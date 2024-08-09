@@ -1,0 +1,100 @@
+html[data-theme='dark'] {
+    .wrapper {
+        .disabled {
+            --ifm-alert-border-color: gray;
+            --ifm-alert-background-color: rgb(99, 98, 98);
+        }
+    }
+}
+.wrapper {
+    position: relative;
+    --current-alert-padding-vertical: var(--ifm-alert-padding-vertical);
+    --current-alert-padding-horizontal: var(--ifm-alert-padding-horizontal);
+    &:not(.standalone) {
+        :global(.alert) {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            --ifm-alert-padding-vertical: 0.2em;
+            --ifm-alert-padding-horizontal: 0.2em;
+            margin-right: calc(-1 * var(--current-alert-padding-vertical));
+            margin-left: calc(
+                -1 * calc(var(--current-alert-padding-vertical) + var(--ifm-alert-border-left-width))
+            );
+            border-width: 0;
+            border-left-width: var(--ifm-alert-border-left-width) !important;
+            .alert {
+                border-top-left-radius: var(--ifm-alert-border-radius);
+                border-bottom-left-radius: var(--ifm-alert-border-radius);
+                --ifm-alert-padding-vertical: var(--current-alert-padding-vertical);
+                --ifm-alert-padding-horizontal: var(--current-alert-padding-horizontal);
+                margin-right: 0;
+                margin-left: 0;
+            }
+        }
+    }
+
+    .disabled {
+        --ifm-alert-border-color: gray;
+        --ifm-alert-background-color: rgb(226, 226, 226);
+        font-style: italic;
+        font-size: smaller;
+        user-select: none;
+        cursor: pointer;
+        padding-left: 0.5em;
+        > .summaryIcon {
+            float: right;
+            fill: var(--ifm-color-success);
+            margin-right: 0.2em;
+        }
+    }
+
+    details.solution {
+        --ifm-alert-border-color: var(--ifm-color-success-dark);
+        --ifm-alert-background-color: var(--ifm-color-success-contrast-background);
+    }
+
+    details.hint,
+    details.solution {
+        --ifm-spacing-vertical: 0;
+        > summary {
+            .summary {
+                display: flex;
+                align-items: center;
+                gap: 0.5em;
+                .summaryIcon {
+                    transition: all 0.5s;
+                    transition-delay: 0s;
+                    float: right;
+                    fill: var(--ifm-alert-border-color);
+                    margin-right: 0.2em;
+                }
+            }
+        }
+        &[open] > summary {
+            .summary {
+                .summaryIcon {
+                    transform: scale(1.6) rotate(360deg);
+                }
+            }
+        }
+        > div {
+            > div {
+                // the collapsibleContent within the details
+                margin-top: 0.2em;
+                padding-top: 0.2em;
+            }
+        }
+    }
+}
+
+:global(.theme-admonition-aufgabe) {
+    :last-child {
+        &.hint-wrapper,
+        &.solution-wrapper {
+            > .alert {
+                margin-bottom: calc(-1 * var(--current-alert-padding-vertical));
+                border-bottom-left-radius: var(--ifm-alert-border-radius);
+            }
+        }
+    }
+}

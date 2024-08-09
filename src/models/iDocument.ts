@@ -8,6 +8,11 @@ import { ApiState } from '../stores/iStore';
  * normally, save only once all 1000ms
  */
 const SAVE_DEBOUNCE_TIME = 1000;
+
+export enum Source {
+    LOCAL = 'local',
+    API = 'api'
+}
 abstract class iDocument<Type extends DocumentType> {
     readonly store: DocumentStore;
     readonly id: string;
@@ -81,12 +86,12 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     reset() {
-        this.setData({ ...this._pristine }, true);
+        this.setData({ ...this._pristine }, Source.LOCAL);
     }
 
     abstract get data(): TypeDataMapping[Type];
 
-    abstract setData(data: TypeDataMapping[Type], persist: boolean, updatedAt?: Date): void;
+    abstract setData(data: TypeDataMapping[Type], from: Source, updatedAt?: Date): void;
 
     @computed
     get isDirty() {
@@ -106,6 +111,9 @@ abstract class iDocument<Type extends DocumentType> {
     @computed
     get canEdit() {
         if (!this.root) {
+            return false;
+        }
+        if (this.root.meta.access === Access.RO) {
             return false;
         }
         if (this.root.isDummy) {

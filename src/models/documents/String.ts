@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import iDocument from '../iDocument';
+import iDocument, { Source } from '../iDocument';
 import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@site/src/api/document';
 import DocumentStore from '@site/src/stores/DocumentStore';
 import { TypeMeta } from '../DocumentRoot';
@@ -53,10 +53,10 @@ class String extends iDocument<DocumentType.String> {
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.String], persist: boolean, updatedAt?: Date): void {
+    setData(data: TypeDataMapping[DocumentType.String], from: Source, updatedAt?: Date): void {
         this.text = data.text;
         this.answer = StringAnswer.Unchecked;
-        if (persist) {
+        if (from === Source.LOCAL) {
             this.save();
         }
         if (updatedAt) {

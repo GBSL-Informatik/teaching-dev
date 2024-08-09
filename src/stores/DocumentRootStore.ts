@@ -2,7 +2,13 @@ import { action, observable } from 'mobx';
 import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import DocumentRoot, { TypeMeta } from '../models/DocumentRoot';
-import { find as apiFind, create as apiCreate, Config } from '../api/documentRoot';
+import {
+    Config,
+    create as apiCreate,
+    DocumentRootUpdate,
+    find as apiFind,
+    update as apiUpdate
+} from '../api/documentRoot';
 import iStore from './iStore';
 import PermissionGroup from '../models/PermissionGroup';
 import PermissionUser from '../models/PermissionUser';
@@ -79,6 +85,15 @@ export class DocumentRootStore extends iStore {
         });
     }
 
+    @action
+    handleUpdate({ id, access, sharedAccess }: DocumentRootUpdate) {
+        const model = this.find(id);
+        if (model) {
+            model.rootAccess = access;
+            model.sharedAccess = sharedAccess;
+        }
+    }
+
     /**
      * returns userPermissions and! groupPermissions
      */
@@ -106,5 +121,21 @@ export class DocumentRootStore extends iStore {
         documentRoot.documents.forEach((doc) => {
             this.root.documentStore.removeFromStore(doc.id);
         });
+    }
+
+    @action
+    save(documentRoot: DocumentRoot<any>) {
+        if (!this.root.sessionStore.isLoggedIn || !this.root.userStore.current?.isAdmin) {
+            return Promise.resolve('error');
+        }
+
+        const model = {
+            access: documentRoot.rootAccess,
+            sharedAccess: documentRoot.sharedAccess
+        };
+
+        return this.withAbortController(`save-${documentRoot.id}`, (signal) => {
+            return apiUpdate(documentRoot.id, model, signal.signal);
+        }).catch(() => console.warn('Error saving document root'));
     }
 }

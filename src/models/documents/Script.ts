@@ -14,7 +14,7 @@ import {
     Status
 } from 'docusaurus-live-brython/theme/CodeEditor/WithScript/Types';
 import { runCode } from 'docusaurus-live-brython/theme/CodeEditor/WithScript/bryRunner';
-import iDocument from '../iDocument';
+import iDocument, { Source } from '../iDocument';
 import {
     DocumentType,
     Document as DocumentProps,
@@ -173,8 +173,8 @@ export default class Script extends iDocument<DocumentType.Script> {
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.Script], persist: boolean, updatedAt?: Date) {
-        if (persist) {
+    setData(data: TypeDataMapping[DocumentType.Script], from: Source, updatedAt?: Date) {
+        if (from === Source.LOCAL) {
             this.setCode(data.code);
         } else {
             this.code = data.code;

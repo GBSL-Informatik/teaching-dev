@@ -4,6 +4,8 @@ import { computedFn } from 'mobx-utils';
 import PermissionUser from '../models/PermissionUser';
 import PermissionGroup from '../models/PermissionGroup';
 import iStore from './iStore';
+import { RecordType } from '@site/src/api/IoEventTypes';
+import { GroupPermission, UserPermission } from '@site/src/api/permission';
 
 class PermissionStore extends iStore {
     readonly root: RootStore;
@@ -73,6 +75,30 @@ class PermissionStore extends iStore {
             this.userPermissions.remove(old);
         }
         this.groupPermissions.push(groupPermission);
+    }
+
+    @action
+    handleUserPermissionUpdate(userPermission: UserPermission) {
+        // TODO: Implement.
+        console.log('PermissionStore: handling user permission update', userPermission);
+    }
+
+    @action
+    handleGroupPermissionUpdate(groupPermission: GroupPermission) {
+        // TODO: Implement.
+        console.log('PermissionStore: handling group permission update', groupPermission);
+    }
+
+    @action
+    deleteUserPermission(id: string) {
+        // TODO: Implement.
+        console.log(`PermissionStore: deleting userPermission with id ${id}`);
+    }
+
+    @action
+    deleteGroupPermission(id: string) {
+        // TODO: Implement.
+        console.log(`PermissionStore: deleting groupPermission with id ${id}`);
     }
 }
 

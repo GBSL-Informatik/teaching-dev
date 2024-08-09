@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import iDocument from '../iDocument';
+import iDocument, { Source } from '../iDocument';
 import {
     DocumentType,
     Document as DocumentProps,
@@ -48,13 +48,13 @@ class TaskState extends iDocument<DocumentType.TaskState> {
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.TaskState], persist: boolean, updatedAt?: Date): void {
+    setData(data: TypeDataMapping[DocumentType.TaskState], from: Source, updatedAt?: Date): void {
         if (this.root?.access !== Access.RW) {
             return;
         }
         this.taskState = data.state;
 
-        if (persist) {
+        if (from === Source.LOCAL) {
             this.saveNow();
         }
         if (updatedAt) {
@@ -83,7 +83,7 @@ class TaskState extends iDocument<DocumentType.TaskState> {
             {
                 state: this.meta.taskState[(idx + 1) % this.meta.taskState.length]
             },
-            true,
+            Source.LOCAL,
             new Date()
         );
     }

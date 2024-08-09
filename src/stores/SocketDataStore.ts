@@ -1,7 +1,7 @@
 import { RootStore } from './rootStore';
 import { io, Socket } from 'socket.io-client';
 import { action, observable, reaction } from 'mobx';
-import { default as api, checkLogin as pingApi } from '../api/base';
+import { checkLogin as pingApi, default as api } from '../api/base';
 import iStore from './iStore';
 import {
     ChangedDocument,
@@ -15,6 +15,8 @@ import {
     ServerToClientEvents
 } from '../api/IoEventTypes';
 import { BACKEND_URL } from '../authConfig';
+import { DocumentRootUpdate } from '@site/src/api/documentRoot';
+import { GroupPermission, UserPermission } from '@site/src/api/permission';
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -122,7 +124,20 @@ export class SocketDataStore extends iStore<'ping'> {
 
     @action
     updateRecord({ type, record }: ChangedRecord<RecordType>) {
-        console.log('changedRecord', type, record);
+        switch (type) {
+            case RecordType.DocumentRoot:
+                this.root.documentRootStore.handleUpdate(record as DocumentRootUpdate);
+                break;
+            case RecordType.UserPermission:
+                this.root.permissionStore.handleUserPermissionUpdate(record as UserPermission);
+                break;
+            case RecordType.GroupPermission:
+                this.root.permissionStore.handleGroupPermissionUpdate(record as GroupPermission);
+                break;
+            default:
+                console.log('changedRecord', type, record);
+                break;
+        }
     }
 
     @action
@@ -133,7 +148,19 @@ export class SocketDataStore extends iStore<'ping'> {
 
     @action
     deleteRecord({ type, id }: DeletedRecord) {
-        console.log('deletedRecord', type, id);
+        switch (type) {
+            case RecordType.UserPermission:
+                // TODO: Do we also need to update all docs / doc roots?
+                this.root.permissionStore.deleteUserPermission(id);
+                break;
+            case RecordType.GroupPermission:
+                // TODO: Do we also need to update all docs / doc roots?
+                this.root.permissionStore.deleteGroupPermission(id);
+                break;
+            default:
+                console.log('deletedRecord', type, id);
+                break;
+        }
     }
 
     @action
