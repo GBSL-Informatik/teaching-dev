@@ -1,0 +1,16 @@
+.popupContentContainer {
+    padding: 0.5rem;
+}
+
+.radioGroup {
+    display: flex;
+    flex-direction: row;
+
+    .radioGroupTitle {
+        margin-right: 0.5rem;
+    }
+
+    label {
+        margin-right: 0.5rem;
+    }
+}

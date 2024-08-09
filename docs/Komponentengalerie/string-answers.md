@@ -1,4 +1,5 @@
 import String from '@site/src/components/documents/String';
+import PermissionsPanel from "@site/src/components/PermissionsPanel"
 
 # String Answers
 
@@ -9,6 +10,7 @@ Einzeilige Texteingabe ohne Formatierung.
 ```
 
 <String id="4caa49d4-5385-433e-9651-a48ebed29a9a" />
+<PermissionsPanel documentRootId="4caa49d4-5385-433e-9651-a48ebed29a9a" />
 
 ## Label
 
