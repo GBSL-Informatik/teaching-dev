@@ -4,6 +4,8 @@ import type TaskState from '../models/documents/TaskState';
 import type String from '../models/documents/String';
 import api from './base';
 import { AxiosPromise } from 'axios';
+import QuillV2 from '../models/documents/QuillV2';
+import { Delta } from 'quill/core';
 
 export enum Access {
     RO = 'RO',
@@ -15,7 +17,8 @@ export enum DocumentType {
     Script = 'script',
     ScriptVersion = 'script_version',
     TaskState = 'task_state',
-    String = 'string'
+    String = 'string',
+    QuillV2 = 'quill_v2'
 }
 export interface ScriptData {
     code: string;
@@ -26,8 +29,13 @@ export interface ScriptVersionData {
     version: number;
     pasted?: boolean;
 }
+
 export interface StringData {
     text: string;
+}
+
+export interface QuillV2Data {
+    delta: Delta;
 }
 
 export type StateType = 'checked' | 'question' | 'unset' | 'star' | 'star-half' | 'star-empty';
@@ -41,6 +49,7 @@ export interface TypeDataMapping {
     [DocumentType.TaskState]: TaskStateData;
     [DocumentType.ScriptVersion]: ScriptVersionData;
     [DocumentType.String]: StringData;
+    [DocumentType.QuillV2]: QuillV2Data;
     // Add more mappings as needed
 }
 
@@ -49,15 +58,16 @@ export interface TypeModelMapping {
     [DocumentType.TaskState]: TaskState;
     [DocumentType.ScriptVersion]: ScriptVersion;
     [DocumentType.String]: String;
+    [DocumentType.QuillV2]: QuillV2;
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
      * @see DocumentRoot
-     * @link file://../../src/models/DocumentRoot.ts
+     * @link file://../../src/stores/DocumentStore.ts#CreateDocumentModel
      */
 }
 
-export type DocumentTypes = Script | TaskState | ScriptVersion | String;
+export type DocumentTypes = Script | TaskState | ScriptVersion | String | QuillV2;
 
 export interface Document<Type extends DocumentType> {
     id: string;

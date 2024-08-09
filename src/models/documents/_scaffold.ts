@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import iDocument from '../iDocument';
+import iDocument, { Source } from '../iDocument';
 import {
     DocumentType,
     Document as DocumentProps,
@@ -34,9 +34,9 @@ class Model extends iDocument<DocumentType.TaskState> {
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.TaskState], persist: boolean, updatedAt?: Date): void {
+    setData(data: TypeDataMapping[DocumentType.TaskState], from: Source, updatedAt?: Date): void {
         // TODO: change state according to data
-        if (persist) {
+        if (from === Source.LOCAL) {
             this.save();
         }
         if (updatedAt) {

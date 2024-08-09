@@ -16,10 +16,11 @@ import TaskState from '@site/src/models/documents/TaskState';
 import iStore from './iStore';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import iDocument from '../models/iDocument';
+import iDocument, { Source } from '../models/iDocument';
 import ScriptVersion from '../models/documents/ScriptVersion';
 import { ChangedDocument } from '../api/IoEventTypes';
 import String from '../models/documents/String';
+import QuillV2 from '../models/documents/QuillV2';
 
 export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
@@ -35,6 +36,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new ScriptVersion(data as DocumentProps<DocumentType.ScriptVersion>, store);
         case DocumentType.String:
             return new String(data as DocumentProps<DocumentType.String>, store);
+        case DocumentType.QuillV2:
+            return new QuillV2(data as DocumentProps<DocumentType.QuillV2>, store);
     }
 }
 class DocumentStore extends iStore {
@@ -213,7 +216,7 @@ class DocumentStore extends iStore {
     handleUpdate(change: ChangedDocument) {
         const model = this.find(change.id);
         if (model) {
-            model.setData(change.data as any, false, new Date(change.updatedAt));
+            model.setData(change.data as any, Source.API, new Date(change.updatedAt));
         }
     }
 }

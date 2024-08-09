@@ -7,6 +7,8 @@ import strongPlugin from './src/plugins/remark-strong/plugin';
 import deflistPlugin from './src/plugins/remark-deflist/plugin';
 import mdiPlugin from './src/plugins/remark-mdi/plugin';
 import kbdPlugin from './src/plugins/remark-kbd/plugin';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import defboxPlugin from './src/plugins/remark-code-defbox/plugin';
 import flexCardsPlugin from './src/plugins/remark-flex-cards/plugin';
 import imagePlugin from './src/plugins/remark-images/plugin';
@@ -48,8 +50,12 @@ const REMARK_PLUGINS = [
       }
   ],
   mediaPlugin,
-  kbdPlugin
+  kbdPlugin,
+  remarkMath
 ];
+const REHYPE_PLUGINS = [
+  rehypeKatex
+]
 
 
 const config: Config = {
@@ -76,7 +82,9 @@ const config: Config = {
     TEST_USERNAME: process.env.TEST_USERNAME,
     NO_AUTH: process.env.NODE_ENV !== 'production' && !!process.env.TEST_USERNAME,
     /** The Domain Name where the api is running */
-    APP_URL: process.env.APP_URL || 'http://localhost:3000',
+    APP_URL: process.env.NETLIFY 
+      ? process.env.DEPLOY_PRIME_URL 
+      : process.env.APP_URL || 'http://localhost:3000',
     /** The Domain Name of this app */
     BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
     /** The application id generated in https://portal.azure.com */
@@ -107,6 +115,7 @@ const config: Config = {
           editUrl:
             'https://github.com/GBSL-Informatik/teaching-dev/edit/main/',
           remarkPlugins: REMARK_PLUGINS,
+          rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
         blog: {
@@ -116,10 +125,12 @@ const config: Config = {
           editUrl:
             'https://github.com/GBSL-Informatik/teaching-dev/edit/main/',
             remarkPlugins: REMARK_PLUGINS,
+            rehypePlugins: REHYPE_PLUGINS,
             beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
         pages: {
           remarkPlugins: REMARK_PLUGINS,
+          rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
         theme: {
@@ -191,6 +202,15 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
   plugins: ['docusaurus-plugin-sass'],
   themes: ['docusaurus-live-brython'],
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      crossorigin: 'anonymous',
+    },
+  ]
 };
 
 export default config;
