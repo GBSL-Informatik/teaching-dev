@@ -9,6 +9,7 @@ import Button from '../../shared/Button';
 import { mdiCheckCircle, mdiCloseCircle, mdiFlashTriangle, mdiHelpCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import SyncStatus from '../../SyncStatus';
+import { Source } from '@site/src/models/iDocument';
 
 interface Props extends MetaInit {
     id: string;
@@ -123,7 +124,7 @@ const String = observer((props: Props) => {
                         style={{ width: props.inputWidth }}
                         spellCheck={false}
                         onChange={(e) => {
-                            doc.setData({ text: e.target.value }, true);
+                            doc.setData({ text: e.target.value }, Source.LOCAL);
                         }}
                         className={clsx(styles.input)}
                         value={doc.text}

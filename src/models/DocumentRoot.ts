@@ -1,7 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import { DocumentRootBase as DocumentRootProps } from '../api/documentRoot';
 import { DocumentRootStore } from '../stores/DocumentRootStore';
-import { Access, Document, DocumentType, TypeDataMapping, TypeModelMapping } from '../api/document';
+import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '../api/document';
 import { highestAccess } from './helpers/accessPolicy';
 
 export abstract class TypeMeta<T extends DocumentType> {
@@ -27,14 +27,14 @@ class DocumentRoot<T extends DocumentType> {
     readonly isDummy: boolean;
 
     @observable accessor _access: Access;
-    @observable accessor sharedAccess: Access;
+    @observable accessor _sharedAccess: Access;
 
     constructor(props: DocumentRootProps, meta: TypeMeta<T>, store: DocumentRootStore, isDummy?: boolean) {
         this.store = store;
         this.meta = meta;
         this.id = props.id;
         this._access = props.access;
-        this.sharedAccess = props.sharedAccess;
+        this._sharedAccess = props.sharedAccess;
         this.isDummy = !!isDummy;
     }
 
@@ -47,6 +47,24 @@ class DocumentRoot<T extends DocumentType> {
             return this.meta.access;
         }
         return this._access;
+    }
+
+    get rootAccess() {
+        return this._access;
+    }
+
+    @action
+    set rootAccess(access: Access) {
+        this._access = access;
+    }
+
+    get sharedAccess() {
+        return this._sharedAccess;
+    }
+
+    @action
+    set sharedAccess(access: Access) {
+        this._sharedAccess = access;
     }
 
     get loadStatus() {
@@ -120,6 +138,11 @@ class DocumentRoot<T extends DocumentType> {
     @computed
     get firstMainDocument(): TypeModelMapping[T] | undefined {
         return this.mainDocuments[0];
+    }
+
+    @action
+    save() {
+        return this.store.save(this).catch(() => console.log('Failed to update document root'));
     }
 }
 

@@ -1,0 +1,29 @@
+.popupContentContainer {
+    padding: 0.5rem;
+}
+
+.radioGroup {
+    display: flex;
+    flex-direction: row;
+
+    .radioGroupTitle {
+        margin-right: 0.5rem;
+    }
+
+    label {
+        margin-right: 0.5rem;
+    }
+}
+.wrapper {
+    max-height: 90vh;
+    max-width: 95vw;
+    padding: 1em;
+    overflow: auto;
+    --ifm-global-shadow-lw: var(--ifm-global-shadow-tl);
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0;
+    }
+}
