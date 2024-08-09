@@ -1,0 +1,7 @@
+:global(.alert .commentable) {
+    &:last-child {
+        > p {
+            margin-bottom: 0;
+        }
+    }
+}

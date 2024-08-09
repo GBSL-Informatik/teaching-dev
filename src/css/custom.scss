@@ -91,3 +91,51 @@ html[data-theme='dark'] {
         }
     }
 }
+
+div.flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin-bottom: 1em;
+
+    > div.item {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 10px;
+
+        &.noFlex {
+            flex-grow: unset;
+            flex-shrink: unset;
+            flex-basis: unset;
+        }
+        &.empty {
+            opacity: 0;
+        }
+
+        .card__image {
+            :first-child {
+                margin: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            figure {
+                margin: 0;
+                line-height: 0;
+                flex-grow: 1;
+
+                > * {
+                    line-height: normal;
+                }
+
+                figcaption {
+                    margin: 0.4em 1em;
+                }
+            }
+
+            &.code__card {
+                padding: 0;
+            }
+        }
+    }
+}

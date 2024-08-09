@@ -75,7 +75,7 @@ Some content
         const input = `Hello [[ctrl world!`;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-        "Hello \\\\[\\\\[ctrl world!
+        "Hello \\[\\[ctrl world!
         "`);
     });
 
@@ -83,7 +83,7 @@ Some content
         const input = `Hello [[ctrl]] [[ world!`;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-        "Hello <kbd>ctrl</kbd> \\\\[\\\\[ world!
+        "Hello <kbd>ctrl</kbd> \\[\\[ world!
         "`);
     });
 

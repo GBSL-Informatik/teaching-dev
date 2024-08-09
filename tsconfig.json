@@ -9,5 +9,5 @@
         "target": "esnext",
         "strict": true
     },
-    "exclude": ["node_modules", "dist", "build"]
+    "exclude": ["src/plugins/**/*.test.ts", "node_modules", "dist", "build"]
 }

@@ -35,10 +35,11 @@ Some content
         `;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-        "# Details element example
+          "# Details element example
 
-        Hello <strong className=\\"underline\\">ctrl</strong> world!
-        "`);
+          Hello <strong className="underline">ctrl</strong> world!
+          "
+        `);
     });
 
     it('can convert complex underline', async () => {
@@ -49,7 +50,7 @@ Some content
         expect(result).toMatchInlineSnapshot(`
           "# Details element example
 
-          Hello <strong className=\\"underline\\">ctrl + [x](https://hello.world)</strong> world!
+          Hello <strong className="underline">ctrl + [x](https://hello.world)</strong> world!
           "
         `);
     });

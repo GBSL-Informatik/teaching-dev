@@ -1,0 +1,42 @@
+.def {
+    --ifm-alert-border-color: rgb(30, 255, 0);
+    --ifm-alert-background-color: rgba(0, 0, 0, 0.226);
+    --ifm-spacing-vertical: 0.5rem;
+    margin-bottom: 1em;
+    .heading {
+        display: flex;
+        gap: 0.5em;
+        h3 {
+            & code {
+                color: rgb(19, 165, 0);
+                text-transform: none;
+                background-color: var(--ifm-color-secondary-dark);
+                &:first-of-type {
+                    background-color: var(--ifm-color-primary-dark);
+                    color: var(--ifm-alert-border-color);
+                }
+            }
+        }
+    }
+    .content {
+        :global(.commentable):last-child {
+            > p {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+html[data-theme='dark'] {
+    .def {
+        --ifm-alert-background-color: var(--ifm-color-primary-darkest);
+        .heading {
+            & code {
+                background-color: var(--ifm-color-primary-dark);
+                &:first-of-type {
+                    background-color: var(--ifm-color-primary-lightest);
+                }
+            }
+        }
+    }
+}

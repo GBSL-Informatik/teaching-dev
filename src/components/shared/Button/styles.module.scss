@@ -61,11 +61,11 @@
     // }
     &.disabled {
         opacity: 0.5;
+        --ifm-button-border-color: var(--ifm-color-disabled);
         .spacer.borderLeft,
         .spacer.borderRight {
             border-color: var(--ifm-color-disabled);
         }
-        --ifm-button-border-color: var(--ifm-color-disabled);
     }
 
     &:hover {

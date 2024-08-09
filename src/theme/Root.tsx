@@ -19,7 +19,7 @@ export const msalInstance = new PublicClientApplication(msalConfig);
 
 console.log(NO_AUTH, TEST_USERNAME);
 if (NO_AUTH) {
-    const n = TEST_USERNAME.length >= 40 ? 0 : 40 - TEST_USERNAME.length;
+    const n = (TEST_USERNAME?.length || 0) >= 40 ? 0 : 40 - (TEST_USERNAME?.length || 0);
     console.log(
         [
             '',
@@ -156,7 +156,7 @@ const MsalAccount = observer(() => {
 });
 
 // Default implementation, that you can customize
-function Root({ children }) {
+function Root({ children }: { children: JSX.Element }) {
     const location = useLocation();
     React.useEffect(() => {
         if (!rootStore) {
@@ -193,7 +193,10 @@ function Root({ children }) {
         <>
             <Head>
                 <meta property="og:description" content={siteConfig.tagline} />
-                <meta property="og:image" content={`${siteConfig.customFields.DOMAIN}/img/og-preview.jpeg`} />
+                <meta
+                    property="og:image"
+                    content={`${siteConfig.customFields?.DOMAIN || ''}/img/og-preview.jpeg`}
+                />
             </Head>
             <StoresProvider value={rootStore}>
                 <MsalWrapper>{children}</MsalWrapper>

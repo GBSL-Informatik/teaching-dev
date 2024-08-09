@@ -235,17 +235,17 @@ export const parseOptions = (
     while (OPTION_REGEX.test(raw)) {
         const match = raw.match(OPTION_REGEX);
         raw = raw.replace(OPTION_REGEX, '');
-        const { key, value } = match.groups;
+        const { key, value } = match?.groups || {};
         if (key) {
-            css[optKey(key)] = value;
+            (css as any)[optKey(key)] = value;
         }
     }
     while (BOOLEAN_REGEX.test(raw)) {
         const match = raw.match(BOOLEAN_REGEX);
         raw = raw.replace(BOOLEAN_REGEX, '');
-        const { key } = match.groups;
+        const { key } = match?.groups || {};
         if (key) {
-            css[optKey(key)] = true;
+            (css as any)[optKey(key)] = true;
         }
     }
     return css;

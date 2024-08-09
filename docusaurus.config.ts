@@ -7,7 +7,21 @@ import strongPlugin from './src/plugins/remark-strong/plugin';
 import deflistPlugin from './src/plugins/remark-deflist/plugin';
 import mdiPlugin from './src/plugins/remark-mdi/plugin';
 import kbdPlugin from './src/plugins/remark-kbd/plugin';
+import defboxPlugin from './src/plugins/remark-code-defbox/plugin';
+import flexCardsPlugin from './src/plugins/remark-flex-cards/plugin';
+import imagePlugin from './src/plugins/remark-images/plugin';
+import mediaPlugin from './src/plugins/remark-media/plugin';
+
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
+
+const BEFORE_DEFAULT_REMARK_PLUGINS = [
+  flexCardsPlugin,
+  [
+      imagePlugin,
+      { tagNames: { sourceRef: 'SourceRef', figure: 'Figure' } }
+  ],
+  defboxPlugin
+];
 
 const REMARK_PLUGINS = [  
   [strongPlugin, { className: 'boxed' }],
@@ -33,6 +47,7 @@ const REMARK_PLUGINS = [
           defaultSize: '1.25em'
       }
   ],
+  mediaPlugin,
   kbdPlugin
 ];
 
@@ -94,6 +109,7 @@ const config: Config = {
           editUrl:
             'https://github.com/GBSL-Informatik/teaching-dev/edit/main/',
           remarkPlugins: REMARK_PLUGINS,
+          beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
         blog: {
           showReadingTime: true,
@@ -102,9 +118,11 @@ const config: Config = {
           editUrl:
             'https://github.com/GBSL-Informatik/teaching-dev/edit/main/',
             remarkPlugins: REMARK_PLUGINS,
+            beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
         pages: {
           remarkPlugins: REMARK_PLUGINS,
+          beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
         theme: {
           customCss: './src/css/custom.scss',
@@ -130,7 +148,7 @@ const config: Config = {
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/GBSL-Informatik',
+          href: 'https://github.com/GBSL-Informatik/teaching-dev',
           label: 'GitHub',
           position: 'right',
         },
@@ -147,8 +165,8 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'Galerie',
+              to: '/docs/Komponentengalerie',
             },
           ],
         },

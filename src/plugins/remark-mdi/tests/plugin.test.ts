@@ -31,7 +31,7 @@ Some content
 
         # Details element example
 
-        Hello <Icon path={mdiRobot} size={1.5} className=\\"mdi-icon\\" /> world!
+        Hello <Icon path={mdiRobot} size={1.5} className="mdi-icon" /> world!
         "`);
     });
 
@@ -47,7 +47,7 @@ Some content
 
         # Details element example
 
-        Hello <Icon path={mdiRobot} color=\\"teal\\" size=\\"20em\\" className=\\"mdi-icon\\" /> world!
+        Hello <Icon path={mdiRobot} color="teal" size="20em" className="mdi-icon" /> world!
         "`);
     });
 
@@ -64,7 +64,7 @@ Some content
         
         # Details element example
 
-        Hello <Icon path={mdiRobot} size={1.5} className=\\"mdi-icon\\" /> world!
+        Hello <Icon path={mdiRobot} size={1.5} className="mdi-icon" /> world!
         "`);
     });
 
@@ -81,7 +81,7 @@ Some content
 
           # Details element example
 
-          Hello <Icon path={mdiNumeric1Box} size={1.5} className=\\"mdi-icon\\" /> world!
+          Hello <Icon path={mdiNumeric1Box} size={1.5} className="mdi-icon" /> world!
           "
         `);
     });
@@ -98,7 +98,7 @@ Some content
 
           # Details element example
 
-          Hello [<Icon path={mdiRobot} size={1.5} className=\\"mdi-icon\\" /> robo](https://srf.ch) world!
+          Hello [<Icon path={mdiRobot} size={1.5} className="mdi-icon" /> robo](https://srf.ch) world!
           "
         `);
     });

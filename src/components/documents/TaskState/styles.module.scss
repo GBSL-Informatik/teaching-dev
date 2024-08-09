@@ -4,6 +4,13 @@
     gap: 8px;
     cursor: pointer;
 
+    margin-bottom: var(--ifm-paragraph-margin-bottom);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -khtml-user-select: none;
+
     .checkbox {
         font-size: 1.2rem;
         border-radius: var(--ifm-global-radius);
@@ -15,13 +22,6 @@
             filter: brightness(0.85);
         }
     }
-
-    margin-bottom: var(--ifm-paragraph-margin-bottom);
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -khtml-user-select: none;
     &.dummy {
         .checkbox {
             border: 2px solid var(--ifm-color-danger);

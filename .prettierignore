@@ -17,3 +17,4 @@ docusaurus.config.ts
 versioned_sidebars/*.json
 
 static/katex/katex.min.css
+.vscode/*.code-snippets
