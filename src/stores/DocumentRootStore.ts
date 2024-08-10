@@ -108,11 +108,13 @@ export class DocumentRootStore extends iStore {
     }
 
     @action
-    removeFromStore(documentRootId: string) {
+    removeFromStore(documentRootId: string, cleanup: boolean = true) {
         const docRoot = this.find(documentRootId);
         if (docRoot) {
             this.documentRoots.remove(docRoot);
-            this.cleanupDocumentRoot(docRoot);
+            if (cleanup) {
+                this.cleanupDocumentRoot(docRoot);
+            }
         }
     }
 

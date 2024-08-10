@@ -103,6 +103,15 @@ abstract class iDocument<Type extends DocumentType> {
         return this.store.root.documentRootStore.find(this.documentRootId);
     }
 
+    get isInitialized() {
+        /**
+         * only return true if the models root document is present in the store...
+         * -> maybe the root document is not yet loaded, then this model
+         *   should not be displayed...
+         */
+        return !!this.root;
+    }
+
     @computed
     get canEdit() {
         if (!this.root) {

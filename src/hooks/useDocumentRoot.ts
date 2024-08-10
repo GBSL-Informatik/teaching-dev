@@ -1,8 +1,7 @@
 import React, { useId } from 'react';
-import { Access, Document, DocumentType } from '../api/document';
+import { Access, DocumentType } from '../api/document';
 import { rootStore } from '../stores/rootStore';
 import DocumentRoot, { TypeMeta } from '../models/DocumentRoot';
-import { CreateDocumentModel } from '../stores/DocumentStore';
 
 /**
  * 1. create a dummy documentRoot with default (meta) data
@@ -16,28 +15,12 @@ import { CreateDocumentModel } from '../stores/DocumentStore';
  */
 export const useDocumentRoot = <Type extends DocumentType>(id: string | undefined, meta: TypeMeta<Type>) => {
     const defaultRootDocId = useId();
-    const defaultDocId = useId();
     const [dummyDocumentRoot] = React.useState<DocumentRoot<Type>>(
         new DocumentRoot(
             { id: id || defaultRootDocId, access: Access.RW, sharedAccess: Access.None },
             meta,
             rootStore.documentRootStore,
             true
-        )
-    );
-    const [dummyDocument] = React.useState(
-        CreateDocumentModel(
-            {
-                id: defaultDocId,
-                type: meta.type,
-                data: meta.defaultData,
-                authorId: 'dummy',
-                documentRootId: id || defaultRootDocId,
-                parentId: null,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            },
-            rootStore.documentStore
         )
     );
     /**
@@ -51,18 +34,14 @@ export const useDocumentRoot = <Type extends DocumentType>(id: string | undefine
         if (!initRender) {
             return;
         }
-        const { documentStore, documentRootStore } = rootStore;
+        const { documentRootStore } = rootStore;
         const rootDoc = documentRootStore.find(dummyDocumentRoot.id);
         if (rootDoc) {
             return;
         }
-        documentStore.addDocument(dummyDocument);
-        documentRootStore.addDocumentRoot(dummyDocumentRoot, true);
-        if (!id || dummyDocumentRoot.id === defaultRootDocId) {
-            /** no according document in the backend can be expected - skip */
-            return () => {
-                documentRootStore.removeFromStore(dummyDocumentRoot.id);
-            };
+        documentRootStore.addDocumentRoot(dummyDocumentRoot);
+        if (!id) {
+            return;
         }
 
         /**
@@ -91,7 +70,6 @@ export const useDocumentRoot = <Type extends DocumentType>(id: string | undefine
                         });
                     }
                 }
-                rootStore.documentRootStore.removeFromStore(defaultDocId);
             })
             .catch((err) => {
                 /**
@@ -100,14 +78,14 @@ export const useDocumentRoot = <Type extends DocumentType>(id: string | undefine
                  */
                 console.log('err loading', err);
             });
-        return () => {
-            documentRootStore.removeFromStore(dummyDocumentRoot.id);
-        };
     }, [initRender, rootStore]);
 
     React.useEffect(() => {
         setInitRender(true);
+        return () => {
+            rootStore.documentRootStore.removeFromStore(defaultRootDocId, false);
+        };
     }, []);
 
-    return rootStore.documentRootStore.find<Type>(dummyDocumentRoot.id);
+    return rootStore.documentRootStore.find<Type>(dummyDocumentRoot.id) || dummyDocumentRoot;
 };

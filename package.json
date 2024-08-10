@@ -20,8 +20,8 @@
     "dependencies": {
         "@azure/msal-browser": "^3.20.0",
         "@azure/msal-react": "^2.0.22",
-        "@docusaurus/core": "3.4.0",
-        "@docusaurus/preset-classic": "3.4.0",
+        "@docusaurus/core": "^3.5.1",
+        "@docusaurus/preset-classic": "^3.5.1",
         "@mdi/js": "^7.4.47",
         "@mdi/react": "^1.6.1",
         "@mdx-js/react": "^3.0.0",
@@ -46,9 +46,9 @@
     },
     "devDependencies": {
         "@babel/plugin-proposal-decorators": "^7.24.7",
-        "@docusaurus/module-type-aliases": "3.4.0",
-        "@docusaurus/tsconfig": "3.4.0",
-        "@docusaurus/types": "3.4.0",
+        "@docusaurus/module-type-aliases": "^3.5.1",
+        "@docusaurus/tsconfig": "^3.5.1",
+        "@docusaurus/types": "^3.5.1",
         "@types/uuid": "^10.0.0",
         "@vitest/coverage-v8": "^2.0.5",
         "prettier": "^3.3.2",

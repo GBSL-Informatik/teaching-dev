@@ -8,16 +8,6 @@
     order: 199;
     z-index: calc(var(--ifm-z-index-fixed) - 2);
 
-    &:hover {
-        background-color: var(--ifm-color-info-lightest);
-        color: var(--ifm-color-primary);
-    }
-
-    &.visible {
-        // background-color: var(--ifm-color-info-lightest);
-        color: var(--ifm-color-success);
-    }
-
     -webkit-touch-callout: none;
     /* iOS Safari */
     -webkit-user-select: none;
@@ -29,6 +19,16 @@
     -ms-user-select: none;
     /* Internet Explorer/Edge */
     user-select: none;
+
+    &:hover {
+        background-color: var(--ifm-color-info-lightest);
+        color: var(--ifm-color-primary);
+    }
+
+    &.visible {
+        // background-color: var(--ifm-color-info-lightest);
+        color: var(--ifm-color-success);
+    }
 }
 .meta {
     display: flex;

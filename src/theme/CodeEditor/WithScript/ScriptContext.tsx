@@ -15,7 +15,7 @@ const ScriptContext = observer((props: InitState & { children: JSX.Element }) =>
     return (
         <BrowserOnly fallback={<CodeBlock language={props.lang}>{props.code}</CodeBlock>}>
             {() => {
-                if (!doc) {
+                if (!doc || !doc.isInitialized) {
                     return (
                         <div style={{ position: 'relative' }}>
                             <CodeBlock language={props.lang}>{props.code}</CodeBlock>
