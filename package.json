@@ -28,7 +28,7 @@
         "@types/lodash": "^4.17.7",
         "axios": "^1.7.2",
         "clsx": "^2.0.0",
-        "docusaurus-live-brython": "^3.0.0-beta.27",
+        "docusaurus-live-brython": "^3.0.0-beta.28",
         "docusaurus-plugin-sass": "^0.2.5",
         "dotenv": "^16.4.5",
         "known-css-properties": "^0.34.0",

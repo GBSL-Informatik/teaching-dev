@@ -4414,10 +4414,10 @@ dns-packet@^5.2.2:
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
 
-docusaurus-live-brython@^3.0.0-beta.27:
-  version "3.0.0-beta.27"
-  resolved "https://registry.yarnpkg.com/docusaurus-live-brython/-/docusaurus-live-brython-3.0.0-beta.27.tgz#58984ce3bf9f8c9dbeea39ca464c27b60e67650a"
-  integrity sha512-XSngg92nPmx7L9H84nHQkzJLk6nZ2eg9IHiixs9FxPlSTcxIVOkIBjVe/H22/WVkNVOYUxsBE8LQ0uErysH/NA==
+docusaurus-live-brython@^3.0.0-beta.28:
+  version "3.0.0-beta.28"
+  resolved "https://registry.yarnpkg.com/docusaurus-live-brython/-/docusaurus-live-brython-3.0.0-beta.28.tgz#789d9cb3de0ff0579d05f7307c10e9d34cf44c19"
+  integrity sha512-mpEM0jBfPa9tNZ1+Rd/T79O6UEURwXLmArq91zm9EIhU8SvE1QLjZXd+JLemhF3Qb8LC1qyvf3Fz02ygf3BSVA==
   dependencies:
     "@docusaurus/core" "3.4.0"
     "@docusaurus/theme-classic" "3.4.0"
