@@ -9,7 +9,8 @@ export enum IoEvent {
     CHANGED_RECORD = 'CHANGED_RECORD',
     CHANGED_DOCUMENT = 'CHANGED_DOCUMENT',
     DELETED_RECORD = 'DELETED_RECORD',
-    CONNECTED_CLIENTS = 'CONNECTED_CLIENTS'
+    CONNECTED_CLIENTS = 'CONNECTED_CLIENTS',
+    USER_MESSAGE = 'USER_MESSAGE'
 }
 
 export enum RecordType {
@@ -90,7 +91,19 @@ export type Notification =
 
 export enum IoClientEvent {
     JOIN_ROOM = 'JOIN_ROOM',
-    LEAVE_ROOM = 'LEAVE_ROOM'
+    LEAVE_ROOM = 'LEAVE_ROOM',
+    USER_JOIN_ROOM = 'USER_JOIN_ROOM',
+    USER_LEAVE_ROOM = 'USER_LEAVE_ROOM',
+    USER_MESSAGE = 'USER_MESSAGE'
+}
+
+export interface iMessage<T = any> {
+    type: string;
+    data: T;
+}
+
+export interface iDeliveredMessage<T = any> extends iMessage<T> {
+    serverSentAt: Date;
 }
 
 export type ServerToClientEvents = {
@@ -99,11 +112,19 @@ export type ServerToClientEvents = {
     [IoEvent.DELETED_RECORD]: (message: DeletedRecord) => void;
     [IoEvent.CHANGED_DOCUMENT]: (message: ChangedDocument) => void;
     [IoEvent.CONNECTED_CLIENTS]: (message: ConnectedClients) => void;
+    [IoEvent.USER_MESSAGE]: (roomId: string, message: iDeliveredMessage) => void;
 };
 
 export interface ClientToServerEvents {
     [IoClientEvent.JOIN_ROOM]: (roomId: string, callback: () => void) => void;
     [IoClientEvent.LEAVE_ROOM]: (roomId: string, callback: () => void) => void;
+    [IoClientEvent.USER_JOIN_ROOM]: (roomName: string, callback: (roomId: string) => void) => void;
+    [IoClientEvent.USER_LEAVE_ROOM]: (roomName: string, callback: () => void) => void;
+    [IoClientEvent.USER_MESSAGE]: (
+        to: string,
+        message: iMessage,
+        callback: (serverSentAt: Date | null) => void
+    ) => void;
 }
 
 export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore } = {
