@@ -1,3 +1,4 @@
+import { iDeliveredMessage, iMessage as ClientMessageProps } from '@tdev-api/IoEventTypes';
 import { UserMessageStore } from '@tdev-stores/UserMessageStore';
 import { action, computed, observable } from 'mobx';
 
@@ -13,6 +14,13 @@ export interface TypeDataMapping {
     [MessageType.Text]: TextData;
 }
 
+export interface iProps<Type extends MessageType> {
+    type: Type;
+    data: TypeDataMapping[Type];
+    room: string;
+    senderId?: string;
+}
+
 abstract class iMessage<Type extends MessageType> {
     readonly store: UserMessageStore;
     readonly type: Type;
@@ -22,12 +30,14 @@ abstract class iMessage<Type extends MessageType> {
     @observable.ref accessor createdAt: Date;
     @observable.ref accessor deliveredAt: Date | undefined;
     @observable.ref accessor serverSentAt: Date | null = null;
+    @observable.ref accessor senderId: string | undefined;
 
-    constructor(type: Type, room: string, data: TypeDataMapping[Type], store: UserMessageStore) {
+    constructor(props: iProps<Type>, store: UserMessageStore) {
         this.store = store;
-        this.type = type;
-        this.room = room;
-        this.data = data;
+        this.type = props.type;
+        this.room = props.room;
+        this.data = props.data;
+        this.senderId = props.senderId;
         this.createdAt = new Date();
     }
 
@@ -55,6 +65,11 @@ abstract class iMessage<Type extends MessageType> {
 
     get message() {
         return this.data;
+    }
+
+    @computed
+    get author() {
+        return this.store.root.userStore.find(this.senderId);
     }
 }
 

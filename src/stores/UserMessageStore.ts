@@ -44,7 +44,7 @@ export class UserMessageStore {
             this.root.socketStore.socket?.emit(
                 IoClientEvent.USER_MESSAGE,
                 message.room,
-                message,
+                message.data,
                 action((serverSentAt) => {
                     console.log('Message sent to:', message.room, serverSentAt);
                     message.serverSentAt = serverSentAt;
