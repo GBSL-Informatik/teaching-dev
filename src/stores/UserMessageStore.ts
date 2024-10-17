@@ -49,11 +49,11 @@ export class UserMessageStore {
     }
 
     @action
-    addMessageTo(room: string, message: iMessage<any>) {
-        if (!this.messages.has(room)) {
-            this.messages.set(room, observable.array<iMessage<any>>([], { deep: false }));
+    addMessage(message: iMessage<any>) {
+        if (!this.messages.has(message.room)) {
+            this.messages.set(message.room, observable.array<iMessage<any>>([], { deep: false }));
         }
-        const conversation = this.messages.get(room);
+        const conversation = this.messages.get(message.room);
         if (conversation) {
             conversation.push(message);
         }
@@ -71,7 +71,7 @@ export class UserMessageStore {
                 },
                 action((serverSentAt) => {
                     message.serverSentAt = serverSentAt;
-                    this.addMessageTo(message.room, message);
+                    this.addMessage(message);
                 })
             );
         }
@@ -79,12 +79,12 @@ export class UserMessageStore {
 
     @action
     handleMessage(to: string, message: iDeliveredMessage) {
+        const room = to.split(':').slice(1).join(':');
         switch (message.type) {
             case MessageType.Text:
-                this.addMessageTo(
-                    to,
+                this.addMessage(
                     new TextMessage(
-                        { ...(message as iDeliveredMessage<TypeDataMapping[MessageType.Text]>), room: to },
+                        { ...(message as iDeliveredMessage<TypeDataMapping[MessageType.Text]>), room: room },
                         this
                     )
                 );
