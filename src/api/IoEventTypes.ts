@@ -3,6 +3,7 @@ import { Document, DocumentType } from '../api/document';
 import { rootStore } from '../stores/rootStore';
 import { GroupPermission, UserPermission } from '../api/permission';
 import { DocumentRootUpdate } from '../api/documentRoot';
+import { type MessageType } from '@tdev-models/Messages/iMessage';
 
 export enum IoEvent {
     NEW_RECORD = 'NEW_RECORD',
@@ -98,7 +99,7 @@ export enum IoClientEvent {
 }
 
 export interface iMessage<T = any> {
-    type: string;
+    type: MessageType;
     data: T;
 }
 

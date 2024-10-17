@@ -8,20 +8,24 @@ import { default as TextMessageModel } from '@tdev-models/Messages/Text';
 import Icon from '@mdi/react';
 import { mdiClose, mdiSend } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
-import String from '@tdev-components/documents/String';
 import Button from '@tdev-components/shared/Button';
 import { MessageType } from '@tdev-models/Messages/iMessage';
 
 const NewMessage = observer(() => {
     const [message, setMessage] = React.useState('');
+    const userStore = useStore('userStore');
     const userMessageStore = useStore('userMessageStore');
     const sendMessage = () => {
+        if (!userStore.current) {
+            return;
+        }
         const msg = new TextMessageModel(
             {
                 type: MessageType.Text,
                 data: {
                     text: message
                 },
+                senderId: userStore.current.id,
                 room: 'foo'
             },
             userMessageStore
