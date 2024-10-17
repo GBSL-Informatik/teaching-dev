@@ -117,6 +117,10 @@ export class SocketDataStore extends iStore<'ping'> {
         this.socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
         this.socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
         this.socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
+        this.socket.on(
+            IoEvent.USER_MESSAGE,
+            this.root.userMessageStore.handleMessage.bind(this.root.userMessageStore)
+        );
     }
 
     @action
