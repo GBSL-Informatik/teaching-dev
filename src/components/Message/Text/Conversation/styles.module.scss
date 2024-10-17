@@ -1,0 +1,8 @@
+.conversation {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    gap: 0.3em;
+    max-height: 80vh;
+}

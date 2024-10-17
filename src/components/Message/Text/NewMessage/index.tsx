@@ -2,11 +2,8 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import Loader from '@tdev-components/Loader';
 import { default as TextMessageModel } from '@tdev-models/Messages/Text';
-import Icon from '@mdi/react';
-import { mdiClose, mdiSend } from '@mdi/js';
+import { mdiSend } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { MessageType } from '@tdev-models/Messages/iMessage';
@@ -20,7 +17,7 @@ const NewMessage = observer((props: Props) => {
     const userStore = useStore('userStore');
     const userMessageStore = useStore('userMessageStore');
     const sendMessage = () => {
-        if (!userStore.current) {
+        if (!userStore.current || message.trim() === '') {
             return;
         }
         const msg = new TextMessageModel(
@@ -38,11 +35,9 @@ const NewMessage = observer((props: Props) => {
         setMessage('');
     };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.ctrlKey || event.metaKey) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                sendMessage();
-            }
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
         }
     };
     return (
@@ -50,6 +45,7 @@ const NewMessage = observer((props: Props) => {
             <input
                 name="message"
                 type="search"
+                autoFocus
                 autoComplete="off"
                 spellCheck={false}
                 value={message}
@@ -58,7 +54,7 @@ const NewMessage = observer((props: Props) => {
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
             />
-            <Button icon={mdiSend} onClick={sendMessage} />
+            <Button icon={mdiSend} onClick={sendMessage} className={clsx(styles.button)} size={1.1} />
         </div>
     );
 });

@@ -1,14 +1,22 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 1em;
+    .rooms {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        gap: 1em;
+        margin: 1em 0;
+        max-width: 60em;
+    }
+}
+
 .alert {
     display: flex;
     justify-content: start;
     gap: 1em;
     align-items: center;
-    margin: 1em;
-}
-
-.rooms {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
     margin: 1em;
 }

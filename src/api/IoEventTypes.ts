@@ -125,7 +125,7 @@ export interface ClientToServerEvents {
     [IoClientEvent.USER_MESSAGE]: (
         to: string,
         message: iMessage,
-        callback: (serverSentAt: Date | null) => void
+        callback: (serverSentAt: string | null) => void
     ) => void;
 }
 

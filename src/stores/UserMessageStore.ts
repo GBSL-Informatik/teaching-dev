@@ -42,7 +42,6 @@ export class UserMessageStore {
     leaveRoom(room: string) {
         if (this.root.socketStore.isLive) {
             this.root.socketStore.socket?.emit(IoClientEvent.USER_LEAVE_ROOM, room, () => {
-                console.log('Left room:', room);
                 this.messages.delete(room);
             });
         }
@@ -70,8 +69,10 @@ export class UserMessageStore {
                     data: message.data
                 },
                 action((serverSentAt) => {
-                    message.serverSentAt = serverSentAt;
-                    this.addMessage(message);
+                    if (serverSentAt) {
+                        message.serverSentAt = new Date(serverSentAt);
+                        this.addMessage(message);
+                    }
                 })
             );
         }

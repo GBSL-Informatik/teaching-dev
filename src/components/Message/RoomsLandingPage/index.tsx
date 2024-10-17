@@ -56,10 +56,15 @@ const Rooms = observer((props: Props): JSX.Element => {
         return <NoRoom />;
     }
     return (
-        <div className={clsx(styles.rooms)}>
-            <Conversation room={room} />
-            <NewMessage room={room} />
-        </div>
+        <>
+            <div className={clsx(styles.wrapper)}>
+                <div className={clsx(styles.rooms)}>
+                    <h1>{room}</h1>
+                    <Conversation room={room} />
+                    <NewMessage room={room} />
+                </div>
+            </div>
+        </>
     );
 });
 

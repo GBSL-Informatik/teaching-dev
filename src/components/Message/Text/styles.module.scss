@@ -3,4 +3,7 @@
     padding-left: 1em;
     display: flex;
     justify-content: space-between;
+    .content {
+        max-width: 89%;
+    }
 }
