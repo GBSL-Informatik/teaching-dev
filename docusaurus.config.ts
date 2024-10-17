@@ -293,7 +293,7 @@ const config: Config = {
         routes: [
           {
             path: '/rooms/',
-            component: '@tdev-components/Message/SwitchRooms',
+            component: '@tdev-components/Message/RoomsLandingPage',
           }
         ]
       } satisfies DynamicRouteConfig

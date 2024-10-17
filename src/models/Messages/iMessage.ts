@@ -71,6 +71,11 @@ abstract class iMessage<Type extends MessageType> {
     get author() {
         return this.store.root.userStore.find(this.senderId);
     }
+
+    @computed
+    get sentToday() {
+        return this.createdAt.toDateString() === new Date().toDateString();
+    }
 }
 
 export default iMessage;

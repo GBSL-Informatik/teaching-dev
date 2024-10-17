@@ -16,6 +16,11 @@ export class UserMessageStore {
         this.initialized = true;
     }
 
+    @computed
+    get canJoinRooms() {
+        return this.root.socketStore.isLive;
+    }
+
     @action
     cleanup() {
         /**

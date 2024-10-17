@@ -11,7 +11,11 @@ import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { MessageType } from '@tdev-models/Messages/iMessage';
 
-const NewMessage = observer(() => {
+interface Props {
+    room: string;
+}
+
+const NewMessage = observer((props: Props) => {
     const [message, setMessage] = React.useState('');
     const userStore = useStore('userStore');
     const userMessageStore = useStore('userMessageStore');
@@ -26,11 +30,11 @@ const NewMessage = observer(() => {
                     text: message
                 },
                 senderId: userStore.current.id,
-                room: 'foo'
+                room: props.room
             },
             userMessageStore
         );
-        userMessageStore.sendMessage(msg);
+        msg.deliver();
         setMessage('');
     };
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -45,7 +49,8 @@ const NewMessage = observer(() => {
         <div className={clsx(styles.message)}>
             <input
                 name="message"
-                type={'text'}
+                type="search"
+                autoComplete="off"
                 spellCheck={false}
                 value={message}
                 className={clsx(styles.input)}

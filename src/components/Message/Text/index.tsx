@@ -10,21 +10,33 @@ import { mdiClose } from '@mdi/js';
 
 interface Props {
     message: TextMessageModel;
+    canDelete?: boolean;
 }
 
 const TextMessage = observer((props: Props) => {
     const { message } = props;
     return (
-        <div className="alert alert--primary" role="alert">
-            <button aria-label="Close" className="clean-btn close" type="button" onClick={() => {}}>
-                <span aria-hidden="true">
-                    <Icon path={mdiClose} size={1} />
-                </span>
-            </button>
+        <div className={clsx('alert alert--primary', styles.message)} role="alert">
+            {props.canDelete && (
+                <button aria-label="Close" className="clean-btn close" type="button" onClick={() => {}}>
+                    <span aria-hidden="true">
+                        <Icon path={mdiClose} size={1} />
+                    </span>
+                </button>
+            )}
             {message.text}
             <small>
-                {message.createdAt.toLocaleString()}
-                {message.author?.nameShort || message.senderId}
+                <span
+                    className={clsx('badge badge--secondary')}
+                    title={message.deliveredAt?.toISOString().replace('T', ' ').replace('Z', '')}
+                >
+                    {message.sentToday
+                        ? message.deliveredAt?.toLocaleTimeString().slice(0, -3)
+                        : message.deliveredAt?.toLocaleString()}
+                </span>
+                <span className={clsx('badge badge--primary')}>
+                    {message.author?.nameShort || message.senderId}
+                </span>
             </small>
         </div>
     );

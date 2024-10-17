@@ -1,4 +1,4 @@
-import { LoadContext, Plugin, PluginModule, RouteConfig } from '@docusaurus/types';
+import { LoadContext, PluginModule, RouteConfig } from '@docusaurus/types';
 
 export interface Config {
     routes: RouteConfig[];
