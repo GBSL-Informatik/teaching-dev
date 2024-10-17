@@ -32,8 +32,8 @@ export class UserMessageStore {
     @action
     joinRoom(room: string) {
         if (this.root.socketStore.isLive) {
-            this.root.socketStore.socket?.emit(IoClientEvent.USER_JOIN_ROOM, room, (roomId: string) => {
-                this.messages.set(roomId, observable.array<iMessage<any>>([], { deep: false }));
+            this.root.socketStore.socket?.emit(IoClientEvent.USER_JOIN_ROOM, room, (roomName: string) => {
+                this.messages.set(roomName, observable.array<iMessage<any>>([], { deep: false }));
             });
         }
     }
@@ -79,12 +79,11 @@ export class UserMessageStore {
 
     @action
     handleMessage(to: string, message: iDeliveredMessage) {
-        const room = to.split(':').slice(1).join(':');
         switch (message.type) {
             case MessageType.Text:
                 this.addMessage(
                     new TextMessage(
-                        { ...(message as iDeliveredMessage<TypeDataMapping[MessageType.Text]>), room: room },
+                        { ...(message as iDeliveredMessage<TypeDataMapping[MessageType.Text]>), room: to },
                         this
                     )
                 );

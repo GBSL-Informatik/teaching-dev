@@ -114,13 +114,13 @@ export type ServerToClientEvents = {
     [IoEvent.DELETED_RECORD]: (message: DeletedRecord) => void;
     [IoEvent.CHANGED_DOCUMENT]: (message: ChangedDocument) => void;
     [IoEvent.CONNECTED_CLIENTS]: (message: ConnectedClients) => void;
-    [IoEvent.USER_MESSAGE]: (roomId: string, message: iDeliveredMessage) => void;
+    [IoEvent.USER_MESSAGE]: (roomName: string, message: iDeliveredMessage) => void;
 };
 
 export interface ClientToServerEvents {
     [IoClientEvent.JOIN_ROOM]: (roomId: string, callback: () => void) => void;
     [IoClientEvent.LEAVE_ROOM]: (roomId: string, callback: () => void) => void;
-    [IoClientEvent.USER_JOIN_ROOM]: (roomName: string, callback: (roomId: string) => void) => void;
+    [IoClientEvent.USER_JOIN_ROOM]: (roomName: string, callback: (roomName: string) => void) => void;
     [IoClientEvent.USER_LEAVE_ROOM]: (roomName: string, callback: () => void) => void;
     [IoClientEvent.USER_MESSAGE]: (
         to: string,
