@@ -21,6 +21,7 @@ import pdfPlugin from './src/plugins/remark-pdf/plugin';
 import commentPlugin from './src/plugins/remark-comments/plugin';
 import themeCodeEditor from './src/plugins/theme-code-editor'
 import enumerateAnswersPlugin from './src/plugins/remark-enumerate-components/plugin';
+import dynamicRouterPlugin, { Config as DynamicRouteConfig} from './src/plugins/plugin-dynamic-routes';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
@@ -289,6 +290,17 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
   plugins: [
     'docusaurus-plugin-sass',
+    [
+      dynamicRouterPlugin,
+      {
+        routes: [
+          {
+            path: '/rooms/',
+            component: '@tdev-components/Message/RoomsLandingPage',
+          }
+        ]
+      } satisfies DynamicRouteConfig
+    ],
     () => {
       return {
         name: 'alias-configuration',
