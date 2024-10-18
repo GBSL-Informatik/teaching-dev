@@ -136,7 +136,8 @@ export type DocumentTypes =
     | Solution
     | Directory
     | File
-    | MdxComment;
+    | MdxComment
+    | Restricted;
 
 export interface Document<Type extends DocumentType> {
     id: string;

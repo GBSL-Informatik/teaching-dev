@@ -27,6 +27,7 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
+import Restricted from '@tdev-models/documents/Restricted';
 
 export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
@@ -52,6 +53,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new File(data as DocumentProps<DocumentType.File>, store);
         case DocumentType.MdxComment:
             return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
+        case DocumentType.Restricted:
+            return new Restricted(data as DocumentProps<DocumentType.Restricted>, store);
     }
 }
 class DocumentStore extends iStore<`delete-${string}`> {
