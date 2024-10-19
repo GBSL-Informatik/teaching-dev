@@ -1,0 +1,55 @@
+.pdfWrapper {
+    max-width: 100%;
+    width: 100%;
+    height: max-content;
+    &.overflowing {
+        overflow-x: auto;
+    }
+    .doc {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        .download {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            opacity: 0.2;
+            padding: 0.2em 1em;
+            padding-bottom: 0;
+        }
+        &:hover {
+            .download {
+                opacity: 1;
+            }
+        }
+        .pdfPage {
+            box-shadow: var(--ifm-global-shadow-lw);
+        }
+    }
+
+    &.scroll {
+        max-height: 85vh;
+        overflow-y: auto;
+        .doc {
+            flex-direction: column;
+            .download {
+                position: sticky;
+                align-self: flex-end;
+            }
+
+            .pdfPage {
+                box-shadow: var(--ifm-global-shadow-md);
+            }
+        }
+    }
+
+    .controls {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .badge {
+            border-radius: 0;
+        }
+    }
+}

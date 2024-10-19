@@ -17,6 +17,7 @@ import linkAnnotationPlugin from './src/plugins/remark-link-annotation/plugin';
 import mediaPlugin from './src/plugins/remark-media/plugin';
 import detailsPlugin from './src/plugins/remark-details/plugin';
 import pagePlugin from './src/plugins/remark-page/plugin';
+import pdfPlugin from './src/plugins/remark-pdf/plugin';
 import commentPlugin from './src/plugins/remark-comments/plugin';
 import themeCodeEditor from './src/plugins/theme-code-editor'
 import enumerateAnswersPlugin from './src/plugins/remark-enumerate-components/plugin';
@@ -24,6 +25,7 @@ import dynamicRouterPlugin, { Config as DynamicRouteConfig} from './src/plugins/
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
@@ -71,6 +73,7 @@ const REMARK_PLUGINS = [
       componentsToEnumerate: ['Answer', 'TaskState', 'SelfCheckTaskState'],
     }
   ],
+  pdfPlugin,
   pagePlugin,
   [
     commentPlugin,
@@ -314,6 +317,35 @@ const config: Config = {
               }
             }
           }
+        }
+      }
+    },
+    () => {
+      return {
+        name: 'pdfjd-copy-dependencies',
+        configureWebpack(config, isServer, utils) {
+            return {
+                resolve: {
+                  alias: {
+                    canvas: false
+                  }
+                },
+                plugins: [
+                    new CopyWebpackPlugin({
+                        patterns: [
+                            // pdf-cmaps
+                            {
+                              from: 'node_modules/pdfjs-dist/cmaps/',
+                              to: 'cmaps/'
+                            },
+                            {
+                                from: 'node_modules/pdfjs-dist/build/pdf.worker.mjs',
+                                to: 'pdf.worker.mjs'
+                            }
+                        ]
+                    }),
+                ]
+            };
         }
       }
     }

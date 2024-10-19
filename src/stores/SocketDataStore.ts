@@ -21,6 +21,10 @@ import { GroupPermission, UserPermission } from '@tdev-api/permission';
 import { Document, DocumentType } from '../api/document';
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+/**
+ * Records that should be created when a IoEvent.NEW_RECORD event is received.
+ */
+const RecordsToCreate = new Set<DocumentType>([DocumentType.Dir, DocumentType.File, DocumentType.MdxComment]);
 
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
@@ -134,7 +138,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.Document:
                 const doc = record as Document<any>;
-                if (doc.type === DocumentType.Dir || doc.type === DocumentType.File || doc.parentId) {
+                if (RecordsToCreate.has(doc.type) || doc.parentId) {
                     this.root.documentStore.addToStore(doc);
                 }
                 break;

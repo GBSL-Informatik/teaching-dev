@@ -47,6 +47,7 @@
         "react-diff-viewer-continued": "^3.4.0",
         "react-dom": "^18.0.0",
         "react-draggable": "^4.4.6",
+        "react-pdf": "^9.1.1",
         "react-quilljs": "^2.0.4",
         "reactjs-popup": "^2.0.6",
         "rehype-katex": "7",

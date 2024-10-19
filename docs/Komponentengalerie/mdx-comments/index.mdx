@@ -49,26 +49,15 @@ page_id: 694583bd-784f-4db9-99c4-491d6e373b88
 Damit die Kommentarfunktion gebraucht werden kann, braucht es das Plugin [👉 remark-page](../mdx-page.mdx).
 :::
 
-:::info[Code]
+:::info[Code Kopieren]
 - `src/components/documents/MdxComment`
 - `src/models/documents/MdxComment.ts`
 - `src/plugins/remark-comments`
 :::
 
-:::info[`src/stores/DocumentStore.ts`]
-```tsx {4-5}
-export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
-    switch (data.type) {
-        /* ... */
-        case DocumentType.MdxComment:
-            return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
-    }
-}
-```
-:::
-
-:::info[`src/api/document.ts`]
-```tsx
+:::info[Models]
+ 
+```tsx title="src/api/document.ts"
 
 export enum DocumentType {
     /* ... */
@@ -96,12 +85,33 @@ export type DocumentTypes =
     /* ... */
     | MdxComment;
 ```
+
 :::
+:::info[Stores]
 
+```tsx title="src/stores/DocumentStore.ts" {4-5}
+export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
+    switch (data.type) {
+        /* ... */
+        case DocumentType.MdxComment:
+            return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
+    }
+}
+```
+
+```ts title="src/stores/SocketDataStore.ts" {4}
+/**
+ * Records that should be created when a IoEvent.NEW_RECORD event is received.
+ */
+const RecordsToCreate = new Set<DocumentType>([DocumentType.MdxComment, /* ... */]);
+/* ... */
+```
+
+:::
+:::info[Remark-Plugins]
+```ts title="src/plugins/remark-comments/plugin.ts"
 Das Plugin `remark-comments` kann für die Bedürfnisse der Seite konfiguriert werden - für die Teaching-Dev Seite ist es wie folgt konfiguriert:
-
-:::info[`docusaurus.config.ts]
-```ts
+```ts title="docusaurus.config.ts"
 import commentPlugin from './src/plugins/remark-comments/plugin';
 /* ... */
 

@@ -14,6 +14,7 @@ import styles from './styles.module.css';
 interface Props {
     children: ReactNode;
     minHeight?: number;
+    maxHeight?: number;
     url: string;
     style?: CSSProperties;
     bodyStyle?: CSSProperties;
@@ -22,12 +23,16 @@ interface Props {
 export default function BrowserWindow({
     children,
     minHeight,
+    maxHeight,
     url = 'http://localhost:3000',
     style,
     bodyStyle
 }: Props): JSX.Element {
     return (
-        <div className={styles.browserWindow} style={{ ...style, minHeight }}>
+        <div
+            className={styles.browserWindow}
+            style={{ ...style, minHeight, maxHeight, overflowY: maxHeight ? 'auto' : undefined }}
+        >
             <div className={styles.browserWindowHeader}>
                 <div className={styles.buttons}>
                     <span className={styles.dot} style={{ background: '#f25f58' }} />

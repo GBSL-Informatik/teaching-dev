@@ -1,0 +1,150 @@
+---
+page_id: a1037ea0-9b8c-4c32-b1cc-36e04fcdd6d8
+tags: [remark]
+---
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# PDF Viewer
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]
+```
+
+<BrowserWindow maxHeight={'450px'}>
+::pdf[./assets/lehrplan-ofi.pdf]
+</BrowserWindow>
+
+## Optionen
+
+
+### Einzelne Seite anzeigen (`page`)
+
+Es wird nur die angegebene Seite angezeigt.
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]{page=3}
+```
+
+<BrowserWindow maxHeight={'450px'}>
+::pdf[./assets/lehrplan-ofi.pdf]{page=3}
+</BrowserWindow>
+
+### Fortlaufende Darstellung (`scroll`)
+Alle Seiten werden scrollbar untereinander angezeigt.
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]{scroll}
+```
+
+<BrowserWindow maxHeight={'450px'}>
+::pdf[./assets/lehrplan-ofi.pdf]{scroll}
+</BrowserWindow>
+
+### Breite (`width`)
+Die Breite des Viewers, wobei die maximale Breite `100 %` beträgt.
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]{width=200}
+```
+
+<BrowserWindow maxHeight={'450px'}>
+::pdf[./assets/lehrplan-ofi.pdf]{width=200}
+</BrowserWindow>
+
+### Minimale Breite (`minWidth`)
+Die minimale Breite des Viewers - falls diese Breite grösser als die Breite des Viewers ist, wird ein Scroll-Fenster angezeigt.
+
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]{minWidth=2000}
+```
+
+<BrowserWindow maxHeight={'400px'}>
+::pdf[./assets/lehrplan-ofi.pdf]{minWidth=2000}
+</BrowserWindow>
+
+:::warning[Abgeschnittene Inhalte]
+Bei einer grosse Mindestbreite kann es zu abgeschnittenen Inhalten kommen.
+:::
+
+### Skalierung (`scale`)
+Ein Skalierungsfaktor der mit der aktuellen Breite multipliziert wird.
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]{scale=0.5}
+```
+
+<BrowserWindow maxHeight={'450px'}>
+::pdf[./assets/lehrplan-ofi.pdf]{scale=0.5}
+</BrowserWindow>
+
+
+### Kein Download (`noDownload`)
+Das PDF kann nicht heruntergeladen werden - der Download-Button wird ausgeblendet.
+
+```md
+::pdf[./assets/lehrplan-ofi.pdf]{noDownload}
+```
+
+<BrowserWindow maxHeight={'450px'}>
+::pdf[./assets/lehrplan-ofi.pdf]{noDownload}
+</BrowserWindow>
+
+
+## Installation
+
+:::info[Code]
+- `src/plugins/remark-pdf`
+- `src/components/PdfViewer`
+:::
+
+:::info[npm]
+```bash
+yarn add react-pdf@^9.1.1
+```
+:::
+
+:::info[`docusaurus.config.ts]
+
+```ts {1,5,9-38}
+import pdfPlugin from './src/plugins/remark-pdf/plugin';
+
+const REMARK_PLUGINS = [
+    /* ... */
+    pdfPlugin
+];
+const config: Config = {
+    plugins: [
+        () => {
+            return {
+                name: 'pdfjd-copy-dependencies',
+                configureWebpack(config, isServer, utils) {
+                    return {
+                        resolve: {
+                            alias: {
+                                canvas: false
+                            }
+                        },
+                        plugins: [
+                            new CopyWebpackPlugin({
+                                patterns: [
+                                    // pdf-cmaps
+                                    {
+                                    from: 'node_modules/pdfjs-dist/cmaps/',
+                                    to: 'cmaps/'
+                                    },
+                                    {
+                                        from: 'node_modules/pdfjs-dist/build/pdf.worker.mjs',
+                                        to: 'pdf.worker.mjs'
+                                    }
+                                ]
+                            }),
+                        ]
+                    };
+                }
+            }
+        }
+    ]
+}
+```
+:::
