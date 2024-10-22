@@ -11,9 +11,8 @@ import {
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 
-
 export enum UserInteractionType {
-    TextConversation = 'TextConversation',
+    TextConversation = 'TextConversation'
 }
 
 export interface MetaInit {
@@ -29,18 +28,23 @@ export class ModelMeta extends TypeMeta<DocumentType.UserInteraction> {
     }
 
     get defaultData(): TypeDataMapping[DocumentType.UserInteraction] {
-        return {};
+        return {
+            name: ''
+        };
     }
 }
 
 class UserInteraction extends iDocument<DocumentType.UserInteraction> {
+    @observable accessor name: string = '';
+
     constructor(props: DocumentProps<DocumentType.UserInteraction>, store: DocumentStore) {
         super(props, store);
+        this.name = props.data.name;
     }
 
     @action
     setData(data: TypeDataMapping[DocumentType.UserInteraction], from: Source, updatedAt?: Date): void {
-        // TODO: change state according to data
+        this.name = data.name;
         if (from === Source.LOCAL) {
             this.save();
         }
@@ -49,8 +53,15 @@ class UserInteraction extends iDocument<DocumentType.UserInteraction> {
         }
     }
 
+    @action
+    setName(name: string) {
+        this.setData({ name: name }, Source.LOCAL);
+    }
+
     get data(): TypeDataMapping[DocumentType.UserInteraction] {
-        return {};
+        return {
+            name: this.name
+        };
     }
 
     @computed
