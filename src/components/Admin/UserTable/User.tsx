@@ -60,6 +60,11 @@ const UserTableRow = observer((props: Props) => {
             <td>{formatDateTime(user.createdAt)}</td>
             <td>{formatDateTime(user.updatedAt)}</td>
             <td>
+                {user.studentGroups.map((group) => (
+                    <span className={clsx('badge badge--primary', styles.groupBadge)}>{group.name}</span>
+                ))}
+            </td>
+            <td>
                 <CopyBadge value={user.id} className={clsx(styles.nowrap)} />
             </td>
         </tr>

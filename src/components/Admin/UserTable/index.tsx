@@ -18,6 +18,7 @@ type SortColumn =
     | 'lastName'
     | 'createdAt'
     | 'updatedAt'
+    | 'groups'
     | 'id'
     | 'connectedClients';
 interface Props {
@@ -151,6 +152,15 @@ const UserTable = observer((props: Props) => {
                                     icon={sortColumn === 'updatedAt' && icon}
                                     text="Aktualisiert"
                                     onClick={() => setSortColumn('updatedAt')}
+                                />
+                            </th>
+                            <th>
+                                <Button
+                                    size={SIZE_S}
+                                    iconSide="left"
+                                    icon={sortColumn === 'groups' && icon}
+                                    text="Lerngruppen"
+                                    onClick={() => setSortColumn('groups')}
                                 />
                             </th>
                             <th>

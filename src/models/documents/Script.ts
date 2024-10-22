@@ -66,7 +66,7 @@ export class ScriptMeta extends TypeMeta<DocumentType.Script> {
         this.initCode = props.code || '';
         this.slim = !!props.slim;
         this.hasHistory = !!props.versioned && !props.noHistory;
-        this.showLineNumbers = !!props.showLineNumbers;
+        this.showLineNumbers = props.showLineNumbers === undefined ? true : props.showLineNumbers;
         this.maxLines = props.maxLines || 25;
         this.isResettable = !props.noReset;
         this.canCompare = !props.noCompare;
