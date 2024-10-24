@@ -28,6 +28,8 @@ import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
+import InteractionManager from '@tdev-models/documents/InteractionManager';
+import UserInteraction from '@tdev-models/documents/InteractionManager/TextConversation';
 
 export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
@@ -55,6 +57,10 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
         case DocumentType.Restricted:
             return new Restricted(data as DocumentProps<DocumentType.Restricted>, store);
+        case DocumentType.InteractionManager:
+            return new InteractionManager(data as DocumentProps<DocumentType.InteractionManager>, store);
+        case DocumentType.UserInteraction:
+            return new UserInteraction(data as DocumentProps<DocumentType.UserInteraction>, store);
     }
 }
 class DocumentStore extends iStore<`delete-${string}`> {

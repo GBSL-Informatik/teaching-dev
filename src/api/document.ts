@@ -12,6 +12,11 @@ import File from '../models/documents/FileSystem/File';
 import Restricted from '@tdev-models/documents/Restricted';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import { Color } from '@tdev-components/shared/Colors';
+import type {
+    default as InteractionManager,
+    UserInteractionType
+} from '@tdev-models/documents/InteractionManager';
+import UserInteraction from '@tdev-models/documents/InteractionManager/TextConversation';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -35,7 +40,9 @@ export enum DocumentType {
     Dir = 'dir',
     File = 'file',
     MdxComment = 'mdx_comment',
-    Restricted = 'restricted'
+    Restricted = 'restricted',
+    InteractionManager = 'interaction_manager',
+    UserInteraction = 'user_interaction'
 }
 export interface ScriptData {
     code: string;
@@ -94,6 +101,14 @@ export interface MdxCommentData {
     isOpen: boolean;
     color: Color;
 }
+
+export interface InteractionManagerData {
+    interactionRootDocumentIds: string[];
+}
+export interface UserInteractionData {
+    name: string;
+}
+
 export interface TypeDataMapping {
     [DocumentType.Script]: ScriptData;
     [DocumentType.TaskState]: TaskStateData;
@@ -105,6 +120,8 @@ export interface TypeDataMapping {
     [DocumentType.File]: FileData;
     [DocumentType.MdxComment]: MdxCommentData;
     [DocumentType.Restricted]: RestrictedData;
+    [DocumentType.InteractionManager]: InteractionManagerData;
+    [DocumentType.UserInteraction]: UserInteractionData;
     // Add more mappings as needed
 }
 
@@ -119,6 +136,8 @@ export interface TypeModelMapping {
     [DocumentType.File]: File;
     [DocumentType.MdxComment]: MdxComment;
     [DocumentType.Restricted]: Restricted;
+    [DocumentType.InteractionManager]: InteractionManager;
+    [DocumentType.UserInteraction]: UserInteraction;
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
@@ -137,7 +156,9 @@ export type DocumentTypes =
     | Directory
     | File
     | MdxComment
-    | Restricted;
+    | Restricted
+    | InteractionManager
+    | UserInteraction;
 
 export interface Document<Type extends DocumentType> {
     id: string;
