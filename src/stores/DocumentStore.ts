@@ -2,15 +2,15 @@ import { action, observable } from 'mobx';
 import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import {
+    allDocuments as apiAllDocuments,
+    create as apiCreate,
     Document as DocumentProps,
     DocumentType,
-    find as apiFind,
-    update as apiUpdate,
-    create as apiCreate,
-    remove as apiDelete,
     DocumentTypes,
+    find as apiFind,
+    remove as apiDelete,
     TypeModelMapping,
-    allDocuments as apiAllDocuments
+    update as apiUpdate
 } from '@tdev-api/document';
 import Script from '@tdev-models/documents/Script';
 import TaskState from '@tdev-models/documents/TaskState';
@@ -28,6 +28,7 @@ import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
+import CmsText from '@tdev-models/documents/CmsText';
 
 export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
@@ -55,6 +56,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
         case DocumentType.Restricted:
             return new Restricted(data as DocumentProps<DocumentType.Restricted>, store);
+        case DocumentType.CmsText:
+            return new CmsText(data as DocumentProps<DocumentType.CmsText>, store);
     }
 }
 class DocumentStore extends iStore<`delete-${string}`> {

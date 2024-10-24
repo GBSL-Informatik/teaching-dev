@@ -12,6 +12,7 @@ import File from '../models/documents/FileSystem/File';
 import Restricted from '@tdev-models/documents/Restricted';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import { Color } from '@tdev-components/shared/Colors';
+import CmsText from '@tdev-models/documents/CmsText';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -35,7 +36,8 @@ export enum DocumentType {
     Dir = 'dir',
     File = 'file',
     MdxComment = 'mdx_comment',
-    Restricted = 'restricted'
+    Restricted = 'restricted',
+    CmsText = 'cms_text'
 }
 export interface ScriptData {
     code: string;
@@ -61,6 +63,10 @@ export interface SolutionData {
 
 export interface RestrictedData {
     /** no content needed */
+}
+
+export interface CmsTextData {
+    text: string;
 }
 
 export interface DirData {
@@ -105,6 +111,7 @@ export interface TypeDataMapping {
     [DocumentType.File]: FileData;
     [DocumentType.MdxComment]: MdxCommentData;
     [DocumentType.Restricted]: RestrictedData;
+    [DocumentType.CmsText]: CmsTextData;
     // Add more mappings as needed
 }
 
@@ -119,6 +126,7 @@ export interface TypeModelMapping {
     [DocumentType.File]: File;
     [DocumentType.MdxComment]: MdxComment;
     [DocumentType.Restricted]: Restricted;
+    [DocumentType.CmsText]: CmsText;
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
@@ -137,7 +145,8 @@ export type DocumentTypes =
     | Directory
     | File
     | MdxComment
-    | Restricted;
+    | Restricted
+    | CmsText;
 
 export interface Document<Type extends DocumentType> {
     id: string;
