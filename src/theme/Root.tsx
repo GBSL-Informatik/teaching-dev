@@ -13,7 +13,6 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 const { NO_AUTH, TEST_USERNAME } = siteConfig.customFields as { TEST_USERNAME?: string; NO_AUTH?: boolean };
 export const msalInstance = new PublicClientApplication(msalConfig);
 
-console.log(NO_AUTH, TEST_USERNAME);
 if (NO_AUTH) {
     const n = (TEST_USERNAME?.length || 0) >= 40 ? 0 : 40 - (TEST_USERNAME?.length || 0);
     console.log(
