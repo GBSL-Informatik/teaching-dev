@@ -16,39 +16,56 @@ import UserPermission from '@tdev-components/PermissionsPanel/UserPermission';
 import { PopupPosition } from 'reactjs-popup/dist/types';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
-interface Props {
-    documentRootId: string;
+interface BaseProps {
     position?: PopupPosition | PopupPosition[];
+    className?: string;
+}
+interface SingleDocRootProps extends BaseProps {
+    documentRootId: string;
+    documentRootIds?: never;
+}
+interface MultiDocRootProps extends BaseProps {
+    documentRootIds: string[];
+    documentRootId?: never;
 }
 
-const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
+type Props = SingleDocRootProps | MultiDocRootProps;
+
+const PermissionsPanel = observer((props: Props) => {
+    const { documentRootId, documentRootIds, position } = props;
+    const docRootIds = documentRootIds || [documentRootId];
     const [isOpen, setIsOpen] = React.useState(false);
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
     const permissionStore = useStore('permissionStore');
     const isMobileView = useIsMobileView(470);
-    const documentRoot = documentRootStore.find(documentRootId);
+    const documentRoots = docRootIds.map((did) => documentRootStore.find(did)).filter((x) => !!x);
     const { viewedUser } = userStore;
 
-    if (!userStore.current?.isAdmin || !documentRoot) {
+    if (!userStore.current?.isAdmin || documentRoots.length === 0) {
         return null;
     }
+    const firstRoot = documentRoots[0];
 
     if (viewedUser && viewedUser !== userStore.current) {
-        const userPermission = permissionStore
-            .userPermissionsByDocumentRoot(documentRoot.id)
-            .find((permission) => permission.userId === viewedUser.id);
+        const userPermissions = documentRoots
+            .map((dr) =>
+                permissionStore
+                    .userPermissionsByDocumentRoot(dr.id)
+                    .find((permission) => permission.userId === viewedUser.id)
+            )
+            .filter((x) => !!x);
         return (
-            <div className={styles.viewedUserPermissionPanel} onClick={(e) => e.stopPropagation()}>
-                {userPermission ? (
-                    <UserPermission permission={userPermission} />
+            <div
+                className={clsx(styles.viewedUserPermissionPanel, props.className)}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {userPermissions.length === documentRoots.length ? (
+                    <UserPermission permissions={userPermissions} />
                 ) : (
-                    <AccessSelector
-                        accessTypes={[Access.RO_User, Access.RW_User, Access.None_User]}
-                        onChange={(access) => {
-                            permissionStore.createUserPermission(documentRoot, viewedUser, access);
-                        }}
-                    />
+                    <span
+                        className={clsx('badge', 'badge--warning')}
+                    >{`Nur ${userPermissions.length}/${documentRoots.length} Berechtiungen gefunden.`}</span>
                 )}
             </div>
         );
@@ -57,7 +74,7 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
     return (
         <Popup
             trigger={
-                <span>
+                <span className={clsx(props.className)}>
                     <Button
                         onClick={(e) => {
                             e.preventDefault();
@@ -87,7 +104,7 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
             keepTooltipInside=".markdown"
             modal={isMobileView}
             onOpen={action(() => {
-                permissionStore.loadPermissions(documentRoot);
+                documentRoots.forEach((dr) => permissionStore.loadPermissions(dr));
                 setIsOpen(true);
             })}
             onClose={() => setIsOpen(false)}
@@ -97,6 +114,21 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
                     <h3>Berechtigungen Festlegen</h3>
                 </div>
                 <div className={clsx('card__body', styles.cardBody)}>
+                    {documentRoots.length > 1 && (
+                        <div>
+                            <small>
+                                Für{' '}
+                                <span
+                                    className="badge badge--warning"
+                                    title={documentRoots.map((dr) => dr.id).join('\n')}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {documentRoots.length}
+                                </span>{' '}
+                                DocumentRoots
+                            </small>
+                        </div>
+                    )}
                     <DefinitionList className={styles.popupContentContainer} small>
                         <dt>Allgemeine Berechtigung</dt>
                         <dd>
@@ -106,10 +138,16 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
                                     Access.RW_DocumentRoot,
                                     Access.None_DocumentRoot
                                 ]}
-                                access={documentRoot.rootAccess}
+                                access={
+                                    documentRoots.every((dr) => dr.rootAccess === firstRoot.rootAccess)
+                                        ? firstRoot.rootAccess
+                                        : undefined
+                                }
                                 onChange={(access) => {
-                                    documentRoot.rootAccess = access;
-                                    documentRoot.save();
+                                    documentRoots.forEach((dr) => {
+                                        dr.setRootAccess(access);
+                                        dr.save();
+                                    });
                                 }}
                             />
                         </dd>
@@ -121,20 +159,26 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
                                     Access.RW_DocumentRoot,
                                     Access.None_DocumentRoot
                                 ]}
-                                access={documentRoot.sharedAccess}
+                                access={
+                                    documentRoots.every((dr) => dr.sharedAccess === firstRoot.sharedAccess)
+                                        ? firstRoot.sharedAccess
+                                        : undefined
+                                }
                                 onChange={(access) => {
-                                    documentRoot.sharedAccess = access;
-                                    documentRoot.save();
+                                    documentRoots.forEach((dr) => {
+                                        dr.setSharedAccess(access);
+                                        dr.save();
+                                    });
                                 }}
                             />
                         </dd>
                         <dt>Gruppen-Berechtigungen</dt>
                         <dd>
-                            <GroupAccessPanel documentRoot={documentRoot} />
+                            <GroupAccessPanel documentRoots={documentRoots} />
                         </dd>
                         <dt>User-Berechtigungen</dt>
                         <dd>
-                            <UserAccessPanel documentRoot={documentRoot} />
+                            <UserAccessPanel documentRoots={documentRoots} />
                         </dd>
                     </DefinitionList>
                 </div>

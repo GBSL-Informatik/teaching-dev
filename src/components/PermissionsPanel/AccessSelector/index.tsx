@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { Access } from '@tdev-api/document';
+import Icon from '@mdi/react';
+import { mdiCircleSmall } from '@mdi/js';
 
 const AccessNames: { [key in Access]: string } = {
     [Access.RO_User]: 'RO',
@@ -21,6 +23,7 @@ interface Props {
     accessTypes: Access[];
     access?: Access;
     className?: string;
+    mark?: Set<Access>;
 }
 
 const AccessSelector = observer((props: Props) => {
@@ -37,6 +40,14 @@ const AccessSelector = observer((props: Props) => {
                     )}
                     onClick={() => props.onChange(acc)}
                 >
+                    {props.mark?.has(acc) ? (
+                        <Icon
+                            path={mdiCircleSmall}
+                            className={clsx(styles.mark)}
+                            color="var(--ifm-color-warning)"
+                            size={1}
+                        />
+                    ) : null}
                     {AccessNames[acc]}
                 </button>
             ))}

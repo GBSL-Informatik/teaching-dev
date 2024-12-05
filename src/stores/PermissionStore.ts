@@ -177,7 +177,7 @@ class PermissionStore extends iStore<`update-${string}`> {
 
     @action
     saveUserPermission(permission: UserPermission) {
-        this.withAbortController(`update-${permission.id}`, async (signal) => {
+        return this.withAbortController(`update-${permission.id}`, async (signal) => {
             return updateUserPermissionApi(permission.id, permission.access, signal.signal).then(
                 ({ data }) => {
                     this.addUserPermission(new UserPermission(data, this));

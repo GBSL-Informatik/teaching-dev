@@ -71,7 +71,7 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @action
-    set rootAccess(access: Access) {
+    setRootAccess(access: Access) {
         if (this._access === access) {
             return;
         }
@@ -83,7 +83,7 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @action
-    set sharedAccess(access: Access) {
+    setSharedAccess(access: Access) {
         if (this._sharedAccess === access) {
             return;
         }

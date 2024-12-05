@@ -8,13 +8,14 @@ import UserPermission from '.';
 import AccessSelector from '../AccessSelector';
 import Loader from '@tdev-components/Loader';
 import { Access } from '@tdev-api/document';
+import _ from 'lodash';
 
 interface Props {
-    documentRoot: DocumentRoot<any>;
+    documentRoots: DocumentRoot<any>[];
 }
 
 const AccessPanel = observer((props: Props) => {
-    const { documentRoot } = props;
+    const { documentRoots } = props;
     const userStore = useStore('userStore');
     const permissionStore = useStore('permissionStore');
     const [searchFilter, setSearchFilter] = React.useState('');
@@ -22,9 +23,31 @@ const AccessPanel = observer((props: Props) => {
     React.useEffect(() => {
         setSearchRegex(new RegExp(searchFilter, 'i'));
     }, [searchFilter]);
-    if (documentRoot.isDummy) {
+    if (documentRoots.length === 0) {
+        return null;
+    }
+    if (documentRoots.some((dr) => dr.isDummy)) {
         return <div>-</div>;
     }
+    const firstRoot = documentRoots[0];
+    /** map that contains all present access levels */
+    const activePermissionLevels = new Map<string, Set<Access>>();
+    documentRoots.forEach((dr) => {
+        dr.userPermissions.forEach((gp) => {
+            if (!activePermissionLevels.has(gp.userId)) {
+                activePermissionLevels.set(gp.userId, new Set());
+            }
+            activePermissionLevels.get(gp.userId)!.add(gp.access);
+        });
+    });
+
+    const commonPermissions = firstRoot.userPermissions
+        .map((up) => {
+            return documentRoots
+                .map((dr) => dr.userPermissions.find((up2) => up2.userId === up.userId))
+                .filter((x) => !!x);
+        })
+        .filter((gps) => gps.length === documentRoots.length);
     return (
         <div className={clsx(styles.panel)}>
             <input
@@ -38,20 +61,22 @@ const AccessPanel = observer((props: Props) => {
             />
             <div className={styles.listContainer}>
                 <div className={clsx(styles.list)}>
-                    {documentRoot.userPermissions
-                        .filter((permission) =>
-                            permission.user?.searchTerm ? searchRegex.test(permission.user.searchTerm) : true
+                    {commonPermissions
+                        .filter((permissions) =>
+                            permissions[0].user?.searchTerm
+                                ? searchRegex.test(permissions[0].user.searchTerm)
+                                : true
                         )
-                        .map((userPermission, idx) => (
-                            <div key={userPermission.id} className={clsx(styles.item)}>
-                                <UserPermission key={idx} permission={userPermission} />
+                        .map((userPermissions, idx) => (
+                            <div key={userPermissions[0].id} className={clsx(styles.item)}>
+                                <UserPermission permissions={userPermissions} />
                             </div>
                         ))}
                     {userStore.users
                         .filter(
                             (user) =>
                                 searchRegex.test(user.searchTerm) &&
-                                !documentRoot.userPermissions.some((p) => p.userId === user.id)
+                                !commonPermissions.some((p) => p[0].userId === user.id)
                         )
                         .map((user, idx) => (
                             <div key={idx} className={clsx(styles.item)}>
@@ -61,15 +86,27 @@ const AccessPanel = observer((props: Props) => {
                                     <AccessSelector
                                         accessTypes={[Access.RO_User, Access.RW_User, Access.None_User]}
                                         onChange={(access) => {
-                                            permissionStore.createUserPermission(documentRoot, user, access);
+                                            documentRoots.forEach((dr) => {
+                                                const currentPermission = dr.userPermissions.find(
+                                                    (up) => up.userId === user.id
+                                                );
+                                                if (currentPermission) {
+                                                    currentPermission.setAccess(access);
+                                                } else {
+                                                    permissionStore.createUserPermission(dr, user, access);
+                                                }
+                                            });
                                         }}
+                                        mark={activePermissionLevels.get(user.id)}
                                     />
                                 </div>
                             </div>
                         ))}
                 </div>
             </div>
-            {!permissionStore.permissionsLoadedForDocumentRootIds.has(documentRoot.id) && <Loader overlay />}
+            {!documentRoots.every((dr) => permissionStore.permissionsLoadedForDocumentRootIds.has(dr.id)) && (
+                <Loader overlay />
+            )}
         </div>
     );
 });

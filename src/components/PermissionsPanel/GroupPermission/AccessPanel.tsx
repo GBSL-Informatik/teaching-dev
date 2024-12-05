@@ -8,13 +8,15 @@ import GroupPermission from '.';
 import AccessSelector from '@tdev-components/PermissionsPanel/AccessSelector';
 import Loader from '@tdev-components/Loader';
 import { Access } from '@tdev-api/document';
+import { default as GroupPermissionModel } from '@tdev-models/GroupPermission';
+import _ from 'lodash';
 
 interface Props {
-    documentRoot: DocumentRoot<any>;
+    documentRoots: DocumentRoot<any>[];
 }
 
 const AccessPanel = observer((props: Props) => {
-    const { documentRoot } = props;
+    const { documentRoots } = props;
     const studentGroupStore = useStore('studentGroupStore');
     const permissionStore = useStore('permissionStore');
     const [searchFilter, setSearchFilter] = React.useState('');
@@ -22,9 +24,31 @@ const AccessPanel = observer((props: Props) => {
     React.useEffect(() => {
         setSearchRegex(new RegExp(searchFilter, 'i'));
     }, [searchFilter]);
-    if (documentRoot.isDummy) {
+    if (documentRoots.length === 0) {
+        return null;
+    }
+    if (documentRoots.some((dr) => dr.isDummy)) {
         return <div>-</div>;
     }
+    const firstRoot = documentRoots[0];
+    /** map that contains all present access levels */
+    const activePermissionLevels = new Map<string, Set<Access>>();
+    documentRoots.forEach((dr) => {
+        dr.groupPermissions.forEach((gp) => {
+            if (!activePermissionLevels.has(gp.groupId)) {
+                activePermissionLevels.set(gp.groupId, new Set());
+            }
+            activePermissionLevels.get(gp.groupId)!.add(gp.access);
+        });
+    });
+
+    const commonPermissions = firstRoot.groupPermissions
+        .map((gp) => {
+            return documentRoots
+                .map((dr) => dr.groupPermissions.find((gp2) => gp2.groupId === gp.groupId))
+                .filter((x) => !!x);
+        })
+        .filter((gps) => gps.length === documentRoots.length);
     return (
         <div>
             <input
@@ -38,26 +62,26 @@ const AccessPanel = observer((props: Props) => {
             />
             <div className={styles.listContainer}>
                 <div className={clsx(styles.list)}>
-                    {documentRoot.groupPermissions
-                        .filter((permission) =>
-                            permission.group?.searchTerm
-                                ? searchRegex.test(permission.group.searchTerm)
+                    {commonPermissions
+                        .filter((permissions) =>
+                            permissions[0].group?.searchTerm
+                                ? searchRegex.test(permissions[0].group.searchTerm)
                                 : true
                         )
-                        .map((groupPermission, idx) => (
-                            <div key={groupPermission.id} className={clsx(styles.item)}>
-                                <GroupPermission key={idx} permission={groupPermission} />
+                        .map((groupPermissions, idx) => (
+                            <div key={groupPermissions[0].id} className={clsx(styles.item)}>
+                                <GroupPermission permissions={groupPermissions} />
                             </div>
                         ))}
                     {studentGroupStore.studentGroups
                         .filter(
                             (group) =>
                                 searchRegex.test(group.searchTerm) &&
-                                !documentRoot.groupPermissions.some((p) => p.groupId === group.id)
+                                !commonPermissions.some((p) => p[0].groupId === group.id)
                         )
                         .map((group, idx) => (
                             <div key={idx} className={clsx(styles.item)}>
-                                <span className={styles.audience}>{group.name}</span>
+                                <span className={clsx(styles.audience)}>{group.name}</span>
                                 <span className={clsx(styles.spacer)} />
                                 <div className={styles.actions}>
                                     <AccessSelector
@@ -67,19 +91,27 @@ const AccessPanel = observer((props: Props) => {
                                             Access.None_StudentGroup
                                         ]}
                                         onChange={(access) => {
-                                            permissionStore.createGroupPermission(
-                                                documentRoot,
-                                                group,
-                                                access
-                                            );
+                                            documentRoots.forEach((dr) => {
+                                                const currentPermission = dr.groupPermissions.find(
+                                                    (gp) => gp.groupId === group.id
+                                                );
+                                                if (currentPermission) {
+                                                    currentPermission.setAccess(access);
+                                                } else {
+                                                    permissionStore.createGroupPermission(dr, group, access);
+                                                }
+                                            });
                                         }}
+                                        mark={activePermissionLevels.get(group.id)}
                                     />
                                 </div>
                             </div>
                         ))}
                 </div>
             </div>
-            {!permissionStore.permissionsLoadedForDocumentRootIds.has(documentRoot.id) && <Loader overlay />}
+            {!documentRoots.every((dr) => permissionStore.permissionsLoadedForDocumentRootIds.has(dr.id)) && (
+                <Loader overlay />
+            )}
         </div>
     );
 });

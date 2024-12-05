@@ -1,0 +1,28 @@
+.xlsxImport {
+    margin-bottom: var(--ifm-paragraph-margin-bottom);
+    .main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+        justify-content: space-between;
+        .input {
+            flex-grow: 1;
+            flex-basis: 12em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            .tabButton {
+                align-self: flex-start;
+            }
+            .textArea {
+                white-space: nowrap;
+                overflow-x: auto;
+            }
+        }
+        .preview {
+            flex-grow: 1;
+            overflow: auto;
+            flex-basis: 12em;
+        }
+    }
+}
