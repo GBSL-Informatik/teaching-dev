@@ -39,6 +39,11 @@ export default class User {
     }
 
     @computed
+    get name() {
+        return `${this.firstName} ${this.lastName}`;
+    }
+
+    @computed
     get nameShort() {
         if (this.isStudent) {
             return `${this.firstName} ${this.lastName.slice(0, 1)}.`;

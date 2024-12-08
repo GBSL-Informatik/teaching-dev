@@ -1,0 +1,29 @@
+.selectUser {
+    width: 100%;
+    .filter {
+        padding: 0.1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: var(--ifm-z-index-dropdown);
+        .filterInput {
+            width: unset;
+            font-size: 70%;
+            box-shadow: none;
+        }
+    }
+
+    .tableWrapper {
+        overflow-x: auto;
+        table.table {
+            width: 100%;
+            border-collapse: collapse;
+            display: table;
+            --ifm-table-cell-padding: 0;
+            td,
+            .nowrap {
+                white-space: nowrap;
+            }
+        }
+    }
+}

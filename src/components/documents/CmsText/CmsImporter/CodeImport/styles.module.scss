@@ -1,0 +1,18 @@
+.codeImport {
+    margin-bottom: var(--ifm-paragraph-margin-bottom);
+    .main {
+        .input {
+            min-width: 80ch;
+            max-width: 100%;
+            .editor {
+                border-radius: var(--ifm-global-radius);
+            }
+        }
+    }
+    .userSelect {
+        margin-bottom: var(--ifm-paragraph-margin-bottom);
+        .userTable {
+            max-height: 12em;
+        }
+    }
+}

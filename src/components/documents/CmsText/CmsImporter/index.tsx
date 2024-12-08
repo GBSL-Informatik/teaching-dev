@@ -4,8 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
 import Button from '@tdev-components/shared/Button';
-import FromXlsxClipboard from '@tdev-components/shared/FromXlsxClipboard';
-import { mdiClose, mdiFileExcelOutline } from '@mdi/js';
+import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiFileExcelOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import { DocumentType } from '@tdev-api/document';
 import { CmsTextEntries } from '../WithCmsText';
@@ -13,50 +12,59 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import CmsText from '@tdev-models/documents/CmsText';
 import { Source } from '@tdev-models/iDocument';
 import { ApiState } from '@tdev-stores/iStore';
-import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/FromXlsxClipboard/AssignColumns';
+import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
 import ImportPreview from './ImportPreview';
+import XlsxImport from './XlsxImport';
+import CodeImport from './CodeImport';
 
 interface Props {
     className?: string;
     toAssign: CmsTextEntries;
+    mode?: 'xlsx' | 'code';
 }
 
-const createCmsTexts = (documentStore: DocumentStore, table: string[][], assignments: AssignedColumn[]) => {
+const createCmsTexts = async (
+    documentStore: DocumentStore,
+    table: string[][],
+    assignments: AssignedColumn[]
+) => {
     const { documentRootStore } = documentStore.root;
 
-    const promises = assignments.flatMap((assignment) => {
+    for (const assignment of assignments) {
         const documentRoot = documentRootStore.find(assignment.id);
         if (!documentRoot) {
-            return Promise.resolve();
+            continue;
         }
-        return table.flatMap((row) => {
+
+        for (const row of table) {
             const userId = row[0];
             const doc = documentRoot.allDocuments.find((d) => d.isMain && d.authorId === userId) as CmsText;
+
             if (doc) {
                 // update the document with the new text when needed
-                if (doc.text === row[assignment.idx]) {
-                    return Promise.resolve();
+                if (doc.text !== row[assignment.idx]) {
+                    doc.setData({ text: row[assignment.idx] }, Source.LOCAL);
+                    await doc.saveNow();
                 }
-                doc.setData({ text: row[assignment.idx] }, Source.LOCAL);
-                return doc.saveNow();
+            } else {
+                // create a new document with the text
+                await documentStore.create({
+                    type: DocumentType.CmsText,
+                    authorId: userId,
+                    documentRootId: assignment.id,
+                    data: { text: row[assignment.idx] }
+                });
             }
-            // create a new document with the text
-            return documentStore.create({
-                type: DocumentType.CmsText,
-                authorId: userId,
-                documentRootId: assignment.id,
-                data: { text: row[assignment.idx] }
-            });
-        });
-    });
-    return Promise.all(promises);
+        }
+    }
 };
 
-const CmsXlsxImporter = observer((props: Props) => {
+const CmsImporter = observer((props: Props) => {
     const { toAssign } = props;
     const ref = React.useRef(null);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
+    const [mode, setMode] = React.useState<'xlsx' | 'code'>(props.mode || 'xlsx');
     const [table, setTable] = React.useState<string[][]>([]);
     const [assigned, setAssigned] = React.useState<AssignedColumn[]>([]);
     const [ready, setReady] = React.useState(false);
@@ -77,14 +85,15 @@ const CmsXlsxImporter = observer((props: Props) => {
                 <span className={clsx(styles.importer, props.className)}>
                     <Button
                         onClick={(e) => e.preventDefault()}
-                        icon={mdiFileExcelOutline}
-                        color={'green'}
+                        icon={mdiDatabaseImport}
+                        color={'blue'}
                         noOutline={isOpen}
                     />
                 </span>
             }
             on="click"
             modal
+            nested
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
             onOpen={() => {
                 setIsOpen(true);
@@ -99,7 +108,7 @@ const CmsXlsxImporter = observer((props: Props) => {
                     }
                 });
             }}
-            closeOnEscape={false}
+            closeOnEscape={true}
             onClose={() => {
                 setIsOpen(false);
                 reset();
@@ -112,24 +121,43 @@ const CmsXlsxImporter = observer((props: Props) => {
                 </div>
                 <div className={clsx('card__body', styles.cardBody)}>
                     {table.length === 0 ? (
-                        <FromXlsxClipboard
-                            matchUsers
-                            onDone={(table) => {
-                                const newTable = table?.filter(
-                                    (row) => row.length > 0 && row[0].trim().length > 0
-                                );
-                                /**
-                                 * table includes header
-                                 */
-                                if (!newTable || newTable.length <= 1) {
-                                    return closeTooltip();
-                                }
-                                setTable(newTable);
-                            }}
-                            importLabel="Weiter"
-                            cancelIcon={mdiClose}
-                            includeHeader
-                        />
+                        <>
+                            <div className={clsx('button-group', 'button-group--block')}>
+                                <Button
+                                    icon={mdiFileExcel}
+                                    text={'Excel'}
+                                    onClick={() => {
+                                        setMode('xlsx');
+                                    }}
+                                    active={mode === 'xlsx'}
+                                    color="green"
+                                />
+                                <Button
+                                    icon={mdiCodeBlockBraces}
+                                    text={'Code'}
+                                    onClick={() => {
+                                        setMode('code');
+                                    }}
+                                    active={mode === 'code'}
+                                    color="blue"
+                                />
+                            </div>
+                            {mode === 'xlsx' ? (
+                                <XlsxImport
+                                    onDone={(data) => {
+                                        setTable(data);
+                                    }}
+                                    onClose={closeTooltip}
+                                />
+                            ) : (
+                                <CodeImport
+                                    onDone={(data) => {
+                                        setTable(data);
+                                    }}
+                                    onClose={closeTooltip}
+                                />
+                            )}
+                        </>
                     ) : (
                         <>
                             <AssignColumns
@@ -139,6 +167,7 @@ const CmsXlsxImporter = observer((props: Props) => {
                                 table={table}
                                 toAssign={toAssign}
                                 trimmedCells={{ [0]: 7 }}
+                                tableClassName={clsx(styles.assignTable)}
                             />
                             <ImportPreview tableWithHeader={table} assignments={assigned} />
                         </>
@@ -177,4 +206,4 @@ const CmsXlsxImporter = observer((props: Props) => {
     );
 });
 
-export default CmsXlsxImporter;
+export default CmsImporter;

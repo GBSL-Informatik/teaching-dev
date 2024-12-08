@@ -19,18 +19,17 @@ const CmsCode = observer((props: Props) => {
     const contextId = name ? React.useContext(CmsTextContext)?.entries[name] : undefined;
     const documentRootId = id || contextId;
     const cmsText = useFirstCmsTextDocumentIfExists(documentRootId);
+    const actionEntries =
+        showActions && documentRootId ? ({ [documentRootId]: documentRootId } as CmsTextEntries) : undefined;
     if (!cmsText || (!cmsText.canDisplay && !userStore.isUserSwitched)) {
-        return showActions && documentRootId ? (
-            <CmsActions entries={{ [documentRootId]: documentRootId } as CmsTextEntries} />
+        return actionEntries ? (
+            <CmsActions entries={actionEntries} className={clsx(styles.codeBlock)} mode="code" />
         ) : null;
     }
-    if (showActions && documentRootId) {
+    if (actionEntries) {
         return (
             <div className={clsx(styles.container, props.codeBlockProps?.title && styles.withTitle)}>
-                <CmsActions
-                    entries={{ [documentRootId]: documentRootId } as CmsTextEntries}
-                    className={clsx(styles.codeBlock)}
-                />
+                <CmsActions entries={actionEntries} className={clsx(styles.codeBlock)} mode="code" />
                 <CodeBlock {...(props.codeBlockProps || {})}>{cmsText.text}</CodeBlock>
             </div>
         );

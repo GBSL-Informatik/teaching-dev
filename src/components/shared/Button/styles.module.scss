@@ -92,6 +92,9 @@
             --ifm-button-color: var(--ifm-color-content);
         }
     }
+    &.noBorder {
+        border: none;
+    }
 }
 
 .delete {

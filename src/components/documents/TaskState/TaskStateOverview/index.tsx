@@ -12,6 +12,7 @@ import Popup from 'reactjs-popup';
 import TaskStateList from './TaskStateList';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import _ from 'lodash';
+import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 
 export const mdiColor: { [key in StateType]: string } = {
     checked: '--ifm-color-success',
@@ -79,68 +80,7 @@ const TaskStateOverview = observer(() => {
                 >
                     <div className={clsx('card', styles.popupCard)}>
                         <div className={clsx('card__body')}>
-                            <div
-                                className={clsx(
-                                    styles.studentGroupSelector,
-                                    'button-group button-group--block'
-                                )}
-                            >
-                                {studentGroupStore.studentGroups
-                                    .filter((sg) => !sg.parentId)
-                                    .map((group, idx) => {
-                                        return (
-                                            <button
-                                                key={idx}
-                                                className={clsx(
-                                                    'button',
-                                                    'button--sm',
-                                                    currentPage.activeStudentGroup?.id === group.id ||
-                                                        currentPage.activeStudentGroup?.parentIds.includes(
-                                                            group.id
-                                                        )
-                                                        ? 'button--warning'
-                                                        : 'button--secondary',
-                                                    // ,
-                                                    styles.button
-                                                )}
-                                                onClick={() => {
-                                                    currentPage.setPrimaryStudentGroup(group);
-                                                }}
-                                            >
-                                                {group.name}
-                                            </button>
-                                        );
-                                    })}
-                            </div>
-                            {currentPage.childStudentGroups.length > 0 && (
-                                <div
-                                    className={clsx(
-                                        styles.studentGroupSelector,
-                                        'button-group button-group--block'
-                                    )}
-                                >
-                                    {currentPage.childStudentGroups.map((group, idx) => {
-                                        return (
-                                            <button
-                                                key={idx}
-                                                className={clsx(
-                                                    'button',
-                                                    'button--sm',
-                                                    currentPage.activeStudentGroup?.id === group.id
-                                                        ? 'button--primary'
-                                                        : 'button--secondary',
-                                                    styles.button
-                                                )}
-                                                onClick={() => {
-                                                    currentPage.toggleActiveStudentGroup(group);
-                                                }}
-                                            >
-                                                {group.name}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                            <PageStudentGroupFilter />
                             <div className={clsx(styles.overviewWrapper)}>
                                 {_.orderBy(
                                     Object.values(currentPage.taskStatesByUsers),
