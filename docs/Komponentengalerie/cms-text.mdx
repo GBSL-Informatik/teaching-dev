@@ -3,6 +3,7 @@ page_id: 9440f367-3529-4e8d-8477-492bd94482dc
 ---
 
 import CmsText from '@tdev-components/documents/CmsText';
+import CmsCode from '@tdev-components/documents/CmsText/Code';
 import WithCmsText from '@tdev-components/documents/CmsText/WithCmsText';
 import DefinitionList from '@tdev-components/DefinitionList';
 import BrowserWindow from '@tdev-components/BrowserWindow';
@@ -12,19 +13,30 @@ import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 
 # CMS Text
 export const DocumentCreator = observer(() => {
-
     useFirstMainDocument('21535ea1-47d9-4521-a7fa-392f06d08f0a', new CmsTextMeta({
         default: 'CMS-Text aus der Datenbank 📚'
     }));
-
-    return <></>;
+    useFirstMainDocument('5b72150a-947b-4cf2-b616-727ff77c5119', new CmsTextMeta({
+        default: `print('Hello CMS Code!')`
+    }));
+    return null;
 });
 
 <DocumentCreator />
 ::::info[Erstellung von Documents]
 Im Gegensatz zu vielen anderen Komponenten erstellen die Komponenten rund um CMS-Text bewusst **nicht** automatisch ein Document, wenn keins vorhanden ist.
 
-Diese Gallery-Page ist so aufgesetzt, dass für die DocumentRoot-ID `21535ea1-47d9-4521-a7fa-392f06d08f0a` automatisch ein CmsText-Document erzeugt wird. Für die ID `2c0c085d-388a-48cd-9871-975bab0ffda3` wird kein Document erstellt.
+Diese Gallery-Page ist so aufgesetzt, dass für einige DocumentRoot-IDs automatisch ein CmsText-Document erzeugt wird:
+
+`21535ea1`
+: Inhalt: "CMS-Text aus der Datenbank 📚"
+: UUID: `21535ea1-47d9-4521-a7fa-392f06d08f0a`
+`5b72150a`
+: Inhalt: `print('Hello CMS Code!')`
+: UUID: `5b72150a-947b-4cf2-b616-727ff77c5119`
+
+
+Für die ID `2c0c085d-388a-48cd-9871-975bab0ffda3` wird kein Document erstellt.
 
 :::details[Implementierung]
 Das Dokument wird hier im `.mdx` wie folgt erzeugt:
@@ -33,7 +45,10 @@ export const DocumentCreator = observer(() => {
     useFirstMainDocument('21535ea1-47d9-4521-a7fa-392f06d08f0a', new CmsTextMeta({
         default: 'CMS-Text aus der Datenbank 📚'
     }));
-    return <></>;
+    useFirstMainDocument('5b72150a-947b-4cf2-b616-727ff77c5119', new CmsTextMeta({
+        default: `print('Hello CMS Code!')`
+    }));
+    return null;
 });
 <DocumentCreator />
 ```
@@ -46,6 +61,8 @@ Ein möglicher Anwendungsfall ist die Bereitstellung individualisierter Informat
 
 ## Inline-Text aus dem CMS
 ```md
+import CmsText from '@tdev-components/documents/CmsText';
+
 Der Text "<CmsText id="21535ea1-47d9-4521-a7fa-392f06d08f0a"/>" wurde aus der Datenbank geladen.
 ```
 
@@ -61,6 +78,82 @@ Der Text "<CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3"/>" wurde aus der Da
 
 <BrowserWindow>
     Der Text "<CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3"/>" wurde aus der Datenbank geladen.
+</BrowserWindow>
+
+## CMS-Text mit Permissions Panel
+CMS Text kann auch nützlich sein, um bspw. Prüfungsinhalte erst zur gegebenen Zeit mit einer __Shared Permission__ anzuzeigen. Das Permissions Panel kann deshalb optional angezeigt werden:
+
+```md
+<BrowserWindow>
+Diskutieren Sie das nachfolgende Zitat:
+> <CmsText id="21535ea1-47d9-4521-a7fa-392f06d08f0a" showPermissionsPanel/>
+
+</BrowserWindow>
+```
+
+<BrowserWindow>
+Diskutieren Sie das nachfolgende Zitat:
+
+> <CmsText id="21535ea1-47d9-4521-a7fa-392f06d08f0a" showPermissionsPanel/>
+
+</BrowserWindow>
+
+
+## CMS Code
+Es können auch Code-Blöcke aus dem CMS geladen werden:
+
+```md
+import CmsCode from '@tdev-components/documents/CmsText/Code';
+
+<CmsCode 
+    id="5b72150a-947b-4cf2-b616-727ff77c5119"
+    codeBlockProps={{
+        language: 'python'
+    }}
+/>
+<CmsCode 
+    id="5b72150a-947b-4cf2-b616-727ff77c5119"
+    codeBlockProps={{
+        language: 'python'
+    }}
+    showPermissionsPanel
+/>
+`codeBlockProps` entspricht den Props der Komponente `@theme/CodeBlock`.
+<CmsCode 
+    id="5b72150a-947b-4cf2-b616-727ff77c5119"
+    codeBlockProps={{
+        language: 'python',
+        showLineNumbers: true,
+        title: 'Hello World'
+    }}
+    showPermissionsPanel
+/>
+```
+
+<BrowserWindow>
+<CmsCode 
+    id="5b72150a-947b-4cf2-b616-727ff77c5119"
+    codeBlockProps={{
+        language: 'python'
+    }}
+/>
+<CmsCode 
+    id="5b72150a-947b-4cf2-b616-727ff77c5119"
+    codeBlockProps={{
+        language: 'python'
+    }}
+    showPermissionsPanel
+/>
+`codeBlockProps` entspricht den Props der Komponente `@theme/CodeBlock`.
+<CmsCode 
+    id="5b72150a-947b-4cf2-b616-727ff77c5119"
+    codeBlockProps={{
+        language: 'python',
+        showLineNumbers: true,
+        title: 'Hello World'
+    }}
+    showPermissionsPanel
+/>
 </BrowserWindow>
 
 ## Einfluss auf umliegende Elemente
@@ -97,7 +190,10 @@ Im folgenden Beispiel wird die gesamte `<DefinitionList>` nur dann angezeigt, we
 Zusätzlich wird ein weiterer CMS-Text mit der ID `2c0c085d-388a-48cd-9871-975bab0ffda3` verwendet. Wenn dort das entsprechende Dokument fehlt, bleibt der Eintrag einfach leer.
 
 ```md
-<WithCmsText entries={{demo: "21535ea1-47d9-4521-a7fa-392f06d08f0a"}}>
+<WithCmsText entries={{
+    demo: "21535ea1-47d9-4521-a7fa-392f06d08f0a", 
+    code: "5b72150a-947b-4cf2-b616-727ff77c5119"
+}}>
     <DefinitionList>
         <dt>Hallo</dt>
         <dd>Das ist der erste Eintrag.</dd>
@@ -105,6 +201,8 @@ Zusätzlich wird ein weiterer CMS-Text mit der ID `2c0c085d-388a-48cd-9871-975ba
         <dd>Das ist der zweite Eintrag.</dd>
         <dt>CMS-Eintrag</dt>
         <dd><CmsText name="demo" /></dd>
+        <dt>CMS-Code</dt>
+        <dd><CmsCode name="code" codeBlockProps={{language: 'py'}} /></dd>
         <dt>Anderer CMS-Eintrag</dt>
         <dt><CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3" /></dt>
     </DefinitionList>
@@ -112,7 +210,7 @@ Zusätzlich wird ein weiterer CMS-Text mit der ID `2c0c085d-388a-48cd-9871-975ba
 ```
 
 <BrowserWindow>
-    <WithCmsText entries={{demo: "21535ea1-47d9-4521-a7fa-392f06d08f0a"}}>
+    <WithCmsText entries={{demo: "21535ea1-47d9-4521-a7fa-392f06d08f0a", code: "5b72150a-947b-4cf2-b616-727ff77c5119"}}>
         <DefinitionList>
             <dt>Hallo</dt>
             <dd>Das ist der erste Eintrag.</dd>
@@ -120,6 +218,8 @@ Zusätzlich wird ein weiterer CMS-Text mit der ID `2c0c085d-388a-48cd-9871-975ba
             <dd>Das ist der zweite Eintrag.</dd>
             <dt>CMS-Eintrag</dt>
             <dd><CmsText name="demo" /></dd>
+            <dt>CMS-Code</dt>
+            <dd><CmsCode name="code" codeBlockProps={{language: 'py'}} /></dd>
             <dt>Anderer CMS-Eintrag</dt>
             <dt><CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3" /></dt>
         </DefinitionList>

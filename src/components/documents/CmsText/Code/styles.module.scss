@@ -1,0 +1,18 @@
+.container {
+    .codeBlock {
+        align-self: flex-end;
+    }
+    &:not(.withTitle) {
+        display: flex;
+        flex-direction: column;
+    }
+    &.withTitle {
+        position: relative;
+        .codeBlock {
+            z-index: var(--ifm-z-index-dropdown);
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+    }
+}

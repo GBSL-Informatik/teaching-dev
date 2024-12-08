@@ -8,6 +8,9 @@ interface CmsTextContextType {
 
 export const CmsTextContext = React.createContext<CmsTextContextType | undefined>(undefined);
 
+/**
+ * @returns an existing, real CmsText document or undefined. (no dummy document is returned)
+ */
 export function useFirstCmsTextDocumentIfExists(id?: string): CmsText | undefined {
     if (!id) {
         return undefined;
