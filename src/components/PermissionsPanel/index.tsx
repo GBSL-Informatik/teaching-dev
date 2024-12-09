@@ -19,9 +19,11 @@ import useIsMobileView from '@tdev-hooks/useIsMobileView';
 interface Props {
     documentRootId: string;
     position?: PopupPosition | PopupPosition[];
+    className?: string;
 }
 
-const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
+const PermissionsPanel = observer((props: Props) => {
+    const { documentRootId, position } = props;
     const [isOpen, setIsOpen] = React.useState(false);
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
@@ -39,7 +41,10 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
             .userPermissionsByDocumentRoot(documentRoot.id)
             .find((permission) => permission.userId === viewedUser.id);
         return (
-            <div className={styles.viewedUserPermissionPanel} onClick={(e) => e.stopPropagation()}>
+            <div
+                className={clsx(styles.viewedUserPermissionPanel, props.className)}
+                onClick={(e) => e.stopPropagation()}
+            >
                 {userPermission ? (
                     <UserPermission permission={userPermission} />
                 ) : (
@@ -57,7 +62,7 @@ const PermissionsPanel = observer(({ documentRootId, position }: Props) => {
     return (
         <Popup
             trigger={
-                <span>
+                <span className={clsx(props.className)}>
                     <Button
                         onClick={(e) => {
                             e.preventDefault();
