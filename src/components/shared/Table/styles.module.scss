@@ -1,0 +1,22 @@
+.table {
+    border-collapse: collapse;
+    line-height: 1.2;
+    font-size: 0.9rem;
+    width: max-content;
+    max-width: 95%;
+    th,
+    td {
+        padding: 0 2px;
+        text-align: left;
+        &.highlight {
+            background-color: var(--docusaurus-highlighted-code-line-bg);
+        }
+        &.empty {
+            color: var(--ifm-color-danger);
+            background: var(--ifm-color-danger-lightest);
+        }
+    }
+    &.selecteable {
+        cursor: pointer;
+    }
+}

@@ -26,7 +26,7 @@ class GroupPermission {
     }
 
     @action
-    set access(access: Access) {
+    setAccess(access: Access) {
         if (this._access === access) {
             return;
         }

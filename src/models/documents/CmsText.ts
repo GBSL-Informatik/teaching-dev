@@ -55,6 +55,14 @@ class CmsText extends iDocument<DocumentType.CmsText> {
         }
         return new CmsTextMeta({});
     }
+
+    /**
+     * for now, only admins can edit cms texts
+     */
+    @computed
+    get canEdit(): boolean {
+        return !!this.store.root.userStore.current?.isAdmin;
+    }
 }
 
 export default CmsText;

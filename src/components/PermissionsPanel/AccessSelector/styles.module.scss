@@ -1,0 +1,10 @@
+.selector {
+    .button {
+        position: relative;
+        .mark {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+        }
+    }
+}

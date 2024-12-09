@@ -30,12 +30,12 @@ class UserPermission {
     }
 
     @action
-    set access(access: Access) {
+    setAccess(access: Access) {
         if (this._access === access) {
             return;
         }
         this._access = access;
-        this.store.saveUserPermission(this);
+        return this.store.saveUserPermission(this);
     }
 
     get access() {
