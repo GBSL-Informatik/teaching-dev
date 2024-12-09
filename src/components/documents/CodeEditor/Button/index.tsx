@@ -2,6 +2,7 @@ import * as React from 'react';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import Icon from '@mdi/react';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 export enum Color {
     Primary = 'button--primary',
@@ -29,6 +30,7 @@ export interface Props {
 }
 
 const Button = (props: Props) => {
+    const isBrowser = useIsBrowser();
     return (
         <button
             className={clsx(
@@ -44,7 +46,7 @@ const Button = (props: Props) => {
             <Icon
                 path={props.icon}
                 className={styles.icon}
-                spin={props.spin}
+                spin={isBrowser && props.spin}
                 size={props.iconSize || '1.6em'}
             />
         </button>
