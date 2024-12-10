@@ -4,7 +4,7 @@ import styles from './styles.module.scss';
 import CodeBlock from '@theme/CodeBlock';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import { type AssignedColumn } from '@tdev-components/shared/FromXlsxClipboard/AssignColumns';
+import { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
 
 const getPreview = (table: string[][], selectedColumn: number, docRootId: string) => {
     const preview = table

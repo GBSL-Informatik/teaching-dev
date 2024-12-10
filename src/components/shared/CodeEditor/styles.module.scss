@@ -1,0 +1,11 @@
+.editor {
+    display: flex;
+    flex-wrap: wrap;
+    height: max-content;
+    .noGutter :global(.ace_scroller) {
+        left: 4px !important;
+    }
+    :global(.ace_scrollbar.ace_scrollbar-h) {
+        overflow-x: hidden !important;
+    }
+}

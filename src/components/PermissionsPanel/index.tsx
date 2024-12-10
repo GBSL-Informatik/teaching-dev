@@ -31,6 +31,17 @@ interface MultiDocRootProps extends BaseProps {
 
 type Props = SingleDocRootProps | MultiDocRootProps;
 
+const MissingPermissionsBadge = ({ available, total }: { available: number; total: number }) => {
+    if (available === total) {
+        return null;
+    }
+    return (
+        <span className={clsx('badge', 'badge--warning')}>
+            {`${available}/${total} Berechtiungen gefunden.`}
+        </span>
+    );
+};
+
 const PermissionsPanel = observer((props: Props) => {
     const { documentRootId, documentRootIds, position } = props;
     const docRootIds = documentRootIds || [documentRootId];
@@ -60,13 +71,7 @@ const PermissionsPanel = observer((props: Props) => {
                 className={clsx(styles.viewedUserPermissionPanel, props.className)}
                 onClick={(e) => e.stopPropagation()}
             >
-                {userPermissions.length === documentRoots.length ? (
-                    <UserPermission permissions={userPermissions} />
-                ) : (
-                    <span
-                        className={clsx('badge', 'badge--warning')}
-                    >{`Nur ${userPermissions.length}/${documentRoots.length} Berechtiungen gefunden.`}</span>
-                )}
+                <UserPermission permissions={userPermissions} />
             </div>
         );
     }

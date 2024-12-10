@@ -11,23 +11,38 @@ export type CmsTextEntries = { [key: Name]: DocumentRootId };
 
 interface Props {
     entries: CmsTextEntries;
-    showActions?: boolean;
+    hideActions?: boolean;
     children?: React.ReactNode;
+    mode?: 'xlsx' | 'code';
 }
 
 const WithCmsText = observer((props: Props) => {
-    const { entries, showActions, children } = props;
+    const { entries, hideActions, children } = props;
     const allDocumentsAvailable = Object.values(entries)
         .map((documentRootId) => !!useFirstCmsTextDocumentIfExists(documentRootId))
         .every(Boolean);
 
     return allDocumentsAvailable ? (
         <CmsTextContext.Provider value={{ entries }}>
-            {showActions && <CmsActions entries={entries} className={clsx(styles.actions, 'shadow--lw')} />}
+            {!hideActions && (
+                <CmsActions
+                    entries={entries}
+                    className={clsx(styles.actions, 'shadow--lw')}
+                    mode={props.mode}
+                />
+            )}
             {children}
         </CmsTextContext.Provider>
     ) : (
-        <>{showActions && <CmsActions entries={entries} className={clsx(styles.actions, 'shadow--lw')} />}</>
+        <>
+            {!hideActions && (
+                <CmsActions
+                    entries={entries}
+                    className={clsx(styles.actions, 'shadow--lw')}
+                    mode={props.mode}
+                />
+            )}
+        </>
     );
 });
 

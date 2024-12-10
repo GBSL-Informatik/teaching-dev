@@ -22,11 +22,19 @@ interface Props {
     toAssign: AssignableColumns;
     onChange: (assigned: AssignedColumn[]) => void;
     trimmedCells?: { [key: number]: number };
+    tableClassName?: string;
 }
 
 const AssignColumns = (props: Props) => {
     const { table, toAssign, onChange } = props;
-    const [assigned, setAssigned] = React.useState<AssignedColumn[]>([]);
+
+    const count = Object.values(toAssign).length;
+    const isSingleAssignment = count === 1;
+    const [assigned, setAssigned] = React.useState<AssignedColumn[]>(
+        isSingleAssignment && table[0].length === 2
+            ? [{ id: Object.values(toAssign)[0], idx: 1, name: Object.keys(toAssign)[0] }]
+            : []
+    );
     const [currentAssignment, setCurrentAssignment] = React.useState<AssignedColumn | null>({
         id: Object.values(toAssign)[0],
         idx: -1,
@@ -35,9 +43,6 @@ const AssignColumns = (props: Props) => {
     React.useEffect(() => {
         onChange(assigned);
     }, [onChange, assigned]);
-
-    const count = Object.values(toAssign).length;
-    const isSingleAssignment = count === 1;
     const colorIdxMap = new Map(Object.values(toAssign).map((id, idx) => [id, idx % COLORS.length]));
 
     return (
@@ -56,7 +61,7 @@ const AssignColumns = (props: Props) => {
             {count > 1 && (
                 <>
                     <div className={clsx(styles.names, 'button-group', 'button--block')}>
-                        {Object.entries(toAssign).map(([name, id]) => {
+                        {Object.entries(toAssign).map(([name, id], idx) => {
                             return (
                                 <Button
                                     onClick={() => {
@@ -69,7 +74,7 @@ const AssignColumns = (props: Props) => {
                                     text={name || id}
                                     noOutline={currentAssignment?.id === id}
                                     color={COLORS[colorIdxMap.get(id)!]}
-                                    key={id}
+                                    key={idx}
                                 />
                             );
                         })}
@@ -83,6 +88,7 @@ const AssignColumns = (props: Props) => {
                     index: a.idx,
                     color: IFM_COLORS[colorIdxMap.get(a.id)!]
                 }))}
+                className={clsx(props.tableClassName)}
                 trimmedCells={props.trimmedCells}
                 onSelectColumn={(idx) => {
                     if (isSingleAssignment) {

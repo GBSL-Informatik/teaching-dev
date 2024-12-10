@@ -31,6 +31,7 @@ export interface Base {
     size?: number;
     color?: Color | string;
     spin?: boolean | number;
+    noBorder?: boolean;
 }
 interface IconProps extends Base {
     icon: ReactNode | string;
@@ -138,7 +139,7 @@ const Button = (props: Props) => {
             <Link
                 to={props.disabled ? '#' : props.href}
                 target={props.target}
-                className={clsx(styles.link, commonCls)}
+                className={clsx(styles.link, commonCls, props.noBorder && styles.noBorder)}
                 style={style}
             >
                 <span className={clsx(styles.buttonInner)}>
@@ -150,7 +151,7 @@ const Button = (props: Props) => {
     return (
         <button
             type="button"
-            className={clsx(commonCls)}
+            className={clsx(commonCls, props.noBorder && styles.noBorder)}
             onClick={props.onClick}
             style={style}
             disabled={props.disabled}
