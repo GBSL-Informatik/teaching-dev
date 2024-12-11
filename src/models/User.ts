@@ -65,6 +65,14 @@ export default class User {
     }
 
     @computed
+    get searchRegex() {
+        return new RegExp(
+            `(?:\\s+|^)(?:(${this.firstName}\\s+${this.lastName})|(${this.lastName}\\s+${this.firstName})|(${this.email}))(?:\\s+|$)`,
+            'i'
+        );
+    }
+
+    @computed
     get studentGroups() {
         return this.store.root.studentGroupStore.studentGroups.filter((group) => group.userIds.has(this.id));
     }

@@ -248,14 +248,14 @@ export class DocumentRootStore extends iStore {
             const old = model.permission;
             let needsReload = false;
             if (access !== model.rootAccess) {
-                model.rootAccess = access;
+                model.setRootAccess(access);
                 const current = model.permission;
                 needsReload = NoneAccess.has(old) && !NoneAccess.has(current);
             }
             if (sharedAccess !== model.sharedAccess) {
                 needsReload =
                     needsReload || (NoneAccess.has(model.sharedAccess) && !NoneAccess.has(sharedAccess));
-                model.sharedAccess = sharedAccess;
+                model.setSharedAccess(sharedAccess);
             }
             if (needsReload) {
                 this.reload(model);

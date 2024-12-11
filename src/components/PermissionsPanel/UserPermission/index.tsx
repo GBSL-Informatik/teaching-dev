@@ -9,30 +9,58 @@ import { mdiAccountCircle, mdiDelete } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Access } from '@tdev-api/document';
 
-interface Props {
+interface SingleProps {
     permission: UserPermissionModel;
+    permissions?: never;
 }
+interface MultiProps {
+    permissions: UserPermissionModel[];
+    permission?: never;
+}
+type Props = SingleProps | MultiProps;
 
 const UserPermission = observer((props: Props) => {
-    const { permission } = props;
+    const { permission, permissions } = props;
+    const models = permissions || [permission];
+    if (models.length === 0) {
+        return null;
+    }
+    const firstModel = models[0];
+    if (!models.every((p) => p.userId === firstModel.userId)) {
+        throw new Error('GroupPermission: All provided permissions must concerne the same user');
+    }
+    const accessLevels = new Set(models.map((p) => p.access));
+    const allCommon = accessLevels.size === 1;
     return (
         <div className={clsx(styles.permission)}>
-            <span className={clsx(styles.audience)}>
-                <Icon path={mdiAccountCircle} color="var(--ifm-color-primary)" size={0.8} />
-                {permission.user?.nameShort || permission.id}
+            <span
+                className={clsx(styles.audience)}
+                title={allCommon ? undefined : 'Es haben aktuell nicht alle Dokumente dieselbe Berechtigung!'}
+            >
+                <Icon
+                    path={mdiAccountCircle}
+                    color={`var(--ifm-color-${allCommon ? 'primary' : 'warning'})`}
+                    size={0.8}
+                />
+                {firstModel.user?.nameShort || firstModel.userId}
             </span>
             <span className={clsx(styles.spacer)} />
             <AccessSelector
                 accessTypes={[Access.RO_User, Access.RW_User, Access.None_User]}
-                access={permission.access}
+                access={allCommon ? firstModel.access : undefined}
                 onChange={(access) => {
-                    permission.access = access;
+                    models.forEach((p) => {
+                        p.setAccess(access);
+                    });
                 }}
+                mark={allCommon ? undefined : accessLevels}
             />
             <span className={clsx(styles.actions)}>
                 <Button
                     onClick={() => {
-                        permission.delete();
+                        models.forEach((permission) => {
+                            permission.delete();
+                        });
                     }}
                     color="red"
                     icon={mdiDelete}

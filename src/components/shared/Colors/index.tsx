@@ -6,10 +6,14 @@ export const Colors = {
     secondary: styles.secondary,
     blue: styles.blue,
     green: styles.green,
+    success: styles.green,
     red: styles.red,
+    danger: styles.red,
     orange: styles.orange,
+    warning: styles.orange,
     gray: styles.gray,
     lightBlue: styles.lightBlue,
+    info: styles.gray,
     black: styles.black
 };
 export type Color = keyof typeof Colors;
@@ -19,10 +23,14 @@ export const ButtonColors: { [key in Color]: string } = {
     secondary: 'button--secondary',
     blue: 'button--primary',
     green: 'button--success',
+    success: 'button--success',
     red: 'button--danger',
+    danger: 'button--danger',
     orange: 'button--warning',
+    warning: 'button--warning',
     gray: 'button--secondary',
     lightBlue: 'button--info',
+    info: 'button--info',
     black: 'button--primary'
 };
 

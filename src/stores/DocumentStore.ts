@@ -10,7 +10,8 @@ import {
     find as apiFind,
     remove as apiDelete,
     TypeModelMapping,
-    update as apiUpdate
+    update as apiUpdate,
+    ADMIN_EDITABLE_DOCUMENTS
 } from '@tdev-api/document';
 import Script from '@tdev-models/documents/Script';
 import TaskState from '@tdev-models/documents/TaskState';
@@ -204,15 +205,18 @@ class DocumentStore extends iStore<`delete-${string}`> {
         if (model.isDirty) {
             const { id } = model;
             const hasAdminAccess =
-                this.root.userStore.current?.isAdmin && model.authorId === this.root.userStore.current.id;
+                !!this.root.userStore.current?.isAdmin &&
+                (model.authorId === this.root.userStore.current.id ||
+                    ADMIN_EDITABLE_DOCUMENTS.includes(model.type));
             if (!model.canEdit && !hasAdminAccess) {
                 return Promise.resolve('error');
             }
             if (!RWAccess.has(model.root.permission) && !hasAdminAccess) {
                 return Promise.resolve('error');
             }
+            const onBehalfOf = model.authorId !== this.root.userStore.current?.id && hasAdminAccess;
             return this.withAbortController(`save-${id}`, (sig) => {
-                return apiUpdate(model.id, model.data, sig.signal);
+                return apiUpdate(model.id, model.data, onBehalfOf, sig.signal);
             })
                 .then(
                     action(({ data }) => {
@@ -247,8 +251,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
         if (!hasAccess) {
             return Promise.resolve(undefined);
         }
+        const onBehalfOf =
+            model.authorId !== this.root.userStore.current?.id &&
+            ADMIN_EDITABLE_DOCUMENTS.includes(model.type);
         return this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
-            return apiCreate<Type>(model, sig.signal);
+            return apiCreate<Type>(model, onBehalfOf, sig.signal);
         })
             .then(
                 action(({ data }) => {
@@ -274,7 +281,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     @action
     apiLoadDocumentsFrom(rootIds: string[]) {
         if (!this.root.userStore.current?.isAdmin) {
-            return;
+            return Promise.resolve([]);
         }
         return this.withAbortController(`load-docs-${rootIds.join('::')}`, (sig) => {
             return apiAllDocuments(rootIds, sig.signal);

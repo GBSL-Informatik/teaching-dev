@@ -50,6 +50,12 @@ export enum DocumentType {
     DynamicDocumentRoots = 'dynamic_document_roots'
 }
 
+/**
+ * Document types that can be edited by admins ON BEHALF OF other users.
+ * This should not be the default case for most documents - but things like CMS texts
+ * should be editeable by admins only.
+ */
+export const ADMIN_EDITABLE_DOCUMENTS: DocumentType[] = [DocumentType.CmsText] as const;
 export interface ScriptData {
     code: string;
 }
@@ -222,9 +228,10 @@ export function find<Type extends DocumentType>(
 
 export function create<Type extends DocumentType>(
     data: Partial<Document<Type>>,
+    onBehalfOf: boolean,
     signal: AbortSignal
 ): AxiosPromise<Document<Type>> {
-    return api.post(`/documents`, data, { signal });
+    return api.post(`/documents${onBehalfOf ? '?onBehalfOf=true' : ''}`, data, { signal });
 }
 
 export function remove(id: string, signal: AbortSignal): AxiosPromise<void> {
@@ -234,9 +241,10 @@ export function remove(id: string, signal: AbortSignal): AxiosPromise<void> {
 export function update<Type extends DocumentType>(
     id: string,
     data: TypeDataMapping[Type],
+    onBehalfOf: boolean,
     signal: AbortSignal
 ): AxiosPromise<Document<Type>> {
-    return api.put(`/documents/${id}`, { data }, { signal });
+    return api.put(`/documents/${id}${onBehalfOf ? '?onBehalfOf=true' : ''}`, { data }, { signal });
 }
 
 /**

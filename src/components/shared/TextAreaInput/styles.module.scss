@@ -1,0 +1,19 @@
+.textAreaInput {
+    width: 100%;
+    padding: var(--ifm-button-padding-vertical);
+    resize: none;
+    overflow-y: hidden;
+    border: 1px solid #ccc;
+    border-radius: var(--ifm-global-radius);
+    font-size: var(--ifm-font-size-base);
+    box-shadow: var(--ifm-global-shadow-md);
+    transition: height 0.3s ease-in-out;
+    &:focus {
+        border-color: var(--ifm-link-hover-color);
+        outline: none;
+        box-shadow: 0 0 8px var(--ifm-link-hover-color);
+    }
+    &.monospace {
+        font-family: var(--ifm-font-family-monospace);
+    }
+}
