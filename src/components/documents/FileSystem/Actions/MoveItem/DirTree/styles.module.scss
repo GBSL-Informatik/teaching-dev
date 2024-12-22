@@ -1,0 +1,35 @@
+.moveTo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.25em;
+    cursor: pointer;
+    border-radius: var(--ifm-global-radius);
+    -webkit-touch-callout: none;
+    /* Safari */
+    -webkit-user-select: none;
+    /* Old versions of Firefox */
+    -moz-user-select: none;
+    user-select: none;
+
+    .spacer {
+        flex-grow: 1;
+        flex-basis: 0;
+    }
+    .stacked {
+        position: relative;
+        line-height: 1vh;
+        margin-right: 1em;
+        .topRight {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+        }
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-md);
+    }
+}
+.content {
+    margin-left: 1em;
+}

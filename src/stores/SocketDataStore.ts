@@ -185,6 +185,9 @@ export class SocketDataStore extends iStore<'ping'> {
             case RecordType.GroupPermission:
                 this.root.permissionStore.handleGroupPermissionUpdate(record as GroupPermission);
                 break;
+            case RecordType.Document:
+                this.root.documentStore.addToStore(record as Document<DocumentType>);
+                break;
             default:
                 console.log('changedRecord', type, record);
                 break;

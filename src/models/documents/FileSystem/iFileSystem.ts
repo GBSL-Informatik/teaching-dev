@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import {
     DocumentType,
@@ -81,6 +81,17 @@ class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     get meta(): iFSMeta<T> {
         throw new Error('Not implemented');
+    }
+
+    @computed
+    get path() {
+        const path: DocumentTypes[] = [];
+        let parent = this.parent;
+        while (parent) {
+            path.unshift(parent);
+            parent = parent.parent;
+        }
+        return path;
     }
 
     @action

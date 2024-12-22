@@ -15,6 +15,7 @@ import { MetaInit } from '@tdev-models/documents/FileSystem/iFileSystem';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import Loader from '@tdev-components/Loader';
 import FsDetails from '../FsDetails';
+import MoveItem from '../Actions/MoveItem';
 
 interface Props extends MetaInit {
     id: string;

@@ -1,0 +1,37 @@
+.userTable {
+    width: 100%;
+    .tableWrapper {
+        overflow-x: auto;
+        table.table {
+            width: 100%;
+            border-collapse: collapse;
+            display: table;
+            --ifm-table-cell-padding: 0.2em 0.5em;
+            .user {
+                .clients {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 100%;
+                }
+                .groupBadge:not(:last-child) {
+                    display: inline-block;
+                    margin-right: 0.5em;
+                }
+            }
+            td,
+            .nowrap {
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+.newAction {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    .button {
+        align-self: flex-end;
+    }
+}

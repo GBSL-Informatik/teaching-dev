@@ -1,6 +1,8 @@
 import {
     mdiClose,
     mdiDotsHorizontalCircleOutline,
+    mdiFileMove,
+    mdiFolderMove,
     mdiRenameOutline,
     mdiTrashCan,
     mdiTrashCanOutline
@@ -13,6 +15,8 @@ import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
 import clsx from 'clsx';
 import React from 'react';
+import { DocumentType } from '@tdev-api/document';
+import MoveItem from './MoveItem';
 
 interface Props {
     item: File | Directory;
@@ -51,6 +55,7 @@ const Actions = observer((props: Props) => {
                     offsetX={20}
                     offsetY={5}
                     repositionOnResize
+                    nested
                 >
                     <div className={clsx('card', styles.card)}>
                         <div className={clsx('card__body', styles.body)}>
@@ -82,6 +87,29 @@ const Actions = observer((props: Props) => {
                                         }
                                     }}
                                 />
+                            </div>
+                            <div className={clsx(styles.move)}>
+                                <Popup
+                                    trigger={
+                                        <span>
+                                            <Button
+                                                text="Verschieben"
+                                                color="blue"
+                                                icon={
+                                                    item.type === DocumentType.Dir
+                                                        ? mdiFolderMove
+                                                        : mdiFileMove
+                                                }
+                                                size={1}
+                                            />
+                                        </span>
+                                    }
+                                    modal
+                                    overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
+                                    on="click"
+                                >
+                                    <MoveItem item={item} />
+                                </Popup>
                             </div>
                         </div>
                     </div>

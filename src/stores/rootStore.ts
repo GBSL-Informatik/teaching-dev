@@ -8,6 +8,7 @@ import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import PermissionStore from '@tdev-stores/PermissionStore';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { PageStore } from '@tdev-stores/PageStore';
+import { AdminStore } from './AdminStore';
 
 export class RootStore {
     documentRootStore: DocumentRootStore;
@@ -18,6 +19,7 @@ export class RootStore {
     permissionStore: PermissionStore;
     documentStore: DocumentStore;
     pageStore: PageStore;
+    adminStore: AdminStore;
 
     // @observable accessor initialized = false;
     constructor() {
@@ -29,6 +31,7 @@ export class RootStore {
         this.permissionStore = new PermissionStore(this);
         this.documentStore = new DocumentStore(this);
         this.pageStore = new PageStore(this);
+        this.adminStore = new AdminStore(this);
 
         if (this.sessionStore.isLoggedIn) {
             this.load();
@@ -45,6 +48,9 @@ export class RootStore {
                  */
                 this.userStore.load();
                 this.studentGroupStore.load();
+                if (user.isAdmin) {
+                    this.adminStore.load();
+                }
             }
         });
     }

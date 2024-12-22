@@ -44,7 +44,7 @@ const getColor = (type?: DocumentType) => {
     }
 };
 
-const getIcon = (type?: DocumentType) => {
+export const getIcon = (type?: DocumentType) => {
     switch (type) {
         case DocumentType.QuillV2:
             return mdiFileDocumentOutline;

@@ -1,0 +1,22 @@
+.dropdown {
+    appearance: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: var(--ifm-button-padding-vertical);
+    font-size: var(--ifm-font-size-base);
+    color: #333;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+    transition: all 0.3s ease;
+
+    &:focus {
+        border-color: var(--ifm-link-hover-color);
+        outline: none;
+        box-shadow: 0 0 3px var(--ifm-link-hover-color);
+    }
+
+    option {
+        padding: var(--ifm-button-padding-vertical);
+    }
+}

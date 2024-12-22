@@ -7,6 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import StudentGroupPanel from '@tdev-components/Admin/StudentGroupPanel';
 import UserTable from '@tdev-components/Admin/UserTable';
+import AllowedActions from '../AllowedActions';
 
 const AdminPanel = observer(() => {
     const userStore = useStore('userStore');
@@ -28,6 +29,9 @@ const AdminPanel = observer(() => {
                 </TabItem>
                 <TabItem value="accounts" label="Accounts">
                     <UserTable />
+                </TabItem>
+                <TabItem value="allowedActions" label="Erlaubte Aktionen">
+                    <AllowedActions />
                 </TabItem>
             </Tabs>
         </div>

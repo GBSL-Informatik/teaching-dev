@@ -11,7 +11,8 @@ import {
     remove as apiDelete,
     TypeModelMapping,
     update as apiUpdate,
-    ADMIN_EDITABLE_DOCUMENTS
+    ADMIN_EDITABLE_DOCUMENTS,
+    linkTo as apiLinkTo
 } from '@tdev-api/document';
 import Script from '@tdev-models/documents/Script';
 import TaskState from '@tdev-models/documents/TaskState';
@@ -309,6 +310,20 @@ class DocumentStore extends iStore<`delete-${string}`> {
             .catch((err) => {
                 console.warn('Error deleting document', err);
                 this.removeFromStore(document);
+            });
+    }
+
+    @action
+    relinkParent(document: DocumentTypes, newParent: DocumentTypes) {
+        return this.withAbortController(`save-${document.id}`, (sig) => {
+            return apiLinkTo(document.id, newParent.id, sig.signal);
+        })
+            .then((res) => {
+                this.addToStore(res.data);
+            })
+            .catch((err) => {
+                console.warn('Relinking not possible', err);
+                document.reset();
             });
     }
 }

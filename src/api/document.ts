@@ -255,3 +255,11 @@ export function allDocuments(documentRootIds: string[], signal: AbortSignal): Ax
         signal
     });
 }
+
+export function linkTo<Type extends DocumentType>(
+    id: string,
+    linkToId: string,
+    signal: AbortSignal
+): AxiosPromise<Document<Type>> {
+    return api.put(`/documents/${id}/linkTo/${linkToId}`, { signal });
+}
