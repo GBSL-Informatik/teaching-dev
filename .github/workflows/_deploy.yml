@@ -1,3 +1,4 @@
+# currently disabled - build and deploy through netlify
 name: Deploy to GitHub Pages
 
 on:

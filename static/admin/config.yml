@@ -5,29 +5,28 @@ backend:
 
 # These lines should *not* be indented
 media_folder: 'static/img' # Media files will be stored in the repo under static/images/uploads
+# media_folder: "{{media_folder_path}}/{{media_folder_relative_path}}"
 public_folder: '/img/' # The src attribute for uploaded media will begin with /images/uploads
 
 collections:
-    - name: blog
-      label: 'blog'
-      folder: blog
+    - name: docs
+      label: 'docs'
+      label_singular: 'doc'
+      folder: docs
       identifier_field: title
-      extension: md
-      widget: 'list'
+      extension: mdx
+      format: frontmatter
       create: true
-      slug: '{{year}}-{{month}}-{{day}}-{{slug}}' # Filename template, e.g., YYYY-MM-DD-title.md
+      nested:
+          depth: 100 # max depth to show in the collection tree
+          summary: '{{title}}' # optional summary for a tree node, defaults to the inferred title field
       fields:
-          - { name: title, label: Title, widget: string }
-          - { name: body, label: Body, widget: markdown }
-          - { name: slug, label: Slug, widget: string }
-          - label: 'Tags'
-            name: 'tags'
-            widget: 'list'
-          - label: 'Authors'
-            name: 'authors'
-            widget: 'list'
-            fields:
-                - { name: name, label: Name, widget: string }
-                - { name: title, label: Title, widget: string }
-                - { name: url, label: URL, widget: string }
-                - { name: imageUrl, label: ImageURL, widget: string }
+          - label: Title
+            name: title
+            widget: string
+          - label: Body
+            name: body
+            widget: markdown
+      # adding a meta object with a path property allows editing the path of entries
+      # moving an existing entry will move the entire sub tree of the entry to the new location
+      meta: { path: { widget: string, label: 'Path', index_file: 'index' } }

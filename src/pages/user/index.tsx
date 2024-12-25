@@ -115,7 +115,7 @@ const UserPage = observer(() => {
                             <dt>Admin</dt>
                             <dd>
                                 <Button
-                                    href={'/admin'}
+                                    href={'/teachers'}
                                     text="zum Adminbereich"
                                     icon={mdiArrowRightThin}
                                     iconSide="left"
