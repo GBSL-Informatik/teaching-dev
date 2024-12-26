@@ -1,28 +1,28 @@
 ---
 page_id: 3139de4d-8bd6-4bed-978e-a342519d7c52
+title: Dateien und Ordner
 ---
 import Directory from '@tdev-components/documents/FileSystem/Directory';
 
 # Dateien und Ordner
 
-
 <Directory name="Ordner" id="1e79cf9a-b890-4d9e-a5fe-e4b372e233c6"/>
 
 ## Installation
 
-::::info[Code-Ordner kopieren]
-- `src/models/documents/FileSystem`
-- `src/components/documents/FileSystem`
+::::info\[Code-Ordner kopieren]
 
-:::warning[Abhängigkeiten]
+* `src/models/documents/FileSystem`
+* `src/components/documents/FileSystem`
+
+:::warning\[Abhängigkeiten]
 Standardmässig werden alle verfügbaren Dateitypen unterstützt. Ist ein Dokumententyp (bspw. `excalidoc`) nicht verfügbar, muss dieser entfernt werden.
 :::
 ::::
 
-:::info[Models]
+:::info\[Models]
 
-```tsx title="src/api/document.ts"
-
+```tsx
 export enum DocumentType {
     /* ... */
     Dir = 'dir',
@@ -55,11 +55,12 @@ export type DocumentTypes =
     | Directory
     | File
 ```
+
 :::
 
-:::info[Stores]
+:::info\[Stores]
 
-```tsx title="src/stores/DocumentStore.ts" {4-7}
+```tsx
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
     switch (data.type) {
         /* ... */
@@ -71,11 +72,12 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
 }
 ```
 
-```ts title="src/stores/SocketDataStore.ts" {4}
+```ts
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
 const RecordsToCreate = new Set<DocumentType>([DocumentType.Dir, DocumentType.File/* ... */]);
 /* ... */
 ```
+
 :::
