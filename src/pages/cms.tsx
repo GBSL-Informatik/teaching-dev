@@ -11,6 +11,7 @@ const config: InitOptions = {
         },
         media_folder: 'static/img',
         public_folder: '/img/',
+        publish_mode: 'editorial_workflow',
         collections: [
             {
                 name: 'docs',
