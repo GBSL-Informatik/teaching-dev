@@ -17,7 +17,7 @@ const config: InitOptions = {
                 label: 'Docs',
                 label_singular: 'Doc',
                 folder: 'docs',
-                identifier_field: 'id',
+                identifier_field: 'path',
                 extension: 'mdx',
                 format: 'frontmatter',
                 create: true,
