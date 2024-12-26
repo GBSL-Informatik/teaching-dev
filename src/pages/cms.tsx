@@ -10,7 +10,6 @@ const config: InitOptions = {
             repo: 'GBSL-Informatik/teaching-dev'
         },
         media_folder: 'static/img',
-        // media_folder: '{{media_folder_path}}/{{media_folder_relative_path}}',
         public_folder: '/img/',
         collections: [
             {
@@ -18,10 +17,12 @@ const config: InitOptions = {
                 label: 'Docs',
                 label_singular: 'Doc',
                 folder: 'docs',
-                identifier_field: 'name',
+                identifier_field: 'id',
                 extension: 'mdx',
                 format: 'frontmatter',
                 create: true,
+                media_folder: 'images/',
+                public_folder: 'images/',
                 nested: {
                     depth: 100
                 },
