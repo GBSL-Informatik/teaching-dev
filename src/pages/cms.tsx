@@ -1,9 +1,7 @@
 import { useClientLib } from '@tdev-hooks/useClientLib';
-// import CMS from 'decap-cms-app';
 import type { InitOptions } from 'decap-cms-core';
 import React from 'react';
-// (window as any).CMS_MANUAL_INIT = true;
-// Initialize the CMS object
+
 const config: InitOptions = {
     config: {
         backend: {
@@ -12,6 +10,7 @@ const config: InitOptions = {
             repo: 'GBSL-Informatik/teaching-dev'
         },
         media_folder: 'static/img',
+        // media_folder: '{{media_folder_path}}/{{media_folder_relative_path}}',
         public_folder: '/img/',
         collections: [
             {
@@ -19,7 +18,7 @@ const config: InitOptions = {
                 label: 'Docs',
                 label_singular: 'Doc',
                 folder: 'docs',
-                identifier_field: '{{filename}}',
+                identifier_field: 'name',
                 extension: 'mdx',
                 format: 'frontmatter',
                 create: true,
@@ -41,14 +40,13 @@ const config: InitOptions = {
         ]
     }
 };
-// Now the registry is available via the CMS object.
-// CMS.registerPreviewTemplate("my-template", MyTemplate);
 
 const DecapCms = () => {
     const Lib = useClientLib(() => import('decap-cms-app'), 'decap-cms-app');
     React.useEffect(() => {
         if (Lib) {
             (window as any).CMS_MANUAL_INIT = true;
+            // Lib.default.registerPreviewTemplate("my-template", MyTemplate);
             Lib.default.init(config);
         }
     }, [Lib]);
