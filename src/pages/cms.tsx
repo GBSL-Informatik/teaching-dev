@@ -18,15 +18,16 @@ const config: InitOptions = {
                 label: 'Docs',
                 label_singular: 'Doc',
                 folder: 'docs',
-                identifier_field: 'path',
+                identifier_field: '{{path}}',
                 extension: 'mdx',
                 format: 'frontmatter',
                 create: true,
                 media_folder: 'images/',
                 public_folder: 'images/',
                 nested: {
-                    depth: 100
-                },
+                    depth: 100,
+                    summary: '{{path}}'
+                } as any,
                 fields: [
                     { label: 'Title', name: 'title', widget: 'string' },
                     { label: 'Body', name: 'body', widget: 'markdown' }
