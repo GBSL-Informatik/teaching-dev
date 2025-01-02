@@ -29,6 +29,7 @@
         "@mdi/js": "^7.4.47",
         "@mdi/react": "^1.6.1",
         "@mdx-js/react": "^3.0.0",
+        "@mdxeditor/editor": "^3.20.0",
         "@types/lodash": "^4.17.7",
         "@yudiel/react-qr-scanner": "^2.1.0",
         "ace-builds": "^1.36.2",
