@@ -1,6 +1,16 @@
+import DocCardList from '@theme/DocCardList'
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
+
 # Teaching-Dev Website
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
+
+<DocCardList />
+
+
+
+<BrowserWindow />
 
 :::info[Created with MdxEditor]
 Yay, admonitions work :)
