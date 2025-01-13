@@ -1,12 +1,12 @@
 # Teaching-Dev Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. blaa
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
 ## ENV
 
 | Variable                   | For         | Default                 | Example             | Description                                                                                                                                                        |
 | :------------------------- | :---------- | :---------------------- | :------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| APP\_URL                   | Production  | `http://localhost:3000` | asdf                | Domain of the hosted app                                                                                                                                           |
+| APP\_URL                   | Production  | `http://localhost:3000` |                     | Domain of the hosted app                                                                                                                                           |
 | BACKEND\_URL               | Production  | `http://localhost:3002` |                     | Url of the API Endpoint                                                                                                                                            |
 | CLIENT\_ID                 | Production  |                         |                     | Azure ID: Client ID                                                                                                                                                |
 | TENANT\_ID                 | Production  |                         |                     | Azure AD: Tenant Id                                                                                                                                                |
