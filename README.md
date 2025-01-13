@@ -2,6 +2,10 @@
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
 
+:::info[Created with MdxEditor]
+Yay, admonitions work :)
+:::
+
 ## ENV
 
 | Variable                   | For         | Default                 | Example             | Description                                                                                                                                                        |
