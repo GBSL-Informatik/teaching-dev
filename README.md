@@ -19,7 +19,7 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 
 \* To change users, clear LocalStorage to delete the API key created upon first authentication.<br />
 
-## Upgrade
+## Upgrade Docusaurus
 
 To upgrade docusaurus, run:
 
