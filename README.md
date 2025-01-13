@@ -1,6 +1,8 @@
 # Teaching-Dev Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. It is used to teach computer science classes.
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+
+asdf
 
 ## ENV
 
