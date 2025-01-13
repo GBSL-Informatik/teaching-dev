@@ -6,9 +6,9 @@ import BrowserWindow from '@tdev-components/BrowserWindow'
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
 
+:mdi[skateboarding]{rotate=120}
+
 <DocCardList />
-
-
 
 <BrowserWindow />
 
