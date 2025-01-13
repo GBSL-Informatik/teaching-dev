@@ -4,6 +4,12 @@ import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Teaching-Dev Website
 
+Hello World
+: The simplest example
+World
+: Our planet
+
+
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
 
 :mdi[skateboarding]{size="5" rotate="120" className="blue"}
