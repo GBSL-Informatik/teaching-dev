@@ -9,12 +9,17 @@ Hello World
 World
 : Our planet
 
-
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
 
-:mdi[skateboarding]{size="5" rotate="120" className="blue"}
+
+
+
 
 <DocCardList />
+
+
+
+:mdi[skateboarding]{size="5" rotate="120" className="blue"}
 
 <BrowserWindow />
 
