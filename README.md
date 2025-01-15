@@ -7,17 +7,11 @@ import BrowserWindow from '@tdev-components/BrowserWindow'
 Hello World
 : The simplest example
 World
-: Our planet
+: Our planet :mdi[emoticon-sad-outline]{.cyan}&#x20;
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
 
-
-
-
-
 <DocCardList />
-
-
 
 :mdi[skateboarding]{size="5" rotate="120" className="blue"}
 
