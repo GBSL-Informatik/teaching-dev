@@ -4,8 +4,8 @@ import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Teaching-Dev Website
 
-Hello World
-: The simplest example
+Hello World :mdi[earth]{.blue}&#x20;
+: The simplest example :mdi[lightbulb-question-outline]{.orange}&#x20;
 World
 : Our planet :mdi[emoticon-sad-outline]{.cyan}&#x20;
 
