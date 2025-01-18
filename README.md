@@ -1,39 +1,9 @@
-import DocCardList from '@theme/DocCardList'
+# Website
 
-import BrowserWindow from '@tdev-components/BrowserWindow'
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-# Teaching-Dev Website
-
-:mdi[moon-new]{.red} :mdi[bike-pedal-mountain] :mdi[access-point]&#x20;
-
-Hello World :mdi[earth]{.blue}&#x20;
-: The simplest example :mdi[lightbulb-question-outline]{.orange}&#x20;
-World
-: Our planet :mdi[emoticon-sad-outline]{.cyan}&#x20;
-
-::::tip[Hallo]
-:::info
-kjdsfhglkjdf
-
-lkj
-
-<BrowserWindow>
-  iuhsafahdjkf
-</BrowserWindow>
-:::
-::::
-
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. 🚀
-
-<DocCardList />
-
-:mdi[skateboarding]{size="5" rotate="120" className="blue"}
-
-<BrowserWindow />
-
-:::info[Created with MdxEditor]
-Yay, admonitions work :)
-:::
+> [!NOTE]
+> Compatible with @docusaurus/faster (rspack and swc).
 
 ## ENV
 
