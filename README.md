@@ -4,7 +4,7 @@ import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Teaching-Dev Website
 
-:mdi[moon-new]{.red} :mdi[bike-pedal-mountain]&#x20;
+:mdi[moon-new]{.red} :mdi[bike-pedal-mountain] :mdi[access-point]&#x20;
 
 Hello World :mdi[earth]{.blue}&#x20;
 : The simplest example :mdi[lightbulb-question-outline]{.orange}&#x20;
