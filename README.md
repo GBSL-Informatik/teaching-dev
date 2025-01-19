@@ -1,8 +1,8 @@
-# Website
+# Website :mdi[test-tube]{.green}&#x20;
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-> [!NOTE]
+> \[!NOTE]
 > Compatible with @docusaurus/faster (rspack and swc).
 
 ## ENV
