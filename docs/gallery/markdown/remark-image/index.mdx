@@ -15,7 +15,7 @@ Bilder können im Markdown-Style eingebunden werden. Der `alt`-Text wird automat
 
 mit einem gleichnamigen `.json`-File:
 
-```json title="./images/street-food.json"
+```json
 {
     "author": "Takeaway",
     "source": "https://commons.wikimedia.org/wiki/File:Street_food_Yasothon.jpg",
@@ -99,7 +99,7 @@ Inline-Bilder können nicht mit CSS-Styles, Bildunterschriften oder Quellenangab
 :::
 
 :::info[`src/theme/MDXComponents.tsx`]
-```tsx {2-3,8-9}
+```tsx 
 import MDXComponents from '@theme-original/MDXComponents';
 import Figure from '../components/Figure';
 import SourceRef from '../components/Figure/SourceRef';
@@ -126,8 +126,9 @@ const BEFORE_DEFAULT_REMARK_PLUGINS = [
     ]
 ];
 ```
+````mdx-code-block
 :::details[Konfiguration fürs Zusammenspiel mit [remark-strong](../remark-strong/index.mdx)]
-```ts title="docusaurus.config.ts" {4-12}
+```ts
 import { visitor as captionVisitor } from './src/plugins/remark-strong/plugin';
 const BEFORE_DEFAULT_REMARK_PLUGINS = [
 	/* ... */
@@ -143,6 +144,7 @@ const BEFORE_DEFAULT_REMARK_PLUGINS = [
 ];
 ```
 :::
+````
 ::::
 
 ### Automatisches Inlining deaktivieren
@@ -157,8 +159,9 @@ Um das automatische Inlining von leeren Bildunterschriften zu deaktivieren, kön
 
 ### VS Code
 Damit die Bild-Quellen einfach eingefügt werden können, kann folgendes Snippet unter hinzugefügt werden. So wird beim Eintippen von `src` in einem `.json`-File automatisch die Quellenangabe eingefügt.
+````mdx-code-block
 :::details[`.vscode/json.code-snippets`]
-```json	title=".vscode/json.code-snippets"
+```json
 {
 	// Place your ofi-blog workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
 	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
@@ -204,3 +207,4 @@ Damit die Bild-Quellen einfach eingefügt werden können, kann folgendes Snippet
 }
 ```
 :::
+````
