@@ -9,22 +9,27 @@ Sollen Lernende die Gelegenheit erhalten, Kommentare zu Webseiteninhalten hinzuz
 Es ermöglicht angemeldeten Usern, dynamisch Kommentare hinzuzufügen, zu bearbeiten und farblich zu kennzeichnen.
 
 ## Kommentare Hinzufügen
+
 Befindet sich die Maus über einem Abschnitt, so wird auf der rechten Seite ein Icon zum Hinzufügen eines Kommentars angezeigt.
 
 ![Kommentar hinzufügen --width=350px](./images/comment-add.jpg)
 
 ## Vorhandene Kommentare
+
 Kommentare werden nach dem laden dort angezeigt, wo sie hinzugefpgt wurden. Kommentare können entweder geöffnet oder geschlossen sein.
 
 ### Offene Kommentare
+
 ![Geöffnete Kommentare --width=350px](./images/comments-open.jpg)
 
 ### Geschlossene Komentare
+
 Bei den geschlossenen Kommentaren wird nur ein kleiner Indikator rechts neben dem Abschnitt angezeigt.
 
 ![Geschlossene Kommentare --width=350px](./images/comments-closed.jpg)
 
 ## Optionen
+
 Die kommentaroptionen können bei einem geöffneten Kommentar durch Positionieren des Mauszeigers über dem Kommentar angezeigt werden.
 
 ![Optionen Öffnen: Mit dem Mauszeiger über den Kommentar fahren --width=350px](./images/comment-options.jpg)
@@ -50,13 +55,12 @@ Damit die Kommentarfunktion gebraucht werden kann, braucht es das Plugin [👉 r
 :::
 
 :::info[Code Kopieren]
-- `src/components/documents/MdxComment`
-- `src/models/documents/MdxComment.ts`
-- `src/plugins/remark-comments`
+* `src/components/documents/MdxComment`
+* `src/models/documents/MdxComment.ts`
+* `src/plugins/remark-comments`
 :::
 
 :::info[Models]
- 
 ```tsx title="src/api/document.ts"
 
 export enum DocumentType {
@@ -85,10 +89,9 @@ export type DocumentTypes =
     /* ... */
     | MdxComment;
 ```
-
 :::
-:::info[Stores]
 
+:::info[Stores]
 ```tsx title="src/stores/DocumentStore.ts" {4-5}
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
     switch (data.type) {
@@ -106,10 +109,9 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
 const RecordsToCreate = new Set<DocumentType>([DocumentType.MdxComment, /* ... */]);
 /* ... */
 ```
-
 :::
+
 :::info[Remark-Plugins]
-```ts title="src/plugins/remark-comments/plugin.ts"
 Das Plugin `remark-comments` kann für die Bedürfnisse der Seite konfiguriert werden - für die Teaching-Dev Seite ist es wie folgt konfiguriert:
 ```ts title="docusaurus.config.ts"
 import commentPlugin from './src/plugins/remark-comments/plugin';
