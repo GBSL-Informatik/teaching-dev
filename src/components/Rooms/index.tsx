@@ -68,7 +68,7 @@ interface Props {
     roomProps: DynamicDocumentRoot;
     parentDocumentId: string;
 }
-const RoomComponent = observer((props: Props): JSX.Element => {
+const RoomComponent = observer((props: Props): React.ReactNode => {
     const documentStore = useStore('documentStore');
     const drStore = useStore('documentRootStore');
     const { roomProps } = props;
@@ -100,7 +100,7 @@ const RoomComponent = observer((props: Props): JSX.Element => {
 interface WithParentRootProps {
     path: string;
 }
-const WithParentRoot = observer((props: WithParentRootProps): JSX.Element => {
+const WithParentRoot = observer((props: WithParentRootProps): React.ReactNode => {
     const routeParams = matchPath<PathParams>(props.path, PATHNAME_PATTERN);
     const { parentRootId, documentRootId } = routeParams?.params || {};
     const [rootsMeta] = React.useState(new RootsMeta({}));

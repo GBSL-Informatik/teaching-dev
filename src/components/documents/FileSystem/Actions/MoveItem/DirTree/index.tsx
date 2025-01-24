@@ -49,7 +49,7 @@ const DirTree = observer((props: DirProps) => {
                         color={disabled ? 'var(--ifm-color-disabled)' : 'var(--ifm-color-primary)'}
                     />
                     {dir.id !== item.id && (
-                        <Stack className={clsx(styles.topRight)} size={0.7}>
+                        <Stack className={clsx(styles.topRight)} size={0.7} color={null}>
                             <Icon path={mdiCircle} color="white" size={0.8} />
                             <Icon
                                 path={getNumericCircleIcon(dir.directories.length)}

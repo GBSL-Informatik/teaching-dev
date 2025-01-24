@@ -6,7 +6,7 @@ import Icon from '@mdi/react';
 import { mdiFileEyeOutline } from '@mdi/js';
 
 interface Props {
-    children: React.JSX.Element | React.JSX.Element[];
+    children: React.ReactNode | React.ReactNode[];
 }
 
 const DefHeading = (props: Props) => {

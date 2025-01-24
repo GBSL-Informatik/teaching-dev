@@ -6,7 +6,7 @@ import * as Mdi from '@mdi/js';
 import _ from 'lodash';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 
-export default function MdiSelector(): JSX.Element {
+export default function MdiSelector(): React.ReactNode {
     const [showNr, setShowNr] = React.useState(300);
     const [icons, setIcons] = React.useState<string[]>([]);
     const [filter, setFilter] = React.useState('');

@@ -27,7 +27,7 @@ export default function BrowserWindow({
     url = 'http://localhost:3000',
     style,
     bodyStyle
-}: Props): JSX.Element {
+}: Props): React.ReactNode {
     return (
         <div
             className={styles.browserWindow}
