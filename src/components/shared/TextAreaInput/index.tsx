@@ -16,9 +16,12 @@ interface Props {
     monospace?: boolean;
     showTabButton?: boolean;
     tabClassName?: string;
+    label?: string;
+    labelClassName?: string;
 }
 
 const TextAreaInput = observer((props: Props) => {
+    const id = React.useId();
     const [text, setText] = React.useState(props.defaultValue || '');
     const [rows, setRows] = React.useState(
         Math.max((props.defaultValue || '').split('\n').length, props.minRows || 1)
@@ -50,6 +53,11 @@ const TextAreaInput = observer((props: Props) => {
     };
     return (
         <>
+            {props.label && (
+                <label className={clsx(styles.label, props.labelClassName)} htmlFor={id}>
+                    {props.label}
+                </label>
+            )}
             {props.showTabButton && (
                 <Button
                     icon={mdiKeyboardTab}
@@ -62,6 +70,7 @@ const TextAreaInput = observer((props: Props) => {
                 />
             )}
             <textarea
+                id={id}
                 ref={ref}
                 placeholder={props.placeholder}
                 value={text}

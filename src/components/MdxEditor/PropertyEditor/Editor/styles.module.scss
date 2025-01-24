@@ -1,0 +1,10 @@
+.editor {
+    --ifm-table-cell-padding: 0.2rem;
+    table {
+        margin-bottom: 0;
+    }
+    .buttonsFooter {
+        display: flex;
+        justify-content: space-between;
+    }
+}

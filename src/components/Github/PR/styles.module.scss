@@ -1,0 +1,17 @@
+.PR {
+    display: flex;
+    border-radius: var(--ifm-global-radius);
+    padding: 2px 0.5em;
+    gap: 0.5em;
+    align-items: center;
+    flex-wrap: wrap;
+    .spacer {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0;
+        min-width: none;
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-md);
+    }
+}

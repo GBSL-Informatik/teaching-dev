@@ -20,6 +20,7 @@
     --ifm-color-blue-dark: #306cce;
     --ifm-color-blue-darker: #2d66c3;
     --ifm-color-disabled: #6e6e6e;
+    --ifm-color-violet: #8957e5;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -47,6 +48,7 @@ html[data-theme='dark'] {
     }
 }
 
+.mdxeditor,
 .markdown {
     dl {
         dd,

@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 
 interface Props {
-    children: React.JSX.Element | React.JSX.Element[];
+    children: React.ReactNode | React.ReactNode[];
 }
 
 const DefContent = (props: Props) => {

@@ -1,0 +1,13 @@
+button.breadcrumbsButton:global(.button) {
+    border-radius: var(--ifm-breadcrumb-border-radius);
+    --ifm-button-background-color: var(--ifm-breadcrumb-item-background-active);
+    --ifm-button-border-color: var(--ifm-breadcrumb-item-border-active);
+    color: var(--ifm-color-content);
+}
+.item {
+    cursor: pointer;
+    &.active {
+        color: var(--ifm-navbar-link-active-color);
+        background: var(--ifm-pagination-item-active-background);
+    }
+}

@@ -23,7 +23,7 @@ export interface Base {
     target?: '_blank' | `_self`;
     iconSide?: 'left' | 'right';
     noOutline?: boolean;
-    text?: string;
+    text?: string | undefined;
     active?: boolean;
     className?: string;
     textClassName?: string /* can be used to disable the text over css with `display: none` */;
@@ -32,6 +32,7 @@ export interface Base {
     color?: Color | string;
     spin?: boolean | number;
     noBorder?: boolean;
+    type?: 'button' | 'submit' | 'reset';
 }
 interface IconProps extends Base {
     icon: ReactNode | string;
@@ -150,7 +151,7 @@ const Button = (props: Props) => {
     }
     return (
         <button
-            type="button"
+            type={props.type || 'button'}
             className={clsx(commonCls, props.noBorder && styles.noBorder)}
             onClick={props.onClick}
             style={style}

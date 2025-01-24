@@ -1,0 +1,26 @@
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    .button {
+        height: 2.5cap;
+        &.optionsButton {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+}
+
+.optionsCard {
+    border-radius: var(--ifm-button-border-radius);
+    .body {
+        padding: 1px;
+        .options {
+            list-style: none;
+            padding-left: 0;
+            .option {
+                margin-left: 0;
+            }
+        }
+    }
+}

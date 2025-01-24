@@ -19,6 +19,7 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import Icon from '@mdi/react';
 import TextInput from '@tdev-components/shared/TextInput';
 import { ExcalidrawColor, mdiExcalidraw } from '@tdev-components/documents/Excalidoc';
+import { PopupActions } from 'reactjs-popup/dist/types';
 
 interface Props {
     directory: Directory;
@@ -47,7 +48,7 @@ const asPyName = (name: string) => {
 };
 
 const NewItem = observer((props: Props) => {
-    const ref = React.useRef(null);
+    const ref = React.useRef<PopupActions>(null);
     const [name, setName] = React.useState('');
     const documentStore = useStore('documentStore');
     const closeTooltip = () => (ref.current as any)?.close();

@@ -168,11 +168,13 @@ export const transformAttributes = (
                 ? true
                 : value === 'false'
                   ? false
-                  : value === '' || value === null || value === undefined
-                    ? ''
-                    : !Number.isNaN(Number(value))
-                      ? Number(value)
-                      : value;
+                  : value === ''
+                    ? true
+                    : value === null || value === undefined
+                      ? ''
+                      : !Number.isNaN(Number(value))
+                        ? Number(value)
+                        : value;
     }
     return options;
 };
