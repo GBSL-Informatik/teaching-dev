@@ -2,7 +2,8 @@
 page_id: 9a0e84c3-778f-43e6-948c-79ea7f70a48f
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Details
 
@@ -16,15 +17,14 @@ In Docusaurus werden html-details hübsch dargestellt. Hier ein Beispiel:
     ☀️⛰️🏖️🏝️
 </details>
 ```
+
 <BrowserWindow>
-```mdx-code-block
-<details>
-    <summary>
-        Mehr zu meinen **Sommerferien** 🍹
-    </summary>
-    ☀️⛰️🏖️🏝️
-</details>
-```
+  <details>
+      <summary>
+          Mehr zu meinen **Sommerferien** 🍹
+      </summary>
+      ☀️⛰️🏖️🏝️
+  </details>
 </BrowserWindow>
 
 Um die Details mit weniger Aufwand zu erstellen, können auch `:::details`-Blöcke verwendet werden:
@@ -34,14 +34,14 @@ Um die Details mit weniger Aufwand zu erstellen, können auch `:::details`-Blöc
 ☀️⛰️🏖️🏝️
 :::
 ```
+
 mit demselben Resultat:
 
 <BrowserWindow>
-:::details[Mehr zu meinen **Sommerferien** 🍹]
-☀️⛰️🏖️🏝️
-:::
+  :::details[Mehr zu meinen **Sommerferien** 🍹]
+  ☀️⛰️🏖️🏝️
+  :::
 </BrowserWindow>
-
 
 ## Installation
 
@@ -49,9 +49,7 @@ mit demselben Resultat:
 - `src/plugins/remark-details`
 :::
 
-
 :::info[`docusaurus.config.ts`]
-
 ```ts
 import detailsPlugin from './src/plugins/remark-details/plugin';
 const BEFORE_DEFAULT_REMARK_PLUGINS = [
