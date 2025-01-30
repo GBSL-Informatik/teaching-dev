@@ -2,7 +2,8 @@
 page_id: 38699e0f-ca3f-4213-b626-c2ef7db6d412
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Strong
 
@@ -10,12 +11,14 @@ Dieses Plugin __umrandet__ Textteile. Markdown hat eine gewisse redundanz - fett
 
 Dieses Plugin fügt allen `__`-Markierungen einen konfigurierten `className` hinzu. So kann mit etwas CSS etwa ein Rahmen um den Text gezogen werden.
 
+![What the Heck? --width=168](https://picsum.photos/200/300)
+
 ```md
 Dieser Text ist __umrandet__.
 ```
 
 <BrowserWindow>
-Dieser Text ist __umrandet__.
+  Dieser Text ist **umrandet**.
 </BrowserWindow>
 
 ## Konfiguration
@@ -45,7 +48,7 @@ const REMARK_PLUGINS = [
 :::
 
 :::info[CSS]
-CSS für eine __dunkelblaue Umrandung__:
+CSS für eine **dunkelblaue Umrandung**:
 
 ```css
 strong.boxed {
