@@ -1,0 +1,17 @@
+.imageEditor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .imageWrapper {
+        display: inline-block;
+        position: relative;
+        line-height: 0;
+        &[draggable='true'] {
+            cursor: move;
+            /* fallback if grab cursor is unsupported */
+            cursor: grab;
+            cursor: -moz-grab;
+            cursor: -webkit-grab;
+        }
+    }
+}

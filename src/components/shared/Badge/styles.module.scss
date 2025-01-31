@@ -1,0 +1,12 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    cursor: pointer;
+    &.noPaddingLeft {
+        padding-left: 4px;
+    }
+    &.noPaddingRight {
+        padding-right: 4px;
+    }
+}

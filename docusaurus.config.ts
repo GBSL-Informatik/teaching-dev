@@ -291,6 +291,11 @@ const config: Config = {
         },
         { to: '/blog', label: 'Blog', position: 'left' },
         {
+          to: '/gh-login',
+          label: 'CMS',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/GBSL-Informatik/teaching-dev',
           label: 'GitHub',
           position: 'right',

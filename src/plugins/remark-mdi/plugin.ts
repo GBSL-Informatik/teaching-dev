@@ -1,6 +1,6 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxTextElement, MdxjsEsm } from 'mdast-util-mdx';
+import type { MdxJsxAttribute, MdxJsxTextElement, MdxjsEsm } from 'mdast-util-mdx';
 import { camelCased, captialize, toJsxAttribute, transformAttributes } from '../helpers';
 import { Root, Text } from 'mdast';
 
@@ -132,6 +132,33 @@ interface OptionsInput {
     defaultSize?: number | string;
 }
 
+export const transformMdiAttributes = (
+    attributes: Record<string, string | null | undefined> | null | undefined,
+    optionsInput: OptionsInput = {}
+) => {
+    const rawAttributes = transformAttributes(attributes || {});
+    if (!('size' in rawAttributes.attributes)) {
+        delete rawAttributes.style['size'];
+        rawAttributes.attributes.size = optionsInput?.defaultSize || 1.5;
+    }
+    if ('color' in rawAttributes.attributes) {
+        delete rawAttributes.style['color'];
+        const color = rawAttributes.attributes.color as string;
+        if (optionsInput?.colorMapping && color in optionsInput.colorMapping) {
+            rawAttributes.attributes.color = optionsInput.colorMapping[color];
+        }
+    }
+    if (
+        'className' in rawAttributes.attributes &&
+        !/mdi-icon/.test(rawAttributes.attributes.className as string)
+    ) {
+        rawAttributes.attributes.className = `mdi-icon ${rawAttributes.attributes.className}`;
+    } else {
+        rawAttributes.attributes.className = 'mdi-icon';
+    }
+    return rawAttributes;
+};
+
 const plugin: Plugin<OptionsInput[], Root> = function plugin(optionsInput = {}): Transformer<Root> {
     return async (root) => {
         let hasMdiIcons = false;
@@ -169,26 +196,7 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(optionsInput = {}):
             if (!includedMdiIcons.has(mdiIcon)) {
                 newMdiIcons.add(mdiIcon);
             }
-            const rawAttributes = transformAttributes(node.attributes || {});
-            if (!('size' in rawAttributes.attributes)) {
-                delete rawAttributes.style['size'];
-                rawAttributes.attributes.size = optionsInput?.defaultSize || 1.5;
-            }
-            if ('color' in rawAttributes.attributes) {
-                delete rawAttributes.style['color'];
-                const color = rawAttributes.attributes.color as string;
-                if (optionsInput?.colorMapping && color in optionsInput.colorMapping) {
-                    rawAttributes.attributes.color = optionsInput.colorMapping[color];
-                }
-            }
-            if (
-                'className' in rawAttributes.attributes &&
-                !/mdi-icon/.test(rawAttributes.attributes.className as string)
-            ) {
-                rawAttributes.attributes.className = `mdi-icon ${rawAttributes.attributes.className}`;
-            } else {
-                rawAttributes.attributes.className = 'mdi-icon';
-            }
+            const rawAttributes = transformMdiAttributes(node.attributes, optionsInput);
             const attributes = Object.entries(rawAttributes.attributes).map(([key, value]) =>
                 toJsxAttribute(key, value)
             );

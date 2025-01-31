@@ -2,6 +2,7 @@ import { User } from '@tdev-api/user';
 import { Primitive } from 'utility-types';
 import siteConfig from '@generated/docusaurus.config';
 import _ from 'lodash';
+import MemoryStorage from './MemoryStorage';
 
 export type PersistedData = {
     user?: User;
@@ -81,30 +82,6 @@ class Storage {
         } catch (_err) {
             // Ignore errors
         }
-    }
-}
-
-/**
- * MemoryStorage is a simple in-memory storage implementation that is used
- * when localStorage is not available.
- */
-class MemoryStorage {
-    private data: any = {};
-
-    getItem(key: string) {
-        return this.data[key] || null;
-    }
-
-    setItem(key: string, value: Primitive) {
-        return (this.data[key] = String(value));
-    }
-
-    removeItem(key: string) {
-        return delete this.data[key];
-    }
-
-    clear() {
-        return (this.data = {});
     }
 }
 

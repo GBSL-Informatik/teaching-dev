@@ -168,11 +168,13 @@ export const transformAttributes = (
                 ? true
                 : value === 'false'
                   ? false
-                  : value === '' || value === null || value === undefined
-                    ? ''
-                    : !Number.isNaN(Number(value))
-                      ? Number(value)
-                      : value;
+                  : value === ''
+                    ? true
+                    : value === null || value === undefined
+                      ? ''
+                      : !Number.isNaN(Number(value))
+                        ? Number(value)
+                        : value;
     }
     return options;
 };
@@ -208,11 +210,11 @@ export const requireDefaultMdastNode = (key: string, src: string) => {
     });
 };
 
-export const cleanedText = (rawText: string) => {
-    return rawText
+export const cleanedText = (rawText: string, trim: boolean = true) => {
+    const cleaned = rawText
         .replace(new RegExp(OPTION_REGEX, 'g'), '')
-        .replace(new RegExp(BOOLEAN_REGEX, 'g'), '')
-        .trim();
+        .replace(new RegExp(BOOLEAN_REGEX, 'g'), '');
+    return trim ? cleaned.trim() : cleaned;
 };
 
 export const parseOptions = (
