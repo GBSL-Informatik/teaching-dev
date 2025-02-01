@@ -2,7 +2,8 @@
 page_id: edebd470-67c3-4ebe-9e96-3674b34dff25
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Flex Cards
 
@@ -15,14 +16,17 @@ Hello moon!
 ```
 
 <BrowserWindow>
-:::flex
-Hello world!
-::br
-Hello moon!
-:::
+  :::flex
+  Hello world!
+
+  ::br
+
+  Hello moon!
+  :::
 </BrowserWindow>
 
 ## Verschachtelt
+
 ```md
 ::::flex
 Nesting Level 1
@@ -37,19 +41,25 @@ Yaa!
 ```
 
 <BrowserWindow>
-::::flex
-Nesting Level 1
-::br
-Content with a flex
-:::flex
-Boo!
-::br
-Yaa!
-:::
-::::
+  ::::flex
+  Nesting Level 1
+
+  ::br
+
+  Content with a flex
+
+  :::flex
+  Boo!
+
+  ::br
+
+  Yaa!
+  :::
+  ::::
 </BrowserWindow>
 
 ## Cards
+
 Dasselbe mit den Docusaurus-Cards und dem Stichwort `cards`
 
 ```md
@@ -67,17 +77,23 @@ Yaa!
 ```
 
 <BrowserWindow>
-::::cards
-Nesting Level 1
-::br
-Content with a cards section
-:::cards
-::br{.alert .alert--danger}
-Boo!
-::br{.alert .alert--primary}
-Yaa!
-:::
-::::
+  ::::cards
+  Nesting Level 1
+
+  ::br
+
+  Content with a cards section
+
+  :::cards
+  ::br{.alert.alert--danger}
+
+  Boo!
+
+  ::br{.alert.alert--primary}
+
+  Yaa!
+  :::
+  ::::
 </BrowserWindow>
 
 ### Mit Bildern
@@ -93,16 +109,16 @@ Hello Holidays!
 ```
 
 <BrowserWindow>
-:::cards{flexBasis=200px maxWidth=420px}
-![Drone View](https://images.unsplash.com/photo-1506624183912-c602f4a21ca7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60)
-Hello world!
-::br
-![Sunset](https://images.unsplash.com/photo-1501619951397-5ba40d0f75da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1655&q=80)
-Hello Holidays!
-:::
+  :::cards{flexBasis="200px" maxWidth="420px"}
+  ![Drone View](https://images.unsplash.com/photo-1506624183912-c602f4a21ca7?ixlib=rb-1.2.1\&ixid=eyJhcHBfaWQiOjEyMDd9\&auto=format\&fit=crop\&w=800\&q=60)
+  Hello world!
+
+  ::br
+
+  ![Sunset](https://images.unsplash.com/photo-1501619951397-5ba40d0f75da?ixlib=rb-1.2.1\&auto=format\&fit=crop\&w=1655\&q=80)
+  Hello Holidays!
+  :::
 </BrowserWindow>
-
-
 
 ## Installation
 
@@ -174,7 +190,6 @@ div.flex {
 :::
 
 :::info[`docusaurus.config.ts`]
-
 ```ts
 import flexCardsPlugin from './src/plugins/remark-flex-cards/plugin';
 const BEFORE_DEFAULT_REMARK_PLUGINS = [
