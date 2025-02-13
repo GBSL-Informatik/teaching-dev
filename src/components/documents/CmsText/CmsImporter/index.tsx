@@ -16,6 +16,7 @@ import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/Assi
 import ImportPreview from './ImportPreview';
 import XlsxImport from './XlsxImport';
 import CodeImport from './CodeImport';
+import { PopupActions } from 'reactjs-popup/dist/types';
 
 interface Props {
     className?: string;
@@ -61,7 +62,7 @@ const createCmsTexts = async (
 
 const CmsImporter = observer((props: Props) => {
     const { toAssign } = props;
-    const ref = React.useRef(null);
+    const ref = React.useRef<PopupActions>(null);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
     const [mode, setMode] = React.useState<'xlsx' | 'code'>(props.mode || 'xlsx');

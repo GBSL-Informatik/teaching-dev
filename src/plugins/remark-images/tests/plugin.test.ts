@@ -49,9 +49,9 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
           "
         `);
     });
@@ -66,13 +66,13 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
           "
         `);
     });
@@ -86,11 +86,11 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
         "# Heading
 
-        <figure options={{"width":"200px"}}>
+        <span className="figure" options={{"width":"200px"}}>
           ![Caption](https://example.com/image.png)
 
-          <figcaption><span style={{"flexGrow":1}} />Caption<span style={{"flexGrow":1}} /></figcaption>
-        </figure>
+          <span className="caption"><span style={{"flexGrow":1}} />Caption<span style={{"flexGrow":1}} /></span>
+        </span>
         "
       `);
     });
@@ -103,11 +103,11 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
       "# Heading
 
-      <figure options={{"maxWidth":"200px"}}>
+      <span className="figure" options={{"maxWidth":"200px"}}>
         ![Caption](https://example.com/image.png)
 
-        <figcaption><span style={{"flexGrow":1}} />Caption<span style={{"flexGrow":1}} /></figcaption>
-      </figure>
+        <span className="caption"><span style={{"flexGrow":1}} />Caption<span style={{"flexGrow":1}} /></span>
+      </span>
       "
     `);
     });
@@ -120,11 +120,11 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
-          <figure>
+          <span className="figure">
             ![image](https://example.com/image.png)
 
-            <figcaption><span style={{"flexGrow":1}} />image<span style={{"flexGrow":1}} /></figcaption>
-          </figure>
+            <span className="caption"><span style={{"flexGrow":1}} />image<span style={{"flexGrow":1}} /></span>
+          </span>
           "
         `);
     });
@@ -137,11 +137,11 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
-          <figure>
+          <span className="figure">
             ![image foo.bar](https://example.com/image.png)
 
-            <figcaption><span style={{"flexGrow":1}} />image [foo.bar](https://foo.bar)<span style={{"flexGrow":1}} /></figcaption>
-          </figure>
+            <span className="caption"><span style={{"flexGrow":1}} />image [foo.bar](https://foo.bar)<span style={{"flexGrow":1}} /></span>
+          </span>
           "
         `);
     });
@@ -154,11 +154,11 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
-          <figure>
+          <span className="figure">
             ![](assets/placeholder.svg)
 
-            <figcaption className="inline"><span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></figcaption>
-          </figure>
+            <span className="caption inline"><span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></span>
+          </span>
           "
         `);
     });
@@ -173,11 +173,11 @@ describe('#image', () => {
 
             Hello
 
-            <figure>
+            <span className="figure">
               ![](assets/placeholder.svg)
 
-              <figcaption className="inline"><span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></figcaption>
-            </figure>
+              <span className="caption inline"><span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></span>
+            </span>
 
             my friend.
             "
@@ -204,9 +204,9 @@ describe('#image', () => {
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
 
           hello
           "
@@ -223,9 +223,9 @@ describe('#image', () => {
 
           hello
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
 
           bello
           "
@@ -242,15 +242,15 @@ describe('#image', () => {
 
           cello
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
 
           hello
 
-          <figure>
+          <span className="figure">
             ![](https://example.com/image.png)
-          </figure>
+          </span>
 
           bello
           "
@@ -263,11 +263,11 @@ describe('#image', () => {
       `;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-        "<figure>
+        "<span className="figure">
           ![a bold caption](assets/placeholder.svg)
 
-          <figcaption><span style={{"flexGrow":1}} />a **bold** caption<span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></figcaption>
-        </figure>
+          <span className="caption"><span style={{"flexGrow":1}} />a **bold** caption<span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></span>
+        </span>
         "
       `);
     });
@@ -277,11 +277,11 @@ describe('#image', () => {
       `;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-        "<figure>
+        "<span className="figure">
           ![a link caption](assets/placeholder.svg)
 
-          <figcaption><span style={{"flexGrow":1}} />a [link](https://link.com) caption<span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></figcaption>
-        </figure>
+          <span className="caption"><span style={{"flexGrow":1}} />a [link](https://link.com) caption<span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></span>
+        </span>
         "
       `);
     });
@@ -318,11 +318,11 @@ describe('#image', () => {
       `;
         const result = await process(input, [captionVisitor]);
         expect(result).toMatchInlineSnapshot(`
-          "<figure>
+          "<span className="figure">
             ![a link caption](assets/placeholder.svg)
 
-            <figcaption><span style={{"flexGrow":1}} />a [<strong className="boxed">link</strong>](https://link.com) caption<span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></figcaption>
-          </figure>
+            <span className="caption"><span style={{"flexGrow":1}} />a [<strong className="boxed">link</strong>](https://link.com) caption<span style={{"flexGrow":1}} /><SourceRef bib={{"author":"Flanoz","source":"https://commons.wikimedia.org/wiki/File:Placeholder_view_vector.svg","licence":"CC 0","licence_url":"https://creativecommons.org/publicdomain/zero/1.0/deed.en","edited":false}} /></span>
+          </span>
           "
         `);
     });

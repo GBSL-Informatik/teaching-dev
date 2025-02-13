@@ -5,7 +5,7 @@ import dynamicRouterPlugin, { Config as DynamicRouteConfig} from './src/plugins/
 import type * as Preset from '@docusaurus/preset-classic';
 import path from 'path';
 
-import strongPlugin, { visitor as captionVisitor } from './src/plugins/remark-strong/plugin';
+import strongPlugin, { transformer as captionVisitor } from './src/plugins/remark-strong/plugin';
 import deflistPlugin from './src/plugins/remark-deflist/plugin';
 import mdiPlugin from './src/plugins/remark-mdi/plugin';
 import kbdPlugin from './src/plugins/remark-kbd/plugin';
@@ -48,7 +48,14 @@ const BEFORE_DEFAULT_REMARK_PLUGINS = [
         figure: 'Figure'
       },
       captionVisitors: [
-        (ast, caption) => captionVisitor(ast, caption, { className: 'boxed' })
+        (ast, caption) => captionVisitor(ast, caption, (children) => {
+                    return {
+                        type: 'mdxJsxTextElement',
+                        name: 'strong',
+                        attributes: [{ type: 'mdxJsxAttribute', name: 'className', value: 'boxed' }],
+                        children: children
+                    };
+                })
       ] satisfies CaptionVisitor[]
     }
   ],
@@ -247,7 +254,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/GBSL-Informatik/teaching-dev/edit/main/',
+            '/cms/',
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
@@ -257,7 +264,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/GBSL-Informatik/teaching-dev/edit/main/',
+            '/cms/',
             remarkPlugins: REMARK_PLUGINS,
             rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
@@ -266,6 +273,7 @@ const config: Config = {
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+          editUrl: '/cms/'
         },
         theme: {
           customCss: './src/css/custom.scss',
@@ -290,6 +298,11 @@ const config: Config = {
           position: 'left',
         },
         { to: '/blog', label: 'Blog', position: 'left' },
+        {
+          to: '/cms',
+          label: 'CMS',
+          position: 'left',
+        },
         {
           href: 'https://github.com/GBSL-Informatik/teaching-dev',
           label: 'GitHub',
@@ -352,6 +365,10 @@ const config: Config = {
           {
             path: '/rooms/',
             component: '@tdev-components/Rooms',
+          },
+          {
+            path: '/cms/',
+            component: '@tdev-components/Cms',
           }
         ]
       } satisfies DynamicRouteConfig
@@ -376,6 +393,7 @@ const config: Config = {
                 '@tdev-models': path.resolve(__dirname, './src/models'),
                 '@tdev-stores': path.resolve(__dirname, './src/stores'),
                 '@tdev-api': path.resolve(__dirname, './src/api'),
+                '@tdev-plugins': path.resolve(__dirname, './src/plugins'),
                 '@tdev': path.resolve(__dirname, './src'),
               }
             }

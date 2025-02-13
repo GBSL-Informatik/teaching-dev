@@ -1,0 +1,22 @@
+{
+    "component": {
+        "prefix": "class",
+        "scope": "typescript",
+        "body": [
+            "import { action, computed, observable } from 'mobx';",
+            "",
+            "interface Props {",
+            "    ${1:propName:propType}",
+            "}",
+            "class ${2:ClassName} {",
+            "    ${1/([^,]+):([^,]+),?/@observable accessor $1: $2;\n    /g}",
+            "    constructor(props: Props) {",
+            "        ${1/([^,]+):([^,]+),?/this.$1 = props.$1;\n        /g}",
+            "    }",
+            "};",
+            "",
+            "export default $2;"
+        ],
+        "description": "Create a mobx model"
+    }
+}

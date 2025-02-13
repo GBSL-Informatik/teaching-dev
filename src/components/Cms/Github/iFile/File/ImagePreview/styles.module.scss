@@ -1,0 +1,12 @@
+.preview {
+    min-width: 2em;
+    max-width: 12em;
+    .img {
+        line-height: 0;
+    }
+    .header {
+        padding: 0 2px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

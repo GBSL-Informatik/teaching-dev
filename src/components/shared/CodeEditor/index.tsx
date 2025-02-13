@@ -10,10 +10,12 @@ import 'ace-builds/src-noconflict/mode-svg';
 import 'ace-builds/src-noconflict/theme-dracula';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
+import 'ace-builds/esm-resolver';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
-    py: 'python'
+    py: 'python',
+    ts: 'typescript'
 };
 
 interface Props {

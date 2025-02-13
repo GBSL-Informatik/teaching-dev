@@ -1,10 +1,11 @@
 .figure {
+    display: block;
     position: relative;
     text-align: center;
     margin: 0 auto;
     margin-bottom: 1em;
     width: fit-content;
-    figcaption {
+    span:global(.caption) {
         font-style: italic;
         display: flex;
         justify-content: flex-end;

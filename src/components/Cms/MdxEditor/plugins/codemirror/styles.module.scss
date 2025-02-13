@@ -1,0 +1,15 @@
+.editor {
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--ifm-color-emphasis-300);
+        padding-right: 0;
+        padding-top: 0;
+        --basePageBg: transparent;
+        .removeButton {
+            border-top-right-radius: var(--ifm-card-border-radius);
+        }
+    }
+
+    margin-bottom: var(--ifm-leading);
+}

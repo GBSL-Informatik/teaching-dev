@@ -1,0 +1,13 @@
+.imageGallery {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    .image {
+        cursor: pointer;
+        border-radius: var(--ifm-card-border-radius);
+        &:hover {
+            box-shadow: var(--ifm-global-shadow-md);
+        }
+    }
+}

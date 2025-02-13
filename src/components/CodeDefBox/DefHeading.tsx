@@ -6,12 +6,13 @@ import Icon from '@mdi/react';
 import { mdiFileEyeOutline } from '@mdi/js';
 
 interface Props {
-    children: React.JSX.Element | React.JSX.Element[];
+    children: React.ReactNode | React.ReactNode[];
+    className?: string;
 }
 
 const DefHeading = (props: Props) => {
     return (
-        <div className={clsx(styles.heading)}>
+        <div className={clsx(styles.heading, props.className)}>
             <Icon path={mdiFileEyeOutline} size={1} />
             {props.children}
         </div>
