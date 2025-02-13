@@ -2,7 +2,8 @@
 page_id: bab79a4c-17be-4ed3-aca9-bb4d7df92346
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Code Defbox
 
@@ -21,15 +22,15 @@ forward(100)
 ````
 
 <BrowserWindow>
-:::def[`forward(n)` `fd(n)`]{h=3}
-Bewegt die Turtle `n` Pixel nach vorne.
+  :::def[`forward(n)` `fd(n)`]{h="3"}
+  Bewegt die Turtle `n` Pixel nach vorne.
 
-```py live_py slim
-from turtle import forward
-### PRE
-forward(100)
-```
-:::
+  ```py live_py slim
+  from turtle import forward
+  ### PRE
+  forward(100)
+  ```
+  :::
 </BrowserWindow>
 
 ## Installation
@@ -57,7 +58,6 @@ export default {
 :::
 
 :::info[`docusaurus.config.ts`]
-
 ```ts {1,8,11,14}
 import defboxPlugin from './src/plugins/remark-code-defbox/plugin';
 const BEFORE_DEFAULT_REMARK_PLUGINS = [
