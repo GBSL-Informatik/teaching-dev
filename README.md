@@ -1,6 +1,6 @@
 # Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.asdfdddd
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.asdfddddsss
 
 > \[!NOTE]
 > Compatible with @docusaurus/faster (rspack and swc).
