@@ -1,7 +1,8 @@
 ---
 page_id: 05d0e326-5d1c-451b-acc5-f6b92ad63504
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Code Blocks
 
@@ -15,9 +16,9 @@ Mit dem `title`-Parameter kann ein Titel für den Code-Block hinzugefügt werden
 
 :::warning[Spaces]
 Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String eines Code-Blocks verwendet wird. Verwenden Sie stattdessen einen Unterstrich `_` oder einen Bindestrich `-`.
-
 :::
-````py
+
+````md
 ```py live_py title=example.py
 ```
 ````
@@ -25,32 +26,32 @@ Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String ei
 :::tip[Use `_` in the title]
 Um einen Unterstrich zu verwenden, können Sie die folgende Syntax verwenden:
 
-````py
+````md
 ```py live_py title=example__file.py
 ```
 ````
 
 <BrowserWindow>
-```py live_py title=example__file.py id=8ba96031-71e6-47dd-be6e-9164761653ee
-print('Hello Title')
-```
+  ```py live_py title=example__file.py id=8ba96031-71e6-47dd-be6e-9164761653ee
+  print('Hello Title')
+  ```
 </BrowserWindow>
 :::
 
 ### Slim Mode (`slim`)
+
 Manchmal ist ein Editor mit einem Header visuell zu gross. Für kleine Code-Schnipsel kann der `slim`-Modus verwendet werden, um die Grösse des Editors zu reduzieren. Dies entfernt den Header und blendet die Zeilennummern aus.
 
-````py
+````md
 ```py live_py slim
 print('Hello Slim Mode')
 ```
 ````
 
 <BrowserWindow>
-
-```py live_py slim
-print('Hello Slim Mode')
-```
+  ```py live_py slim
+  print('Hello Slim Mode')
+  ```
 </BrowserWindow>
 
 :::warning[API-Speicherung]
@@ -58,23 +59,24 @@ Bei der Verwendung des `slim`-Modus wird der `id`-Parameter ignoriert.
 :::
 
 ### Read-Only Mode (`readonly`)
+
 Ein Editor kann auch im Read-Only-Modus angezeigt werden, indem der `readonly`-Parameter hinzugefügt wird.
 
-````py
+````md
 ```py live_py readonly
 print('Hello Read-Only Mode')
 ```
 ````
 
 <BrowserWindow>
-
-```py live_py readonly hideWarning
-print('Hello Read-Only Mode')
-```
+  ```py live_py readonly hideWarning
+  print('Hello Read-Only Mode')
+  ```
 </BrowserWindow>
 
 ::::tip[Works with Persisted Code]
 Auch wenn der Code von der API geladen wird, wird der Read-Only-Modus beibehalten.
+
 :::details[Use Case: Schulunterricht]
 Dies ist besonders nützlich im Schulunterricht, wenn einige Übungen/Prüfungen nur während einer bestimmten Zeit durchgeführt werden sollen, aber Sie den Schülern gerne Feedback zu den eingereichten Lösungen geben möchten. Dann wird das `readonly`-Attribut hinzugefügt und die Schüler sehen ihre Änderungen, können sie aber nicht bearbeiten.
 :::
@@ -84,58 +86,59 @@ Dies ist besonders nützlich im Schulunterricht, wenn einige Übungen/Prüfungen
 
 Der Download-Button ermöglicht es, den Code als Datei herunterzuladen. Mit dem `noDownload`-Meta-String kann der Download-Button ausgeblendet werden.
 
-````py
+````md
 ```py live_py noDownload
 print('Hello No Download Button')
 ```
 ````
-<BrowserWindow>
 
-```py live_py noDownload hideWarning
-print('Hello No Download Button')
-```
+<BrowserWindow>
+  ```py live_py noDownload hideWarning
+  print('Hello No Download Button')
+  ```
 </BrowserWindow>
 
 ### Vergleich-Button ausblenden (`noCompare`)
 
 Wenn Änderungen am Code vorgenommen wurden, können Sie mit dem Originalcode vergleichen. Sie können den Vergleichsbutton ausblenden, indem Sie den `noCompare`-Meta-String hinzufügen.
 
-````py
+````md
 ```py live_py noCompare hideWarning
 print('Hello No Compare Button')
 ```
 ````
 
 <BrowserWindow>
-Ändere den Code und beachte, dass kein Vergleichsbutton angezeigt wird.
+  Ändere den Code und beachte, dass kein Vergleichsbutton angezeigt wird.
 
-```py live_py noCompare hideWarning
-print('Hello No Compare Button')
-```
+  ```py live_py noCompare hideWarning
+  print('Hello No Compare Button')
+  ```
 </BrowserWindow>
 
 ### Reset-Button ausblenden (`noReset`)
 
 Der Reset-Button ermöglicht es, den Code auf den ursprünglichen Code zurückzusetzen. Sie können den Reset-Button ausblenden, indem Sie den `noReset`-Meta-String hinzufügen.
 
-````py
+````md
 ```py live_py noReset
 print('Hello No Reset Button')
 ```
 ````
-<BrowserWindow>
-Ändere den Code und beachte, dass der Reset-Button ausgeblendet ist.
 
-```py live_py noReset hideWarning
-print('Hello No Reset Button')
-```
+<BrowserWindow>
+  Ändere den Code und beachte, dass der Reset-Button ausgeblendet ist.
+
+  ```py live_py noReset hideWarning
+  print('Hello No Reset Button')
+  ```
 </BrowserWindow>
 
 ### Max Line Number bevor gescrollt wird (`maxLines`)
 
 Es kann die maximale Anzahl von Zeilen angegeben werden, bevor der Editor scrollt. Dies ist nützlich für lange Code-Schnipsel. Der Standardwert ist `25`.
 
-````py
+````md
 ```py live_py maxLines=5
 print('Line 1')
 print('Line 2')
@@ -145,26 +148,26 @@ print('Line 5')
 print('Line 6 - scrolled')
 ```
 ````
-<BrowserWindow>
 
-```py live_py maxLines=5 hideWarning
-print('Line 1')
-print('Line 2')
-print('Line 3')
-print('Line 4')
-print('Line 5')
-print('Line 6 - scrolled')
-```
+<BrowserWindow>
+  ```py live_py maxLines=5 hideWarning
+  print('Line 1')
+  print('Line 2')
+  print('Line 3')
+  print('Line 4')
+  print('Line 5')
+  print('Line 6 - scrolled')
+  ```
 </BrowserWindow>
 
 ### Imports
+
 Standardmässig können alle Python-Skripte, die sich im Verzeichnis `static/bry-libs/` befinden, direkt aus den Code-Blöcken importiert werden. Dies ermöglicht es Ihnen, wiederverwendbare Module zu erstellen, die in Ihre Code-Blöcke importiert werden können.
 
 Das folgende Beispiel zeigt, wie Sie ein Modul importieren und verwenden können. Das Skript `grid.py` ist standardmässig in `static/bry-libs/grid.py` enthalten und kann somit importiert werden.
 The script `grid.py` is added by default to `static/bry-libs/grid.py` when you run the dev-server.
 
 :::details[Sourcecode von `grid.py`]
-
 ```py
 from browser import document # type: ignore
 from config import Config # type: ignore
@@ -432,39 +435,37 @@ class Grid():
 :::
 
 <BrowserWindow>
-```py live_py title=grid__example.py hideWarning
-from grid import Grid
-Grid.clear_canvas()
-smile = Grid.from_text('''
-       
- x    x
- 
- 
- 
- x    x 
- xxxxxx
- 
-''')
-smile.draw()
-```
+  ```py live_py title=grid__example.py hideWarning
+  from grid import Grid
+  Grid.clear_canvas()
+  smile = Grid.from_text('''
+         
+   x    x
+   
+   
+   
+   x    x 
+   xxxxxx
+   
+  ''')
+  smile.draw()
+  ```
 </BrowserWindow>
 
 ### Änderungen abspeichern (`id`=uuid)
 
 Änderungen im Code-Editor können durch Hinzufügen einer `id` zum Code-Block persistiert werden. Die Änderungen werden über die `teaching-api` gespeicher und der Inhalt wird beim Neuladen der Seite wiederhergestellt.
 
-````py
+````md
 ```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
 # changes made in this code block will be stored in the local storage
 ```
 ````
 
 <BrowserWindow>
-
-```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
-# changes made in this code block will be stored in the local storage
-```
-
+  ```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
+  # changes made in this code block will be stored in the local storage
+  ```
 </BrowserWindow>
 
 :::warning[Eindeutige IDs]
@@ -475,44 +476,42 @@ Stelle sicher dass die IDs auf der gesamten Website (nicht nur auf dieser Seite)
 Ein guter Weg, um eindeutige IDs zu gewährleisten, ist die Verwendung einer UUID. Für VS Code-Benutzer ist die Erweiterung [UUID Generator von Motivesoft](https://marketplace.visualstudio.com/items?itemName=motivesoft.vscode-uuid-generator) praktisch, um neue UUIDs mit `Alt+Shift+U` einzufügen.
 :::
 
-
 ### Versionen speichern (`versioned`)
 
 Es können Versionen des Codes gespeichert werden, indem der `versioned`-Meta-String hinzugefügt wird. Dies fügt eine Versionshistorie zum Editor hinzu. Jede Änderung wird als neue Version gespeichert, aber nicht öfter als einmal alle 1 Sekunde.
 
-````py
+````md
 ```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
 print('Hello Versioned Mode')
 ```
 ````
+
 <BrowserWindow>
+  Probiere es aus, indem du den Code mehrmals (min. 2x) änderst und speicherst und dann auf die Versionshistorie-Details klickst.
 
-Probiere es aus, indem du den Code mehrmals (min. 2x) änderst und speicherst und dann auf die Versionshistorie-Details klickst.
-
-```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
-print('Hello Versioned Mode')
-```
+  ```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
+  print('Hello Versioned Mode')
+  ```
 </BrowserWindow>
 
 :::warning[Only in Persisted Mode]
 Der `versioned`-Modus funktioniert nur in Kombination mit dem `id`-Attribut. Das `id`-Attribut wird verwendet, um die Versionen im backend zu persistieren.
 :::
 
-
 ### Version History verstecken (`noHistory`)
 
 Die Versionen des Codes werden standardmässig angezeigt. Mit dem `noHistory`-Meta-String können Sie die Versionshistorie ausblenden.
 
-````py
+````md
 ```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
 print('Hello No History')
 ```
 ````
 
 <BrowserWindow>
-```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
-print('Hello Versioned Mode')
-```
+  ```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
+  print('Hello Versioned Mode')
+  ```
 </BrowserWindow>
 
 ### Pre- und Post-Code
@@ -524,8 +523,7 @@ Mit Kommentaren lassen sich Code-Teile zu Beginn oder am Ende verstecken und auf
 `### POST`
 : Die Code-Sequenz **nach** dem `### POST`-Kommentar ist standardmässig eingeklappt und wird nicht angezeigt.
 
-
-````py
+````md
 ```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
 # This is a pre code block
 from time import time
@@ -541,19 +539,19 @@ print(f'Die Berechnung dauerte {time.time() - t0} Sekunden')
 ````
 
 <BrowserWindow>
-Codeblock mit eingeklapptem Pre- und Post-Code. Die Ausklapp-Knöpfe werden angezeigt, wenn mit der Maus über den Code gefahren wird.
+  Codeblock mit eingeklapptem Pre- und Post-Code. Die Ausklapp-Knöpfe werden angezeigt, wenn mit der Maus über den Code gefahren wird.
 
-```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
-from time import time
-t0 = time()
-PI = 3.14159265359
-### PRE
-radius = 10
-print(f'Der Umfang eines Kreises mit Radius {radius} beträgt {2 * PI * radius}')
-### POST
-print('----------------------------------------------------------')
-print(f'Die Berechnung dauerte {(time() - t0) * 1000} Millisekunden')
-```
+  ```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
+  from time import time
+  t0 = time()
+  PI = 3.14159265359
+  ### PRE
+  radius = 10
+  print(f'Der Umfang eines Kreises mit Radius {radius} beträgt {2 * PI * radius}')
+  ### POST
+  print('----------------------------------------------------------')
+  print(f'Die Berechnung dauerte {(time() - t0) * 1000} Millisekunden')
+  ```
 </BrowserWindow>
 
 ### Nicht abgespeicherte Code Blocks
@@ -561,33 +559,33 @@ print(f'Die Berechnung dauerte {(time() - t0) * 1000} Millisekunden')
 Wenn keine `id` angegeben ist, wird der Code nicht gespeichert, was mit einem :mdi[flash-triangle-outline]{.orange} und einem orangen Header signalisiert wird.
 Dies ist nützlich, wenn Sie Code-Beispiele haben, die nicht gespeichert werden sollen.
 
-````py
+````md
 ```py live_py
 print('Hello Unpersisted Code Block')
 ```
 ````
-<BrowserWindow>
 
-```py live_py
-print('Hello Unpersisted Code Block')
-```
+<BrowserWindow>
+  ```py live_py
+  print('Hello Unpersisted Code Block')
+  ```
 </BrowserWindow>
 
 #### Hide the Warning (`hideWarning`)
+
 Soll die Warnung ausgeblendet werden, kann der `hideWarning`-Parameter hinzugefügt werden.
 
-````py
+````md
 ```py live_py hideWarning
 print('Hello Unpersisted Code Block')
 ```
 ````
+
 <BrowserWindow>
-
-```py live_py hideWarning
-print('Hello Unpersisted Code Block')
-```
+  ```py live_py hideWarning
+  print('Hello Unpersisted Code Block')
+  ```
 </BrowserWindow>
-
 
 ## Installation
 
@@ -620,13 +618,14 @@ Die neuen Models `Script` und `ScriptVersion` müssen unter `src/api/document.ts
   }
 }
 ```
+
 hinzufügen mit:
-```bash	
+
+```bash
 yarn add ace-builds rc-slider react-ace react-diff-viewer-continued react-draggable svg-parser
 yarn add --dev @types/fs-extra @types/svg-parser fs-extra
 ```
 :::
-
 
 :::info[`docusaurus.config.ts`]
 ```ts
@@ -645,6 +644,7 @@ const config: Config = {
     ],
 }
 ```
+
 Wobei
 
 `libDir`
@@ -659,7 +659,6 @@ Wobei
 : die URL zur JS-Brython-Standardbibliothek
 :::
 
-
 ## Eigene Brython Bibliotheken
 
 Es können eigene Python-Bibliotheken hinzugefügt werden - normale Python-Files, die unter `libDir` (Standard: `src/static/bry-libs/`) abgelegt sind. Diese können dann in den Code-Blöcken normal importiert werden.
@@ -672,6 +671,7 @@ speak('Hallo, es ist Winter!')
 ```
 
 Die Sprachausgabe kann angepasst werden:
+
 ```py live_py slim
 from speech import speak
 ### PRE
@@ -682,7 +682,9 @@ speak('Jetzt höher', lang='de-DE', pitch=2) # max 2
 speak('Jetzt tiefer', lang='de-DE', pitch=0.1) # min 0.1
 speak('Jetzt leiser', lang='de-DE', volume=0.5) # Werte zwischen 0 und 1, Standard ist 1
 ```
+
 Es kann auch die __Stimme__ verändert werden, wobei nicht jede Stimme in jedem Browser verfügbar ist.
+
 ```py live_py slim
 from speech import speak, voices
 voices('de-DE') # gibt die verfügbaren Stimmen aus
@@ -690,6 +692,7 @@ speak('Hallo, es ist Winter!', lang='de-DE', voice='Microsoft Katja - German (Ge
 ```
 
 Die __verfügbaren Sprachen__ können mit `languages()` ausgegeben werden.
+
 ```py live_py slim
 from speech import speak, languages
 languages()
@@ -698,10 +701,9 @@ languages()
 :::warning[Browser-Feature]
 Nicht jeder Browser unterstützt das Sprechen von Texten in allen Sprachen.
 :::
-
 ::::
 
-::::def[`cowsay.py`]
+:::def[`cowsay.py`]
 Die bekannte Bibliothek Cowsay[^1] ist unter `src/static/bry-libs/cowsay.py` zu finden. Nach dem Kopieren in den `bry-libs` Ordner, kann sie verwendet werden:
 
 ```py live_py slim
@@ -722,7 +724,6 @@ turkey('turkey')
 turtle('turtle')
 tux('tux')
 ```
-
-::::
+:::
 
 [^1]: [Wikipedia](https://en.wikipedia.org/wiki/Cowsay)
