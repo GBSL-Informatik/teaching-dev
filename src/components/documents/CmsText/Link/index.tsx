@@ -8,9 +8,11 @@ import CmsActions from '../CmsActions';
 import { CmsTextEntries } from '../WithCmsText';
 import { useStore } from '@tdev-hooks/useStore';
 import Link from '@docusaurus/Link';
+import DivSpanWrapper from '@tdev-components/shared/DivSpanWrapper';
 
 interface Props extends DefaultCmsProps {
     children?: React.ReactNode;
+    inline?: boolean;
 }
 
 const CmsLink = observer((props: Props) => {
@@ -21,17 +23,28 @@ const CmsLink = observer((props: Props) => {
     const cmsText = useFirstCmsTextDocumentIfExists(documentRootId);
     const actionEntries =
         showActions && documentRootId ? ({ [documentRootId]: documentRootId } as CmsTextEntries) : undefined;
+
     if (!cmsText || (!cmsText.canDisplay && !userStore.isUserSwitched)) {
         return actionEntries ? (
-            <CmsActions entries={actionEntries} className={clsx(styles.codeBlock)} mode="code" />
+            <CmsActions
+                entries={actionEntries}
+                className={clsx(styles.codeBlock)}
+                mode="code"
+                inline={props.inline}
+            />
         ) : null;
     }
     if (actionEntries) {
         return (
-            <div className={clsx(styles.container)}>
-                <CmsActions entries={actionEntries} className={clsx(styles.codeBlock)} mode="code" />
+            <DivSpanWrapper inline={props.inline} className={clsx(styles.container)}>
+                <CmsActions
+                    entries={actionEntries}
+                    className={clsx(styles.codeBlock)}
+                    mode="code"
+                    inline={props.inline}
+                />
                 <Link to={cmsText.text}>{props.children || cmsText.text}</Link>
-            </div>
+            </DivSpanWrapper>
         );
     }
 

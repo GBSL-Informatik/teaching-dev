@@ -7,7 +7,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import { useLocation } from '@docusaurus/router';
 type Props = WrapperProps<typeof ContentType>;
 
-const ContentWrapper = observer((props: Props): JSX.Element => {
+const ContentWrapper = observer((props: Props): React.ReactNode => {
     const pageStore = useStore('pageStore');
     const location = useLocation();
 
