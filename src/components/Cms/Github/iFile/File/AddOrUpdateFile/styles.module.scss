@@ -1,0 +1,18 @@
+.pathInfo {
+    display: flex;
+    flex-direction: column;
+    .label {
+        display: inline-block;
+        width: 4em;
+    }
+}
+.confirm {
+    margin: 0;
+    .confirmButton {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+.addFile {
+    display: flex;
+}

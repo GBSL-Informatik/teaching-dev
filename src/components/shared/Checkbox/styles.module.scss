@@ -1,0 +1,45 @@
+.checkbox {
+    display: flex;
+    .label {
+        display: flex;
+        gap: 0.4em;
+        cursor: pointer;
+        user-select: none;
+        padding: 2px;
+        --cb-color: var(--ifm-color-primary);
+
+        &.disabled {
+            --cb-color: var(--ifm-color-disabled);
+            cursor: not-allowed;
+        }
+
+        input[type='checkbox'] {
+            accent-color: var(--ifm-color-primary);
+            /* Not removed via appearance */
+            margin: 0;
+
+            font: inherit;
+            width: 1.15em;
+            height: 1.15em;
+            border: 0.15em solid var(--cb-color);
+            border-radius: 0.15em;
+            transform: translateY(-0.075em);
+
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            &:focus {
+                outline: 1px solid var(--ifm-color-primary);
+                outline-offset: 1px;
+            }
+            &:disabled {
+                --cb-color: var(--ifm-color-disabled);
+                cursor: not-allowed;
+            }
+        }
+
+        .labelText {
+            line-height: 1;
+        }
+    }
+}

@@ -1,0 +1,21 @@
+.preview {
+    min-width: 2em;
+    max-width: 12em;
+    max-height: 12em;
+    .img {
+        line-height: 0;
+    }
+    .header {
+        padding: 0 2px;
+        padding-bottom: 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+    &:hover {
+        .header {
+            scrollbar-width: thin;
+            padding-bottom: 0px;
+        }
+    }
+}

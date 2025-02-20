@@ -1,0 +1,29 @@
+.branch {
+    display: flex;
+    justify-content: flex-end;
+    border-radius: var(--ifm-global-radius);
+    padding: 2px 0.5em;
+    gap: 0.5em;
+    align-items: center;
+    // justify-self: flex-end;
+    .spacer {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0;
+        min-width: none;
+    }
+    .name {
+        &.compact {
+            max-width: 6em;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-md);
+    }
+}
+
+.createPr {
+    min-width: 15em;
+}

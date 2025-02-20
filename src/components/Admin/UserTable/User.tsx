@@ -60,8 +60,10 @@ const UserTableRow = observer((props: Props) => {
             <td>{formatDateTime(user.createdAt)}</td>
             <td>{formatDateTime(user.updatedAt)}</td>
             <td>
-                {user.studentGroups.map((group) => (
-                    <span className={clsx('badge badge--primary', styles.groupBadge)}>{group.name}</span>
+                {user.studentGroups.map((group, idx) => (
+                    <span className={clsx('badge badge--primary', styles.groupBadge)} key={idx}>
+                        {group.name}
+                    </span>
                 ))}
             </td>
             <td>

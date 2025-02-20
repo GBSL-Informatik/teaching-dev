@@ -1,0 +1,47 @@
+import { CmsSettings, FullCmsSettings } from '@tdev-api/cms';
+import { CmsStore } from '@tdev-stores/CmsStore';
+import _ from 'lodash';
+import { action, computed } from 'mobx';
+import File from './File';
+import iEntry from './iEntry';
+import Dir from './Dir';
+import PartialSettings from './PartialSettings';
+
+class Settings extends PartialSettings {
+    constructor(props: FullCmsSettings, store: CmsStore) {
+        super(props, store);
+    }
+
+    @computed
+    get activeEntry(): File | undefined {
+        if (!this.activePath || !this.activeBranchName) {
+            return;
+        }
+        return this.store.findEntry(this.activeBranchName, this.activePath);
+    }
+
+    @action
+    refreshToken() {
+        this.store.loadSettings();
+    }
+
+    @action
+    setActiveEntry(entry: iEntry) {
+        this.setActiveBranchName(entry.branch, false);
+        this.setActivePath(entry.path, false);
+        if (entry._isFileType) {
+            this.save();
+        } else {
+            (entry as Dir).setOpen(true);
+        }
+    }
+
+    get token(): string {
+        return this._token as string;
+    }
+    get tokenExpiresAt(): Date {
+        return this._tokenExpiresAt as Date;
+    }
+}
+
+export default Settings;

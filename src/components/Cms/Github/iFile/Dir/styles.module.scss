@@ -1,0 +1,22 @@
+.dirName {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .dir {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        gap: 0.25em;
+        user-select: none;
+    }
+    .onHover {
+        display: none;
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-md);
+        .onHover {
+            display: flex;
+        }
+    }
+}

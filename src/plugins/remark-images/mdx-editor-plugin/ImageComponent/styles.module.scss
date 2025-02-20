@@ -1,0 +1,41 @@
+.imageEditor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .imageWrapper {
+        display: inline-block;
+        position: relative;
+        line-height: 0;
+        &[draggable='true'] {
+            cursor: move;
+            /* fallback if grab cursor is unsupported */
+            cursor: grab;
+            cursor: -moz-grab;
+            cursor: -webkit-grab;
+        }
+    }
+}
+:global(.flex-card-container) {
+    :global(.flex-cards) {
+        > :global(.item.card) {
+            > :global(.card__body) {
+                // &:has(
+                //         > div[data-lexical-editor='true']
+                //             > p
+                //             > span:first-of-type
+                //             > div[class^='imageEditor_']
+                //     ) {
+                //     margin: 0;
+                //     padding: 0;
+                //     margin-bottom: 1rem;
+                // }
+                > div[data-lexical-editor='true'] {
+                    > p:nth-child(1) > span > div[class^='imageEditor_'] {
+                        margin: calc(-1 * var(--ifm-card-vertical-spacing) + -1 * var(--spacing-1))
+                            calc(-1 * var(--ifm-card-horizontal-spacing) + -1 * var(--spacing-2));
+                    }
+                }
+            }
+        }
+    }
+}

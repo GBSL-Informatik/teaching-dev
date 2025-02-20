@@ -1,0 +1,45 @@
+.pathNav {
+    max-width: 100%;
+    .breadcrumbNav {
+        max-width: 100%;
+        .breadcrumbs {
+            max-width: 100%;
+        }
+    }
+}
+button.breadcrumbsButton:global(.button) {
+    border-radius: var(--ifm-breadcrumb-border-radius);
+    --ifm-button-background-color: var(--ifm-breadcrumb-item-background-active);
+    --ifm-button-border-color: var(--ifm-breadcrumb-item-border-active);
+    --ifm-button-padding-vertical: 0.3rem;
+    --ifm-button-padding-horizontal: 0.3rem;
+    --ifm-breadcrumb-border-radius: 0.5rem;
+    color: var(--ifm-color-content);
+    min-width: 2em;
+}
+.item {
+    cursor: pointer;
+    &.active {
+        color: var(--ifm-navbar-link-active-color);
+        background: var(--ifm-pagination-item-active-background);
+    }
+}
+:global(.breadcrumbs__item) {
+    --ifm-breadcrumb-border-radius: 0.3rem;
+    --ifm-breadcrumb-padding-vertical: 0.1rem;
+    :global(.dropdown__menu) {
+        display: none;
+    }
+    &:hover {
+        :global(.dropdown__menu) {
+            display: block;
+        }
+    }
+    &:not(:last-child):after {
+        transform: translateY(-3px);
+        --ifm-breadcrumb-spacing: 0.15rem;
+    }
+    > :global(.breadcrumbs__link) {
+        transform: translateY(-2px);
+    }
+}

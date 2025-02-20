@@ -120,4 +120,12 @@ Some content
         "<kbd>ctrl + [x](https://foobar.ch)</kbd> world!
         "`);
     });
+    it('handels html in kbds', async () => {
+        const input = `[[ctrl + <span>a</span>]] world!
+        `;
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+        "<kbd>ctrl + <span>a</span></kbd> world!
+        "`);
+    });
 });

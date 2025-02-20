@@ -8,6 +8,7 @@
     border-color: var(--ifm-button-border-color);
     background: var(--ifm-button-background-color);
     color: var(--ifm-button-color);
+    position: relative;
     &:disabled {
         pointer-events: auto;
     }
@@ -94,6 +95,11 @@
     }
     &.noBorder {
         border: none;
+    }
+    .floatingIcon {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 }
 
