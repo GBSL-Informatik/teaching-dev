@@ -2,11 +2,13 @@
 page_id: 41c6a9c0-61fd-4c97-9375-936f552de079
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # ::audio
 
 Bindet eine lokale Audio-Datei ein.
+
+asdf
 
 ```mdx
 ::audio[./assets/sound.mp3]
@@ -14,8 +16,9 @@ Bindet eine lokale Audio-Datei ein.
 ```
 
 <BrowserWindow>
-::audio[./assets/sound.mp3]
-@by [KAM HESARI - Chill](https://freemusicarchive.org/music/kam-hesari/single/chill-3/)
+  ::audio[./assets/sound.mp3]
+
+  @by [KAM HESARI - Chill](https://freemusicarchive.org/music/kam-hesari/single/chill-3/)
 </BrowserWindow>
 
 ## Optionen
@@ -28,5 +31,5 @@ css Eigenschaften
 ```
 
 <BrowserWindow>
-::audio[./assets/sound.mp3]{marginLeft=auto marginRight=auto display=block}
+  ::audio[./assets/sound.mp3]{marginLeft="auto" marginRight="auto" display="block"}
 </BrowserWindow>
