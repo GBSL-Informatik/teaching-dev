@@ -36,6 +36,16 @@ import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 
+const IsNotUniqueError = (error: any) => {
+    try {
+        const message = error.response.data;
+        // @see https://github.com/GBSL-Informatik/teaching-api/blob/main/src/models/Document.ts#Document.createModel
+        return /FORBIDDEN: \[403\] \[not unique\]/.test(message || '');
+    } catch {
+        return false;
+    }
+};
+
 export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
     store: DocumentStore
@@ -242,7 +252,8 @@ class DocumentStore extends iStore<`delete-${string}`> {
 
     @action
     create<Type extends DocumentType>(
-        model: { documentRootId: string; type: Type } & Partial<DocumentProps<Type>>
+        model: { documentRootId: string; type: Type } & Partial<DocumentProps<Type>>,
+        isMain: boolean = false
     ) {
         const rootDoc = this.root.documentRootStore.find(model.documentRootId);
         if (!rootDoc || rootDoc.isDummy) {
@@ -256,7 +267,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
             model.authorId !== this.root.userStore.current?.id &&
             ADMIN_EDITABLE_DOCUMENTS.includes(model.type);
         return this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
-            return apiCreate<Type>(model, onBehalfOf, sig.signal);
+            return apiCreate<Type>(model, onBehalfOf, isMain, sig.signal);
         })
             .then(
                 action(({ data }) => {
@@ -265,6 +276,13 @@ class DocumentStore extends iStore<`delete-${string}`> {
             )
             .catch((err) => {
                 if (!axios.isCancel(err)) {
+                    if (IsNotUniqueError(err)) {
+                        const docRoot = this.root.documentRootStore.find(model.documentRootId);
+                        if ((docRoot?.mainDocuments?.length || 0) < 1) {
+                            console.log('The main document must be unique - try to load it from the api.');
+                            return this.root.documentRootStore.loadInNextBatch(model.documentRootId);
+                        }
+                    }
                     console.warn('Error creating document', err);
                 }
                 return undefined;

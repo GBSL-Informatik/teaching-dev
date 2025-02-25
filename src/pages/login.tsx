@@ -26,7 +26,6 @@ function HomepageHeader() {
 }
 
 const LoginPage = observer(() => {
-    const sessionStore = useStore('sessionStore');
     const { instance } = useMsal();
     const isAuthenticated = useIsAuthenticated();
     if (isAuthenticated || NO_AUTH) {

@@ -4,7 +4,6 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { CreateDocumentModel } from '@tdev-stores/DocumentStore';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
-import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import { Config } from '@tdev-api/documentRoot';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
@@ -52,12 +51,15 @@ export const useFirstMainDocument = <Type extends DocumentType>(
         }
         if (documentRoot.isLoaded && !documentRoot.isDummy && !documentRoot.firstMainDocument) {
             if (createDocument && documentRoot.hasAdminRWAccess) {
-                documentStore.create({
-                    documentRootId: documentRoot.id,
-                    authorId: userStore.current.id,
-                    type: meta.type,
-                    data: meta.defaultData
-                });
+                documentStore.create(
+                    {
+                        documentRootId: documentRoot.id,
+                        authorId: userStore.current.id,
+                        type: meta.type,
+                        data: meta.defaultData
+                    },
+                    true
+                );
             }
         }
     }, [documentRoot, userStore.current]);

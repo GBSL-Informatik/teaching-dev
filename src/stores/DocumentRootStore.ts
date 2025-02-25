@@ -33,7 +33,7 @@ type LoadConfig = {
 
 type BatchedMeta = {
     load: LoadConfig;
-    meta: TypeMeta<any>;
+    meta?: TypeMeta<any>;
     access: Partial<Config>;
 };
 
@@ -79,7 +79,7 @@ export class DocumentRootStore extends iStore {
     @action
     loadInNextBatch<Type extends DocumentType>(
         id: string,
-        meta: TypeMeta<Type>,
+        meta?: TypeMeta<Type>,
         loadConfig?: LoadConfig,
         accessConfig?: Partial<Config>
     ) {
@@ -175,7 +175,7 @@ export class DocumentRootStore extends iStore {
                         .filter((id) => !this.find(id)?.isLoaded && !current.get(id)!.load.skipCreate)
                         .map((id) => {
                             const config = current.get(id);
-                            if (config) {
+                            if (config && config.meta) {
                                 return this.create(id, config.meta, config.access).catch(() => undefined);
                             }
                             return Promise.resolve(undefined);
@@ -200,6 +200,9 @@ export class DocumentRootStore extends iStore {
 
     @action
     addApiResultToStore(data: ApiDocumentRoot, config: Omit<BatchedMeta, 'access'>) {
+        if (!config.meta) {
+            return;
+        }
         const documentRoot = config.load.documentRoot
             ? new DocumentRoot(data, config.meta, this)
             : this.find(data.id);

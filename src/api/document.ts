@@ -229,9 +229,19 @@ export function find<Type extends DocumentType>(
 export function create<Type extends DocumentType>(
     data: Partial<Document<Type>>,
     onBehalfOf: boolean,
+    isMain: boolean,
     signal: AbortSignal
 ): AxiosPromise<Document<Type>> {
-    return api.post(`/documents${onBehalfOf ? '?onBehalfOf=true' : ''}`, data, { signal });
+    const queryParams: string[] = [];
+    if (onBehalfOf) {
+        queryParams.push('onBehalfOf=true');
+    }
+    if (isMain) {
+        queryParams.push('uniqueMain=true');
+    }
+    return api.post(`/documents${queryParams.length > 0 ? `?${queryParams.join('&')}` : ''}`, data, {
+        signal
+    });
 }
 
 export function remove(id: string, signal: AbortSignal): AxiosPromise<void> {

@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { Configuration, LogLevel } from '@azure/msal-browser';
+import { Configuration, LogLevel, type RedirectRequest } from '@azure/msal-browser';
 import siteConfig from '@generated/docusaurus.config';
 
 export interface CustomFields {
@@ -90,6 +90,6 @@ export const loginRequest = {
  * To learn more about how to work with scopes and resources, see:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
  */
-export const tokenRequest = {
+export const tokenRequest: RedirectRequest = {
     scopes: [...apiConfig.scopes]
 };

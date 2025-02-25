@@ -143,7 +143,9 @@ const config: Config = {
     NO_AUTH: process.env.NODE_ENV !== 'production' && !!process.env.TEST_USERNAME,
     /** The Domain Name where the api is running */
     APP_URL: process.env.NETLIFY
-      ? process.env.DEPLOY_PRIME_URL
+      ? process.env.CONTEXT === 'production' 
+        ? process.env.URL 
+        : process.env.DEPLOY_PRIME_URL
       : process.env.APP_URL || 'http://localhost:3000',
     /** The Domain Name of this app */
     BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
