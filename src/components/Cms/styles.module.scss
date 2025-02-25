@@ -1,0 +1,92 @@
+.cms {
+    --cms-tree-view-width: 0px;
+    --cms-toolbar-top-offset: 60px;
+
+    display: grid;
+    grid-template-areas:
+        'nav nav'
+        'fileTree content'
+        'fileTree footer';
+    grid-template-columns: var(--cms-tree-view-width) minmax(10em, 1fr);
+    grid-template-rows: auto 1fr auto;
+    min-height: 60vh;
+    .header {
+        grid-area: nav;
+        background-color: var(--ifm-background-color);
+        border-top-left-radius: var(--ifm-global-radius);
+        border-top-right-radius: var(--ifm-global-radius);
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+    .fileTree {
+        grid-area: fileTree;
+        .tree {
+            position: sticky;
+            top: var(--cms-toolbar-top-offset);
+            margin: 0;
+            margin-right: 0.5rem;
+            max-height: calc(100vh - var(--cms-toolbar-top-offset));
+            overflow-y: auto;
+            .treeContent {
+                margin-bottom: 2em;
+            }
+        }
+        &:not(.showFileTree) {
+            display: none;
+        }
+    }
+    .content {
+        grid-area: content;
+    }
+    .footer {
+        grid-area: footer;
+    }
+    &.showFileTree {
+        --cms-tree-view-width: 300px;
+    }
+}
+
+@media screen and (max-width: 620px) {
+    .cms {
+        margin: 0 0.5em;
+        .header {
+            justify-content: flex-start;
+        }
+        .fileTree {
+            .tree {
+                .treeContent {
+                    margin-bottom: 5em;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 900px) {
+    .cms {
+        --cms-toolbar-top-offset: 84px;
+        .header {
+            position: sticky;
+            top: 60px;
+            z-index: var(--ifm-z-index-dropdown);
+        }
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .cms {
+        margin: 0 1em;
+    }
+}
+
+@media screen and (min-width: 1320px) {
+    .cms {
+        max-width: var(--ifm-container-width-xl);
+        min-width: min(100%, 1320px);
+        margin: 0 auto;
+        &.showFileTree {
+            max-width: min(100vw, calc(var(--ifm-container-width-xl) + var(--cms-tree-view-width)));
+            min-width: min(100%, calc(var(--ifm-container-width-xl) + var(--cms-tree-view-width)));
+        }
+    }
+}

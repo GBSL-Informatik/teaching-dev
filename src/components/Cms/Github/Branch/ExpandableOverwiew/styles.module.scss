@@ -1,0 +1,30 @@
+.branchState {
+    display: flex;
+    align-items: center;
+    .branch {
+        gap: 0.15em;
+        margin: 0;
+        padding: 0;
+        .name {
+            display: none;
+        }
+    }
+    .branchSpacer {
+        display: none;
+    }
+    &:not(.expanded) {
+        .delete {
+            display: none;
+        }
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .branchState {
+        &:not(.expanded) {
+            .reload {
+                display: none;
+            }
+        }
+    }
+}

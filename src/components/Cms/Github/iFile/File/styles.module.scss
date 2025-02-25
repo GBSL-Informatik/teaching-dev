@@ -1,0 +1,32 @@
+.file {
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 0 0.5em;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .actions {
+        display: flex;
+        min-height: 2.4cap;
+        &.onHover {
+            display: none;
+        }
+    }
+    .fileLink {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+    .fName {
+        text-wrap: break-word;
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-md);
+        .actions {
+            &.onHover {
+                display: flex;
+            }
+        }
+    }
+}

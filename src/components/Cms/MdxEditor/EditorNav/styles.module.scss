@@ -1,0 +1,19 @@
+.editorNav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5em;
+    min-width: 100%;
+    // margin-left: calc(var(--cms-tree-view-width) / 2);
+    // padding-left: var(--cms-tree-view-width);
+    .navLeftSpacer {
+        flex-grow: 0;
+        flex-shrink: 1;
+        flex-basis: var(--cms-tree-view-width);
+    }
+    .spacer {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0;
+    }
+}

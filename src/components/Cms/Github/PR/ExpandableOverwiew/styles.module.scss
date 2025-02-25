@@ -1,0 +1,34 @@
+.PrState {
+    display: flex;
+    align-items: center;
+    .pr {
+        gap: 0.15em;
+        padding: 0;
+        .prName {
+            white-space: nowrap;
+        }
+    }
+    .prSpacer {
+        display: none;
+    }
+    &:not(.expanded) {
+        .prName,
+        .draft,
+        .sync,
+        .rebase,
+        .merge {
+            display: none;
+        }
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .PrState {
+        &:not(.expanded) {
+            .reload,
+            .preview {
+                display: none;
+            }
+        }
+    }
+}

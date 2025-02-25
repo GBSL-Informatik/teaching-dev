@@ -23,7 +23,7 @@ export interface MetaProps {
 
 type Props = WrapperProps<typeof CodeBlockType>;
 
-const sanitizedTitle = (title?: string) => {
+export const sanitizedTitle = (title?: string) => {
     if (!title) {
         return;
     }
@@ -35,7 +35,7 @@ const sanitizedTitle = (title?: string) => {
         .replace(/<<HYPHEN>>/g, '-');
 };
 
-const extractMetaProps = (props: { metastring?: string }): Partial<MetaProps> => {
+export const extractMetaProps = (props: { metastring?: string }): Partial<MetaProps> => {
     const metaString = (props?.metastring || '').replace(/\s*=\s*/g, '='); // remove spaces around =
     const metaRaw = metaString.split(/\s+/).map((s) => s.trim().split('='));
     return metaRaw.reduce(
@@ -70,7 +70,7 @@ export const splitCode = (rawCode: string) => {
     };
 };
 
-export default function CodeBlockWrapper(props: Props & MetaProps): JSX.Element {
+export default function CodeBlockWrapper(props: Props & MetaProps): React.ReactNode {
     const metaProps = extractMetaProps(props);
     const langMatch = ((props.className || '') as string).match(/language-(?<lang>\w*)/);
     let lang = langMatch?.groups?.lang?.toLocaleLowerCase() ?? '';

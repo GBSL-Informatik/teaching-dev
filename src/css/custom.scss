@@ -20,6 +20,8 @@
     --ifm-color-blue-dark: #306cce;
     --ifm-color-blue-darker: #2d66c3;
     --ifm-color-disabled: #6e6e6e;
+    --ifm-color-violet: #8957e5;
+    --ifm-color-boxed: #3348b5;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -28,10 +30,11 @@
     --ifm-global-shadow-lw: 0 1px 2px 0 rgba(0, 255, 234, 0.2);
     --ifm-global-shadow-md: 0 5px 40px rgba(0, 255, 234, 0.2);
     --ifm-global-shadow-tl: 0 12px 28px 0 rgba(0, 255, 234, 0.2), 0 2px 4px 0 rgba(0, 255, 234, 0.1);
+    --ifm-color-boxed: #8395ef;
 }
 
 strong.boxed {
-    color: #3348b5;
+    color: var(--ifm-color-boxed);
     font-weight: normal;
     border: 1px solid var(--ifm-color-gray-600);
     padding: 1px 0.4em 1px 0.3em;
@@ -41,12 +44,7 @@ strong.boxed {
     line-height: initial;
 }
 
-html[data-theme='dark'] {
-    strong.boxed {
-        color: #8395ef;
-    }
-}
-
+.mdxeditor,
 .markdown {
     dl {
         dd,
@@ -165,4 +163,8 @@ div.flex {
 
 .popup-content {
     max-width: 98%;
+}
+
+.popup-overlay {
+    max-width: 100vw;
 }

@@ -1,0 +1,18 @@
+.directory {
+    --ifm-list-left-padding: 1.25em;
+    margin: 2em;
+    &.compact {
+        --ifm-list-left-padding: 0.5em;
+    }
+    .cardBody {
+        padding-top: 0.25em;
+        .dirTree {
+            padding-left: 0;
+        }
+    }
+}
+@media screen and (max-width: 620px) {
+    .directory {
+        margin: 0.5em;
+    }
+}

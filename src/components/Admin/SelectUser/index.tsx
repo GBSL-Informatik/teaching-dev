@@ -54,7 +54,6 @@ const SelectUser = observer((props: Props) => {
         if (props.onChange) {
             props.onChange(ids);
         }
-        console.log(ids);
     }, [ids]);
 
     /**

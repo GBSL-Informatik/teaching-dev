@@ -56,16 +56,25 @@
     --ifm-color-primary-dark: var(--ifm-color-blue-dark);
     --ifm-color-primary-darker: var(--ifm-color-blue-darker);
     --button-separator-color: var(--ifm-color-secondary);
-    // &:hover {
-    //     --ifm-button-background-color: var(--ifm-color-blue-dark);
-    //     --ifm-button-border-color: var(--ifm-color-blue-dark);
-    // }
 }
 .buttonBlack {
     --ifm-color-primary: var(--ifm-font-color-base);
     --ifm-color-primary-darker: var(--ifm-font-color-base);
+    &:hover {
+        --ifm-button-color: var(--ifm-color-white);
+        --baseTextContrast: var(--ifm-color-white);
+    }
 }
 .buttonPrimary {
     color: var(--ifm-color-primary);
     --ifm-badge-background-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] {
+    .buttonBlack {
+        &:hover {
+            --ifm-button-color: var(--ifm-color-black);
+            --baseTextContrast: var(--ifm-color-black);
+        }
+    }
 }

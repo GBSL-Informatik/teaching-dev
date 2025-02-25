@@ -4,7 +4,7 @@ import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '../helpers';
 import { Link, Root, Text } from 'mdast';
 
-enum LeafDirectiveName {
+export enum LeafDirectiveName {
     VIDEO = 'video',
     AUDIO = 'audio',
     YOUTUBE = 'youtube',

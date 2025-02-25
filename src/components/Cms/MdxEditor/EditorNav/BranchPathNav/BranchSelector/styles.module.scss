@@ -1,0 +1,21 @@
+.menuCard {
+    box-shadow: var(--ifm-global-shadow-tl);
+
+    .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2em;
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 0.2em;
+            &.newBranch {
+                border-top: 1px solid var(--ifm-color-emphasis-300);
+                &:not(:hover) {
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 0;
+                }
+            }
+        }
+    }
+}

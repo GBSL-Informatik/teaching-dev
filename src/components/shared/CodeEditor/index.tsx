@@ -10,10 +10,12 @@ import 'ace-builds/src-noconflict/mode-svg';
 import 'ace-builds/src-noconflict/theme-dracula';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
+import 'ace-builds/esm-resolver';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
-    py: 'python'
+    py: 'python',
+    ts: 'typescript'
 };
 
 interface Props {
@@ -27,9 +29,19 @@ interface Props {
     maxLines?: number;
     readonly?: boolean;
     name?: string;
+    placeholder?: string;
+    hideLineNumbers?: boolean;
 }
 
 const CodeEditor = (props: Props) => {
+    const ref = React.useRef<AceEditor>(null);
+    React.useEffect(() => {
+        if (props.value !== undefined && ref.current) {
+            if (props.value !== ref.current.editor.getValue()) {
+                ref.current.editor.setValue(props.value);
+            }
+        }
+    }, [ref, props.value]);
     return (
         <div className={clsx(styles.editor, props.className)}>
             <AceEditor
@@ -40,6 +52,7 @@ const CodeEditor = (props: Props) => {
                     fontSize: 'var(--ifm-code-font-size)',
                     fontFamily: 'var(--ifm-font-family-monospace)'
                 }}
+                ref={ref}
                 fontSize={'var(--ifm-code-font-size)'}
                 focus={!!props.focus}
                 navigateToFileEnd={false}
@@ -54,9 +67,10 @@ const CodeEditor = (props: Props) => {
                 }}
                 readOnly={props.readonly}
                 value={props.value}
-                defaultValue={props.defaultValue || '\n'}
+                defaultValue={props.defaultValue ?? '\n'}
                 name={props.name}
                 editorProps={{ $blockScrolling: true }}
+                placeholder={props.placeholder}
                 setOptions={{
                     displayIndentGuides: true,
                     vScrollBarAlwaysVisible: false,
@@ -67,7 +81,7 @@ const CodeEditor = (props: Props) => {
                 enableBasicAutocompletion
                 enableLiveAutocompletion={false}
                 enableSnippets={false}
-                showGutter={true}
+                showGutter={!props.hideLineNumbers}
             />
         </div>
     );

@@ -1,0 +1,8 @@
+.menuCard {
+    box-shadow: var(--ifm-global-shadow-tl);
+    .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2em;
+    }
+}

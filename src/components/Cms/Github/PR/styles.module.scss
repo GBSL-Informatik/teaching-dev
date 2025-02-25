@@ -1,0 +1,23 @@
+.PR {
+    display: flex;
+    justify-content: flex-end;
+    border-radius: var(--ifm-global-radius);
+    gap: 0.5em;
+    align-items: center;
+    .link {
+        &.compact {
+            max-width: 6em;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+    .spacer {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0;
+        min-width: none;
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-md);
+    }
+}

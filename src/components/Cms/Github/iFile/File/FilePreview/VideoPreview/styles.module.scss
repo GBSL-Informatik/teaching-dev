@@ -1,0 +1,23 @@
+.preview {
+    min-width: 2em;
+    max-width: 30em;
+    max-height: 25em;
+    .videoContainer {
+        line-height: 0;
+        .video {
+            max-width: 100%;
+        }
+    }
+    .header {
+        padding: 0 2px;
+        padding-bottom: 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+    &:hover {
+        .header {
+            scrollbar-width: thin;
+        }
+    }
+}

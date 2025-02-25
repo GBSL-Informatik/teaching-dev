@@ -86,7 +86,7 @@ const EditorAce = observer(() => {
                 }}
                 readOnly={script.meta.readonly || script.showRaw}
                 value={script.showRaw ? script.pristineCode : script.code}
-                defaultValue={script.code || '\n'}
+                defaultValue={script?.code || '\n'}
                 name={DOM_ELEMENT_IDS.aceEditor(script.codeId)}
                 editorProps={{ $blockScrolling: true }}
                 setOptions={{

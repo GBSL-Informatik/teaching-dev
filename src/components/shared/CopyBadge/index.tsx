@@ -1,8 +1,9 @@
 import clsx from 'clsx';
 import * as React from 'react';
 import styles from './styles.module.scss';
-import { mdiClipboardCheck, mdiClipboardText, mdiCloseCircle, mdiLoading } from '@mdi/js';
-import Icon from '@mdi/react';
+import { mdiCircle, mdiClipboardCheck, mdiClipboardText, mdiCloseCircle, mdiLoading } from '@mdi/js';
+import Icon, { Stack } from '@mdi/react';
+import { Color, getType } from '../Badge';
 
 type CopyState = 'none' | 'spin' | 'copied' | 'error';
 const CopyIcon: { [key in CopyState]: string } = {
@@ -22,6 +23,7 @@ interface Props {
     label?: string;
     size?: number;
     className?: string;
+    color?: Color;
 }
 
 const CopyBadge = (props: Props) => {
@@ -37,7 +39,12 @@ const CopyBadge = (props: Props) => {
 
     return (
         <span
-            className={clsx(styles.copyBadge, props.className, 'badge', 'badge--secondary')}
+            className={clsx(
+                styles.copyBadge,
+                props.className,
+                'badge',
+                `badge--${getType(props.color) || 'secondary'}`
+            )}
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -55,7 +62,10 @@ const CopyBadge = (props: Props) => {
         >
             {props.label || props.value}
             <span className={clsx(styles.copyIcon)}>
-                <Icon path={CopyIcon[copyState]} size={props.size || 0.6} color={CopyColor[copyState]} />
+                <Stack size={props.size || 0.7}>
+                    <Icon path={mdiCircle} size={props.size || 0.75} color={'var(--ifm-color-secondary)'} />
+                    <Icon path={CopyIcon[copyState]} size={props.size || 0.6} color={CopyColor[copyState]} />
+                </Stack>
             </span>
         </span>
     );

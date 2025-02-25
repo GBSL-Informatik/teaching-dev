@@ -1,0 +1,26 @@
+.navItem {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.2em;
+    border-radius: var(--ifm-badge-border-radius);
+    color: var(--ifm-color-content);
+    background-color: var(--ifm-breadcrumb-item-background-active);
+    cursor: pointer;
+    padding: 2px 8px;
+    margin-top: var(--cms-nav-margin-vertical);
+    margin-bottom: var(--cms-nav-margin-vertical);
+
+    font-size: var(--cms-nav-font-size);
+    font-weight: var(--ifm-font-weight-bold);
+    &:hover {
+        background-color: var(--ifm-color-gray-300);
+    }
+    &.active {
+        color: var(--ifm-link-color);
+        text-decoration: var(--ifm-link-decoration);
+        &:hover {
+            text-decoration: var(--ifm-link-hover-decoration);
+        }
+    }
+}

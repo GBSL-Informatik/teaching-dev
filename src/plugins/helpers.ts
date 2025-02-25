@@ -133,9 +133,14 @@ export const dashedString = (camelCased: string): string => {
     }, camelCased);
 };
 
+/**
+ * style, className and jsxAttributes have distinct keys
+ * attributes contains everything.
+ */
 export interface Options {
     style: { [key: string]: string | boolean };
     className: string;
+    jsxAttributes: { [key: string]: string | number | boolean };
     attributes: { [key: string]: string | number | boolean };
 }
 
@@ -151,28 +156,34 @@ export const transformAttributes = (
     const options: Options = {
         style: {},
         className: '',
-        attributes: {}
+        attributes: {},
+        jsxAttributes: {}
     };
     for (const [key, value] of Object.entries(attributes)) {
         let k = key;
         if (k in keyAliases) {
             k = keyAliases[k];
         }
-        if (KnownCssProperties.includes(dashedString(k))) {
-            options.style[camelCased(k)] = value === '' ? true : !value ? false : value;
-        } else if (k === 'className' && value) {
-            options.className = value;
-        }
-        options.attributes[k] =
+        const val =
             value === 'true'
                 ? true
                 : value === 'false'
                   ? false
-                  : value === '' || value === null || value === undefined
-                    ? ''
-                    : !Number.isNaN(Number(value))
-                      ? Number(value)
-                      : value;
+                  : value === ''
+                    ? true
+                    : value === null || value === undefined
+                      ? ''
+                      : !Number.isNaN(Number(value))
+                        ? Number(value)
+                        : value;
+        if (KnownCssProperties.includes(dashedString(k))) {
+            options.style[camelCased(k)] = typeof val === 'number' ? `${val}` : val;
+        } else if (k === 'className' && value) {
+            options.className = value;
+        } else {
+            options.jsxAttributes[k] = val;
+        }
+        options.attributes[k] = val;
     }
     return options;
 };
@@ -208,19 +219,24 @@ export const requireDefaultMdastNode = (key: string, src: string) => {
     });
 };
 
-export const cleanedText = (rawText: string) => {
-    return rawText
+export const cleanedText = (rawText: string, trim: boolean = true) => {
+    const cleaned = rawText
         .replace(new RegExp(OPTION_REGEX, 'g'), '')
-        .replace(new RegExp(BOOLEAN_REGEX, 'g'), '')
-        .trim();
+        .replace(new RegExp(BOOLEAN_REGEX, 'g'), '');
+    return trim ? cleaned.trim() : cleaned;
 };
+
+export interface ParsedOptions {
+    className?: string;
+    [key: string]: string | boolean | number | undefined;
+}
 
 export const parseOptions = (
     rawText: string,
     transform2CamelCase = false,
     keyAliases: { [key: string]: string } = {}
 ) => {
-    const css = {};
+    const options: ParsedOptions = {};
     let raw = rawText;
     const optKey = (key: string) => {
         let k = key;
@@ -237,7 +253,7 @@ export const parseOptions = (
         raw = raw.replace(OPTION_REGEX, '');
         const { key, value } = match?.groups || {};
         if (key) {
-            (css as any)[optKey(key)] = value;
+            (options as any)[optKey(key)] = value;
         }
     }
     while (BOOLEAN_REGEX.test(raw)) {
@@ -245,8 +261,8 @@ export const parseOptions = (
         raw = raw.replace(BOOLEAN_REGEX, '');
         const { key } = match?.groups || {};
         if (key) {
-            (css as any)[optKey(key)] = true;
+            (options as any)[optKey(key)] = true;
         }
     }
-    return css;
+    return options;
 };

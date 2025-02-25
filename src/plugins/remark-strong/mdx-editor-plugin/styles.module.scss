@@ -1,0 +1,17 @@
+.boxEditor {
+    // border: 1px solid red;
+    margin: 0 1px;
+    border-radius: var(--ifm-global-radius);
+    .boxed {
+        display: inline-block;
+        border: 1px solid var(--ifm-color-boxed);
+        padding: 0px 0.4em;
+        border-radius: var(--ifm-global-radius);
+        > p {
+            display: inline;
+            > br {
+                display: none;
+            }
+        }
+    }
+}

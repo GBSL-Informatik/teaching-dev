@@ -1,0 +1,30 @@
+.gallery {
+    overflow-y: auto;
+    max-height: 15em;
+    position: relative;
+    .header {
+        position: sticky;
+        top: calc(-1 * var(--ifm-card-vertical-spacing) - 6px);
+        h4 {
+            background-color: var(--ifm-card-background-color);
+            display: inline-block;
+            border-radius: var(--ifm-global-radius);
+            padding-right: 8px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+    .imageGallery {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        .image {
+            cursor: pointer;
+            border-radius: var(--ifm-card-border-radius);
+            &:hover {
+                box-shadow: var(--ifm-global-shadow-md);
+            }
+        }
+    }
+}

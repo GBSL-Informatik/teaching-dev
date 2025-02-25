@@ -1,0 +1,12 @@
+.attributes {
+    display: flex;
+    gap: 0.25em;
+    overflow-x: auto;
+    .badge {
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        display: inline-block;
+    }
+}

@@ -13,6 +13,7 @@
             "@tdev-hooks/*": ["src/hooks/*"],
             "@tdev-models/*": ["src/models/*"],
             "@tdev-stores/*": ["src/stores/*"],
+            "@tdev-plugins/*": ["src/plugins/*"],
             "@tdev-api/*": ["src/api/*"],
             "@tdev/*": ["src/*"],
             "@site/*": ["./*"]

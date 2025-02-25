@@ -1,0 +1,28 @@
+.imageDialog {
+    max-height: 80vh;
+    max-width: 95vw;
+    .body {
+        overflow-y: auto;
+    }
+    .preview {
+        .previewImage {
+            max-height: 12em;
+            width: 100%;
+            object-fit: contain;
+            cursor: pointer;
+            border: 3px dashed var(--ifm-color-success);
+            border-radius: var(--ifm-card-border-radius);
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            box-shadow: var(--ifm-global-shadow-md);
+            &:hover {
+                box-shadow: var(--ifm-global-shadow-tl);
+            }
+        }
+    }
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+}
