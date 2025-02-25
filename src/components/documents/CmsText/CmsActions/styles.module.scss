@@ -1,4 +1,9 @@
 .actions {
     display: flex;
     gap: 0.25em;
+    &.inline {
+        display: inline-flex;
+        padding: 0 0.25em;
+        gap: 0;
+    }
 }

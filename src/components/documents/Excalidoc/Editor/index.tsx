@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { MetaInit, ModelMeta } from '@site/src/models/documents/Excalidoc';
+import { MetaInit } from '@site/src/models/documents/Excalidoc';
 import type {
     ExcalidrawImperativeAPI,
     LibraryItems,
@@ -11,7 +11,6 @@ import { reaction } from 'mobx';
 import { useColorMode } from '@docusaurus/theme-common';
 import type { default as ExcalidrawLib } from '@excalidraw/excalidraw';
 import _ from 'lodash';
-import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { DocumentType } from '@tdev-api/document';
 

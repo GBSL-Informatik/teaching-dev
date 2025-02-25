@@ -17,7 +17,7 @@ interface Props {
 
 const IMG_STYLE_PROPS = ['width', 'maxWidth', 'maxHeight', 'height'];
 
-export default function Figure(props: Props): JSX.Element {
+export default function Figure(props: Props): React.ReactNode {
     const ref = React.useRef<HTMLElement>(null);
     const opts = { ...props.options };
     if (opts) {

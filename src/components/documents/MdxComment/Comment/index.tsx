@@ -49,7 +49,7 @@ const Comment = observer((props: Props) => {
                         comment.setIsOpen(!comment.isOpen);
                     }}
                 >
-                    <Stack size={1}>
+                    <Stack size={1} color={null}>
                         <Icon
                             path={comment.isOpen ? mdiCommentAccountOutline : mdiCommentAccount}
                             size={1}
@@ -85,7 +85,7 @@ const Comment = observer((props: Props) => {
                                 comment.setOptionsOpen(!comment.optionsOpen);
                             }}
                         >
-                            <Stack size={1}>
+                            <Stack size={1} color={null}>
                                 <Icon
                                     path={
                                         comment.optionsOpen
