@@ -3,11 +3,14 @@ page_id: e1405533-17b1-46d8-9168-97c6c0d1f362
 sidebar_position: 1
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # Bilder
 
 Bilder können im Markdown-Style eingebunden werden. Der `alt`-Text wird automatisch als Bildunterschrift hinzugefügt, wobei zusätzliche Eigenschaften wie die Breite oder Höhe des Bildes zuerst extrahiert werden. Zudem wird eine Quellenangabe hinzugefügt, falls sich beim Bildpfad ein gleichnamiges `.json`-File befindet, welches die Bildinformationen enthält.
+
+![--width=465](./images/binary-counter.gif)
 
 ```md
 ![Streetfood Festival --width=300px](../images/street-food.jpg)
@@ -26,43 +29,47 @@ mit einem gleichnamigen `.json`-File:
 ```
 
 <BrowserWindow>
-![Streetfood Festival --width=450px](../images/street-food.jpg)
+  ![Streetfood Festival Streetfood Festival --width=450px](../images/street-food.jpg)
 </BrowserWindow>
 
 ## Inlining der Quellenangabe
-Wenn keine Bildunterschrift angegeben wird, wird die Quellenangabe automatisch _inlined_ (also in das Bild hineinverschoben):
+
+Wenn keine Bildunterschrift angegeben wird, wird die Quellenangabe automatisch *inlined* (also in das Bild hineinverschoben):
 
 ```md
 ![--width=450px](../images/street-food.jpg)
 ```
 
 <BrowserWindow>
-![--width=450px](../images/street-food.jpg)
+  ![--width=450px](../images/street-food.jpg)
 </BrowserWindow>
 
 Dieses Verhalten kann mit der Plugin-Option `inlineEmptyCaptions: false` deaktiviert werden ([siehe unten](#automatisches-inlining-deaktivieren)).
 
 Zudem kann das Inlining der Quellenangabe (und Bildunterschrift, falls vorhanden) mit der Option `--inlineCaption` auch für ein einzelnes Bild erzwingen oder verhindert werden:
 
- ```md
+```md
 ![Schneebedeckte Strasse --width=450px --inlineCaption={true}](../images/snowy-street.jpg)
 ```
 
 <BrowserWindow>
-![Schneebedeckte Strasse --width=450px --inlineCaption={true}](../images/snowy-street.jpg)
+  ![Schneebedeckte Strasse Schneebedeckte Strasse --width=450px --inlineCaption=true](../images/snowy-street.jpg)
 </BrowserWindow>
 
 ## Formatierung der Bildunterschrift
+
 Die Bildunterschrift kann mit gängigen Markdown-Formatierungen wie **Fett**, *Kursiv* oder `Code` versehen werden
 
 ```md
 ![**Fett**, *Kursiv*, :mdi[laptop]{.red}, __boxed__, `Code` und [Links](#) --width=450px](./images/fat-cursive-code.jpg)
 ```
+
 <BrowserWindow>
-![**Fett**, *Kursiv*, :mdi[laptop]{.red}, __boxed__, `Code` und [Links](#formatierung-der-bildunterschrift) --width=450px](./images/fat-cursive-code.jpg)
+  ![**Fett**, *Kursiv*, :mdi[laptop]{.red}, __boxed__, `Code` und [Links](#formatierung-der-bildunterschrift) Fett, Kursiv, laptop, boxed, Code und Links --width=450px](./images/fat-cursive-code.jpg)
 </BrowserWindow>
 
 ## Markdown Inline-Bilder (`@inline`)
+
 Bilder mit Unterschriften (= HTML `<figure>`s mit `<figcaption>`s) dürfen nicht innerhalb von Paragraphen `<p>` vorkommen. Standardmässig werden Bilder deshalb immer in eigene Block-Elemente umgewandelt. Mit der Option `@inline` können Bilder jedoch auch als echte Inline-Elemente gerendert werden, dann aber ohne Bildunterschrift und Quellenangabe.
 
 ```md
@@ -70,7 +77,7 @@ Hallo, das ist nun ein ![@inline](./images/logo.svg) Inline Bild.
 ```
 
 <BrowserWindow>
-Hallo, das ist nun ein ![@inline](./images/logo.svg) Inline Bild.
+  Hallo, das ist nun ein ![@inline](./images/logo.svg) Inline Bild.
 </BrowserWindow>
 
 :::warning[Inline-Bilder]
@@ -91,6 +98,7 @@ Inline-Bilder können nicht mit CSS-Styles, Bildunterschriften oder Quellenangab
 : Plugins, die auf den unprozessierten Markdown-Text zugreifen müssen, funktionieren deshalb nicht.
 : Mit `captionVisitors` können zusätzliche Plugins hinzugefügt werden, die den Alt-Text verarbeiten - für [remark-strong](../remark-strong/index.mdx) ist dies nötig.
 : Standard: `[]`
+
 ## Installation
 
 :::info[Code]
@@ -114,7 +122,6 @@ export default {
 :::
 
 ::::info[`docusaurus.config.ts`]
-
 ```ts
 import imagePlugin from './src/plugins/remark-images/plugin';
 
@@ -126,6 +133,7 @@ const BEFORE_DEFAULT_REMARK_PLUGINS = [
     ]
 ];
 ```
+
 :::details[Konfiguration fürs Zusammenspiel mit [remark-strong](../remark-strong/index.mdx)]
 ```ts title="docusaurus.config.ts" {4-12}
 import { visitor as captionVisitor } from './src/plugins/remark-strong/plugin';
@@ -146,6 +154,7 @@ const BEFORE_DEFAULT_REMARK_PLUGINS = [
 ::::
 
 ### Automatisches Inlining deaktivieren
+
 Um das automatische Inlining von leeren Bildunterschriften zu deaktivieren, können die Plugin-Optionen wie folgt ergänzt werden:
 
 ```ts
@@ -156,9 +165,11 @@ Um das automatische Inlining von leeren Bildunterschriften zu deaktivieren, kön
 ```
 
 ### VS Code
+
 Damit die Bild-Quellen einfach eingefügt werden können, kann folgendes Snippet unter hinzugefügt werden. So wird beim Eintippen von `src` in einem `.json`-File automatisch die Quellenangabe eingefügt.
+
 :::details[`.vscode/json.code-snippets`]
-```json	title=".vscode/json.code-snippets"
+```json title=".vscode/json.code-snippets"
 {
 	// Place your ofi-blog workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
 	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
