@@ -14,7 +14,7 @@ interface Props {
     documentRoot: DocumentRoot<DocumentType.DynamicDocumentRoot>;
 }
 
-const TextMessages = observer((props: Props): JSX.Element => {
+const TextMessages = observer((props: Props): React.ReactNode => {
     const { documentRoot, roomProps: dynamicDocumentRoot } = props;
     if (documentRoot.id !== dynamicDocumentRoot.id) {
         return <></>;

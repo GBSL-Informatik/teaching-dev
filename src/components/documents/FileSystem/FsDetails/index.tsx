@@ -31,7 +31,7 @@ export type DetailsProps = {
     lazy?: boolean;
 } & ComponentProps<'details'>;
 
-const FsDetails = ({ summary, model, lazy, children, ...props }: DetailsProps): JSX.Element => {
+const FsDetails = ({ summary, model, lazy, children, ...props }: DetailsProps): React.ReactNode => {
     const isBrowser = useIsBrowser();
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const summaryElement = React.isValidElement(summary) ? summary : <summary>{summary}</summary>;
