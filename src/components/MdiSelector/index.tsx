@@ -5,6 +5,7 @@ import Icon from '@mdi/react';
 import * as Mdi from '@mdi/js';
 import _ from 'lodash';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
+import TextInput from '@tdev-components/shared/TextInput';
 
 export default function MdiSelector(): React.ReactNode {
     const [showNr, setShowNr] = React.useState(300);
@@ -24,7 +25,7 @@ export default function MdiSelector(): React.ReactNode {
     return (
         <div>
             <div className={clsx(styles.header)}>
-                <input
+                <TextInput
                     type="text"
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
