@@ -60,9 +60,9 @@ const File = observer((props: Props) => {
                         disabled={cmsStore.isOnDefaultBranch}
                         text={''}
                         title={
-                            cmsStore.isOnDefaultBranch
-                                ? `Es können keine Dateien im ${cmsStore.github?.defaultBranchName || 'main'}-Branch gelöscht werden.`
-                                : undefined
+                            cmsStore.canModifyActiveBranch
+                                ? undefined
+                                : `Es können keine Dateien im ${cmsStore.github?.defaultBranchName || 'main'}-Branch gelöscht werden.`
                         }
                         size={BUTTON_SIZE}
                     />

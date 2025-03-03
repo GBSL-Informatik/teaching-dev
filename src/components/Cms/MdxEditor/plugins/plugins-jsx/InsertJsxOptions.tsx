@@ -18,6 +18,8 @@ import {
     mdiInvoiceTextSendOutline,
     mdiMathIntegral,
     mdiMathIntegralBox,
+    mdiQrcode,
+    mdiQrcodeScan,
     mdiTextBox
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
@@ -81,6 +83,14 @@ export const InsertJsxElements = () => {
                     {
                         label: <Button icon={mdiCheckboxOutline} text="State Answer" iconSide="left" />,
                         value: 'StateAnswer'
+                    },
+                    {
+                        label: <Button icon={mdiQrcode} text="QR Code" iconSide="left" />,
+                        value: 'QrGenerator'
+                    },
+                    {
+                        label: <Button icon={mdiQrcodeScan} text="QR Scanner" iconSide="left" />,
+                        value: 'QrScanner'
                     }
                 ]}
                 title="Insert JSX Elements"
@@ -91,6 +101,20 @@ export const InsertJsxElements = () => {
                                 case 'DocCardList':
                                     insertJsx({
                                         name: 'DocCardList',
+                                        kind: 'flow',
+                                        props: {}
+                                    });
+                                    break;
+                                case 'QrScanner':
+                                    insertJsx({
+                                        name: 'Scanner',
+                                        kind: 'flow',
+                                        props: {}
+                                    });
+                                    break;
+                                case 'QrGenerator':
+                                    insertJsx({
+                                        name: 'Generator',
                                         kind: 'flow',
                                         props: {}
                                     });

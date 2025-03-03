@@ -136,6 +136,14 @@ export class CmsStore extends iStore<`update-settings` | `load-settings` | `load
     }
 
     @computed
+    get canModifyActiveBranch() {
+        if (this.root.userStore.current?.isAdmin) {
+            return true;
+        }
+        return !this.isOnDefaultBranch;
+    }
+
+    @computed
     get isOnDefaultBranch() {
         return !!this.activeBranch?.isDefault;
     }

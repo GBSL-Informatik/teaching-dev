@@ -692,7 +692,7 @@ class Github {
         }
         const old = this.store.findEntry(branch, file.path);
         if (old) {
-            if (file.type === 'file_stub' && old.sha === file.sha) {
+            if (file.type === old.type && old.sha === file.sha) {
                 return;
             }
             this.entries.get(branch)!.remove(old);

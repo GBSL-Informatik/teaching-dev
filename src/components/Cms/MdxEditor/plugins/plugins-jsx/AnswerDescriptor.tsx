@@ -1,13 +1,15 @@
 import React from 'react';
 import { JsxComponentDescriptor, JsxPropertyDescriptor } from '@mdxeditor/editor';
-import RemoveNode from '../../RemoveNode';
+import RemoveNode from '@tdev-components/Cms/MdxEditor/RemoveNode';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { mdiCardTextOutline, mdiCheckboxOutline, mdiFormTextbox, mdiInvoiceTextSendOutline } from '@mdi/js';
-import GenericAttributeEditor, { GenericPropery } from '../../GenericAttributeEditor';
+import GenericAttributeEditor, {
+    GenericPropery
+} from '@tdev-components/Cms/MdxEditor/GenericAttributeEditor';
 import Card from '@tdev-components/shared/Card';
 import { DocumentType } from '@tdev-api/document';
-import { useAttributeEditorInNestedEditor } from '../../hooks/useAttributeEditorInNestedEditor';
+import { useAttributeEditorInNestedEditor } from '@tdev-components/Cms/MdxEditor/hooks/useAttributeEditorInNestedEditor';
 import Answer from '@tdev-components/Answer';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -132,7 +134,6 @@ const AnswerDescriptor: JsxComponentDescriptor = {
             return getAnswerAttributes(answerType);
         }, [answerType]);
         const { onUpdate, values } = useAttributeEditorInNestedEditor(answerAttributes, mdastNode.attributes);
-        console.log(values);
 
         return (
             <Card classNames={{ card: styles.answerCard, body: clsx(styles.answerBody) }}>

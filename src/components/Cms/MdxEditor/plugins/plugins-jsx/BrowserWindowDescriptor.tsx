@@ -8,7 +8,7 @@ import RemoveNode from '../../RemoveNode';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { useAttributeEditorInNestedEditor } from '../../hooks/useAttributeEditorInNestedEditor';
-import { parseExpression } from '../../PropertyEditor/parseValue';
+import { parseExpression } from '../../PropertyEditor/parseExpression';
 
 const props: GenericPropery[] = [
     { name: 'url', type: 'text', required: false, placeholder: 'http://localhost:3000' },

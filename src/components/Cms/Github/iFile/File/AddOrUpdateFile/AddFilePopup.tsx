@@ -32,7 +32,17 @@ const AddFilePopup = observer((props: Props) => {
         <Popup
             trigger={
                 <div className={clsx(styles.addFile, props.className)}>
-                    <Button icon={mdiFilePlus} color="blue" size={0.8} />
+                    <Button
+                        icon={mdiFilePlus}
+                        color="blue"
+                        size={0.8}
+                        disabled={!cmsStore.canModifyActiveBranch}
+                        title={
+                            cmsStore.canModifyActiveBranch
+                                ? undefined
+                                : `Inhalte auf dem ${cmsStore.github?.defaultBranchName}-Branch können nicht direkt modifiziert werden. Branch wechseln!`
+                        }
+                    />
                 </div>
             }
             on="click"
@@ -41,7 +51,7 @@ const AddFilePopup = observer((props: Props) => {
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
         >
             <AddOrUpdateFile
-                onCreateOrUpdate={(path: string) => {
+                onCreateOrUpdate={(path, isUpdate) => {
                     const absPath = resolvePath(dir.path, path);
                     const isMarkdown = /\.mdx?$/i.test(path);
                     const content = isMarkdown ? `---\npage_id: ${uuidv4()}\n---\n` : '\n';
@@ -56,7 +66,7 @@ const AddFilePopup = observer((props: Props) => {
                         .then((file) => {
                             ref.current?.close();
                             if (file) {
-                                cmsStore.setActiveEntry(file, true);
+                                cmsStore.setActiveEntry(file);
                             }
                             return { state: ApiState.SUCCESS };
                         })

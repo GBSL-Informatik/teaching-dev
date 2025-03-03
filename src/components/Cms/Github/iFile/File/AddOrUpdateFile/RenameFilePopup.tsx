@@ -37,7 +37,7 @@ const RenameFilePopup = observer((props: Props) => {
                         icon={mdiFileEdit}
                         color="orange"
                         size={props.size || 0.8}
-                        disabled={props.disabled}
+                        disabled={props.disabled || !cmsStore.canModifyActiveBranch}
                     />
                 </div>
             }
@@ -54,7 +54,7 @@ const RenameFilePopup = observer((props: Props) => {
         >
             <AddOrUpdateFile
                 file={file}
-                onCreateOrUpdate={(fileName: string) => {
+                onCreateOrUpdate={(fileName, isUpdate) => {
                     const newPath = resolvePath(file.parentPath || '', fileName);
                     if (!file.isLoadedFile()) {
                         return Promise.resolve({ state: ApiState.ERROR, message: 'File not loaded' });
@@ -78,12 +78,7 @@ const RenameFilePopup = observer((props: Props) => {
                         })
                         .then((movedFile) => {
                             if (movedFile) {
-                                // cmsStore.fetchFile(movedFile).then((reloadedFile) => {
-                                //     if (reloadedFile) {
-                                //         reloadedFile.openRecursive();
-                                //     }
-                                // });
-                                // cmsStore.setActiveEntry(movedFile, true);
+                                cmsStore.setActiveEntry(movedFile);
                             }
                             ref.current?.close();
                             return { state: ApiState.SUCCESS };
