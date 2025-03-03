@@ -124,12 +124,12 @@ const getCopyPlugin = (
 
 
 const config: Config = {
-  title: 'Teaching-Dev',
-  tagline: 'Dogfooding Teaching Features',
+  title: 'Rätsel der Naturwissenschaften',
+  tagline: 'MINT Woche der 26e',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://teaching-dev.gbsl.website',
+  url: 'https://mint-26e.gbsl.website',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -137,7 +137,7 @@ const config: Config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'gbsl-informatik', // Usually your GitHub org/user name.
-  projectName: 'teaching-dev', // Usually your repo name.
+  projectName: 'MINT-26e', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -261,16 +261,7 @@ const config: Config = {
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
         },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            '/cms/',
-            remarkPlugins: REMARK_PLUGINS,
-            rehypePlugins: REHYPE_PLUGINS,
-          beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-        },
+        blog: false,
         pages: {
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
@@ -286,37 +277,23 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/social-card.jpg',
+    image: 'img/social-card.png',
     navbar: {
-      title: 'Teaching Dev',
+      title: 'MINT Woche 26e',
       logo: {
-        alt: 'Teaching Dev Logo',
-        src: 'img/logo.svg',
+        alt: 'MINT 26e',
+        src: 'img/logo.png',
       },
       items: [
-        {
-          to: '/docs/gallery',
-          label: 'Galerie',
-          position: 'left',
-        },
-        { to: '/blog', label: 'Blog', position: 'left' },
         {
           to: '/cms',
           label: 'CMS',
           position: 'left',
         },
         {
-          href: 'https://github.com/GBSL-Informatik/teaching-dev',
+          href: 'https://github.com/GBSL-Informatik/MINT-26e',
           label: 'GitHub',
           position: 'right',
-        },
-        {
-          type: 'custom-taskStateOverview',
-          position: 'left'
-        },
-        {
-          type: 'custom-accountSwitcher',
-          position: 'right'
         },
         {
           type: 'custom-loginProfileButton',
@@ -328,23 +305,23 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Inhalt',
           items: [
             {
-              label: 'Galerie',
-              to: '/docs/gallery',
+              label: 'Bearbeiten',
+              to: '/cms',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'Tools',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
+              label: 'Icons finden',
+              to: '/docs/mdi',
             },
           ],
-        },
+        }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
       <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commit/${GIT_COMMIT_SHA}">

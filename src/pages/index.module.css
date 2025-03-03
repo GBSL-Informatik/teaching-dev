@@ -21,3 +21,12 @@
     align-items: center;
     justify-content: center;
 }
+
+.qr {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+    align-items: center;
+    flex-direction: column;
+    gap: 2em;
+}

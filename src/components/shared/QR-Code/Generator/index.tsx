@@ -24,6 +24,7 @@ interface Props {
      * Mdi icon path - will be embedded in svg and transformed to base64
      */
     icon?: string;
+    image?: string;
     iconColor?: string;
     iconSize?: number;
 }
@@ -58,14 +59,16 @@ const Generator = (props: Props) => {
                         size={width}
                         className={clsx(styles.qrImage)}
                         imageSettings={
-                            props.icon && isBrowser
+                            (props.icon || props.image) && isBrowser
                                 ? {
                                       height: props.iconSize ?? 32,
                                       width: props.iconSize ?? 32,
                                       excavate: true,
                                       opacity: 1,
                                       ...(props.qrProps?.imageSettings || {}),
-                                      src: MdiPathToBase64(props.icon, props.iconColor)
+                                      src: props.image
+                                          ? props.image
+                                          : MdiPathToBase64(props.icon!, props.iconColor)
                                   }
                                 : undefined
                         }
