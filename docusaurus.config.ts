@@ -286,11 +286,6 @@ const config: Config = {
       },
       items: [
         {
-          to: '/cms',
-          label: 'CMS',
-          position: 'left',
-        },
-        {
           href: 'https://github.com/GBSL-Informatik/MINT-26e',
           label: 'GitHub',
           position: 'right',
@@ -305,11 +300,20 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Inhalt',
+          title: 'Inhalte Bearbeiten',
           items: [
             {
-              label: 'Bearbeiten',
+              label: 'CMS',
               to: '/cms',
+            },
+          ],
+        },
+        {
+          title: 'Dokumentation',
+          items: [
+            {
+              label: 'Startseite',
+              to: '/docs',
             },
           ],
         },
@@ -324,7 +328,7 @@ const config: Config = {
         }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
-      <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commit/${GIT_COMMIT_SHA}">
+      <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/MINT-26e/commit/${GIT_COMMIT_SHA}">
             ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
       </a>
       `,
