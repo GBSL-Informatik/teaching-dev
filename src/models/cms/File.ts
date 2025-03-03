@@ -13,12 +13,21 @@ class File extends iFile {
     refContent: string;
 
     @observable accessor apiState: ApiState = ApiState.IDLE;
+    /**
+     * can be used as a key for the cms editor component.
+     */
+    @observable accessor resetCounter = 0;
 
     constructor(props: FileProps, store: CmsStore) {
         super(props, store);
         this.content = props.content;
         this._pristine = props.content;
         this.refContent = props.content;
+    }
+
+    @computed
+    get componentKey() {
+        return `${this.branch}-${this.path}-${this.sha}-${this.resetCounter}`;
     }
 
     get canEdit() {
@@ -80,6 +89,7 @@ class File extends iFile {
     reset() {
         if (this._pristine) {
             this.setContent(this._pristine);
+            this.resetCounter++;
         }
     }
 
