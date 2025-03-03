@@ -28,7 +28,7 @@ export default function MdiSelector(): React.ReactNode {
                 <TextInput
                     type="text"
                     value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
+                    onChange={(text) => setFilter(text)}
                     placeholder="🔎 Suche"
                 />
                 <span className={styles.spacer}></span>
