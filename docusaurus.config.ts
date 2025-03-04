@@ -450,7 +450,7 @@ const config: Config = {
     {
       src: 'https://umami.gbsl.website/tell-me.js',
       ['data-website-id']: process.env.UMAMI_ID,
-      ['data-domains']: 'inf.gbsl.website',
+      ['data-domains']: 'mint-26e.gbsl.website',
       async: true,
       defer: true
     }
