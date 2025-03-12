@@ -6,13 +6,15 @@ page_id: 0a663db5-aaa0-40b1-b4e3-2fd80e1c0598
 
 Ein Bild ist ein Rechteck, das sich aus Zeilen und Spalten von Pixeln (Farbpunkte) zusammensetzt.
 
-![Bild mit 25 x 25 Pixeln](./images/bild-25x25.jpg)
+![Bild mit 25 x 25 Pixeln --width=254](./images/bild-25x25.jpg)
 
 Reto hat sich ein Verfahren zur Verschlüsselung von Bildern überlegt. Er verwendet dabei diese zwei Operationen:
 
 ## Operation H
 
 **H** für horizontal
+
+![--width=493.66668701171875](./images/pixel-operation-h.jpg)
 
 In Zeile 1 bleiben die Pixel unverändert. In Zeile 2 rückt jedes Pixel um 1 nach rechts. In Zeile 3 rückt jedes Pixel um 2 nach rechts.
 
@@ -25,6 +27,8 @@ Pixel, die dabei über den rechten Bildrand hinausrücken, werden in derselben Z
 **V** für vertikal
 
 > Jedes Pixel in der n-ten Spalte rückt um n-1 Zeilen nach unten.
+
+![--width=472.666748046875](./images/pixel-operation-v.jpg)
 
 Pixel, die über den unteren Bildrand hinausrücken, werden in derselben Spalte oben wieder eingefügt.
 
