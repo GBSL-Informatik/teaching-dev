@@ -286,6 +286,11 @@ const config: Config = {
       },
       items: [
         {
+          to: '/docs',
+          label: 'Infos',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/GBSL-Informatik/MINT-26e',
           label: 'GitHub',
           position: 'right',
