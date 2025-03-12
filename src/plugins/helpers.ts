@@ -4,6 +4,8 @@ import type { Directive, MemberExpression, ObjectExpression } from 'estree-jsx';
 // matches options in strings: "--width=200px --height=20%" -> {width: '20px', height='20%'}
 const OPTION_REGEX = /(^|\s+)--(?<key>[a-zA-Z\-]+)\s*=\s*(?<value>[\d\S-]+)/;
 const BOOLEAN_REGEX = /(^|\s+)--(?<key>[a-zA-Z\-]+)\s*/;
+// ?: makes an uncaptured group
+const EXTRACT_OPTINS_REGEX = /(^|\s+)--((?:[a-zA-Z\-]+)\s*=\s*(?:[\d\S-]+)|(?:[a-zA-Z\-]+)\s*)/g;
 
 const ALIASES = {
     width: 'minWidth',
@@ -224,6 +226,15 @@ export const cleanedText = (rawText: string, trim: boolean = true) => {
         .replace(new RegExp(OPTION_REGEX, 'g'), '')
         .replace(new RegExp(BOOLEAN_REGEX, 'g'), '');
     return trim ? cleaned.trim() : cleaned;
+};
+
+/**
+ * returns only the options from a string
+ * @example
+ * cleanedOptions('Hello --width=200px --height=20% Options --inline') -> '--width=200px --height=20% --inline'
+ */
+export const extractOptions = (rawText: string) => {
+    return Array.from(rawText.matchAll(EXTRACT_OPTINS_REGEX), (m) => m[0].trim()).join(' ');
 };
 
 export interface ParsedOptions {

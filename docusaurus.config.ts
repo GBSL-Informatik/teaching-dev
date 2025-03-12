@@ -324,7 +324,7 @@ const config: Config = {
         }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
-      <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commit/${GIT_COMMIT_SHA}">
+      <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commits/${GIT_COMMIT_SHA}">
             ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
       </a>
       `,

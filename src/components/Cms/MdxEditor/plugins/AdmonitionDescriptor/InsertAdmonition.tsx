@@ -21,7 +21,6 @@ import { ADMONITION_TYPES } from './AdmonitionTypeSelector/admonitionTypes';
  */
 export const InsertAdmonition = observer(() => {
     const [editor] = useLexicalComposerContext();
-    const cmsStore = useStore('cmsStore');
     const insertDirective = usePublisher(insertDirective$);
     const [iconComponentFor] = useCellValues(iconComponentFor$);
     const t = useTranslation();

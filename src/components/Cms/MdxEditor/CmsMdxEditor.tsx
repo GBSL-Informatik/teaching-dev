@@ -37,8 +37,6 @@ import { DetailsDirectiveDescriptor } from '@tdev-plugins/remark-details/mdx-edi
 import '@mdxeditor/editor/style.css';
 import { InsertAdmonition } from './plugins/AdmonitionDescriptor/InsertAdmonition';
 import { InsertJsxElements } from './plugins/plugins-jsx/InsertJsxOptions';
-import BrowserWindowDescriptor from './plugins/plugins-jsx/BrowserWindowDescriptor';
-import DocCardListDescriptor from './plugins/plugins-jsx/DocCardListDescriptor';
 import { MdiDescriptor } from '@tdev-plugins/remark-mdi/mdx-editor-plugin';
 import {
     CardsDirectiveDescriptor,
@@ -46,7 +44,6 @@ import {
 } from '@tdev-plugins/remark-flex-cards/mdx-editor-plugin';
 import mdiCompletePlugin from '@tdev-plugins/remark-mdi/mdx-editor-plugin/MdiComplete';
 import { ImageCaption, ImageFigure, imagePlugin } from '@tdev-plugins/remark-images/mdx-editor-plugin';
-import { DeflistDescriptor, DdDescriptor, DtDescriptor } from './plugins/plugins-jsx/DeflistDescriptor';
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
@@ -67,9 +64,9 @@ import { mathPlugin } from './plugins/mathPlugin';
 import MediaDescriptors from '@tdev-plugins/remark-media/mdx-editor-plugin';
 import { PdfDescriptor } from '@tdev-plugins/remark-pdf/mdx-editor-plugin/PdfDescriptor';
 import { Asset } from '@tdev-models/cms/Dir';
-import DraggableBlockNode from './plugins/DraggableBlockPlugin/DraggableBlockNode';
 import { draggableBlockPlugin } from './plugins/DraggableBlockPlugin';
 import JsxDescriptors from './plugins/plugins-jsx/JsxDescriptors';
+import { extractOptions } from '@tdev-plugins/helpers';
 
 export interface Props {
     file: FileModel;
@@ -175,6 +172,7 @@ const CmsMdxEditor = observer((props: Props) => {
                                     <ListsToggle />
                                     <InsertCodeBlock />
                                     <InsertTable />
+                                    <InsertImage />
                                     <CreateLink />
                                     <CodeToggle />
                                     <BlockTypeSelect />
@@ -196,7 +194,6 @@ const CmsMdxEditor = observer((props: Props) => {
                                         ]}
                                     />
                                     <InsertJsxElements />
-                                    <InsertImage />
                                 </DiffSourceToggleWrapper>
                             </>
                         )
@@ -256,14 +253,9 @@ const CmsMdxEditor = observer((props: Props) => {
                             const text = caption.children.reduce((acc, child) => {
                                 return acc + state.handle(child, node, state, info);
                             }, '');
-                            const alt = `${text} ${image.alt}`.trim();
+                            const options = extractOptions(image.alt || '');
+                            const alt = `${text} ${options}`.trim();
                             return `![${alt}](${image.url})`;
-                        },
-                        imageCaption: (node: ImageCaption, parent, state, info) => {
-                            const text = node.children.reduce((acc, child) => {
-                                return acc + state.handle(child, node, state, info);
-                            }, '');
-                            return `[[${text}]]`;
                         }
                     }
                 }}

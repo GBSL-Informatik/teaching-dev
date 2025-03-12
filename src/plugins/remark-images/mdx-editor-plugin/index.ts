@@ -2,23 +2,15 @@
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
 
-import { $wrapNodeInElement } from '@lexical/utils';
+import { $insertNodeToNearestRoot } from '@lexical/utils';
 import { Cell, Signal, withLatestFrom } from '@mdxeditor/gurx';
 import {
     $createParagraphNode,
     $getSelection,
-    $insertNodes,
     $isParagraphNode,
     $isRangeSelection,
-    $isRootOrShadowRoot,
-    COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_EDITOR,
-    COMMAND_PRIORITY_HIGH,
-    COMMAND_PRIORITY_LOW,
-    COMMAND_PRIORITY_NORMAL,
-    ElementNode,
     KEY_DOWN_COMMAND,
-    KEY_ENTER_COMMAND,
     LexicalEditor
 } from 'lexical';
 import {
@@ -108,21 +100,30 @@ export interface SaveImageParameters extends BaseImageParameters {
 
 const internalInsertImage$ = Signal<SrcImageParameters>((r) => {
     r.sub(r.pipe(internalInsertImage$, withLatestFrom(activeEditor$)), ([values, theEditor]) => {
-        theEditor?.update(() => {
-            const imageFigure = $createImageFigureNode();
-            const imageNode = $createImageNode({
-                altText: values.altText ?? '',
-                src: values.src
-            });
-            const imageCaption = $createImageCaptionNode();
-            imageCaption.append($createParagraphNode());
-            imageFigure.append(imageNode, imageCaption);
-
-            $insertNodes([imageFigure]);
-            if ($isRootOrShadowRoot(imageFigure.getParentOrThrow())) {
-                $wrapNodeInElement(imageFigure, $createParagraphNode).selectEnd();
-            }
-        });
+        if (!theEditor) {
+            return;
+        }
+        theEditor?.focus(
+            () => {
+                theEditor.getEditorState().read(() => {
+                    const selection = $getSelection();
+                    if ($isRangeSelection(selection)) {
+                        theEditor.update(() => {
+                            const imageFigure = $createImageFigureNode();
+                            const imageNode = $createImageNode({
+                                altText: values.altText ?? '',
+                                src: values.src
+                            });
+                            const imageCaption = $createImageCaptionNode();
+                            imageCaption.append($createParagraphNode());
+                            imageFigure.append(imageNode, imageCaption);
+                            $insertNodeToNearestRoot(imageFigure);
+                        });
+                    }
+                });
+            },
+            { defaultSelection: 'rootEnd' }
+        );
     });
 });
 

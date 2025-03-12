@@ -70,8 +70,9 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
     constructor(src: string, altText: string, key?: NodeKey) {
         super(key);
         this.__src = src;
-        this.__options = parseOptions(altText, true);
-        this.__width = (this.__options as any).width;
+        const opts = parseOptions(altText, true);
+        this.__options = opts;
+        this.__width = (opts as any).width || 200;
     }
 
     /** @internal */
