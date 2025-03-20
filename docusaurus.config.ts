@@ -122,6 +122,8 @@ const getCopyPlugin = (
   return CopyWebpackPlugin;
 }
 
+const ORGANIZATION_NAME = 'gbsl-informatik';
+const PROJECT_NAME = 'teaching-dev';
 
 const config: Config = {
   title: 'Teaching-Dev',
@@ -136,8 +138,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'gbsl-informatik', // Usually your GitHub org/user name.
-  projectName: 'teaching-dev', // Usually your repo name.
+  organizationName: ORGANIZATION_NAME, // Usually your GitHub org/user name.
+  projectName: PROJECT_NAME, // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -256,7 +258,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            '/cms/',
+            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
@@ -266,7 +268,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            '/cms/',
+            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
             remarkPlugins: REMARK_PLUGINS,
             rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
@@ -275,7 +277,7 @@ const config: Config = {
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-          editUrl: '/cms/'
+          editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`
         },
         theme: {
           customCss: './src/css/custom.scss',

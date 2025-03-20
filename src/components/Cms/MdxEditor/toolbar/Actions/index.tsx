@@ -74,7 +74,7 @@ const Actions = observer((props: Props) => {
                                 iconSide="left"
                             />
                         </li>
-                        {file.isOnMainBranch && (
+                        {file.isOnMainBranch && cmsStore.github?.canWrite && (
                             <>
                                 <li className={clsx(styles.option)}>
                                     <Button

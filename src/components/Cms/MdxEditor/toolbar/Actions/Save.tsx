@@ -6,6 +6,7 @@ import Button from '@tdev-components/shared/Button';
 import { mdiCircle, mdiContentSave } from '@mdi/js';
 import { Color } from '@tdev-components/shared/Colors';
 import Icon from '@mdi/react';
+import { useStore } from '@tdev-hooks/useStore';
 
 export interface Props {
     file: File;
@@ -16,6 +17,7 @@ export interface Props {
 
 const Save = observer((props: Props) => {
     const { file } = props;
+    const cmsStore = useStore('cmsStore');
     return (
         <Button
             icon={props.showIcon ? mdiContentSave : undefined}
@@ -23,7 +25,7 @@ const Save = observer((props: Props) => {
                 file.save();
             }}
             text="Speichern"
-            disabled={!file.isDirty || file.isOnMainBranch}
+            disabled={!file.isDirty || file.isOnMainBranch || !cmsStore.github?.canWrite}
             color={props.color ?? 'green'}
             className={props.className}
             floatingIcon={

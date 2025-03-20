@@ -5,6 +5,7 @@ import {
     githubToken as apiGithubToken,
     load as apiLoadSettings,
     update as apiUpdateSettings,
+    logout as apiGithubLogout,
     CmsSettings,
     FullCmsSettings
 } from '@tdev-api/cms';
@@ -23,15 +24,16 @@ import imageCompression from 'browser-image-compression';
 import BinFile from '@tdev-models/cms/BinFile';
 import CmsViewStore from './ViewStores/CmsViewStore';
 import iFile from '@tdev-models/cms/iFile';
-import type * as Preset from '@docusaurus/preset-classic';
 
-const { organizationName, projectName, presets } = siteConfig;
+const { organizationName, projectName } = siteConfig;
 if (!organizationName || !projectName) {
     throw new Error('"organizationName" and "projectName" must be set in docusaurus.config.ts');
 }
 
-export class CmsStore extends iStore<`update-settings` | `load-settings` | `load-token`> {
+export class CmsStore extends iStore<'logout' | `update-settings` | `load-settings` | `load-token`> {
     readonly root: RootStore;
+    @observable accessor repoOwner: string = organizationName!;
+    @observable accessor repoName: string = projectName!;
     @observable.ref accessor settings: Settings | undefined;
     @observable.ref accessor partialSettings: PartialSettings | undefined;
     @observable.ref accessor github: Github | undefined;
@@ -85,6 +87,32 @@ export class CmsStore extends iStore<`update-settings` | `load-settings` | `load
         );
     }
 
+    @computed
+    get repoKey() {
+        return `${this.repoOwner}/${this.repoName}`;
+    }
+
+    @action
+    configureRepo(owner: string, name: string) {
+        if (
+            this.repoOwner === owner &&
+            this.repoName === name &&
+            owner === organizationName &&
+            name === projectName
+        ) {
+            return;
+        }
+        if (this.github) {
+            this.github.reset();
+        }
+        if (this.settings) {
+            this.settings.clearLocation();
+        }
+        this.repoOwner = owner;
+        this.repoName = name;
+        this.github?.load();
+    }
+
     @action
     _initializeGithub() {
         if (!this.settings || this.settings.isExpired) {
@@ -92,6 +120,34 @@ export class CmsStore extends iStore<`update-settings` | `load-settings` | `load
         }
         this.github = new Github(this.settings.token, this);
         this.github.load();
+    }
+
+    @computed
+    get userName() {
+        return this.settings?.userId;
+    }
+
+    @action
+    logoutGithub() {
+        this.withAbortController(`logout`, (ct) => {
+            return apiGithubLogout(ct.signal).then(
+                action(({ data }) => {
+                    this.handleSettingsChange(data);
+                })
+            );
+        });
+    }
+
+    @action
+    handleSettingsChange(data: Partial<CmsSettings>) {
+        this.partialSettings = new PartialSettings(data as CmsSettings, this);
+        if (data.token && data.tokenExpiresAt) {
+            this.settings = new Settings(data as FullCmsSettings, this);
+            return this.settings;
+        } else {
+            this.clearAccessToken();
+        }
+        return null;
     }
 
     @action
@@ -275,11 +331,15 @@ export class CmsStore extends iStore<`update-settings` | `load-settings` | `load
         if (this.initialized) {
             return;
         }
-        this.loadSettings().then(
-            action((res) => {
-                this.initialized = true;
-            })
-        );
+        this.loadSettings()
+            .then(
+                action((res) => {
+                    this.initialized = true;
+                })
+            )
+            .catch((err) => {
+                console.log('err from loadSettings', err);
+            });
     }
 
     @computed
@@ -292,12 +352,7 @@ export class CmsStore extends iStore<`update-settings` | `load-settings` | `load
         return this.withAbortController(`load-settings`, (ct) => {
             return apiLoadSettings(ct.signal).then(
                 action(({ data }) => {
-                    this.partialSettings = new PartialSettings(data as CmsSettings, this);
-                    if (data.token && data.tokenExpiresAt) {
-                        this.settings = new Settings(data as FullCmsSettings, this);
-                        return this.settings;
-                    }
-                    return null;
+                    return this.handleSettingsChange(data);
                 })
             );
         });
@@ -334,14 +389,9 @@ export class CmsStore extends iStore<`update-settings` | `load-settings` | `load
         }
         return imageCompression(file, { maxSizeMB: maxSizeMB, maxWidthOrHeight: 3840, useWebWorker: true })
             .then((compressedFile) => {
-                console.log(compressedFile);
                 return compressedFile.arrayBuffer();
-                // return imageCompression.getDataUrlFromFile(compressedFile);
             })
             .then((binData) => {
-                // dataUrl looks like: data:image/jpeg;base64,/9j/4AAQSkZJRg...
-                // take only the content after the comma
-                // const base64 = binData.split(',')[1];
                 return github.createOrUpdateFile(imagePath, new Uint8Array(binData), branch, sha);
             })
             .catch(function (error) {

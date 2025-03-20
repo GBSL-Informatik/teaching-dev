@@ -20,6 +20,7 @@ import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
 import { Document, DocumentType } from '../api/document';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import { CmsSettings } from '@tdev-api/cms';
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**
@@ -145,6 +146,10 @@ export class SocketDataStore extends iStore<'ping'> {
                     this.root.documentStore.addToStore(doc);
                 }
                 break;
+            case RecordType.CmsSettings:
+                const settings = record as CmsSettings;
+                this.root.cmsStore.handleSettingsChange(settings);
+                break;
             case RecordType.DocumentRoot:
                 const docRoot = record as DocumentRoot;
                 const current = this.root.documentRootStore.find(docRoot.id);
@@ -187,6 +192,9 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.Document:
                 this.root.documentStore.addToStore(record as Document<DocumentType>);
+                break;
+            case RecordType.CmsSettings:
+                this.root.cmsStore.handleSettingsChange(record as CmsSettings);
                 break;
             default:
                 console.log('changedRecord', type, record);

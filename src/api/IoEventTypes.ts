@@ -3,6 +3,7 @@ import { Document, DocumentType } from '../api/document';
 import { rootStore } from '../stores/rootStore';
 import { GroupPermission, UserPermission } from '../api/permission';
 import { DocumentRootUpdate } from '../api/documentRoot';
+import { CmsSettings } from './cms';
 
 export enum IoEvent {
     NEW_RECORD = 'NEW_RECORD',
@@ -17,7 +18,8 @@ export enum RecordType {
     User = 'User',
     UserPermission = 'UserPermission',
     GroupPermission = 'GroupPermission',
-    DocumentRoot = 'DocumentRoot'
+    DocumentRoot = 'DocumentRoot',
+    CmsSettings = 'CmsSettings'
 }
 
 type TypeRecordMap = {
@@ -26,6 +28,7 @@ type TypeRecordMap = {
     [RecordType.UserPermission]: UserPermission;
     [RecordType.GroupPermission]: GroupPermission;
     [RecordType.DocumentRoot]: DocumentRootUpdate;
+    [RecordType.CmsSettings]: CmsSettings;
 };
 
 export interface NewRecord<T extends RecordType> {
@@ -111,5 +114,6 @@ export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore } = {
     Document: 'documentRootStore',
     UserPermission: 'permissionStore',
     GroupPermission: 'permissionStore',
-    DocumentRoot: 'documentRootStore'
+    DocumentRoot: 'documentRootStore',
+    CmsSettings: 'cmsStore'
 } as const;
