@@ -61,12 +61,13 @@ export const parse = (sanitizedData: string): ParserResult => {
 
     if (!match) {
         const errors = createErrorReport(sanitizedData);
-        return { errors: errors };
+        return { errors: errors, config: { format: 'P1', width: 0, height: 0 } };
     }
 
     if (!match.groups) {
         return {
-            errors: ['Unerwarteter Fehler beim Parsen der Bilddaten: Keine Gruppen im regulären Ausdruck.']
+            errors: ['Unerwarteter Fehler beim Parsen der Bilddaten: Keine Gruppen im regulären Ausdruck.'],
+            config: { format: 'P1', width: 0, height: 0 }
         };
     }
 

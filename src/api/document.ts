@@ -19,7 +19,7 @@ import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocument
 import Excalidoc from '@tdev-models/documents/Excalidoc';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types/types';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGrapic';
+import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',

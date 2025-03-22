@@ -2,15 +2,23 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import clsx from 'clsx';
-import { ParserResult } from './types';
 import ImageCanvas from './ImageCanvas';
-import NetpbmGraphic, { MetaInit, ModelMeta } from '@tdev-models/documents/NetpbmGrapic';
+import NetpbmGraphic, { MetaInit, ModelMeta } from '@tdev-models/documents/NetpbmGraphic';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { Source } from '@tdev-models/iDocument';
 import SyncStatus from '@tdev-components/SyncStatus';
 import Icon from '@mdi/react';
-import { mdiAlertCircle, mdiAlertCircleOutline, mdiCheckAll, mdiFlashTriangle } from '@mdi/js';
-import { parse } from './parser/parser';
+import {
+    mdiAlertCircle,
+    mdiAlertCircleOutline,
+    mdiCheckAll,
+    mdiFlashTriangle,
+    mdiFormatTextRotationAngleUp,
+    mdiTextBoxCheckOutline
+} from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { ApiState } from '@tdev-stores/iStore';
 
 const StateIcons = observer(({ doc }: { doc: NetpbmGraphic }) => (
     <span className={clsx(styles.stateIcons)}>
@@ -24,139 +32,135 @@ const StateIcons = observer(({ doc }: { doc: NetpbmGraphic }) => (
 interface Props extends MetaInit {
     id: string;
     noEditor?: boolean;
+    hideWarning?: boolean;
 }
 
 const NetpbmEditor = observer((props: Props) => {
-    const [sanitizedData, setSanitizedData] = React.useState<string>('');
-    const [displayedErrors, setDisplayedErrors] = React.useState<(string | React.ReactElement)[]>([]);
-    const [displayedWarnings, setDisplayedWarnings] = React.useState<(string | React.ReactElement)[]>([]);
-    const [height, setHeight] = React.useState<number>(0);
-    const [width, setWidth] = React.useState<number>(0);
-    const [pixels, setPixels] = React.useState<Uint8ClampedArray>();
-
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstMainDocument(props.id, meta);
-
+    const ref = React.useRef<HTMLTextAreaElement>(null);
     React.useEffect(() => {
-        const result = doc.data.imageData
-            .trim()
-            .split('\n')
-            .filter((line) => !line.trim().startsWith('#')) // Remove comments.
-            .join('\n');
-
-        setSanitizedData(result);
-    }, [doc.data.imageData]);
-
-    const resetImageData = React.useMemo(
-        () => () => {
-            setHeight(0);
-            setWidth(0);
-            setPixels(new Uint8ClampedArray());
-        },
-        []
-    );
-
-    const resetErrorsAndWarnings = React.useMemo(
-        () => () => {
-            setDisplayedErrors([]);
-            setDisplayedWarnings([]);
-        },
-        []
-    );
-
-    const processParserResult = React.useMemo(
-        () => (result: ParserResult) => {
-            const { imageData, errors, warnings } = result;
-            setDisplayedErrors(errors || []);
-            setDisplayedWarnings(warnings || []);
-            if (imageData) {
-                setHeight(imageData.height);
-                setWidth(imageData.width);
-                setPixels(imageData.pixels);
+        if (!ref.current) {
+            return;
+        }
+        const handleWheel = (e: WheelEvent) => {
+            if (e.ctrlKey) {
+                const textarea = e.target as HTMLTextAreaElement;
+                if (!textarea) {
+                    return;
+                }
+                e.preventDefault();
+                const currentSize = parseFloat(window.getComputedStyle(textarea).fontSize);
+                const newSize = e.deltaY < 0 ? currentSize * 1.1 : currentSize * 0.9;
+                textarea.style.fontSize = `${newSize}px`;
             }
-        },
-        []
-    );
-
-    const render = () => {
-        resetImageData();
-        resetErrorsAndWarnings();
-        processParserResult(parse(sanitizedData));
-    };
-
-    React.useEffect(() => {
-        render();
-    }, [sanitizedData]);
-
-    const { hasErrorsOrWarnings, hasWarnings, hasErrors } = React.useMemo(() => {
-        return {
-            hasErrorsOrWarnings: displayedErrors.length > 0 || displayedWarnings.length > 0,
-            hasWarnings: displayedWarnings.length > 0,
-            hasErrors: displayedErrors.length > 0
         };
-    }, [displayedErrors, displayedWarnings]);
+
+        ref.current.addEventListener('wheel', handleWheel, { passive: false });
+
+        return () => {
+            ref.current?.removeEventListener('wheel', handleWheel);
+        };
+    }, []);
 
     return (
-        <div>
+        <div className={clsx(styles.netpbm)}>
             <div className={clsx(styles.editor, { [styles.hidden]: props.noEditor })}>
                 <div className={styles.textAreaWrapper}>
-                    <StateIcons doc={doc} />
                     <textarea
+                        ref={ref}
                         rows={12}
                         className={clsx(styles.editorTextArea)}
                         onChange={(e) => doc.setData({ imageData: e.target.value }, Source.LOCAL)}
                         value={doc.data.imageData}
                         disabled={props.readonly}
+                        onKeyDown={(e) => {
+                            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                                doc.saveNow();
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        }}
                     />
                 </div>
                 <div
-                    className={clsx(styles.validationWrapper, 'alert', {
-                        ['alert--secondary']: !hasErrorsOrWarnings,
-                        ['alert--warning']: hasWarnings && !hasErrors,
-                        ['alert--danger']: hasErrors
+                    className={clsx(styles.footer, 'alert', {
+                        ['alert--secondary']: !doc.hasErrorsOrWarnings,
+                        ['alert--warning']: doc.hasWarnings && !doc.hasErrors,
+                        ['alert--danger']: doc.hasErrors
                     })}
                 >
-                    {!hasErrorsOrWarnings && (
-                        <>
-                            <span>Keine Fehler gefunden</span>
-                            <span className={styles.iconContainer}>
-                                <Icon path={mdiCheckAll} size={0.8} />
-                            </span>
-                        </>
-                    )}
-                    {hasErrorsOrWarnings && (
-                        <details>
-                            <summary>
-                                {hasErrors && (
-                                    <>
-                                        <span>Fehler in den Bilddaten</span>
-                                        <span className={styles.iconContainer}>
-                                            <Icon path={mdiAlertCircle} size={0.8} color="red" />
-                                        </span>
-                                    </>
-                                )}
-                                {!hasErrors && hasWarnings && (
-                                    <>
-                                        <span>Warnungen anzeigen</span>
-                                        <span className={styles.iconContainer}>
-                                            <Icon path={mdiAlertCircleOutline} size={0.8} color="orange" />
-                                        </span>
-                                    </>
-                                )}
-                            </summary>
-                            <ul>
-                                {displayedWarnings.map((warnung, index) => (
-                                    <li key={index}>⚠️ {warnung}</li>
-                                ))}
-                                {displayedErrors.map((error, index) => (
-                                    <li key={index}>❌ {error}</li>
-                                ))}
-                            </ul>
-                        </details>
-                    )}
+                    <div className={clsx(styles.validationWrapper)}>
+                        {doc.hasErrorsOrWarnings ? (
+                            <details>
+                                <summary>
+                                    {doc.hasErrors && (
+                                        <>
+                                            <span>Fehler in den Bilddaten</span>
+                                            <span className={styles.iconContainer}>
+                                                <Icon path={mdiAlertCircle} size={0.8} color="red" />
+                                            </span>
+                                        </>
+                                    )}
+                                    {!doc.hasErrors && doc.hasWarnings && (
+                                        <>
+                                            <span>Warnungen anzeigen</span>
+                                            <span className={styles.iconContainer}>
+                                                <Icon
+                                                    path={mdiAlertCircleOutline}
+                                                    size={0.8}
+                                                    color="orange"
+                                                />
+                                            </span>
+                                        </>
+                                    )}
+                                </summary>
+                                <ul>
+                                    {doc.warnings.map((warnung, index) => (
+                                        <li key={index}>⚠️ {warnung}</li>
+                                    ))}
+                                    {doc.errors.map((error, index) => (
+                                        <li key={index}>❌ {error}</li>
+                                    ))}
+                                </ul>
+                            </details>
+                        ) : (
+                            <>
+                                <span>Keine Fehler gefunden</span>
+                                <span className={styles.iconContainer}>
+                                    <Icon path={mdiCheckAll} size={0.8} />
+                                </span>
+                            </>
+                        )}
+                    </div>
+                    <div className={clsx(styles.actions)}>
+                        {!props.hideWarning && <StateIcons doc={doc} />}
+                        <Button
+                            icon={
+                                doc.formattingState === ApiState.SUCCESS
+                                    ? mdiTextBoxCheckOutline
+                                    : mdiFormatTextRotationAngleUp
+                            }
+                            onClick={() => {
+                                doc.format();
+                            }}
+                            spin={doc.formattingState === ApiState.SYNCING}
+                            color={
+                                doc.formattingState === ApiState.SYNCING
+                                    ? 'var(--ifm-color-primary)'
+                                    : doc.formattingState === ApiState.SUCCESS
+                                      ? 'var(--ifm-color-success)'
+                                      : undefined
+                            }
+                            size={SIZE_S}
+                            title="Inhalt Formatieren"
+                        />
+                    </div>
                 </div>
             </div>
-            <ImageCanvas width={width} height={height} pixels={pixels} />
+            <div className={clsx(styles.output)}>
+                <ImageCanvas width={doc.width} height={doc.height} pixels={doc.pixels} />
+            </div>
         </div>
     );
 });
