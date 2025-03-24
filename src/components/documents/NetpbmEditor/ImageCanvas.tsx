@@ -11,7 +11,7 @@ interface Props {
 const ImageCanvas = ({ width, height, pixels }: Props) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const scale = 10;
+    const scale = 50;
     const offsetX = 0;
     const offsetY = 0;
 
@@ -31,9 +31,20 @@ const ImageCanvas = ({ width, height, pixels }: Props) => {
             return;
         }
 
-        // Set canvas size to be larger than the image
-        canvas.width = width * scale;
-        canvas.height = height * scale;
+        // Get device pixel ratio
+        const dpr = window.devicePixelRatio || 1;
+        // Set display size (css pixels)
+        const displayWidth = width * scale;
+        const displayHeight = height * scale;
+        canvas.style.width = `${displayWidth}px`;
+        canvas.style.height = `${displayHeight}px`;
+
+        // Set actual size in memory (scaled to account for extra pixel density)
+        canvas.width = Math.floor(displayWidth * dpr);
+        canvas.height = Math.floor(displayHeight * dpr);
+
+        // Scale context to match the device pixel ratio
+        ctx.scale(dpr, dpr);
 
         // Create a temporary canvas to hold the original image
         const tempCanvas = document.createElement('canvas');
@@ -50,9 +61,9 @@ const ImageCanvas = ({ width, height, pixels }: Props) => {
         tempCtx.putImageData(imageData, 0, 0);
 
         // Clear the main canvas and draw the scaled image
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(tempCanvas, offsetX, offsetY, width * scale, height * scale);
+        ctx.drawImage(tempCanvas, offsetX, offsetY, displayWidth, displayHeight);
     }, [pixels, width, height, scale, offsetX, offsetY]);
 
     return <canvas className={clsx(styles.canvas, { [styles.hidden]: hidden() })} ref={canvasRef} />;

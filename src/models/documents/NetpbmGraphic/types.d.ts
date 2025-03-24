@@ -1,8 +1,11 @@
-export interface RasterParserInput {
+export interface ParserConfig {
     format: 'P1' | 'P2' | 'P3';
     width: number;
     height: number;
     maxValue?: number;
+}
+
+export interface RasterParserInput extends ParserConfig {
     raster: string;
 }
 
@@ -18,4 +21,5 @@ export interface ParserResult {
     imageData?: ParserImageDataResult;
     errors?: ParserMessage[];
     warnings?: ParserMessage[];
+    config: ParserConfig;
 }
