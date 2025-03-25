@@ -13,6 +13,9 @@
     cursor: text;
 
     .toolbar {
+        --baseBase: var(--baseBg);
+        --radius-medium: var(--ifm-global-radius);
+        margin-left: 1px;
         top: var(--cms-toolbar-top-offset);
         z-index: var(--ifm-z-index-dropdown);
         scrollbar-width: thin;

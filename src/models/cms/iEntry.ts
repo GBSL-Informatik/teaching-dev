@@ -77,7 +77,6 @@ abstract class iEntry {
     openRecursive() {
         this.tree.forEach((entry) => {
             if (entry?.type === 'dir') {
-                console.log('Open from cms.ts');
                 entry.setOpen(true);
             }
         });

@@ -43,7 +43,7 @@ import {
     FlexDirectiveDescriptor
 } from '@tdev-plugins/remark-flex-cards/mdx-editor-plugin';
 import mdiCompletePlugin from '@tdev-plugins/remark-mdi/mdx-editor-plugin/MdiComplete';
-import { ImageCaption, ImageFigure, imagePlugin } from '@tdev-plugins/remark-images/mdx-editor-plugin';
+import { ImageFigure, imagePlugin } from '@tdev-plugins/remark-images/mdx-editor-plugin';
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
@@ -67,6 +67,8 @@ import { Asset } from '@tdev-models/cms/Dir';
 import { draggableBlockPlugin } from './plugins/DraggableBlockPlugin';
 import JsxDescriptors from './plugins/plugins-jsx/JsxDescriptors';
 import { extractOptions } from '@tdev-plugins/helpers';
+import { GenericDirectiveDescriptor } from './plugins/CatchAllUnknown/GenericDirectiveDescriptor';
+import { keepImportsPlugin } from './plugins/keepImportsPlugin';
 
 export interface Props {
     file: FileModel;
@@ -110,10 +112,12 @@ const CmsMdxEditor = observer((props: Props) => {
                     quotePlugin(),
                     strongPlugin(),
                     mathPlugin(),
+                    keepImportsPlugin(),
                     jsxPlugin({
                         jsxComponentDescriptors: JsxDescriptors
                     }),
                     directivesPlugin({
+                        escapeUnknownTextDirectives: true,
                         directiveDescriptors: [
                             AdmonitionDirectiveDescriptor,
                             CodeDefBoxDirectiveDescriptor,
@@ -122,7 +126,9 @@ const CmsMdxEditor = observer((props: Props) => {
                             FlexDirectiveDescriptor,
                             CardsDirectiveDescriptor,
                             ...MediaDescriptors,
-                            PdfDescriptor
+                            PdfDescriptor,
+                            // must be the last descriptor!!
+                            GenericDirectiveDescriptor
                         ]
                     }),
                     thematicBreakPlugin(),
@@ -149,7 +155,8 @@ const CmsMdxEditor = observer((props: Props) => {
                             sh: 'Shell',
                             c: 'C',
                             cpp: 'C++',
-                            ['mdx-code-block']: 'MdxCodeBlock'
+                            ['mdx-code-block']: 'MdxCodeBlock',
+                            ['']: 'Plain Text'
                         },
                         autoLoadLanguageSupport: true
                     }),
@@ -206,7 +213,6 @@ const CmsMdxEditor = observer((props: Props) => {
                             }
                             const fPath = `${activeEntry.parent.imageDirPath}/${img.name}`;
                             const current = cmsStore.findEntry(activeEntry.branch, fPath);
-                            console.log('uploading image', fPath);
                             return cmsStore
                                 .uploadImage(img, fPath, activeEntry.branch, current?.sha)
                                 .then((file) => {

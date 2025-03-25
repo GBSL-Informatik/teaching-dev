@@ -92,7 +92,7 @@ function buildCodeBlockDescriptor(codeBlockLanguages: Record<string, string>): C
     return {
         match(language, meta) {
             const isLiveJSX = /live-jsx/i.test(meta ?? '');
-            return Boolean(Object.hasOwn(codeBlockLanguages, language ?? '')) && !isLiveJSX;
+            return !isLiveJSX;
         },
         priority: 1,
         Editor: CodeMirrorEditor

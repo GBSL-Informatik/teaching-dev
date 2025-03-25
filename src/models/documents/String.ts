@@ -26,7 +26,8 @@ export class ModelMeta extends TypeMeta<DocumentType.String> {
         this.readonly = props.readonly;
         this.default = props.default;
         this.solution = props.solution;
-        this.sanitizer = props.sanitizer || ((val: string) => val);
+        this.sanitizer =
+            props.sanitizer && typeof props.sanitizer === 'function' ? props.sanitizer : (val: string) => val;
         this.sanitizedSolution = this.solution ? this.sanitizer(this.solution) : undefined;
         this.checker = props.checker || ((val: string | undefined) => val === this.sanitizedSolution);
     }

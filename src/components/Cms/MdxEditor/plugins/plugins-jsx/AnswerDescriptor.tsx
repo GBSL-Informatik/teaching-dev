@@ -40,7 +40,7 @@ const StringProps: GenericPropery[] = [
     { name: 'default', type: 'text', description: 'Standardwert' },
     { name: 'solution', type: 'text', description: 'Lösung' },
     {
-        name: 'sanitier',
+        name: 'sanitizer',
         type: 'expression',
         description: 'Sanitierfunktion die auf die Lösung angewandt wird.',
         placeholder: `(val) => val.toLowerCase().replaceAll(' ', '')`,
@@ -130,14 +130,16 @@ const AnswerDescriptor: JsxComponentDescriptor = {
                 attr.type === 'mdxJsxAttribute' && attr.name === 'type' && typeof attr.value === 'string'
         )?.value as 'text' | DocumentType | 'state';
         const answerAttributes = React.useMemo(() => {
-            console.log('recalc');
             return getAnswerAttributes(answerType);
         }, [answerType]);
-        const { onUpdate, values } = useAttributeEditorInNestedEditor(answerAttributes, mdastNode.attributes);
+        const { onUpdate, values, componentKey } = useAttributeEditorInNestedEditor(
+            answerAttributes,
+            mdastNode.attributes
+        );
 
         return (
             <Card classNames={{ card: styles.answerCard, body: clsx(styles.answerBody) }}>
-                <div className={clsx(styles.answer)} key={answerType}>
+                <div className={clsx(styles.answer)} key={componentKey}>
                     <Answer {...values} type={answerType} readonly id="" hideApiState hideWarning />
                 </div>
                 <GenericAttributeEditor

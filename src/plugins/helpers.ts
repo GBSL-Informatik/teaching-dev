@@ -152,7 +152,7 @@ export interface Options {
  * @param keyAliases
  */
 export const transformAttributes = (
-    attributes: { [key: string]: string | undefined | null },
+    attributes: { [key: string]: string | undefined | null } | undefined | null,
     keyAliases: { [key: string]: string } = ALIASES
 ) => {
     const options: Options = {
@@ -161,11 +161,11 @@ export const transformAttributes = (
         attributes: {},
         jsxAttributes: {}
     };
+    if (!attributes) {
+        return options;
+    }
     for (const [key, value] of Object.entries(attributes)) {
-        let k = key;
-        if (k in keyAliases) {
-            k = keyAliases[k];
-        }
+        const k = keyAliases[key] ?? key;
         const val =
             value === 'true'
                 ? true

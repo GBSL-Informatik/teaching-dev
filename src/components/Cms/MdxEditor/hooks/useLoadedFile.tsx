@@ -14,7 +14,7 @@ export const useLoadedFile = <T extends BinFile | File | Dir = BinFile | File | 
         if (file && file.type === 'file_stub' && file.apiState !== ApiState.SYNCING) {
             cmsStore.fetchFile(file);
         }
-    }, [file]);
+    }, [file, cmsStore.github]);
     if (!file || file.type === 'file_stub') {
         return undefined;
     }

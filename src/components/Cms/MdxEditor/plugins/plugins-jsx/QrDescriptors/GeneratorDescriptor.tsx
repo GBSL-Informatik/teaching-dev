@@ -28,7 +28,6 @@ const GeneratorDescriptor: JsxComponentDescriptor = {
     Editor: ({ descriptor, mdastNode }) => {
         const { onUpdate, values } = useAttributeEditorInNestedEditor(ScannerProps, mdastNode.attributes);
         const jsxValues = toJsxAttributes(values);
-        console.log(jsxValues);
         return (
             <Card
                 classNames={{ header: styles.actions, body: styles.cardBody }}

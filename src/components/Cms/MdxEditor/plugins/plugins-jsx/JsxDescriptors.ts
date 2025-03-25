@@ -1,3 +1,4 @@
+import { GenericJsxDescriptor } from '../CatchAllUnknown/GenericJsxDescriptor';
 import AnswerDescriptor from './AnswerDescriptor';
 import BrowserWindowDescriptor from './BrowserWindowDescriptor';
 import { DdDescriptor, DeflistDescriptor, DtDescriptor } from './DeflistDescriptor';
@@ -13,7 +14,8 @@ const JsxDescriptors = [
     DtDescriptor,
     AnswerDescriptor,
     ScannerDescriptor,
-    GeneratorDescriptor
+    GeneratorDescriptor,
+    GenericJsxDescriptor
 ];
 
 export default JsxDescriptors;

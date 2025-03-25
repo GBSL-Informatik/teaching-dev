@@ -26,3 +26,7 @@ export function update(data: Partial<CmsSettings>, signal: AbortSignal): AxiosPr
 export function githubToken(token: string, signal: AbortSignal): AxiosPromise<CmsSettings> {
     return api.get(`/cms/github-token?code=${token}`, { signal });
 }
+
+export function logout(signal: AbortSignal): AxiosPromise<CmsSettings> {
+    return api.post(`/cms/logout`, { signal });
+}

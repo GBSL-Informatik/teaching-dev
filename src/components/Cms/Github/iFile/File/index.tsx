@@ -7,7 +7,7 @@ import shared from '../styles.module.scss';
 import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
-import { mdiContentSave, mdiLoading, mdiRestore } from '@mdi/js';
+import { mdiContentSave, mdiEye, mdiLoading, mdiRestore, mdiStar } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import Link from '@docusaurus/Link';
 import { Delete } from '@tdev-components/shared/Button/Delete';
@@ -35,11 +35,7 @@ const File = observer((props: Props) => {
                         }
                         props.onSelect(file as FileModel);
                     } else {
-                        if (file.type !== 'bin_file') {
-                            cmsStore.setIsEditing(file, true);
-                        } else {
-                            cmsStore.setActiveEntry(file);
-                        }
+                        cmsStore.setActiveEntry(file);
                     }
                 }}
                 className={clsx(styles.fileLink)}
@@ -50,6 +46,12 @@ const File = observer((props: Props) => {
                         {file.name}
                     </span>
                 </PreviewPopup>
+                {cmsStore.activeEntry === file && (
+                    <Icon path={mdiEye} size={BUTTON_SIZE} color="var(--ifm-color-primary)" />
+                )}
+                {file.type === 'file' && file.isDirty && (
+                    <Icon path={mdiStar} size={0.5} color="var(--ifm-color-warning)" />
+                )}
             </Link>
             {props.showActions !== 'never' && (
                 <div className={clsx(styles.actions, props.showActions === 'hover' && styles.onHover)}>

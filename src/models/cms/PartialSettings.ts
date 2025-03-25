@@ -1,10 +1,7 @@
-import { CmsSettings, FullCmsSettings } from '@tdev-api/cms';
+import { CmsSettings } from '@tdev-api/cms';
 import { CmsStore } from '@tdev-stores/CmsStore';
 import _ from 'lodash';
 import { action, computed, observable } from 'mobx';
-import File from './File';
-import iEntry from './iEntry';
-import Dir from './Dir';
 
 export const REFRESH_THRESHOLD = 60 * 60;
 

@@ -21,7 +21,6 @@ import {
 import ImageResizer from '../ImageResizer';
 import { $isImageNode, type ImageNode } from '../ImageNode';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { useAssetFile } from '@tdev-components/Cms/MdxEditor/hooks/useAssetFile';
@@ -39,15 +38,17 @@ import { ImageDialog } from '../ImagesDialog';
 import Button from '@tdev-components/shared/Button';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { VoidEmitter } from '@mdxeditor/editor';
 
 export interface ImageEditorProps {
     nodeKey: string;
     src: string;
-    width?: number;
+    options: ParsedOptions;
+    focusEmitter: VoidEmitter;
 }
 
 export const ImageComponent = observer((props: ImageEditorProps): React.ReactNode => {
-    const { src, nodeKey } = props;
+    const { src, nodeKey, options } = props;
     const ref = React.useRef<PopupActions>(null);
 
     const imageRef = React.useRef<null | HTMLImageElement>(null);
@@ -57,7 +58,6 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
     const activeEditorRef = React.useRef<LexicalEditor | null>(null);
     const [isResizing, setIsResizing] = React.useState<boolean>(false);
     const gitImg = useAssetFile(src);
-    const [imgOptions, setImgOptions] = React.useState<ParsedOptions>({});
 
     React.useEffect(() => {
         let isMounted = true;
@@ -135,7 +135,6 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
         editor?.update(() => {
             const node = $getNodeByKey(nodeKey);
             const figure = node?.getParent();
-            console.log(nodeKey, node, figure);
             if ($isImageNode(node) && $isImageFigureNode(figure)) {
                 const focusNext =
                     figure.getPreviousSibling() || figure.getNextSibling() || figure.getParent();
@@ -145,17 +144,15 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
         });
     }, [nodeKey, editor]);
 
+    React.useEffect(() => {
+        props.focusEmitter.subscribe(() => {
+            setSelected(true);
+        });
+    }, [props.focusEmitter, nodeKey]);
+
     const onResizeStart = () => {
         setIsResizing(true);
     };
-    React.useEffect(() => {
-        editor.read(() => {
-            const node = $getNodeByKey(nodeKey);
-            if ($isImageNode(node)) {
-                setImgOptions(node.__options);
-            }
-        });
-    }, [nodeKey]);
 
     const draggable = $isNodeSelection(selection);
     const isFocused = isSelected;
@@ -166,7 +163,7 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
             {!isResizing && (
                 <div className={clsx(styles.actions, isFocused && styles.focused)}>
                     <Badge title="Anzahl Optionen" type="primary">
-                        {Object.keys(imgOptions).length}
+                        {Object.keys(options).length}
                     </Badge>
                     <div className={styles.spacer} />
                     <Popup
@@ -204,14 +201,16 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
                                 if ($isImageNode(node)) {
                                     node.setOptions(values);
                                 }
-                                const n = node?.getLatest();
-                                if ($isImageNode(n)) {
-                                    setImgOptions(n.__options);
-                                }
                             });
                         }}
-                        properties={[{ name: 'width', type: 'string', removable: false }]}
-                        values={asStringRecord(imgOptions)}
+                        properties={[
+                            {
+                                name: 'width',
+                                type: 'string',
+                                removable: false
+                            }
+                        ]}
+                        values={asStringRecord(options)}
                         canExtend
                     />
                     <RemoveNode onRemove={removeImageFigure} className={clsx(styles.remove)} />
@@ -228,7 +227,7 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
                         <img
                             className={clsx(isFocused && styles.focusedImage)}
                             src={gitImg?.type === 'bin_file' && gitImg.isImage ? gitImg.src : src}
-                            width={props.width}
+                            width={options.width as string}
                             ref={imageRef}
                             draggable="false"
                         />

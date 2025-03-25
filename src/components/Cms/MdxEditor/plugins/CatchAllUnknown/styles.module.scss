@@ -1,0 +1,25 @@
+.inlineEditor {
+    display: inline-flex;
+}
+.blockEditor {
+    display: flex;
+}
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.jsxFlow {
+    border-radius: var(--ifm-code-border-radius);
+    box-shadow: var(--ifm-global-shadow-lw);
+    margin-bottom: var(--ifm-leading);
+    .content {
+        border-left: 2em solid var(--prism-background-color);
+    }
+    .codeBlock {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        box-shadow: none;
+        margin-bottom: 0;
+    }
+}

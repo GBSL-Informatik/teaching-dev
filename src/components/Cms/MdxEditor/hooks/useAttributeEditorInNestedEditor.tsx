@@ -43,27 +43,33 @@ export const useAttributeEditorInNestedEditor = (
     mdastAttributes: (MdxJsxAttribute | MdxJsxExpressionAttribute)[]
 ) => {
     const updateMdastNode = useMdastNodeUpdater();
-    const cProps = React.useMemo(
-        () =>
-            properties.reduce<Record<string, string>>((acc, prop) => {
-                const attribute = mdastAttributes.find((attr) =>
-                    isMdxJsxAttribute(attr) ? attr.name === prop.name : false
-                );
+    const [componentKey, setComponentKey] = React.useState<number>(Date.now());
+    const cProps = React.useMemo(() => {
+        const availableNames = [
+            ...new Set<string>([
+                ...mdastAttributes.filter((a) => a.type === 'mdxJsxAttribute').map((attr) => attr.name),
+                ...properties.map((prop) => prop.name)
+            ])
+        ];
 
-                if (attribute) {
-                    if (isExpressionValue(attribute.value)) {
-                        acc[prop.name] = attribute.value.value;
-                    }
+        return availableNames.reduce<Record<string, string>>((acc, name) => {
+            const attribute = mdastAttributes.find((attr) =>
+                isMdxJsxAttribute(attr) ? attr.name === name : false
+            );
 
-                    if (isStringValue(attribute.value)) {
-                        acc[prop.name] = attribute.value;
-                    }
+            if (attribute) {
+                if (isExpressionValue(attribute.value)) {
+                    acc[name] = attribute.value.value;
                 }
 
-                return acc;
-            }, {}),
-        [mdastAttributes, properties]
-    );
+                if (isStringValue(attribute.value)) {
+                    acc[name] = attribute.value;
+                }
+            }
+
+            return acc;
+        }, {});
+    }, [mdastAttributes, properties]);
 
     const onUpdate = React.useCallback(
         (values: GenericValueProperty[]) => {
@@ -88,11 +94,11 @@ export const useAttributeEditorInNestedEditor = (
 
                 return acc;
             }, []);
-
+            setComponentKey((prev) => (prev ? prev + 1 : 1));
             updateMdastNode({ attributes: updatedAttributes });
         },
         [mdastAttributes, updateMdastNode, properties]
     );
 
-    return { values: cProps, onUpdate: onUpdate };
+    return { values: cProps, onUpdate: onUpdate, componentKey: componentKey };
 };

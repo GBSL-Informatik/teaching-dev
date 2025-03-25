@@ -22,6 +22,7 @@
     --ifm-color-disabled: #6e6e6e;
     --ifm-color-violet: #8957e5;
     --ifm-color-boxed: #3348b5;
+    --prism-background-color: #f6f8fa;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -31,6 +32,7 @@
     --ifm-global-shadow-md: 0 5px 40px rgba(0, 255, 234, 0.2);
     --ifm-global-shadow-tl: 0 12px 28px 0 rgba(0, 255, 234, 0.2), 0 2px 4px 0 rgba(0, 255, 234, 0.1);
     --ifm-color-boxed: #8395ef;
+    --prism-background-color: #282a36;
 }
 
 strong.boxed {

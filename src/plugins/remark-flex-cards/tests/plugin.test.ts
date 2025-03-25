@@ -278,7 +278,7 @@ Some content
         const result = await process(input);
         expect(result).toBe(input);
     });
-    it('can convert cards', async () => {
+    it('can convert simple cards', async () => {
         const input = alignLeft(`# Details element example
           :::cards
           Hello world!
@@ -309,7 +309,7 @@ Some content
         "
       `);
     });
-    it('can convert nested cards', async () => {
+    it('can convert simple nested cards', async () => {
         const input = alignLeft(`# Details element example
           ::::cards
           Nesting Level 1
@@ -360,7 +360,7 @@ Some content
       `);
     });
 
-    it('can convert cards with an image', async () => {
+    it('can convert sipmple cards with an image', async () => {
         const input = alignLeft(`
           :::cards
           ![Some Image](https://via.placeholder.com/150)
@@ -396,7 +396,7 @@ Some content
       `);
     });
 
-    it('can convert cards with multiple image', async () => {
+    it('can convert multiple cards with image', async () => {
         const input = alignLeft(`
         :::cards
         Hii
@@ -409,6 +409,8 @@ Some content
         Byyye!
     `);
         const result = await process(input);
+        console.log(result);
+
         expect(result).toMatchInlineSnapshot(`
       "<div className="flex-cards flex">
         <div className="item card">

@@ -5,6 +5,8 @@ import { observer } from 'mobx-react-lite';
 import { default as DirModel } from '@tdev-models/cms/Dir';
 import Card from '@tdev-components/shared/Card';
 import Dir from '@tdev-components/Cms/Github/iFile/Dir';
+import { useStore } from '@tdev-hooks/useStore';
+import UserAvatar from '@tdev-components/Cms/Github/AccountOptions/UserAvatar';
 
 interface Props {
     dir?: DirModel;
@@ -12,13 +14,13 @@ interface Props {
     contentClassName?: string;
     showActions?: 'always' | 'hover';
     compact?: boolean;
+    showAvatar?: boolean;
 }
 
 const Directory = observer((props: Props) => {
     const { dir } = props;
     React.useEffect(() => {
         if (dir && !dir.isOpen) {
-            console.log('Open from Directory.tsx');
             dir.setOpen(true);
         }
     }, [dir]);
@@ -28,6 +30,7 @@ const Directory = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.directory, props.className, props.compact && styles.compact)}>
+            {props.showAvatar && <UserAvatar showOptions />}
             <Card
                 classNames={{
                     body: styles.cardBody,

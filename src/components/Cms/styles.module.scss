@@ -1,6 +1,6 @@
 .cms {
     --cms-tree-view-width: 0px;
-    --cms-toolbar-top-offset: 60px;
+    --cms-toolbar-top-offset: 64px;
 
     display: grid;
     grid-template-areas:
@@ -64,7 +64,7 @@
 
 @media screen and (min-width: 900px) {
     .cms {
-        --cms-toolbar-top-offset: 84px;
+        --cms-toolbar-top-offset: 88px;
         .header {
             position: sticky;
             top: 60px;

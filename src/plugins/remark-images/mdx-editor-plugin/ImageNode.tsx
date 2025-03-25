@@ -16,6 +16,7 @@ import { DecoratorNode } from 'lexical';
 import { ImageComponent } from './ImageComponent';
 import { camelCased, ParsedOptions, parseOptions, serializeOptions } from '@tdev/plugins/helpers';
 import _ from 'lodash';
+import { voidEmitter } from '@mdxeditor/editor';
 
 /**
  * A serialized representation of an {@link ImageNode}.
@@ -38,10 +39,9 @@ export type SerializedImageNode = Spread<
 export class ImageNode extends DecoratorNode<React.ReactNode> {
     /** @internal */
     __src: string;
-    /** @internal */
-    __width?: number;
 
     __options: ParsedOptions;
+    __focusEmitter = voidEmitter();
 
     /** @internal */
     static getType(): string {
@@ -50,7 +50,7 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
 
     /** @internal */
     static clone(node: ImageNode): ImageNode {
-        return new ImageNode(node.__src, node.getAltText(), node.__key);
+        return new ImageNode(node.getSrc(), node.getAltText(), node.getKey());
     }
 
     /** @internal */
@@ -72,7 +72,6 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
         this.__src = src;
         const opts = parseOptions(altText, true);
         this.__options = opts;
-        this.__width = (opts as any).width || 200;
     }
 
     /** @internal */
@@ -86,15 +85,13 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
     }
 
     setWidth(width: number | undefined): void {
-        this.getWritable().__width = width;
+        this.getWritable().__options = { ...this.getLatest().__options, width: width };
+        this.select();
     }
 
     setOptions(options: { name: string; value: number | string | undefined }[]) {
         const newOptions: Record<string, string | number> = {};
         options.forEach((option) => {
-            if (option.name === 'width') {
-                return this.setWidth(option.value as number);
-            }
             if (!option.value || option.value === 'false') {
                 delete newOptions[camelCased(option.name)];
                 return;
@@ -102,10 +99,12 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
             newOptions[camelCased(option.name)] = option.value;
         });
         this.getWritable().__options = newOptions;
+        this.select();
     }
 
     getAltText(): string {
-        const alt = serializeOptions({ ...this.__options, width: this.__width });
+        const latest = this.getLatest();
+        const alt = serializeOptions({ ...latest.__options });
         return alt;
     }
 
@@ -120,16 +119,28 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
     }
 
     getSrc(): string {
-        return this.__src;
+        return this.getLatest().__src;
     }
 
     setSrc(src: string): void {
         this.getWritable().__src = src;
+        this.select();
     }
+
+    select = () => {
+        this.__focusEmitter.publish();
+    };
 
     /** @internal */
     decorate(_parentEditor: LexicalEditor): React.ReactNode {
-        return <ImageComponent src={this.getSrc()} nodeKey={this.getKey()} width={this.__width} />;
+        return (
+            <ImageComponent
+                src={this.getSrc()}
+                nodeKey={this.getKey()}
+                options={this.getLatest().__options}
+                focusEmitter={this.__focusEmitter}
+            />
+        );
     }
 }
 

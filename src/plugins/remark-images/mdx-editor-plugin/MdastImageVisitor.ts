@@ -18,7 +18,8 @@ export const MdastImageVisitor: MdastImportVisitor<Mdast.Image> = {
                 altText: mdastNode.alt ?? ''
             })
         );
-    }
+    },
+    priority: 1
 };
 
 export const MdastImageCaptionVisitor: MdastImportVisitor<ImageCaption> = {

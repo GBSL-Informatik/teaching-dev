@@ -35,7 +35,6 @@ export function useCodeMirrorRef(
 
     const onKeyDownHandler = React.useCallback(
         (e: KeyboardEvent) => {
-            console.log('key down', e.key);
             if (e.key === 'ArrowDown') {
                 const state = codeMirrorRef.current?.getCodemirror()?.state;
                 if (state) {

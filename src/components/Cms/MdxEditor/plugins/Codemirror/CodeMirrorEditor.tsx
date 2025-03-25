@@ -138,7 +138,6 @@ const PYTHON_PROPS: GenericPropery[] = [
 
 export const CodeMirrorEditor = ({ language, nodeKey, code, focusEmitter, meta }: CodeBlockEditorProps) => {
     const mappedLang = LANGUAGE_ALIAS_MAP[language] || language;
-    const t = useTranslation();
     const { parentEditor, lexicalNode } = useCodeBlockEditorContext();
     const [readOnly, codeMirrorExtensions, autoLoadLanguageSupport, codeBlockLanguages] = useCellValues(
         readOnly$,
