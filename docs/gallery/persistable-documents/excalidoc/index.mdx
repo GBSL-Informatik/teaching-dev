@@ -2,6 +2,7 @@
 page_id: 0533f41e-98c1-42cf-8939-6ed533a76d4f
 ---
 import Excalidoc from '@tdev-components/documents/Excalidoc';
+import ExcalidocWithCodeEditor from '@tdev-components/documents/Excalidoc/WithCodeEditor';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # Excalidraw
@@ -123,6 +124,23 @@ Bibliotheken können aktuell nicht von Usern selber hinzugefügt werden (bzw. nu
         defaultElements={require('./assets/netzwerk-topo.excalidraw').elements}
         defaultFiles={require('./assets/netzwerk-topo.excalidraw').files}
         defaultImage={require('./assets/netzwerk-topo.png').default}
+    />
+</BrowserWindow>
+
+## Mit Code-Editor
+Es kann auch eine Editor-Komponente mit dem Source-Code angezeigt werden:
+
+```mdx
+import ExcalidocWithCodeEditor from '@tdev-components/documents/Excalidoc/WithCodeEditor';
+
+<ExcalidocWithCodeEditor id="c82833bc-d5c1-42d1-9e19-1c330a9873ad"
+    defaultElements={require('./assets/circles.excalidraw').elements}
+/>
+```
+
+<BrowserWindow>
+    <ExcalidocWithCodeEditor id="c82833bc-d5c1-42d1-9e19-1c330a9873ad"
+        defaultElements={require('./assets/circles.excalidraw').elements}
     />
 </BrowserWindow>
 

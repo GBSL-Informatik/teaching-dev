@@ -21,6 +21,8 @@ export interface Props extends MetaInit {
     libraryItems?: LibraryItems;
     allowImageInsertion?: boolean;
     readonly?: boolean;
+    onlyCommitValidChanges?: boolean;
+    zenMode?: boolean;
 }
 
 const Editor = observer((props: Props) => {
@@ -67,6 +69,10 @@ const Editor = observer((props: Props) => {
                         elements,
                         excalidrawAPI.getSceneElementsIncludingDeleted()
                     );
+                    if (props.onlyCommitValidChanges && restoredElements.length !== elements.length) {
+                        excalidrawAPI.setToast({ message: 'Invalide Elemente gefunden', duration: 2000 });
+                        return;
+                    }
                     renderedSceneVersion.current = newVersion;
                     apiSceneVersion.current = newVersion;
                     excalidrawAPI.updateScene({
@@ -115,7 +121,7 @@ const Editor = observer((props: Props) => {
                 files: excalidoc.files,
                 appState: {
                     objectsSnapModeEnabled: true,
-                    zenModeEnabled: !props.libraryItems,
+                    zenModeEnabled: props.zenMode ?? !props.libraryItems,
                     zoom: {
                         value: 1.0 as NormalizedZoomValue // 100 %
                     }

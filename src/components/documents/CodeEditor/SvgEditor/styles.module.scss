@@ -1,0 +1,23 @@
+.svgEditor {
+    .code {
+        > div[class^='playgroundContainer'] {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+    .svgCard {
+        overflow: auto;
+        max-height: 50vh;
+        max-width: 100%;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        .svgCardBody {
+            margin: 0 auto;
+            .svgResult {
+                svg {
+                    border: 1px dashed var(--ifm-color-primary);
+                }
+            }
+        }
+    }
+}

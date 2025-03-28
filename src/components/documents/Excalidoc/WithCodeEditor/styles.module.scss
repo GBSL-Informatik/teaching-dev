@@ -1,0 +1,10 @@
+.withCodeEditor {
+    display: flex;
+    gap: 0.2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    .item {
+        flex-basis: 30em;
+        flex-grow: 1;
+    }
+}

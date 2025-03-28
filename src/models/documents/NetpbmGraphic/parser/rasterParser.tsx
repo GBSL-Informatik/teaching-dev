@@ -1,4 +1,4 @@
-import { ParserMessage, ParserResult, RasterParserInput } from '../types';
+import { ParserConfig, ParserMessage, ParserResult, RasterParserInput } from '../types';
 import {
     parseByteAscii,
     scaleByMaxValue,
@@ -9,6 +9,7 @@ import {
 
 export const parserP1Raster = ({ width, height, raster }: RasterParserInput): ParserResult => {
     const errors = [];
+    const config: ParserConfig = { format: 'P1', width, height };
 
     try {
         const bits = splitRasterData(raster);
@@ -16,7 +17,7 @@ export const parserP1Raster = ({ width, height, raster }: RasterParserInput): Pa
 
         if (bits.length === 0) {
             errors.push('Keine Rasterdaten gefunden.');
-            return { errors: errors };
+            return { errors: errors, config };
         }
 
         if (bits.length !== expectedNumberOfBits) {
@@ -48,17 +49,19 @@ export const parserP1Raster = ({ width, height, raster }: RasterParserInput): Pa
                 width,
                 height
             },
+            config,
             errors: errors
         };
     } catch (e) {
         errors.push('Fehler beim Parsen der Bilddaten: ' + e);
-        return { errors: errors };
+        return { errors: errors, config };
     }
 };
 
 export const parseP2Raster = ({ width, height, maxValue, raster }: RasterParserInput): ParserResult => {
+    const config: ParserConfig = { format: 'P2', width, height, maxValue: maxValue! };
     if (!maxValue) {
-        return { errors: ['Maximalwert nicht angegeben oder 0'] };
+        return { errors: ['Maximalwert nicht angegeben oder 0'], config };
     }
 
     const errors: ParserMessage[] = [];
@@ -69,7 +72,7 @@ export const parseP2Raster = ({ width, height, maxValue, raster }: RasterParserI
 
         if (bytes.length === 0) {
             errors.push('Keine Rasterdaten gefunden.');
-            return { errors: errors };
+            return { errors: errors, config };
         }
 
         validateMatchingNumberOfRasterBytes(bytes, expectedNumberOfBytes, width, height, errors);
@@ -99,17 +102,19 @@ export const parseP2Raster = ({ width, height, maxValue, raster }: RasterParserI
                 width,
                 height
             },
+            config,
             errors: errors
         };
     } catch (e) {
         errors.push('Fehler beim Parsen der Bilddaten: ' + e);
-        return { errors: errors };
+        return { errors: errors, config };
     }
 };
 
 export const parseP3Raster = ({ width, height, maxValue, raster }: RasterParserInput): ParserResult => {
+    const config: ParserConfig = { format: 'P3', width, height, maxValue: maxValue! };
     if (!maxValue) {
-        return { errors: ['Maximalwert nicht angegeben oder 0'] };
+        return { errors: ['Maximalwert nicht angegeben oder 0'], config };
     }
 
     const errors: ParserMessage[] = [];
@@ -120,7 +125,7 @@ export const parseP3Raster = ({ width, height, maxValue, raster }: RasterParserI
 
         if (bytes.length === 0) {
             errors.push('Keine Rasterdaten gefunden.');
-            return { errors: errors };
+            return { errors: errors, config };
         }
 
         validateMatchingNumberOfRasterBytes(bytes, expectedNumberOfBytes, width, height, errors);
@@ -151,10 +156,11 @@ export const parseP3Raster = ({ width, height, maxValue, raster }: RasterParserI
                 width,
                 height
             },
+            config,
             errors: errors
         };
     } catch (e) {
         errors.push('Fehler beim Parsen der Bilddaten: ' + e);
-        return { errors: errors };
+        return { errors: errors, config };
     }
 };

@@ -35,7 +35,7 @@ import Excalidoc from '@tdev-models/documents/Excalidoc';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGrapic';
+import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 
 const IsNotUniqueError = (error: any) => {
     try {
