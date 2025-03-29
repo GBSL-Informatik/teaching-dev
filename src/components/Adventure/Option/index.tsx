@@ -3,14 +3,15 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import Card from '@tdev-components/shared/Card';
 
 interface Props {
+    label: string;
     children: React.ReactNode;
+    nextGuessIn: number;
 }
 
 const Option = observer((props: Props) => {
-    const [isFlipped, setIsFlipped] = React.useState(false);
+    const pageStore = useStore('pageStore');
     const { front, back } = React.useMemo(() => {
         if (!Array.isArray(props.children)) {
             return { front: props.children, back: 'Rückseite' };
@@ -23,6 +24,12 @@ const Option = observer((props: Props) => {
         const back = props.children.slice(splitIdx + 2);
         return { front, back: back.length === 0 ? 'Rückseite' : back };
     }, [props.children]);
+    const page = pageStore.current;
+    if (!page) {
+        return null;
+    }
+
+    const isFlipped = page.activeSolution === props.label;
 
     return (
         <div
@@ -30,7 +37,7 @@ const Option = observer((props: Props) => {
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setIsFlipped(!isFlipped);
+                page.flipOption(props.label, props.nextGuessIn);
             }}
         >
             <div className={clsx('card__body', styles.body)}>
@@ -40,6 +47,9 @@ const Option = observer((props: Props) => {
                 <div className={clsx(styles.back)}>
                     <div>{back}</div>
                 </div>
+            </div>
+            <div className={clsx('card__footer', styles.label)}>
+                <h4>{props.label}</h4>
             </div>
         </div>
     );

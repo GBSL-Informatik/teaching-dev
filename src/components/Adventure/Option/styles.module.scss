@@ -20,9 +20,12 @@
         .back {
             transform: rotateY(180deg);
             height: 0;
+            width: 0;
         }
     }
     &.flipped {
+        flex-basis: 100%;
+        order: -1;
         .body {
             transform: rotateY(180deg);
             .front {
@@ -30,7 +33,12 @@
             }
             .back {
                 height: 100%;
+                width: 100%;
             }
         }
+    }
+    .label {
+        display: flex;
+        justify-content: center;
     }
 }

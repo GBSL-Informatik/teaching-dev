@@ -40,11 +40,15 @@ class Storage {
      * @param value The value to set
      */
     public set<T>(key: keyof typeof StorageKey, value: T, storeAsJson = true) {
+        this.setUnsafe(StorageKey[key], value, storeAsJson);
+    }
+
+    public setUnsafe<T>(key: string, value: T, storeAsJson = true) {
         try {
             if (value === undefined) {
-                this.remove(key);
+                this.removeUnsafe(key);
             } else {
-                this.interface.setItem(StorageKey[key], storeAsJson ? JSON.stringify(value) : (value as any));
+                this.interface.setItem(key, storeAsJson ? JSON.stringify(value) : (value as any));
             }
         } catch (_err) {
             // Ignore errors
@@ -60,16 +64,25 @@ class Storage {
      */
     public get<T>(key: keyof typeof StorageKey, fallback?: T, restoreFromJson = true): T | undefined {
         try {
-            const value = this.interface.getItem(StorageKey[key]);
+            return this.getUnsafe(StorageKey[key], fallback, restoreFromJson);
+        } catch (_err) {
+            // Ignore errors
+        }
+
+        return fallback;
+    }
+
+    public getUnsafe<T>(key: string, fallback?: T, restoreFromJson = true): T | undefined {
+        try {
+            const value = this.interface.getItem(key);
             if (restoreFromJson && typeof value === 'string') {
                 return JSON.parse(value);
             } else {
                 return value as T;
             }
         } catch (_err) {
-            // Ignore errors
+            // ignore errors
         }
-
         return fallback;
     }
 
@@ -81,6 +94,14 @@ class Storage {
     public remove(key: keyof typeof StorageKey) {
         try {
             this.interface.removeItem(StorageKey[key]);
+        } catch (_err) {
+            // Ignore errors
+        }
+    }
+
+    public removeUnsafe(key: string) {
+        try {
+            this.interface.removeItem(key);
         } catch (_err) {
             // Ignore errors
         }

@@ -8,6 +8,7 @@ import TaskState from '@tdev-models/documents/TaskState';
 import _ from 'lodash';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
+import Storage from '@tdev-stores/utils/Storage';
 
 export default class Page {
     readonly store: PageStore;
@@ -122,5 +123,26 @@ export default class Page {
                 .sort((a, b) => a.root!.meta.pagePosition - b.root!.meta.pagePosition),
             (doc) => doc.authorId
         );
+    }
+
+    /* MINT STUFF */
+    @observable accessor activeSolution: string | undefined = undefined;
+
+    @action
+    flipOption(label?: string, nextGuessIn?: number) {
+        if (!label) {
+            return;
+        }
+        const now = Date.now();
+        const current = Storage.getUnsafe(`MINT-GUESS-${this.id}`, now - 1)!;
+        if (this.activeSolution === label) {
+            // this.activeSolution = undefined;
+            return;
+        } else {
+            if (now > current) {
+                this.activeSolution = label;
+                Storage.setUnsafe(`MINT-GUESS-${this.id}`, now + (nextGuessIn || 0));
+            }
+        }
     }
 }

@@ -53,36 +53,39 @@ Folgendes Bild wird mit **VH** verschlüsselt:
 ![--width=200](./images/bild-1000x1000.jpg)
 
 Wie sieht das Ergebnis aus?
+<div style={{display: 'flex', flexWrap: 'wrap'}}>
 
-:::flex
-<Option>
-  ![a --width=125](./images/option-a.jpg)
+
+<Option label="a" nextGuessIn={5000}>
+  ![--width=125](./images/option-a.jpg)
+
+  ***
+
+  ![--width=525](./images/option-a.jpg)
+  Hello
 </Option>
 
-::br
 
-<Option>
-  ![b --width=125](./images/option-b.jpg)
+<Option label="b" nextGuessIn={5000}>
+  ![--width=125](./images/option-b.jpg)
 </Option>
 
-::br
 
-<Option>
-  ![c --width=125](./images/option-c.jpg)
+<Option label="c" nextGuessIn={5000}>
+  ![--width=125](./images/option-c.jpg)
 </Option>
 
-::br
 
-<Option>
-  ![d --width=125](./images/option-d.jpg)
+<Option label="d" nextGuessIn={5000}>
+  ![--width=125](./images/option-d.jpg)
 </Option>
 
-::br
 
-<Option>
-  ![e --width=125](./images/option-e.jpg)
+<Option label="e" nextGuessIn={5000}>
+  ![--width=125](./images/option-e.jpg)
 </Option>
-:::
+
+</div>
 
 :::details[Lösung]
 Antwort **e** ist richtig.
