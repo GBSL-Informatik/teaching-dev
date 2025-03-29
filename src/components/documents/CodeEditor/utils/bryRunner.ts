@@ -1,6 +1,7 @@
 import { RouterType } from '@docusaurus/types';
 import { DOM_ELEMENT_IDS } from '../constants';
 import { sanitizePyScript } from './helpers';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 export const runCode = (
     code: string,
@@ -29,11 +30,11 @@ export const runCode = (
      * ensure that the script is executed after the current event loop.
      * Otherwise, the brython script will not be able to access the graphics output.
      */
-    setTimeout(() => {
+    scheduleMicrotask(() => {
         (window as any).__BRYTHON__.runPythonSource(src, {
             pythonpath: router === 'hash' ? [] : [libDir],
             cache: cache
         });
-    }, 0);
+    });
     return src;
 };

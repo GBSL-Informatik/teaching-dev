@@ -6,6 +6,7 @@ import _ from 'lodash';
 import Storage, { PersistedData } from '@tdev-stores/utils/Storage';
 import { computedFn } from 'mobx-utils';
 import iStore from '@tdev-stores/iStore';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 export class UserStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
@@ -17,10 +18,10 @@ export class UserStore extends iStore<`update-${string}`> {
         super();
         this.root = root;
 
-        setTimeout(() => {
+        scheduleMicrotask(() => {
             // attempt to load the previous state of this store from localstorage
             this.rehydrate();
-        }, 1);
+        });
     }
 
     @action

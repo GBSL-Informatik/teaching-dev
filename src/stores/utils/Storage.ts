@@ -1,5 +1,4 @@
 import { User } from '@tdev-api/user';
-import { Primitive } from 'utility-types';
 import siteConfig from '@generated/docusaurus.config';
 import _ from 'lodash';
 import MemoryStorage from './MemoryStorage';
@@ -10,7 +9,8 @@ export type PersistedData = {
 
 export const StorageKey = Object.freeze({
     SessionStore: _.upperFirst(_.camelCase(`SessionStore${siteConfig.projectName || ''}`)),
-    QrScannerDeviceId: 'QrScannerDeviceId'
+    QrScannerDeviceId: 'QrScannerDeviceId',
+    CmsViewMode: 'CmsViewMode'
 });
 
 /**
@@ -39,12 +39,12 @@ class Storage {
      * @param key The key to set under.
      * @param value The value to set
      */
-    public set<T>(key: keyof typeof StorageKey, value: T) {
+    public set<T>(key: keyof typeof StorageKey, value: T, storeAsJson = true) {
         try {
             if (value === undefined) {
                 this.remove(key);
             } else {
-                this.interface.setItem(StorageKey[key], JSON.stringify(value));
+                this.interface.setItem(StorageKey[key], storeAsJson ? JSON.stringify(value) : (value as any));
             }
         } catch (_err) {
             // Ignore errors
@@ -58,11 +58,13 @@ class Storage {
      * @param fallback The fallback value if the key doesn't exist.
      * @returns The value or undefined if it doesn't exist.
      */
-    public get<T>(key: keyof typeof StorageKey, fallback?: T): T | undefined {
+    public get<T>(key: keyof typeof StorageKey, fallback?: T, restoreFromJson = true): T | undefined {
         try {
             const value = this.interface.getItem(StorageKey[key]);
-            if (typeof value === 'string') {
+            if (restoreFromJson && typeof value === 'string') {
                 return JSON.parse(value);
+            } else {
+                return value as T;
             }
         } catch (_err) {
             // Ignore errors

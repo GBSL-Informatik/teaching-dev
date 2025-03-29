@@ -40,6 +40,7 @@ import { $createImageFigureNode, ImageFigureNode } from './ImageFigureNode';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { directiveFromMarkdown } from 'mdast-util-directive';
 import { directive } from 'micromark-extension-directive';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 export * from './ImageNode';
 
 export interface ImageCaption extends Parent {
@@ -230,13 +231,13 @@ const keyHandler = (editor: LexicalEditor) => {
                                 const figure = caption.getParent();
                                 const nextSibling = figure?.getNextSibling();
                                 if ($isParagraphNode(nextSibling)) {
-                                    setTimeout(() => {
+                                    scheduleMicrotask(() => {
                                         activeEditor.update(() => {
                                             nextSibling.selectStart();
                                         });
-                                    }, 0);
+                                    });
                                 } else {
-                                    setTimeout(() => {
+                                    scheduleMicrotask(() => {
                                         activeEditor.update(
                                             () => {
                                                 const newParagraph = $createParagraphNode();
@@ -245,7 +246,7 @@ const keyHandler = (editor: LexicalEditor) => {
                                             },
                                             { discrete: true }
                                         );
-                                    }, 0);
+                                    });
                                 }
                                 break;
                             case 'ArrowLeft':
@@ -256,7 +257,7 @@ const keyHandler = (editor: LexicalEditor) => {
                                 ) {
                                     const figure = caption.getParent();
                                     const previousSibling = figure?.getPreviousSibling();
-                                    setTimeout(() => {
+                                    scheduleMicrotask(() => {
                                         activeEditor.update(
                                             () => {
                                                 if ($isParagraphNode(previousSibling)) {
@@ -269,7 +270,7 @@ const keyHandler = (editor: LexicalEditor) => {
                                             },
                                             { discrete: true }
                                         );
-                                    }, 0);
+                                    });
                                     shouldPrevent = true;
                                 }
                         }

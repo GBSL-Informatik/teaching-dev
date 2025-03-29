@@ -15,7 +15,9 @@ import 'ace-builds/esm-resolver';
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
     py: 'python',
-    ts: 'typescript'
+    ts: 'typescript',
+    mdx: 'markdown',
+    md: 'markdown'
 };
 
 interface Props {

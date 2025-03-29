@@ -10,9 +10,9 @@ import type { JSX } from 'react';
 import styles from './styles.module.scss';
 
 import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import clsx from 'clsx';
-import { contentEditableClassName$, contentEditableRef$, useCellValue } from '@mdxeditor/editor';
+import { contentEditableRef$, useCellValue } from '@mdxeditor/editor';
 import Icon from '@mdi/react';
 
 const DRAGGABLE_BLOCK_MENU_CLASSNAME = styles.draggableBlockMenu;
@@ -36,7 +36,7 @@ const DraggableBlockNode = (props: Props): JSX.Element => {
             menuRef={menuRef as React.RefObject<HTMLDivElement>}
             targetLineRef={targetLineRef as React.RefObject<HTMLDivElement>}
             menuComponent={
-                <div ref={menuRef} className={clsx(styles.icon, styles.draggableBlockMenu)}>
+                <div ref={menuRef} className={clsx(styles.icon, DRAGGABLE_BLOCK_MENU_CLASSNAME)}>
                     <div className={clsx(styles.icon)}>
                         <Icon path={PATH} size={0.7} />
                     </div>

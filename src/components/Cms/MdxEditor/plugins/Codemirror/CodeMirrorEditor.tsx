@@ -8,12 +8,7 @@ import { EditorView, lineNumbers } from '@codemirror/view';
 import { basicLight } from 'cm6-theme-basic-light';
 import { basicSetup } from 'codemirror';
 import { codeBlockLanguages$, codeMirrorAutoLoadLanguageSupport$, codeMirrorExtensions$ } from '.';
-import {
-    CodeBlockEditorProps,
-    readOnly$,
-    useCodeBlockEditorContext,
-    useTranslation
-} from '@mdxeditor/editor';
+import { CodeBlockEditorProps, readOnly$, useCodeBlockEditorContext } from '@mdxeditor/editor';
 import { useCodeMirrorRef } from './useCodeMirrorRef';
 import styles from './styles.module.scss';
 import Card from '@tdev-components/shared/Card';
@@ -31,6 +26,7 @@ import Popup from 'reactjs-popup';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import MyAttributes from '../../GenericAttributeEditor/MyAttributes';
 import { action } from 'mobx';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 export const COMMON_STATE_CONFIG_EXTENSIONS: Extension[] = [];
 
@@ -138,16 +134,14 @@ const PYTHON_PROPS: GenericPropery[] = [
 
 export const CodeMirrorEditor = ({ language, nodeKey, code, focusEmitter, meta }: CodeBlockEditorProps) => {
     const mappedLang = LANGUAGE_ALIAS_MAP[language] || language;
-    const { parentEditor, lexicalNode } = useCodeBlockEditorContext();
+    const { setCode, parentEditor, lexicalNode } = useCodeBlockEditorContext();
     const [readOnly, codeMirrorExtensions, autoLoadLanguageSupport, codeBlockLanguages] = useCellValues(
         readOnly$,
         codeMirrorExtensions$,
         codeMirrorAutoLoadLanguageSupport$,
         codeBlockLanguages$
     );
-
-    const codeMirrorRef = useCodeMirrorRef(nodeKey, 'codeblock', language, focusEmitter);
-    const { setCode } = useCodeBlockEditorContext();
+    const codeMirrorRef = useCodeMirrorRef('codeblock', language, focusEmitter);
     const editorViewRef = React.useRef<EditorView | null>(null);
     const elRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -243,7 +237,7 @@ export const CodeMirrorEditor = ({ language, nodeKey, code, focusEmitter, meta }
             );
             parentEditor.update(() => {
                 lexicalNode.setMeta(metaString);
-                setTimeout(() => {
+                scheduleMicrotask(() => {
                     parentEditor.update(() => {
                         lexicalNode.getLatest().select();
                     });
@@ -299,7 +293,7 @@ export const CodeMirrorEditor = ({ language, nodeKey, code, focusEmitter, meta }
                                                 onClick={() => {
                                                     parentEditor.update(() => {
                                                         lexicalNode.setLanguage(value);
-                                                        setTimeout(() => {
+                                                        scheduleMicrotask(() => {
                                                             parentEditor.update(() => {
                                                                 lexicalNode.getLatest().select();
                                                             });

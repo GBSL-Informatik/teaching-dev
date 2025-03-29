@@ -179,8 +179,8 @@ export default function ImageResizer({
         const positioning = positioningRef.current;
         const controlWrapper = controlWrapperRef.current;
         if (image !== null && controlWrapper !== null && positioning.isResizing) {
-            const width = positioning.currentWidth;
-            const height = positioning.currentHeight;
+            const width = Math.round(positioning.currentWidth);
+            const height = Math.round(positioning.currentHeight);
             positioning.startWidth = 0;
             positioning.startHeight = 0;
             positioning.ratio = 0;

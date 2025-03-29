@@ -12,11 +12,13 @@ import {
 } from '@mdxeditor/editor';
 import { LexicalEditor, COMMAND_PRIORITY_LOW } from 'lexical';
 import { MdastBoxVisitor } from './MdastBoxVisitor';
-import { $toggleBoxed, BoxNode, TOGGLE_BOX_COMMAND } from './BoxNode';
+import { $isBoxNode, $toggleBoxed, BoxNode, TOGGLE_BOX_COMMAND } from './BoxNode';
 import { LexicalBoxVisitor } from './LexicalBoxVisitor';
 import { Parent, PhrasingContent, Root, Nodes } from 'mdast';
 import { transformer } from '../plugin';
 import { rootStore } from '@tdev/stores/rootStore';
+import handleFocusNextInline from '@tdev-components/Cms/MdxEditor/helpers/lexical/handle-focus-next-inline';
+import handleFocusPreviousInline from '@tdev-components/Cms/MdxEditor/helpers/lexical/handle-focus-previous-inline';
 
 export interface Box extends Parent {
     type: 'box';
@@ -50,16 +52,20 @@ export const strongPlugin = realmPlugin<{}>({
                     ]
                 }
             ],
-            [createRootEditorSubscription$]: (editor: LexicalEditor) => {
-                return editor.registerCommand<KeyboardEvent>(
-                    TOGGLE_BOX_COMMAND,
-                    (payload) => {
-                        $toggleBoxed(payload === null ? true : !!payload);
-                        return true;
-                    },
-                    COMMAND_PRIORITY_LOW
-                );
-            }
+            [createRootEditorSubscription$]: [
+                (editor: LexicalEditor) => {
+                    return editor.registerCommand<boolean | null>(
+                        TOGGLE_BOX_COMMAND,
+                        (payload) => {
+                            $toggleBoxed(payload === null ? true : !!payload);
+                            return true;
+                        },
+                        COMMAND_PRIORITY_LOW
+                    );
+                },
+                handleFocusNextInline($isBoxNode),
+                handleFocusPreviousInline($isBoxNode)
+            ]
         });
     }
 });

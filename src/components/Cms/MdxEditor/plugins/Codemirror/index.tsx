@@ -1,12 +1,24 @@
 import { Cell, Signal, map } from '@mdxeditor/gurx';
 import { Extension } from '@codemirror/state';
 import {
+    $isCodeBlockNode,
+    activeEditor$,
     appendCodeBlockEditorDescriptor$,
     CodeBlockEditorDescriptor,
+    createRootEditorSubscription$,
     insertCodeBlock$,
     realmPlugin
 } from '@mdxeditor/editor';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
+import {
+    $getSelection,
+    $isElementNode,
+    $isParagraphNode,
+    $isRangeSelection,
+    COMMAND_PRIORITY_LOW,
+    KEY_DOWN_COMMAND,
+    LexicalEditor
+} from 'lexical';
 
 /**
  * The codemirror code block languages.
@@ -83,7 +95,81 @@ export const codeMirrorPlugin = realmPlugin<{
             [codeBlockLanguages$]: params?.codeBlockLanguages,
             [codeMirrorExtensions$]: params?.codeMirrorExtensions ?? [],
             [appendCodeBlockEditorDescriptor$]: buildCodeBlockDescriptor(params?.codeBlockLanguages ?? {}),
-            [codeMirrorAutoLoadLanguageSupport$]: params?.autoLoadLanguageSupport ?? true
+            [codeMirrorAutoLoadLanguageSupport$]: params?.autoLoadLanguageSupport ?? true,
+            [createRootEditorSubscription$]: [
+                (editor: LexicalEditor) => {
+                    return editor.registerCommand<KeyboardEvent>(
+                        KEY_DOWN_COMMAND,
+                        (event, activeEditor) => {
+                            if (event.key !== 'ArrowRight' && event.key !== 'ArrowDown') {
+                                return false;
+                            }
+                            const selection = $getSelection();
+                            if (!$isRangeSelection(selection)) {
+                                return false;
+                            }
+                            const nodes = selection.getNodes();
+                            const selectedNode = nodes[nodes.length - 1];
+                            if (!selectedNode) {
+                                return false;
+                            }
+                            const eNode =
+                                $isElementNode(selectedNode) && !selectedNode.isInline()
+                                    ? selectedNode
+                                    : selectedNode.getParent();
+                            const nextNode = eNode?.getNextSibling();
+                            if ($isCodeBlockNode(nextNode)) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                nextNode.select();
+                                return true;
+                            }
+                            return false;
+                        },
+                        COMMAND_PRIORITY_LOW
+                    );
+                },
+                (editor: LexicalEditor) => {
+                    return editor.registerCommand<KeyboardEvent>(
+                        KEY_DOWN_COMMAND,
+                        (event, activeEditor) => {
+                            if (
+                                event.key !== 'ArrowLeft' &&
+                                event.key !== 'ArrowUp' &&
+                                event.key !== 'Backspace'
+                            ) {
+                                return false;
+                            }
+                            const selection = $getSelection();
+                            if (!$isRangeSelection(selection)) {
+                                return false;
+                            }
+                            const nodes = selection.getNodes();
+                            const selectedNode = nodes[0];
+                            if (!selectedNode) {
+                                return false;
+                            }
+                            if (event.key !== 'ArrowUp' && selection.focus.offset !== 0) {
+                                return false;
+                            }
+                            const eNode =
+                                $isElementNode(selectedNode) && !selectedNode.isInline()
+                                    ? selectedNode
+                                    : selectedNode.getParent();
+
+                            const prevNode = eNode?.getPreviousSibling();
+                            if ($isCodeBlockNode(prevNode)) {
+                                prevNode.select();
+                                event.preventDefault();
+                                event.stopPropagation();
+                                return event.key !== 'Backspace';
+                            }
+                            return false;
+                        },
+                        COMMAND_PRIORITY_LOW
+                    );
+                }
+            ]
         });
     }
 });

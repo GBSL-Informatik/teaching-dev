@@ -1,3 +1,4 @@
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 import { DraggableEvent } from 'react-draggable';
 /**
  * When using react-draggable, the click-event is not propagated
@@ -26,7 +27,7 @@ const checkForButtonClick = (event: DraggableEvent) => {
     }
     if (elem) {
         // add the click to the end of the event queue
-        setTimeout(() => elem?.click(), 1);
+        scheduleMicrotask(() => elem?.click());
     }
 };
 

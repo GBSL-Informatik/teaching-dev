@@ -4,6 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
 import { mdiKeyboardTab } from '@mdi/js';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 interface Props {
     defaultValue?: string;
@@ -46,9 +47,9 @@ const TextAreaInput = observer((props: Props) => {
             const newText = `${text.slice(0, selectionStart)}\t${text.slice(selectionStart)}`;
             setText(newText);
             props.onChange(newText);
-            setTimeout(() => {
+            scheduleMicrotask(() => {
                 inp?.setSelectionRange(selectionStart + 1, selectionStart + 1);
-            }, 0);
+            });
         }
     };
     return (
