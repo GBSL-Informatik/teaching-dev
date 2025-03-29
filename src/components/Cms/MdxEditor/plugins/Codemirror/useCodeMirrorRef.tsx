@@ -1,30 +1,22 @@
 // https://github.com/mdx-editor/editor/blob/main/src/plugins/sandpack/useCodeMirrorRef.ts
-import { $createParagraphNode, $getNodeByKey } from 'lexical';
 import type { EditorView } from '@codemirror/view';
 import React from 'react';
-import { useCellValue, usePublisher } from '@mdxeditor/gurx';
-import { activeEditor$, editorInFocus$, useCodeBlockEditorContext, VoidEmitter } from '@mdxeditor/editor';
+import { usePublisher } from '@mdxeditor/gurx';
+import { editorInFocus$, useCodeBlockEditorContext, VoidEmitter } from '@mdxeditor/editor';
+import { $insertPlaceholderParagraph } from '../focusHandler/keyDownHandler';
 
 interface CodeMirrorRef {
     getCodemirror: () => EditorView | undefined;
 }
 
 export function useCodeMirrorRef(
-    nodeKey: string,
     editorType: 'codeblock' | 'sandpack',
     language: string,
     focusEmitter: VoidEmitter
 ) {
-    const activeEditor = useCellValue(activeEditor$);
     const setEditorInFocus = usePublisher(editorInFocus$);
-    // const setActiveEditorType = usePublisher('activeEditorType')
     const codeMirrorRef = React.useRef<CodeMirrorRef | null>(null);
-    const { lexicalNode } = useCodeBlockEditorContext();
-
-    // these flags escape the editor with arrows.
-    // they are set to true when the cursor is at the top or bottom of the editor, and then the user presses the arrow.
-    const atBottom = React.useRef(false);
-    const atTop = React.useRef(false);
+    const { lexicalNode, parentEditor } = useCodeBlockEditorContext();
 
     const onFocusHandler = React.useCallback(() => {
         setEditorInFocus({
@@ -35,58 +27,47 @@ export function useCodeMirrorRef(
 
     const onKeyDownHandler = React.useCallback(
         (e: KeyboardEvent) => {
-            if (e.key === 'ArrowDown') {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
                 const state = codeMirrorRef.current?.getCodemirror()?.state;
                 if (state) {
                     const docLength = state.doc.length;
                     const selectionEnd = state.selection.ranges[0].to;
 
                     if (docLength === selectionEnd) {
-                        // escaping once
-                        if (!atBottom.current) {
-                            atBottom.current = true;
-                        } else {
-                            // escaping twice
-                            activeEditor?.update(() => {
-                                const node = $getNodeByKey(nodeKey);
-                                if (!node) {
-                                    return;
-                                }
-                                const nextSibling = node.getNextSibling();
-                                if (nextSibling) {
-                                    codeMirrorRef.current?.getCodemirror()?.contentDOM.blur();
-                                    node.selectNext();
-                                } else {
-                                    node.insertAfter($createParagraphNode());
-                                }
-                            });
-                            atBottom.current = false;
-                        }
+                        parentEditor?.update(() => {
+                            const latest = lexicalNode.getLatest();
+                            if (!latest) {
+                                return;
+                            }
+                            const nextSibling = latest.getNextSibling();
+                            if (nextSibling) {
+                                latest.selectNext();
+                            } else {
+                                $insertPlaceholderParagraph((p) => latest.insertAfter(p));
+                            }
+                            codeMirrorRef.current?.getCodemirror()?.contentDOM.blur();
+                        });
                     }
                 }
-            } else if (e.key === 'ArrowUp') {
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
                 const state = codeMirrorRef.current?.getCodemirror()?.state;
                 if (state) {
                     const selectionStart = state.selection.ranges[0].from;
 
                     if (selectionStart === 0) {
-                        // escaping once
-                        if (!atTop.current) {
-                            atTop.current = true;
-                        } else {
-                            // escaping twice
-                            activeEditor?.update(() => {
-                                const node = $getNodeByKey(nodeKey)!;
-                                const previousSibling = node.getPreviousSibling();
-                                if (previousSibling) {
-                                    codeMirrorRef.current?.getCodemirror()?.contentDOM.blur();
-                                    node.selectPrevious();
-                                } else {
-                                    // TODO: insert a paragraph before the sandpack node
-                                }
-                            });
-                            atTop.current = false;
-                        }
+                        parentEditor?.update(() => {
+                            const latest = lexicalNode.getLatest();
+                            if (!latest) {
+                                return;
+                            }
+                            const prevSibling = latest.getPreviousSibling();
+                            if (prevSibling) {
+                                latest.selectPrevious();
+                            } else {
+                                $insertPlaceholderParagraph((p) => latest.insertBefore(p));
+                            }
+                            codeMirrorRef.current?.getCodemirror()?.contentDOM.blur();
+                        });
                     }
                 }
             } else if (e.key === 'Enter') {
@@ -95,14 +76,14 @@ export function useCodeMirrorRef(
                 const state = codeMirrorRef.current?.getCodemirror()?.state;
                 const docLength = state?.doc.length;
                 if (docLength === 0) {
-                    activeEditor?.update(() => {
-                        const node = $getNodeByKey(nodeKey)!;
-                        node.remove();
+                    parentEditor.update(() => {
+                        const latest = lexicalNode.getLatest();
+                        latest?.remove();
                     });
                 }
             }
         },
-        [activeEditor, nodeKey]
+        [parentEditor, lexicalNode.getKey()]
     );
 
     React.useEffect(() => {
@@ -123,7 +104,7 @@ export function useCodeMirrorRef(
             codeMirrorRef.current?.getCodemirror()?.focus();
             onFocusHandler();
         });
-    }, [focusEmitter, codeMirrorRef, nodeKey, onFocusHandler]);
+    }, [focusEmitter, codeMirrorRef, lexicalNode.getKey(), onFocusHandler]);
 
     return codeMirrorRef;
 }

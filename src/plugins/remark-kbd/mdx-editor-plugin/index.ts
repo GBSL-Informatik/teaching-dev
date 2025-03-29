@@ -13,9 +13,11 @@ import {
 import { transformer } from '../plugin';
 import type { Parent, PhrasingContent, Root } from 'mdast';
 import { MdastKbdVisitor } from './MdastKbdVisitor';
-import { $toggleKbd, KbdNode, TOGGLE_KBD_COMMAND } from './KbdNode';
+import { $isKbdNode, $toggleKbd, KbdNode, TOGGLE_KBD_COMMAND } from './KbdNode';
 import { LexicalKbdVisitor } from './LexicalKbdVisitor';
 import { COMMAND_PRIORITY_LOW, type LexicalEditor } from 'lexical';
+import handleFocusNextInline from '@tdev-components/Cms/MdxEditor/helpers/lexical/handle-focus-next-inline';
+import handleFocusPreviousInline from '@tdev-components/Cms/MdxEditor/helpers/lexical/handle-focus-previous-inline';
 
 export interface Kbd extends Parent {
     type: 'kbd';
@@ -43,16 +45,20 @@ export const kbdPlugin = realmPlugin<{}>({
                     ]
                 }
             ],
-            [createRootEditorSubscription$]: (editor: LexicalEditor) => {
-                return editor.registerCommand<KeyboardEvent>(
-                    TOGGLE_KBD_COMMAND,
-                    (payload) => {
-                        $toggleKbd(payload === null ? true : !!payload);
-                        return true;
-                    },
-                    COMMAND_PRIORITY_LOW
-                );
-            }
+            [createRootEditorSubscription$]: [
+                (editor: LexicalEditor) => {
+                    return editor.registerCommand<boolean | null>(
+                        TOGGLE_KBD_COMMAND,
+                        (payload) => {
+                            $toggleKbd(payload === null ? true : !!payload);
+                            return true;
+                        },
+                        COMMAND_PRIORITY_LOW
+                    );
+                },
+                handleFocusNextInline($isKbdNode),
+                handleFocusPreviousInline($isKbdNode)
+            ]
         });
     }
 });

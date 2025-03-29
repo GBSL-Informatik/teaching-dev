@@ -15,11 +15,15 @@
     .toolbar {
         --baseBase: var(--baseBg);
         --radius-medium: var(--ifm-global-radius);
+        padding-right: 0;
         margin-left: 1px;
         top: var(--cms-toolbar-top-offset);
         z-index: var(--ifm-z-index-dropdown);
         scrollbar-width: thin;
         cursor: default;
+        .showCodeEditorButton {
+            margin-left: -0.5em;
+        }
     }
     // style native details element according to docusaurus theme
     :global(details):not([class]) {

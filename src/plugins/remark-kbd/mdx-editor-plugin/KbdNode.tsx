@@ -63,22 +63,12 @@ export class KbdNode extends ElementNode {
 
     exportJSON(): SerializedKbdNode {
         return super.exportJSON();
-        // return {
-        //     ...super.exportJSON(),
-        //     children: this.getChildren().map((child) => child.exportJSON())
-        // };
     }
 
     insertNewAfter(_: RangeSelection, restoreSelection = true): null | ElementNode {
         const kbdNode = $createKbdNode();
         this.insertAfter(kbdNode, restoreSelection);
         return kbdNode;
-    }
-
-    markdownSerialize(): string {
-        return `[[${this.getChildren()
-            .map((child) => (child as any).markdownSerialize?.() || child.getTextContent())
-            .join('')}]]></kbd`;
     }
 
     canInsertTextBefore(): true {

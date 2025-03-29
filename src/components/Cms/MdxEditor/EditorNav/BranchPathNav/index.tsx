@@ -34,7 +34,7 @@ const BranchPathNav = observer((props: Props) => {
                     }
                     return (
                         <div className={clsx(styles.part)} key={idx}>
-                            <FileNav file={part} isActive className={clsx(styles.part)} />
+                            <FileNav file={part} isActive className={clsx(styles.part)} linkToGithub />
                         </div>
                     );
                 })}

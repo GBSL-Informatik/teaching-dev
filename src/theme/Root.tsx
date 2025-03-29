@@ -10,6 +10,7 @@ import { setupMsalAxios, setupNoAuthAxios } from '@tdev-api/base';
 import { useStore } from '@tdev-hooks/useStore';
 import { runInAction } from 'mobx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 const { NO_AUTH, TEST_USERNAME } = siteConfig.customFields as { TEST_USERNAME?: string; NO_AUTH?: boolean };
 export const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -135,10 +136,10 @@ const MsalAccount = observer(() => {
                  * 3. load authorized entities
                  */
                 setupMsalAxios();
-                setTimeout(() => {
+                scheduleMicrotask(() => {
                     rootStore.sessionStore.setAccount(active);
                     rootStore.load();
-                }, 0);
+                });
             }
         }
     }, [sessionStore?.authMethod, accounts, inProgress, instance, isAuthenticated]);

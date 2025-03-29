@@ -26,6 +26,7 @@ import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { v4 as uuidv4 } from 'uuid';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 /**
  * A toolbar dropdown button that allows the user to insert admonitions.
@@ -49,11 +50,11 @@ export const InsertJsxElements = () => {
                 ]}
                 title="Inline Math Einfügen"
                 onChoose={(value) => {
-                    setTimeout(() => {
+                    scheduleMicrotask(() => {
                         editor.update(() => {
                             insertMdx('$\\LaTeX$');
                         });
-                    }, 0);
+                    });
                 }}
             >
                 <Icon path={mdiMathIntegral} size={1} />
@@ -95,7 +96,7 @@ export const InsertJsxElements = () => {
                 ]}
                 title="Insert JSX Elements"
                 onChoose={(value) => {
-                    setTimeout(() => {
+                    scheduleMicrotask(() => {
                         editor.update(() => {
                             switch (value) {
                                 case 'DocCardList':
@@ -141,7 +142,7 @@ export const InsertJsxElements = () => {
                                     break;
                             }
                         });
-                    }, 1);
+                    });
                 }}
             >
                 <Icon path={mdiDotsVerticalCircleOutline} size={1} />

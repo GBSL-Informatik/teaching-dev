@@ -4,6 +4,7 @@ import { activeEditor$, currentSelection$, MultipleChoiceToggleGroup } from '@md
 import { useCellValues } from '@mdxeditor/gurx';
 import React from 'react';
 import { $isKbdNode, TOGGLE_KBD_COMMAND } from './KbdNode';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 /**
  * A toolbar component that lets the user undo and redo changes in the editor.
@@ -13,7 +14,7 @@ export const ToolbarInsertKbd: React.FC = () => {
     const [selection, editor] = useCellValues(currentSelection$, activeEditor$);
     const [isActive, setIsActive] = React.useState(false);
     React.useEffect(() => {
-        setTimeout(() => {
+        scheduleMicrotask(() => {
             editor?.read(() => {
                 try {
                     const parents = selection?.getNodes()?.[0]?.getParents() || [];
@@ -22,7 +23,7 @@ export const ToolbarInsertKbd: React.FC = () => {
                     // nop
                 }
             });
-        }, 1);
+        });
     }, [editor, selection]);
     return (
         <MultipleChoiceToggleGroup

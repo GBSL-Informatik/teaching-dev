@@ -3,6 +3,7 @@ import type Directory from '@tdev-models/documents/FileSystem/Directory';
 import type File from '@tdev-models/documents/FileSystem/File';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 interface Props {
     model: Directory | File;
@@ -48,9 +49,9 @@ const Name = observer((props: Props) => {
                                 model.setName(
                                     `${model.name.slice(0, selectionStart)} ${model.name.slice(selectionEnd)}`
                                 );
-                                setTimeout(() => {
+                                scheduleMicrotask(() => {
                                     inp.setSelectionRange(selectionStart + 1, selectionStart + 1);
-                                }, 0);
+                                });
                             }
                         }
                     }}

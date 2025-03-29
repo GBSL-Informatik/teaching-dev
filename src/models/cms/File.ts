@@ -18,6 +18,8 @@ class File extends iFile {
      */
     @observable accessor resetCounter = 0;
 
+    @observable accessor preventMdxEditor = false;
+
     constructor(props: FileProps, store: CmsStore) {
         super(props, store);
         this.content = props.content;
@@ -37,6 +39,11 @@ class File extends iFile {
     @computed
     get isEditing() {
         return this.store.editedFile === this;
+    }
+
+    @action
+    setPreventMdxEditor(prevent: boolean) {
+        this.preventMdxEditor = prevent;
     }
 
     /**

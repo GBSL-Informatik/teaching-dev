@@ -12,16 +12,10 @@ import { ImageCaption, ImageFigure } from '.';
 export const LexicalImageVisitor: LexicalExportVisitor<ImageNode, Mdast.Image> = {
     testLexicalNode: $isImageNode,
     visitLexicalNode({ mdastParent, lexicalNode, actions }) {
-        const data: Record<string, any> = {
-            ...(lexicalNode.__options || {})
-        };
-        if (lexicalNode.__width) {
-            data.width = String(lexicalNode.__width);
-        }
         actions.appendToParent(mdastParent, {
             type: 'image',
             url: lexicalNode.getSrc(),
-            data: data,
+            data: lexicalNode.getOptions(),
             alt: lexicalNode.getAltText()
         });
     }

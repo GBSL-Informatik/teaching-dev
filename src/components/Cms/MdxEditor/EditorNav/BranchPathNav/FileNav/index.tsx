@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import File from '@tdev-models/cms/File';
@@ -11,6 +10,7 @@ import NavItem from '@tdev-components/Cms/MdxEditor/EditorNav/BranchPathNav/NavI
 interface Props {
     file: File | BinFile | FileStub;
     isActive?: boolean;
+    linkToGithub?: boolean;
     className?: string;
 }
 
@@ -23,6 +23,7 @@ const FileNav = observer((props: Props) => {
             onClick={() => {
                 cmsStore.setActiveEntry(file);
             }}
+            href={props.linkToGithub ? file.htmlUrl : undefined}
             color={file.iconColor}
             icon={file.icon}
             name={file.name}

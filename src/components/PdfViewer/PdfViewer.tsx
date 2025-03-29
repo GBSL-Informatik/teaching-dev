@@ -8,6 +8,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import Icon from '@mdi/react';
 import { mdiArrowLeftCircle, mdiArrowRightCircle, mdiDownload } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 export interface Props {
     file: string | { data: Uint8Array; url?: string } | { url: string };
@@ -101,9 +102,9 @@ const PdfViewer = (props: Props) => {
         } else {
             setPageNumber(pageNumber + offset);
         }
-        setTimeout(() => {
+        scheduleMicrotask(() => {
             window.scrollTo(scrollX, scrollY);
-        }, 0);
+        });
     };
 
     const previousPage = () => {
