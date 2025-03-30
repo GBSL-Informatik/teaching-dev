@@ -1,9 +1,6 @@
 import { JsxComponentDescriptor, type JsxPropertyDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
-import BrowserWindow from '@tdev-components/BrowserWindow';
 import { MdxJsxFlowElement } from 'mdast-util-mdx';
-import GenericAttributeEditor, {
-    type GenericPropery
-} from '@tdev-components/Cms/MdxEditor/GenericAttributeEditor';
+import { type GenericPropery } from '@tdev-components/Cms/MdxEditor/GenericAttributeEditor';
 import RemoveNode from '../../../RemoveNode';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
@@ -20,7 +17,6 @@ const AdventureOptions: JsxComponentDescriptor = {
     defaultExport: false,
     props: props as JsxPropertyDescriptor[],
     Editor: ({ descriptor, mdastNode }) => {
-        const { componentKey } = useAttributeEditorInNestedEditor(props, mdastNode.attributes);
         return (
             <Card
                 classNames={{ card: clsx(styles.options), header: clsx(styles.header) }}
@@ -30,10 +26,11 @@ const AdventureOptions: JsxComponentDescriptor = {
                         <RemoveNode />
                     </>
                 }
-                key={componentKey}
             >
                 <NestedLexicalEditor<MdxJsxFlowElement>
-                    getContent={(node) => node.children}
+                    getContent={(node) => {
+                        return node.children;
+                    }}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     getUpdatedMdastNode={(mdastNode, children: any) => {
                         return { ...mdastNode, children };

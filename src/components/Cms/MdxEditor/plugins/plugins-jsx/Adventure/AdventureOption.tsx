@@ -35,8 +35,6 @@ const AdventureOption: JsxComponentDescriptor = {
             props,
             mdastNode.attributes
         );
-        const compStyle = parseExpression<React.CSSProperties>(values.style);
-        const bodyStyle = parseExpression<React.CSSProperties>(values.bodyStyle);
 
         return (
             <Card
@@ -49,12 +47,10 @@ const AdventureOption: JsxComponentDescriptor = {
                             properties={descriptor.props}
                             onUpdate={onUpdate}
                             values={values}
-                            canExtend
                         />
                         <RemoveNode />
                     </>
                 }
-                key={componentKey}
             >
                 <NestedLexicalEditor<MdxJsxFlowElement>
                     getContent={(node) => node.children}
@@ -62,6 +58,7 @@ const AdventureOption: JsxComponentDescriptor = {
                     getUpdatedMdastNode={(mdastNode, children: any) => {
                         return { ...mdastNode, children };
                     }}
+                    block
                 />
             </Card>
         );

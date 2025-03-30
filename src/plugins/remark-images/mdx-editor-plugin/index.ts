@@ -6,7 +6,10 @@ import { $insertNodeToNearestRoot } from '@lexical/utils';
 import { Cell, Signal, withLatestFrom } from '@mdxeditor/gurx';
 import {
     $createParagraphNode,
+    $getNearestRootOrShadowRoot,
     $getSelection,
+    $isElementNode,
+    $isLeafNode,
     $isParagraphNode,
     $isRangeSelection,
     COMMAND_PRIORITY_EDITOR,
@@ -104,11 +107,20 @@ const internalInsertImage$ = Signal<SrcImageParameters>((r) => {
         if (!theEditor) {
             return;
         }
-        theEditor?.focus(
+        theEditor.focus(
             () => {
-                theEditor.getEditorState().read(() => {
+                theEditor.read(() => {
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
+                        const nodes = selection.getNodes();
+                        const selectedNode = nodes[0];
+                        const elementNode =
+                            $isElementNode(selectedNode) && !selectedNode.isInline()
+                                ? selectedNode
+                                : selectedNode.getParent();
+                        if (!elementNode) {
+                            return;
+                        }
                         theEditor.update(() => {
                             const imageFigure = $createImageFigureNode();
                             const imageNode = $createImageNode({
@@ -118,7 +130,7 @@ const internalInsertImage$ = Signal<SrcImageParameters>((r) => {
                             const imageCaption = $createImageCaptionNode();
                             imageCaption.append($createParagraphNode());
                             imageFigure.append(imageNode, imageCaption);
-                            $insertNodeToNearestRoot(imageFigure);
+                            elementNode?.insertAfter(imageFigure);
                         });
                     }
                 });
