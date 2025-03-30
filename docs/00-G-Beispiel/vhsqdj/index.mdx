@@ -1,104 +1,24 @@
 ---
-page_id: 0a663db5-aaa0-40b1-b4e3-2fd80e1c0598
+sidebar_position: 2
+page_id: 6128da86-c3d0-4f76-b44c-edfeb7c75ab2
 ---
 
-import Option from '@tdev-components/Adventure/Option'
+# Richtige Antwort
 
-# Bilder verschlüsseln
-
-Ein Bild ist ein Rechteck, das sich aus Zeilen und Spalten von Pixeln (Farbpunkte) zusammensetzt.
-
-:::flex
-![Bild mit 3 x 3 --width=175](./images/pixel-3x3.jpg)
-
-::br
-
-![Mona Lisa in 25 x 25 Pixeln --width=250](./images/bild-25x25.jpg)
-:::
-
-Reto hat sich ein Verfahren zur Verschlüsselung von Bildern überlegt. Er verwendet dabei diese zwei Operationen:
-
-## Operation H
-
-**H** für horizontal
-
-![--width=475](./images/pixel-operation-h.jpg)
-
-In Zeile 1 bleiben die Pixel unverändert. In Zeile 2 rückt jedes Pixel um 1 nach rechts. In Zeile 3 rückt jedes Pixel um 2 nach rechts.
-
-> Jedes Pixel in der n-ten Zeile rückt um $n-1$ Spalten nach rechts.
-
-Pixel, die dabei über den rechten Bildrand hinausrücken, werden in derselben Zeile links wieder eingefügt. Die Pixelreihenfolge wird dabei nicht verändert.
-
-![Nach der Operation **H** --width=169](./images/bild-op-h.jpg)
-
-## Operation V
-
-**V** für vertikal
-
-> Jedes Pixel in der n-ten Spalte rückt um $n-1$ Zeilen nach unten.
-
-![--width=475](./images/pixel-operation-v.jpg)
-
-Pixel, die über den unteren Bildrand hinausrücken, werden in derselben Spalte oben wieder eingefügt.
-
-Die Operationen können hintereinander durchgeführt werden, als Folge. Im Beispiel hat Reto das Bild (25 x 25 Pixel) mit der Folge **HV** verschlüsselt (also Zuerst wurde Operation **H**, danach Operation **V** angewandt).
-
-![Verschlüsselung mit **HV**. --width=144](./images/bild-op-h-v.jpg)
-
-## Rätsel
-
-Folgendes Bild wird mit **VH** verschlüsselt:
-
-![--width=200](./images/bild-1000x1000.jpg)
-
-Wie sieht das Ergebnis aus?
-<div style={{display: 'flex', flexWrap: 'wrap'}}>
+Du hast die richtige Antwort gefunden 🥳
 
 
-<Option label="a" nextGuessIn={5000}>
-  ![--width=125](./images/option-a.jpg)
-
-  ***
-
-  ![--width=525](./images/option-a.jpg)
-  Hello
-</Option>
-
-
-<Option label="b" nextGuessIn={5000}>
-  ![--width=125](./images/option-b.jpg)
-</Option>
-
-
-<Option label="c" nextGuessIn={5000}>
-  ![--width=125](./images/option-c.jpg)
-</Option>
-
-
-<Option label="d" nextGuessIn={5000}>
-  ![--width=125](./images/option-d.jpg)
-</Option>
-
-
-<Option label="e" nextGuessIn={5000}>
-  ![--width=125](./images/option-e.jpg)
-</Option>
-
-</div>
-
-:::details[Lösung]
-Antwort **e** ist richtig.
-
+## Lösung
 Im Beispiel deutet die Verzerrung der Mona Lisa darauf hin, dass die Operation **H** geometrisch eine horizontale *Scherung* bewirkt und die Operation **V** eine vertikale *Scherung*.
 Das Bild mit den vier farbigen Quadraten wird durch die Operation **V** zunächst nach unten *geschert*. Das Ergebnis ist eine Parallelogramm mit einem verzerrten Bild. Das überhängende Dreieck am unteren Rand wird oben eingefügt (durch *Parallelverschiebung*), so dass wieder ein rechteckiges Bild entsteht. In ähnlicher Weise erfolgt danach durch die Operation **H** eine Scherung nach rechts. Der Überhang wird links eingefügt:
 
 ![--width=732](./images/lsg.jpg)
 
 Dieses Ergebnis der Verschlüsselung mit der Operationsfolge **VH** entspricht dem Bild aus Antwort **e**.
-:::
 
-:::tip[Dies ist Informatik!]
+## Hintergrundinformationen zum Rätsel
+
+
 Bei der Übertragung von Daten kann es wichtig sein, die Daten zu verschlüsseln. Sender\:in und Emp-
 fänger\:in der Daten verabreden dazu, welches Verfahren zur Verschlüsselung (und zur Entschlüsselung)
 verwendet wird. Wenn man kurz die Daten mit $D$ und das Verschlüsselungsverfahren mit $K$ (für
@@ -121,4 +41,7 @@ und bei der Übermittlung eines komplexen geheimen Schlüssels zwischen Sender u
 der verschlüsselten Information). Die Informatik kennt aber moderne Verfahren, die wenig Aufwand
 für Ver- und Entschlüsselung erfordern, die aber durch ihre besonderen (meist mathematischen)
 Eigenschaften eine Entzifferung übertragener Daten praktisch unmöglich machen.
-:::
+
+## Nächstes Rätsel
+
+![Nächstes Rätsel --width=500](./images/next-qr.png)

@@ -7,6 +7,7 @@ import styles from './index.module.css';
 import QrGrid from '@tdev-components/shared/QR-Code/Generator/QrGrid';
 
 const groups = {
+    'G-Beispiel': ['olwwql', 'omcrfc', 'mrjdcr', 'wfxnkv', 'pgemyw', 'vhsqdj'],
     'G-1': ['blusjk', 'rcyggi', 'vnaypf', 'hxbcaa', 'tmghcn', 'xjsiac'],
     'G-2': ['mhwmjw', 'tuxuck', 'ssnffg', 'swvauq', 'jjqrtz', 'ahraaa'],
     'G-3': ['fkqzke', 'hkmvox', 'ksolsr', 'ercvzt', 'fvccpc', 'wlwgum'],
@@ -33,7 +34,7 @@ export default function Home(): React.ReactNode {
                             <h2>{key}</h2>
                             <QrGrid
                                 title={key}
-                                cols={2}
+                                cols={3}
                                 image="/img/logo.png"
                                 iconSize={128}
                                 iconColor="#01f0bc"

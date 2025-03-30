@@ -1,0 +1,80 @@
+// styles.module.scss
+.tttContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  .tttStatus {
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .tttBoard {
+    display: flex;
+    flex-direction: column;
+    border: 3px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .tttRow {
+    display: flex;
+  }
+  
+  .tttSquare {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border: 1px solid #999;
+    font-size: 42px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+  
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  
+    &:focus {
+      outline: none;
+      background-color: #eaeaea;
+    }
+  }
+  
+  .tttSquareX {
+    color: #e74c3c;
+  }
+  
+  .tttSquareO {
+    color: #3498db;
+  }
+  
+  .tttResetButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4a69bd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  
+    &:hover {
+      background-color: #3c5aa6;
+    }
+  
+    &:active {
+      transform: translateY(1px);
+    }
+  }

@@ -1,0 +1,15 @@
+.cookie {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  
+  .image {
+    transition: transform 0.3s;
+    cursor: pointer;
+    width: 20em;
+    height: 20em;
+    &:hover {
+      filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3));
+    }
+  }
