@@ -3,7 +3,7 @@ page_id: 0a663db5-aaa0-40b1-b4e3-2fd80e1c0598
 sidebar_position: 1
 ---
 
-import {AdventureOption, AdventureOptions} from '@tdev-components/Adventure'
+import { AdventureOption, AdventureOptions } from '@tdev-components/Adventure'
 
 # Bilder verschlüsseln
 
@@ -56,39 +56,43 @@ Folgendes Bild wird mit **VH** verschlüsselt:
 Wie sieht das Ergebnis aus?
 
 <AdventureOptions>
+  <AdventureOption label="a" nextGuessIn={65}>
+    ![--width=125](./images/option-a.jpg)
 
-<AdventureOption label="a" nextGuessIn={65}>
-  ![--width=125](./images/option-a.jpg)
-  ***
-  ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-a.jpg)
-</AdventureOption>
+    ---
 
+    ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-a.jpg)
+  </AdventureOption>
 
-<AdventureOption label="b" nextGuessIn={65}>
-  ![--width=125](./images/option-b.jpg)
-  ***
-  ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-b.jpg)
-</AdventureOption>
+  <AdventureOption label="b" nextGuessIn={65}>
+    ![--width=125](./images/option-b.jpg)
 
+    ---
 
-<AdventureOption label="c" nextGuessIn={65}>
-  ![--width=125](./images/option-c.jpg)
-  ***
-  ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-c.jpg)
-</AdventureOption>
+    ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-b.jpg)
+  </AdventureOption>
 
+  <AdventureOption label="c" nextGuessIn={65}>
+    ![--width=125](./images/option-c.jpg)
 
-<AdventureOption label="d" nextGuessIn={65}>
-  ![--width=125](./images/option-d.jpg)
-  ***
-  ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-d.jpg)
-</AdventureOption>
+    ---
 
+    ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-c.jpg)
+  </AdventureOption>
 
-<AdventureOption label="e" nextGuessIn={65}>
-  ![--width=125](./images/option-e.jpg)
-  ***
-  ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-e.jpg)
-</AdventureOption>
+  <AdventureOption label="d" nextGuessIn={65}>
+    ![--width=125](./images/option-d.jpg)
 
+    ---
+
+    ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-d.jpg)
+  </AdventureOption>
+
+  <AdventureOption label="e" nextGuessIn={65}>
+    ![--width=125](./images/option-e.jpg)
+
+    ---
+
+    ![Ob deine Antwort stimmt, findest du bei diesem QR Code heraus](./images/solution-e.jpg)
+  </AdventureOption>
 </AdventureOptions>
