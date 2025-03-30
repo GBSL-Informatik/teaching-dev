@@ -12,7 +12,7 @@ interface Props {
     nextGuessIn: number;
 }
 
-const Option = observer((props: Props) => {
+const AdventureOption = observer((props: Props) => {
     const pageStore = useStore('pageStore');
     const page = pageStore.current;
     const [counter, setCounter] = React.useState(Date.now());
@@ -84,4 +84,4 @@ const Option = observer((props: Props) => {
     );
 });
 
-export default Option;
+export default AdventureOption;

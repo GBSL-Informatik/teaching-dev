@@ -7,8 +7,8 @@ interface Props {
     children: React.ReactNode;
 }
 
-const Options = observer((props: Props) => {
+const AdventureOptions = observer((props: Props) => {
     return <div className={clsx(styles.options)}>{props.children}</div>;
 });
 
-export default Options;
+export default AdventureOptions;

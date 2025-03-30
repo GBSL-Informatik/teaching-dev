@@ -1,4 +1,4 @@
-import Option from './Option';
-import Options from './Options';
+import AdventureOption from './Option';
+import AdventureOptions from './Options';
 
-export { Option, Options };
+export { AdventureOption, AdventureOptions };
