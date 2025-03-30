@@ -1,0 +1,22 @@
+.options {
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.option {
+    .header {
+        display: flex;
+        align-items: center;
+        .spacer {
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0;
+        }
+    }
+    hr::before {
+        content: 'Vorderseite';
+    }
+}

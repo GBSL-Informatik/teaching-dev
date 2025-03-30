@@ -13,6 +13,7 @@ interface Props {
     colors?: Record<string, string>;
     labels?: Record<string, string>;
     title?: string;
+    showValues?: boolean;
 }
 
 const MyAttributes = observer((props: Props) => {
@@ -38,7 +39,7 @@ const MyAttributes = observer((props: Props) => {
                         title={`${key} = ${value}`}
                         className={clsx(styles.badge)}
                     >
-                        {labels[key] || key}
+                        {props.showValues ? `${labels[key] || key}: ${value}` : labels[key] || key}
                     </Badge>
                 );
             })}

@@ -1,4 +1,6 @@
 import { GenericJsxDescriptor } from '../CatchAllUnknown/GenericJsxDescriptor';
+import AdventureOption from './Adventure/AdventureOption';
+import AdventureOptions from './Adventure/AdventureOptions';
 import AnswerDescriptor from './AnswerDescriptor';
 import BrowserWindowDescriptor from './BrowserWindowDescriptor';
 import { DdDescriptor, DeflistDescriptor, DtDescriptor } from './DeflistDescriptor';
@@ -15,7 +17,9 @@ const JsxDescriptors = [
     AnswerDescriptor,
     ScannerDescriptor,
     GeneratorDescriptor,
-    GenericJsxDescriptor
+    GenericJsxDescriptor,
+    AdventureOptions,
+    AdventureOption
 ];
 
 export default JsxDescriptors;

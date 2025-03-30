@@ -16,6 +16,7 @@ import {
     InsertCodeBlock,
     InsertFrontmatter,
     InsertTable,
+    InsertThematicBreak,
     jsxPlugin,
     linkDialogPlugin,
     linkPlugin,
@@ -214,8 +215,8 @@ const CmsMdxEditor = observer((props: Props) => {
                                     <CreateLink />
                                     <CodeToggle />
                                     <BlockTypeSelect />
+                                    <InsertThematicBreak />
                                     <InsertAdmonition />
-                                    <InsertFrontmatter />
                                     <ConditionalContents
                                         options={[
                                             {
