@@ -29,8 +29,7 @@ const URLS = GROUPS.reduce((acc, curr) => {
 console.log(JSON.stringify(URLS, null, 2))
 const main = async () => {
     GROUPS.forEach((group, idx) => {
-      const groupRoot = `docs/${group}`
-      // fs.writeFileSync(`${groupRoot}/index.mdx`, `# Gruppe ${group}\n`);
+      const groupRoot = `docs/${(idx + 1).toString().padStart(2, '0')}-${group}`
       const routes = URLS[group];
       routes.forEach((r, idx) => {
         fs.mkdirSync(`${groupRoot}/${r}`, { recursive: true });
@@ -38,9 +37,9 @@ const main = async () => {
           ? '# Rätsel' 
           : idx === 1 
             ? '# Richtige Antwort\n\nDu hast die richtige Antwort gefunden 🥳\n## Lösung\n\n## Hintergrundinformationen zum Rätsel\n\n## Nächstes Rätsel' 
-            : `# Falsche Antwort 😑\n\nZurück zum [Rästel](https://mint-26e.gbsl.website/${routes[0]})`
-
-        fs.writeFileSync(`${groupRoot}/${r}/index.mdx`, content);
+            : `# Falsche Antwort 😑\n\nZurück zum [Rästel](https://mint-26e.gbsl.website/${routes[0]})`;
+        const withFrontMatter = `---\nsidebar_position: ${idx + 1}\n---\n\n${content}`
+        fs.writeFileSync(`${groupRoot}/${r}/index.mdx`, withFrontMatter);
       })
     });
 }

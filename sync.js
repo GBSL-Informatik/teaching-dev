@@ -27,7 +27,7 @@ function copyRecursive(src, dest) {
     return rootFiles
   }
 const main = async () => {
-    const dirs = fs.readdirSync('docs').filter(d => d.startsWith('G-'));
+    const dirs = fs.readdirSync('docs').filter(d => /^\d\d-G-/.test(d));
     const ignore = []
     dirs.forEach((d) => {
         copyRecursive(`docs/${d}`, 'src/pages/').forEach(e => ignore.push(e));

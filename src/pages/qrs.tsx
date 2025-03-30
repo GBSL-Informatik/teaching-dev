@@ -7,16 +7,16 @@ import styles from './index.module.css';
 import QrGrid from '@tdev-components/shared/QR-Code/Generator/QrGrid';
 
 const groups = {
-    'G-1': ['uzykwc', 'qtsjtm', 'iosbgr', 'ecsrjh', 'asqylk', 'ewpoue'],
-    'G-2': ['kizppf', 'nrdkkd', 'xelght', 'levhbg', 'ejkvtm', 'rotrju'],
-    'G-3': ['rwjfie', 'fbujxp', 'zcvofe', 'owdudn', 'ednsiq', 'zhrykg'],
-    'G-4': ['flnweo', 'fuvndx', 'bifnjh', 'qikido', 'dmywpn', 'lycpmx'],
-    'G-5': ['jkmvch', 'wvcsua', 'hmobdv', 'njtegs', 'glafsd', 'khfmvu'],
-    'G-6': ['znqmkr', 'ojuijb', 'hgwlzg', 'bdrtyu', 'hwjgmy', 'yhixsk'],
-    'G-7': ['mtrwnf', 'zahuez', 'vbrckf', 'onvfxs', 'roiwqd', 'kfphnc'],
-    'G-8': ['rxczxa', 'ezjvto', 'tdneum', 'pwcjfs', 'smccvp', 'klodaj'],
-    'G-9': ['qygjyr', 'larwpa', 'pijljp', 'hebdja', 'kzztxb', 'hfgfod'],
-    'G-10': ['ucmkps', 'mtvbvk', 'tzksuo', 'rhajez', 'idljin', 'ojwilj']
+    'G-1': ['blusjk', 'rcyggi', 'vnaypf', 'hxbcaa', 'tmghcn', 'xjsiac'],
+    'G-2': ['mhwmjw', 'tuxuck', 'ssnffg', 'swvauq', 'jjqrtz', 'ahraaa'],
+    'G-3': ['fkqzke', 'hkmvox', 'ksolsr', 'ercvzt', 'fvccpc', 'wlwgum'],
+    'G-4': ['dacaqx', 'qrexph', 'hmviyc', 'tsodqe', 'qlogij', 'qwilyc'],
+    'G-5': ['vlryak', 'wweyay', 'wpvbsh', 'lfrsda', 'jkvdeu', 'hjmlbu'],
+    'G-6': ['isduqe', 'tixhkj', 'xijycm', 'ovallm', 'urpjrb', 'ubmqwa'],
+    'G-7': ['oqkkhh', 'dhcdnq', 'hmouoj', 'kzmztj', 'nzmlss', 'idsxds'],
+    'G-8': ['amsjvh', 'nfilgw', 'ubylcx', 'dlddka', 'ctatsc', 'bbxbyh'],
+    'G-9': ['xtwfwk', 'ftqdgu', 'zbqpnl', 'cwdxgx', 'fjwxwl', 'glrloz'],
+    'G-10': ['pcqsni', 'avqqxt', 'ehovae', 'olkwto', 'tnabrb', 'ooyllo']
 };
 
 export default function Home(): React.ReactNode {
