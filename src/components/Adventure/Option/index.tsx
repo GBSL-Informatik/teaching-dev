@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
+import Loader from '@tdev-components/Loader';
+import { formatSeconds } from '@tdev-components/util/timeHelpers';
 
 interface Props {
     label: string;
@@ -12,6 +14,27 @@ interface Props {
 
 const Option = observer((props: Props) => {
     const pageStore = useStore('pageStore');
+    const page = pageStore.current;
+    const [counter, setCounter] = React.useState(Date.now());
+    const skippedCounter = React.useRef<number>(null);
+
+    React.useEffect(() => {
+        if (!page) {
+            return;
+        }
+        const now = Date.now();
+        if (now < page.lastGuessedAt() + props.nextGuessIn * 1000) {
+            if (skippedCounter.current !== counter) {
+                setCounter(now);
+                skippedCounter.current = now;
+            }
+            const tDisposer = setTimeout(() => {
+                setCounter(Date.now());
+            }, 1000);
+            return () => clearTimeout(tDisposer);
+        }
+    }, [counter, page?.activeSolution, props.nextGuessIn, skippedCounter]);
+
     const { front, back } = React.useMemo(() => {
         if (!Array.isArray(props.children)) {
             return { front: props.children, back: 'Rückseite' };
@@ -24,7 +47,12 @@ const Option = observer((props: Props) => {
         const back = props.children.slice(splitIdx + 2);
         return { front, back: back.length === 0 ? 'Rückseite' : back };
     }, [props.children]);
-    const page = pageStore.current;
+    const timeLeft = React.useMemo(() => {
+        if (!page) {
+            return 1;
+        }
+        return page.lastGuessedAt() + props.nextGuessIn * 1000 - counter;
+    }, [page, counter, page?.activeSolution, props.nextGuessIn]);
     if (!page) {
         return null;
     }
@@ -37,7 +65,7 @@ const Option = observer((props: Props) => {
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                page.flipOption(props.label, props.nextGuessIn);
+                page.flipOption(props.label, props.nextGuessIn * 1000);
             }}
         >
             <div className={clsx('card__body', styles.body)}>
@@ -51,6 +79,7 @@ const Option = observer((props: Props) => {
             <div className={clsx('card__footer', styles.label)}>
                 <h4>{props.label}</h4>
             </div>
+            {!isFlipped && timeLeft > 0 && <Loader label={formatSeconds(timeLeft / 1000 + 1)} overlay />}
         </div>
     );
 });

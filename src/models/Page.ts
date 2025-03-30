@@ -16,10 +16,12 @@ export default class Page {
 
     @observable.ref accessor primaryStudentGroup: StudentGroup | undefined = undefined;
     @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
+
     documentRootIds: ObservableSet<string>;
 
     constructor(id: string, store: PageStore) {
         this.id = id;
+        this.activeSolution = Storage.getUnsafe(`MINT-GUESS-${id}-S`);
         this.store = store;
         this.documentRootIds = observable.set<string>([id]);
     }
@@ -128,20 +130,22 @@ export default class Page {
     /* MINT STUFF */
     @observable accessor activeSolution: string | undefined = undefined;
 
+    lastGuessedAt() {
+        return Storage.getUnsafe(`MINT-GUESS-${this.id}-T`, Date.now())!;
+    }
+
     @action
-    flipOption(label?: string, nextGuessIn?: number) {
-        if (!label) {
-            return;
-        }
+    flipOption(label: string, nextGuessIn: number) {
         const now = Date.now();
-        const current = Storage.getUnsafe(`MINT-GUESS-${this.id}`, now - 1)!;
         if (this.activeSolution === label) {
-            // this.activeSolution = undefined;
+            this.activeSolution = undefined;
+            Storage.setUnsafe(`MINT-GUESS-${this.id}-S`, undefined);
             return;
         } else {
-            if (now > current) {
+            if (now >= this.lastGuessedAt() + nextGuessIn) {
                 this.activeSolution = label;
-                Storage.setUnsafe(`MINT-GUESS-${this.id}`, now + (nextGuessIn || 0));
+                Storage.setUnsafe(`MINT-GUESS-${this.id}-S`, label);
+                Storage.setUnsafe(`MINT-GUESS-${this.id}-T`, now);
             }
         }
     }

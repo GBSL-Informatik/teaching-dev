@@ -1,6 +1,7 @@
 .flipCard {
     perspective: 1000px;
     cursor: pointer;
+    position: relative;
 
     .body {
         position: relative;
