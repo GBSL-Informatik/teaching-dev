@@ -8,7 +8,7 @@ import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props extends Omit<DefaultProps, 'text' | 'onCanvas'> {
-    title?: string;
+    title: string;
     qrTexts: string[];
     cols?: number;
 }
@@ -54,13 +54,13 @@ const QrGrid = observer((props: Props) => {
             }
         }
         const link = document.createElement('a');
-        link.download = 'qrcode.png';
+        link.download = `qrcodes-${props.title}.png`;
         link.href = downloadCanvas.toDataURL('image/png');
         link.click();
     }, [qrRefs, props.title]);
     return (
         <>
-            <Button icon={mdiDownload} onClick={onDownload} size={SIZE_S} />
+            <Button icon={mdiDownload} onClick={onDownload} size={SIZE_S} text={`Download ${props.title}`} />
             <div className={clsx(styles.qrGrid)} style={{ ['--qr-cols' as any]: props.cols || 2 }}>
                 {qrTexts.map((text, idx) => {
                     return (
