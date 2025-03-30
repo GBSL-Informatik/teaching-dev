@@ -1,0 +1,7 @@
+.qrGrid {
+    display: grid;
+    grid-template-columns: repeat(var(--qr-cols), 1fr);
+    gap: 1em;
+    .qr {
+    }
+}
