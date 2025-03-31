@@ -3,6 +3,125 @@ sidebar_position: 1
 page_id: 71e92ebf-c675-4869-b47c-e6334ea74983
 ---
 
-# Wissenschaftler\:innen Quizz 1
+import { AdventureOptions, AdventureOption } from '@tdev-components/Adventure'
 
-by Benjamin und Jacy
+# David Hilbert und sein unendliches Hotel
+
+---
+
+**David Hilbert** gilt bis heute als einer der bedeutestens Mathematiker der Neuzeit. Er wurde am 23.01.1862 zu einer wohlhabenden Familie in Königsberg geboren. Er besuchte renommierte Schulen und entwickelte schon früh ein Interesse für die Wissenschaft, insbesondere für die Mathematik, aufgrund der Faszination seiner Mutter. So studierte er 1880 Mathematik an der *Albertus-Universität* in Königsberg. Aber was macht ihn zu einem der **bekanntesten Mathematikern** der Neuzeit?
+
+![David Hilbert, 1912](./images/david_hilbert.jpg)
+
+Hilbert erfand ein Axiomensystem für den euklidischen Raum. Es spielt jetzt keine Rolle, was genau das ist, aber viele Mathematiker waren auf der Suche nach einem und hielten es für notwendig, eins zu finden.&#x20;
+In 1900 postulierte Hilbert **23 Probleme** aus allen Teilgebieten der Mathematik, die dazumale ungelöst waren. In 2012 galten 15 davon als gelöst, 3 als ungelöst und 5 als prinzipiell unlösbar.
+Am 20. November 1915 reichte Hilbert eine Arbeit zur allgemeinen Relativitätstheorie ein, also **5 Tage vor Einstein.** Zu dieser Zeit war die allgemeine Relativitätstheorie noch nicht bekannt, nur die spezielle. In Einsteins Arbeit waren aber auch die einsteinischen Feldgleichungen enthalten, die als essenziell für die Relativitätstheorie gelten. Einstein und Hilbert haben sich aber nie gestritten, und respektierten ihre jeweiligen Arbeiten.
+
+In unserem Rätsel geht es um ein Gedankensystem, das von ihm geschaffen wurde. Stellen Sie sich ein Hotel vor, welches **unendlich Zimmer** hat und **vollständig besetzt** ist. Nun kommt ein neuer Gast. Was kann die Rezeption tun, um diesem Gast ein Zimmer zu geben?
+Die Rezeption kann folgendes tun: Jeder Gast im Hotel muss **ein Zimmer nach rechts** gehen. Also der Gast aus Zimmer 1 geht in Zimmer 2, der Gast aus Zimmer 2 geht in Zimmer 3, der Gast aus Zimmer 3 in Zimmer 4, und so weiter. Die Rechnung lautet:&#x20;
+Neue Zimmernummer = Zimmernummer + 1
+Was kann die Rezeption tun, wenn 8 neue Gäste ein Zimmer beziehen möchten? Das Prinzip bleibt dasselbe. **Jeder Gast geht 8 Zimmer weiter**. Der Gast aus Zimmer 1 geht in Zimmer 9, der Gast aus Zimmer 2 geht in Zimmer 10, und so weiter.&#x20;
+Es gilt also für jede endliche, natürliche Anzahl an Gästen:&#x20;
+**Neue Zimmernummer = Zimmernummer + Anzahl neuer Gäste**
+
+:::details[Mathematischere Darstellung]
+$$
+\text{n = Zimmernummer}\\
+\text{N = Neue Zimmernummer}\\
+\text{A = Anzahl Gäste}\\
+\text{}\\
+N =n + A
+$$
+:::
+
+Was kann die Rezeption unternehmen, wenn vor dem Hotel **ein** Bus hält mit **unendlich vielen** Gästen? Die Antwort ist auch hier recht simpel. Die Gäste beziehen das Zimmer, das die **doppelt so hohe Nummer** hat wie ihr jetztiges Zimmer. So geht der Gast aus Zimmer 1 in Zimmer 2, der Gast aus Zimmer 2 in Zimmer 4, der Gast aus Zimmer 3 in Zimmer 6, und so weiter. Dadurch werden alle Zimmer mit einer **geraden Nummer besetzt**, alle Zimmer mit einer **ungeraden Nummer frei**. Alle Gäste aus dem Bus können in den ungeraden Zimmern untergebracht werden.&#x20;
+Es gilt also für unendlich viele Gäste:
+**Neue Zimmernummer = 2 x Zimmernummer**
+
+:::details[Mathematischere Darstellung]
+$$
+\text{n = Zimmernummer}\\
+\text{N = Neue Zimmernummer}\\
+\text{}\\
+N = 2 * n
+$$
+:::
+
+Nun kommen wir zur Rätselfrage:
+**Was kann die Rezeption tun, wenn unendlich viele Busse mit jeweils unendlich vielen Gästen kommen?**
+
+:::details[Hinweis]
+Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit den Natürlichen Zahlen durchnummeriert werden.
+:::
+
+<AdventureOptions>
+  <AdventureOption label="I" nextGuessIn="60">
+    Diese Frage hat keine Lösung.
+
+    ---
+
+    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+  </AdventureOption>
+</AdventureOptions>
+
+<AdventureOptions>
+  <AdventureOption label="II" nextGuessIn="60">
+    Man multipliziert die Zimmernummer wieder mit 2, so dass alle ungeraden Zimmer frei sind. Danach belegt man alle ungeraden Zimmer und ihre Potenzen mit den Gästen aus einem Bus.
+
+    $$
+    \text{n = Zimmernummer}\\
+    \text{k ist ein Element der Natürlichen Zahlen}\\
+    \text{}\\
+    \text{Zimmernummer für Bus 1: } 3^k\\
+    \text{Zimmernummer für Bus 2: } 5^k\\
+    \text{Zimmernummer für Bus 3: } 7^k\\
+    \text{und so weiter}\\
+    \text{}\\
+    \text{Zimmernummer allgemein: } (2n+1)^k\\
+    $$
+
+    ---
+
+    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+  </AdventureOption>
+</AdventureOptions>
+
+<AdventureOptions>
+  <AdventureOption label="III" nextGuessIn="60">
+    Jeder Gast geht ins Zimmer mit der Nummer, welche die jetzige Nummer quadriert ist.
+    Also: der Gast in Zimmer 1 geht in Zimmer 1, der Gast in Zimmer 2 geht in Zimmer 4, der Gast in Zimmer 3 geht in Zimmer 9, und so weiter.
+
+    $$
+    \text{n = Zimmernummer}\\
+    \text{k ist ein Element der Natürlichen Zahlen}\\
+    \text{}\\
+    \text{Jeder Gast geht ins folgende Zimmer } n^k\\
+    \text{}\\
+    \text{Die neuen Gäste gehen in die jetzt freien Zimmer}
+
+    $$
+
+    ---
+
+    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+  </AdventureOption>
+</AdventureOptions>
+
+<AdventureOptions>
+  <AdventureOption label="IV" nextGuessIn="60">
+    Jeder Gast nimmt das Zimmer mit der 3fachen Nummer seiner aktuellen Zimmernummer. Also Zimmer 1 geht in Zimmer 3, Zimmer 2 geht in Zimmer 6, Zimmer 3 geht in Zimmer 9, und so weiter. Die neuen Gäste gehen in die nun freien Zimmer.
+
+    $$
+    \text{n = Zimmernummer}\\
+    \text{k ist ein Element der Natürlichen Zahlen}\\
+    \text{}\\
+    \text{Die Gäste gehen in folgendes Zimmer } 3n\\
+    \text{}\\
+    \text{Die neuen Gäste gehen in die nun freien Zimmer}
+    $$
+
+    ---
+
+    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+  </AdventureOption>
+</AdventureOptions>
