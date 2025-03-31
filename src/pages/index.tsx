@@ -38,10 +38,10 @@ export default function Home(): React.ReactNode {
                     image="/img/logo.png"
                     iconSize={48}
                     iconColor="#01f0bc"
-                    text="https://mint-26e.gbsl.website"
+                    text="https://mint-26e.gbsl.website/olwwql"
                     isLink
                     showText
-                    size="20em"
+                    size="22em"
                 />
                 <Button
                     icon={mdiQrcodeScan}
