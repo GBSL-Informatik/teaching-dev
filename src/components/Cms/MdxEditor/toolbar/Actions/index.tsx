@@ -10,6 +10,7 @@ import {
     mdiCloseCircle,
     mdiCloseCircleOutline,
     mdiContentSaveAlert,
+    mdiLoading,
     mdiSourceBranchPlus
 } from '@mdi/js';
 import styles from './styles.module.scss';
@@ -18,6 +19,8 @@ import Card from '@tdev-components/shared/Card';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { useStore } from '@tdev-hooks/useStore';
+import { ApiAction, ApiState } from '@tdev-stores/iStore';
+import { apiButtonColor, apiIcon } from '@tdev-components/util/apiStateIcon';
 
 export interface Props {
     file: File;
@@ -29,12 +32,13 @@ const Actions = observer((props: Props) => {
     const { github } = cmsStore;
     const { file } = props;
     const ref = React.useRef<PopupActions>(null);
+    const [saveState, setSaveState] = React.useState<ApiState>(ApiState.IDLE);
     if (!github) {
         return null;
     }
     return (
         <div className={clsx(styles.actions, 'button-group')}>
-            <Save file={file} className={clsx(styles.button)} />
+            <Save file={file} className={clsx(styles.button)} apiState={saveState} />
             <Popup
                 ref={ref}
                 trigger={
@@ -79,10 +83,14 @@ const Actions = observer((props: Props) => {
                                         text="In neuem Branch speichern"
                                         onClick={() => {
                                             const name = github.nextBranchName;
-                                            github.saveFileInNewBranchAndCreatePr(file, name);
+                                            github.saveFileInNewBranchAndCreatePr(file, name).then((res) => {
+                                                setSaveState(res ? ApiState.SUCCESS : ApiState.ERROR);
+                                            });
+                                            setSaveState(ApiState.SYNCING);
                                         }}
-                                        icon={mdiSourceBranchPlus}
-                                        color="primary"
+                                        spin={saveState === ApiState.SYNCING}
+                                        icon={apiIcon(mdiSourceBranchPlus, saveState, true)}
+                                        color={apiButtonColor('primary', saveState, true)}
                                         iconSide="left"
                                     />
                                 </li>
@@ -92,7 +100,8 @@ const Actions = observer((props: Props) => {
                                         onConfirm={() => {
                                             file.save();
                                         }}
-                                        icon={mdiContentSaveAlert}
+                                        icon={apiIcon(mdiContentSaveAlert, saveState, true)}
+                                        spin={saveState === ApiState.SYNCING}
                                         confirmColor="orange"
                                         confirmText={`Wirklich im ${file.branch}-Branch speichern?`}
                                         color="green"
