@@ -247,16 +247,20 @@ class Github {
 
     @action
     saveFileInNewBranchAndCreatePr(file: FileModel, newBranch: string) {
-        this.createNewBranch(newBranch)
+        return this.createNewBranch(newBranch)
             .then(async () => {
                 await this.createOrUpdateFile(file.path, file.content, newBranch, file.sha);
                 await this.createPR(newBranch, withoutPreviewPRName(newBranch));
                 this.store.triggerNavigateToFile(newBranch, file.path);
+                return true;
             })
             .catch(() => {
-                return this.deleteBranch(newBranch).catch(() => {
-                    console.warn('Failed to delete branch', newBranch);
-                });
+                return this.deleteBranch(newBranch)
+                    .then(() => false)
+                    .catch(() => {
+                        console.warn('Failed to delete branch', newBranch);
+                        return false;
+                    });
             });
     }
 
