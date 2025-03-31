@@ -87,9 +87,9 @@ class PR {
     @action
     setPreview(enabled: boolean) {
         if (enabled) {
-            this.gitProvider.updatePr(this.number, { title: withPreviewPRName(this.title) });
+            return this.gitProvider.updatePr(this.number, { title: withPreviewPRName(this.title) });
         } else {
-            this.gitProvider.updatePr(this.number, { title: withoutPreviewPRName(this.title) });
+            return this.gitProvider.updatePr(this.number, { title: withoutPreviewPRName(this.title) });
         }
     }
 
@@ -134,6 +134,9 @@ class PR {
                 .fetchPrState(this.number)
                 .then(
                     action((res) => {
+                        if (!res) {
+                            return;
+                        }
                         this.title = res.title;
                         this.body = res.body || '';
                         this.mergeable = !!res.mergeable;

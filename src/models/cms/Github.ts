@@ -322,23 +322,30 @@ class Github {
 
     @action
     mergePR(prNumber: number) {
-        this.octokit.pulls
-            .merge({
-                owner: this.store.repoOwner,
-                repo: this.store.repoName,
-                pull_number: prNumber,
-                merge_method: 'merge', // or "squash" or "rebase"
-                commit_title: `CMS: Merge #${prNumber}`
-            })
-            .then(
-                action((res) => {
-                    const pr = this.store.findPr(prNumber);
-                    if (pr) {
-                        pr.setMerged(true);
-                        pr.sync();
-                    }
+        const pr = this.PRs.find((pr) => pr.number === prNumber);
+        let prepare: Promise<any> = Promise.resolve(undefined);
+        if (pr && !pr.hasPreview) {
+            prepare = pr.setPreview(true);
+        }
+        prepare.then(() => {
+            this.octokit.pulls
+                .merge({
+                    owner: this.store.repoOwner,
+                    repo: this.store.repoName,
+                    pull_number: prNumber,
+                    merge_method: 'merge', // or "squash" or "rebase"
+                    commit_title: `CMS: Merge #${prNumber}`
                 })
-            );
+                .then(
+                    action((res) => {
+                        const pr = this.store.findPr(prNumber);
+                        if (pr) {
+                            pr.setMerged(true);
+                            pr.sync();
+                        }
+                    })
+                );
+        });
     }
 
     @action
