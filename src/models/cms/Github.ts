@@ -333,6 +333,7 @@ class Github {
         if (pr && !pr.hasPreview) {
             prepare = pr.setPreview(true);
         }
+        const branchName = pr?.branchName;
         prepare.then(() => {
             this.octokit.pulls
                 .merge({
@@ -348,6 +349,10 @@ class Github {
                         if (pr) {
                             pr.setMerged(true);
                             pr.sync();
+                        }
+                        const bName = pr?.branchName || branchName;
+                        if (res.data.merged && bName) {
+                            this.deleteBranch(bName);
                         }
                     })
                 );
