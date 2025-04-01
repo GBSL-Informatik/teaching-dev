@@ -49,6 +49,18 @@ export const ImageComponent = observer((props: ImageEditorProps): React.ReactNod
     const gitImg = useAssetFile(src);
 
     React.useEffect(() => {
+        if (imageRef.current) {
+            let imgFigure = imageRef.current.parentElement;
+            while (imgFigure && !imgFigure.classList.contains('lexicalImageFigure')) {
+                imgFigure = imgFigure.parentElement;
+            }
+            if (imgFigure && !imgFigure.style.getPropertyValue('--cms-img-width')) {
+                imgFigure.style.setProperty('--cms-img-width', `${imageRef.current.width}px`);
+            }
+        }
+    }, [imageRef]);
+
+    React.useEffect(() => {
         let isMounted = true;
         const unregister = mergeRegister(
             editor.registerUpdateListener(({ editorState }) => {
