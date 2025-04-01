@@ -23,6 +23,17 @@ export const GenericJsxDescriptor: JsxComponentDescriptor = {
     props: [],
     Editor: ({ mdastNode, descriptor }) => {
         const { onUpdate, values } = useAttributeEditorInNestedEditor([], mdastNode.attributes);
+        const props = React.useMemo(() => {
+            return Object.entries(values)
+                .map(([k, v]) =>
+                    /^\s*(\[|\{)/.test(v)
+                        ? `${k}={${v}}`
+                        : /^\d+(\.\d+)?$/.test(v)
+                          ? `${k}={${v}}`
+                          : `${k}="${v}"`
+                )
+                .join(' ');
+        }, [values]);
 
         if (mdastNode.children && mdastNode.children.length > 0) {
             return (
@@ -45,9 +56,7 @@ export const GenericJsxDescriptor: JsxComponentDescriptor = {
                             ) as any
                         }
                     >
-                        {`<${mdastNode.name} ${Object.entries(values)
-                            .map(([k, v]) => `${k}="${v}"`)
-                            .join(' ')}>`}
+                        {`<${mdastNode.name} ${props}>`}
                     </CodeBlock>
                     <div className={clsx(styles.content)}>
                         <NestedLexicalEditor<MdxJsxTextElement | MdxJsxFlowElement>
@@ -83,9 +92,7 @@ export const GenericJsxDescriptor: JsxComponentDescriptor = {
                     ) as any
                 }
             >
-                {`<${mdastNode.name} ${Object.entries(values)
-                    .map(([k, v]) => `${k}="${v}"`)
-                    .join(' ')} />`}
+                {`<${mdastNode.name} ${props} />`}
             </CodeBlock>
         );
     }
