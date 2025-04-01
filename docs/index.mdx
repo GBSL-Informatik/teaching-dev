@@ -30,3 +30,22 @@ Um Antwort-Optionen zu erstellen, soll wie folgt vorgegangen werden:
 1. Alle notwendigen Bilder untereinander einfügen und speichern.
 2. In den Source-Mode wechseln.
 3. Die Kärtchen erstellen. Es braucht ein `<AdventureOptions>` (Mehrzahl!) und mehrere `<AdventureOption>` - eins pro Antwort.
+
+```tsx
+<AdventureOptions>
+  <AdventureOption label="A" nextGuessIn={60}>
+    Vorderseite
+
+    ---
+  
+    Rückseite
+  </AdventureOption>
+  <AdventureOption label="B" nextGuessIn={60}>
+    Vorderseite
+
+    ---
+
+    Rückseite
+  </AdventureOption>
+</AdventureOptions>
+```
