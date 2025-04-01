@@ -51,8 +51,12 @@ const sanitizeFileName = (path: string) => {
             .replace(/Ö/g, 'Oe')
             .replace(/Ü/g, 'Ue')
             .replace(/ß/g, 'ss')
+            .replace(/%/g, '')
             // Rest of sanitization...
             .replace(/\s+/g, '-')
+            // Remove special characters that Git doesn't handle well
+            // Added % to the list of removed characters
+            .replace(/[~^:?*[\]\\{}|"<%>]/g, '')
             .replace(/[~^:?*[\]\\{}|"<>]/g, '')
             .replace(/[\x00-\x1F\x7F]/g, '')
             .replace(/^[./]+|[./]+$/g, '')
