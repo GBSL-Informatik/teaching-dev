@@ -26,11 +26,13 @@ Es gilt also für jede endliche, natürliche Anzahl an Gästen:&#x20;
 
 :::details[Mathematischere Darstellung]
 $$
-\text{n = Zimmernummer}\\
-\text{N = Neue Zimmernummer}\\
-\text{A = Anzahl Gäste}\\
-\text{}\\
-N =n + A
+\begin{aligned}
+n &:\quad \text{aktuelle Zimmernummer}\\
+A &:\quad \text{Anzahl Gäste}\\
+N &:\quad \text{neue Zimmernummer}\\
+&\\
+N &= n + A
+\end{aligned}
 $$
 :::
 
@@ -40,10 +42,12 @@ Es gilt also für unendlich viele Gäste:
 
 :::details[Mathematischere Darstellung]
 $$
-\text{n = Zimmernummer}\\
-\text{N = Neue Zimmernummer}\\
-\text{}\\
-N = 2 * n
+\begin{aligned}
+    n &:\quad \text{aktuelle Zimmernummer}\\
+    N &:\quad \text{neue Zimmernummer}\\
+      &\text{}\\
+    N &= 2 \cdot n
+\end{aligned}
 $$
 :::
 
@@ -69,16 +73,18 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
     Man multipliziert die Zimmernummer wieder mit 2, sodass alle ungeraden Zimmer frei sind. Danach belegt man alle Zimmer mit Nummern, welche ungerade Primzahlen sind und ihre Potenzen mit den Gästen aus einem Bus.
 
     $$
-    \text{n = Zimmernummer}\\
-    \text{k ist ein Element der Natürlichen Zahlen}\\
-    \text{}\\
-    \text{Zimmernummer für Bus 1: } 3^k\\
-    \text{Zimmernummer für Bus 2: } 5^k\\
-    \text{Zimmernummer für Bus 3: } 7^k\\
-    \text{Zimmernummer für Bus 4: } 11^k\\
-    \text{und so weiter}\\
-    \text{}\\
-    \text{Zimmernummer allgemein: } (2n+1)^k\\
+    \begin{aligned}
+        n :&\quad \text{aktuelle Zimmernummer}\\
+        k :&\quad \text{ist ein Element der Natürlichen Zahlen}\\
+        &\\
+        \text{Zimmernummer für Bus 1: }&\quad 3^k\\
+        \text{Zimmernummer für Bus 2: }&\quad 5^k\\
+        \text{Zimmernummer für Bus 3: }&\quad 7^k\\
+        \text{Zimmernummer für Bus 4: }&\quad 11^k\\
+        \text{und so weiter...}&\\
+        &\\
+        \text{Zimmernummer allgemein: }&\quad (2n+1)^k\\
+    \end{aligned}
     $$
 
     ---
@@ -93,13 +99,14 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
     Also: der Gast in Zimmer 1 geht in Zimmer 1, der Gast in Zimmer 2 geht in Zimmer 4, der Gast in Zimmer 3 geht in Zimmer 9, und so weiter.
 
     $$
-    \text{n = Zimmernummer}\\
-    \text{k ist ein Element der Natürlichen Zahlen}\\
-    \text{}\\
-    \text{Jeder Gast geht ins folgende Zimmer } n^k\\
-    \text{}\\
-    \text{Die neuen Gäste gehen in die jetzt freien Zimmer}\\
-
+    \begin{aligned}
+        n:& \quad \text{Zimmernummer}\\
+        k :&\quad \text{ist ein Element der Natürlichen Zahlen}\\
+        &\\
+        \text{Jeder Gast geht ins folgende Zimmer}:&\quad n^k\\
+        &\\
+        \rightarrow \text{Die neuen Gäste gehen in die jetzt freien Zimmer}\quad\\
+    \end{aligned}
     $$
 
     ---
@@ -113,12 +120,14 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
     Jeder Gast nimmt das Zimmer mit der 3fachen Nummer seiner aktuellen Zimmernummer. Also Zimmer 1 geht in Zimmer 3, Zimmer 2 geht in Zimmer 6, Zimmer 3 geht in Zimmer 9, und so weiter. Die neuen Gäste gehen in die nun freien Zimmer.
 
     $$
-    \text{n = Zimmernummer}\\
-    \text{k ist ein Element der Natürlichen Zahlen}\\
-    \text{}\\
-    \text{Die Gäste gehen in folgendes Zimmer } 3n\\
-    \text{}\\
-    \text{Die neuen Gäste gehen in die nun freien Zimmer}\\
+    \begin{aligned}
+        n:& \quad \text{Zimmernummer}\\
+        k :&\quad \text{ist ein Element der Natürlichen Zahlen}\\
+        &\\
+        \text{Die Gäste gehen in folgendes Zimmer}:&\quad 3n\\
+        &\\
+        \rightarrow \text{Die neuen Gäste gehen in die nun freien Zimmer}\\
+    \end{aligned}
     $$
 
     ---
