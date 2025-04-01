@@ -12,6 +12,7 @@ import {
     $isLeafNode,
     $isParagraphNode,
     $isRangeSelection,
+    $isTextNode,
     COMMAND_PRIORITY_EDITOR,
     KEY_DOWN_COMMAND,
     LexicalEditor
@@ -44,6 +45,7 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { directiveFromMarkdown } from 'mdast-util-directive';
 import { directive } from 'micromark-extension-directive';
 import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import { $isHeadingNode } from '@lexical/rich-text';
 export * from './ImageNode';
 
 export interface ImageCaption extends Parent {
@@ -113,13 +115,16 @@ const internalInsertImage$ = Signal<SrcImageParameters>((r) => {
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
                         const nodes = selection.getNodes();
+                        console.log('nodes', nodes[0]?.getTextContent());
                         const selectedNode = nodes[0];
-                        const elementNode =
-                            $isElementNode(selectedNode) && !selectedNode.isInline()
-                                ? selectedNode
-                                : selectedNode.getParent();
-                        if (!elementNode) {
+                        if (!selectedNode) {
                             return;
+                        }
+                        let currentNode = selectedNode;
+                        let parent = selectedNode.getParent();
+                        while (($isElementNode(parent) && parent.isInline()) || $isHeadingNode(parent)) {
+                            currentNode = parent;
+                            parent = currentNode.getParent();
                         }
                         theEditor.update(() => {
                             const imageFigure = $createImageFigureNode();
@@ -130,7 +135,11 @@ const internalInsertImage$ = Signal<SrcImageParameters>((r) => {
                             const imageCaption = $createImageCaptionNode();
                             imageCaption.append($createParagraphNode());
                             imageFigure.append(imageNode, imageCaption);
-                            elementNode?.insertAfter(imageFigure);
+                            if ($isParagraphNode(currentNode.getParent())) {
+                                currentNode.getParent()!.insertAfter(imageFigure);
+                            } else {
+                                currentNode.insertAfter(imageFigure);
+                            }
                         });
                     }
                 });
