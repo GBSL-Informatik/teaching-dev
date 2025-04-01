@@ -5,15 +5,24 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Popup from 'reactjs-popup';
 import Card from '@tdev-components/shared/Card';
-import { mdiClose, mdiFlashTriangle, mdiSourceBranch, mdiSourceBranchPlus } from '@mdi/js';
+import {
+    mdiClose,
+    mdiFlashTriangle,
+    mdiPlusCircleMultipleOutline,
+    mdiSourceBranch,
+    mdiSourceBranchPlus
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
 import Alert from '@tdev-components/shared/Alert';
 import TextInput from '@tdev-components/shared/TextInput';
+import File from '@tdev-models/cms/File';
 
 interface Props {
     onDone: (branch?: string) => void;
     onDiscard: () => void;
+    showCreatePrOption?: boolean;
+    file?: File;
 }
 
 const NewBranch = observer((props: Props) => {
@@ -22,6 +31,7 @@ const NewBranch = observer((props: Props) => {
     const [branchName, setBranchName] = React.useState(cmsStore.github?.nextBranchName || '');
     const [isCreating, setIsCreating] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
+    const { file } = props;
 
     return (
         <Card
@@ -49,7 +59,17 @@ const NewBranch = observer((props: Props) => {
                                 return props.onDone();
                             }
                             setIsCreating(true);
-
+                            if (file) {
+                                return cmsStore.github
+                                    .saveFileInNewBranchAndCreatePr(file, branchName, true)
+                                    .then(() => {
+                                        props.onDone(branchName);
+                                    })
+                                    .catch(() => {
+                                        setIsError(true);
+                                        setIsCreating(false);
+                                    });
+                            }
                             cmsStore.github
                                 .createNewBranch(branchName)
                                 .then((branch) => {
@@ -65,11 +85,38 @@ const NewBranch = observer((props: Props) => {
                         spin={isCreating}
                         disabled={isError}
                         icon={isError ? mdiFlashTriangle : mdiSourceBranchPlus}
-                        color={isError ? 'ref' : 'green'}
+                        color={isError ? 'red' : 'green'}
                         iconSide="right"
                     >
-                        {isError ? 'Fehler' : 'Branch Erstellen'}
+                        {isError ? 'Fehler' : 'Branch'}
                     </Button>
+                    {props.showCreatePrOption && file && (
+                        <Button
+                            onClick={() => {
+                                if (!cmsStore.github) {
+                                    return props.onDone();
+                                }
+                                setIsCreating(true);
+                                cmsStore.github
+                                    .saveFileInNewBranchAndCreatePr(file, branchName)
+                                    .then((res) => {
+                                        props.onDone(branchName);
+                                    })
+                                    .catch(() => {
+                                        setIsError(true);
+                                        setIsCreating(false);
+                                    });
+                            }}
+                            title={isError ? 'Fehler beim Erstellen' : 'Branch + PR'}
+                            spin={isCreating}
+                            disabled={isError}
+                            icon={isError ? mdiFlashTriangle : mdiPlusCircleMultipleOutline}
+                            color={isError ? 'red' : 'var(--ifm-color-violet)'}
+                            iconSide="right"
+                        >
+                            {isError ? 'Fehler' : 'Branch + PR'}
+                        </Button>
+                    )}
                 </div>
             }
         >
