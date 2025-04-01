@@ -40,6 +40,28 @@ interface Props {
     uploadButtonLabel: string;
 }
 
+const sanitizeFileName = (path: string) => {
+    return (
+        path
+            // Map specific umlauts
+            .replace(/ä/g, 'ae')
+            .replace(/ö/g, 'oe')
+            .replace(/ü/g, 'ue')
+            .replace(/Ä/g, 'Ae')
+            .replace(/Ö/g, 'Oe')
+            .replace(/Ü/g, 'Ue')
+            .replace(/ß/g, 'ss')
+            // Rest of sanitization...
+            .replace(/\s+/g, '-')
+            .replace(/[~^:?*[\]\\{}|"<>]/g, '')
+            .replace(/[\x00-\x1F\x7F]/g, '')
+            .replace(/^[./]+|[./]+$/g, '')
+            .replace(/\.git(\/|$)/g, '')
+            .replace(/\/+/g, '/')
+            .replace(/(^|\/)@/g, '$1-at-')
+    );
+};
+
 const FileUpload = observer((props: Props) => {
     const [files, setFiles] = useState<File[]>([]);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -55,7 +77,7 @@ const FileUpload = observer((props: Props) => {
         const selectedFiles = event.target.files;
         if (selectedFiles && selectedFiles.length > 0) {
             const newFiles = Array.from(selectedFiles);
-            setUploadName(newFiles[0].name);
+            setUploadName(sanitizeFileName(newFiles[0].name));
             setFiles(newFiles);
             props.onFileSelected?.();
         }
@@ -67,7 +89,7 @@ const FileUpload = observer((props: Props) => {
         const droppedFiles = event.dataTransfer.files;
         if (droppedFiles.length > 0) {
             const newFiles = Array.from(droppedFiles);
-            setUploadName(newFiles[0].name);
+            setUploadName(sanitizeFileName(newFiles[0].name));
             setFiles(newFiles);
             props.onFileSelected?.();
         }
@@ -171,11 +193,12 @@ const FileUpload = observer((props: Props) => {
                             onClick={() => {
                                 if (files[0].type.startsWith('image/')) {
                                     const imgDir = props.uploadDir;
+                                    const fName = sanitizeFileName(uploadName);
                                     if (compress) {
                                         cmsStore
                                             .uploadImage(
                                                 files[0],
-                                                resolvePath(imgDir, uploadName),
+                                                resolvePath(imgDir, fName),
                                                 props.branch,
                                                 undefined,
                                                 1
@@ -190,11 +213,11 @@ const FileUpload = observer((props: Props) => {
                                             .arrayBuffer()
                                             .then((content) => {
                                                 return cmsStore.github?.createOrUpdateFile(
-                                                    resolvePath(imgDir, uploadName),
+                                                    resolvePath(imgDir, fName),
                                                     new Uint8Array(content),
                                                     props.branch,
                                                     undefined,
-                                                    `Upload ${uploadName}`
+                                                    `Upload ${fName}`
                                                 );
                                             })
                                             .then((uploadedFile) => {
