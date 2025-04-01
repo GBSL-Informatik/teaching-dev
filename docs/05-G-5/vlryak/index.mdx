@@ -3,6 +3,8 @@ sidebar_position: 1
 page_id: c0670b9b-7ba1-42a9-b0bb-db35e8c54ff2
 ---
 
+import { AdventureOptions, AdventureOption } from '@tdev-components/Adventure'
+
 import Board from './Checkerboard'
 
 # N-Damen-Problem
@@ -26,3 +28,21 @@ Für ein n x n Schachbrett muss man n Damen platzieren. Eine mögliche Lösung f
 Auf dem Schachbrett sind bereits 4 Damen platziert. Platziere die restlichen 4 Damen so, dass sie den Anforderungen des Damenproblems entsprechen.
 
 <Board initialQueens={[{ row: 0, col: 6 },{ row: 3, col: 2 },{ row: 4, col: 0 },{ row: 7, col: 4 }]} />
+
+<AdventureOptions>
+  <AdventureOption label="1" nextGuessIn={6}>
+    Vorderseite
+
+    ---
+
+    Rückseite
+  </AdventureOption>
+
+  <AdventureOption label="2" nextGuessIn={6}>
+    Vorderseite
+
+    ---
+
+    Rückseite
+  </AdventureOption>
+</AdventureOptions>
