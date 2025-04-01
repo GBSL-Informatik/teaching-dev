@@ -7,7 +7,65 @@ page_id: 9713d2c6-410d-4f32-8de4-9675768599ec
 
 Der Dijkstra-Algorithmus ist ein Verfahren zur Bestimmung der kürzesten Wege in einem Graphen mit gewichteten Kanten. Er startet an einem Knoten und findet den schnellsten Weg zu allen anderen Knoten, indem er nach und nach die Entfernungen zu den benachbarten Knoten aktualisiert. Der Algorithmus wird häufig in Navigation und Netzwerkrouting verwendet, um den effizientesten Weg zu berechnen.
 
-![Einfaches Beispiel für einen Dijkstra Rätsel](./images/dijkstra_algorithmus.png)
+![einfaches Dijkstra Beispiel  --width=273](./images/photo_2025-04-01_14-38-21.jpg)
+
+1️⃣ Initialisierung der Tabelle
+
+A ist der Startknoten → Distanz 0
+
+Alle anderen Knoten haben zuerst ∞ (unendlich)
+
+
+
+2️⃣ Erste Iteration (Start bei A)
+
+Von A aus gehen wir zu allen Nachbarn:
+
+A → B = 4
+
+A → C = 1
+
+A → F = 6
+
+👉 Wähle den Knoten mit der kleinsten Distanz → C (1 Schritt)
+
+3️⃣ Zweite Iteration (Besuche C)
+
+Von C aus:
+
+C → D = 1 + 5 = 6
+
+C → E = 1 + 8 = 9
+
+👉 Wähle den Knoten mit der kleinsten Distanz → B (4 Schritte)
+
+4️⃣ Dritte Iteration (Besuche B)
+
+Von B aus:
+
+B → D = 4 + 2 = 6 (bleibt gleich)
+
+👉 Wähle den Knoten mit der kleinsten Distanz → D (6 Schritte)
+
+5️⃣ Vierte Iteration (Besuche D)
+
+Von D aus:
+
+D → E = 6 + 3 = 9 (bleibt gleich)
+
+👉 Wähle den Knoten mit der kleinsten Distanz → E (9 Schritte)
+
+✅ E ist unser Ziel, Algorithmus fertig!
+
+6️⃣ Endergebnis: Kürzester Weg von A nach E
+
+Um den kürzesten Weg von A nach E zu rekonstruieren, schauen wir in die „Vorgänger“-Spalte zurück:
+
+&#x20;E wurde über C erreicht → davor kam A
+
+✔️ A → C → E (9 Schritte)
+
+**Antwort**: Der kürzeste Weg von A nach E ist A → C → E mit einer Distanz von 9.
 
 # Rätsel
 
