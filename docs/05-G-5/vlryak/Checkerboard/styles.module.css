@@ -35,13 +35,13 @@
 }
 
 .initialQueen {
-    color: #0066cc;
+    color: #000000;
 }
 
 .safeQueen {
-    color: #333;
+    color: #ffffff;
 }
 
 .attackedQueen {
-    color: #cc0000;
+    color: #ffffff;
 }
