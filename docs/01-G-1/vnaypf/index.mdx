@@ -13,19 +13,19 @@ Durch die mittelalterliche (Heute nicht mehr existierende) Stadt Königsberg flo
 
 Das Problem bestand darin, einen Rundweg zu finden, der jede der sieben Brücken genau einmal passiert. Euler untersuchte 1736 dieses Problem und stellte fest, dass es keinen solchen Weg gibt. Er erkannte, dass die Lösung nicht von der genauen geografischen Lage der Brücken abhängt, sondern von der Anordnung und Verbindung der Brücken zwischen den Landmassen.
 
-Genauer gesagt muss man eine Landmasse über eine Brücke betreten und über eine andere verlassen. Das heisst, die Anzahl Brücken, welche eine Landmasse berühren, müssten gerade sein. In Königsberg sind die Anzahl Brücken zu jeder Insel ungerade, d.h. es gibt keine Lösung. In der Graphentheorie sagt man den Landmassen **Knoten** und den Brücken **Geraden**.
+Genauer gesagt muss man eine Landmasse über eine Brücke betreten und über eine andere verlassen. Das heisst, die Anzahl Brücken, welche eine Landmasse berühren, müssten gerade sein. In Königsberg sind die Anzahl Brücken zu jeder Insel ungerade, d.h. es gibt keine Lösung. In der Graphentheorie sagt man den Landmassen **Knoten** und den Brücken **Kanten**.
 
 Euler kam zum Schluss, dass es 2 Szenarien gibt:
 
-1. Wenn 2 Knoten eine ungerade Anzahl Geraden haben (z.b. 1 Gerade), ist der eine ungerade Knoten der Startpunkt und der andere der Endpunkt. Die restlichen Knoten in dem Szenario müssen eine gerade Anzahl Geraden haben.
+1. Wenn 2 Knoten eine ungerade Anzahl Kanten haben (z.b. 1 Kante), ist der eine ungerade Knoten der Startpunkt und der andere der Endpunkt. Die restlichen Knoten in dem Szenario müssen eine gerade Anzahl Kanten haben.
 
 ![](./images/eigeneulerpfade1.png)
 
-1. Wenn alle Knoten eine gerade Anzahl Geraden haben, beginnt und endet der Weg an derselben Position. Ein Solcher Rundgang nennt man auch einen **Eulerkreis**.
+1. Wenn alle Knoten eine gerade Anzahl Kanten haben, beginnt und endet der Weg an derselben Position. Ein Solcher Rundgang nennt man auch einen **Eulerkreis**.
 
 ![](./images/eigeneulerpfade2.png)
 
-Eulerpfade bilden den Grundstein der heutigen Graphentheorie, einem ganz eigenen Gebiet der Mathematik. Dieses Muster mit Geraden und Knoten kann man im Alltag überall erkennen, zum Beispiel im altbekannten «Haus des Nikolaus» oder in den effizientesten Routen für die Müllabfahrt.
+Eulerpfade bilden den Grundstein der heutigen Graphentheorie, einem ganz eigenen Gebiet der Mathematik. Dieses Muster mit Kanten und Knoten kann man im Alltag überall erkennen, zum Beispiel im altbekannten «Haus des Nikolaus» oder in den effizientesten Routen für die Müllabfahrt.
 
 ## Allgemeiner Lösungsweg:
 
@@ -35,12 +35,12 @@ Euler vereinfachte das Problem, indem er die Landmassen als Knoten und die Brüc
 
 ![](./images/Eulerpfadeumwandeln.png)
 
-Haben alle Knoten Gerade Anzahl von Geraden? --> Lösbar (Eulerkreis)
-Haben alle Knoten Gerade Anzahl von Geraden ausser zweien? --> lösbar (Eulerpfad, nicht Rundgang)
-Haben 1 oder über 2 Knoten ungerade Anzahl von Geraden? --> Nicht lösbar
+Haben alle Knoten eine Gerade Anzahl von Kanten? 					--> Lösbar (Eulerkreis)
+Haben alle Knoten eine Gerade Anzahl von Kanten ausser zweien? 		--> lösbar (Eulerpfad)
+Haben 1 oder mehr als 2 Knoten eine ungerade Anzahl von Kanten? 		--> Nicht lösbar
 
 ---
 
-# Wir hoffen, dass Ihr Spass hattet beim Lösen dieses Rätsels. Dies ist jedoch nur das erste in einer Reihe von vielen. Den Start des zweiten Rätsels findet Ihr hier:
+## Wir hoffen, dass Ihr Spass hattet beim Lösen dieses Rätsels. Dies ist jedoch nur das erste in einer Reihe von vielen. Den Start des zweiten Rätsels findet Ihr hier:
 
 ![](./images/Start-Nr2.jpeg)
