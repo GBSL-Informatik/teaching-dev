@@ -246,11 +246,13 @@ class Github {
     }
 
     @action
-    saveFileInNewBranchAndCreatePr(file: FileModel, newBranch: string) {
+    saveFileInNewBranchAndCreatePr(file: FileModel, newBranch: string, skipCreatePr?: boolean) {
         return this.createNewBranch(newBranch)
             .then(async () => {
                 await this.createOrUpdateFile(file.path, file.content, newBranch, file.sha);
-                await this.createPR(newBranch, withoutPreviewPRName(newBranch));
+                if (!skipCreatePr) {
+                    await this.createPR(newBranch, withoutPreviewPRName(newBranch));
+                }
                 this.store.triggerNavigateToFile(newBranch, file.path);
                 return true;
             })
