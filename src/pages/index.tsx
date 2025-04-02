@@ -38,7 +38,7 @@ export default function Home(): React.ReactNode {
                     image="/img/logo.png"
                     iconSize={48}
                     iconColor="#01f0bc"
-                    text="https://mint-26e.gbsl.website/blusjk"
+                    text="/blusjk"
                     isLink
                     showText
                     size="22em"
