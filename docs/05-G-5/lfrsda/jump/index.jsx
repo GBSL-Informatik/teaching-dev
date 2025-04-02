@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
 
-const Game = () => {
+const Game2 = () => {
   const [score, setScore] = useState(0);
   const [position, setPosition] = useState({ top: "50%", left: "50%" });
 
@@ -29,6 +29,6 @@ const Game = () => {
   );
 };
 
-export default Game;
+export default Game2;
 
 
