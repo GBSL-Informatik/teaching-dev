@@ -7,17 +7,19 @@ page_id: 9713d2c6-410d-4f32-8de4-9675768599ec
 
 Der Dijkstra-Algorithmus ist ein Verfahren zur Bestimmung der kürzesten Wege in einem Graphen mit gewichteten Kanten. Er startet an einem Knoten und findet den schnellsten Weg zu allen anderen Knoten, indem er nach und nach die Entfernungen zu den benachbarten Knoten aktualisiert. Der Algorithmus wird häufig in Navigation und Netzwerkrouting verwendet, um den effizientesten Weg zu berechnen.
 
-![einfaches Dijkstra Beispiel  --width=273](./images/photo_2025-04-01_14-38-21.jpg)
+![einfaches Dijkstra Beispiel --width=273](./images/photo_2025-04-01_14-38-21.jpg)
 
 1️⃣ Initialisierung der Tabelle
+
+![--width=390](./images/photo_4_2025-04-01_14-47-23.jpg)
 
 A ist der Startknoten → Distanz 0
 
 Alle anderen Knoten haben zuerst ∞ (unendlich)
 
-
-
 2️⃣ Erste Iteration (Start bei A)
+
+![--width=390](./images/photo_2_2025-04-01_14-47-23.jpg)
 
 Von A aus gehen wir zu allen Nachbarn:
 
@@ -31,6 +33,8 @@ A → F = 6
 
 3️⃣ Zweite Iteration (Besuche C)
 
+![--width=390](./images/photo_5_2025-04-01_14-47-23.jpg)
+
 Von C aus:
 
 C → D = 1 + 5 = 6
@@ -41,6 +45,8 @@ C → E = 1 + 8 = 9
 
 4️⃣ Dritte Iteration (Besuche B)
 
+![--width=390](./images/photo_1_2025-04-01_14-47-23.jpg)
+
 Von B aus:
 
 B → D = 4 + 2 = 6 (bleibt gleich)
@@ -48,6 +54,8 @@ B → D = 4 + 2 = 6 (bleibt gleich)
 👉 Wähle den Knoten mit der kleinsten Distanz → D (6 Schritte)
 
 5️⃣ Vierte Iteration (Besuche D)
+
+![--width=390](./images/photo_5_2025-04-01_14-47-23.jpg)
 
 Von D aus:
 
@@ -90,3 +98,4 @@ Du willst nach der Schule noch genug Energie für Basketball haben, um alle auf 
 ## **Deine Mission**:&#x20;
 
 Plane den kürzesten Weg, um alle deine Ziele zu erreichen, ohne unnötige Meter zu gehen. Welche Route wählst du? Nur eine der fünf Möglichkeiten ist die effizienteste – wählst du richtig, oder verschwendest du unnötige Schritte? Berechne es mithilfe der gegebenen Karte und deines Taschenrechners.
+
