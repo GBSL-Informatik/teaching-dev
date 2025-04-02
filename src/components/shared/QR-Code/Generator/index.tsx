@@ -33,6 +33,7 @@ export interface Props {
     iconSize?: number;
     download?: boolean;
     onCanvas?: (canvas: HTMLCanvasElement) => void;
+    navLink?: string;
     linkText?: string;
 }
 const Generator = (props: Props) => {
@@ -117,8 +118,8 @@ const Generator = (props: Props) => {
             </div>
             {showFooter && (
                 <div className={clsx(styles.footer, 'card__footer')}>
-                    {props.isLink ? (
-                        <Link to={props.text} className={clsx(styles.qrText)}>
+                    {props.isLink || props.navLink ? (
+                        <Link to={props.navLink || props.text} className={clsx(styles.qrText)}>
                             {props.linkText || props.text}
                         </Link>
                     ) : (
