@@ -7,6 +7,8 @@
         position: relative;
         transition: transform 0.6s;
         transform-style: preserve-3d;
+        -moz-backface-visibility: hidden;
+        backface-visibility: hidden;
 
         .front,
         .back {

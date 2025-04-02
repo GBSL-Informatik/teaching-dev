@@ -38,7 +38,7 @@ const AdventureOption: JsxComponentDescriptor = {
 
         return (
             <Card
-                classNames={{ card: styles.option, header: clsx(styles.header) }}
+                classNames={{ card: styles.option, body: styles.body, header: clsx(styles.header) }}
                 header={
                     <>
                         <MyAttributes showValues attributes={values} />
