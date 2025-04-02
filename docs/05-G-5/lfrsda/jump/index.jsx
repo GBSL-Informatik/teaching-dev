@@ -1,6 +1,6 @@
 // Game.jsx
 import React, { useState } from "react";
-import styles from "./style.module.css";
+import styles from "./styles.module.css";
 
 const Game2 = () => {
   const [score, setScore] = useState(0);
