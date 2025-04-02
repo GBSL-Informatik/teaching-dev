@@ -1,1 +1,147 @@
-
+// styles.module.scss
+.puzzleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem auto;
+    max-width: 600px;
+  }
+  
+  .title {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .scoreBoard {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .moves {
+    padding: 0.5rem 1rem;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .puzzle {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    background-color: #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card {
+    aspect-ratio: 1/1;
+    perspective: 1000px;
+    cursor: pointer;
+    
+    &.solved {
+      cursor: default;
+    }
+  }
+  
+  .cardInner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+  }
+  
+  .flipped .cardInner {
+    transform: rotateY(180deg);
+  }
+  
+  .cardFront, .cardBack {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+  }
+  
+  .cardFront {
+    background-color: #f5f5f5;
+    border: 2px solid #ddd;
+  }
+  
+  .cardBack {
+    background-color: #4a90e2;
+    transform: rotateY(180deg);
+  }
+  
+  .solved .cardBack {
+    background-color: #4caf50;
+    animation: pulse 1s infinite;
+  }
+  
+  .completeBanner {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  .resetButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #d32f2f;
+    }
+  }
+  
+  .buttonIcon {
+    margin-right: 4px;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: rotateY(180deg) scale(1);
+    }
+    50% {
+      transform: rotateY(180deg) scale(1.05);
+    }
+    100% {
+      transform: rotateY(180deg) scale(1);
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .puzzle {
+      gap: 5px;
+      padding: 10px;
+    }
+  }
