@@ -2,14 +2,12 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import File from '@tdev-models/cms/File';
-import FileStub from '@tdev-models/cms/FileStub';
-import BinFile from '@tdev-models/cms/BinFile';
+import type { FileType } from '@tdev-models/cms/FileStub';
 import Popup from 'reactjs-popup';
 import FilePreview from '..';
 
 interface Props {
-    file: File | FileStub | BinFile;
+    file: FileType;
     children: React.ReactNode;
     inlineTrigger?: boolean;
 }

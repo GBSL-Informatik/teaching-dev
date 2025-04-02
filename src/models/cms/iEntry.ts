@@ -1,10 +1,9 @@
 import { CmsStore } from '@tdev-stores/CmsStore';
 import { action, computed, observable } from 'mobx';
-import FileStub from './FileStub';
+import type { FileType } from './FileStub';
 import Dir from './Dir';
 import { ApiState } from '@tdev-stores/iStore';
 import BinFile from './BinFile';
-import { t } from '@excalidraw/excalidraw/types/i18n';
 
 export interface iEntryProps {
     name: string;
@@ -101,7 +100,7 @@ abstract class iEntry {
             });
     }
 
-    isFile(): this is File | FileStub | BinFile {
+    isFile(): this is FileType {
         return this._isFileType;
     }
 

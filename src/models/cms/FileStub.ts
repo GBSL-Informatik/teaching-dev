@@ -1,6 +1,8 @@
 import { type CmsStore } from '@tdev-stores/CmsStore';
 import iFile, { FileStubProps } from './iFile';
 import { computed } from 'mobx';
+import type BinFile from './BinFile';
+import type File from './File';
 
 export const DUMMY_PROPS: FileStubProps = {
     name: '',
@@ -13,6 +15,8 @@ export const DUMMY_PROPS: FileStubProps = {
     url: '',
     encoding: ''
 } as const;
+
+export type FileType = File | FileStub | BinFile;
 
 class FileStub extends iFile {
     readonly type = 'file_stub';
