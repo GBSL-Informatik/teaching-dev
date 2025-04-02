@@ -33,12 +33,28 @@ const Game = () => {
   }, [gameOver, playerPos]);
 
   const moveLeft = () => {
-    if (playerPos > 0) setPlayerPos(playerPos - 20);
+    if (playerPos > 0) setPlayerPos((pos) => pos - 20);
   };
 
   const moveRight = () => {
-    if (playerPos < 270) setPlayerPos(playerPos + 20);
+    if (playerPos < 270) setPlayerPos((pos) => pos + 20);
   };
+
+  React.useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'ArrowRight') {
+        setPlayerPos((pos) => Math.min(pos + 20, 270))
+      } else if (e.key === 'ArrowLeft') {
+        setPlayerPos((pos) => Math.max(pos - 20, 0))
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    }
+    
+  }, [])
+
 
   const restartGame = () => {
     setPlayerPos(135);
