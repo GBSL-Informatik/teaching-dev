@@ -1,0 +1,58 @@
+/* JumpGame.module.css */
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #87ceeb;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score {
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.player {
+  width: 50px;
+  height: 50px;
+  background-color: blue;
+  position: absolute;
+  left: 10%;
+  bottom: 50%;
+  border-radius: 5px;
+}
+
+.obstacle {
+  width: 20px;
+  background-color: red;
+  position: absolute;
+  bottom: 0;
+}
+
+.gameOverScreen {
+  text-align: center;
+  color: white;
+}
+
+.resetButton {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  background-color: #ff4757;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+}
+
+.resetButton:hover {
+  background-color: #e84118;
+}
+
