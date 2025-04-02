@@ -8,6 +8,8 @@ import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import AddFilePopup from '../File/AddOrUpdateFile/AddFilePopup';
 import iFile from '@tdev-models/cms/iFile';
+import PreviewPopup from '../File/FilePreview/PreviewPopup';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props<T extends iFile = iFile> {
     dir: DirModel;
@@ -24,6 +26,7 @@ interface Props<T extends iFile = iFile> {
      */
     expandedByDefault?: string[];
     hideEmpty?: boolean;
+    skipLoadOnHover?: boolean;
     onSelect?: (file: T) => void;
 }
 
@@ -38,10 +41,18 @@ const Dir = observer((props: Props) => {
             }
         }
     }, [dir, expandedByDefault]);
+    const onHover = React.useMemo((): React.MouseEventHandler<HTMLDivElement> | undefined => {
+        if (props.skipLoadOnHover || dir.isFetched) {
+            return undefined;
+        }
+        return (e) => {
+            dir.fetchDirectory();
+        };
+    }, [props.skipLoadOnHover, dir.isFetched]);
 
     return (
         <li className={clsx(shared.item, styles.dir)}>
-            <div className={clsx(styles.dirName)}>
+            <div className={clsx(styles.dirName)} onMouseEnter={onHover}>
                 <span
                     className={clsx(styles.dir)}
                     onClick={() => {
@@ -65,7 +76,13 @@ const Dir = observer((props: Props) => {
                         size={0.8}
                         color={dir.iconColor}
                     />
-                    {dir.name}
+                    {dir.hasIndexFile ? (
+                        <PreviewPopup file={dir.indexFile!} inlineTrigger>
+                            <span className={clsx(shared.item)}>{dir.name}</span>
+                        </PreviewPopup>
+                    ) : (
+                        <>{dir.name}</>
+                    )}
                 </span>
                 {props.showActions !== 'never' && (
                     <AddFilePopup

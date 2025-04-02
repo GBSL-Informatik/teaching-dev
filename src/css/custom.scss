@@ -170,3 +170,9 @@ div.flex {
 .popup-overlay {
     max-width: 100vw;
 }
+
+a.badge {
+    &:hover {
+        color: var(--ifm-color-secondary);
+    }
+}

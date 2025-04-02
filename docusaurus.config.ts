@@ -335,9 +335,14 @@ const config: Config = {
         }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
-      <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/MINT-26e/commits/${GIT_COMMIT_SHA}">
-            ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
-      </a>
+      <div style="display: flex; gap: 1em; align-items: center; justify-content: center">
+        <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/MINT-26e/commits/${GIT_COMMIT_SHA}">
+              ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
+        </a>
+        <a style="line-height: 0" href="https://app.netlify.com/sites/mint-26e/deploys">
+          <img src="https://api.netlify.com/api/v1/badges/c12c90fd-3361-4d73-a8bc-bd6ea1753a3a/deploy-status" alt="Netlify Status" />
+        </a>
+      </div>
       `,
     },
     prism: {

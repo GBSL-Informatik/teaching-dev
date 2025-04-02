@@ -42,11 +42,15 @@ export class ImageFigureNode extends ElementNode {
 
     createDOM(config: EditorConfig): ImageFigureHTMLElementType {
         const element = document.createElement('div');
-        element.classList.add(styles.imageFigure);
+        element.classList.add(styles.imageFigure, 'lexicalImageFigure');
         const latest = this.imageNode()?.getLatest();
         if (this.__width || latest?.__options.width) {
             const width = (this.__width || latest?.__options.width || '').toString();
-            element.style.setProperty('--cms-img-width', /\d$/.test(width) ? `${width}px` : width);
+            if (width) {
+                element.style.setProperty('--cms-img-width', /\d$/.test(width) ? `${width}px` : width);
+            } else {
+                // skip and let the child modify it...
+            }
         }
 
         return element;

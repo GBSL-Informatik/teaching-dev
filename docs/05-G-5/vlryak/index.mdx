@@ -3,26 +3,80 @@ sidebar_position: 1
 page_id: c0670b9b-7ba1-42a9-b0bb-db35e8c54ff2
 ---
 
+import { AdventureOptions, AdventureOption } from '@tdev-components/Adventure'
+
 import Board from './Checkerboard'
 
 # N-Damen-Problem
 
 by Aviva und Sanja
 
-## **Was ist das Damenproblem ?**
+## Was ist das Damenproblem ?
 
 Bei dem Damenproblem handelt es sich um ein Mathematisches Problem, dass auf den bestehenden Schachregeln beruht.
 
 Gegeben ist ein quadratisches Schachbrett, das mindestens n > 3 Felder groß sein muss. Auf diesem wird nun in jeder Spalte eine Dame platziert. Diese Damen müssen so platziert werden, dass sie sich horizontal, vertikal oder diagonal beliebig weit bewegen können, ohne sich gegenseitig zu schlagen.
 
-![Bewegung einer Dame beim Schach --width=330](./images/8-Damen-Raetsel-Erklaerung-1-1536x864.jpg)
+![--width=424](./images/schachbrett-dame-laufwege.jpeg)
 
 Für ein n x n Schachbrett muss man n Damen platzieren. Eine mögliche Lösung für ein 8 x 8 Schachbrett ist:&#x20;
 
-![Lösung für ein 8 x 8 Schachbrett --width=334](./images/Bild2.jpg)
+![--width=425](./images/Moegliche_Loesungen.jpeg)
 
-## **Rätsel**
+## Rätsel
 
-Auf dem Schachbrett sind bereits 4 Damen platziert. Platziere die restlichen 4 Damen so, dass sie den Anforderungen des Damenproblems entsprechen.
+Auf dem Schachbrett sind bereits 4 Damen platziert. Platziere die restlichen 4 Damen so, dass sie den Anforderungen des Damenproblems entsprechen. Kontrolliere deine Lösung mit der gegebenen Nummer.
 
 <Board initialQueens={[{ row: 0, col: 6 },{ row: 3, col: 2 },{ row: 4, col: 0 },{ row: 7, col: 4 }]} />
+
+<AdventureOptions>
+  <AdventureOption label="1" nextGuessIn={6}>
+    Antwort
+
+    ---
+
+    Ort des QR-Codes
+
+    ![--width=391](./images/Image1.jpeg)
+  </AdventureOption>
+
+  <AdventureOption label="2" nextGuessIn={6}>
+    Antwort
+
+    ---
+
+    Ort des QR-Codes
+
+    ![--width=445](./images/Image2.jpeg)
+  </AdventureOption>
+
+  <AdventureOption label="3" nextGuessIn={6}>
+    Antwort
+
+    ---
+
+    Ort des QR-Codes
+
+    ![--width=420](./images/Image3.jpeg)
+  </AdventureOption>
+
+  <AdventureOption label="4" nextGuessIn={6}>
+    Antwort
+
+    ---
+
+    Ort des QR-Codes
+
+    ![--width=406](./images/Image4.jpeg)
+  </AdventureOption>
+
+  <AdventureOption label="5" nextGuessIn={6}>
+    Antwort
+
+    ---
+
+    Ort des QR-Codes
+
+    ![--width=416](./images/Image5.jpeg)
+  </AdventureOption>
+</AdventureOptions>

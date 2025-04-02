@@ -1,8 +1,10 @@
 # Website
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c12c90fd-3361-4d73-a8bc-bd6ea1753a3a/deploy-status)](https://app.netlify.com/sites/mint-26e/deploys)
+
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-> [!NOTE]
+> \[!NOTE]
 > Compatible with @docusaurus/faster (rspack and swc).
 
 ## ENV

@@ -3,6 +3,73 @@ sidebar_position: 1
 page_id: cf62aa41-d349-4cbf-90d5-e9f081d31476
 ---
 
+import { AdventureOption, AdventureOptions } from '@tdev-components/Adventure'
+
 # Labyrinthe und Irrgärten
 
-by Jari, Nico und Tobias&#x20;
+:::warning[Fehlende Bilder]
+- IMG_0260.jpeg
+:::
+
+**Right-Hand-Algorithmus (Rechte-Hand-Regel):**
+
+Du legst deine rechte Hand an die Wand des Labyrinths und gehst immer so weiter, dass deine Hand **ständig die Wand berührt**.
+• So folgst du der äußeren Wand des Labyrinths.
+• Du kommst **immer zum Ausgang**, **wenn** das Labyrinth **keine “schwebenden” Wände** oder **Inseln** hat (also wenn Start und Ziel mit dem Rand verbunden sind).
+
+**Left-Hand-Algorithmus (Linke-Hand-Regel):**
+
+Dasselbe Prinzip, nur mit der **linken** Hand an der Wand.
+• Funktioniert genauso gut, führt dich aber meist auf einem anderen Weg zum Ziel.
+
+⸻
+
+Führe die folgenden zwei Algorithmen auf diesem Labyrinth aus:
+
+![--width=600](./images/IMG_0259.png)
+
+1. Immer-rechts-Strategie: Halte dich stets an der rechten Wand.
+2. Immer-links-Strategie: Halte dich stets an der linken Wand. &#x20;
+
+Addiere dabei alle Zahlen auf dem Weg. Jede Zahl darf nur einmal gezählt werden, auch wenn sie mehrfach durchquert wird.
+
+<AdventureOptions>
+  <AdventureOption label="A" nextGuessIn={0}>
+    Rechts-Strategie: 82
+
+    Links-Strategie: 69
+
+    ---
+
+    ![](./images/IMG_0262.jpeg)
+  </AdventureOption>
+
+  <AdventureOption label="B" nextGuessIn={0}>
+    Rechts-Strategie: 84
+
+    Links-Strategie: 76
+
+    ---
+
+    ![](./images/IMG_0264.jpeg)
+  </AdventureOption>
+
+  <AdventureOption label="C" nextGuessIn={60}>
+    Rechts-Strategie: 84
+
+    Links-Strategie: 69
+
+    ---
+
+  </AdventureOption>
+
+  <AdventureOption label="D" nextGuessIn={60}>
+    Rechts-Strategie: 82
+
+    Links-Strategie: 76
+
+    ---
+
+    ![](./images/IMG_0263.jpeg)
+  </AdventureOption>
+</AdventureOptions>
