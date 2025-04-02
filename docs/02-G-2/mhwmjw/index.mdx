@@ -7,6 +7,12 @@ import { AdventureOptions, AdventureOption } from '@tdev-components/Adventure'
 
 # Was ist der Dijkstra Algorithmus?
 
+:::warning[Fehlende Bilder]
+- Lösungen
+- Karten
+:::
+
+
 Der Dijkstra-Algorithmus ist ein Verfahren zur Bestimmung der kürzesten Wege in einem Graphen mit gewichteten Kanten. Er startet an einem Knoten und findet den schnellsten Weg zu allen anderen Knoten, indem er nach und nach die Entfernungen zu den benachbarten Knoten aktualisiert. Der Algorithmus wird häufig in Navigation und Netzwerkrouting verwendet, um den effizientesten Weg zu berechnen.
 
 ![einfaches Dijkstra Beispiel --width=273](./images/photo_2025-04-01_14-38-21.jpg)
@@ -71,7 +77,7 @@ D → E = 6 + 3 = 9 (bleibt gleich)
 
 Um den kürzesten Weg von A nach E zu rekonstruieren, schauen wir in die „Vorgänger“-Spalte zurück:
 
-&#x20;E wurde über C erreicht → davor kam A
+E wurde über C erreicht → davor kam A
 
 ✔️ A → C → E (9 Schritte)
 
@@ -79,11 +85,11 @@ Um den kürzesten Weg von A nach E zu rekonstruieren, schauen wir in die „Vorg
 
 # Rätsel
 
-## **Die perfekte Route für maximale Dunks!** :mdi[basketball]{.red spin="1.5s"}
+## Die perfekte Route für maximale Dunks! :mdi[basketball]{.red spin="1.5s"}
 
 Du willst nach der Schule noch genug Energie für Basketball haben, um alle auf dem Platz zu zerstören. Doch dein Tag ist vollgepackt – und je weniger du läufst, desto mehr Power hast du für deine Dunks!
 
-## **Dein Tagesablauf:**
+## Dein Tagesablauf:
 
 1️⃣ Start: Du beginnst am Spind.
 
@@ -107,7 +113,7 @@ Hier ist die vereinfachte Skizze mit allen Routes und den Energie-Credits:
 
 ![--width=714](./images/photo_2025-04-02_09-58-04.jpg)
 
-## **Deine Mission**:&#x20;
+## Deine Mission
 
 Plane den kürzesten Weg, um alle deine Ziele zu erreichen. Welche Route wählst du? Nur eine der fünf Möglichkeiten ist die effizienteste – wählst du richtig, oder verschwendest du deine Energie-Credits? Berechne es mithilfe der gegebenen Karte und deines Taschenrechners.
 
@@ -123,48 +129,40 @@ Plane den kürzesten Weg, um alle deine Ziele zu erreichen. Welche Route wählst
   <AdventureOption label="B" nextGuessIn={2}>
     Enegie-Credits B
 
-    ![--width=125](./images/Karte2.png)
 
     ---
 
     Ob die Antwort B die richtige ist, findest du heraus durch das scannen des QR-Codes im D-Gebäude, .
 
-    ![](./images/rcyggi_G.jpeg)
   </AdventureOption>
 
   <AdventureOption label="C" nextGuessIn={3}>
     Energie-Credits C
 
-    ![--width=125](./images/Karte3.png)
 
     ---
 
     Ob die Antwort C die richtige ist, findest du heraus durch das scannen des QR-Codes im D-Gebäude, .
 
-    ![](./images/tmghcn_G.jpeg)
   </AdventureOption>
 
   <AdventureOption label="D" nextGuessIn={4}>
     Energie-Credits D
 
-    ![--width=125](./images/Karte4.png)
 
     ---
 
     Ob die Antwort D die richtige ist, findest du heraus durch das scannen des QR-Codes im D-Gebäude, .
 
-    ![](./images/Loesung_D.jpeg)
   </AdventureOption>
 
   <AdventureOption label="E" nextGuessIn={5}>
     Energie-Credits E
 
-    ![--width=125](./images/Karte6.png)
 
     ---
 
     Ob die Antwort E die richtige ist, findest du heraus durch das scannen des QR-Codes im D-Gebäude, .
 
-    ![](./images/xjsiac_M.jpeg)
   </AdventureOption>
 </AdventureOptions>
