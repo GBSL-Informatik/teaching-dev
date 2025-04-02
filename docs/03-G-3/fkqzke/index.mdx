@@ -17,18 +17,18 @@ Hilbert erfand ein Axiomensystem für den euklidischen Raum. Es spielt jetzt kei
 In 1900 postulierte Hilbert **23 Probleme** aus allen Teilgebieten der Mathematik, die damals ungelöst waren. In 2012 galten 15 davon als gelöst, 3 als ungelöst und 5 als prinzipiell unlösbar.
 Am 20. November 1915 reichte Hilbert eine Arbeit zur allgemeinen Relativitätstheorie ein, also **5 Tage vor Einstein.** Zu dieser Zeit war die allgemeine Relativitätstheorie noch nicht bekannt, nur die Spezielle. In Einsteins Arbeit waren aber auch die Einsteinschen Feldgleichungen enthalten, die als essenziell für die Relativitätstheorie gelten. Einstein und Hilbert haben sich aber nie gestritten und respektierten ihre jeweiligen Arbeiten.
 
-In unserem Rätsel geht es um ein Gedankensystem, das von Hilbert geschaffen wurde. Stell Dir sich ein Hotel vor, welches **unendlich viele Zimmer** hat und **vollständig besetzt** ist. Was kann die Rezeption tun, wenn ein neuer Gast ein Zimmer beziehen möchte?
+In unserem Rätsel geht es um ein Gedankenexpeiment, das von Hilbert geschaffen wurde. Stell Dir ein Hotel vor, welches **unendlich viele Zimmer** hat und **vollständig besetzt** ist. Was kann die Rezeption tun, wenn ein neuer Gast ein Zimmer beziehen möchte?
 Die Antwort ist einfach. Die Rezeption kann jeden Gast im Hotel um **ein Zimmer nach rechts** versetzen. Also der Gast aus Zimmer 1 geht in Zimmer 2, der Gast aus Zimmer 2 geht in Zimmer 3, der Gast aus Zimmer 3 in Zimmer 4, und so weiter. Die Rechnung lautet:&#x20;
 Neue Zimmernummer = Zimmernummer + 1
 Was kann die Rezeption tun, wenn 8 neue Gäste ein Zimmer beziehen möchten? Das Prinzip bleibt dasselbe. **Jeder Gast geht 8 Zimmer weiter**. Der Gast aus Zimmer 1 geht in Zimmer 9, der Gast aus Zimmer 2 geht in Zimmer 10, und so weiter.&#x20;
 Es gilt also für jede endliche, natürliche Anzahl an Gästen:&#x20;
-**Neue Zimmernummer = Zimmernummer + Anzahl neuer Gäste**
+**Neue Zimmernummer = Aktuelle Zimmernummer + Anzahl neuer Gäste**
 
 :::details[Mathematischere Darstellung]
 $$
 \begin{aligned}
 n &:\quad \text{aktuelle Zimmernummer}\\
-A &:\quad \text{Anzahl Gäste}\\
+A &:\quad \text{Anzahl neuer Gäste}\\
 N &:\quad \text{neue Zimmernummer}\\
 &\\
 N &= n + A
@@ -38,7 +38,7 @@ $$
 
 Was kann die Rezeption unternehmen, wenn vor dem Hotel **ein** Bus hält mit **unendlich vielen** Gästen? Die Antwort ist auch hier recht simpel. Die Gäste beziehen das Zimmer, das die **doppelt so hohe Nummer** hat wie ihr jetziges Zimmer. So geht der Gast aus Zimmer 1 in Zimmer 2, der Gast aus Zimmer 2 in Zimmer 4, der Gast aus Zimmer 3 in Zimmer 6, und so weiter. Dadurch werden alle Zimmer mit einer **geraden Nummer besetzt**, alle Zimmer mit einer **ungeraden Nummer frei**. Alle Gäste aus dem Bus können in den ungeraden Zimmern untergebracht werden.&#x20;
 Es gilt also für unendlich viele Gäste:
-**Neue Zimmernummer = 2 x Zimmernummer**
+**Neue Zimmernummer = 2 x Aktuelle Zimmernummer**
 
 :::details[Mathematischere Darstellung]
 $$
@@ -74,15 +74,14 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     $$
     \begin{aligned}
-        n &\quad \text{aktuelle Zimmernummer}\\
         k &\quad \in \quad \N \\
-        p &\quad \text{ist eine Primzal}
+        p &\quad \text{ist eine Primzahl}
         &\quad\\
         &\quad\\
-        &\quad \text{Zimmernummer für Bus 1: }&\quad 3^k\\
-        &\quad \text{Zimmernummer für Bus 2: }&\quad 5^k\\
-        &\quad \text{Zimmernummer für Bus 3: }&\quad 7^k\\
-        &\quad \text{Zimmernummer für Bus 4: }&\quad 11^k\\
+        &\quad \text{Zimmernummern für Bus 1: }&\quad 3^k\\
+        &\quad \text{Zimmernummern für Bus 2: }&\quad 5^k\\
+        &\quad \text{Zimmernummern für Bus 3: }&\quad 7^k\\
+        &\quad \text{Zimmernummern für Bus 4: }&\quad 11^k\\
         &\quad \text{und so weiter...}&\\
         &\quad \text{Allgemein gilt: } p^k\\
     \end{aligned}
@@ -90,7 +89,7 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     ---
 
-    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+    Ob diese Antwort stimmt, findest Du beim QR-Code hier:
 
     ![--width=400](./images/IMG_1905.jpg)
   </AdventureOption>
@@ -101,10 +100,9 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     $$
     \begin  {aligned}
-        &n \quad \text{Zimmernummer}\\
-        &k \quad \in \quad \N\\
+        &n \quad \text{Aktuelle Zimmernummer}\\
         &\\
-         \quad &\text{Jeder Gast geht ins folgende Zimmer}: n^k\\
+         \quad &\text{Jeder Gast geht ins folgende Zimmer}: n^2\\
         &\\
        & \rightarrow \text{Die neuen Gäste gehen in die jetzt freien Zimmer}\quad\\
     \end{aligned}
@@ -112,7 +110,7 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     ---
 
-    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+    Ob diese Antwort stimmt, findest Du beim QR-Code hier:
 
     ![--width=400](./images/fvccpc.jpg)
   </AdventureOption>
@@ -122,8 +120,7 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     $$
     \begin{aligned}
-       & n \quad \text{Zimmernummer}\\
-       & k \quad \in \quad \N\\
+       & n \quad \text{Aktuelle Zimmernummer}\\
         \\
        & \text{Die Gäste gehen in folgendes Zimmer}:\quad 3n\\
 
@@ -133,7 +130,7 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     ---
 
-    Ob diese Antwort stimmt, findest du beim QR-Code hier:
+    Ob diese Antwort stimmt, findest Du beim QR-Code hier:
 
     ![--width=400](./images/ksolsr.jpg)
   </AdventureOption>
