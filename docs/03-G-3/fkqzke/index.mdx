@@ -17,7 +17,7 @@ Hilbert erfand ein Axiomensystem für den euklidischen Raum. Es spielt jetzt kei
 In 1900 postulierte Hilbert **23 Probleme** aus allen Teilgebieten der Mathematik, die damals ungelöst waren. In 2012 galten 15 davon als gelöst, 3 als ungelöst und 5 als prinzipiell unlösbar.
 Am 20. November 1915 reichte Hilbert eine Arbeit zur allgemeinen Relativitätstheorie ein, also **5 Tage vor Einstein.** Zu dieser Zeit war die allgemeine Relativitätstheorie noch nicht bekannt, nur die Spezielle. In Einsteins Arbeit waren aber auch die Einsteinschen Feldgleichungen enthalten, die als essenziell für die Relativitätstheorie gelten. Einstein und Hilbert haben sich aber nie gestritten und respektierten ihre jeweiligen Arbeiten.
 
-In unserem Rätsel geht es um ein Gedankensystem, das von Hilbert geschaffen wurde. Stellen Sie sich ein Hotel vor, welches **unendlich viele Zimmer** hat und **vollständig besetzt** ist. Was kann die Rezeption tun, wenn ein neuer Gast ein Zimmer beziehen möchte?
+In unserem Rätsel geht es um ein Gedankensystem, das von Hilbert geschaffen wurde. Stell Dir sich ein Hotel vor, welches **unendlich viele Zimmer** hat und **vollständig besetzt** ist. Was kann die Rezeption tun, wenn ein neuer Gast ein Zimmer beziehen möchte?
 Die Antwort ist einfach. Die Rezeption kann jeden Gast im Hotel um **ein Zimmer nach rechts** versetzen. Also der Gast aus Zimmer 1 geht in Zimmer 2, der Gast aus Zimmer 2 geht in Zimmer 3, der Gast aus Zimmer 3 in Zimmer 4, und so weiter. Die Rechnung lautet:&#x20;
 Neue Zimmernummer = Zimmernummer + 1
 Was kann die Rezeption tun, wenn 8 neue Gäste ein Zimmer beziehen möchten? Das Prinzip bleibt dasselbe. **Jeder Gast geht 8 Zimmer weiter**. Der Gast aus Zimmer 1 geht in Zimmer 9, der Gast aus Zimmer 2 geht in Zimmer 10, und so weiter.&#x20;
@@ -60,7 +60,7 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
 <AdventureOptions>
   <AdventureOption label="I" nextGuessIn="60">
-    Diese Frage hat keine Lösung.
+    Die Rezeption kann nichts tun; es ist unmöglich.
 
     ---
 
@@ -74,16 +74,17 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     $$
     \begin{aligned}
-        n :&\quad \text{aktuelle Zimmernummer}\\
-        k :&\quad \text{ist ein Element der Natürlichen Zahlen}\\
-        &\\
-        \text{Zimmernummer für Bus 1: }&\quad 3^k\\
-        \text{Zimmernummer für Bus 2: }&\quad 5^k\\
-        \text{Zimmernummer für Bus 3: }&\quad 7^k\\
-        \text{Zimmernummer für Bus 4: }&\quad 11^k\\
-        \text{und so weiter...}&\\
-        &\\
-        \text{Zimmernummer allgemein: }&\quad (2n+1)^k\\
+        n &\quad \text{aktuelle Zimmernummer}\\
+        k &\quad \in \quad \N \\
+        p &\quad \text{ist eine Primzal}
+        &\quad\\
+        &\quad\\
+        &\quad \text{Zimmernummer für Bus 1: }&\quad 3^k\\
+        &\quad \text{Zimmernummer für Bus 2: }&\quad 5^k\\
+        &\quad \text{Zimmernummer für Bus 3: }&\quad 7^k\\
+        &\quad \text{Zimmernummer für Bus 4: }&\quad 11^k\\
+        &\quad \text{und so weiter...}&\\
+        &\quad \text{Allgemein gilt: } p^k\\
     \end{aligned}
     $$
 
@@ -91,7 +92,7 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     Ob diese Antwort stimmt, findest du beim QR-Code hier:
 
-    ![--width=400](./images/hkmvox.jpg)
+    ![--width=400](./images/IMG_1905.jpg)
   </AdventureOption>
 
   <AdventureOption label="III" nextGuessIn="60">
@@ -99,13 +100,13 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
     Also: der Gast in Zimmer 1 geht in Zimmer 1, der Gast in Zimmer 2 geht in Zimmer 4, der Gast in Zimmer 3 geht in Zimmer 9, und so weiter.
 
     $$
-    \begin{aligned}
-        n:& \quad \text{Zimmernummer}\\
-        k :&\quad \text{ist ein Element der Natürlichen Zahlen}\\
+    \begin  {aligned}
+        &n \quad \text{Zimmernummer}\\
+        &k \quad \in \quad \N\\
         &\\
-        \text{Jeder Gast geht ins folgende Zimmer}:&\quad n^k\\
+         \quad &\text{Jeder Gast geht ins folgende Zimmer}: n^k\\
         &\\
-        \rightarrow \text{Die neuen Gäste gehen in die jetzt freien Zimmer}\quad\\
+       & \rightarrow \text{Die neuen Gäste gehen in die jetzt freien Zimmer}\quad\\
     \end{aligned}
     $$
 
@@ -121,12 +122,12 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 
     $$
     \begin{aligned}
-        n:& \quad \text{Zimmernummer}\\
-        k :&\quad \text{ist ein Element der Natürlichen Zahlen}\\
-        &\\
-        \text{Die Gäste gehen in folgendes Zimmer}:&\quad 3n\\
-        &\\
-        \rightarrow \text{Die neuen Gäste gehen in die nun freien Zimmer}\\
+       & n \quad \text{Zimmernummer}\\
+       & k \quad \in \quad \N\\
+        \\
+       & \text{Die Gäste gehen in folgendes Zimmer}:\quad 3n\\
+
+        &\quad \rightarrow \text{Die neuen Gäste gehen in die nun freien Zimmer}\\
     \end{aligned}
     $$
 
