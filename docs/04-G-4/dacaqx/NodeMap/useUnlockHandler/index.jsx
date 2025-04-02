@@ -12,3 +12,13 @@ export const useUnlockHandler = (newNodes, initializeNew = false) => {
     return value;
 }
 
+export const useUnlockEdgesHandler = (newEdges, initializeNew = false) => {
+    const [value, setValue] = React.useState(Storage.getUnsafe('MINT-A-STAR-EDGES', [], true))
+    React.useEffect(() => {
+        const updated = initializeNew ? newEdges : [...new Set([...value, ...newEdges])];
+        setValue(updated);
+        Storage.setUnsafe('MINT-A-STAR-EDGES', updated, true);
+    }, [newEdges, initializeNew]);
+    return value;
+}
+

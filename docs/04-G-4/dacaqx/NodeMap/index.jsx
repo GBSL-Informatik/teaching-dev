@@ -9,7 +9,7 @@ import ReactFlow, {
 } from "reactflow";
 
 import "reactflow/dist/style.css";
-import { useUnlockHandler } from "./useUnlockHandler";
+import { useUnlockEdgesHandler, useUnlockHandler } from "./useUnlockHandler";
 
 import styles from "./styles.module.css";
 
@@ -185,18 +185,18 @@ const initialEdges = [
   },
 ];
 
-const NodeGraph = ({newNodes, initializeNew}) => {
+const NodeGraph = ({newNodes, newEdges, initializeNew}) => {
   const [selectedNode, setSelectedNode] = React.useState(null);
-  const aStarNodes = useUnlockHandler(newNodes, initializeNew);
+  const aStarNodes = useUnlockHandler(newNodes ?? [], initializeNew);
+  const aStarEdges = useUnlockEdgesHandler(newEdges ?? [], initializeNew);
 
   const aStarGraph = React.useMemo(() => {
     return A_STAR_GRAPH.filter((n) => aStarNodes.includes(n.id))
   }, [aStarNodes])
-  
+
   const edges = React.useMemo(() => {
-    const knownIDs = new Set(aStarGraph.map(n => n.id));
-    return initialEdges.filter(e => knownIDs.has(e.source) && knownIDs.has(e.target));
-  }, [aStarGraph]);
+    return initialEdges.filter((e) => aStarEdges.includes(e.id));
+  }, [aStarEdges]);
 
   const onNodeClick = (event, node) => {
     setSelectedNode(node);
@@ -205,10 +205,6 @@ const NodeGraph = ({newNodes, initializeNew}) => {
   const closePopup = () => {
     setSelectedNode(null);
   };
-
-  if (edges.length === 0) {
-    return null;
-  }
 
   return (
     <div className={styles.container}>
