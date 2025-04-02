@@ -5,6 +5,7 @@ import type { WrapperProps } from '@docusaurus/types';
 import Admonition from '@theme/Admonition';
 import Icon from '@mdi/react';
 import { mdiQrcodeScan } from '@mdi/js';
+import Link from '@docusaurus/Link';
 
 type Props = WrapperProps<typeof MDXContentType>;
 
@@ -18,7 +19,8 @@ export default function MDXContentWrapper(props: Props): ReactNode {
             >
                 Überall in der Schule findest du QR-Codes - scanne sie und stelle dein Wissen in Mathematik,
                 Informatik und Naturwissenschaften auf die Probe! Spannende Rätsel und knifflige Aufgaben
-                warten auf dich. Bist du bereit, sie zu lösen? Dann starte jetzt im Foyer!
+                warten auf dich. Bist du bereit, sie zu lösen? Starte <Link to="/blusjk">👉 hier</Link> mit
+                dem ersten Rätsel!
                 <small style={{ float: 'right' }}>MINT-Woche der 26e</small>
             </Admonition>
             <MDXContent {...props} />
