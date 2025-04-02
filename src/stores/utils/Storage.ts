@@ -78,7 +78,7 @@ class Storage {
             if (restoreFromJson && typeof value === 'string') {
                 return JSON.parse(value);
             } else {
-                return value as T;
+                return (value as T) ?? fallback;
             }
         } catch (_err) {
             // ignore errors
