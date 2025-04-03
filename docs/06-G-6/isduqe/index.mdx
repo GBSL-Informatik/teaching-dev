@@ -7,25 +7,17 @@ import { AdventureOption, AdventureOptions } from '@tdev-components/Adventure'
 
 # Labyrinthe und Irrgärten
 
-:::warning[Fehlende Bilder]
-- IMG_0260.jpeg
-:::
-
 **Right-Hand-Algorithmus (Rechte-Hand-Regel):**
-
 Du legst deine rechte Hand an die Wand des Labyrinths und gehst immer so weiter, dass deine Hand **ständig die Wand berührt**.
 • So folgst du der äußeren Wand des Labyrinths.
-• Du kommst **immer zum Ausgang**, **wenn** das Labyrinth **keine “schwebenden” Wände** oder **Inseln** hat (also wenn Start und Ziel mit dem Rand verbunden sind).
-
+• Du kommst **immer zum Ausgang**, **wenn** das Labyrinth **keine “schwebenden” Wände** oder **Inseln** hat. Die Links- oder Rechtsstrategie funktioniert auch in Labyrinthen mit schwebenden Wänden so lange Start und Ziel im gleichen, zusammenhängenden Bereich liegen. Wichtig ist nur, dass man sich immer an einer Wand orientieren kann. Nur wenn Start oder Ziel auf einer **abgetrennten** „Insel“ liegen, funktioniert die Methode **nicht**. Zum Beispiel funktioniert das untenstehende Labyrinth, obschon es (rot markiert) schwebende Wände hat.
 **Left-Hand-Algorithmus (Linke-Hand-Regel):**
-
 Dasselbe Prinzip, nur mit der **linken** Hand an der Wand.
 • Funktioniert genauso gut, führt dich aber meist auf einem anderen Weg zum Ziel.
-
 ⸻
-
 Führe die folgenden zwei Algorithmen auf diesem Labyrinth aus:
 
+![](./images/IMG_0268.png)
 
 1. Immer-rechts-Strategie: Halte dich stets an der rechten Wand.
 2. Immer-links-Strategie: Halte dich stets an der linken Wand. &#x20;
@@ -60,6 +52,7 @@ Addiere dabei alle Zahlen auf dem Weg. Jede Zahl darf nur einmal gezählt werden
 
     ---
 
+    ![](./images/IMG_0260.jpeg)
   </AdventureOption>
 
   <AdventureOption label="D" nextGuessIn={60}>
@@ -76,5 +69,4 @@ Addiere dabei alle Zahlen auf dem Weg. Jede Zahl darf nur einmal gezählt werden
 ## Rubrik "Wer bin ich?"
 
 :::info[Wer bin ich?]
-
 :::
