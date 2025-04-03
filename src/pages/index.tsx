@@ -47,17 +47,8 @@ export default function Home(): React.ReactNode {
                     size="22em"
                     linkText="👉 Hier gehts zum ersten Rätsel!"
                 />
-                <Button
-                    icon={mdiQrcodeScan}
-                    className={clsx(styles.scanButton)}
-                    text="QR Code Scannen"
-                    href={scanUrl}
-                    color="primary"
-                    size={3}
-                    iconSide="left"
-                />
                 <Card
-                    style={{ maxWidth: '40em' }}
+                    style={{ maxWidth: '40em', boxShadow: 'var(--ifm-global-shadow-md)' }}
                     header={
                         <div>
                             <h3 style={{ color: 'var(--ifm-color-blue)' }}>
