@@ -29,8 +29,8 @@ export default function Home(): React.ReactNode {
     const scanUrl = useBaseUrl('/scan');
     return (
         <Layout
-            title={`Hello from ${siteConfig.title}`}
-            description="Description will go into a meta tag in <head />"
+            title={`MINT 26e - ${siteConfig.title}`}
+            description="Sonderwoche MINT am Gymnasium Biel-Seeland"
         >
             <HomepageHeader />
             <main className={clsx(styles.qr)}>
@@ -38,10 +38,12 @@ export default function Home(): React.ReactNode {
                     image="/img/logo.png"
                     iconSize={48}
                     iconColor="#01f0bc"
-                    text="https://mint-26e.gbsl.website/olwwql"
+                    text="https://mint-26e.gbsl.website/blusjk"
+                    navLink="/blusjk"
                     isLink
                     showText
                     size="22em"
+                    linkText="👉 Hier gehts zum ersten Rätsel!"
                 />
                 <Button
                     icon={mdiQrcodeScan}

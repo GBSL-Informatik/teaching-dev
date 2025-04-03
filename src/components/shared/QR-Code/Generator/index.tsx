@@ -33,6 +33,8 @@ export interface Props {
     iconSize?: number;
     download?: boolean;
     onCanvas?: (canvas: HTMLCanvasElement) => void;
+    navLink?: string;
+    linkText?: string;
 }
 const Generator = (props: Props) => {
     const [text, setText] = React.useState(props.text || '');
@@ -116,12 +118,12 @@ const Generator = (props: Props) => {
             </div>
             {showFooter && (
                 <div className={clsx(styles.footer, 'card__footer')}>
-                    {props.isLink ? (
-                        <Link to={props.text} className={clsx(styles.qrText)}>
-                            {props.text}
+                    {props.isLink || props.navLink ? (
+                        <Link to={props.navLink || props.text} className={clsx(styles.qrText)}>
+                            {props.linkText || props.text}
                         </Link>
                     ) : (
-                        <div className={clsx(styles.qrText)}>{props.text}</div>
+                        <div className={clsx(styles.qrText)}>{props.linkText || props.text}</div>
                     )}
                     {props.download && <Button icon={mdiDownload} onClick={onDownload} size={SIZE_S} />}
                 </div>

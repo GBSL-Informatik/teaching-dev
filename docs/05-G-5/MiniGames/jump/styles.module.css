@@ -1,7 +1,7 @@
 /* Game.module.css */
 .container {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background-color: #282c34;
   display: flex;
@@ -27,4 +27,5 @@
   cursor: pointer;
   transition: top 0.2s, left 0.2s;
 }
+
 

@@ -37,7 +37,7 @@ const main = async () => {
           ? '# Rätsel' 
           : idx === 1 
             ? '# Richtige Antwort\n\nDu hast die richtige Antwort gefunden 🥳\n## Lösung\n\n## Hintergrundinformationen zum Rätsel\n\n## Nächstes Rätsel' 
-            : `# Falsche Antwort 😑\n\nZurück zum [Rästel](https://mint-26e.gbsl.website/${routes[0]})`;
+            : `# Falsche Antwort 😑\n\nZurück zum [Rätsel](https://mint-26e.gbsl.website/${routes[0]})`;
         const withFrontMatter = `---\nsidebar_position: ${idx + 1}\n---\n\n${content}`
         fs.writeFileSync(`${groupRoot}/${r}/index.mdx`, withFrontMatter);
       })
