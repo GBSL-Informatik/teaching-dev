@@ -3,7 +3,7 @@ sidebar_position: 2
 page_id: 17776c49-cb69-424e-818c-c421ea9cac5a
 ---
 
-# Richtige Antwort
+# Richtige Antwort[^1]
 
 Du hast eine der insgesamt 92 verschiedene Lösungsmöglichkeiten für das 8-Damen-Problem gefunden!🥳
 
@@ -11,7 +11,7 @@ Du hast eine der insgesamt 92 verschiedene Lösungsmöglichkeiten für das 8-Dam
 
 ![--width=351](./images/Loesung.jpeg)
 
-## Hintergrundinformationen zum Rätsel[^1]
+## Hintergrundinformationen zum Rätsel
 
 Berücksichtigt man dabei, dass viele dieser 92 Lösungskonstellationen durch **Drehungen oder Spiegelungen** auseinander hervorgehen, so verbleiben immerhin noch 12 “grundsätzlich verschiedene” Lösungen. Die Lösung mit den beiden folgenden Lösungen wurden als eine der **12 Basislösungen** gezählt oder als drei der insgesamt 92 Konstellationen.
 
@@ -21,7 +21,7 @@ Berücksichtigt man dabei, dass viele dieser 92 Lösungskonstellationen durch **
 
 Erstmals formuliert wurde das Damenproblem von dem bayerischen Schachmeister **Max Bezzel**. In der Berliner *Schachzeitung* fragte er 1848 nach der Anzahl der möglichen Lösungen. Als erster nannte 1850 der Zahnarzt **Franz Nauck** in der Leipziger *Illustrirten Zeitung* die korrekte Zahl **92**. 1874 bewies der englische Mathematiker **James Whitbread Lee Glaisher**, dass es nicht mehr Lösungen geben kann. Damit war das ursprüngliche Problem vollständig gelöst.
 
-## Anzahl der Lösungen[^1]
+## Anzahl der Lösungen
 
 Die Lösungszahl eines n x n Schachbrettes kann mit der folgenden Formel berechnet werden:
 
@@ -31,7 +31,7 @@ Die Anzahl Lösungen für verschiedene Brettgrößen wurden bereits berechnet un
 
 ![Anzahl der Lösungen bis zu n = 14 --width=506](./images/Screenshot-2025-04-03-072706.png)
 
-## Rekursives Backtracking[^1]
+## Rekursives Backtracking
 
 Mögliche Lösungen des n-Damenproblems kann man mit dem rekursiven Backtracking herausfinden. 
 
@@ -39,8 +39,10 @@ Das rekursive Backtracking ist eine Methode, in der man mögliche Lösungen ausp
 
 Bei dem n-Damenproblem sieht es folgendermassen aus: Man startet von der ersten Reihe aus und setzt die erste Dame irgendwo in die erste Reihe. Dann fährt man gleich mit der Zweiten fort. Man kontrolliert immer, ob die gerade gesetzte Dame von einer anderen angegriffen wird. Wenn das nicht der Fall ist, geht man zur nächsten Reihe weiter. Wenn sie aber angegriffen wird, nimmt man die Dame wieder weg und versucht eine neue Möglichkeit aus. Wenn es keine Lösung gibt, geht man eine Reihe zurück und setzt die vorherige Dame neu. Dies fährt man so lange fort, bis alle Damen gesetzt sind. 
 
-[^1]: Quelle [https://de.wikipedia.org/wiki/Damenproblem](https://de.wikipedia.org/wiki/Damenproblem)
-
 ## Nächstes Rätsel
+Hier gehts weiter:
 
 ![--width=369](./images/naechstes_raetsel.jpeg)
+
+
+[^1]: Quelle [https://de.wikipedia.org/wiki/Damenproblem](https://de.wikipedia.org/wiki/Damenproblem)
