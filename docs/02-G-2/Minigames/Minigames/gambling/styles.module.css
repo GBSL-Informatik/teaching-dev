@@ -1,78 +1,56 @@
 .container {
   text-align: center;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
-.title {
+h1 {
   font-size: 2rem;
-  font-weight: bold;
-  animation: glow 1.5s infinite alternate;
+  margin-bottom: 10px;
+  color: #ffd700;
 }
 
-@keyframes glow {
-  0% { color: #ff0; text-shadow: 0 0 10px #ff0, 0 0 20px #ff0; }
-  100% { color: #ff4500; text-shadow: 0 0 20px #ff4500, 0 0 30px #ff4500; }
-}
-
-.slotGrid {
+.grid {
   display: grid;
-  grid-template-rows: repeat(5, 1fr);
-  gap: 5px;
+  grid-template-columns: repeat(5, 60px);
+  grid-gap: 10px;
   justify-content: center;
-  margin: 20px auto;
+  margin-top: 20px;
 }
 
-.row {
-  display: flex;
-  gap: 5px;
-}
-
-.slot {
+.tile {
   width: 60px;
   height: 60px;
-  font-size: 2rem;
+  background-color: #333;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(45deg, #222, #555);
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease-in-out;
-}
-
-.slot:hover {
-  transform: scale(1.1);
-}
-
-.spin {
-  animation: spinAnim 0.5s infinite ease-in-out alternate;
-}
-
-@keyframes spinAnim {
-  0% { transform: rotateX(0deg); }
-  100% { transform: rotateX(180deg); }
-}
-
-.spinButton {
-  background: linear-gradient(90deg, #ff4500, #ff0);
-  font-size: 1.5rem;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
+  font-size: 2rem;
   color: white;
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.spinButton:hover {
+.tile:hover {
   transform: scale(1.1);
-  box-shadow: 0px 6px 15px rgba(255, 69, 0, 0.7);
 }
 
-.spinButton:disabled {
-  background: gray;
-  cursor: not-allowed;
+.flipped {
+  background-color: #444;
+  transform: rotateY(180deg);
 }
 
+.gameOver {
+  font-size: 1.5rem;
+  color: red;
+  margin-top: 20px;
+  animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
