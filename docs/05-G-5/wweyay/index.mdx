@@ -31,6 +31,9 @@ Die Anzahl Lösungen für verschiedene Brettgrößen wurden bereits berechnet un
 
 ![Anzahl der Lösungen bis zu n = 14 --width=506](./images/Screenshot-2025-04-03-072706.png)
 
+\*eindeutig: gespiegelte/gedrehte Lösungen wurden als eine Lösung gezählt
+\*insgesamt: gespiegelte/gedrehte Lösungen wurden einzeln gezählt
+
 ## Rekursives Backtracking
 
 Mögliche Lösungen des n-Damenproblems kann man mit dem rekursiven Backtracking herausfinden. 
@@ -40,9 +43,9 @@ Das rekursive Backtracking ist eine Methode, in der man mögliche Lösungen ausp
 Bei dem n-Damenproblem sieht es folgendermassen aus: Man startet von der ersten Reihe aus und setzt die erste Dame irgendwo in die erste Reihe. Dann fährt man gleich mit der Zweiten fort. Man kontrolliert immer, ob die gerade gesetzte Dame von einer anderen angegriffen wird. Wenn das nicht der Fall ist, geht man zur nächsten Reihe weiter. Wenn sie aber angegriffen wird, nimmt man die Dame wieder weg und versucht eine neue Möglichkeit aus. Wenn es keine Lösung gibt, geht man eine Reihe zurück und setzt die vorherige Dame neu. Dies fährt man so lange fort, bis alle Damen gesetzt sind. 
 
 ## Nächstes Rätsel
+
 Hier gehts weiter:
 
 ![--width=369](./images/naechstes_raetsel.jpeg)
-
 
 [^1]: Quelle [https://de.wikipedia.org/wiki/Damenproblem](https://de.wikipedia.org/wiki/Damenproblem)
