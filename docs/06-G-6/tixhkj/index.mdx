@@ -7,12 +7,26 @@ page_id: 69d103e9-5874-4a03-a484-d3b3ccc6b696
 
 Du hast die richtige Antwort gefunden 🥳
 
-Bei der Immer-rechts-Strategie ergibt die Summe 84.
-Bei der Immer-links-Strategie ergibt die Summe 69.
+Bei der Rechts-Strategie ergibt die Summe 84.
+Bei der Links-Strategie ergibt die Summe 69.
 
 **Warum funktioniert die Links-/Rechtsstrategie in Labyrinthen?**
-Die Links- oder Rechtsstrategie funktioniert, weil du dich dabei immer an einer Wand orientierst. Wenn du zum Beispiel immer mit der rechten Hand an der Wand entlangläufst, folgst du dem äußeren Rand des Labyrinths. Dadurch durchläufst du alle Gänge, die mit dem Startpunkt verbunden sind, und kommst irgendwann zum Ausgang – *sofern Start und Ziel im selben verbundenen Bereich liegen*.
+Die Links- oder Rechtsstrategie funktioniert, weil du dich dabei immer an einer Wand orientierst. Wenn du zum Beispiel immer mit der rechten Hand an der Wand entlangläufst, folgst du dem äusseren Rand des Labyrinths. Dadurch durchläufst du alle Gänge, die mit dem Startpunkt verbunden sind, und kommst irgendwann zum Ausgang – *sofern Start und Ziel im selben verbundenen Bereich liegen*.
 
-## Nächstes Rätsel
+Falls dies nicht der Fall ist gibt es einen anderen Algorithmus:
+
+![](./images/IMG_0270.png)
+
+a) Beim Auftreffen auf ein Hindernis entscheidet man, ob man nach links oder rechts geht.
+
+b) Die erste Entscheidung bestimmt, ob man bei einer Linkskurve **1 addiert** oder **1 subtrahiert**.
+
+c) Dies wird so lange fortgesetzt, bis die Summe **0** beträgt.
+
+d) Sobald die Summe **0** erreicht ist, geht man so lange geradeaus, bis man erneut auf ein Hindernis trifft. Anschliessend wird der Algorithmus von vorne ausgeführt.
+
+Dieser Algorithmus dient ausschliesslich dazu, Endlosschleifen zu verlassen. Damit er vollständig funktioniert, muss die Richtung des Auswegs bekannt sein. Er ist nicht dazu geeignet, ein allgemeines Problem zu lösen oder zuverlässig aus einem Labyrinth herauszufinden.
+
+# **Hier findest du das nächste Rätsel:**
 
 ![](./images/IMG_0267.jpeg)
