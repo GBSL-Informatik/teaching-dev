@@ -27,7 +27,7 @@ Die Lösungszahl eines n x n Schachbrettes kann mit der folgenden Formel berechn
 
 ![![--width=236](./images/Formel2.png) --width=226](./images/Formel1.png)
 
-## Rekursives Backtracking
+## Rekursives Backtracking[^1]
 
 Mögliche Lösungen des n-Damenproblems kann man mit dem rekursiven Backtracking herausfinden. 
 
@@ -35,10 +35,10 @@ Das rekursive Backtracking ist eine Methode, in der man mögliche Lösungen ausp
 
 Bei dem n-Damenproblem sieht es folgendermassen aus: Man startet von der ersten Reihe aus und setzt die erste Dame irgendwo in die erste Reihe. Dann fährt man gleich mit der Zweiten fort. Man kontrolliert immer, ob die gerade gesetzte Dame von einer anderen angegriffen wird. Wenn das nicht der Fall ist, geht man zur nächsten Reihe weiter. Wenn sie aber angegriffen wird nimmt man die Dame wieder weg und versucht eine neue Möglichkeit aus. Wenn es keine Lösung gibt, geht man eine Reihe zurück und setzt die vorherige Dame neu. Dies fährt man so lange fort, bis alle Damen gesetzt sind. 
 
-*Quelle:* [https://de.wikipedia.org/wiki/Damenproblem](https://de.wikipedia.org/wiki/Damenproblem)
-
 
 
 ## Nächstes Rätsel
 
 ![--width=369](./images/naechstes_raetsel.jpeg)
+
+[^1]: Quelle [https://de.wikipedia.org/wiki/Damenproblem](https://de.wikipedia.org/wiki/Damenproblem)
