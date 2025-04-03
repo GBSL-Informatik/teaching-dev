@@ -95,16 +95,22 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
   </AdventureOption>
 
   <AdventureOption label="III" nextGuessIn="60">
-    Jeder Gast geht ins Zimmer mit der Nummer, welche die jetzige Nummer quadriert ist.
-    Also: der Gast in Zimmer 1 geht in Zimmer 1, der Gast in Zimmer 2 geht in Zimmer 4, der Gast in Zimmer 3 geht in Zimmer 9, und so weiter.
+    Jeder Gast geht in das Zimmer, welche eine doppelt so hohe Zimmernummer hat. Dadurch sind alle schon vorhandenen Gäste in den geraden Zimmernummern. Die neuen Gäste beziehen die ungeraden Zimmernummern und ihre Potenzen, damit alle Gäste aus allen Bussen Platz haben.
 
     $$
     \begin  {aligned}
         &n \quad \text{Aktuelle Zimmernummer}\\
+        &k \quad \in \quad \N\\
         &\\
-         \quad &\text{Jeder Gast geht ins folgende Zimmer}: n^2\\
+         \quad &\text{Jeder Gast geht ins folgende Zimmer}: 2n\\
+         &\\
+         \quad &\text{Gäste aus Bus 1 gehen in}: 2^k\\
+         \quad &\text{Gäste aus Bus 2 gehen in}: 3^k\\
+         \quad &\text{Gäste aus Bus 3 gehen in}: 5^k\\
+         \quad &\text{Gäste aus Bus 4 gehen in}: 7^k\\
+         \quad &\text{Gäste aus Bus 5 gehen in}: 9^k\\
+          \quad &\text{und so weiter...}
         &\\
-       & \rightarrow \text{Die neuen Gäste gehen in die jetzt freien Zimmer}\quad\\
     \end{aligned}
     $$
 
@@ -139,5 +145,4 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 ## Rubrik "Wer bin ich?"
 
 :::info[Wer bin ich?]
-
 :::
