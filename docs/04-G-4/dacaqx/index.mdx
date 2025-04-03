@@ -7,6 +7,8 @@ import NodeGraph from '@site/src/components/NodeMap'
 
 # A\*
 
+von David und Janik&#x20;
+
 Der A-Stern-Algorithmus ist eine Methode zur Bestimmung des kürzesten Weges zu einem bestimmten Ziel. Es ist eine Weiterentwicklung des Dijkstra-Algorithmus, bei dem zusätzlich die geschätzte Entfernung in Luftlinie berücksichtigt wird. Dabei addiert man die Gesamtkosten des zurückgelegten Weges bis zum aktuellen Knoten (dies entspricht g) und die geschätzte Entfernung des aktuellen Knotens zum Ziel (dies entspricht h). Dies ergibt den Wert des aktuellen Knotens (dies entspricht f). Beim A-Stern-Algorithmus wählt man stets den Knoten mit dem tiefsten f-Wert aus. Falls zwei Knoten denselben f-Wert haben, wird der Knoten mit dem tieferen h-Wert bevorzugt. Durch die Kombination von tatsächlichem Weg und geschätzter Entfernung findet der Algorithmus den optimalen Pfad effizienter.
 
 **f (n) = g (n) + h (n)**
