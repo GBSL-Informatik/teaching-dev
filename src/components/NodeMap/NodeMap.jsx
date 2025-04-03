@@ -35,19 +35,19 @@ const startGraph = [
       id: "S",
       type: "custom",
       position: { x: 300, y: 50 },
-      data: { label: "S", image: require('../../images/S.jpeg').default },
+      data: { label: "S", image: require('./images/S.jpeg').default },
   },
 {
   id: "A",
   type: "custom",
   position: { x: 150, y: 150 },
-  data: { label: "37 A", image: require('../../images/A.jpeg').default },
+  data: { label: "37 A", image: require('./images/A.jpeg').default },
 },
 {
   id: "B",
   type: "custom",
   position: { x: 450, y: 150 },
-  data: { label: "39 B", image: require('../../images/B.jpeg').default },
+  data: { label: "39 B", image: require('./images/B.jpeg').default },
 }]
 const A_STAR_GRAPH = [
   ...startGraph,
@@ -55,37 +55,37 @@ const A_STAR_GRAPH = [
     id: "C",
     type: "custom",
     position: { x: 250, y: 250 },
-    data: { label: "20 C", image: require('../../images/C.jpeg').default },
+    data: { label: "20 C", image: require('./images/C.jpeg').default },
   },
   {
     id: "D",
     type: "custom",
     position: { x: 400, y: 250 },
-    data: { label: "28 D", image: require('../../images/D.jpeg').default },
+    data: { label: "28 D", image: require('./images/D.jpeg').default },
   },
   {
     id: "E",
     type: "custom",
     position: { x: 100, y: 350 },
-    data: { label: "15 E", image: require('../../images/E.jpeg').default },
+    data: { label: "15 E", image: require('./images/E.jpeg').default },
   },
   {
     id: "F",
     type: "custom",
     position: { x: 250, y: 330 },
-    data: { label: "0 F", image: require('../../images/F.jpeg').default },
+    data: { label: "0 F", image: require('./images/F.jpeg').default },
   },
   {
     id: "G",
     type: "custom",
     position: { x: 500, y: 350 },
-    data: { label: "26 G", image: require('../../images/G.jpeg').default },
+    data: { label: "26 G", image: require('./images/G.jpeg').default },
   },
   {
     id: "H",
     type: "custom",
     position: { x: 250, y: 450 },
-    data: { label: "11 H", image: require('../../images/H.jpeg').default },
+    data: { label: "11 H", image: require('./images/H.jpeg').default },
   },
 ];
 
