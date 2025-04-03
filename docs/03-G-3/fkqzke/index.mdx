@@ -104,12 +104,12 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
         &\\
          \quad &\text{Jeder Gast geht ins folgende Zimmer}: 2n\\
          &\\
-         \quad &\text{Gäste aus Bus 1 gehen in}: 2^k\\
-         \quad &\text{Gäste aus Bus 2 gehen in}: 3^k\\
-         \quad &\text{Gäste aus Bus 3 gehen in}: 5^k\\
-         \quad &\text{Gäste aus Bus 4 gehen in}: 7^k\\
-         \quad &\text{Gäste aus Bus 5 gehen in}: 9^k\\
-          \quad &\text{und so weiter...}
+         \quad &\text{Gäste aus Bus 1 gehen in}: 3^k\\
+         \quad &\text{Gäste aus Bus 2 gehen in}: 5^k\\
+         \quad &\text{Gäste aus Bus 3 gehen in}: 7^k\\
+         \quad &\text{Gäste aus Bus 4 gehen in}: 9^k\\
+         \quad &\text{und so weiter...}\\
+         \quad &\text{Allgemein gilt}: (2n+1)^k
         &\\
     \end{aligned}
     $$
@@ -122,15 +122,21 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
   </AdventureOption>
 
   <AdventureOption label="IV" nextGuessIn="60">
-    Jeder Gast nimmt das Zimmer mit der 3fachen Nummer seiner aktuellen Zimmernummer. Also Zimmer 1 geht in Zimmer 3, Zimmer 2 geht in Zimmer 6, Zimmer 3 geht in Zimmer 9, und so weiter. Die neuen Gäste gehen in die nun freien Zimmer.
+    Jeder Gast nimmt das Zimmer mit der 3fachen Nummer seiner aktuellen Zimmernummer. Also Zimmer 1 geht in Zimmer 3, Zimmer 2 geht in Zimmer 6, Zimmer 3 geht in Zimmer 9, und so weiter. Die neuen Gäste gehen nun in die Potenzen der nicht 3er-Reihen Zahlen.
 
     $$
     \begin{aligned}
        & n \quad \text{Aktuelle Zimmernummer}\\
+       &k \quad \in \quad \N\\
         \\
        & \text{Die Gäste gehen in folgendes Zimmer}:\quad 3n\\
-
-        &\quad \rightarrow \text{Die neuen Gäste gehen in die nun freien Zimmer}\\
+        \\
+       & \text{Gäste aus Bus 1 gehen in:} \quad 1^k\\
+       & \text{Gäste aus Bus 2 gehen in:} \quad 2^k\\
+       & \text{Gäste aus Bus 3 gehen in:} \quad 4^k\\
+       & \text{Gäste aus Bus 4 gehen in:} \quad 5^k\\
+       & \text{Gäste aus Bus 5 gehen in:} \quad 7^k\\
+       
     \end{aligned}
     $$
 
@@ -145,4 +151,5 @@ Die Mengen sind unendlich abzählbar. Das heisst, sie können theoretisch mit de
 ## Rubrik "Wer bin ich?"
 
 :::info[Wer bin ich?]
+Wir beide hatten grosse Visionen, aber ihre vollständige Umsetzung oder Anerkennung erlebten wir nicht mehr: Hilberts Traum von einem vollständigen, widerspruchsfreien mathematischen System wurde widerlegt. Ich starb, bevor ich Anerkennung für meine Arbeit erhielt… Wer bin ich?
 :::
