@@ -17,6 +17,11 @@ const AdventureOption = observer((props: Props) => {
     const page = pageStore.current;
     const [counter, setCounter] = React.useState(Date.now());
     const skippedCounter = React.useRef<number>(null);
+    React.useEffect(() => {
+        if (page) {
+            page.setInitialGuessTime(Date.now() - props.nextGuessIn);
+        }
+    }, [page]);
 
     React.useEffect(() => {
         if (!page) {
@@ -58,6 +63,7 @@ const AdventureOption = observer((props: Props) => {
     }
 
     const isFlipped = page.activeSolution === props.label;
+    console.log('flipped', formatSeconds(timeLeft / 1000));
 
     return (
         <div

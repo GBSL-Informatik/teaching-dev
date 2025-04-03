@@ -129,9 +129,15 @@ export default class Page {
 
     /* MINT STUFF */
     @observable accessor activeSolution: string | undefined = undefined;
+    @observable.ref accessor _initialGuessTime = Date.now();
+
+    @action
+    setInitialGuessTime(time: number) {
+        this._initialGuessTime = time;
+    }
 
     lastGuessedAt() {
-        return Storage.getUnsafe(`MINT-GUESS-${this.id}-T`, Date.now())!;
+        return Storage.getUnsafe(`MINT-GUESS-${this.id}-T`, this._initialGuessTime)!;
     }
 
     @action
@@ -146,6 +152,7 @@ export default class Page {
                 this.activeSolution = label;
                 Storage.setUnsafe(`MINT-GUESS-${this.id}-S`, label);
                 Storage.setUnsafe(`MINT-GUESS-${this.id}-T`, now);
+                this.setInitialGuessTime(now);
             }
         }
     }
