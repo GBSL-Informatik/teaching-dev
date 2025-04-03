@@ -1,13 +1,14 @@
 .container {
   text-align: center;
   font-family: "Arial", sans-serif;
+  
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #ffd700;
+  }
 }
 
-h1 {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  color: #ffd700;
-}
 
 .grid {
   display: grid;
