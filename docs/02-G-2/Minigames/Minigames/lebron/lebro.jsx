@@ -41,7 +41,7 @@ h2 {
   height: 20px;
   background: red;
   border-radius: 50%;
-  transition: left 0.1s linear; /* Verlangsamung der Bewegung */
+  transition: left 0.3s linear; /* Noch langsamere Bewegung */
 }
 
 .button {
