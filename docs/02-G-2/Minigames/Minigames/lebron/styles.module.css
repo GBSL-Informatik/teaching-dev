@@ -2,20 +2,19 @@
   text-align: center;
   font-family: Arial, sans-serif;
   animation: fadeIn 1s ease-in-out;
-
-  h1 {
-    font-size: 2rem;
-    color: #ff4500;
-    text-shadow: 3px 3px 0px black;
-    animation: bounce 1s infinite alternate;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-    color: #333;
-  }
 }
 
+h1 {
+  font-size: 2rem;
+  color: #ff4500;
+  text-shadow: 3px 3px 0px black;
+  animation: bounce 1s infinite alternate;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #333;
+}
 
 .bar {
   position: relative;
@@ -42,7 +41,7 @@
   height: 20px;
   background: red;
   border-radius: 50%;
-  transition: left 0.05s linear;
+  transition: left 0.3s linear; /* Noch langsamere Bewegung */
 }
 
 .button {
@@ -84,4 +83,3 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
