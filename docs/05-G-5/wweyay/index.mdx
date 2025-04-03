@@ -13,7 +13,7 @@ Du hast eine der insgesamt 92 verschiedene Lösungsmöglichkeiten für das 8-Dam
 
 ## Hintergrundinformationen zum Rätsel[^1]
 
-Berücksichtigt man dabei, dass viele dieser 92 Lösungskonstellationen durch **Drehungen oder Spiegelungen** auseinander hervorgehen, so verbleiben immerhin noch 12 “grundsätzlich verschiedene” Lösungen. Die Lösung und die beiden folgenden Lösungen wurden als eine der **12 Basislösungen** gezählt oder als drei der insgesamt 92 Konstellationen.
+Berücksichtigt man dabei, dass viele dieser 92 Lösungskonstellationen durch **Drehungen oder Spiegelungen** auseinander hervorgehen, so verbleiben immerhin noch 12 “grundsätzlich verschiedene” Lösungen. Die Lösung mit den beiden folgenden Lösungen wurden als eine der **12 Basislösungen** gezählt oder als drei der insgesamt 92 Konstellationen.
 
 ![Die Lösung gespiegelt --width=332](./images/gespiegelt.jpeg)
 
@@ -37,11 +37,9 @@ Mögliche Lösungen des n-Damenproblems kann man mit dem rekursiven Backtracking
 
 Das rekursive Backtracking ist eine Methode, in der man mögliche Lösungen ausprobiert und wenn sie nicht funktioniert, geht man einen Schritt zurück, um eine andere Möglichkeit auszuprobieren. 
 
-Bei dem n-Damenproblem sieht es folgendermassen aus: Man startet von der ersten Reihe aus und setzt die erste Dame irgendwo in die erste Reihe. Dann fährt man gleich mit der Zweiten fort. Man kontrolliert immer, ob die gerade gesetzte Dame von einer anderen angegriffen wird. Wenn das nicht der Fall ist, geht man zur nächsten Reihe weiter. Wenn sie aber angegriffen wird nimmt man die Dame wieder weg und versucht eine neue Möglichkeit aus. Wenn es keine Lösung gibt, geht man eine Reihe zurück und setzt die vorherige Dame neu. Dies fährt man so lange fort, bis alle Damen gesetzt sind. 
+Bei dem n-Damenproblem sieht es folgendermassen aus: Man startet von der ersten Reihe aus und setzt die erste Dame irgendwo in die erste Reihe. Dann fährt man gleich mit der Zweiten fort. Man kontrolliert immer, ob die gerade gesetzte Dame von einer anderen angegriffen wird. Wenn das nicht der Fall ist, geht man zur nächsten Reihe weiter. Wenn sie aber angegriffen wird, nimmt man die Dame wieder weg und versucht eine neue Möglichkeit aus. Wenn es keine Lösung gibt, geht man eine Reihe zurück und setzt die vorherige Dame neu. Dies fährt man so lange fort, bis alle Damen gesetzt sind. 
 
 [^1]: Quelle [https://de.wikipedia.org/wiki/Damenproblem](https://de.wikipedia.org/wiki/Damenproblem)
-
-
 
 ## Nächstes Rätsel
 
