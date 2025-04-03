@@ -11,7 +11,7 @@ const groups = {
     'G-1': ['blusjk', 'rcyggi', 'vnaypf', 'hxbcaa', 'tmghcn', 'xjsiac'],
     'G-2': ['mhwmjw', 'tuxuck', 'ssnffg', 'swvauq', 'jjqrtz', 'ahraaa'],
     'G-3': ['fkqzke', 'hkmvox', 'ksolsr', 'ercvzt', 'fvccpc', 'wlwgum'],
-    'G-4': ['dacaqx', 'qrexph', 'hmviyc', 'tsodqe', 'qlogij', 'qwilyc'],
+    'G-4': ['dacaqx', 'qrexph', 'hmviyc', 'tsodqe', 'qlogij', 'qwilyc', 'onmzik', 'hesnqr', 'byzear'],
     'G-5': ['vlryak', 'wweyay', 'wpvbsh', 'lfrsda', 'jkvdeu', 'hjmlbu'],
     'G-6': ['isduqe', 'tixhkj', 'xijycm', 'ovallm', 'urpjrb', 'ubmqwa'],
     'G-7': ['oqkkhh', 'dhcdnq', 'hmouoj', 'kzmztj', 'nzmlss', 'idsxds'],
