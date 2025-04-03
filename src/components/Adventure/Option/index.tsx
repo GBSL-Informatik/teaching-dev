@@ -33,7 +33,7 @@ const AdventureOption = observer((props: Props) => {
             }, 1000);
             return () => clearTimeout(tDisposer);
         }
-    }, [counter, page?.activeSolution, props.nextGuessIn, skippedCounter]);
+    }, [counter, page, page?.activeSolution, props.nextGuessIn, skippedCounter]);
 
     const { front, back } = React.useMemo(() => {
         if (!Array.isArray(props.children)) {
