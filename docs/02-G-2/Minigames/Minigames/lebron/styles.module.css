@@ -29,8 +29,8 @@ h2 {
 
 .greenZone {
   position: absolute;
-  left: 40%;
-  width: 20%;
+  left: 30%;
+  width: 40%; /* Verdoppelte Breite */
   height: 100%;
   background: limegreen;
 }
@@ -41,7 +41,7 @@ h2 {
   height: 20px;
   background: red;
   border-radius: 50%;
-  transition: left 0.3s linear; /* Noch langsamere Bewegung */
+  transition: left 0.3s linear;
 }
 
 .button {
