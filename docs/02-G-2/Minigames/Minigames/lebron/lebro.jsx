@@ -1,60 +1,85 @@
-import React, { useState, useEffect } from "react";
-import styles from "./styles.module.css";
+.container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  animation: fadeIn 1s ease-in-out;
+}
 
-export default function MiniLeBronDunk() {
-  const [position, setPosition] = useState(0);
-  const [speed, setSpeed] = useState(20);
-  const [movingRight, setMovingRight] = useState(true);
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
+h1 {
+  font-size: 2rem;
+  color: #ff4500;
+  text-shadow: 3px 3px 0px black;
+  animation: bounce 1s infinite alternate;
+}
 
-  useEffect(() => {
-    if (gameOver) return;
-    const interval = setInterval(() => {
-      setPosition((prev) => {
-        if (prev >= 100) setMovingRight(false);
-        if (prev <= 0) setMovingRight(true);
-        return movingRight ? prev + 5 : prev - 5;
-      });
-    }, speed);
-    return () => clearInterval(interval);
-  }, [movingRight, speed, gameOver]);
+h2 {
+  font-size: 1.5rem;
+  color: #333;
+}
 
-  const handleStop = () => {
-    if (position > 40 && position < 60) {
-      setScore(score + 1);
-      setSpeed(Math.max(speed - 2, 5)); // Wird immer schneller
-    } else {
-      setGameOver(true);
-    }
-  };
+.bar {
+  position: relative;
+  width: 80%;
+  height: 20px;
+  background: #ddd;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid black;
+}
 
-  const restartGame = () => {
-    setScore(0);
-    setSpeed(20);
-    setGameOver(false);
-    setPosition(0);
-  };
+.greenZone {
+  position: absolute;
+  left: 40%;
+  width: 20%;
+  height: 100%;
+  background: limegreen;
+}
 
-  return (
-    <div className={styles.container}>
-      <h1>🏀 Mini LeBron Dunk</h1>
-      <h2>Score: {score}</h2>
-      <div className={styles.bar}>
-        <div className={styles.greenZone}></div>
-        <div
-          className={styles.marker}
-          style={{ left: `${position}%` }}
-        ></div>
-      </div>
-      {!gameOver ? (
-        <button className={styles.button} onClick={handleStop}>DUNK!</button>
-      ) : (
-        <div>
-          <h2 className={styles.boo}>BOOOOH! 😭 Mini LeBron ist enttäuscht...</h2>
-          <button className={styles.button} onClick={restartGame}>Try Again</button>
-        </div>
-      )}
-    </div>
-  );
+.marker {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: red;
+  border-radius: 50%;
+  transition: left 0.3s linear; /* Noch langsamere Bewegung */
+}
+
+.button {
+  background: gold;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-weight: bold;
+  box-shadow: 3px 3px 0px black;
+  transition: transform 0.1s;
+}
+
+.button:hover {
+  transform: scale(1.1);
+  background: orange;
+}
+
+.boo {
+  color: red;
+  font-size: 2rem;
+  font-weight: bold;
+  animation: shake 0.5s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(3deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
