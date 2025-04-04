@@ -65,10 +65,10 @@ export default function Home(): React.ReactNode {
                     }
                 >
                     <hr style={{ margin: 0, marginBottom: '5px' }} />
-                    Wir erhielten die Aufgabe, verschiedene Rätsel im MINT-Bereich zu erstellen und auf die
-                    Website, welche von Herrn Hofer vorbereitet wurde, hochzuladen. Über die nächsten Tage
-                    haben wir selbst Rätsel gelöst, welche uns von unseren Begleitpersonen gestellt wurden und
-                    gleichzeitig eigene erstellt. Am Mittwochnachmittag gingen wir als Klasse nach Bern zu den{' '}
+                    Wir erhielten die Aufgabe, verschiedene Rätsel über Phänomene des MINT-Bereichs zu
+                    erstellen und auf die Website hochzuladen. Über die nächsten Tage haben wir selbst Rätsel
+                    gelöst, welche uns von unseren Begleitpersonen gestellt wurden und gleichzeitig eigene
+                    erstellt. Am Mittwochnachmittag gingen wir als Klasse nach Bern zu den{' '}
                     <a href="https://www.bern.adventurerooms.ch/" target="_blank">
                         AdventureRooms
                     </a>{' '}
