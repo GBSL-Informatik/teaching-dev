@@ -33,16 +33,9 @@ const main = async () => {
         copyRecursive(`docs/${d}`, 'src/pages/').forEach(e => ignore.push(e));
     });
     if (process.env.NODE_ENV === 'production') {
-      console.log('cleanup docs');
-      for (let i = 0; i < 2; i++) {
-        dirs.forEach((d) => {
-          try {
-            fs.rmSync(`docs/${d}`, { recursive: true, force: true });
-          } catch (e) {
-            console.log('err', e);
-          }
-        });
-      }
+      fs.rmSync('docs', { recursive: true, force: true });
+      fs.mkdirSync('docs');
+      fs.writeFileSync(`docs/index.mdx`, '---\npage_id: 973015b0-9aa1-4c0e-b450-6214a4b191b2\n---\n\n# MINT Woche');
     }
     fs.writeFileSync('src/pages/.gitignore', ignore.map(d => `${d}/*`).join('\n'))
 }
