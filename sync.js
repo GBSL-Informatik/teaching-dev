@@ -34,9 +34,15 @@ const main = async () => {
     });
     if (process.env.NODE_ENV === 'production') {
       console.log('cleanup docs');
-      dirs.forEach((d) => {
-        fs.rmSync(`docs/${d}`, { recursive: true, force: true });
-      });
+      for (let i = 0; i < 2; i++) {
+        dirs.forEach((d) => {
+          try {
+            fs.rmSync(`docs/${d}`, { recursive: true, force: true });
+          } catch (e) {
+            console.log('err', e);
+          }
+        });
+      }
     }
     fs.writeFileSync('src/pages/.gitignore', ignore.map(d => `${d}/*`).join('\n'))
 }
