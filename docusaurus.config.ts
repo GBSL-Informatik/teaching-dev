@@ -91,14 +91,6 @@ const REMARK_PLUGINS = [
   pdfPlugin,
   pagePlugin,
   [
-    commentPlugin,
-    {
-      commentableJsxFlowElements: ['dd', 'DefHeading', 'figcaption', 'String'],
-      ignoreJsxFlowElements: ['summary', 'dt'],
-      ignoreCodeBlocksWithMeta: /live_py/
-    }
-  ],
-  [
       linkAnnotationPlugin,
       {
           prefix: '👉',
