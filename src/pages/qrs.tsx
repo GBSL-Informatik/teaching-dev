@@ -31,13 +31,13 @@ export default function Home(): React.ReactNode {
             <main className={clsx(styles.qr)}>
                 <Generator
                     image="/img/logo.png"
-                    iconSize={256}
+                    iconSize={226}
                     iconColor="#01f0bc"
                     text="https://mint-26e.gbsl.website/blusjk"
                     isLink
                     showText
                     download
-                    size="60em"
+                    size="50em"
                 />
                 {Object.entries(groups).map(([key, val], idx) => {
                     return (

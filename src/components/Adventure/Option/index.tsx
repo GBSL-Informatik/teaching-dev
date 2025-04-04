@@ -19,7 +19,7 @@ const AdventureOption = observer((props: Props) => {
     const skippedCounter = React.useRef<number>(null);
     React.useEffect(() => {
         if (page) {
-            page.setInitialGuessTime(Date.now() - props.nextGuessIn);
+            page.setInitialGuessTime(Date.now() - (props.nextGuessIn + 1) * 1000);
         }
     }, [page]);
 
@@ -38,7 +38,7 @@ const AdventureOption = observer((props: Props) => {
             }, 1000);
             return () => clearTimeout(tDisposer);
         }
-    }, [counter, page, page?.activeSolution, props.nextGuessIn, skippedCounter]);
+    }, [counter, page, page?.activeSolution, props.nextGuessIn, skippedCounter, page?._initialGuessTime]);
 
     const { front, back } = React.useMemo(() => {
         if (!Array.isArray(props.children)) {
@@ -49,9 +49,10 @@ const AdventureOption = observer((props: Props) => {
             return { front: props.children, back: 'Rückseite' };
         }
         const front = props.children.slice(0, splitIdx);
-        const back = props.children.slice(splitIdx + 2);
+        const back = props.children.slice(splitIdx + 1);
         return { front, back: back.length === 0 ? 'Rückseite' : back };
     }, [props.children]);
+
     const timeLeft = React.useMemo(() => {
         if (!page) {
             return 1;
