@@ -46,7 +46,7 @@ const BasketGame: React.FC = () => {
     const resetBall = () => {
         setBall({
             x: 50,
-            y: 80,
+            y: 60,
             velocityX: 0,
             velocityY: 0,
             isShot: false
@@ -215,8 +215,8 @@ const BasketGame: React.FC = () => {
                 );
 
                 // Score if the ball passes through the basket
-                if (distance < 5 && newBall.y > basketY && newBall.velocityY > 0) {
-                    setScore((prevScore) => prevScore + 2);
+                if (distance < 8 && newBall.y > basketY && newBall.velocityY > 0) {
+                    setScore((prevScore) => prevScore + 8 - distance);
                     // Reset ball after a short delay
                     setTimeout(() => {
                         resetBall();
