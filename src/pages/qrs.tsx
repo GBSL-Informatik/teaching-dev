@@ -31,13 +31,13 @@ export default function Home(): React.ReactNode {
             <main className={clsx(styles.qr)}>
                 <Generator
                     image="/img/logo.png"
-                    iconSize={226}
+                    iconSize={64}
                     iconColor="#01f0bc"
                     text="https://mint-26e.gbsl.website/blusjk"
                     isLink
                     showText
                     download
-                    size="50em"
+                    size="24em"
                 />
                 {Object.entries(groups).map(([key, val], idx) => {
                     return (
@@ -47,12 +47,12 @@ export default function Home(): React.ReactNode {
                                 title={key}
                                 cols={3}
                                 image="/img/logo.png"
-                                iconSize={128}
+                                iconSize={64}
                                 iconColor="#01f0bc"
                                 qrTexts={val.map((v) => `https://mint-26e.gbsl.website/${v}`)}
                                 isLink
                                 showText
-                                size="40em"
+                                size="20em"
                             />
                         </React.Fragment>
                     );
