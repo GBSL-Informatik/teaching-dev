@@ -32,6 +32,12 @@ const main = async () => {
     dirs.forEach((d) => {
         copyRecursive(`docs/${d}`, 'src/pages/').forEach(e => ignore.push(e));
     });
+    if (process.env.NODE_ENV === 'production') {
+      console.log('cleanup docs');
+      dirs.forEach((d) => {
+        fs.rmSync(`docs/${d}`, { recursive: true, force: true });
+      });
+    }
     fs.writeFileSync('src/pages/.gitignore', ignore.map(d => `${d}/*`).join('\n'))
 }
 
