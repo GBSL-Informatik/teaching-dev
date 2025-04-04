@@ -63,7 +63,6 @@ const AdventureOption = observer((props: Props) => {
     }
 
     const isFlipped = page.activeSolution === props.label;
-    console.log('flipped', formatSeconds(timeLeft / 1000));
 
     return (
         <div
