@@ -20,6 +20,7 @@ const AdventureOption = observer((props: Props) => {
     React.useEffect(() => {
         if (page) {
             page.setInitialGuessTime(Date.now() - (props.nextGuessIn + 1) * 1000);
+            setCounter((prev) => prev - 1);
         }
     }, [page]);
 
@@ -71,6 +72,10 @@ const AdventureOption = observer((props: Props) => {
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                const target = e.currentTarget;
+                setTimeout(() => {
+                    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
                 page.flipOption(props.label, props.nextGuessIn * 1000);
             }}
         >

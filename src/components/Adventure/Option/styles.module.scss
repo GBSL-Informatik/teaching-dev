@@ -29,6 +29,7 @@
     &.flipped {
         flex-basis: 100%;
         order: -1;
+        box-shadow: 0 5px 40px var(--ifm-color-success);
         .body {
             transform: rotateY(180deg);
             .front {
