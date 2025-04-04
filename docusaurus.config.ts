@@ -286,22 +286,7 @@ const config: Config = {
         alt: 'MINT 26e',
         src: 'img/logo.png',
       },
-      items: [
-        {
-          to: '/docs',
-          label: 'Infos',
-          position: 'left',
-        },
-        {
-          href: 'https://github.com/GBSL-Informatik/MINT-26e',
-          label: 'GitHub',
-          position: 'right',
-        },
-        {
-          type: 'custom-loginProfileButton',
-          position: 'right'
-        },
-      ],
+      items: [],
     },
     footer: {
       style: 'dark',
@@ -316,20 +301,11 @@ const config: Config = {
           ],
         },
         {
-          title: 'Dokumentation',
+          title: 'Rätsel',
           items: [
             {
-              label: 'Startseite',
-              to: '/docs',
-            },
-          ],
-        },
-        {
-          title: 'Tools',
-          items: [
-            {
-              label: 'Icons finden',
-              to: '/docs/mdi',
+              label: 'Rätsel Nr. 1',
+              to: '/blusjk',
             },
           ],
         }

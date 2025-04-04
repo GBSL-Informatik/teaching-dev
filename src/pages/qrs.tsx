@@ -5,6 +5,7 @@ import Layout from '@theme/Layout';
 
 import styles from './index.module.css';
 import QrGrid from '@tdev-components/shared/QR-Code/Generator/QrGrid';
+import Generator from '@tdev-components/shared/QR-Code/Generator';
 
 const groups = {
     'G-Beispiel': ['olwwql', 'omcrfc', 'mrjdcr', 'wfxnkv', 'pgemyw', 'vhsqdj'],
@@ -28,6 +29,15 @@ export default function Home(): React.ReactNode {
             description="Description will go into a meta tag in <head />"
         >
             <main className={clsx(styles.qr)}>
+                <Generator
+                    image="/img/logo.png"
+                    iconSize={48}
+                    iconColor="#01f0bc"
+                    text="https://mint-26e.gbsl.website/blusjk"
+                    isLink
+                    showText
+                    size="60em"
+                />
                 {Object.entries(groups).map(([key, val], idx) => {
                     return (
                         <React.Fragment key={idx}>

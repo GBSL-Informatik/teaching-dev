@@ -38,11 +38,12 @@ const parseLocation = (location: Location): FileNavigation => {
 };
 
 const CmsLandingPage = observer(() => {
+    const userStore = useStore('userStore');
     const cmsStore = useStore('cmsStore');
     const access = useGithubAccess();
     const { settings, activeEntry, viewStore } = cmsStore;
     const entry = useLoadedFile(activeEntry);
-    if (access === 'no-token') {
+    if (access === 'no-token' || !userStore.current) {
         return <Redirect to={'/gh-login'} />;
     }
     if (access === 'loading' || !settings || !cmsStore.github || !entry) {
