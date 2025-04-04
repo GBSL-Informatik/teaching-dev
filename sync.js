@@ -32,7 +32,7 @@ const main = async () => {
     dirs.forEach((d) => {
         copyRecursive(`docs/${d}`, 'src/pages/').forEach(e => ignore.push(e));
     });
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.CONTEXT === 'production') {
       fs.rmSync('docs', { recursive: true, force: true });
       fs.mkdirSync('docs');
       fs.writeFileSync(`docs/index.mdx`, '---\npage_id: 973015b0-9aa1-4c0e-b450-6214a4b191b2\n---\n\n# MINT Woche');
