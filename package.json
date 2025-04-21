@@ -25,6 +25,7 @@
         "@docusaurus/preset-classic": "^3.7.0",
         "@docusaurus/theme-classic": "^3.7.0",
         "@docusaurus/theme-common": "^3.7.0",
+        "@docusaurus/theme-mermaid": "^3.7.0",
         "@excalidraw/excalidraw": "^0.17.6",
         "@lexical/clipboard": "^0.27.1",
         "@lexical/link": "^0.27.1",

@@ -212,6 +212,7 @@ const config: Config = {
     locales: ['de'],
   },
   markdown: {
+    mermaid: true,
     parseFrontMatter: async (params) => {
       const result = await params.defaultParseFrontMatter(params);
       /**
@@ -493,7 +494,8 @@ const config: Config = {
         brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.0/brython_stdlib.js',
         libDir: '/bry-libs/'
       }
-    ]
+    ],
+    '@docusaurus/theme-mermaid'
   ],
   stylesheets: [
     {
