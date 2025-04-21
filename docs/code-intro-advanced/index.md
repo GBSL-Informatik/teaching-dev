@@ -1,7 +1,7 @@
 ---
 page_id: a1e237bc-6594-4ecb-b602-4b85901a2ca5
 ---
-# Advanced Tutorial: teaching-project
+# Advanced Tutorial
 
 The teaching-project is an educational platform focused on managing digital content (*Documents*) contained within administrative units (*Document Roots*). Access control is managed through flexible *Access Policies* assigned to **Users** and **Student Groups**.
 The technical architecture features a backend interacting with a **Database Schema** via an **API**, with real-time updates pushed using **Socket.IO**, while the frontend utilizes the **MobX Store Pattern** for state management. A specific **CMS Integration** allows managing documentation directly from a GitHub repository.

@@ -1,7 +1,7 @@
 ---
 page_id: 74d22897-7156-41da-8217-34456caae7cd
 ---
-# Tutorial: teaching-project
+# Beginner Tutorial
 
 Dieses Projekt ist eine **Lernplattform** mit Fokus auf die Arbeit mit
 *Dokumenten* und *Berechtigungen*. Es besteht aus einem **Backend**

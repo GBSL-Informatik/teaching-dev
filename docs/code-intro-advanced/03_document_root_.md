@@ -198,7 +198,7 @@ sequenceDiagram
     participant Database as Database (PostgreSQL)
 
     Frontend App->>Frontend Store: useDocumentRoot(id) -> loadInNextBatch(id)
-    Frontend Store->>Frontend Store: Queue IDs; Debounce loadQueued
+    Frontend Store->>Frontend Store: Queue IDs, Debounce loadQueued
     Frontend Store->>Frontend API: Batch GET /users/:userId/documentRoots?ids=...
     Frontend API->>Backend API: GET /users/:userId/documentRoots?ids=...
     Backend API->>Auth Mid: Identify req.user (via session/token)

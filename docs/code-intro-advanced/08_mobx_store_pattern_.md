@@ -132,28 +132,28 @@ When data arrives from the API (initial load or Socket.IO update), the data flow
 
 ```mermaid
 sequenceDiagram
-    participant Backend API as Backend
-    participant Frontend API as Frontend API
-    participant DocumentRoot Store as DocumentRootStore
-    participant Document Store as DocumentStore
-    participant Permission Store as PermissionStore
-    participant Root Store as RootStore
-    GoTo Frontend Component as UI Component(s)
+    participant Backend
+    participant FrontendAPI as "Frontend API"
+    participant DocumentRootStore
+    participant DocumentStore
+    participant PermissionStore
+    participant RootStore
+    participant UI as "UI Component(s)"
 
-    Backend API->>Frontend API: API Response (e.g., /documentRoots/:id response with documents and permissions)
-    Frontend API->>DocumentRoot Store: _loadQueued (action) receives response data
-    DocumentRoot Store->>DocumentRoot Store: addApiResultToStore (action)
-    DocumentRoot Store->>Root Store: Access root (this.root)
-    DocumentRoot Store->>DocumentRoot Store: Creates/updates DocumentRoot model properties (observable)
-    DocumentRoot Store->>Permission Store: Calls permissionStore.add*Permission for each received permission (action)
-    Permission Store->>Permission Store: Adds/updates observable User/Group Permission models
-    DocumentRoot Store->>Document Store: Calls documentStore.addToStore for each received document (action)
-    Document Store->>Document Store: Creates/updates observable Document models
-    Document Store->>Document Store: Adds Document models to observable array
-    DocumentRoot Store->>DocumentRoot Store: Document/Permission models update their internal state (observable)
-    DocumentRoot Store->>DocumentRoot Store: Computed properties on DocumentRoot & Document models re-evaluate (e.g., DocumentRoot.permission, DocumentRoot.documents, Document.canEdit)
-    UI Component(s)-->>UI Component(s): MobX reacts to changes in observable/computed properties
-    UI Component(s)-->>GoTo Frontend Component: UI Re-renders
+    Backend->>FrontendAPI: API Response (e.g., /documentRoots/:id response with documents and permissions)
+    FrontendAPI->>DocumentRootStore: _loadQueued (action) receives response data
+    DocumentRootStore->>DocumentRootStore: addApiResultToStore (action)
+    DocumentRootStore->>RootStore: Access root (this.root)
+    DocumentRootStore->>DocumentRootStore: Creates/updates DocumentRoot model properties (observable)
+    DocumentRootStore->>PermissionStore: Calls permissionStore.add*Permission for each received permission (action)
+    PermissionStore->>PermissionStore: Adds/updates observable User/Group Permission models
+    DocumentRootStore->>DocumentStore: Calls documentStore.addToStore for each received document (action)
+    DocumentStore->>DocumentStore: Creates/updates observable Document models
+    DocumentStore->>DocumentStore: Adds Document models to observable array
+    DocumentRootStore->>DocumentRootStore: Document/Permission models update their internal state (observable)
+    DocumentRootStore->>DocumentRootStore: Computed properties on DocumentRoot & Document models re-evaluate (e.g., DocumentRoot.permission, DocumentRoot.documents, Document.canEdit)
+    UI-->>UI: MobX reacts to changes in observable/computed properties
+    UI-->>UI: UI Re-renders
 ```
 
 This shows a common flow: data arrives for one primary entity (`DocumentRoot`), but bundled related data (`Document`s, `Permission`s) is also received. The `DocumentRootStore` acts as the initial receiver and then distributes the related data to the appropriate stores (`DocumentStore`, `PermissionStore`) via `this.root`. Each store then updates its own collection of observable models. The reactive nature of MobX ensures that any component observing any of this updated data automatically re-renders.
