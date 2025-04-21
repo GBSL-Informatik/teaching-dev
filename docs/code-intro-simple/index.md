@@ -12,7 +12,7 @@ anzeigt und bearbeitet. Wichtige Funktionen sind **Benutzerauthentifizierung**,
 Änderungen zwischen allen Nutzern.
 
 
-**Source Repository:** [None](None)
+**Source Repository:**
 
 ```mermaid
 flowchart TD

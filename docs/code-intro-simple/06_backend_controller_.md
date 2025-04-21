@@ -4,7 +4,6 @@ page_id: 48d67bc5-bd43-4708-bcb6-ea2953837981
 # Chapter 6: Backend-Controller
 
 
-Willkommen zurück zu unserem Tutorial! In den vorherigen Kapiteln haben wir uns mit den grundlegenden Bausteinen unseres Backends beschäftigt: dem **Datenbankschema** ([Kapitel 2: Datenbankschema (Prisma Schema)](02_datenbankschema__prisma_schema__.md)) als Fundament, den **Backend-Datenmodellen** ([Kapitel 1: Backend-Datenmodelle (Prisma Models)](01_backend_datenmodelle__prisma_models__.md)) als intelligente Datenverwalter, der **Authentifizierung & Autorisierung** ([Kapitel 3: Authentifizierung & Autorisierung](03_authentifizierung___autorisierung_.md)) als Sicherheitsschicht und den **Dokumenten** ([Kapitel 4: Dokumente (Content Units)](04_dokumente__content_units__.md)) und **Dokumentenbäumen** ([Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md)) als die eigentlichen Inhalte plus ihre Struktur und Berechtigungen.
 
 Stellen Sie sich vor, das Frontend (der Teil der Anwendung, den der Benutzer im Browser sieht) möchte etwas vom Backend machen lassen. Zum Beispiel:
 
@@ -131,9 +130,9 @@ Basierend auf dem Fluss, den wir in [Kapitel 3: Authentifizierung & Autorisierun
 1.  **Frontend** sendet HTTP-Anfrage (z.B. `PUT /api/v1/users/ihre-id` mit Daten).
 2.  Die **Express App** ([Kapitel 7: API-Anwendung (Express App)](07_api_anwendung__express_app__.md)) empfängt die Anfrage.
 3.  Verschiedene **Middleware** laufen durch:
-    *   Session-Middleware identifiziert die Session.
-    *   Passport-Middleware (mit `deserializeUser`) authentifiziert den Benutzer und fügt `req.user` hinzu.
-    *   `routeGuard` Middleware ([Kapitel 3]) führt eine **grobe Autorisierung** auf Basis von Pfad/Methode und `req.user?.isAdmin` durch. Wenn dieser Check fehlschlägt, wird hier eine 403 Forbidden Antwort gesendet, und der Rest der Kette wird nicht ausgeführt.
+    -   Session-Middleware identifiziert die Session.
+    -   Passport-Middleware (mit `deserializeUser`) authentifiziert den Benutzer und fügt `req.user` hinzu.
+    -   `routeGuard` Middleware ([Kapitel 3]) führt eine **grobe Autorisierung** auf Basis von Pfad/Methode und `req.user?.isAdmin` durch. Wenn dieser Check fehlschlägt, wird hier eine 403 Forbidden Antwort gesendet, und der Rest der Kette wird nicht ausgeführt.
 4.  Wenn der `routeGuard` die Anfrage durchlässt, matcht der **Express Router** die URL und die HTTP-Methode mit einem registrierten **Controller-Handler**.
 5.  Der zuständige **Controller-Handler** (z.B. `update` in `users.ts`) wird aufgerufen.
 6.  Der Controller **extrahiert** relevante Daten aus `req` (`req.params`, `req.body`, `req.query`).
@@ -155,21 +154,22 @@ sequenceDiagram
     participant Model
     participant Datenbank
 
-    Frontend->>ExpressApp: HTTP-Anfrage (PUT /users/:id)
+    Frontend->>ExpressApp: HTTP-Anfrage (PUT)
     ExpressApp->>Middleware: Anfrage
-    Middleware->>ExpressApp: Anfrage (mit req.user nach Auth)
-    opt Grobe Autorisierung (RouteGuard) erfolgreich
-        ExpressApp->>Router: Anfrage
+    Middleware->>Router: Anfrage (mit req.user nach Auth)
+
+    alt Grobe Autorisierung (RouteGuard) erfolgreich
         Router->>Controller: Ruft Controller-Handler auf (z.B. update)
         Controller->>Model: Ruft Model-Methode auf (z.B. updateModel(actor, id, data))
         Model->>Datenbank: Interaktion (SELECT, UPDATE etc.)
         Datenbank-->>Model: Ergebnis
         Model-->>Controller: Ergebnis/Fehler
-        Controller-->>ExpressApp: Formatiert Antwort (res) oder wirft Fehler (next)
+        Controller-->>Router: Formatiert Antwort (res) oder wirft Fehler (next)
+        Router-->>ExpressApp: Weiterleitung der Antwort
         ExpressApp-->>Frontend: HTTP-Antwort (200 OK, 204 No Content oder Fehler)
-    else Grobe Autorisierung fehlschlagend
-        Middleware--xExpressApp: Wirft HTTP403Error
-        ExpressApp--xFrontend: 403 Forbidden
+    else Grobe Autorisierung fehlgeschlagen
+        Middleware-->>ExpressApp: Wirft HTTP403Error
+        ExpressApp-->>Frontend: 403 Forbidden
     end
 
 ```

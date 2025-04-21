@@ -3,8 +3,6 @@ page_id: c2469ac2-9cd2-45ac-9062-b2f0dcb912fc
 ---
 # Chapter 7: API-Anwendung (Express App)
 
-Willkommen zurück zu unserem Tutorial! In den vorherigen Kapiteln haben wir die einzelnen Bausteine unseres Backends kennengelernt: das **Datenbankschema** ([Kapitel 2: Datenbankschema (Prisma Schema)](02_datenbankschema__prisma_schema__.md)), die **Backend-Datenmodelle** ([Kapitel 1: Backend-Datenmodelle (Prisma Models)](01_backend_datenmodelle__prisma_models__.md)), die **Authentifizierung & Autorisierung** ([Kapitel 3: Authentifizierung & Autorisierung](03_authentifizierung___autorisierung_.md)), die **Dokumente** ([Kapitel 4: Dokumente (Content Units)](04_dokumente__content_units__.md)) und **Dokumentenbäume** ([Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md)), sowie die **Backend-Controller** ([Kapitel 6: Backend-Controller](06_backend_controller_.md)), die die Anfragen an die Modelle weiterleiten.
-
 Stellen Sie sich vor, Sie haben all diese spezialisierten Abteilungen in Ihrem Backend-Bürogebäude (Datenmodelle, Authentifizierungsprüfer, Dokumentenverwalter). Aber wie kommen die Anfragen vom Frontend überhaupt rein? Wer sitzt an der Rezeption, koordiniert die Sicherheitskontrollen und den Papierkram, bevor die Anfrage beim richtigen Sachbearbeiter (dem Controller) landet?
 
 Hier kommt die **API-Anwendung (Express App)** ins Spiel. In unserem Projekt ist dies die zentrale Instanz, die alle eingehenden HTTP-Anfragen empfängt, die notwendigen vorgelagerten Schritte (wie Authentifizierung und grobe Autorisierung) verwaltet und die Anfrage dann an den richtigen Controller weiterleitet. Man könnte sie als das "Betriebssystem" oder das "Hauptgebäude" bezeichnen, in dem all die anderen Komponenten leben und zusammenarbeiten.
@@ -212,7 +210,7 @@ Obwohl nicht vollständig im Ausschnitt gezeigt, ist die zentrale Fehlerbehandlu
 
 Nehmen wir den Fluss einer Anfrage und zoomen in die Rolle der Express App hine.
 
-```mermaid
+```
 sequenceDiagram
     participant Frontend
     participant ExpressApp as Express App

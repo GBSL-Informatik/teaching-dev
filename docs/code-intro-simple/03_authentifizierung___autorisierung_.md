@@ -4,7 +4,6 @@ page_id: b02f9b83-0e5a-41d7-91e6-da93f888c021
 # Chapter 3: Authentifizierung & Autorisierung
 
 
-Willkommen zurück! In den vorherigen Kapiteln haben wir uns mit dem **Datenbankschema** ([Kapitel 2: Datenbankschema (Prisma Schema)](02_datenbankschema__prisma_schema__.md)) beschäftigt, das den "Bauplan" unserer Datenbasis darstellt, und mit den **Backend-Datenmodellen** ([Kapitel 1: Backend-Datenmodelle (Prisma Models)](01_backend_datenmodelle__prisma_models__.md)), die diese Struktur nutzen, um Daten abzurufen, zu speichern und dabei Geschäftslogik anzuwenden.
 
 Stellen Sie sich vor, Sie haben den Bauplan für ein Haus (Schema) und die "Smart Manager" für jeden Raum und Gegenstand darin (Datenmodelle). Das ist grossartig, um das Haus zu verwalten. Aber wer darf überhaupt eintreten? Und sobald jemand drin ist, welche Räume darf er betreten, und welche Gegenstände darf er anfassen oder verändern?
 

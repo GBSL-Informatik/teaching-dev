@@ -4,7 +4,6 @@ page_id: 76966d4d-cc53-4772-8e9f-c06aa97c897d
 # Chapter 5: Dokumentenbaum (Document Root)
 
 
-Willkommen zurück! In unseren vorherigen Kapiteln haben wir die grundlegenden Bausteine unserer Anwendung kennengelernt: das **Datenbankschema** ([Kapitel 2: Datenbankschema (Prisma Schema)](02_datenbankschema__prisma_schema__.md)) als den Bauplan unserer Daten, die **Backend-Datenmodelle** ([Kapitel 1: Backend-Datenmodelle (Prisma Models)](01_backend_datenmodelle__prisma_models__.md)) als intelligente Verwalter dieser Daten, die **Authentifizierung & Autorisierung** ([Kapitel 3: Authentifizierung & Autorisierung](03_authentifizierung___autorisierung_.md)) als unser Sicherheitssystem und schliesslich die **Dokumente** ([Kapitel 4: Dokumente (Content Units)](04_dokumente__content_units__.md)) als die einzelnen Inhaltseinheiten selbst.
 
 Stellen Sie sich nun vor, wir haben viele einzelne Dokumente: eine Lektion über Algebra, eine Übungsaufgabe zu Funktionen, ein Bild, das ein Diagramm zeigt, ein Code-Snippet für eine Berechnung. Diese Dokumente sind selten isoliert, sondern gehören oft zu einer grösseren Einheit – zum Beispiel einem bestimmten Kurs, einer spezifischen Lektionenserie oder einem Projekt.
 

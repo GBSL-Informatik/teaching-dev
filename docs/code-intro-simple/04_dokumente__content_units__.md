@@ -4,7 +4,6 @@ page_id: ee7ccc84-de0f-4614-bff5-87b5efb27065
 # Chapter 4: Dokumente (Content Units)
 
 
-Willkommen zurück zu unserem Tutorial! In den letzten Kapiteln haben wir die Grundlagen der Datenhaltung betrachtet: das **Datenbankschema** ([Kapitel 2: Datenbankschema (Prisma Schema)](02_datenbankschema__prisma_schema__.md)) als Bauplan und die **Backend-Datenmodelle** ([Kapitel 1: Backend-Datenmodelle (Prisma Models)](01_backend_datenmodelle__prisma_models__.md)) als intelligente Verwalter dieser Daten. Ausserdem haben wir uns mit **Authentifizierung & Autorisierung** ([Kapitel 3: Authentifizierung & Autorisierung](03_authentifizierung___autorisierung_.md)) beschäftigt und gelernt, wer überhaupt mit unseren Daten interagieren darf.
 
 Nachdem das Fundament steht und die Sicherheit gewährleistet ist, wenden wir uns nun dem Herzen der Anwendung zu: den eigentlichen **Inhalten**. In unserer Anwendung nennen wir diese Inhalte **Dokumente**, oft auch als **Content Units** bezeichnet.
 

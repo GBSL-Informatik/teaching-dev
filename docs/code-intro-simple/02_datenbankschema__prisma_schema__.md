@@ -4,7 +4,6 @@ page_id: d041ccf5-da04-4e67-aa58-9c3d476043e9
 # Chapter 2: Datenbankschema (Prisma Schema)
 
 
-Willkommen zurück zu unserem Tutorial! Im [Kapitel 1: Backend-Datenmodelle (Prisma Models)](01_backend_datenmodelle__prisma_models__.md) haben wir uns angesehen, wie unsere Backend-Datenmodelle (wie das `UserModel`) die Geschäftslogik kapseln und als Vermittler zwischen der Anwendung und der Datenbank agieren. Wir haben gelernt, dass diese Modelle auf von Prisma generiertem Code aufbauen, der wiederum weiß, wie die Daten in der Datenbank organisiert sind.
 
 Aber woher kommt dieses Wissen über die Struktur der Daten? Wie "weiß" Prisma, welche Tabellen, Felder und Beziehungen existieren? Genau hier kommt das **Datenbankschema** ins Spiel. Es ist die zentrale "Quelle der Wahrheit" für die Struktur unserer Datenbank.
 
