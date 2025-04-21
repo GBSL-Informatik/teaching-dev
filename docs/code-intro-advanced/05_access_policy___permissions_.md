@@ -3,10 +3,6 @@ page_id: 26998d0d-8f4f-401c-8c0c-92f5bbb4d172
 ---
 # Chapter 5: Access Policy & Permissions
 
-
-```md
-# Chapter 5: Access Policy & Permissions
-
 In the preceding chapters, we've introduced the core entities of the `teaching-project`: the central actor ([Chapter 1: User](01_user_.md)), the fundamental content unit ([Chapter 2: Document](02_document_.md)), their containing structure and permission boundary ([Chapter 3: Document Root](03_document_root_.md)), and a key mechanism for grouping users to simplify access management ([Chapter 4: Student Group](04_student_group_.md)).
 
 With these pieces in place, we can now define how the system determines what actions a specific [`User`](01_user_.md) is permitted to perform, particularly concerning [`DocumentRoot`](03_document_root_.md)s and the [`Document`](02_document_.md)s they contain. This is the role of the **Access Policy & Permissions** system.
