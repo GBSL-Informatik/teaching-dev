@@ -23,8 +23,8 @@ Jedes Dokument hat folgende Schlüsselmerkmale:
 2.  **Einen Autor (`authorId`):** Der Benutzer, der dieses Dokument erstellt hat.
 3.  **Einen Typ (`type`):** Dieser ist entscheidend! Er definiert, *welche Art* von Inhalt das Dokument repräsentiert (z.B. "Code", "Rich Text", "Bild", "Aufgabenstatus") und bestimmt, wie die eigentlichen Daten strukturiert sind und wie das Dokument im Frontend dargestellt wird.
 4.  **Die eigentlichen Daten (`data`):** Der Kerninhalt selbst, gespeichert als flexibles `JSON`-Objekt in der Datenbank. Der *Typ* des Dokuments bestimmt die erwartete Struktur dieses JSON-Objekts.
-5.  **Beziehungen zu anderen Dokumenten (`parentId`):** Dokumente können hierarchisch organisiert sein (z.B. ein Textblock gehört zu einem grösseren Kapitel), was durch eine Referenz auf ein Eltern-Dokument (`parentId`) abgebildet wird. (Mehr dazu in [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md)).
-6.  **Zugehörigkeit zu einem Dokumentenbaum (`documentRootId`):** Jedes Dokument gehört zu einem bestimmten Wurzelknoten, der die Berechtigungen und den Kontext für eine Sammlung von Dokumenten definiert. (Mehr dazu in [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md)).
+5.  **Beziehungen zu anderen Dokumenten (`parentId`):** Dokumente können hierarchisch organisiert sein (z.B. ein Textblock gehört zu einem grösseren Kapitel), was durch eine Referenz auf ein Eltern-Dokument (`parentId`) abgebildet wird. (Mehr dazu in [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root__.md)).
+6.  **Zugehörigkeit zu einem Dokumentenbaum (`documentRootId`):** Jedes Dokument gehört zu einem bestimmten Wurzelknoten, der die Berechtigungen und den Kontext für eine Sammlung von Dokumenten definiert. (Mehr dazu in [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root__.md)).
 7.  **Zeitstempel (`createdAt`, `updatedAt`):** Wann das Dokument erstellt und zuletzt geändert wurde.
 
 ## Der Schlüssel: Typ und Daten (`type` & `data`)
@@ -258,7 +258,7 @@ Sie möchten den Text der Frage ändern. Wie funktioniert das Zusammenspiel der 
 
     export default Document(prisma.document); // Exportiere das erweiterte Prisma Client Objekt
     ```
-    Das Backend Model (`Model`) findet zuerst das Dokument (ggf. inklusive seiner Berechtigungen über den zugehörigen Document Root, siehe [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md)). Dann führt es eine **Autorisierungsprüfung** durch: Hat der `actor` (unser eingeloggter Benutzer) die notwendige Berechtigung, dieses spezifische Dokument zu aktualisieren? Hier wird die über `findModel` ermittelte `highestPermission` (die höchste effektive Berechtigung auf das Dokument, z.B. Read-Only, Read/Write) geprüft. Nur wenn `RWAccess.has(permission)` true ist (oder der agierende Admin das `onBehalfOf`-Flag gesetzt hat), wird die Aktualisierung erlaubt. Andernfalls wird ein `HTTP403Error` geworfen.
+    Das Backend Model (`Model`) findet zuerst das Dokument (ggf. inklusive seiner Berechtigungen über den zugehörigen Document Root, siehe [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root__.md)). Dann führt es eine **Autorisierungsprüfung** durch: Hat der `actor` (unser eingeloggter Benutzer) die notwendige Berechtigung, dieses spezifische Dokument zu aktualisieren? Hier wird die über `findModel` ermittelte `highestPermission` (die höchste effektive Berechtigung auf das Dokument, z.B. Read-Only, Read/Write) geprüft. Nur wenn `RWAccess.has(permission)` true ist (oder der agierende Admin das `onBehalfOf`-Flag gesetzt hat), wird die Aktualisierung erlaubt. Andernfalls wird ein `HTTP403Error` geworfen.
     Wenn die Prüfung erfolgreich ist, verwendet das Model den ungefilterten `docData` JSON Payload aus der Anfrage, um das `data`-Feld des Dokuments in der **Datenbank** über den Prisma Client (`db.update`) zu aktualisieren.
 
 7.  **Datenbank (PostgreSQL):** Prisma führt die SQL `UPDATE` Anweisung aus, die das JSON-Feld in der `documents`-Tabelle für den Datensatz mit der entsprechenden ID ändert.
@@ -388,7 +388,7 @@ Der Prozess des Speicherns eines Dokuments zeigt das Zusammenspiel: Das Frontend
 
 Nachdem wir nun die einzelnen Inhalts-Einheiten – die Dokumente – verstanden haben, müssen wir uns fragen, wie diese Dokumente strukturiert und organisiert werden. Dokumente existieren selten isoliert; sie sind Teil einer Lektion, eines Kurses oder einer anderen Sammlung. Hier kommen die **Dokumentenbäume (Document Roots)** ins Spiel.
 
-Weiter geht es mit [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md).
+Weiter geht es mit [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root__.md).
 
 ---
 

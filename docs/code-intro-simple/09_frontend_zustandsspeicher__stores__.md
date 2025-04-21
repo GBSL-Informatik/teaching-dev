@@ -25,7 +25,7 @@ In unserem `teaching-project` verwenden wir die Bibliothek **MobX** ([MobX](http
 
 ## Anwendungsfall: Anzeigen und Aktualisieren einer Liste von Dokumenten
 
-Nehmen wir als Beispiel, wie das Frontend die Dokumente in einem bestimmten **Dokumentenbaum** ([Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md)) anzeigt und handhabt.
+Nehmen wir als Beispiel, wie das Frontend die Dokumente in einem bestimmten **Dokumentenbaum** ([Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root__.md)) anzeigt und handhabt.
 
 Wenn ein Benutzer einen Kursabschnitt öffnet (der einem `DocumentRoot` entspricht), muss das Frontend:
 
@@ -198,7 +198,7 @@ Zurück zu unserem Anwendungsfall: Anzeigen von Dokumenten in einem Kursabschnit
 1.  **Initiales Laden:**
     *   Wenn der Benutzer den Kursabschnitt öffnet, greift eine UI-Komponente ([z. B. eine React-Komponente](https://react.dev/)) über den `storesContext` auf den `RootStore` zu.
     *   Von dort bekommt sie den `DocumentRootStore` und den `DocumentStore`.
-    *   Die Komponente oder eine View-Schicht ruft eine Methode im `DocumentRootStore` auf, z. B. `loadInNextBatch(documentRootId, ...)`, die wiederum eine API-Funktion wie `apiFindManyFor(userId, [documentRootId], ...)` aufruft (siehe [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root_.md) für Backend-Seite).
+    *   Die Komponente oder eine View-Schicht ruft eine Methode im `DocumentRootStore` auf, z. B. `loadInNextBatch(documentRootId, ...)`, die wiederum eine API-Funktion wie `apiFindManyFor(userId, [documentRootId], ...)` aufruft (siehe [Kapitel 5: Dokumentenbaum (Document Root)](05_dokumentenbaum__document_root__.md) für Backend-Seite).
     *   Wenn die Daten (der `DocumentRoot` und seine `documents`) vom Backend via HTTP eintreffen, verarbeitet der `DocumentRootStore` die Antwort.
     *   Er erstellt eine Instanz des Frontend `DocumentRoot` Modells für den geladenen Baum und fügt es seiner `documentRoots` Liste hinzu.
     *   Für *jedes* empfangene Dokument erstellt er über eine Helferfunktion (`CreateDocumentModel`, siehe Code in `DocumentStore.ts`) das passende Frontend Dokumenten-Modell (basiert auf `type`, z. B. `new Script(...)`, `new String(...)`) und fügt es dem `documents` Observable-Array im `DocumentStore` hinzu (`documentStore.addToStore(doc)`).

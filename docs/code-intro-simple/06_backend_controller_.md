@@ -125,7 +125,7 @@ Auch hier sehen wir dasselbe Muster: Identifiziere den agierenden Benutzer (`act
 
 Wie passt der Controller in den Gesamtfluss einer Anfrage im Backend?
 
-Basierend auf dem Fluss, den wir in [Kapitel 3: Authentifizierung & Autorisierung](03_authentifizierung___autorisierung_.md) und [Kapitel 5: Dokumentenbaum (Document Root)](05_documentenbaum__document_root_.md) gesehen haben, sieht der Weg mit dem Controller als neuem Schritt so aus:
+Basierend auf dem Fluss, den wir in [Kapitel 3: Authentifizierung & Autorisierung](03_authentifizierung___autorisierung_.md) und Kapitel 5 gesehen haben, sieht der Weg mit dem Controller als neuem Schritt so aus:
 
 1.  **Frontend** sendet HTTP-Anfrage (z.B. `PUT /api/v1/users/ihre-id` mit Daten).
 2.  Die **Express App** ([Kapitel 7: API-Anwendung (Express App)](07_api_anwendung__express_app__.md)) empfängt die Anfrage.
