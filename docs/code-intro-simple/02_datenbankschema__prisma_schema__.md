@@ -276,15 +276,15 @@ Sie sehen, dass die `schema.prisma`-Datei das Fundament bildet, auf dem sowohl d
 
 Das `teaching-project` verwendet die `schema.prisma`-Datei intensiv, um seine komplette Datenbanklogik zu definieren. Sie finden hier Definitionen für alle wesentlichen Entitäten und ihre Beziehungen:
 
-*   **`User`**: Definition der Benutzer (email, firstName, lastName, isAdmin etc.) und deren Beziehungen zu Dokumenten, Gruppen und Berechtigungen. File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L22)
-*   **`CmsSettings`**: Speichert CMS-spezifische Einstellungen pro Benutzer. File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L40)
-*   **`StudentGroup`**: Definiert Studentengruppen, inklusive Eltern-Kind-Beziehungen für hierarchische Gruppen. File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L52)
-*   **`Document`**: Definiert die Inhalts-Dokumente, deren Autor, Typ, Daten (als `Json`) und Struktur innerhalb eines `DocumentRoot`. File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L67)
-*   **`DocumentRoot`**: Repräsentiert den Wurzelknoten von Dokumenten mit Zugriffsrechten (verwendet das `Access` Enum). File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L88)
-*   **`RootGroupPermission` / `RootUserPermission`**: Definieren spezifische Berechtigungen für Gruppen oder einzelne Benutzer auf `DocumentRoot`-Ebene (verwenden ebenfalls das `Access` Enum). File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L99), [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L112)
-*   **`AllowedAction`**: Eine einfache Tabelle zur Definition erlaubter Aktionen für verschiedene Dokumententypen. File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L81)
-*   **`Sessions`**: Wird vom Session-Management-Middleware (connect-pg-simple) verwendet, um Benutzersitzungen in der Datenbank zu speichern. File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L127)
-*   **Datenbank-Views**: Mehrere `view`-Definitionen am Ende, die komplexe Join-Operationen kapseln und als Basis für Berechnungen oder Abfragen dienen (z.B. `view_DocumentUserPermissions`). File: [`teaching-api/prisma/schema.prisma`](../teaching-api/prisma/schema.prisma#L136)
+*   **`User`**: Definition der Benutzer (email, firstName, lastName, isAdmin etc.) und deren Beziehungen zu Dokumenten, Gruppen und Berechtigungen.
+*   **`CmsSettings`**: Speichert CMS-spezifische Einstellungen pro Benutzer
+*   **`StudentGroup`**: Definiert Studentengruppen, inklusive Eltern-Kind-Beziehungen für hierarchische Gruppen.
+*   **`Document`**: Definiert die Inhalts-Dokumente, deren Autor, Typ, Daten (als `Json`) und Struktur innerhalb eines `DocumentRoot`.
+*   **`DocumentRoot`**: Repräsentiert den Wurzelknoten von Dokumenten mit Zugriffsrechten (verwendet das `Access` Enum).
+*   **`RootGroupPermission` / `RootUserPermission`**: Definieren spezifische Berechtigungen für Gruppen oder einzelne Benutzer auf `DocumentRoot`-Ebene (verwenden ebenfalls das `Access` Enum).
+*   **`AllowedAction`**: Eine einfache Tabelle zur Definition erlaubter Aktionen für verschiedene Dokumententypen.
+*   **`Sessions`**: Wird vom Session-Management-Middleware (connect-pg-simple) verwendet, um Benutzersitzungen in der Datenbank zu speichern.
+*   **Datenbank-Views**: Mehrere `view`-Definitionen am Ende, die komplexe Join-Operationen kapseln und als Basis für Berechnungen oder Abfragen dienen (z.B. `view_DocumentUserPermissions`).
 
 Diese Schema-Datei ist die *definitive* Beschreibung der Datenbankstruktur für das gesamte Projekt. Alle anderen Teile des Backends, die mit der Datenbank interagieren, tun dies indirekt über den von diesem Schema generierten Prisma Client oder vertrauen darauf, dass die Datenbank diesem Schema entspricht (mithilfe von Prisma Migrations).
 
