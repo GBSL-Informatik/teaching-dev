@@ -3,26 +3,10 @@ import getSiteConfig from './siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config, } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import strongPlugin, { transformer as captionVisitor } from './src/plugins/remark-strong/plugin';
-import deflistPlugin from './src/plugins/remark-deflist/plugin';
-import mdiPlugin from './src/plugins/remark-mdi/plugin';
-import kbdPlugin from './src/plugins/remark-kbd/plugin';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import defboxPlugin from './src/plugins/remark-code-defbox/plugin';
-import flexCardsPlugin from './src/plugins/remark-flex-cards/plugin';
-import imagePlugin, { CaptionVisitor } from './src/plugins/remark-images/plugin';
-import linkAnnotationPlugin from './src/plugins/remark-link-annotation/plugin';
-import mediaPlugin from './src/plugins/remark-media/plugin';
-import detailsPlugin from './src/plugins/remark-details/plugin';
-import pagePlugin from './src/plugins/remark-page/plugin';
-import pdfPlugin from './src/plugins/remark-pdf/plugin';
-import commentPlugin from './src/plugins/remark-comments/plugin';
 import themeCodeEditor from './src/plugins/theme-code-editor'
-import enumerateAnswersPlugin from './src/plugins/remark-enumerate-components/plugin';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
-import { promises as fs, existsSync } from 'fs';
+import { promises as fs } from 'fs';
 import { accountSwitcher, blog, cms, gallery, gitHub, loginProfileButton, requestTarget, taskStateOverview } from './src/siteConfig/navbarItems';
 import { applyTransformers } from './src/siteConfig/transformers';
 import {
@@ -35,6 +19,7 @@ import {
   excalidrawPluginConfig,
   socketIoNoDepWarningsPluginConfig,
 } from './src/siteConfig/pluginConfigs';
+import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recommendedRemarkPlugins } from './src/siteConfig/markdownPluginConfigs';
 
 const siteConfig = getSiteConfig();
 
@@ -43,85 +28,9 @@ const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).subs
 const OFFLINE_API = process.env.OFFLINE_API === 'false' ? false : !!process.env.OFFLINE_API || process.env.CODESPACES === 'true';
 const TITLE = siteConfig.title ?? 'Teaching-Dev';
 
-const BEFORE_DEFAULT_REMARK_PLUGINS = siteConfig.beforeDefaultRemarkPlugins ?? [
-  flexCardsPlugin,
-  [
-    deflistPlugin,
-    {
-      tagNames: {
-        dl: 'Dl',
-      },
-    }
-  ],
-  [
-    imagePlugin,
-    {
-      tagNames: {
-        sourceRef: 'SourceRef',
-        figure: 'Figure'
-      },
-      captionVisitors: [
-        (ast, caption) => captionVisitor(ast, caption, (children) => {
-          return {
-            type: 'mdxJsxTextElement',
-            name: 'strong',
-            attributes: [{ type: 'mdxJsxAttribute', name: 'className', value: 'boxed' }],
-            children: children
-          };
-        })
-      ] satisfies CaptionVisitor[]
-    }
-  ],
-  detailsPlugin,
-  defboxPlugin
-];
-
-const REMARK_PLUGINS = siteConfig.remarkPlugins ?? [
-  [strongPlugin, { className: 'boxed' }],
-  [
-    mdiPlugin,
-    {
-      colorMapping: {
-        green: 'var(--ifm-color-success)',
-        red: 'var(--ifm-color-danger)',
-        orange: 'var(--ifm-color-warning)',
-        yellow: '#edcb5a',
-        blue: '#3578e5',
-        cyan: '#01f0bc'
-      },
-      defaultSize: '1.25em'
-    }
-  ],
-  mediaPlugin,
-  kbdPlugin,
-  remarkMath,
-  [
-    enumerateAnswersPlugin,
-    {
-      componentsToEnumerate: ['Answer', 'TaskState', 'SelfCheckTaskState'],
-    }
-  ],
-  pdfPlugin,
-  pagePlugin,
-  [
-    commentPlugin,
-    {
-      commentableJsxFlowElements: ['dd', 'DefHeading', 'figcaption', 'String'],
-      ignoreJsxFlowElements: ['summary', 'dt'],
-      ignoreCodeBlocksWithMeta: /live_py/
-    }
-  ],
-  [
-    linkAnnotationPlugin,
-    {
-      prefix: '👉',
-      postfix: null
-    }
-  ]
-];
-const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? [
-  rehypeKatex
-];
+const BEFORE_DEFAULT_REMARK_PLUGINS = siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
+const REMARK_PLUGINS = siteConfig.remarkPlugins ?? recommendedRemarkPlugins;
+const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? recommendedRehypePlugins;
 
 const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
 const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
@@ -262,17 +171,18 @@ const config: Config = applyTransformers({
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+          lastVersion: siteConfig.docs?.lastVersion,
+          routeBasePath: siteConfig.docs?.routeBasePath,
+          versions: siteConfig.docs?.versions,
         },
         blog: {
           showReadingTime: true,
-          // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
@@ -347,6 +257,7 @@ const config: Config = applyTransformers({
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'typescript', 'json', 'python'],
     },
+    algolia: siteConfig.algolia ?? undefined,
   } satisfies Preset.ThemeConfig,
   plugins: [
     sassPluginConfig,
