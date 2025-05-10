@@ -1,6 +1,8 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
 import { PluginOptions } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
+import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
+import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-blog';
 
 export interface SiteConfig {
     /** The title of the site. */
@@ -36,6 +38,25 @@ export interface SiteConfig {
     /** Items to show in the navbar. */
     navbarItems?: NavbarItem[];
 
+    /**
+     * the config of the blog plugin. It will be merged with the default options in docusaurus.config.ts
+     * @example ignore the tdev docs (gallery etc.)
+     * ```ts
+     * blog: {
+     *      exclude: ['tdev/**']
+     * }
+     * ```
+     */
+    blog?: BlogPluginOptions | false;
+    /** The config of the docs plugin. It will be merged with the default options in docusaurus.config.ts
+     * @example ignore the tdev blog posts
+     * ```ts
+     * docs: {
+     *      exclude: ['tdev/**']
+     * }
+     * ```
+     */
+    docs?: DocsPluginOptions | false;
     /** Footer configuration */
     footer?: {
         /** The style of the footer. */
