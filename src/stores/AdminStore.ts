@@ -6,13 +6,18 @@ import {
     AllowedAction,
     allowedActions as apiAllowedActions,
     deleteAllowedAction as apiDeleteAllowedAction,
-    createAllowedAction as apiCreateAllowedAction
+    createAllowedAction as apiCreateAllowedAction,
+    signupTokens as apiSignupTokens,
+    SignupToken
 } from '@tdev-api/admin';
 import { DocumentType } from '@tdev-api/document';
 
 export class AdminStore extends iStore {
     readonly root: RootStore;
+
     allowedActions = observable<AllowedAction>([]);
+    signupTokens = observable<SignupToken>([]);
+
     constructor(root: RootStore) {
         super();
         this.root = root;
@@ -21,9 +26,14 @@ export class AdminStore extends iStore {
     @action
     load() {
         return this.withAbortController(`load-all`, async (ct) => {
-            return apiAllowedActions(ct.signal).then(
+            apiAllowedActions(ct.signal).then(
                 action((res) => {
                     this.allowedActions.replace(res.data);
+                })
+            );
+            return apiSignupTokens(ct.signal).then(
+                action((res) => {
+                    this.signupTokens.replace(res.data);
                 })
             );
         });

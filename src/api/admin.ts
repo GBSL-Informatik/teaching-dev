@@ -8,6 +8,17 @@ export interface AllowedAction {
     action: `update@${string}`;
 }
 
+export interface SignupToken {
+    id: string;
+    method: string; // TODO: Make enum?
+    description: string;
+    validThrough?: Date;
+    uses: number;
+    maxUses: number;
+    disabled: boolean;
+    // TODO: defaultStudentGroups
+}
+
 export function deleteAllowedAction(id: string, signal: AbortSignal): AxiosPromise {
     return api.delete(`/admin/allowedActions/${id}`, { signal });
 }
@@ -21,4 +32,8 @@ export function createAllowedAction(
 
 export function allowedActions(signal: AbortSignal): AxiosPromise<AllowedAction[]> {
     return api.get(`/admin/allowedActions`, { signal });
+}
+
+export function signupTokens(signal: AbortSignal): AxiosPromise<SignupToken[]> {
+    return api.get('/admin/signupTokens', { signal });
 }
