@@ -1,0 +1,15 @@
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+}
+
+.signupLink {
+    border-radius: 2em;
+    box-shadow: var(--ifm-global-shadow-lw);
+    padding: 1em 2em;
+}
+
+.nowrap {
+    white-space: nowrap;
+}

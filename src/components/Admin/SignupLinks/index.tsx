@@ -1,26 +1,76 @@
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import { useStore } from '@tdev-hooks/useStore';
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import DefinitionList from '@tdev-components/DefinitionList';
+import clsx from 'clsx';
+import CopyBadge from '@tdev-components/shared/CopyBadge';
+import siteConfig from '@generated/docusaurus.config';
+const { APP_URL } = siteConfig.customFields as {
+    APP_URL?: string;
+};
 
 const SignupLinks = observer(() => {
     const adminStore = useStore('adminStore');
-    const signupUrl = useBaseUrl('/signup');
+    const signupUrl = `${APP_URL || 'http://localhost:3000'}/signup`;
 
     return (
-        <div>
+        <div className={styles.container}>
             {adminStore.signupTokens.map((token) => (
                 <div key={token.id} className={styles.signupLink}>
-                    <h3>{`${signupUrl}?token=${token.id}`}</h3>
-                    <p>
-                        Gültig bis:{' '}
-                        {token.validThrough
-                            ? new Date(token.validThrough).toLocaleDateString()
-                            : 'Unbegrenzt'}
-                    </p>
-                    <p>Verwendungen: {token.uses}</p>
-                    <p>Maximale Verwendungen: {token.maxUses > 0 ? token.maxUses : 'Unbegrenzt'}</p>
-                    <p>Deaktiviert: {token.disabled ? 'Ja' : 'Nein'}</p>
+                    <CopyBadge value={`${signupUrl}?token=${token.id}`} className={clsx(styles.nowrap)} />
+                    <DefinitionList>
+                        <dt>Beschreibung</dt>
+                        <dd>{token.description}</dd>
+                        <dt>Verwendungen</dt>
+                        <dd>
+                            {token.maxUses > 0 && (
+                                <span
+                                    className={clsx(
+                                        'badge',
+                                        token.uses >= token.maxUses ? 'badge--danger' : 'badge--primary'
+                                    )}
+                                >
+                                    {token.uses} / {token.maxUses}
+                                </span>
+                            )}
+                            {token.maxUses == 0 && (
+                                <span className={clsx('badge', 'badge--secondary')}>{token.uses}</span>
+                            )}
+                        </dd>
+                        <dt>Methode</dt>
+                        <dd>{token.method}</dd>
+                        <dt>Gültig bis</dt>
+                        <dd>
+                            {token.validThrough
+                                ? new Date(token.validThrough).toLocaleDateString()
+                                : 'Unbegrenzt'}
+                        </dd>
+                        <dt>Status</dt>
+                        <dd>
+                            <div className={clsx('button-group')}>
+                                <button
+                                    className={clsx(
+                                        'button',
+                                        'button--sm',
+                                        token.disabled ? 'button--secondary' : 'button--primary'
+                                    )}
+                                    onClick={() => {}}
+                                >
+                                    Aktiviert
+                                </button>
+                                <button
+                                    className={clsx(
+                                        'button',
+                                        'button--sm',
+                                        token.disabled ? 'button--danger' : 'button--secondary'
+                                    )}
+                                    onClick={() => {}}
+                                >
+                                    Deaktiviert
+                                </button>
+                            </div>
+                        </dd>
+                    </DefinitionList>
                 </div>
             ))}
         </div>
