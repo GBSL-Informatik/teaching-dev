@@ -21,7 +21,6 @@ interface Props {
     step?: string | number | undefined;
     min?: string | number | undefined;
     max?: string | number | undefined;
-    readOnly?: boolean;
 }
 
 const TextInput = observer((props: Props) => {

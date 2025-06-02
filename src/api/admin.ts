@@ -22,3 +22,51 @@ export function createAllowedAction(
 export function allowedActions(signal: AbortSignal): AxiosPromise<AllowedAction[]> {
     return api.get(`/admin/allowedActions`, { signal });
 }
+
+export interface JsonSchema {
+    [key: string]: any;
+}
+
+export interface AiTemplate {
+    id: string;
+    rateLimit: number;
+    rateLimitPeriodMs: number;
+    isActive: boolean;
+
+    model: string;
+    apiKey: string;
+    apiUrl: string;
+
+    temperature: number;
+    maxTokens: number;
+    topP: number;
+    systemMessage?: string;
+    jsonSchema?: JsonSchema | null;
+
+    createdAt: string;
+    updatedAt: string;
+}
+
+export function createAiTemplate(
+    data: Omit<AiTemplate, 'id' | 'createdAt' | 'updatedAt'>,
+    signal: AbortSignal
+): AxiosPromise<AiTemplate> {
+    return api.post('/admin/aiTemplates', data, { signal });
+}
+
+export function updateAiTemplate(
+    id: string,
+    data: Partial<Omit<AiTemplate, 'id' | 'createdAt' | 'updatedAt'>>,
+    signal: AbortSignal
+): AxiosPromise<AiTemplate> {
+    return api.put(`/admin/aiTemplates/${id}`, data, { signal });
+}
+export function deleteAiTemplate(id: string, signal: AbortSignal): AxiosPromise {
+    return api.delete(`/admin/aiTemplates/${id}`, { signal });
+}
+export function getAllAiTemplates(signal: AbortSignal): AxiosPromise<AiTemplate[]> {
+    return api.get('/admin/aiTemplates', { signal });
+}
+export function getAiTemplate(id: string, signal: AbortSignal): AxiosPromise<AiTemplate> {
+    return api.get(`/admin/aiTemplates/${id}`, { signal });
+}
