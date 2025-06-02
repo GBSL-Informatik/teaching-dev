@@ -4,10 +4,12 @@
 }
 .aiTemplate {
     .definitionList {
-        .jsonSchema {
+        .displayBlock {
             display: block;
-            max-height: 30em;
-            overflow-y: auto;
+            &.jsonSchema {
+                max-height: 30em;
+                overflow-y: auto;
+            }
         }
     }
 }

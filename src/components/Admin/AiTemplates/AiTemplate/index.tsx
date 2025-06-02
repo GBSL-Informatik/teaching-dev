@@ -11,6 +11,7 @@ import { formatDate, formatDateTime } from '@tdev-models/helpers/date';
 import CodeBlock from '@theme/CodeBlock';
 import Edit from './Edit';
 import { mdiTrashCan } from '@mdi/js';
+import AiPrompt from '@tdev-components/AiRequest/Prompt';
 
 interface Props {
     template: AiTemplateModel;
@@ -25,50 +26,56 @@ const AiTemplate = observer((props: Props) => {
             {template.isEditing ? (
                 <Edit template={template} className={styles.edit} />
             ) : (
-                <DefinitionList className={clsx(styles.definitionList)}>
-                    <dt>ID</dt>
-                    <dd>{template.id}</dd>
-                    <dt>Model</dt>
-                    <dd>{template.model}</dd>
-                    <dt>API Key</dt>
-                    <dd>{template.apiKey}</dd>
-                    <dt>API URL</dt>
-                    <dd>{template.apiUrl}</dd>
-                    <dt>Rate Limit</dt>
-                    <dd>
-                        {template.rateLimit} requests per {template.rateLimitPeriodMs} ms
-                    </dd>
-                    <dt>Temperature</dt>
-                    <dd>{template.temperature}</dd>
-                    <dt>Max Tokens</dt>
-                    <dd>{template.maxTokens}</dd>
-                    <dt>Top P</dt>
-                    <dd>{template.topP}</dd>
-                    <dt>Created At</dt>
-                    <dd>{formatDateTime(template.createdAt)}</dd>
-                    <dt>Updated At</dt>
-                    <dd>{formatDateTime(template.updatedAt)}</dd>
-                    <dt>System Message</dt>
-                    <dd>{template.systemMessage}</dd>
-                    <dt>JSON Schema</dt>
-                    <dd className={clsx(styles.jsonSchema)}>
-                        {template.jsonSchema && (
-                            <CodeBlock language="json" showLineNumbers title="JSON Schema">
-                                {JSON.stringify(template.jsonSchema, null, 2)}
-                            </CodeBlock>
-                        )}
-                    </dd>
-                    <dt>Aktionen</dt>
-                    <dd>
-                        <Button onClick={() => template.setEditing(true)} text="Bearbeiten" />
-                        <Button
-                            onClick={() => aiStore.deleteTemplate(template)}
-                            text="Löschen"
-                            color="red"
-                            icon={mdiTrashCan}
-                        />
-                    </dd>
-                </DefinitionList>
+                <>
+                    <DefinitionList className={clsx(styles.definitionList)}>
+                        <dt>ID</dt>
+                        <dd>{template.id}</dd>
+                        <dt>Model</dt>
+                        <dd>{template.model}</dd>
+                        <dt>API Key</dt>
+                        <dd>{template.apiKey}</dd>
+                        <dt>API URL</dt>
+                        <dd>{template.apiUrl}</dd>
+                        <dt>Rate Limit</dt>
+                        <dd>
+                            {template.rateLimit} requests per {template.rateLimitPeriodMs} ms
+                        </dd>
+                        <dt>Temperature</dt>
+                        <dd>{template.temperature}</dd>
+                        <dt>Max Tokens</dt>
+                        <dd>{template.maxTokens}</dd>
+                        <dt>Top P</dt>
+                        <dd>{template.topP}</dd>
+                        <dt>Created At</dt>
+                        <dd>{formatDateTime(template.createdAt)}</dd>
+                        <dt>Updated At</dt>
+                        <dd>{formatDateTime(template.updatedAt)}</dd>
+                        <dt>System Message</dt>
+                        <dd>{template.systemMessage}</dd>
+                        <dt>JSON Schema</dt>
+                        <dd className={clsx(styles.displayBlock, styles.jsonSchema)}>
+                            {template.jsonSchema && (
+                                <CodeBlock language="json" showLineNumbers title="JSON Schema">
+                                    {JSON.stringify(template.jsonSchema, null, 2)}
+                                </CodeBlock>
+                            )}
+                        </dd>
+                        <dt>Aktionen</dt>
+                        <dd>
+                            <Button onClick={() => template.setEditing(true)} text="Bearbeiten" />
+                            <Button
+                                onClick={() => aiStore.deleteTemplate(template)}
+                                text="Löschen"
+                                color="red"
+                                icon={mdiTrashCan}
+                            />
+                        </dd>
+                        <dt>Prompts</dt>
+                        <dd className={clsx(styles.displayBlock)}>
+                            <AiPrompt aiTemplateId={template.id} />
+                        </dd>
+                    </DefinitionList>
+                </>
             )}
         </Card>
     );

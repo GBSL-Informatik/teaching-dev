@@ -6,7 +6,7 @@ import iStore from '@tdev-stores/iStore';
 import AiRequest from '@tdev-models/Ai/AiRequest';
 import AiTemplate from '@tdev-models/Ai/AiTemplate';
 import { AiTemplate as AiTemplateProps } from '@tdev-api/admin';
-import { createAiRequest, allAiRequests } from '@tdev-api/aiRequest';
+import { createAiRequest, allAiRequests, AiRequest as ApiAiRequest } from '@tdev-api/aiRequest';
 import { createAiTemplate, updateAiTemplate, deleteAiTemplate, getAllAiTemplates } from '@tdev-api/admin';
 
 export class AiStore extends iStore<`update-${string}` | `fetch-${string}`> {
@@ -35,7 +35,11 @@ export class AiStore extends iStore<`update-${string}` | `fetch-${string}`> {
             if (!templateId) {
                 return [];
             }
-            return this.aiRequests.filter((d) => d.aiTemplateId === templateId) as AiRequest<T>[];
+            return _.orderBy(
+                this.aiRequests.filter((d) => d.aiTemplateId === templateId) as AiRequest<T>[],
+                ['createdAt'],
+                ['desc']
+            );
         },
         { keepAlive: true }
     );
@@ -97,6 +101,16 @@ export class AiStore extends iStore<`update-${string}` | `fetch-${string}`> {
                 })
             );
         });
+    }
+    @action
+    handleUpdate(data: ApiAiRequest) {
+        const model = this.findRequest(data.id);
+        if (!model) {
+            return;
+        }
+        const updatedTemplate = new AiRequest(data, this);
+        this.aiRequests.remove(model);
+        this.aiRequests.push(updatedTemplate);
     }
 
     @action

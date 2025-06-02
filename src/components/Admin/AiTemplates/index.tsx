@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import AiTemplate from './AiTemplate';
 import Button from '@tdev-components/shared/Button';
-import AiPrompt from '@tdev-components/AiRequest/Prompt';
 
 interface Props {}
 
@@ -14,8 +13,6 @@ const AiTemplates = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.aiTemplates)}>
-            <h2>AI Requests</h2>
-            <AiPrompt aiTemplateId="50eb115d-f09b-4dc5-a419-d28356008e2d" />
             <h2>AI Templates</h2>
             <p>Hier können Sie AI Templates verwalten.</p>
             <Button

@@ -101,7 +101,10 @@ const Edit = observer((props: Props) => {
                 <CodeEditor
                     defaultValue={JSON.stringify(template.jsonSchema, null, 2)}
                     onChange={(val) => {
-                        template.update({ jsonSchema: JSON.parse(val) });
+                        try {
+                            const schema = JSON.parse(val);
+                            template.update({ jsonSchema: schema });
+                        } catch (e) {}
                     }}
                     lang="json"
                 />

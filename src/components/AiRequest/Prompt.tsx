@@ -7,6 +7,7 @@ import { default as AiRequestModel } from '@tdev-models/Ai/AiRequest';
 import AiRequest from '.';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import Button from '@tdev-components/shared/Button';
+import { mdiChatQuestionOutline } from '@mdi/js';
 
 interface Props {
     aiTemplateId: string;
@@ -22,16 +23,19 @@ const AiPrompt = observer((props: Props) => {
         }
     }, [props.aiTemplateId, aiStore]);
     return (
-        <div className={clsx(styles.AiRequest)}>
+        <div className={clsx(styles.aiRequest)}>
             <TextAreaInput
-                placeholder="Type your prompt here..."
+                placeholder="Gib deine Anfrage hier ein..."
                 className={styles.promptInput}
                 onChange={(text) => setValue(text)}
-                minRows={3}
+                minRows={10}
                 label="Eingabe"
             />
             <Button
                 text="Prompt!"
+                color="blue"
+                icon={mdiChatQuestionOutline}
+                className={clsx('button--block')}
                 onClick={() => {
                     aiStore.createRequest(props.aiTemplateId, value);
                 }}
