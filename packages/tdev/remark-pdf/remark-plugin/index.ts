@@ -1,13 +1,13 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin, Transformer } from 'unified';
 import type { MdxJsxFlowElement, MdxjsEsm } from 'mdast-util-mdx';
-import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '../helpers';
+import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '@tdev/core/src/plugins/helpers';
 import { Root, Text } from 'mdast';
 import path from 'path';
 
 const IMPORT_PDF_REACT_NODE: MdxjsEsm = {
     type: 'mdxjsEsm',
-    value: "import PdfViewer from '@tdev-components/PdfViewer';",
+    value: "import PdfViewer from '@tdev/remark-pdf/PdfViewer';",
     data: {
         estree: {
             type: 'Program',
@@ -23,10 +23,11 @@ const IMPORT_PDF_REACT_NODE: MdxjsEsm = {
                             }
                         }
                     ],
+                    attributes: [],
                     source: {
                         type: 'Literal',
-                        value: '@tdev-components/PdfViewer',
-                        raw: "'@tdev-components/PdfViewer'"
+                        value: '@tdev/remark-pdf/PdfViewer',
+                        raw: "'@tdev/remark-pdf/PdfViewer'"
                     }
                 }
             ],

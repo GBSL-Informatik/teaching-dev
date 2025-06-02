@@ -1,20 +1,7 @@
 import path from 'path';
 import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/plugin-dynamic-routes';
-import type { CurrentBundler, PluginConfig } from '@docusaurus/types';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
+import type { PluginConfig } from '@docusaurus/types';
 import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
-
-const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
-
-const pdfjs_cMapsDir = path.join(pdfjsDistPath, 'cmaps');
-
-const getCopyPlugin = (currentBundler: CurrentBundler): typeof CopyWebpackPlugin => {
-    if (currentBundler.name === 'rspack') {
-        // @ts-expect-error: this exists only in Rspack
-        return currentBundler.instance.CopyRspackPlugin;
-    }
-    return CopyWebpackPlugin;
-};
 
 // TODO: Consider bundling default / recommended plugins.
 
@@ -79,9 +66,13 @@ export const aliasConfigurationPluginConfig: PluginConfig = () => {
                             path.resolve(cwd, './website/plugins'),
                             path.resolve(cwd, './src/plugins')
                         ],
-                        '@tdev': [path.resolve(cwd, './website'), path.resolve(cwd, './src')],
+                        '@tdev': [
+                            path.resolve(cwd, './website'),
+                            path.resolve(cwd, './src'),
+                            path.resolve(cwd, './packages/tdev')
+                        ],
                         /** original tdev source */
-                        '@tdev-original': [path.resolve(cwd, './src')]
+                        '@tdev-original': [path.resolve(cwd, './src'), path.resolve(cwd, './packages/tdev')]
                     }
                 },
                 optimization: {
@@ -112,67 +103,6 @@ export const sentryPluginConfig: PluginConfig = () => {
                         authToken: SENTRY_AUTH_TOKEN,
                         org: SENTRY_ORG,
                         project: SENTRY_PROJECT
-                    })
-                ]
-            };
-        }
-    };
-};
-
-export const pdfjsCopyDependenciesPluginConfig: PluginConfig = () => {
-    return {
-        name: 'pdfjs-copy-dependencies',
-        configureWebpack(config, isServer, { currentBundler }) {
-            const Plugin = getCopyPlugin(currentBundler);
-            return {
-                resolve: {
-                    alias: {
-                        canvas: false
-                    }
-                },
-                plugins: [
-                    new Plugin({
-                        patterns: [
-                            {
-                                from: pdfjs_cMapsDir,
-                                to: 'cmaps/'
-                            }
-                        ]
-                    })
-                ]
-            };
-        }
-    };
-};
-
-export const excalidrawPluginConfig: PluginConfig = () => {
-    return {
-        name: 'excalidraw-config',
-        configureWebpack(config, isServer, { currentBundler }) {
-            const cwd = process.cwd();
-            return {
-                module: {
-                    rules: [
-                        {
-                            test: /\.excalidraw$/,
-                            type: 'json'
-                        },
-                        {
-                            test: /\.excalidrawlib$/,
-                            type: 'json'
-                        }
-                    ]
-                },
-                resolve: {
-                    fallback: {
-                        'roughjs/bin/math': path.resolve(cwd, './node_modules/roughjs/bin/math.js'),
-                        'roughjs/bin/rough': path.resolve(cwd, './node_modules/roughjs/bin/rough.js'),
-                        'roughjs/bin/generator': path.resolve(cwd, './node_modules/roughjs/bin/generator.js')
-                    }
-                },
-                plugins: [
-                    new currentBundler.instance.DefinePlugin({
-                        'process.env.IS_PREACT': JSON.stringify('false')
                     })
                 ]
             };

@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
-import { MetaInit, ModelMeta } from '@tdev-models/documents/Excalidoc';
 import Loader from '@tdev-components/Loader';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 import _ from 'lodash';
@@ -18,6 +17,7 @@ import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { DocumentType } from '@tdev-api/document';
 import { useClientLib } from '@tdev-hooks/useClientLib';
+import { MetaInit, ModelMeta } from '@tdev/excalidoc/model';
 
 export const DEFAULT_HEIGHT = '600px' as const;
 export const mdiExcalidraw =

@@ -12,7 +12,7 @@ import GenericAttributeEditor from '@tdev-components/Cms/MdxEditor/GenericAttrib
 import RemoveNode from '@tdev-components/Cms/MdxEditor/RemoveNode';
 import { isRelPath, useAssetFile } from '@tdev-components/Cms/MdxEditor/hooks/useAssetFile';
 import MyAttributes from '@tdev-components/Cms/MdxEditor/GenericAttributeEditor/MyAttributes';
-import PdfViewer from '@tdev-components/PdfViewer';
+import PdfViewer from '@tdev/remark-pdf/PdfViewer';
 import Loader from '@tdev-components/Loader';
 
 const props: DirectiveProperty[] = [

@@ -4,8 +4,8 @@ tags:
   - bilder
   - codierung
 ---
-import Excalidoc from '@tdev-components/documents/Excalidoc';
-import ExcalidocWithCodeEditor from '@tdev-components/documents/Excalidoc/WithCodeEditor';
+import Excalidoc from '@tdev/excalidoc/Component';
+import ExcalidocWithCodeEditor from '@tdev/excalidoc/Component/WithCodeEditor';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # Excalidraw
@@ -17,7 +17,7 @@ Die Excalidraw-Komponente ermöglicht das Einbetten von [Excalidraw-Zeichnungen]
 Ein leerer Editor zeigt standardmässig das Excalidraw-Logo - erst beim klicken auf "Edit" wird der Editor geladen und ein leeres Dokument wird angezeigt.
 
 ```mdx
-import Excalidoc from '@tdev-components/documents/Excalidoc';
+import Excalidoc from '@tdev/excalidoc/Component';
 
 <Excalidoc id="c0c6e611-7adc-4bc1-8cd8-4abf4276f3a0"/>
 ```
@@ -134,7 +134,7 @@ Bibliotheken können aktuell nicht von Usern selber hinzugefügt werden (bzw. nu
 Es kann auch eine Editor-Komponente mit dem Source-Code angezeigt werden:
 
 ```mdx
-import ExcalidocWithCodeEditor from '@tdev-components/documents/Excalidoc/WithCodeEditor';
+import ExcalidocWithCodeEditor from '@tdev/excalidoc/Component/WithCodeEditor';
 
 <ExcalidocWithCodeEditor id="c82833bc-d5c1-42d1-9e19-1c330a9873ad"
     defaultElements={require('./assets/circles.excalidraw').elements}

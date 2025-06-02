@@ -739,25 +739,24 @@ Remark prozessiert die Markdown-Dateien während dem Build-Prozess. Die `dot`-Bl
 
 
 :::info[Code]
-- `src/plugins/remark-graphviz`
+- `packages/remark-graphviz`
+
+Danach `yarn install` ausführen.
 :::
 
+```ts title="siteConfig.ts"
+import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 
-:::info[npm]
-```bash
-yarn add @hpcc-js/wasm-graphviz@^1.7.0
-```
-:::
-
-```ts title="docusaurus.config.ts"
-import graphvizPlugin from './src/plugins/remark-graphviz/plugin';
-
-const BEFORE_DEFAULT_REMARK_PLUGINS = [
-    /* ... */
-    // graphvizPlugin must come before imagePlugin!
-    graphvizPlugin,
-    imagePlugin
-];
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        beforeDefaultRemarkPlugins: [
+            /* ... */
+            // graphvizPlugin must come before imagePlugin!
+            graphvizPlugin,
+            imagePlugin
+        ],
+    };
+};
 ```
 
 :::details[Ausgabe-Ordner `images/.dot` ändern]
@@ -765,15 +764,19 @@ Soll der Standard-Ordner für die generierten SVG-Bilder geändert werden, kann 
 
 Anpassung zu `img/.dot`:
 
-```ts title="docusaurus.config.ts"
-const BEFORE_DEFAULT_REMARK_PLUGINS = [
-    /* ... */
-    [
-        graphvizPlugin,
-        {
-            dotFileRootDir: 'img/.dot',
-        }
-    ]
-];
+```ts title="siteConfig.ts"
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        beforeDefaultRemarkPlugins: [
+            /* ... */
+            [
+                graphvizPlugin,
+                {
+                    dotFileRootDir: 'img/.dot',
+                }
+            ]
+        ]
+    };
+};
 ```
 :::

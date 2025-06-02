@@ -25,7 +25,7 @@ import {
     ExcalidrawColor,
     mdiExcalidraw,
     mdiExcalidrawOutline
-} from '@tdev-components/documents/Excalidoc';
+} from '@tdev/excalidoc/Component';
 
 interface Props {
     file: FileModel;

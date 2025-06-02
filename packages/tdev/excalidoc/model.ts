@@ -3,9 +3,12 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
-import type { BinaryFiles } from '@excalidraw/excalidraw/types/types';
-import type { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
-import type { default as ExcalidrawLib } from '@excalidraw/excalidraw';
+import type { exportToBlob } from '@excalidraw/excalidraw';
+import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import type { BinaryFiles } from '@excalidraw/excalidraw/types';
+type ExportToBlobArgs = Parameters<typeof exportToBlob>[0];
+type ExportToBlobReturn = ReturnType<typeof exportToBlob>;
+type ExportToBlob = (args: ExportToBlobArgs) => Promise<ExportToBlobReturn>;
 
 export interface MetaInit {
     readonly?: boolean;
@@ -61,7 +64,7 @@ class Excalidoc extends iDocument<DocumentType.Excalidoc> {
         data: TypeDataMapping[DocumentType.Excalidoc],
         from: Source,
         updatedAt?: Date,
-        lib?: typeof ExcalidrawLib | null
+        lib?: { exportToBlob: ExportToBlob } | null
     ): void {
         if (from === Source.LOCAL) {
             /**

@@ -4,7 +4,14 @@ import styles from './styles.module.scss';
 import Layout from '@theme/Layout';
 import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
-import { mdiArrowRightThin, mdiCircle, mdiDeleteEmptyOutline, mdiLogout, mdiRefresh } from '@mdi/js';
+import {
+    mdiArrowRightThin,
+    mdiBackupRestore,
+    mdiCircle,
+    mdiDeleteEmptyOutline,
+    mdiLogout,
+    mdiRefresh
+} from '@mdi/js';
 import { useMsal } from '@azure/msal-react';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { InteractionStatus } from '@azure/msal-browser';
@@ -21,11 +28,12 @@ import { logout } from '@tdev-api/user';
 import SelectInput from '@tdev-components/shared/SelectInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
+import { set } from 'lodash';
 
-const { NO_AUTH, OFFLINE_API, TEST_USERNAMES } = siteConfig.customFields as {
+const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
     OFFLINE_API?: boolean;
-    TEST_USERNAMES: string[];
+    TEST_USER?: string;
 };
 
 const LeftAlign = (text: String) => {
@@ -60,6 +68,16 @@ const UserPage = observer(() => {
         return <Redirect to={'/login'} />;
     }
     const connectedClients = socketStore.connectedClients.get(viewedUser?.id || ' ');
+
+    const setTestUser = (username: string) => {
+        sessionStore.setAccount({ username: username } as any);
+        Storage.set('SessionStore', {
+            user: { email: username }
+        });
+        logout(new AbortController().signal);
+        window.location.reload();
+    };
+
     return (
         <Layout>
             <main className={clsx(styles.main)}>
@@ -183,19 +201,23 @@ const UserPage = observer(() => {
                         <>
                             <dt>Test-User wechseln</dt>
                             <dd>
-                                <SelectInput
-                                    options={TEST_USERNAMES}
-                                    onChange={(username) => {
-                                        sessionStore.setAccount({ username: username } as any);
-                                        Storage.set('SessionStore', {
-                                            user: { email: username }
-                                        });
-                                        logout(new AbortController().signal);
-                                        window.location.reload();
-                                    }}
-                                    value={(sessionStore.account as any)?.username}
-                                    placeholder=".env TEST_USERNAMES"
-                                />
+                                <div className={clsx(styles.changeTestUser)}>
+                                    <SelectInput
+                                        options={userStore.users.map((user) => user.email)}
+                                        onChange={(username) => setTestUser(username)}
+                                        value={(sessionStore.account as any)?.username}
+                                        disabled={userStore.users.length <= 1}
+                                        placeholder={TEST_USER || 'DEFAULT_TEST_USER nicht definiert in .env'}
+                                    />
+                                    {(sessionStore.account as any)?.username !== TEST_USER && (
+                                        <Button
+                                            icon={mdiBackupRestore}
+                                            color="primary"
+                                            title={`Zum Standard-Test-User wechseln`}
+                                            onClick={() => setTestUser(TEST_USER!)}
+                                        />
+                                    )}
+                                </div>
                             </dd>
                         </>
                     )}

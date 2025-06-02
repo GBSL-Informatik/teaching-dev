@@ -1,6 +1,10 @@
 {
-    "name": "teaching-dev",
-    "version": "0.0.0",
+    "name": "@tdev/core",
+    "workspaces": [
+        "packages/**",
+        "."
+    ],
+    "version": "1.0.0",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
@@ -26,8 +30,6 @@
         "@docusaurus/preset-classic": "^3.8.0",
         "@docusaurus/theme-classic": "^3.8.0",
         "@docusaurus/theme-common": "^3.8.0",
-        "@excalidraw/excalidraw": "^0.18.0",
-        "@hpcc-js/wasm-graphviz": "^1.7.0",
         "@lexical/clipboard": "^0.27.1",
         "@lexical/link": "^0.27.1",
         "@lexical/list": "^0.27.1",
@@ -72,7 +74,6 @@
         "react-dom": "^19.1.0",
         "react-draggable": "^4.4.6",
         "react-katex": "^3.0.1",
-        "react-pdf": "^9.2.1",
         "react-quilljs": "^2.0.5",
         "react-select": "^5.10.1",
         "reactjs-popup": "^2.0.6",

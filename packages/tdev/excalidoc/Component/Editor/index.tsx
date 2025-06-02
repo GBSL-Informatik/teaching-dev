@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { MetaInit } from '@tdev-models/documents/Excalidoc';
 import type {
     ExcalidrawImperativeAPI,
     LibraryItems,
@@ -14,6 +13,7 @@ import _ from 'lodash';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { DocumentType } from '@tdev-api/document';
 import '@excalidraw/excalidraw/index.css';
+import { MetaInit } from '@tdev/excalidoc/model';
 export interface Props extends MetaInit {
     Lib: typeof ExcalidrawLib;
     documentId: string;

@@ -8,8 +8,8 @@ import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 import Loader from '@tdev-components/Loader';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import Image from '../Preview/Image';
-import { ModelMeta } from '@tdev-models/documents/Excalidoc';
 import { Source } from '@tdev-models/iDocument';
+import { ModelMeta } from '@tdev/excalidoc/model';
 
 const ExcalidocWithCodeEditor = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));

@@ -15,13 +15,13 @@ import {
   rsDoctorPluginConfig,
   aliasConfigurationPluginConfig,
   sentryPluginConfig,
-  pdfjsCopyDependenciesPluginConfig,
-  excalidrawPluginConfig,
   socketIoNoDepWarningsPluginConfig,
 } from './src/siteConfig/pluginConfigs';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
 import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recommendedRemarkPlugins } from './src/siteConfig/markdownPluginConfigs';
+import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
+import { excalidrawPluginConfig } from '@tdev/excalidoc';
 
 const siteConfig = getSiteConfig();
 
@@ -40,7 +40,7 @@ const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? recommendedRehypePlugins;
 const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
 const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
-const TEST_USERNAMES = (process.env.TEST_USERNAMES?.split(';') || []).map((u) => u.trim()).filter(u => !!u);
+const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
 
 const config: Config = applyTransformers({
   title: TITLE,
@@ -62,12 +62,12 @@ const config: Config = applyTransformers({
   onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
 
   customFields: {
-    /** Use Testuser in local dev: set TEST_USERNAME to the test users email adress*/
-    TEST_USERNAMES: TEST_USERNAMES,
+    /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
+    TEST_USER: DEFAULT_TEST_USER,
     OFFLINE_API: OFFLINE_API,
     /** User.ts#isStudent returns `true` for users matching this pattern. If unset, it returns `true` for all non-admin users. */
     STUDENT_USERNAME_PATTERN: process.env.STUDENT_USERNAME_PATTERN,
-    NO_AUTH: (process.env.NODE_ENV !== 'production' || OFFLINE_API) && TEST_USERNAMES.length > 0,
+    NO_AUTH: (process.env.NODE_ENV !== 'production' || OFFLINE_API) && !!DEFAULT_TEST_USER,
     /** The Domain Name where the api is running */
     APP_URL: process.env.NETLIFY
       ? process.env.CONTEXT === 'production'
@@ -286,7 +286,7 @@ const config: Config = applyTransformers({
     rsDoctorPluginConfig,
     aliasConfigurationPluginConfig,
     sentryPluginConfig,
-    pdfjsCopyDependenciesPluginConfig,
+    remarkPdfPluginConfig,
     excalidrawPluginConfig,
     socketIoNoDepWarningsPluginConfig,
     [

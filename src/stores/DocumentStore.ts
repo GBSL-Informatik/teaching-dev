@@ -31,11 +31,11 @@ import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
-import Excalidoc from '@tdev-models/documents/Excalidoc';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
+import Excalidoc from '@tdev/excalidoc/model';
 
 const IsNotUniqueError = (error: any) => {
     try {

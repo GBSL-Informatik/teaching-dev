@@ -16,10 +16,10 @@ import CmsText from '@tdev-models/documents/CmsText';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import Excalidoc from '@tdev-models/documents/Excalidoc';
-import type { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types';
-import type { BinaryFiles } from '@excalidraw/excalidraw/types/types';
 import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
+import type { BinaryFiles } from '@excalidraw/excalidraw/types';
+import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import Excalidoc from '@tdev/excalidoc/model';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',

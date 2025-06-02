@@ -4,7 +4,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "experimentalDecorators": false,
-        "types": ["docusaurus-plugin-sass"],
+        "types": ["docusaurus-plugin-sass", "@docusaurus/module-type-aliases", "@types/node"],
         "module": "esnext",
         "target": "esnext",
         "strict": true,
@@ -15,8 +15,8 @@
             "@tdev-stores/*": ["website/stores/*", "src/stores/*"],
             "@tdev-plugins/*": ["website/plugins/*", "src/plugins/*"],
             "@tdev-api/*": ["website/api/*", "src/api/*"],
-            "@tdev/*": ["website/*", "src/*"],
-            "@tdev-original/*": ["src/*"],
+            "@tdev/*": ["website/*", "src/*", "packages/tdev/*"],
+            "@tdev-original/*": ["src/*", "packages/tdev/*"],
             "@site/*": ["./*"]
         }
     },

@@ -15,3 +15,13 @@
         }
     }
 }
+
+.switchToUserButton {
+    width: fit-content;
+    position: relative;
+    .liveIndicator {
+        position: absolute;
+        left: 3px;
+        top: 1px;
+    }
+}

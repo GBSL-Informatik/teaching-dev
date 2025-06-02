@@ -3,13 +3,13 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import { mdiLoading, mdiReloadAlert, mdiTarget, mdiWebRefresh } from '@mdi/js';
+import { mdiLoading, mdiTarget } from '@mdi/js';
 import StudentGroup from '@tdev-models/StudentGroup';
 import Button from '@tdev-components/shared/Button';
 
 interface Props {
     studentGroup: StudentGroup;
+    isActiveClass?: boolean;
 }
 
 const NavSetTargetRequest = observer((props: Props) => {
@@ -27,7 +27,7 @@ const NavSetTargetRequest = observer((props: Props) => {
                 icon={isLoading ? mdiLoading : mdiTarget}
                 spin={isLoading}
                 size={0.8}
-                color="primary"
+                color={props.isActiveClass ? 'primary' : 'secondary'}
                 title={`Seite für ${studentGroup.name} anzeigen`}
                 onClick={() => {
                     setIsLoading(true);

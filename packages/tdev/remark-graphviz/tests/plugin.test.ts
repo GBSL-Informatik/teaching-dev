@@ -1,6 +1,6 @@
 import { remark } from 'remark';
 import remarkMdx from 'remark-mdx';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'url';
 import { VFile } from 'vfile';
 import path from 'path';
@@ -16,7 +16,7 @@ const alignLeft = (content: string) => {
         .join('\n');
 };
 const process = async (content: string, fileName?: string, config?: { dotFileRootDir: string }) => {
-    const { default: plugin } = (await import('../plugin')) as any;
+    const { default: plugin } = (await import('../remark-plugin')) as any;
     const file = new VFile({
         value: alignLeft(content),
         history: [fileName ? path.join(__dirname, fileName) : __filename]
@@ -34,6 +34,12 @@ describe('#graphviz', () => {
     afterEach(async () => {
         const dotDir = path.join(__dirname, 'images');
         await fs.rm(dotDir, { recursive: true, force: true });
+    });
+    afterAll(async () => {
+        const dotDir = path.join(__dirname, 'images');
+        await fs.rm(dotDir, { recursive: true, force: true });
+        const imgDir = path.join(__dirname, 'img');
+        await fs.rm(imgDir, { recursive: true, force: true });
     });
     it("does nothing if there's no defbox", async () => {
         const input = `# Heading

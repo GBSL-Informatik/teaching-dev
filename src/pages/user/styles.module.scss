@@ -22,6 +22,10 @@
             top: 0;
         }
     }
+    .changeTestUser {
+        display: flex;
+        flex-direction: row;
+    }
 }
 .connectedClients {
     --ifm-color-primary: var(--ifm-color-blue);

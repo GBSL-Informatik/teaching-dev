@@ -67,7 +67,7 @@ import { footnotePlugin } from './plugins/footnote';
 import Button from '@tdev-components/shared/Button';
 import { mathPlugin } from './plugins/mathPlugin';
 import MediaDescriptors from '@tdev-plugins/remark-media/mdx-editor-plugin';
-import { PdfDescriptor } from '@tdev-plugins/remark-pdf/mdx-editor-plugin/PdfDescriptor';
+import { PdfDescriptor } from '@tdev/remark-pdf/mdx-editor-plugin/PdfDescriptor';
 import { Asset } from '@tdev-models/cms/Dir';
 import { draggableBlockPlugin } from './plugins/DraggableBlockPlugin';
 import JsxDescriptors from './plugins/plugins-jsx/JsxDescriptors';

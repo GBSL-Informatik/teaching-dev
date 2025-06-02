@@ -10,7 +10,7 @@ const alignLeft = (content: string) => {
         .join('\n');
 };
 const process = async (content: string) => {
-    const { default: plugin } = (await import('../plugin')) as any;
+    const { default: plugin } = (await import('../index')) as any;
     const result = await remark().use(remarkMdx).use(remarkDirective).use(plugin).process(alignLeft(content));
 
     return result.value;
@@ -32,7 +32,7 @@ describe('#pdf', () => {
         `;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-          "import PdfViewer from '@tdev-components/PdfViewer';
+          "import PdfViewer from '@tdev/remark-pdf/PdfViewer';
 
           # Details element example
 
@@ -47,7 +47,7 @@ describe('#pdf', () => {
         `;
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
-          "import PdfViewer from '@tdev-components/PdfViewer';
+          "import PdfViewer from '@tdev/remark-pdf/PdfViewer';
 
           # Details element example
 

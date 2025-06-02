@@ -8,6 +8,7 @@ interface Props {
     onChange: (text: string) => void;
     options: string[];
     value: string;
+    disabled?: boolean;
 }
 
 const SelectInput = observer((props: Props) => {
@@ -19,6 +20,7 @@ const SelectInput = observer((props: Props) => {
                 onChange(e.target.value);
             }}
             value={value}
+            disabled={props.disabled}
         >
             {options.map((option, index) => (
                 <option key={index} value={option}>

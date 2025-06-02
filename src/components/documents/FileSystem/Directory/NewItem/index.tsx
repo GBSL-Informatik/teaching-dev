@@ -18,7 +18,7 @@ import { Delta } from 'quill/core';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import Icon from '@mdi/react';
 import TextInput from '@tdev-components/shared/TextInput';
-import { ExcalidrawColor, mdiExcalidraw } from '@tdev-components/documents/Excalidoc';
+import { ExcalidrawColor, mdiExcalidraw } from '@tdev/excalidoc/Component';
 import { PopupActions } from 'reactjs-popup/dist/types';
 
 interface Props {

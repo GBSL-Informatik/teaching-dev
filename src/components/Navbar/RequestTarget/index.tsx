@@ -19,6 +19,9 @@ const RequestTarget = observer(() => {
     if (!isBrowser || !userStore.current?.hasElevatedAccess) {
         return null;
     }
+
+    const klass = location.pathname.split('/')[1];
+
     return (
         <Popup
             trigger={
@@ -34,7 +37,7 @@ const RequestTarget = observer(() => {
                     />
                 </div>
             }
-            on={['click']}
+            on={['click', 'hover']}
             closeOnDocumentClick
             closeOnEscape
         >
@@ -44,8 +47,18 @@ const RequestTarget = observer(() => {
                 </div>
                 <div className={clsx('card__body', styles.body)}>
                     <div className={clsx(styles.groups)}>
-                        {studentGroupStore.managedStudentGroups.map((group) => {
-                            return <NavSetTargetRequest key={group.id} studentGroup={group} />;
+                        {_.orderBy(
+                            studentGroupStore.managedStudentGroups,
+                            [(group) => group.name === klass, 'name'],
+                            ['desc', 'asc']
+                        ).map((group) => {
+                            return (
+                                <NavSetTargetRequest
+                                    key={group.id}
+                                    studentGroup={group}
+                                    isActiveClass={group.name === klass}
+                                />
+                            );
                         })}
                     </div>
                 </div>

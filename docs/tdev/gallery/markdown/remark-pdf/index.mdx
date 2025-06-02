@@ -117,65 +117,31 @@ Dieses Plugin ist auch mit `@docusaurus/faster` kompatibel.
 :::
 
 :::info[Code]
-- `src/plugins/remark-pdf`
-- `src/components/PdfViewer`
+- `packages/remark-pdf`
+
+Danach `yarn install` ausführen.
 :::
 
-:::info[npm]
-```bash
-yarn add react-pdf@^9.1.1
+:::info[Site Configuration]
+
+```ts title="siteConfig.ts"
+import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
+
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        remarkPlugins: [
+            pdfPlugin
+        ]
+    };
+};
 ```
-:::
 
-:::info[`docusaurus.config.ts`]
+```ts title="docusaurus.config.ts"
+import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 
-```ts {1-14,18,22-46}
-import CopyWebpackPlugin from 'copy-webpack-plugin';
-import pdfPlugin from './src/plugins/remark-pdf/plugin';
-
-const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
-const cMapsDir = path.join(pdfjsDistPath, 'cmaps');
-const getCopyPlugin = (
-  currentBundler: CurrentBundler
-): typeof CopyWebpackPlugin => {
-  if (currentBundler.name === 'rspack') {
-    // @ts-expect-error: this exists only in Rspack
-    return currentBundler.instance.CopyRspackPlugin;
-  }
-  return CopyWebpackPlugin;
-}
-
-const REMARK_PLUGINS = [
-    /* ... */
-    pdfPlugin
-];
 const config: Config = {
     plugins: [
-        () => {
-            return {
-                name: 'pdfjs-copy-dependencies',
-                configureWebpack(config, isServer, {currentBundler}) {
-                const Plugin = getCopyPlugin(currentBundler);
-                    return {
-                        resolve: {
-                            alias: {
-                                canvas: false
-                            }
-                        },
-                        plugins: [
-                            new Plugin({
-                                patterns: [
-                                    {
-                                        from: cMapsDir,
-                                        to: 'cmaps/'
-                                    }
-                                ]
-                            })
-                        ]
-                    };
-                }
-            }
-        }
+        remarkPdfPluginConfig
     ]
 }
 ```
