@@ -10,8 +10,10 @@ import DefinitionList from '@tdev-components/DefinitionList';
 import { formatDate, formatDateTime } from '@tdev-models/helpers/date';
 import CodeBlock from '@theme/CodeBlock';
 import Edit from './Edit';
-import { mdiTrashCan } from '@mdi/js';
+import { mdiFileEdit, mdiHomeEdit, mdiTrashCan } from '@mdi/js';
 import AiPrompt from '@tdev-components/AiRequest/Prompt';
+import { SIZE_M, SIZE_S } from '@tdev-components/shared/iconSizes';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
 
 interface Props {
     template: AiTemplateModel;
@@ -62,13 +64,23 @@ const AiTemplate = observer((props: Props) => {
                         </dd>
                         <dt>Aktionen</dt>
                         <dd>
-                            <Button onClick={() => template.setEditing(true)} text="Bearbeiten" />
-                            <Button
-                                onClick={() => aiStore.deleteTemplate(template)}
-                                text="Löschen"
-                                color="red"
-                                icon={mdiTrashCan}
-                            />
+                            <div className={clsx(styles.actions)}>
+                                <Button
+                                    icon={mdiFileEdit}
+                                    color="blue"
+                                    onClick={() => template.setEditing(true)}
+                                    text="Bearbeiten"
+                                    iconSide="left"
+                                    size={SIZE_M}
+                                />
+                                <Confirm
+                                    onConfirm={() => aiStore.deleteTemplate(template)}
+                                    text="Löschen"
+                                    color="red"
+                                    icon={mdiTrashCan}
+                                    size={SIZE_M}
+                                />
+                            </div>
                         </dd>
                         <dt>Prompts</dt>
                         <dd className={clsx(styles.displayBlock)}>

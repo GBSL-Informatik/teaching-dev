@@ -29,25 +29,13 @@ const TextAreaInput = observer((props: Props) => {
 
     const adjustHeight = React.useCallback(() => {
         if (ref.current) {
-            ref.current.style.height = 'auto';
             ref.current.style.height = `${ref.current.scrollHeight}px`;
         }
-    }, []);
+    }, [ref]);
 
     React.useEffect(() => {
         adjustHeight();
-    }, [text, ref.current]);
-
-    React.useEffect(() => {
-        if (ref.current) {
-            ref.current.addEventListener('focus', adjustHeight);
-            return () => {
-                if (ref.current) {
-                    ref.current.removeEventListener('focus', adjustHeight);
-                }
-            };
-        }
-    }, [ref.current]);
+    }, [text]);
 
     const insertTab = () => {
         if (ref.current) {
@@ -92,11 +80,7 @@ const TextAreaInput = observer((props: Props) => {
                     props.showTabButton && styles.showTabButton,
                     props.monospace && styles.monospace
                 )}
-                style={{
-                    minHeight: props.minRows
-                        ? `calc(${props.minRows * 1.1}em + var(--tdev-text-area-height-shift))`
-                        : undefined
-                }}
+                style={{ minHeight: props.minRows ? `${props.minRows * 1.2 + 1}em` : undefined }}
                 onChange={(e) => {
                     setText(e.target.value);
                     props.onChange(e.target.value);
@@ -114,7 +98,7 @@ const TextAreaInput = observer((props: Props) => {
                     }
                 }}
                 rows={1}
-                autoFocus={!props.noAutoFocus}
+                autoFocus
                 autoComplete="off"
                 autoCorrect="off"
             />

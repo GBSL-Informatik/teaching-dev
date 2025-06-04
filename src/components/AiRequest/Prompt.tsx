@@ -28,7 +28,7 @@ const AiPrompt = observer((props: Props) => {
                 placeholder="Gib deine Anfrage hier ein..."
                 className={styles.promptInput}
                 onChange={(text) => setValue(text)}
-                minRows={10}
+                minRows={2}
                 label="Eingabe"
             />
             <Button
