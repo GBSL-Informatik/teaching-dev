@@ -68,7 +68,7 @@ const Edit = observer((props: Props) => {
                     value={template.temperature.toString()}
                     onChange={(val) => template.update({ temperature: Number(val) })}
                     type="number"
-                    step={0.05}
+                    step={0.01}
                     min={0}
                     max={1}
                 />
@@ -87,7 +87,7 @@ const Edit = observer((props: Props) => {
                     value={template.topP.toString()}
                     onChange={(val) => template.update({ topP: Number(val) })}
                     type="number"
-                    step={0.05}
+                    step={0.01}
                     min={0}
                     max={1}
                 />
@@ -139,14 +139,13 @@ const Edit = observer((props: Props) => {
             <dt>Aktionen</dt>
             <dd>
                 <div className={clsx(styles.actions)}>
-                    {template.isDirty && (
-                        <Button
-                            text="Speichern"
-                            onClick={() => template.save()}
-                            icon={mdiContentSave}
-                            color="green"
-                        />
-                    )}
+                    <Button
+                        text="Speichern"
+                        onClick={() => template.save()}
+                        icon={mdiContentSave}
+                        color="green"
+                        disabled={!template.isDirty}
+                    />
                     <Button
                         text="Abbrechen"
                         onClick={() => {

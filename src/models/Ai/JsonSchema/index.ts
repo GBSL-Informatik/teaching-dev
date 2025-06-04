@@ -4,7 +4,7 @@ import JsonObject from './JsonObject';
 import JsonArray from './JsonArray';
 import JsonNumber from './JsonNumber';
 import JsonString from './JsonString';
-import iJson, { iJsonType } from './iJson';
+import iJson from './iJson';
 
 export type JsonType = JsonObject | JsonString | JsonNumber | JsonArray;
 export type ParentType = JsonObject | JsonArray | JsonSchema;
@@ -23,12 +23,15 @@ class JsonSchema {
 
     @computed
     get serialized() {
-        return {
+        const schema: JsonSchemaType = {
             name: this.schema.name,
-            description: this.description,
-            strict: this.strict,
-            schema: this.schema.serialized
+            schema: this.schema.serialized,
+            strict: this.strict
         };
+        if (this.description) {
+            schema.description = this.description;
+        }
+        return schema;
     }
 
     @action

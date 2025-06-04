@@ -125,7 +125,7 @@ class AiTemplate {
 
     @computed
     get isDirty(): boolean {
-        return !_.isEqual(this._pristine, this.props);
+        return Object.keys(this.dirtyProps).length > 0;
     }
 
     @computed
@@ -157,6 +157,7 @@ class AiTemplate {
             }
         });
         if (this.jsonSchema && !_.isEqual(this._pristine.jsonSchema, this.jsonSchema.serialized)) {
+            console.log(this._pristine.jsonSchema, this.jsonSchema.serialized);
             dirtyProps.jsonSchema = this.jsonSchema.serialized;
         } else if (!this.jsonSchema && this._pristine.jsonSchema) {
             dirtyProps.jsonSchema = null;
