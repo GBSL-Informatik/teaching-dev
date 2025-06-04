@@ -37,7 +37,7 @@ const SignupLinks = observer(() => {
                                         onChange={(e) => {
                                             token.setDescription(e.target.value);
                                         }}
-                                        tabIndex={2}
+                                        tabIndex={1}
                                     />
                                 ) : (
                                     token.description
@@ -59,6 +59,31 @@ const SignupLinks = observer(() => {
                                     <span className={clsx('badge', 'badge--secondary')}>{token.uses}</span>
                                 )}
                             </dd>
+                            {token.isEditing && (
+                                <>
+                                    <dt>Max. Verwendungen</dt>
+                                    <dd>
+                                        <i>0 = unlimitiert‚</i>
+                                    </dd>
+                                    <dd>
+                                        <input
+                                            type="number"
+                                            placeholder="Max. Verwendungen..."
+                                            value={token.maxUses}
+                                            min={0}
+                                            className={clsx(styles.textInput)}
+                                            onChange={(e) => {
+                                                token.setMaxUses(parseInt(e.target.value, 10) || 0);
+                                            }}
+                                            autoFocus
+                                            tabIndex={2}
+                                            onFocus={(inp) => {
+                                                inp.target.select();
+                                            }}
+                                        />
+                                    </dd>
+                                </>
+                            )}
                             <dt>Methode</dt>
                             <dd>{token.method}</dd>
                             <dt>Gültig bis</dt>
