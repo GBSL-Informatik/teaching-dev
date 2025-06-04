@@ -6,17 +6,15 @@ import {
     AllowedAction,
     allowedActions as apiAllowedActions,
     deleteAllowedAction as apiDeleteAllowedAction,
-    createAllowedAction as apiCreateAllowedAction,
-    signupTokens as apiSignupTokens,
-    SignupToken
+    createAllowedAction as apiCreateAllowedAction
 } from '@tdev-api/admin';
 import { DocumentType } from '@tdev-api/document';
+import SignupToken from '@tdev-models/SignupToken';
 
 export class AdminStore extends iStore {
     readonly root: RootStore;
 
     allowedActions = observable<AllowedAction>([]);
-    signupTokens = observable<SignupToken>([]);
 
     constructor(root: RootStore) {
         super();
@@ -29,11 +27,6 @@ export class AdminStore extends iStore {
             apiAllowedActions(ct.signal).then(
                 action((res) => {
                     this.allowedActions.replace(res.data);
-                })
-            );
-            return apiSignupTokens(ct.signal).then(
-                action((res) => {
-                    this.signupTokens.replace(res.data);
                 })
             );
         });

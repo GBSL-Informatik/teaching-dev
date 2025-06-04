@@ -11,10 +11,12 @@ import { PageStore } from '@tdev-stores/PageStore';
 import { AdminStore } from '@tdev-stores/AdminStore';
 import { CmsStore } from '@tdev-stores/CmsStore';
 import SiteStore from '@tdev-stores/SiteStore';
+import { SignupTokenStore } from './SignupTokenStore';
 
 export class RootStore {
     documentRootStore: DocumentRootStore;
     userStore: UserStore;
+    signupTokenStore: SignupTokenStore;
     sessionStore: SessionStore;
     socketStore: SocketDataStore;
     studentGroupStore: StudentGroupStore;
@@ -28,8 +30,9 @@ export class RootStore {
     // @observable accessor initialized = false;
     constructor() {
         this.documentRootStore = new DocumentRootStore(this);
-        this.sessionStore = new SessionStore(this);
         this.userStore = new UserStore(this);
+        this.signupTokenStore = new SignupTokenStore(this);
+        this.sessionStore = new SessionStore(this);
         this.socketStore = new SocketDataStore(this);
         this.studentGroupStore = new StudentGroupStore(this);
         this.permissionStore = new PermissionStore(this);
@@ -53,6 +56,7 @@ export class RootStore {
                  * load stores
                  */
                 this.userStore.load();
+                this.signupTokenStore.load();
                 this.studentGroupStore.load();
                 this.cmsStore.initialize();
                 if (user.hasElevatedAccess) {

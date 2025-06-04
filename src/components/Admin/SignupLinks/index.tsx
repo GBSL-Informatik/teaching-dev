@@ -10,12 +10,12 @@ const { APP_URL } = siteConfig.customFields as {
 };
 
 const SignupLinks = observer(() => {
-    const adminStore = useStore('adminStore');
+    const signupTokenStore = useStore('signupTokenStore');
     const signupUrl = `${APP_URL || 'http://localhost:3000'}/signup`;
 
     return (
         <div className={styles.container}>
-            {adminStore.signupTokens.map((token) => (
+            {signupTokenStore.signupTokens.map((token) => (
                 <div key={token.id} className={styles.signupLink}>
                     <CopyBadge value={`${signupUrl}?token=${token.id}`} className={clsx(styles.nowrap)} />
                     <DefinitionList>
@@ -54,7 +54,10 @@ const SignupLinks = observer(() => {
                                         'button--sm',
                                         token.disabled ? 'button--secondary' : 'button--primary'
                                     )}
-                                    onClick={() => {}}
+                                    onClick={() => {
+                                        token.setDisabled(false);
+                                        token.save();
+                                    }}
                                 >
                                     Aktiviert
                                 </button>
@@ -64,7 +67,10 @@ const SignupLinks = observer(() => {
                                         'button--sm',
                                         token.disabled ? 'button--danger' : 'button--secondary'
                                     )}
-                                    onClick={() => {}}
+                                    onClick={() => {
+                                        token.setDisabled(true);
+                                        token.save();
+                                    }}
                                 >
                                     Deaktiviert
                                 </button>
