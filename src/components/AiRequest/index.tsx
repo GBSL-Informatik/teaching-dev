@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import { default as AiRequestModel } from '@tdev-models/Ai/AiRequest';
 import CodeBlock from '@theme/CodeBlock';
 import Card from '@tdev-components/shared/Card';
@@ -20,7 +19,8 @@ const AiRequest = observer((props: Props) => {
             header={
                 <>
                     <h4>{formatDateTime(aiRequest.createdAt)}</h4>
-                    <small>
+                    <small>{aiRequest.user?.nameShort}</small>
+                    <small className={clsx(styles.requestInfo)}>
                         <pre className={clsx(styles.request)}>{aiRequest.request}</pre>
                     </small>
                 </>

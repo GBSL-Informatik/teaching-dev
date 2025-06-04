@@ -19,7 +19,7 @@ const JsonObject = observer((props: Props) => {
     const { json } = props;
     return (
         <JsonType {...props} className={clsx(styles.jsonObject)}>
-            <div className={clsx('button-group')}>
+            <div className={clsx('button-group', styles.actions)}>
                 <Button
                     icon={json.collapsed ? mdiChevronRight : mdiChevronDown}
                     onClick={() => json.setCollapsed(!json.collapsed)}

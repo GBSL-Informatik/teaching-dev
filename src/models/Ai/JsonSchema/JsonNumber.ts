@@ -1,12 +1,6 @@
 import { action, computed, observable } from 'mobx';
-import iJson, { iJsonType, iProps } from './iJson';
-import {
-    JsonObject as SchemaJsonObject,
-    JsonNumber as SchemaJsonNumber,
-    JsonArray as SchemaJsonArray,
-    JsonString as SchemaJsonString,
-    JsonSchemaType
-} from '@tdev-api/admin';
+import iJson, { iJsonType } from './iJson';
+import { JsonNumber as SchemaJsonNumber, JsonSchemaType } from '@tdev-api/admin';
 import JsonArray from './JsonArray';
 import JsonObject from './JsonObject';
 import { toModel } from './helpers';
@@ -19,6 +13,8 @@ class JsonNumber extends iJson<SchemaJsonNumber> {
 
     constructor(name: string, props: SchemaJsonNumber, parent: JsonArray | JsonObject) {
         super(name, props, parent);
+        this.minimum = props.minimum;
+        this.maximum = props.maximum;
     }
 
     @action

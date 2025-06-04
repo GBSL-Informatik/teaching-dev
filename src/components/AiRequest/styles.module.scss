@@ -9,3 +9,9 @@
 .aiRequest {
     margin: 0 0.5em;
 }
+.requestInfo {
+    display: block;
+    max-height: 20em;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}

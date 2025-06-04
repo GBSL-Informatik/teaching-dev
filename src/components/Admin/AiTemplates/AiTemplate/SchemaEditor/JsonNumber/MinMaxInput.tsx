@@ -17,9 +17,10 @@ interface Props {
 
 const MinMaxInput = observer((props: Props) => {
     const { jsonNumber, type } = props;
+    const hasValue = typeof jsonNumber[type] === 'number' && !isNaN(jsonNumber[type]);
     return (
-        <div className={clsx(styles.minMaxInput)}>
-            {typeof jsonNumber[type] === 'number' ? (
+        <div className={clsx(styles.minMaxInput, hasValue && styles.hasValue, !hasValue && 'button--block')}>
+            {hasValue ? (
                 <div className={clsx(styles.input)}>
                     <TextInput
                         type="number"
@@ -45,12 +46,14 @@ const MinMaxInput = observer((props: Props) => {
                                 />
                             </div>
                         }
+                        noAutoFocus
                     />
                 </div>
             ) : (
                 <Button
                     icon={mdiPlusCircleOutline}
-                    iconSide="left"
+                    size={SIZE_XS}
+                    iconSide={type === 'minimum' ? 'left' : 'right'}
                     color="primary"
                     text={_.capitalize(type)}
                     onClick={action(() => {
