@@ -27,17 +27,13 @@
             font-size: 0.8em;
         }
 
-        .textInput {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+        .numberInput {
+            padding: 5px;
+            margin: 5px 0;
+            width: 6em;
             border: 1px solid var(--ifm-color-gray-500);
             border-radius: 4px;
-            font-size: 16px;
-            box-shadow: var(--ifm-global-shadow-md);
-            transition:
-                border-color 0.3s,
-                box-shadow 0.3s;
+            transition: border-color 0.3s;
 
             &:focus {
                 border-color: var(--ifm-link-hover-color);
@@ -48,7 +44,6 @@
 
         .textarea {
             width: 100%;
-            min-width: 18em;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid var(--ifm-color-gray-500);
@@ -67,10 +62,15 @@
             }
         }
 
-        .validThroughInputContainer {
+        .inputWithButton {
             display: flex;
             flex-direction: row;
+            align-items: center;
             gap: 0.2em;
+
+            .button {
+                height: fit-content;
+            }
         }
     }
 }

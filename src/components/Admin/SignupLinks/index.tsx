@@ -69,24 +69,29 @@ const SignupLinks = observer(() => {
                                 <>
                                     <dt>Max. Verwendungen</dt>
                                     <dd>
-                                        <i>0 = unlimitiert</i>
-                                    </dd>
-                                    <dd>
-                                        <input
-                                            type="number"
-                                            placeholder="Max. Verwendungen..."
-                                            value={token.maxUses}
-                                            min={0}
-                                            className={clsx(styles.textInput)}
-                                            onChange={(e) => {
-                                                token.setMaxUses(parseInt(e.target.value, 10) || 0);
-                                            }}
-                                            autoFocus
-                                            tabIndex={2}
-                                            onFocus={(inp) => {
-                                                inp.target.select();
-                                            }}
-                                        />
+                                        <div className={clsx(styles.inputWithButton)}>
+                                            <input
+                                                type="number"
+                                                placeholder="Max. Verwendungen..."
+                                                value={token.maxUses}
+                                                min={0}
+                                                className={clsx(styles.numberInput)}
+                                                onChange={(e) => {
+                                                    token.setMaxUses(parseInt(e.target.value, 10) || 0);
+                                                }}
+                                                autoFocus
+                                                tabIndex={2}
+                                                onFocus={(inp) => {
+                                                    inp.target.select();
+                                                }}
+                                            />
+                                            <Button
+                                                icon={mdiInfinity}
+                                                color="black"
+                                                className={clsx(styles.button)}
+                                                onClick={() => token.setMaxUses(0)}
+                                            />
+                                        </div>
                                     </dd>
                                 </>
                             )}
@@ -95,7 +100,7 @@ const SignupLinks = observer(() => {
                             <dt>Gültig bis</dt>
                             <dd>
                                 {token.isEditing ? (
-                                    <div className={clsx(styles.validThroughInputContainer)}>
+                                    <div className={clsx(styles.inputWithButton)}>
                                         <input
                                             type="datetime-local"
                                             value={
@@ -113,6 +118,7 @@ const SignupLinks = observer(() => {
                                         <Button
                                             icon={mdiInfinity}
                                             color="black"
+                                            className={clsx(styles.button)}
                                             onClick={() => token.setValidThrough(null)}
                                         />
                                     </div>
