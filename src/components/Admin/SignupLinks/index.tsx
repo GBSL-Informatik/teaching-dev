@@ -7,7 +7,13 @@ import CopyBadge from '@tdev-components/shared/CopyBadge';
 import siteConfig from '@generated/docusaurus.config';
 import _ from 'lodash';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import { mdiCircleEditOutline, mdiCloseCircleOutline, mdiContentSave, mdiDeleteOutline } from '@mdi/js';
+import {
+    mdiCircleEditOutline,
+    mdiCloseCircleOutline,
+    mdiContentSave,
+    mdiDeleteOutline,
+    mdiInfinity
+} from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 const { APP_URL } = siteConfig.customFields as {
     APP_URL?: string;
@@ -63,7 +69,7 @@ const SignupLinks = observer(() => {
                                 <>
                                     <dt>Max. Verwendungen</dt>
                                     <dd>
-                                        <i>0 = unlimitiert‚</i>
+                                        <i>0 = unlimitiert</i>
                                     </dd>
                                     <dd>
                                         <input
@@ -88,18 +94,42 @@ const SignupLinks = observer(() => {
                             <dd>{token.method}</dd>
                             <dt>Gültig bis</dt>
                             <dd>
-                                <span
-                                    className={clsx(
-                                        'badge',
-                                        token.validThrough
-                                            ? new Date() > token.validThrough
-                                                ? 'badge--danger'
-                                                : 'badge--primary'
-                                            : 'badge--secondary'
-                                    )}
-                                >
-                                    {token.validThrough ? token.fValidThrough : 'Unbegrenzt'}
-                                </span>
+                                {token.isEditing ? (
+                                    <div className={clsx(styles.validThroughInputContainer)}>
+                                        <input
+                                            type="datetime-local"
+                                            value={
+                                                token.validThrough
+                                                    ? token.validThrough.toISOString().slice(0, 16)
+                                                    : ''
+                                            }
+                                            onChange={(e) =>
+                                                token.setValidThrough(
+                                                    e.target.value ? new Date(e.target.value) : null
+                                                )
+                                            }
+                                            tabIndex={3}
+                                        />
+                                        <Button
+                                            icon={mdiInfinity}
+                                            color="black"
+                                            onClick={() => token.setValidThrough(null)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <span
+                                        className={clsx(
+                                            'badge',
+                                            token.validThrough
+                                                ? new Date() > token.validThrough
+                                                    ? 'badge--danger'
+                                                    : 'badge--primary'
+                                                : 'badge--secondary'
+                                        )}
+                                    >
+                                        {token.validThrough ? token.fValidThrough : 'Unbegrenzt'}
+                                    </span>
+                                )}
                             </dd>
                             <dt>Erstellt</dt>
                             <dd>{token.fCreatedAt}</dd>

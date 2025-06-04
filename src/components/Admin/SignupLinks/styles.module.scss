@@ -66,5 +66,11 @@
                 box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
             }
         }
+
+        .validThroughInputContainer {
+            display: flex;
+            flex-direction: row;
+            gap: 0.2em;
+        }
     }
 }
