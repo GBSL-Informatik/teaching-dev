@@ -2,6 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { SignupToken as SignupTokenProps } from '@tdev-api/signupToken';
 import _ from 'lodash';
 import { SignupTokenStore } from '@tdev-stores/SignupTokenStore';
+import { formatDateTime } from './helpers/date';
 
 class SignupToken {
     readonly store: SignupTokenStore;
@@ -18,8 +19,8 @@ class SignupToken {
     @observable accessor isEditing: boolean = false;
     readonly _pristine: { description: string; validThrough: Date | null; maxUses: number };
 
-    // readonly createdAt: Date;
-    // readonly updatedAt: Date;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
 
     constructor(props: SignupTokenProps, store: SignupTokenStore) {
         this.store = store;
@@ -37,8 +38,16 @@ class SignupToken {
         this.maxUses = props.maxUses;
         this.disabled = props.disabled;
 
-        // this.updatedAt = new Date(props.updatedAt);
-        // this.createdAt = new Date(props.createdAt);
+        this.updatedAt = new Date(props.updatedAt);
+        this.createdAt = new Date(props.createdAt);
+    }
+
+    get fCreatedAt() {
+        return formatDateTime(this.createdAt);
+    }
+
+    get fUpdatedAt() {
+        return formatDateTime(this.updatedAt);
     }
 
     @action
@@ -81,7 +90,7 @@ class SignupToken {
     }
 
     @computed
-    get props(): Omit<SignupTokenProps, 'method' | 'uses'> {
+    get props(): Omit<SignupTokenProps, 'method' | 'uses' | 'createdAt' | 'updatedAt'> {
         return {
             id: this.id,
             description: this.description,

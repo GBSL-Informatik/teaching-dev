@@ -5,6 +5,7 @@ import DefinitionList from '@tdev-components/DefinitionList';
 import clsx from 'clsx';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import siteConfig from '@generated/docusaurus.config';
+import _ from 'lodash';
 const { APP_URL } = siteConfig.customFields as {
     APP_URL?: string;
 };
@@ -15,7 +16,7 @@ const SignupLinks = observer(() => {
 
     return (
         <div className={styles.container}>
-            {signupTokenStore.signupTokens.map((token) => (
+            {_.orderBy(signupTokenStore.signupTokens, ['createdAt', 'id']).map((token) => (
                 <div key={token.id} className={styles.signupLink}>
                     <CopyBadge value={`${signupUrl}?token=${token.id}`} className={clsx(styles.nowrap)} />
                     <DefinitionList>
@@ -45,6 +46,10 @@ const SignupLinks = observer(() => {
                                 ? new Date(token.validThrough).toLocaleDateString()
                                 : 'Unbegrenzt'}
                         </dd>
+                        <dt>Erstellt</dt>
+                        <dd>{token.fCreatedAt}</dd>
+                        <dt>Aktualisiert</dt>
+                        <dd>{token.fUpdatedAt}</dd>
                         <dt>Status</dt>
                         <dd>
                             <div className={clsx('button-group')}>

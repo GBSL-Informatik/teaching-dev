@@ -9,6 +9,8 @@ export interface SignupToken {
     uses: number;
     maxUses: number;
     disabled: boolean;
+    createdAt: Date;
+    updatedAt: Date;
     // TODO: defaultStudentGroups
 }
 
@@ -17,7 +19,7 @@ export function all(signal: AbortSignal): AxiosPromise<SignupToken[]> {
 }
 
 export function create(
-    data: Omit<SignupToken, 'id' | 'uses'>,
+    data: Omit<SignupToken, 'id' | 'uses' | 'createdAt' | 'updatedAt'>,
     signal: AbortSignal
 ): AxiosPromise<SignupToken> {
     return api.post('/admin/signupTokens', data, { signal });
