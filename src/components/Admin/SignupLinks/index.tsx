@@ -28,7 +28,21 @@ const SignupLinks = observer(() => {
                         />
                         <DefinitionList>
                             <dt>Beschreibung</dt>
-                            <dd>{token.description}</dd>
+                            <dd>
+                                {token.isEditing ? (
+                                    <textarea
+                                        placeholder="Beschreibung..."
+                                        value={token.description}
+                                        className={clsx(styles.textarea)}
+                                        onChange={(e) => {
+                                            token.setDescription(e.target.value);
+                                        }}
+                                        tabIndex={2}
+                                    />
+                                ) : (
+                                    token.description
+                                )}
+                            </dd>
                             <dt>Verwendungen</dt>
                             <dd>
                                 {token.maxUses > 0 && (
