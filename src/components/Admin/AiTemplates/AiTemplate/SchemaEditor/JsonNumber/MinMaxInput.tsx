@@ -40,7 +40,11 @@ const MinMaxInput = observer((props: Props) => {
                                     icon={mdiCloseCircleOutline}
                                     color="red"
                                     onClick={action(() => {
-                                        jsonNumber.setMinimum(undefined);
+                                        if (type === 'minimum') {
+                                            jsonNumber.setMinimum(undefined);
+                                        } else {
+                                            jsonNumber.setMaximum(undefined);
+                                        }
                                     })}
                                     size={SIZE_XS}
                                 />
