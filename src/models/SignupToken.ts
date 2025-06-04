@@ -34,12 +34,16 @@ class SignupToken {
         };
         this.method = props.method; // TODO: Should this be readonly, since it can't be updated?
         this.description = props.description;
-        this.validThrough = props.validThrough;
+        this.validThrough = props.validThrough ? new Date(props.validThrough) : null;
         this.maxUses = props.maxUses;
         this.disabled = props.disabled;
 
         this.updatedAt = new Date(props.updatedAt);
         this.createdAt = new Date(props.createdAt);
+    }
+
+    get fValidThrough() {
+        return this.validThrough ? formatDateTime(this.validThrough) : null;
     }
 
     get fCreatedAt() {

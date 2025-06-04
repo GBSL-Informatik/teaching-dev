@@ -42,9 +42,18 @@ const SignupLinks = observer(() => {
                         <dd>{token.method}</dd>
                         <dt>Gültig bis</dt>
                         <dd>
-                            {token.validThrough
-                                ? new Date(token.validThrough).toLocaleDateString()
-                                : 'Unbegrenzt'}
+                            <span
+                                className={clsx(
+                                    'badge',
+                                    token.validThrough
+                                        ? new Date() > token.validThrough
+                                            ? 'badge--danger'
+                                            : 'badge--primary'
+                                        : 'badge--secondary'
+                                )}
+                            >
+                                {token.validThrough ? token.fValidThrough : 'Unbegrenzt'}
+                            </span>
                         </dd>
                         <dt>Erstellt</dt>
                         <dd>{token.fCreatedAt}</dd>
