@@ -27,16 +27,19 @@ class SignupToken {
         this.id = props.id;
         this.uses = props.uses;
 
-        this._pristine = {
-            description: props.description,
-            validThrough: props.validThrough,
-            maxUses: props.maxUses
-        };
+        const validThrough = props.validThrough ? new Date(props.validThrough) : null;
+
         this.method = props.method; // TODO: Should this be readonly, since it can't be updated?
         this.description = props.description;
-        this.validThrough = props.validThrough ? new Date(props.validThrough) : null;
+        this.validThrough = validThrough;
         this.maxUses = props.maxUses;
         this.disabled = props.disabled;
+
+        this._pristine = {
+            description: props.description,
+            validThrough: validThrough,
+            maxUses: props.maxUses
+        };
 
         this.updatedAt = new Date(props.updatedAt);
         this.createdAt = new Date(props.createdAt);
