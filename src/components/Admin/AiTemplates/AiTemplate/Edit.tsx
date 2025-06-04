@@ -12,6 +12,10 @@ import { mdiClose, mdiContentSave } from '@mdi/js';
 import CodeEditor from '@tdev-components/shared/CodeEditor';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import DefinitionList from '@tdev-components/DefinitionList';
+import SchemaEditor from './SchemaEditor';
+import CodeBlock from '@theme/CodeBlock';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 interface Props {
     template: AiTemplateModel;
@@ -98,16 +102,32 @@ const Edit = observer((props: Props) => {
             </dd>
             <dt>JSON Schema</dt>
             <dd>
-                <CodeEditor
-                    defaultValue={JSON.stringify(template.jsonSchema, null, 2)}
-                    onChange={(val) => {
-                        try {
-                            const schema = JSON.parse(val);
-                            template.update({ jsonSchema: schema });
-                        } catch (e) {}
-                    }}
-                    lang="json"
-                />
+                <Tabs className={clsx(styles.tabs)} lazy>
+                    <TabItem value="schema" label="Editor">
+                        {template.jsonSchema && (
+                            <SchemaEditor
+                                json={template.jsonSchema?.schema}
+                                className={clsx(styles.schemaEditor, className)}
+                                noDelete
+                                noChangeType
+                            />
+                        )}
+                    </TabItem>
+                    <TabItem value="json" label="JSON">
+                        <CodeEditor
+                            defaultValue={template.stringifiedJsonSchema}
+                            onChange={(val) => {
+                                try {
+                                    const schema = JSON.parse(val);
+                                    template.setJsonSchema(schema);
+                                } catch (e) {
+                                    console.error('Invalid JSON Schema:', e);
+                                }
+                            }}
+                            lang="json"
+                        />
+                    </TabItem>
+                </Tabs>
             </dd>
             <dt>Is Active</dt>
             <dd>
@@ -129,7 +149,10 @@ const Edit = observer((props: Props) => {
                     )}
                     <Button
                         text="Abbrechen"
-                        onClick={() => template.setEditing(false)}
+                        onClick={() => {
+                            template.reset();
+                            template.setEditing(false);
+                        }}
                         icon={mdiClose}
                         color="black"
                     />

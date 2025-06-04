@@ -29,13 +29,25 @@ const TextAreaInput = observer((props: Props) => {
 
     const adjustHeight = React.useCallback(() => {
         if (ref.current) {
+            ref.current.style.height = 'auto';
             ref.current.style.height = `${ref.current.scrollHeight}px`;
         }
-    }, [ref]);
+    }, []);
 
     React.useEffect(() => {
         adjustHeight();
-    }, [text]);
+    }, [text, ref.current]);
+
+    React.useEffect(() => {
+        if (ref.current) {
+            ref.current.addEventListener('focus', adjustHeight);
+            return () => {
+                if (ref.current) {
+                    ref.current.removeEventListener('focus', adjustHeight);
+                }
+            };
+        }
+    }, [ref.current]);
 
     const insertTab = () => {
         if (ref.current) {
@@ -98,7 +110,7 @@ const TextAreaInput = observer((props: Props) => {
                     }
                 }}
                 rows={1}
-                autoFocus
+                autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
             />

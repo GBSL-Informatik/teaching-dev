@@ -34,38 +34,20 @@ export const ButtonColors: { [key in Color]: string } = {
     black: 'button--primary'
 };
 export const IfmColors: { [key in Color]: string } = {
-    primary: 'var(--ifm-color-primary)',
-    secondary: 'var(--ifm-color-secondary)',
-    blue: 'var(--ifm-color-blue)',
-    green: 'var(--ifm-color-success)',
-    success: 'var(--ifm-color-success)',
-    red: 'var(--ifm-color-danger)',
-    danger: 'var(--ifm-color-danger)',
-    orange: 'var(--ifm-color-warning)',
-    warning: 'var(--ifm-color-warning)',
-    gray: 'var(--ifm-color-gray-600)',
-    lightBlue: 'var(--ifm-color-info)',
-    info: 'var(--ifm-color-info)',
-    black: 'var(--ifm-color-black)'
+    primary: '--ifm-color-primary',
+    secondary: '--ifm-color-secondary',
+    blue: '--ifm-color-blue',
+    green: '--ifm-color-success',
+    success: '--ifm-color-success',
+    red: '--ifm-color-danger',
+    danger: '--ifm-color-danger',
+    orange: '--ifm-color-warning',
+    warning: '--ifm-color-warning',
+    gray: '--ifm-color-secondary',
+    lightBlue: '--ifm-color-info',
+    info: '--ifm-color-info',
+    black: '--ifm-color-black'
 } as const;
-
-export const IfmColors = {
-    primary: 'var(--ifm-color-primary)',
-    primaryDarker: 'var(--ifm-color-primary-darker)',
-    secondary: 'var(--ifm-color-secondary)',
-    blue: 'var(--ifm-color-blue)',
-    green: 'var(--ifm-color-success)',
-    lightGreen: 'var(--ifm-color-success-lightest)',
-    success: 'var(--ifm-color-success)',
-    red: 'var(--ifm-color-danger)',
-    danger: 'var(--ifm-color-danger)',
-    orange: 'var(--ifm-color-warning)',
-    warning: 'var(--ifm-color-warning)',
-    gray: 'var(--ifm-color-gray-600)',
-    lightBlue: 'var(--ifm-color-info)',
-    info: 'var(--ifm-color-info)',
-    black: 'var(--ifm-color-black)'
-};
 
 export const getColorClass = (color: Color | string | undefined, defaultColor?: Color) => {
     return Colors[color as Color] || Colors[defaultColor as Color];

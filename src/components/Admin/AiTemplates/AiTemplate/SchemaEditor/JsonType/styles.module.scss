@@ -1,0 +1,46 @@
+.jsonType {
+    position: relative;
+    border: 1px solid var(--tdev-json-color);
+    border-left-width: 5px;
+    border-radius: var(--ifm-global-radius);
+    line-height: 0;
+    min-height: 2.2em;
+    .label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: top left;
+        transform: rotateZ(-90deg) translate(calc(-100% - 3px), calc(-100% - 4px));
+        display: flex;
+        flex-direction: row-reverse;
+        .remove {
+            margin: 0;
+            .removeButton {
+                border-radius: 0;
+                border-top-right-radius: 4px;
+            }
+        }
+        .typeSelect {
+            margin: 0;
+            padding: 0 2px;
+            border-color: var(--tdev-json-color);
+            border-radius: 0;
+            border-top-left-radius: 4px;
+            padding-right: 0;
+            max-width: 2.2em;
+            font-family: monospace;
+            &.single {
+                border-top-right-radius: 4px;
+            }
+        }
+    }
+    .nameInput {
+        font-weight: bold;
+    }
+    .descriptionInput {
+        margin: auto 0;
+    }
+    .children {
+        line-height: normal;
+    }
+}

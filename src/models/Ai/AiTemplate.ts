@@ -1,7 +1,8 @@
 import { AiStore } from '@tdev-stores/AiStore';
 import { action, computed, observable } from 'mobx';
-import { AiTemplate as AiTemplateProps, JsonSchema } from '@tdev-api/admin';
+import { AiTemplate as AiTemplateProps, JsonObject, JsonSchema as ApiJsonSchema } from '@tdev-api/admin';
 import _ from 'lodash';
+import JsonSchema from './JsonSchema';
 
 const UpdateableFields: (keyof AiTemplate)[] = [
     'rateLimit',
@@ -13,9 +14,21 @@ const UpdateableFields: (keyof AiTemplate)[] = [
     'temperature',
     'maxTokens',
     'topP',
-    'systemMessage',
-    'jsonSchema'
+    'systemMessage'
 ] as const;
+
+const DEFAULT_OBJECT: JsonObject = {
+    type: 'object',
+    properties: {},
+    required: [],
+    additionalProperties: false
+} as const;
+
+const DEFAULT_SCHEMA: ApiJsonSchema = {
+    name: 'Default Schema',
+    schema: _.cloneDeep(DEFAULT_OBJECT),
+    strict: true
+} as const;
 
 class AiTemplate {
     readonly store: AiStore;
@@ -32,7 +45,7 @@ class AiTemplate {
     @observable accessor maxTokens: number;
     @observable accessor topP: number;
     @observable accessor systemMessage: string | undefined;
-    @observable accessor jsonSchema: JsonSchema | undefined | null;
+    @observable accessor jsonSchema: JsonSchema | null;
 
     @observable.ref accessor _pristine: AiTemplateProps;
 
@@ -57,7 +70,7 @@ class AiTemplate {
         this.maxTokens = props.maxTokens;
         this.topP = props.topP;
         this.systemMessage = props.systemMessage;
-        this.jsonSchema = props.jsonSchema;
+        this.jsonSchema = props.jsonSchema ? new JsonSchema(props.jsonSchema) : null;
 
         this.createdAt = new Date(props.createdAt);
         this.updatedAt = new Date(props.updatedAt);
@@ -73,6 +86,12 @@ class AiTemplate {
         this._isEditing = isEditing;
     }
 
+    @action
+    reset() {
+        this.update(this._pristine);
+        this.setJsonSchema(this._pristine.jsonSchema || null);
+    }
+
     @computed
     get isEditing(): boolean {
         return this._isEditing || !this.isPersisted;
@@ -85,6 +104,23 @@ class AiTemplate {
                 (this as any)[key] = (props as any)[key] as any;
             }
         });
+    }
+
+    @action
+    setJsonSchema(schema: ApiJsonSchema | null) {
+        if (schema) {
+            this.jsonSchema = new JsonSchema(schema);
+        } else {
+            this.jsonSchema = null;
+        }
+    }
+
+    @computed
+    get stringifiedJsonSchema(): string {
+        if (!this.jsonSchema || !this.jsonSchema.schema) {
+            return '';
+        }
+        return JSON.stringify(this.jsonSchema.serialized, null, 2);
     }
 
     @computed
@@ -106,7 +142,7 @@ class AiTemplate {
             maxTokens: this.maxTokens,
             topP: this.topP,
             systemMessage: this.systemMessage,
-            jsonSchema: this.jsonSchema,
+            jsonSchema: this.jsonSchema?.serialized,
             createdAt: this.createdAt.toISOString(),
             updatedAt: this.updatedAt.toISOString()
         };
@@ -120,6 +156,11 @@ class AiTemplate {
                 (dirtyProps as any)[key] = (this as any)[key];
             }
         });
+        if (this.jsonSchema && !_.isEqual(this._pristine.jsonSchema, this.jsonSchema.serialized)) {
+            dirtyProps.jsonSchema = this.jsonSchema.serialized;
+        } else if (!this.jsonSchema && this._pristine.jsonSchema) {
+            dirtyProps.jsonSchema = null;
+        }
         return dirtyProps;
     }
 

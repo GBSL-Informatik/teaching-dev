@@ -7,12 +7,12 @@ import { default as AiTemplateModel } from '@tdev-models/Ai/AiTemplate';
 import Card from '@tdev-components/shared/Card';
 import Button from '@tdev-components/shared/Button';
 import DefinitionList from '@tdev-components/DefinitionList';
-import { formatDate, formatDateTime } from '@tdev-models/helpers/date';
+import { formatDateTime } from '@tdev-models/helpers/date';
 import CodeBlock from '@theme/CodeBlock';
 import Edit from './Edit';
-import { mdiFileEdit, mdiHomeEdit, mdiTrashCan } from '@mdi/js';
+import { mdiFileEdit, mdiTrashCan } from '@mdi/js';
 import AiPrompt from '@tdev-components/AiRequest/Prompt';
-import { SIZE_M, SIZE_S } from '@tdev-components/shared/iconSizes';
+import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 
 interface Props {
@@ -58,7 +58,7 @@ const AiTemplate = observer((props: Props) => {
                         <dd className={clsx(styles.displayBlock, styles.jsonSchema)}>
                             {template.jsonSchema && (
                                 <CodeBlock language="json" showLineNumbers title="JSON Schema">
-                                    {JSON.stringify(template.jsonSchema, null, 2)}
+                                    {template.stringifiedJsonSchema}
                                 </CodeBlock>
                             )}
                         </dd>
