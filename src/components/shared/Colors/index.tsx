@@ -43,7 +43,7 @@ export const IfmColors: { [key in Color]: string } = {
     danger: 'var(--ifm-color-danger)',
     orange: 'var(--ifm-color-warning)',
     warning: 'var(--ifm-color-warning)',
-    gray: 'var(--ifm-color-secondary)',
+    gray: 'var(--ifm-color-gray-600)',
     lightBlue: 'var(--ifm-color-info)',
     info: 'var(--ifm-color-info)',
     black: 'var(--ifm-color-black)'

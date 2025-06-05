@@ -6,8 +6,8 @@ import { default as AiRequestModel } from '@tdev-models/Ai/AiRequest';
 import Card from '@tdev-components/shared/Card';
 import Loader from '@tdev-components/Loader';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import Response from './Response';
 import WithTranslations, { Translation } from '@tdev-components/shared/WithTranslations';
+import JsTableViewer from '@tdev-components/shared/JsTableViewer';
 
 interface Props {
     aiRequest: AiRequestModel;
@@ -35,7 +35,7 @@ const AiRequest = observer((props: Props) => {
                 <>
                     {aiRequest.response && (
                         <WithTranslations translations={props.translations}>
-                            <Response response={aiRequest.response} isRoot />
+                            <JsTableViewer js={aiRequest.response} />
                         </WithTranslations>
                     )}
                 </>

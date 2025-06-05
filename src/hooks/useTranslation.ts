@@ -1,19 +1,22 @@
 import React, { useContext } from 'react';
 import { TranslationsContext } from '@tdev-components/shared/WithTranslations';
 
-export function useTranslation(key: string): React.ReactNode {
+export function useTranslation(name?: string): React.ReactNode {
     const context = useContext(TranslationsContext);
+    if (name === null || name === undefined) {
+        return name;
+    }
     if (context === null) {
-        return key;
+        return name;
     }
     if (typeof context === 'function') {
-        return context(key);
+        return context(name);
     }
-    if (key in context) {
-        if (typeof context[key] === 'function') {
-            return context[key](key);
+    if (name in context) {
+        if (typeof context[name] === 'function') {
+            return context[name](name);
         }
-        return context[key];
+        return context[name];
     }
-    return key;
+    return name;
 }

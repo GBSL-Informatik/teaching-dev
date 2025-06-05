@@ -5,6 +5,7 @@ import JsonArray from './JsonArray';
 import JsonNumber from './JsonNumber';
 import JsonString from './JsonString';
 import iJson from './iJson';
+import { JsTypes } from '@tdev-components/shared/JsTableViewer/toJsSchema';
 
 export type JsonType = JsonObject | JsonString | JsonNumber | JsonArray;
 export type ParentType = JsonObject | JsonArray | JsonSchema;
@@ -23,7 +24,7 @@ class JsonSchema {
 
     @computed
     get serialized() {
-        const schema: JsonSchemaType = {
+        const schema: JsonSchemaType & Record<string, JsTypes> = {
             name: this.schema.name,
             schema: this.schema.serialized,
             strict: this.strict
