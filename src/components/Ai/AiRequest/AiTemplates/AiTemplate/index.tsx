@@ -11,7 +11,7 @@ import { formatDateTime } from '@tdev-models/helpers/date';
 import CodeBlock from '@theme/CodeBlock';
 import Edit from './Edit';
 import { mdiFileEdit, mdiTrashCan } from '@mdi/js';
-import AiPrompt from '@tdev-components/AiRequest/Prompt';
+import AiPrompt from '@tdev-components/Ai/AiRequest/Prompt';
 import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 
