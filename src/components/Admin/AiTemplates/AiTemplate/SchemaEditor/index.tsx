@@ -10,6 +10,7 @@ export interface CommonProps {
     className?: string;
     noName?: boolean;
     noDelete?: boolean;
+    onDelete?: () => void;
     noChangeType?: boolean;
 }
 interface Props extends CommonProps {

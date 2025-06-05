@@ -3,12 +3,12 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import { default as AiTemplateModel } from '@tdev-models/Ai/AiTemplate';
+import { default as AiTemplateModel, DEFAULT_SCHEMA } from '@tdev-models/Ai/AiTemplate';
 import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
 import Checkbox from '@tdev-components/shared/Checkbox';
 import Button from '@tdev-components/shared/Button';
-import { mdiClose, mdiContentSave } from '@mdi/js';
+import { mdiClose, mdiContentSave, mdiPlusCircleOutline } from '@mdi/js';
 import CodeEditor from '@tdev-components/shared/CodeEditor';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import DefinitionList from '@tdev-components/DefinitionList';
@@ -104,12 +104,20 @@ const Edit = observer((props: Props) => {
             <dd>
                 <Tabs className={clsx(styles.tabs)} lazy>
                     <TabItem value="schema" label="Editor">
-                        {template.jsonSchema && (
+                        {template.jsonSchema ? (
                             <SchemaEditor
                                 json={template.jsonSchema?.schema}
                                 className={clsx(styles.schemaEditor, className)}
-                                noDelete
+                                onDelete={() => template.setJsonSchema(null)}
                                 noChangeType
+                            />
+                        ) : (
+                            <Button
+                                text="Schema erstellen"
+                                onClick={() => template.setJsonSchema(DEFAULT_SCHEMA)}
+                                color="primary"
+                                icon={mdiPlusCircleOutline}
+                                iconSide="left"
                             />
                         )}
                     </TabItem>

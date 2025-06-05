@@ -12,14 +12,11 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import SelectInput from '@tdev-components/shared/SelectInput';
+import { CommonProps } from '..';
 
-interface Props {
+interface Props extends CommonProps {
     json: iJson;
     children?: React.ReactNode;
-    className?: string;
-    noName?: boolean;
-    noDelete?: boolean;
-    noChangeType?: boolean;
 }
 
 export const ColorMap = {
@@ -60,12 +57,16 @@ const JsonType = observer((props: Props) => {
                         title={json.type}
                         icon={mdiTrashCanOutline}
                         onConfirm={action(() => {
-                            json.remove();
+                            if (props.onDelete) {
+                                props.onDelete();
+                            } else {
+                                json.remove();
+                            }
                         })}
                         size={SIZE_XS}
                         color={ColorMap[json.type]}
                         className={clsx(styles.remove)}
-                        buttonClassName={clsx(styles.removeButton)}
+                        buttonClassName={clsx(styles.removeButton, props.noChangeType && styles.single)}
                         confirmColor={'red'}
                         confirmIcon={mdiTrashCanOutline}
                     />

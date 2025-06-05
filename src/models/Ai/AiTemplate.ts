@@ -24,7 +24,7 @@ const DEFAULT_OBJECT: JsonObject = {
     additionalProperties: false
 } as const;
 
-const DEFAULT_SCHEMA: ApiJsonSchema = {
+export const DEFAULT_SCHEMA: ApiJsonSchema = {
     name: 'Default Schema',
     schema: _.cloneDeep(DEFAULT_OBJECT),
     strict: true

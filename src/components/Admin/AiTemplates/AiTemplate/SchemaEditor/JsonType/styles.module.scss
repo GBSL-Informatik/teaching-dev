@@ -18,6 +18,9 @@
             .removeButton {
                 border-radius: 0;
                 border-top-right-radius: 4px;
+                &.single {
+                    border-top-left-radius: 4px;
+                }
             }
         }
         .typeSelect {
