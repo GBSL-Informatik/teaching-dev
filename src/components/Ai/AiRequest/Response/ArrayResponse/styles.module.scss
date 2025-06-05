@@ -1,0 +1,8 @@
+.array {
+    display: flex;
+    gap: 0 0.5em;
+    flex-wrap: wrap;
+    > *:not(:last-child)::after {
+        content: ',';
+    }
+}

@@ -1,9 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { ArrayResponse, GenericValue as GenericValueType } from '@tdev-models/Ai/AiRequest';
+import styles from './styles.module.scss';
+import { ArrayResponse } from '@tdev-models/Ai/AiRequest';
 import ResponseType from '../ResponseType';
 import GenericValue from '../GenericResponse/GenericValue';
 import ObjectResponse from '../ObjectResponse';
+import clsx from 'clsx';
 
 interface Props {
     response: ArrayResponse;
@@ -15,7 +17,7 @@ const ArrayResponse = observer((props: Props) => {
 
     return (
         <ResponseType response={response}>
-            <div>
+            <div className={clsx(styles.array, className)}>
                 {response.value.map((item, idx) => {
                     switch (response.items) {
                         case 'array':
@@ -23,7 +25,15 @@ const ArrayResponse = observer((props: Props) => {
                         case 'object':
                             return <ObjectResponse key={idx} response={item as unknown as ObjectResponse} />;
                         default:
-                            return <GenericValue key={idx} response={item as unknown as GenericValueType} />;
+                            return (
+                                <GenericValue
+                                    key={idx}
+                                    response={{
+                                        type: response.items,
+                                        value: item as any
+                                    }}
+                                />
+                            );
                     }
                 })}
             </div>

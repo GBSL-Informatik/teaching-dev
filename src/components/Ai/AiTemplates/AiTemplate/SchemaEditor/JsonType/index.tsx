@@ -38,7 +38,7 @@ const JsonType = observer((props: Props) => {
     return (
         <div
             className={clsx(styles.jsonType, props.className)}
-            style={{ ['--tdev-json-color' as any]: `var(${IfmColors[ColorMap[json.type]]})` }}
+            style={{ ['--tdev-json-color' as any]: IfmColors[ColorMap[json.type]] }}
         >
             {!props.noName && (
                 <TextInput

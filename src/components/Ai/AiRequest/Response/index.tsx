@@ -1,14 +1,11 @@
 import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import AiRequest, { ObjectValue } from '@tdev-models/Ai/AiRequest';
+import { ObjectValue } from '@tdev-models/Ai/AiRequest';
 import ArrayResponse from './ArrayResponse';
 import ObjectResponse from './ObjectResponse';
 import GenericResponse from './GenericResponse';
 
-interface Props {
+export interface Props {
     response: ObjectValue;
     className?: string;
     isRoot?: boolean;

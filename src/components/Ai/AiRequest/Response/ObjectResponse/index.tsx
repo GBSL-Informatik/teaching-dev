@@ -5,12 +5,10 @@ import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { ObjectResponse } from '@tdev-models/Ai/AiRequest';
 import ResponseType from '../ResponseType';
-import Response from '..';
+import Response, { Props as CommonProps } from '..';
 
-interface Props {
+interface Props extends CommonProps {
     response: ObjectResponse;
-    className?: string;
-    isRoot?: boolean;
 }
 
 const ObjectResponse = observer((props: Props) => {

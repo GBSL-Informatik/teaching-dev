@@ -7,7 +7,10 @@ import { default as AiRequestModel } from '@tdev-models/Ai/AiRequest';
 import AiRequest from '.';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import Button from '@tdev-components/shared/Button';
-import { mdiChatQuestionOutline } from '@mdi/js';
+import { mdiChatQuestionOutline, mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
+import Icon from '@mdi/react';
+import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface Props {
     aiTemplateId: string;
@@ -41,7 +44,14 @@ const AiPrompt = observer((props: Props) => {
                 }}
             />
             {aiRequests.map((aiRequest) => (
-                <AiRequest key={aiRequest.id} aiRequest={aiRequest as AiRequestModel} />
+                <AiRequest
+                    key={aiRequest.id}
+                    aiRequest={aiRequest as AiRequestModel}
+                    translations={{
+                        bad: () => <Icon size={SIZE_M} path={mdiMinusCircle} color={IfmColors.red} />,
+                        good: () => <Icon size={SIZE_M} path={mdiPlusCircle} color={IfmColors.green} />
+                    }}
+                />
             ))}
         </div>
     );
