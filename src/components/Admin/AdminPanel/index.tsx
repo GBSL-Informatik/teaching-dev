@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 import StudentGroupPanel from '@tdev-components/Admin/StudentGroupPanel';
 import UserTable from '@tdev-components/Admin/UserTable';
 import AllowedActions from '../AllowedActions';
-import AiTemplates from '@tdev-components/Ai/AiRequest/AiTemplates';
+import AiTemplates from '@tdev-components/Ai/AiTemplates';
 
 const AdminPanel = observer(() => {
     const userStore = useStore('userStore');
