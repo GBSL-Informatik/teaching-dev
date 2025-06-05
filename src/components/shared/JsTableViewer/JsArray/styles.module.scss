@@ -2,7 +2,19 @@
     display: flex;
     gap: 0 0.5em;
     flex-wrap: wrap;
-    > *:not(:last-child)::after {
-        content: ',';
+    line-height: normal;
+    > *:not(:last-child) {
+        position: relative;
+        &::after {
+            content: ',';
+            color: var(--ifm-font-color-base);
+            position: absolute;
+            right: -0.3em;
+        }
+    }
+    > code:not(:last-child) {
+        &::after {
+            right: -0.6em;
+        }
     }
 }

@@ -1,0 +1,117 @@
+---
+page_id: 0dfffd0e-39d9-4559-92f9-cb41477c1240
+---
+
+import JsTableViewer from '@tdev-components/shared/JsTableViewer';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+
+# JS Table Viewer
+
+Um ein JavaScript Objekt oder Array visuell ansprechend darzustellen, kann der `JsTableViewer` verwendet werden. Dieser Viewer ist besonders nützlich, um komplexe Datenstrukturen in einer tabellarischen Form darzustellen.
+
+export const data = {
+    name: "John Doe",
+    age: 30,
+    hobbies: [
+        "Reading",
+        "Traveling",
+        {
+            name: "Cycling",
+            type: ["Sport", "Leisure"],
+            details: { bike: "Norco", gear: "Mountain" },
+        },
+    ],
+    address: {
+        street: "123 Main St",
+        city: "Anytown",
+        country: "USA",
+    },
+    deeplyNested: {
+        level1: {
+            level2: {
+                level3: {
+                    value: "Deep Value",
+                    array: [1, 2, 3, { nested: "Nested Value" }],
+                },
+            },
+            level2b: {
+                anotherValue: "Another Deep Value",
+                array: [4, 5, 6],
+            },
+        },
+    },
+    foo: (name) => `Hello, ${name}!`,
+};
+
+```ts
+import JsTableViewer from '@tdev-components/shared/JsTableViewer';
+
+<JsTableViewer
+  js={{
+    name: "John Doe",
+    age: 30,
+    hobbies: [
+      "Reading",
+      "Traveling",
+      {
+        name: "Cycling",
+        type: ["Sport", "Leisure"],
+        details: { bike: "Norco", gear: "Mountain" },
+      },
+    ],
+    address: {
+      street: "123 Main St",
+      city: "Anytown",
+      country: "USA",
+    },
+    deeplyNested: {
+      level1: {
+        level2: {
+          level3: {
+            value: "Deep Value",
+            array: [1, 2, 3, { nested: "Nested Value" }],
+          },
+        },
+        level2b: {
+          anotherValue: "Another Deep Value",
+          array: [4, 5, 6],
+        },
+      },
+    },
+    foo: (name) => `Hello, ${name}!`,
+  }}
+/>
+```
+
+<BrowserWindow>
+    <JsTableViewer
+        js={data}
+    />
+</BrowserWindow>
+
+## Parameter
+### `collapseAt`
+
+`collapseAt`
+: Gibt an, ab welcher Tiefe die Darstellung der Objekte und Arrays zusammengeklappt werden soll.
+: default: `3`, daher in der dritten Ebene werden Objekte und Arrays zusammengeklappt.
+
+```ts
+import JsTableViewer from '@tdev-components/shared/JsTableViewer';
+
+<JsTableViewer
+  js={{
+    name: "John Doe",
+    // ...
+  }}
+  collapseAt={1}
+/>
+```
+
+<BrowserWindow>
+    <JsTableViewer
+        js={data}
+        collapseAt={1}
+    />
+</BrowserWindow>
