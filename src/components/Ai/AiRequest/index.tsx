@@ -7,6 +7,7 @@ import CodeBlock from '@theme/CodeBlock';
 import Card from '@tdev-components/shared/Card';
 import Loader from '@tdev-components/Loader';
 import { formatDateTime } from '@tdev-models/helpers/date';
+import Response from './Response';
 
 interface Props {
     aiRequest: AiRequestModel;
@@ -30,9 +31,7 @@ const AiRequest = observer((props: Props) => {
             {aiRequest.status === 'pending' ? (
                 <Loader label="Antwort generieren..." />
             ) : (
-                <CodeBlock language="json" title="Resultat">
-                    {JSON.stringify(aiRequest.response, null, 2)}
-                </CodeBlock>
+                <>{aiRequest.response && <Response response={aiRequest.response} isRoot />}</>
             )}
         </Card>
     );
