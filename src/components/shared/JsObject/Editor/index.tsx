@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 import JsSchemaEditor from './JsSchemaEditor';
 import { toModel } from './models/toModel';
 import JsRoot from './models/JsRoot';
-import { autorun, reaction } from 'mobx';
+import { reaction } from 'mobx';
 
 interface Props {
     className?: string;
@@ -26,7 +26,6 @@ const JsObjectEditor = observer((props: Props) => {
 
     // Effect that triggers upon observable changes.
     React.useEffect(() => {
-        console.log('setup reaction', jsRoot.isDirty);
         return reaction(
             () => jsRoot.isDirty,
             (isDirty) => {
@@ -40,7 +39,7 @@ const JsObjectEditor = observer((props: Props) => {
     return (
         <div className={clsx(styles.jsObjectEditor, props.className)}>
             <div className={clsx(styles.spacer)} />
-            <JsSchemaEditor schema={jsRoot.values} />
+            <JsSchemaEditor schema={jsRoot.value} />
             <div className={clsx(styles.spacer)} />
         </div>
     );

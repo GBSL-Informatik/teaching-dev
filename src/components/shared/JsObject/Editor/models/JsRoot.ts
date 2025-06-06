@@ -1,31 +1,35 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed } from 'mobx';
 import iJs, { JsModelType } from './iJs';
-import { JsTypes } from '../../toJsSchema';
+import { JsTypes, JsRoot as JsRootType } from '../../toJsSchema';
+import iParentable from './iParentable';
 
-class JsRoot {
+class JsRoot extends iParentable<JsRootType> {
     readonly type = 'root';
-    values = observable.array<JsModelType>([], { deep: false });
+
+    constructor() {
+        super({ type: 'root', value: [] }, null as any);
+    }
+
     @action
     setValues(values: JsModelType[]) {
-        this.values.replace(values);
+        this._value.replace(values);
     }
 
     @action
     remove(model: iJs) {
-        console.log('Removing model:', model);
-        this.values.remove(model as JsModelType);
+        this._value.remove(model as JsModelType);
     }
 
     @computed
     get isDirty(): boolean {
-        return this.values.some((value) => value.isDirty);
+        return this._value.some((value) => value.isDirty);
     }
 
     @computed
-    get serialized(): Record<string, JsTypes> | JsTypes[] {
-        const isObject = this.values.some((o) => o.name !== undefined);
+    get jsObject(): Record<string, JsTypes> | JsTypes[] {
+        const isObject = this._value.some((o) => o.name !== undefined);
         if (isObject) {
-            return this.values.reduce(
+            return this._value.reduce(
                 (acc, model) => {
                     if (!model.name) {
                         return acc;
@@ -36,7 +40,7 @@ class JsRoot {
                 {} as Record<string, JsTypes>
             );
         }
-        return this.values.map((model) => model.serialized);
+        return this._value.map((model) => model.serialized);
     }
 }
 

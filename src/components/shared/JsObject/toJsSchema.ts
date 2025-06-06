@@ -3,7 +3,8 @@ import _ from 'lodash';
 export type JsTypes = string | number | boolean | object | Function | bigint | Symbol | null | undefined;
 
 export type GenericValue = JsString | JsNumber | JsBoolean | JsNullish;
-export type JsValue = GenericValue | JsArray | JsObject | JsFunction;
+export type JsParents = JsArray | JsObject | JsRoot;
+export type JsValue = GenericValue | JsParents | JsFunction;
 export type JsTypeName = JsValue['type'];
 
 export interface JsString {
@@ -38,6 +39,11 @@ export interface JsObject {
 }
 export interface JsArray {
     type: 'array';
+    value: JsValue[];
+    name?: string;
+}
+export interface JsRoot {
+    type: 'root';
     value: JsValue[];
     name?: string;
 }
@@ -90,10 +96,12 @@ const SortPrecedence: { [key: string]: number } = {
     array: 2
 };
 
-export const sortValues = <T extends { type: string; name?: string }>(values: T[]): T[] => {
+type SortableType = { type: string; name?: string; pristineName?: string };
+
+export const sortValues = <T extends SortableType>(values: T[], by: keyof SortableType = 'name'): T[] => {
     return _.orderBy(
         values,
-        [(prop) => SortPrecedence[prop.type] ?? 3, (prop) => prop.name?.toLowerCase()],
+        [(prop) => SortPrecedence[prop.type] ?? 3, (prop) => prop[by]?.toLowerCase()],
         ['desc', 'asc']
     );
 };

@@ -27,7 +27,8 @@ export const ColorMap: { [key in JsTypeName]: keyof typeof IfmColors } = {
     number: 'green',
     boolean: 'gray',
     nullish: 'gray',
-    function: 'red'
+    function: 'red',
+    root: 'black'
 } as const;
 
 const AbbreviatedTypeMap: { [key: string]: JsTypeName } = {
@@ -35,7 +36,7 @@ const AbbreviatedTypeMap: { [key: string]: JsTypeName } = {
     arr: 'array',
     str: 'string',
     num: 'number',
-    bool: 'boolean',
+    boo: 'boolean',
     nul: 'nullish',
     fun: 'function'
 } as const;
@@ -72,15 +73,15 @@ const JsType = observer((props: Props) => {
                     confirmColor={'red'}
                     confirmIcon={mdiTrashCanOutline}
                 />
-                {/* <SelectInput
-                    options={['obj', 'arr', 'str', 'num']}
-                    labels={['Object', 'Array', 'String', 'Number']}
+                <SelectInput
+                    options={['obj', 'arr', 'str', 'num', 'boo', 'nul']}
+                    labels={['Object', 'Array', 'String', 'Number', 'Boolean', 'Nullish']}
                     value={js.type.slice(0, 3)}
                     onChange={(val) => {
                         js.changeType(AbbreviatedTypeMap[val as keyof typeof AbbreviatedTypeMap]);
                     }}
-                    className={clsx(styles.typeSelect, props.noDelete && styles.single)}
-                /> */}
+                    className={clsx(styles.typeSelect)}
+                />
             </div>
             <div className={clsx(styles.children)}>{children}</div>
         </div>

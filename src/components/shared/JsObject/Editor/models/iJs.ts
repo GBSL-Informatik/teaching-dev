@@ -1,25 +1,25 @@
 import { action, computed, observable } from 'mobx';
-import { JsValue, type JsTypeName } from '../../toJsSchema';
+import { JsParents, JsValue, type JsTypeName } from '../../toJsSchema';
 import JsNumber from './JsNumber';
 import JsBoolean from './JsBoolean';
 import JsString from './JsString';
 import JsObject from './JsObject';
 import JsArray from './JsArray';
-import JsRoot from './JsRoot';
 import JsNullish from './JsNullish';
 import JsFunction from './JsFunction';
 import _ from 'lodash';
+import { castToType, toModel } from './toModel';
+import iParentable from './iParentable';
 
 export type JsModelType = JsObject | JsString | JsNumber | JsArray | JsBoolean | JsNullish | JsFunction;
-export type ParentType = JsObject | JsArray | JsRoot;
 
 abstract class iJs<T extends JsValue = JsValue> {
-    readonly parent: ParentType;
+    readonly parent: iParentable;
     abstract readonly type: JsTypeName;
     readonly _pristine: T;
     @observable accessor name: string | undefined;
 
-    constructor(js: T, parent: ParentType) {
+    constructor(js: T, parent: iParentable) {
         this._pristine = js;
         this.name = js.name;
         this.parent = parent;
@@ -48,6 +48,21 @@ abstract class iJs<T extends JsValue = JsValue> {
     }
 
     abstract get serialized(): T;
+
+    @action
+    changeType(type: JsTypeName): void {
+        if (type === 'root') {
+            throw new Error('Cannot change type to root');
+        }
+        if (this.type === type) {
+            return; // No change needed
+        }
+        const val = castToType(this.serialized, type);
+        this.parent.replaceValue(
+            this,
+            toModel({ type: type, value: val as any, name: this.name }, this.parent)
+        );
+    }
 
     // abstract changeType(type: JsTypeName): void;
 }
