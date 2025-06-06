@@ -62,7 +62,10 @@ class SignupToken {
         this.isEditing = isEditing;
     }
 
-    // TODO: Set method?
+    @action
+    setMethod(method: string) {
+        this.method = method;
+    }
 
     @action
     setDescription(description: string) {
@@ -97,9 +100,10 @@ class SignupToken {
     }
 
     @computed
-    get props(): Omit<SignupTokenProps, 'method' | 'uses' | 'createdAt' | 'updatedAt'> {
+    get props(): Omit<SignupTokenProps, 'uses' | 'createdAt' | 'updatedAt'> {
         return {
             id: this.id,
+            method: this.method,
             description: this.description,
             maxUses: this.maxUses,
             validThrough: this.validThrough,
