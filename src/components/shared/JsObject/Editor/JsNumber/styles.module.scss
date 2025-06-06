@@ -1,4 +1,19 @@
-.jsNumber {
-    font-size: 85%;
-    padding: 0.25em 0.5em;
+.actions {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 0.5em;
+    &.hasValue {
+        gap: 0.5em;
+    }
+    .minMaxInput {
+        flex-basis: 3em;
+        .label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
 }

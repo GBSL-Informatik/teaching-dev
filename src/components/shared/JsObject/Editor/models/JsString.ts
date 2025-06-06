@@ -1,13 +1,12 @@
 import { action, computed, observable } from 'mobx';
-import iJs from './iJs';
+import iJs, { ParentType } from './iJs';
 import { JsString as JsStringType } from '../../toJsSchema';
-import type iParentable from './iParentable';
 
 class JsString extends iJs {
     readonly type = 'string';
     @observable accessor value: string;
 
-    constructor(js: JsStringType, parent: iParentable) {
+    constructor(js: JsStringType, parent: ParentType) {
         super(js, parent);
         this.value = js.value;
     }
@@ -27,11 +26,6 @@ class JsString extends iJs {
             js.name = this.name;
         }
         return js;
-    }
-
-    @computed
-    get asJs(): string {
-        return this.value;
     }
 }
 

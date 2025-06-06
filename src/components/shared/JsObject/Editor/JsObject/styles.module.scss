@@ -1,25 +1,11 @@
-.actions {
-    display: flex;
-    scrollbar-width: thin;
-    .collapse {
-        transform: translateY(15%);
+.jsObject {
+    --tdev-json-padding-left: 1.5em;
+    .children {
+        margin-left: var(--tdev-json-padding-left);
     }
-}
-.object {
-    &:has(:focus),
-    &:hover {
-        border-left: 2px dotted var(--ifm-color-blue);
-        border-radius: var(--ifm-global-radius);
-        margin-left: -2px;
-        &:has(:focus) {
-            border-left-style: solid;
-        }
-    }
-    &.indentValues {
-        margin-left: var(--tdev-js-editor-indent-size);
-        &:has(:focus),
-        &:hover {
-            margin-left: calc(var(--tdev-js-editor-indent-size) - 2px);
-        }
+    .actions {
+        overflow-x: auto;
+        display: flex;
+        scrollbar-width: thin;
     }
 }

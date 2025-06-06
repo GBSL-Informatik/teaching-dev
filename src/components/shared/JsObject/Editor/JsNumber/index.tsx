@@ -9,12 +9,11 @@ import { action } from 'mobx';
 
 interface Props {
     js: JsNumberModel;
-    noName?: boolean;
 }
 const JsNumber = observer((props: Props) => {
     const { js } = props;
     return (
-        <JsType js={js} noName={props.noName}>
+        <JsType js={js} className={clsx(styles.jsonNumber)}>
             <TextInput
                 type="number"
                 value={`${js.value}`}
@@ -22,7 +21,6 @@ const JsNumber = observer((props: Props) => {
                     js.setValue(Number(value));
                 })}
                 step={0.01}
-                className={clsx(styles.jsNumber)}
                 noAutoFocus
             />
         </JsType>

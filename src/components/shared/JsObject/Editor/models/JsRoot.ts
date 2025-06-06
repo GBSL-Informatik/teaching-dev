@@ -1,58 +1,31 @@
-import { action, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import iJs, { JsModelType } from './iJs';
-import { JsTypes, JsRoot as JsRootType, toJsSchema, EditLevel } from '../../toJsSchema';
-import iParentable from './iParentable';
-import { toModel } from './toModel';
+import { JsTypes } from '../../toJsSchema';
 
-class JsRoot extends iParentable<JsRootType> {
+class JsRoot {
     readonly type = 'root';
-
-    constructor(editLevel?: EditLevel) {
-        super({ type: 'root', value: [], editLevel: editLevel }, null as any);
-    }
-
-    @action
-    buildFromJs(js: Record<string, JsTypes> | JsTypes[]) {
-        const jsSchema = toJsSchema(js);
-        if (this.editLevel !== 'all') {
-            jsSchema.forEach((prop) => {
-                prop.editLevel = this.editLevel;
-            });
-        }
-        const models = jsSchema.map((js) => toModel(js, this));
-        this.setValues(models);
-    }
-
+    values = observable.array<JsModelType>([], { deep: false });
     @action
     setValues(values: JsModelType[]) {
-        this._value.replace(values);
+        this.values.replace(values);
     }
 
     @action
     remove(model: iJs) {
-        this._value.remove(model as JsModelType);
+        console.log('Removing model:', model);
+        this.values.remove(model as JsModelType);
     }
 
     @computed
     get isDirty(): boolean {
-        return this._value.some((value) => value.isDirty);
+        return this.values.some((value) => value.isDirty);
     }
 
     @computed
-    get isObject(): boolean {
-        return this._value.some((o) => o.name !== undefined);
-    }
-
-    @computed
-    get isArray(): boolean {
-        return !this.isObject;
-    }
-
-    @computed
-    get jsSchema(): Record<string, JsTypes> | JsTypes[] {
-        const isObject = this._value.some((o) => o.name !== undefined);
+    get serialized(): Record<string, JsTypes> | JsTypes[] {
+        const isObject = this.values.some((o) => o.name !== undefined);
         if (isObject) {
-            return this._value.reduce(
+            return this.values.reduce(
                 (acc, model) => {
                     if (!model.name) {
                         return acc;
@@ -63,29 +36,7 @@ class JsRoot extends iParentable<JsRootType> {
                 {} as Record<string, JsTypes>
             );
         }
-        return this._value.map((model) => model.serialized);
-    }
-
-    @computed
-    get asJs(): Record<string, JsTypes> | JsTypes[] {
-        if (this.isArray) {
-            return this._value.map((model) => model.asJs);
-        }
-        return this.value.reduce(
-            (acc, model) => {
-                if (!model.name) {
-                    return acc;
-                }
-                acc[model.name] = model.asJs;
-                return acc;
-            },
-            {} as Record<string, JsTypes>
-        );
-    }
-
-    @action
-    save() {
-        this.buildFromJs(this.asJs);
+        return this.values.map((model) => model.serialized);
     }
 }
 

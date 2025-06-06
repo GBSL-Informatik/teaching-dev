@@ -2,4 +2,91 @@
 page_id: 980f4502-f53b-4f93-91a9-6b5f62e4ee1b
 ---
 
+import JsObjectEditor from '@tdev-components/shared/JsObject/Editor';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
 # JS Object Editor
+
+Um ein JavaScript Objekt oder Array visuell ansprechend darzustellen, kann der `JsObjectEditor` verwendet werden. Dieser Editor ist besonders nützlich, um komplexe Datenstrukturen in einer bearbeitbaren Form darzustellen.
+
+export const data = {
+    name: "John Doe",
+    age: 30,
+    single: true,
+    nullValue: null,
+    hobbies: [
+        "Reading",
+        "Traveling",
+        {
+            name: "Cycling",
+            type: ["Sport", "Leisure"],
+            details: { bike: "Norco", gear: "Mountain" },
+        },
+    ],
+    address: {
+        street: "123 Main St",
+        city: "Anytown",
+        country: "USA",
+    },
+    deeplyNested: {
+        level1: {
+            level2: {
+                level3: {
+                    value: "Deep Value",
+                    array: [1, 2, 3, { nested: "Nested Value" }],
+                },
+            },
+            level2b: {
+                anotherValue: "Another Deep Value",
+                array: [4, 5, 6],
+            },
+        },
+    },
+    bla: new Date(),
+    foo: (name) => `Hello, ${name}!`,
+};
+
+```tsx
+import JsObjectEditor from '@tdev-components/shared/JsObject/Editor';
+
+<JsObjectEditor
+  js={{
+    name: "John Doe",
+    age: 30,
+    hobbies: [
+      "Reading",
+      "Traveling",
+      {
+        name: "Cycling",
+        type: ["Sport", "Leisure"],
+        details: { bike: "Norco", gear: "Mountain" },
+      },
+    ],
+    address: {
+      street: "123 Main St",
+      city: "Anytown",
+      country: "USA",
+    },
+    deeplyNested: {
+      level1: {
+        level2: {
+          level3: {
+            value: "Deep Value",
+            array: [1, 2, 3, { nested: "Nested Value" }],
+          },
+        },
+        level2b: {
+          anotherValue: "Another Deep Value",
+          array: [4, 5, 6],
+        },
+      },
+    }
+  }}
+/>
+```
+
+<BrowserWindow>
+    <JsObjectEditor
+        js={data}
+    />
+</BrowserWindow>

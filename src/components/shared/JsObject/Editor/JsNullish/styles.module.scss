@@ -1,5 +1,19 @@
-.nullish {
-    font-size: 70%;
-    line-height: 0;
-    transform: translateY(15%);
+.actions {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 0.5em;
+    &.hasValue {
+        gap: 0.5em;
+    }
+    .minMaxInput {
+        flex-basis: 3em;
+        .label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
 }

@@ -1,5 +1,4 @@
 .jsObjectEditor {
-    position: relative;
     overflow-x: auto;
     overflow-y: hidden;
     display: flex;
@@ -9,9 +8,4 @@
         flex-basis: 0;
         min-width: 0;
     }
-}
-.header {
-    margin-bottom: 1em;
-    display: flex;
-    justify-content: space-between;
 }

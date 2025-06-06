@@ -4,71 +4,80 @@ export type JsTypes = string | number | boolean | object | Function | bigint | S
 
 export type GenericValue = JsString | JsNumber | JsBoolean | JsNullish;
 export type JsValue = GenericValue | JsArray | JsObject | JsFunction;
+export type JsTypeName = JsValue['type'];
 
-interface JsString {
+export interface JsString {
     type: 'string';
-    name?: string;
     value: string;
-}
-interface JsNullish {
-    type: 'nullish';
     name?: string;
+}
+export interface JsNullish {
+    type: 'nullish';
     value: null | undefined;
+    name?: string;
 }
 export interface JsFunction {
     type: 'function';
-    name?: string;
     value: Function;
+    name?: string;
 }
-interface JsNumber {
+export interface JsNumber {
     type: 'number';
-    name?: string;
     value: number;
-}
-interface JsBoolean {
-    type: 'boolean';
     name?: string;
+}
+export interface JsBoolean {
+    type: 'boolean';
     value: boolean;
+    name?: string;
 }
 export interface JsObject {
     type: 'object';
-    name?: string;
     value: JsValue[];
+    name?: string;
 }
 export interface JsArray {
     type: 'array';
-    name?: string;
     value: JsValue[];
+    name?: string;
 }
 
+const sanitizedName = (value: JsValue): JsValue => {
+    if (value.name === undefined) {
+        delete value.name;
+    }
+    return value;
+};
 const transformValue = (value: JsTypes, key?: string): JsValue => {
     switch (typeof value) {
         case 'string':
-            return { type: 'string', name: key, value } as JsString;
+            return sanitizedName({ type: 'string', value, name: key }) as JsString;
         case 'function':
-            return { type: 'function', name: key, value } as JsFunction;
+            return sanitizedName({ type: 'function', value, name: key }) as JsFunction;
         case 'undefined':
-            return { type: 'nullish', name: key, value: undefined } as JsNullish;
+            return sanitizedName({ type: 'nullish', value: undefined, name: key }) as JsNullish;
         case 'bigint':
         case 'number':
-            return { type: 'number', name: key, value: Number(value) } as JsNumber;
+            return sanitizedName({ type: 'number', value: Number(value), name: key }) as JsNumber;
         case 'boolean':
-            return { type: 'boolean', name: key, value } as JsBoolean;
+            return sanitizedName({ type: 'boolean', value, name: key }) as JsBoolean;
         case 'object':
             if (value === null) {
-                return { type: 'nullish', name: key, value: null } as JsNullish;
+                return sanitizedName({ type: 'nullish', value: null, name: key }) as JsNullish;
             } else if (Array.isArray(value)) {
-                return {
+                return sanitizedName({
                     type: 'array',
-                    name: key,
-                    value: sortValues(value.map((item) => transformValue(item)))
-                } as JsArray;
+                    value: sortValues(value.map((item) => transformValue(item))),
+                    name: key
+                }) as JsArray;
             } else {
-                return {
+                return sanitizedName({
                     type: 'object',
-                    name: key,
-                    value: sortValues(Object.entries(value).map(([key, value]) => transformValue(value, key)))
-                } as JsObject;
+                    value: sortValues(
+                        Object.entries(value).map(([key, value]) => transformValue(value, key))
+                    ),
+                    name: key
+                }) as JsObject;
             }
         default:
             throw new Error(`Unsupported response type for key ${key}`);
@@ -81,7 +90,7 @@ const SortPrecedence: { [key: string]: number } = {
     array: 2
 };
 
-const sortValues = (values: JsValue[]): JsValue[] => {
+export const sortValues = <T extends { type: string; name?: string }>(values: T[]): T[] => {
     return _.orderBy(
         values,
         [(prop) => SortPrecedence[prop.type] ?? 3, (prop) => prop.name?.toLowerCase()],

@@ -5,16 +5,19 @@ import { observer } from 'mobx-react-lite';
 import TextInput from '@tdev-components/shared/TextInput';
 import { action } from 'mobx';
 import _ from 'lodash';
+import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import { mdiTrashCanOutline } from '@mdi/js';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import SelectInput from '@tdev-components/shared/SelectInput';
 import iJs from '../models/iJs';
 import { JsTypeName } from '../../toJsSchema';
-import ChangeType from '../Actions/ChangeType';
-import RemoveProp from '../Actions/RemoveProp';
 
 interface Props {
     js: iJs;
     children?: React.ReactNode;
-    noName?: boolean;
+    className?: string;
 }
 
 export const ColorMap: { [key in JsTypeName]: keyof typeof IfmColors } = {
@@ -24,39 +27,63 @@ export const ColorMap: { [key in JsTypeName]: keyof typeof IfmColors } = {
     number: 'green',
     boolean: 'gray',
     nullish: 'gray',
-    function: 'red',
-    root: 'black'
+    function: 'red'
+} as const;
+
+const AbbreviatedTypeMap: { [key: string]: JsTypeName } = {
+    obj: 'object',
+    arr: 'array',
+    str: 'string',
+    num: 'number',
+    bool: 'boolean',
+    nul: 'nullish',
+    fun: 'function'
 } as const;
 
 const JsType = observer((props: Props) => {
     const { js, children } = props;
     return (
-        <>
-            {!props.noName && (
-                <div className={clsx(styles.name)}>
-                    <TextInput
-                        value={js.name}
-                        onChange={action((value) => {
-                            js.setName(value);
-                        })}
-                        className={clsx(styles.nameInput)}
-                        placeholder={`Name`}
-                        readOnly={!js.canEditName}
-                        noAutoFocus
-                    />
-                    <div className={clsx(styles.dirtyIndicator, js.isDirty && styles.dirty)}>*</div>
-                </div>
+        <div
+            className={clsx(styles.jsType, props.className)}
+            style={{ ['--tdev-json-color' as any]: IfmColors[ColorMap[js.type]] }}
+        >
+            {js.name && (
+                <TextInput
+                    value={js.name}
+                    onChange={action((value) => {
+                        js.setName(value);
+                    })}
+                    className={clsx(styles.nameInput)}
+                    placeholder={`Name`}
+                    noAutoFocus
+                />
             )}
-            <div className={clsx(styles.value, styles[js.type])}>
-                <div className={clsx(styles.input)}>{children}</div>
-                <div className={clsx(styles.stickyActions)}>
-                    <div className={clsx(styles.actions)}>
-                        <ChangeType js={js} />
-                        <RemoveProp js={js} />
-                    </div>
-                </div>
+            <div className={clsx(styles.label)}>
+                <Confirm
+                    title={js.type}
+                    icon={mdiTrashCanOutline}
+                    onConfirm={action(() => {
+                        js.remove();
+                    })}
+                    size={SIZE_XS}
+                    color={ColorMap[js.type]}
+                    className={clsx(styles.remove)}
+                    buttonClassName={clsx(styles.removeButton)}
+                    confirmColor={'red'}
+                    confirmIcon={mdiTrashCanOutline}
+                />
+                {/* <SelectInput
+                    options={['obj', 'arr', 'str', 'num']}
+                    labels={['Object', 'Array', 'String', 'Number']}
+                    value={js.type.slice(0, 3)}
+                    onChange={(val) => {
+                        js.changeType(AbbreviatedTypeMap[val as keyof typeof AbbreviatedTypeMap]);
+                    }}
+                    className={clsx(styles.typeSelect, props.noDelete && styles.single)}
+                /> */}
             </div>
-        </>
+            <div className={clsx(styles.children)}>{children}</div>
+        </div>
     );
 });
 

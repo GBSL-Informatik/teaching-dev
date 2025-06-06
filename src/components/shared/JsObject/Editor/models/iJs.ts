@@ -1,40 +1,26 @@
 import { action, computed, observable } from 'mobx';
-import { EditLevel, JsParents, JsTypes, JsValue, type JsTypeName } from '../../toJsSchema';
+import { JsValue, type JsTypeName } from '../../toJsSchema';
 import JsNumber from './JsNumber';
 import JsBoolean from './JsBoolean';
 import JsString from './JsString';
 import JsObject from './JsObject';
 import JsArray from './JsArray';
+import JsRoot from './JsRoot';
 import JsNullish from './JsNullish';
 import JsFunction from './JsFunction';
 import _ from 'lodash';
-import { castToType, toModel } from './toModel';
-import iParentable from './iParentable';
 
 export type JsModelType = JsObject | JsString | JsNumber | JsArray | JsBoolean | JsNullish | JsFunction;
-
-const nextId = () => {
-    let id = 0;
-    return () => {
-        return `js-${id++}`;
-    };
-};
-
-const generateId = nextId();
+export type ParentType = JsObject | JsArray | JsRoot;
 
 abstract class iJs<T extends JsValue = JsValue> {
-    readonly parent: iParentable;
-    readonly isParent: boolean = false;
-    readonly editLevel: EditLevel;
+    readonly parent: ParentType;
     abstract readonly type: JsTypeName;
     readonly _pristine: T;
-    readonly id = generateId();
     @observable accessor name: string | undefined;
 
-    constructor(js: T, parent: iParentable) {
-        this.editLevel = js.editLevel ?? 'all';
+    constructor(js: T, parent: ParentType) {
         this._pristine = js;
-        delete this._pristine.editLevel; // Remove editLevel from pristine object
         this.name = js.name;
         this.parent = parent;
     }
@@ -42,16 +28,6 @@ abstract class iJs<T extends JsValue = JsValue> {
     @computed
     get pristineName(): string | undefined {
         return this._pristine.name;
-    }
-
-    @computed
-    get canEditName(): boolean {
-        return this.editLevel === 'all' || this.editLevel === 'name';
-    }
-
-    @computed
-    get canEditValue(): boolean {
-        return this.editLevel === 'all' || this.editLevel === 'value';
     }
 
     @action
@@ -72,22 +48,8 @@ abstract class iJs<T extends JsValue = JsValue> {
     }
 
     abstract get serialized(): T;
-    abstract get asJs(): JsTypes | JsTypes[];
 
-    @action
-    changeType(type: JsTypeName): void {
-        if (type === 'root') {
-            throw new Error('Cannot change type to root');
-        }
-        if (this.type === type) {
-            return; // No change needed
-        }
-        const val = castToType(this.serialized, type);
-        this.parent.replaceValue(
-            this,
-            toModel({ type: type, value: val as any, name: this.name }, this.parent)
-        );
-    }
+    // abstract changeType(type: JsTypeName): void;
 }
 
 export default iJs;
