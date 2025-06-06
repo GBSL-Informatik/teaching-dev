@@ -3,6 +3,9 @@
     display: flex;
     justify-content: space-between;
     gap: 0.25rem;
+    &.clickable {
+        color: inherit;
+    }
     .actions {
         line-height: 0;
         transform: translateY(2px);

@@ -1,20 +1,37 @@
 .array {
     display: flex;
     gap: 0 0.5em;
+    align-items: flex-start;
     flex-wrap: wrap;
-    line-height: normal;
-    > *:not(:last-child) {
+    > .inArray {
         position: relative;
-        &::after {
-            content: ',';
-            color: var(--ifm-font-color-base);
-            position: absolute;
-            right: -0.3em;
+        &.array,
+        &.function,
+        &.object {
+            border: 1px solid var(--ifm-color-gray-600);
+            padding: 0 0.25em;
+            border-radius: var(--ifm-global-radius);
+            border-width: 0 2px 0 2px;
+        }
+        &:not(:last-child) {
+            &::after {
+                content: ',';
+                color: var(--ifm-font-color-base);
+                position: absolute;
+                right: -0.3em;
+                bottom: 0;
+            }
         }
     }
-    > code:not(:last-child) {
-        &::after {
-            right: -0.6em;
+    > code.inArray {
+        &:not(:last-child) {
+            &::after {
+                right: -0.6em;
+            }
         }
     }
+}
+.dots {
+    line-height: 0;
+    transform: translateY(85%);
 }

@@ -25,23 +25,31 @@ const JsObject = observer((props: Props) => {
         return <JsSchemaViewer schema={js.value} nestingLevel={props.nestingLevel + 1} />;
     }
 
+    const showToggleCollapse = js.value.length > 1;
+
     return (
         <JsType
             {...props}
             js={js}
             actions={
-                js.value.length > 1 ? (
+                showToggleCollapse ? (
                     <Button
                         icon={collapsed ? mdiChevronRight : mdiChevronDown}
-                        onClick={() => setCollapsed(!collapsed)}
                         color={collapsed ? 'gray' : 'primary'}
                         noOutline={collapsed}
                         size={0.5}
                     />
                 ) : undefined
             }
+            onClick={
+                showToggleCollapse
+                    ? () => {
+                          setCollapsed((prev) => !prev);
+                      }
+                    : undefined
+            }
         >
-            {collapsed ? (
+            {showToggleCollapse && collapsed ? (
                 <Icon path={mdiDotsHorizontal} size={SIZE_XS} className={clsx(styles.dots)} />
             ) : (
                 <JsSchemaViewer schema={js.value} nestingLevel={props.nestingLevel + 1} />

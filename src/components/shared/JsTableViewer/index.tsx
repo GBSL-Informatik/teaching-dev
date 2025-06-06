@@ -2,10 +2,13 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { JsTypes, toJsSchema } from '@tdev-components/shared/JsTableViewer/toJsSchema';
 import JsSchemaViewer from '@tdev-components/shared/JsTableViewer/JsSchemaViewer';
+import clsx from 'clsx';
+import styles from './styles.module.scss';
 
 export interface Props {
     js: Record<string, JsTypes> | JsTypes[];
     className?: string;
+    schemaViewerClassName?: string;
     collapseAt?: number;
 }
 
@@ -16,9 +19,11 @@ const JsTableViewer = observer((props: Props) => {
         return toJsSchema(props.js);
     }, [props.js]);
     return (
-        <CollapseAtContext.Provider value={props.collapseAt}>
-            <JsSchemaViewer schema={jsSchema} className={props.className} nestingLevel={1} />
-        </CollapseAtContext.Provider>
+        <div className={clsx(styles.jsTableViewer, props.className)}>
+            <CollapseAtContext.Provider value={props.collapseAt}>
+                <JsSchemaViewer schema={jsSchema} className={props.schemaViewerClassName} nestingLevel={1} />
+            </CollapseAtContext.Provider>
+        </div>
     );
 });
 

@@ -1,8 +1,9 @@
 .js {
     display: grid;
-    grid-template-columns: min-content minmax(8em, 1fr);
+    grid-template-columns: min-content minmax(min-content, max-content);
     grid-template-rows: auto;
-    grid-auto-flow: row;
+    // grid-auto-flow: row;
+    scrollbar-width: thin;
     .value,
     .name {
         border: 0px solid black;
@@ -19,4 +20,11 @@
     .value {
         padding-left: 0.25em;
     }
+}
+.jsTableViewer {
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
