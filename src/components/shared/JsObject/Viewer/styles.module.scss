@@ -2,6 +2,7 @@
     display: grid;
     grid-template-columns: min-content minmax(min-content, max-content);
     grid-template-rows: auto;
+    // grid-auto-flow: row;
     scrollbar-width: thin;
     .value,
     .name {
@@ -20,14 +21,10 @@
         padding-left: 0.25em;
     }
 }
-.jsObjectViewer {
+.jsTableViewer {
     overflow-x: auto;
     overflow-y: hidden;
     display: flex;
+    justify-content: center;
     align-items: flex-start;
-    .spacer {
-        flex: 1;
-        flex-basis: 0;
-        min-width: 0;
-    }
 }

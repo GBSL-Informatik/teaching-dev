@@ -1,7 +1,7 @@
 import api from './base';
 import { AxiosPromise } from 'axios';
 import { DocumentType } from './document';
-import { JsTypes } from '@tdev-components/shared/JsTableViewer/toJsSchema';
+import { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
 
 export interface AllowedAction {
     id: string;

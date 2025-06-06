@@ -5,7 +5,7 @@ import JsonArray from './JsonArray';
 import JsonNumber from './JsonNumber';
 import JsonString from './JsonString';
 import iJson from './iJson';
-import { JsTypes } from '@tdev-components/shared/JsTableViewer/toJsSchema';
+import { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
 
 export type JsonType = JsonObject | JsonString | JsonNumber | JsonArray;
 export type ParentType = JsonObject | JsonArray | JsonSchema;

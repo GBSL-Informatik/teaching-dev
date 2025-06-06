@@ -3,92 +3,72 @@ import _ from 'lodash';
 export type JsTypes = string | number | boolean | object | Function | bigint | Symbol | null | undefined;
 
 export type GenericValue = JsString | JsNumber | JsBoolean | JsNullish;
-export type JsParents = JsArray | JsObject | JsRoot;
-export type JsValue = GenericValue | JsParents | JsFunction;
-export type JsTypeName = JsValue['type'];
+export type JsValue = GenericValue | JsArray | JsObject | JsFunction;
 
-export type EditLevel = 'all' | 'value' | 'name' | 'none';
-interface JsValueBase {
-    editLevel?: EditLevel;
-}
-
-export interface JsString extends JsValueBase {
+interface JsString {
     type: 'string';
+    name?: string;
     value: string;
-    name?: string;
 }
-export interface JsNullish extends JsValueBase {
+interface JsNullish {
     type: 'nullish';
+    name?: string;
     value: null | undefined;
-    name?: string;
 }
-export interface JsFunction extends JsValueBase {
+export interface JsFunction {
     type: 'function';
+    name?: string;
     value: Function;
-    name?: string;
 }
-export interface JsNumber extends JsValueBase {
+interface JsNumber {
     type: 'number';
+    name?: string;
     value: number;
-    name?: string;
 }
-export interface JsBoolean extends JsValueBase {
+interface JsBoolean {
     type: 'boolean';
+    name?: string;
     value: boolean;
-    name?: string;
 }
-export interface JsObject extends JsValueBase {
+export interface JsObject {
     type: 'object';
-    value: JsValue[];
     name?: string;
+    value: JsValue[];
 }
-export interface JsArray extends JsValueBase {
+export interface JsArray {
     type: 'array';
-    value: JsValue[];
     name?: string;
-}
-export interface JsRoot extends JsValueBase {
-    type: 'root';
     value: JsValue[];
-    name?: string;
 }
 
-const sanitizedName = (value: JsValue): JsValue => {
-    if (value.name === undefined) {
-        delete value.name;
-    }
-    return value;
-};
 const transformValue = (value: JsTypes, key?: string): JsValue => {
     switch (typeof value) {
         case 'string':
-            return sanitizedName({ type: 'string', value, name: key }) as JsString;
+            return { type: 'string', name: key, value } as JsString;
         case 'function':
-            return sanitizedName({ type: 'function', value, name: key }) as JsFunction;
+            return { type: 'function', name: key, value } as JsFunction;
         case 'undefined':
-            return sanitizedName({ type: 'nullish', value: undefined, name: key }) as JsNullish;
+            return { type: 'nullish', name: key, value: undefined } as JsNullish;
         case 'bigint':
         case 'number':
-            return sanitizedName({ type: 'number', value: Number(value), name: key }) as JsNumber;
+            return { type: 'number', name: key, value: Number(value) } as JsNumber;
         case 'boolean':
-            return sanitizedName({ type: 'boolean', value, name: key }) as JsBoolean;
+            return { type: 'boolean', name: key, value } as JsBoolean;
         case 'object':
             if (value === null) {
-                return sanitizedName({ type: 'nullish', value: null, name: key }) as JsNullish;
+                return { type: 'nullish', name: key, value: null } as JsNullish;
             } else if (Array.isArray(value)) {
-                return sanitizedName({
+                return {
                     type: 'array',
-                    value: value.map((item) => transformValue(item)),
-                    name: key
-                }) as JsArray;
+                    name: key,
+                    value: sortValues(value.map((item) => transformValue(item)))
+                } as JsArray;
             } else {
-                return sanitizedName({
+                return {
                     type: 'object',
-                    value: sortValues(
-                        Object.entries(value).map(([key, value]) => transformValue(value, key))
-                    ),
-                    name: key
-                }) as JsObject;
+                    name: key,
+                    value: sortValues(Object.entries(value).map(([key, value]) => transformValue(value, key)))
+                } as JsObject;
             }
         default:
             throw new Error(`Unsupported response type for key ${key}`);
@@ -101,19 +81,17 @@ const SortPrecedence: { [key: string]: number } = {
     array: 2
 };
 
-type SortableType = { type: string; name?: string; pristineName?: string };
-
-export const sortValues = <T extends SortableType>(values: T[], by: keyof SortableType = 'name'): T[] => {
+const sortValues = (values: JsValue[]): JsValue[] => {
     return _.orderBy(
         values,
-        [(prop) => SortPrecedence[prop.type] ?? 3, (prop) => prop[by]?.toLowerCase()],
+        [(prop) => SortPrecedence[prop.type] ?? 3, (prop) => prop.name?.toLowerCase()],
         ['desc', 'asc']
     );
 };
 
 export const toJsSchema = (jsObject: Record<string, JsTypes> | JsTypes[]): JsValue[] => {
     if (Array.isArray(jsObject)) {
-        return jsObject.map((item) => transformValue(item));
+        return sortValues(jsObject.map((item) => transformValue(item)));
     } else {
         return sortValues(Object.entries(jsObject).map(([key, value]) => transformValue(value, key)));
     }

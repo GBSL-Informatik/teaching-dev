@@ -16,7 +16,7 @@ import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import JsTableViewer from '@tdev-components/shared/JsTableViewer';
+import JsObjectViewer from '@tdev-components/shared/JsObject/Viewer';
 
 interface Props {
     template: AiTemplateModel;
@@ -62,7 +62,7 @@ const AiTemplate = observer((props: Props) => {
                             {template.jsonSchema && (
                                 <Tabs className={clsx(styles.tabs)} lazy>
                                     <TabItem value="schema" label="Schema">
-                                        <JsTableViewer js={template.jsonSchema.serialized} />
+                                        <JsObjectViewer js={template.jsonSchema.serialized} />
                                     </TabItem>
                                     <TabItem value="json" label="JSON">
                                         <CodeBlock language="json" showLineNumbers title="JSON Schema">

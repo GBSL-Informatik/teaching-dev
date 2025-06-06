@@ -7,7 +7,7 @@ import Card from '@tdev-components/shared/Card';
 import Loader from '@tdev-components/Loader';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import WithTranslations, { Translation } from '@tdev-components/shared/WithTranslations';
-import JsTableViewer from '@tdev-components/shared/JsTableViewer';
+import JsObjectViewer from '@tdev-components/shared/JsObject/Viewer';
 
 interface Props {
     aiRequest: AiRequestModel;
@@ -35,7 +35,7 @@ const AiRequest = observer((props: Props) => {
                 <>
                     {aiRequest.response && (
                         <WithTranslations translations={props.translations}>
-                            <JsTableViewer js={aiRequest.response} />
+                            <JsObjectViewer js={aiRequest.response} />
                         </WithTranslations>
                     )}
                 </>
