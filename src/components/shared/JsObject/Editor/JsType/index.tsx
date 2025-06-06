@@ -13,9 +13,13 @@ import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import SelectInput from '@tdev-components/shared/SelectInput';
 import iJs from '../models/iJs';
 import { JsTypeName } from '../../toJsSchema';
+import shared from '../styles.module.scss';
+import ChangeType from '../Actions/ChangeType';
+import RemoveProp from '../Actions/RemoveProp';
 
 interface Props {
     js: iJs;
+    actions?: React.ReactNode;
     children?: React.ReactNode;
     className?: string;
 }
@@ -31,24 +35,11 @@ export const ColorMap: { [key in JsTypeName]: keyof typeof IfmColors } = {
     root: 'black'
 } as const;
 
-const AbbreviatedTypeMap: { [key: string]: JsTypeName } = {
-    obj: 'object',
-    arr: 'array',
-    str: 'string',
-    num: 'number',
-    boo: 'boolean',
-    nul: 'nullish',
-    fun: 'function'
-} as const;
-
 const JsType = observer((props: Props) => {
     const { js, children } = props;
     return (
-        <div
-            className={clsx(styles.jsType, props.className)}
-            style={{ ['--tdev-json-color' as any]: IfmColors[ColorMap[js.type]] }}
-        >
-            {js.name && (
+        <>
+            <div className={clsx(shared.name, styles.name)}>
                 <TextInput
                     value={js.name}
                     onChange={action((value) => {
@@ -58,33 +49,12 @@ const JsType = observer((props: Props) => {
                     placeholder={`Name`}
                     noAutoFocus
                 />
-            )}
-            <div className={clsx(styles.label)}>
-                <Confirm
-                    title={js.type}
-                    icon={mdiTrashCanOutline}
-                    onConfirm={action(() => {
-                        js.remove();
-                    })}
-                    size={SIZE_XS}
-                    color={ColorMap[js.type]}
-                    className={clsx(styles.remove)}
-                    buttonClassName={clsx(styles.removeButton)}
-                    confirmColor={'red'}
-                    confirmIcon={mdiTrashCanOutline}
-                />
-                <SelectInput
-                    options={['obj', 'arr', 'str', 'num', 'boo', 'nul']}
-                    labels={['Object', 'Array', 'String', 'Number', 'Boolean', 'Nullish']}
-                    value={js.type.slice(0, 3)}
-                    onChange={(val) => {
-                        js.changeType(AbbreviatedTypeMap[val as keyof typeof AbbreviatedTypeMap]);
-                    }}
-                    className={clsx(styles.typeSelect)}
-                />
+                {props.actions && <div className={clsx(styles.actions)}>{props.actions}</div>}
+                <ChangeType js={js} />
+                <RemoveProp js={js} />
             </div>
-            <div className={clsx(styles.children)}>{children}</div>
-        </div>
+            <div className={clsx(shared.value, styles.children)}>{children}</div>
+        </>
     );
 });
 

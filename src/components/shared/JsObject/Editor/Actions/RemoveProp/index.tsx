@@ -14,29 +14,16 @@ interface Props {
 
 const RemoveProp = observer((props: Props) => {
     const { js } = props;
-    if (js.isParent) {
-    }
     return (
         <div className={clsx(styles.changeType)}>
-            {js.isParent ? (
-                <Confirm
-                    size={SIZE_XS}
-                    icon={mdiCloseCircleOutline}
-                    color="red"
-                    onConfirm={() => {
-                        js.remove();
-                    }}
-                />
-            ) : (
-                <Button
-                    size={SIZE_XS}
-                    icon={mdiCloseCircleOutline}
-                    color="red"
-                    onClick={() => {
-                        js.remove();
-                    }}
-                />
-            )}
+            <Confirm
+                size={SIZE_XS}
+                icon={mdiCloseCircleOutline}
+                color="red"
+                onConfirm={() => {
+                    js.remove();
+                }}
+            />
         </div>
     );
 });

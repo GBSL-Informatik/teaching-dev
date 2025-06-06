@@ -21,17 +21,6 @@ class JsObject extends iParentable<JsObjectType> {
     setCollapsed(value: boolean) {
         this.collapsed = value;
     }
-
-    @action
-    createProperty(type: JsTypeName) {
-        const name = `${this.value.length + 1}`;
-        const newProperty = toModel({ type, name } as JsValue, this);
-        this._value.push(newProperty);
-        if (this.collapsed) {
-            this.setCollapsed(false);
-        }
-        return newProperty;
-    }
 }
 
 export default JsObject;

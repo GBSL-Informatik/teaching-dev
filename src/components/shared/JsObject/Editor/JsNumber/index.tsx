@@ -13,7 +13,7 @@ interface Props {
 const JsNumber = observer((props: Props) => {
     const { js } = props;
     return (
-        <JsType js={js} className={clsx(styles.jsonNumber)}>
+        <JsType js={js}>
             <TextInput
                 type="number"
                 value={`${js.value}`}
@@ -21,6 +21,7 @@ const JsNumber = observer((props: Props) => {
                     js.setValue(Number(value));
                 })}
                 step={0.01}
+                className={clsx(styles.jsNumber)}
                 noAutoFocus
             />
         </JsType>

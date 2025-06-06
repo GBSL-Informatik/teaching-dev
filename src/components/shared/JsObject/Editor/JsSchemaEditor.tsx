@@ -13,8 +13,8 @@ export interface Props {
 const JsSchemaEditor = observer((props: Props) => {
     return (
         <div className={clsx(styles.js, props.className)}>
-            {props.schema.map((js, idx) => (
-                <JsTypeSwitcher key={idx} js={js} />
+            {props.schema.map((js) => (
+                <JsTypeSwitcher key={js.id} js={js} />
             ))}
         </div>
     );

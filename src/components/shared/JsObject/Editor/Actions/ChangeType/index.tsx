@@ -9,6 +9,7 @@ import { ColorMap } from '../../JsType';
 import { action } from 'mobx';
 import { IconMap } from '../AddValue';
 import iJs from '../../models/iJs';
+import RemoveProp from '../RemoveProp';
 
 interface Props {
     js: iJs;
@@ -18,7 +19,15 @@ const ChangeType = observer((props: Props) => {
     const { js } = props;
     const [isOpen, setIsOpen] = React.useState(false);
     return (
-        <div className={clsx(styles.changeType, isOpen && styles.open)}>
+        <div className={clsx(styles.changeType)}>
+            <Button
+                size={SIZE_XS}
+                icon={IconMap[js.type]}
+                onClick={() => {
+                    setIsOpen(!isOpen);
+                }}
+                active
+            />
             {isOpen && (
                 <>
                     {(
@@ -32,7 +41,6 @@ const ChangeType = observer((props: Props) => {
                             color={ColorMap[type]}
                             icon={IconMap[type]}
                             iconSide="left"
-                            className={clsx(styles.changeTypeButton)}
                             onClick={action((e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -42,16 +50,6 @@ const ChangeType = observer((props: Props) => {
                     ))}
                 </>
             )}
-            <Button
-                size={SIZE_XS}
-                icon={IconMap[js.type]}
-                color={ColorMap[js.type]}
-                className={clsx(styles.changeTypeButton)}
-                onClick={() => {
-                    setIsOpen(!isOpen);
-                }}
-                active={isOpen}
-            />
         </div>
     );
 });

@@ -13,10 +13,20 @@ import iParentable from './iParentable';
 
 export type JsModelType = JsObject | JsString | JsNumber | JsArray | JsBoolean | JsNullish | JsFunction;
 
+const nextId = () => {
+    let id = 0;
+    return () => {
+        return `js-${id++}`;
+    };
+};
+
+const generateId = nextId();
+
 abstract class iJs<T extends JsValue = JsValue> {
     readonly parent: iParentable;
     abstract readonly type: JsTypeName;
     readonly _pristine: T;
+    readonly id = generateId();
     @observable accessor name: string | undefined;
 
     constructor(js: T, parent: iParentable) {
@@ -63,8 +73,6 @@ abstract class iJs<T extends JsValue = JsValue> {
             toModel({ type: type, value: val as any, name: this.name }, this.parent)
         );
     }
-
-    // abstract changeType(type: JsTypeName): void;
 }
 
 export default iJs;

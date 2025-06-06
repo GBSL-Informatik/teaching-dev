@@ -44,6 +44,15 @@ abstract class iParentable<T extends JsParents = JsParents> extends iJs<T> {
         this._value.remove(old as JsModelType);
         this._value.push(newProperty);
     }
+
+    @action
+    addValue(value: JsModelType, atIndex?: number) {
+        if (atIndex !== undefined && atIndex >= 0 && atIndex < this._value.length) {
+            this._value.splice(atIndex, 0, value);
+        } else {
+            this._value.push(value);
+        }
+    }
 }
 
 export default iParentable;

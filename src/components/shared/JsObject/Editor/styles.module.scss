@@ -1,3 +1,22 @@
+.js {
+    display: grid;
+    grid-template-columns: minmax(5em, 1fr) minmax(min-content, 5fr);
+    grid-template-rows: auto;
+    scrollbar-width: thin;
+    .value,
+    .name {
+        border: 0px solid black;
+        border-bottom-width: 1px;
+        &:nth-last-child(2),
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+    .name {
+        font-weight: bold;
+    }
+}
+
 .jsObjectEditor {
     overflow-x: auto;
     overflow-y: hidden;

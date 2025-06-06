@@ -37,13 +37,18 @@
             }
         }
     }
-    .nameInput {
-        font-weight: bold;
-    }
     .descriptionInput {
         margin: auto 0;
     }
     .children {
         line-height: normal;
+    }
+}
+
+.name {
+    .nameInput {
+        font-weight: bold;
+        font-size: 85%;
+        padding: 0.25em 0.5em;
     }
 }

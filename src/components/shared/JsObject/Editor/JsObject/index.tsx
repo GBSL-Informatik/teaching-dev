@@ -11,6 +11,7 @@ import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { default as JsObjectModel } from '../models/JsObject';
 import { JsTypeName } from '../../toJsSchema';
 import JsSchemaEditor from '../JsSchemaEditor';
+import AddValue from '../Actions/AddValue';
 
 interface Props {
     js: JsObjectModel;
@@ -27,21 +28,7 @@ const JsObject = observer((props: Props) => {
                     color="blue"
                     size={SIZE_XS}
                 />
-                {(['string', 'number', 'array', 'object', 'boolean', 'nullish'] as JsTypeName[]).map(
-                    (type) => (
-                        <Button
-                            key={type}
-                            text={type}
-                            size={SIZE_XS}
-                            color={ColorMap[type]}
-                            icon={mdiPlusCircleOutline}
-                            iconSide="left"
-                            onClick={action(() => {
-                                js.createProperty(type);
-                            })}
-                        />
-                    )
-                )}
+                <AddValue jsParent={js} />
             </div>
             {!js.collapsed && (
                 <div className={clsx(styles.children)}>
