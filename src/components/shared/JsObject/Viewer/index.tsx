@@ -20,9 +20,11 @@ const JsObjectViewer = observer((props: Props) => {
     }, [props.js]);
     return (
         <div className={clsx(styles.jsTableViewer, props.className)}>
+            <div className={clsx(styles.spacer)} />
             <CollapseAtContext.Provider value={props.collapseAt}>
                 <JsSchemaViewer schema={jsSchema} className={props.schemaViewerClassName} nestingLevel={1} />
             </CollapseAtContext.Provider>
+            <div className={clsx(styles.spacer)} />
         </div>
     );
 });
