@@ -15,23 +15,26 @@ import AddValue from '../Actions/AddValue';
 
 interface Props {
     js: JsObjectModel;
+    noName?: boolean;
 }
 
 const JsObject = observer((props: Props) => {
     const { js } = props;
     return (
-        <JsType js={props.js} className={clsx(styles.jsObject)}>
-            <div className={clsx('button-group', styles.actions)}>
+        <JsType js={js} noName={props.noName}>
+            <div className={clsx(styles.actions)}>
                 <Button
                     icon={js.collapsed ? mdiChevronRight : mdiChevronDown}
                     onClick={() => js.setCollapsed(!js.collapsed)}
-                    color="blue"
+                    color={js.collapsed ? 'gray' : 'blue'}
                     size={SIZE_XS}
+                    className={clsx(styles.collapse)}
+                    active={js.collapsed}
                 />
                 <AddValue jsParent={js} />
             </div>
             {!js.collapsed && (
-                <div className={clsx(styles.children)}>
+                <div className={clsx(styles.object, js.parent.isArray && styles.indentValues)}>
                     <JsSchemaEditor schema={js.value} />
                 </div>
             )}

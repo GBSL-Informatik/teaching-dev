@@ -7,6 +7,7 @@ import JsSchemaEditor from './JsSchemaEditor';
 import { toModel } from './models/toModel';
 import JsRoot from './models/JsRoot';
 import { reaction } from 'mobx';
+import AddValue from './Actions/AddValue';
 
 interface Props {
     className?: string;
@@ -20,7 +21,6 @@ const JsObjectEditor = observer((props: Props) => {
         const root = new JsRoot();
         const models = jsSchema.map((js) => toModel(js, root));
         root.setValues(models);
-        console.log('JsObjectEditor initialized');
         return root;
     });
 
@@ -36,10 +36,15 @@ const JsObjectEditor = observer((props: Props) => {
         );
     }, [jsRoot]);
 
+    console.log('JsObjectEditor', jsRoot.isArray);
+
     return (
         <div className={clsx(styles.jsObjectEditor, props.className)}>
             <div className={clsx(styles.spacer)} />
-            <JsSchemaEditor schema={jsRoot.value} />
+            <div>
+                <AddValue jsParent={jsRoot} className={clsx(styles.actions)} />
+                <JsSchemaEditor schema={jsRoot.value} noName={jsRoot.isArray} />
+            </div>
             <div className={clsx(styles.spacer)} />
         </div>
     );

@@ -26,6 +26,16 @@ class JsRoot extends iParentable<JsRootType> {
     }
 
     @computed
+    get isObject(): boolean {
+        return this._value.some((o) => o.name !== undefined);
+    }
+
+    @computed
+    get isArray(): boolean {
+        return !this.isObject;
+    }
+
+    @computed
     get jsObject(): Record<string, JsTypes> | JsTypes[] {
         const isObject = this._value.some((o) => o.name !== undefined);
         if (isObject) {

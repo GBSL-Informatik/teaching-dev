@@ -9,17 +9,18 @@ import Button from '@tdev-components/shared/Button';
 
 interface Props {
     js: JsNullishModel;
+    noName?: boolean;
 }
 const JsNullish = observer((props: Props) => {
     const { js } = props;
     return (
-        <JsType js={js} className={clsx(styles.jsonNullish)}>
+        <JsType js={js} noName={props.noName}>
             <Button
                 text={js.value === null ? 'Null' : 'Undefined'}
                 onClick={action(() => {
                     js.setValue(js.value === null ? undefined : null);
                 })}
-                className={clsx(styles.nullishButton)}
+                className={clsx(styles.nullish)}
                 color="gray"
                 active
             />

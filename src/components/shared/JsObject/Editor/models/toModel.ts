@@ -2,7 +2,7 @@ import JsArray from './JsArray';
 import JsNumber from './JsNumber';
 import _ from 'lodash';
 import { JsModelType } from './iJs';
-import { JsTypeName, JsTypes, JsValue } from '../../toJsSchema';
+import { JsValue } from '../../toJsSchema';
 import JsString from './JsString';
 import JsBoolean from './JsBoolean';
 import JsObject from './JsObject';

@@ -92,7 +92,11 @@ const TextAreaInput = observer((props: Props) => {
                     props.showTabButton && styles.showTabButton,
                     props.monospace && styles.monospace
                 )}
-                style={{ minHeight: props.minRows ? `${props.minRows * 1.2 + 1}em` : undefined }}
+                style={{
+                    minHeight: props.minRows
+                        ? `calc(${props.minRows * 1.1}em + var(--tdev-text-area-height-shift))`
+                        : undefined
+                }}
                 onChange={(e) => {
                     setText(e.target.value);
                     props.onChange(e.target.value);

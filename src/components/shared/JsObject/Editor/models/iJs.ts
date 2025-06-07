@@ -24,6 +24,7 @@ const generateId = nextId();
 
 abstract class iJs<T extends JsValue = JsValue> {
     readonly parent: iParentable;
+    readonly isParent: boolean = false;
     abstract readonly type: JsTypeName;
     readonly _pristine: T;
     readonly id = generateId();

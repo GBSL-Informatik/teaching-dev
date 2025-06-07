@@ -8,13 +8,14 @@ import { JsModelType } from './models/iJs';
 export interface Props {
     schema: JsModelType[];
     className?: string;
+    noName?: boolean;
 }
 
 const JsSchemaEditor = observer((props: Props) => {
     return (
-        <div className={clsx(styles.js, props.className)}>
+        <div className={clsx(styles.js, props.noName && styles.noName, props.className)}>
             {props.schema.map((js) => (
-                <JsTypeSwitcher key={js.id} js={js} />
+                <JsTypeSwitcher key={js.id} js={js} noName={props.noName} />
             ))}
         </div>
     );

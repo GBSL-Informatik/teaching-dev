@@ -73,7 +73,7 @@ const transformValue = (value: JsTypes, key?: string): JsValue => {
             } else if (Array.isArray(value)) {
                 return sanitizedName({
                     type: 'array',
-                    value: sortValues(value.map((item) => transformValue(item))),
+                    value: value.map((item) => transformValue(item)),
                     name: key
                 }) as JsArray;
             } else {
@@ -108,7 +108,7 @@ export const sortValues = <T extends SortableType>(values: T[], by: keyof Sortab
 
 export const toJsSchema = (jsObject: Record<string, JsTypes> | JsTypes[]): JsValue[] => {
     if (Array.isArray(jsObject)) {
-        return sortValues(jsObject.map((item) => transformValue(item)));
+        return jsObject.map((item) => transformValue(item));
     } else {
         return sortValues(Object.entries(jsObject).map(([key, value]) => transformValue(value, key)));
     }

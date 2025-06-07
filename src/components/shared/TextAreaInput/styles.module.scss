@@ -8,7 +8,7 @@
     border-radius: var(--ifm-global-radius);
     font-size: var(--ifm-font-size-base);
     box-shadow: var(--ifm-global-shadow-md);
-    min-height: 2.1em; /* Minimum height for single line */
+    min-height: calc(1.1em + var(--tdev-text-area-height-shift)); /* Minimum height for single line */
     line-height: normal; /* Ensure consistent line height */
     height: auto; /* Allow height to adjust based on content */
     &:focus {

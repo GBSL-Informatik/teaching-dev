@@ -3,10 +3,13 @@ import iJs, { JsModelType } from './iJs';
 import { toModel } from './toModel';
 import { JsParents, JsValue, sortValues } from '../../toJsSchema';
 import _ from 'lodash';
+import type JsRoot from './JsRoot';
 
 abstract class iParentable<T extends JsParents = JsParents> extends iJs<T> {
     abstract readonly type: T['type'];
+    readonly isParent = true;
     _value = observable.array<JsModelType>([], { deep: false });
+    @observable accessor collapsed: boolean = false;
 
     constructor(js: T, parent: iParentable) {
         super(js, parent);
@@ -15,7 +18,10 @@ abstract class iParentable<T extends JsParents = JsParents> extends iJs<T> {
 
     @computed
     get value(): JsModelType[] {
-        return sortValues(this._value, 'pristineName');
+        if (this.type === 'object' || (this.type === 'root' && (this as unknown as JsRoot).isObject)) {
+            return sortValues(this._value, 'pristineName');
+        }
+        return this._value;
     }
 
     @computed
@@ -52,6 +58,19 @@ abstract class iParentable<T extends JsParents = JsParents> extends iJs<T> {
         } else {
             this._value.push(value);
         }
+    }
+
+    @action
+    setCollapsed(value: boolean) {
+        this.collapsed = value;
+    }
+
+    @computed
+    get isArray(): boolean {
+        if (this.type === 'root') {
+            return (this as unknown as JsRoot).isArray;
+        }
+        return this.type === 'array';
     }
 }
 

@@ -9,21 +9,24 @@ import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 
 interface Props {
     js: JsStringModel;
+    noName?: boolean;
 }
 
 const JsString = observer((props: Props) => {
     const { js } = props;
     return (
-        <JsType js={props.js} className={clsx(styles.jsonString)}>
-            <TextAreaInput
-                defaultValue={js.value}
-                onChange={(value) => {
-                    js.setValue(value);
-                }}
-                placeholder="Text..."
-                className={styles.textArea}
-                noAutoFocus
-            />
+        <JsType js={js} noName={props.noName}>
+            <div className={clsx(styles.jsString)}>
+                <TextAreaInput
+                    defaultValue={js.value}
+                    onChange={(value) => {
+                        js.setValue(value);
+                    }}
+                    placeholder="Text..."
+                    className={clsx(styles.textArea, styles.string)}
+                    noAutoFocus
+                />
+            </div>
         </JsType>
     );
 });

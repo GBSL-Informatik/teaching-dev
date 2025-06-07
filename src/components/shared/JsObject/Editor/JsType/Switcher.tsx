@@ -12,6 +12,7 @@ import JsFunction from '../../Viewer/JsFunction';
 export interface Props {
     js: JsModelType;
     className?: string;
+    noName?: boolean;
 }
 
 const JsTypeSwitcher = observer((props: Props) => {

@@ -5,12 +5,7 @@ import { observer } from 'mobx-react-lite';
 import TextInput from '@tdev-components/shared/TextInput';
 import { action } from 'mobx';
 import _ from 'lodash';
-import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import { IfmColors } from '@tdev-components/shared/Colors';
-import { mdiTrashCanOutline } from '@mdi/js';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import SelectInput from '@tdev-components/shared/SelectInput';
 import iJs from '../models/iJs';
 import { JsTypeName } from '../../toJsSchema';
 import shared from '../styles.module.scss';
@@ -21,7 +16,7 @@ interface Props {
     js: iJs;
     actions?: React.ReactNode;
     children?: React.ReactNode;
-    className?: string;
+    noName?: boolean;
 }
 
 export const ColorMap: { [key in JsTypeName]: keyof typeof IfmColors } = {
@@ -39,21 +34,29 @@ const JsType = observer((props: Props) => {
     const { js, children } = props;
     return (
         <>
-            <div className={clsx(shared.name, styles.name)}>
-                <TextInput
-                    value={js.name}
-                    onChange={action((value) => {
-                        js.setName(value);
-                    })}
-                    className={clsx(styles.nameInput)}
-                    placeholder={`Name`}
-                    noAutoFocus
-                />
-                {props.actions && <div className={clsx(styles.actions)}>{props.actions}</div>}
-                <ChangeType js={js} />
-                <RemoveProp js={js} />
+            {!props.noName && (
+                <div className={clsx(shared.name, styles.name)}>
+                    <TextInput
+                        value={js.name}
+                        onChange={action((value) => {
+                            js.setName(value);
+                        })}
+                        className={clsx(styles.nameInput)}
+                        placeholder={`Name`}
+                        noAutoFocus
+                    />
+                    {props.actions && <div className={clsx(styles.actions)}>{props.actions}</div>}
+                </div>
+            )}
+            <div className={clsx(styles.value, styles[js.type])}>
+                <div className={clsx(styles.input)}>{children}</div>
+                <div className={clsx(styles.stickyActions)}>
+                    <div className={clsx(styles.actions)}>
+                        <ChangeType js={js} />
+                        <RemoveProp js={js} />
+                    </div>
+                </div>
             </div>
-            <div className={clsx(shared.value, styles.children)}>{children}</div>
         </>
     );
 });

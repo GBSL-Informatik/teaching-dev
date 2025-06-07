@@ -9,11 +9,12 @@ import { action } from 'mobx';
 
 interface Props {
     js: JsNumberModel;
+    noName?: boolean;
 }
 const JsNumber = observer((props: Props) => {
     const { js } = props;
     return (
-        <JsType js={js}>
+        <JsType js={js} noName={props.noName}>
             <TextInput
                 type="number"
                 value={`${js.value}`}
