@@ -50,20 +50,17 @@ const JsObjectEditor = observer((props: Props) => {
     });
 
     return (
-        <>
-            <div className={clsx(styles.jsObjectEditor, props.className)}>
-                <div className={clsx(styles.spacer)} />
-                <div>
-                    <div className={clsx(styles.header)}>
-                        <AddValue jsParent={jsRoot} className={clsx(styles.actions)} />
-                        <SaveButton onChange={props.onChange} jsRoot={jsRoot} />
-                    </div>
-                    <JsSchemaEditor schema={jsRoot} noName={jsRoot.isArray} />
+        <div className={clsx(styles.jsObjectEditor, props.className)}>
+            <div className={clsx(styles.spacer)} />
+            <div>
+                <div className={clsx(styles.header)}>
+                    <AddValue jsParent={jsRoot} className={clsx(styles.actions)} />
+                    <SaveButton onChange={props.onChange} jsRoot={jsRoot} />
                 </div>
-                <div className={clsx(styles.spacer)} />
+                <JsSchemaEditor schema={jsRoot} noName={jsRoot.isArray} />
             </div>
-            <CodeBlock language="json">{JSON.stringify(jsRoot.asJs, null, 2)}</CodeBlock>
-        </>
+            <div className={clsx(styles.spacer)} />
+        </div>
     );
 });
 
