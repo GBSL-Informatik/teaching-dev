@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import {
     mdiCircleEditOutline,
+    mdiClipboardOutline,
     mdiCloseCircleOutline,
     mdiContentSave,
     mdiDeleteOutline,
@@ -27,118 +28,141 @@ interface SignupTokenProps {
     token: SignupToken;
 }
 
+const UsesBadge = ({ token }: { token: SignupToken }) => {
+    return (
+        <>
+            {token.maxUses > 0 && (
+                <span
+                    className={clsx(
+                        'badge',
+                        token.uses >= token.maxUses ? 'badge--danger' : 'badge--primary'
+                    )}
+                >
+                    {token.uses} / {token.maxUses}
+                </span>
+            )}
+            {token.maxUses == 0 && <span className={clsx('badge', 'badge--secondary')}>{token.uses}</span>}
+        </>
+    );
+};
+
+const ValidityBadge = ({ token }: { token: SignupToken }) => {
+    return (
+        <span
+            className={clsx(
+                'badge',
+                token.validThrough
+                    ? new Date() > token.validThrough
+                        ? 'badge--danger'
+                        : 'badge--primary'
+                    : 'badge--secondary'
+            )}
+        >
+            {token.validThrough ? token.fValidThrough : 'Unbegrenzt'}
+        </span>
+    );
+};
+
 const SignupLink = observer(({ token }: SignupTokenProps) => {
+    return (
+        <div className={clsx(styles.signupLink)}>
+            <Button
+                icon={mdiClipboardOutline}
+                title="Registrierungslink kopieren"
+                color="blue"
+                onClick={() => {}}
+            />
+            <span className={clsx(styles.description)}>{token.description}</span>
+            <span>{token.method}</span>
+            <UsesBadge token={token} />
+            <ValidityBadge token={token} />
+            <div className={clsx(styles.editButtonContainer)}>
+                <Button
+                    onClick={() => {
+                        token.setEditing(true);
+                    }}
+                    icon={mdiCircleEditOutline}
+                    color="orange"
+                    title="Bearbeiten"
+                />
+            </div>
+        </div>
+    );
+});
+
+const EditSignupLink = observer(({ token }: SignupTokenProps) => {
     const signupTokenStore = useStore('signupTokenStore');
     const signupUrl = `${APP_URL || 'http://localhost:3000'}/signup`;
 
     return (
-        <div key={token.id} className={styles.signupLink}>
+        <div key={token.id} className={styles.editSignupLink}>
             <div className={clsx(styles.info)}>
                 <CopyBadge value={`${signupUrl}?token=${token.id}`} className={clsx(styles.linkBadge)} />
                 <DefinitionList>
                     <dt>Beschreibung</dt>
                     <dd>
-                        {token.isEditing ? (
-                            <textarea
-                                placeholder="Beschreibung..."
-                                value={token.description}
-                                className={clsx(styles.textarea)}
-                                onChange={(e) => {
-                                    token.setDescription(e.target.value);
-                                }}
-                                tabIndex={1}
-                            />
-                        ) : (
-                            token.description
-                        )}
+                        <textarea
+                            placeholder="Beschreibung..."
+                            value={token.description}
+                            className={clsx(styles.textarea)}
+                            onChange={(e) => {
+                                token.setDescription(e.target.value);
+                            }}
+                            tabIndex={1}
+                        />
                     </dd>
                     <dt>Verwendungen</dt>
                     <dd>
-                        {token.maxUses > 0 && (
-                            <span
-                                className={clsx(
-                                    'badge',
-                                    token.uses >= token.maxUses ? 'badge--danger' : 'badge--primary'
-                                )}
-                            >
-                                {token.uses} / {token.maxUses}
-                            </span>
-                        )}
-                        {token.maxUses == 0 && (
-                            <span className={clsx('badge', 'badge--secondary')}>{token.uses}</span>
-                        )}
+                        <UsesBadge token={token} />
                     </dd>
-                    {token.isEditing && (
-                        <>
-                            <dt>Max. Verwendungen</dt>
-                            <dd>
-                                <div className={clsx(styles.inputWithButton)}>
-                                    <input
-                                        type="number"
-                                        placeholder="Max. Verwendungen..."
-                                        value={token.maxUses}
-                                        min={0}
-                                        className={clsx(styles.numberInput)}
-                                        onChange={(e) => {
-                                            token.setMaxUses(parseInt(e.target.value, 10) || 0);
-                                        }}
-                                        autoFocus
-                                        tabIndex={2}
-                                        onFocus={(inp) => {
-                                            inp.target.select();
-                                        }}
-                                    />
-                                    <Button
-                                        icon={mdiInfinity}
-                                        color="black"
-                                        className={clsx(styles.button)}
-                                        onClick={() => token.setMaxUses(0)}
-                                    />
-                                </div>
-                            </dd>
-                        </>
-                    )}
+                    <dt>Max. Verwendungen</dt>
+                    <dd>
+                        <div className={clsx(styles.inputWithButton)}>
+                            <input
+                                type="number"
+                                placeholder="Max. Verwendungen..."
+                                value={token.maxUses}
+                                min={0}
+                                className={clsx(styles.numberInput)}
+                                onChange={(e) => {
+                                    token.setMaxUses(parseInt(e.target.value, 10) || 0);
+                                }}
+                                autoFocus
+                                tabIndex={2}
+                                onFocus={(inp) => {
+                                    inp.target.select();
+                                }}
+                            />
+                            <Button
+                                icon={mdiInfinity}
+                                color="black"
+                                className={clsx(styles.button)}
+                                onClick={() => token.setMaxUses(0)}
+                            />
+                        </div>
+                    </dd>
                     <dt>Methode</dt>
                     <dd>{token.method}</dd>
                     <dt>Gültig bis</dt>
                     <dd>
-                        {token.isEditing ? (
-                            <div className={clsx(styles.inputWithButton)}>
-                                <input
-                                    type="datetime-local"
-                                    value={
-                                        token.validThrough
-                                            ? token.validThrough.toISOString().slice(0, 16)
-                                            : ''
-                                    }
-                                    onChange={(e) =>
-                                        token.setValidThrough(
-                                            e.target.value ? new Date(e.target.value) : null
-                                        )
-                                    }
-                                    tabIndex={3}
-                                />
-                                <Button
-                                    icon={mdiInfinity}
-                                    color="black"
-                                    className={clsx(styles.button)}
-                                    onClick={() => token.setValidThrough(null)}
-                                />
-                            </div>
-                        ) : (
-                            <span
-                                className={clsx(
-                                    'badge',
-                                    token.validThrough
-                                        ? new Date() > token.validThrough
-                                            ? 'badge--danger'
-                                            : 'badge--primary'
-                                        : 'badge--secondary'
-                                )}
-                            >
-                                {token.validThrough ? token.fValidThrough : 'Unbegrenzt'}
-                            </span>
-                        )}
+                        <div className={clsx(styles.inputWithButton)}>
+                            <input
+                                type="datetime-local"
+                                value={
+                                    token.validThrough ? token.validThrough.toISOString().slice(0, 16) : ''
+                                }
+                                onChange={(e) =>
+                                    token.setValidThrough(e.target.value ? new Date(e.target.value) : null)
+                                }
+                                tabIndex={3}
+                            />
+                            <Button
+                                icon={mdiInfinity}
+                                color="black"
+                                className={clsx(styles.button)}
+                                onClick={() => token.setValidThrough(null)}
+                            />
+                        </div>
                     </dd>
                     <dt>Erstellt</dt>
                     <dd>{token.fCreatedAt}</dd>
@@ -178,48 +202,34 @@ const SignupLink = observer(({ token }: SignupTokenProps) => {
                 </DefinitionList>
             </div>
             <div className={styles.buttons}>
-                {!token.isEditing && (
-                    <Button
-                        onClick={() => {
-                            token.setEditing(true);
-                        }}
-                        icon={mdiCircleEditOutline}
-                        color="orange"
-                        title="Bearbeiten"
-                    />
-                )}
-                {token.isEditing && (
-                    <>
-                        <Button
-                            onClick={() => {
-                                token.reset();
-                                token.setEditing(false);
-                            }}
-                            icon={mdiCloseCircleOutline}
-                            color="black"
-                            title="Verwerfen"
-                        />
-                        <Button
-                            icon={mdiContentSave}
-                            color="green"
-                            title="Speichern"
-                            onClick={() => {
-                                token.save();
-                                token.setEditing(false);
-                            }}
-                        />
-                        <Confirm
-                            title="Signup Link löschen"
-                            confirmText="Löschen?"
-                            icon={mdiDeleteOutline}
-                            iconSide="left"
-                            color="danger"
-                            onConfirm={() => {
-                                signupTokenStore.destroy(token);
-                            }}
-                        />
-                    </>
-                )}
+                <Button
+                    onClick={() => {
+                        token.reset();
+                        token.setEditing(false);
+                    }}
+                    icon={mdiCloseCircleOutline}
+                    color="black"
+                    title="Verwerfen"
+                />
+                <Button
+                    icon={mdiContentSave}
+                    color="green"
+                    title="Speichern"
+                    onClick={() => {
+                        token.save();
+                        token.setEditing(false);
+                    }}
+                />
+                <Confirm
+                    title="Signup Link löschen"
+                    confirmText="Löschen?"
+                    icon={mdiDeleteOutline}
+                    iconSide="left"
+                    color="danger"
+                    onConfirm={() => {
+                        signupTokenStore.destroy(token);
+                    }}
+                />
             </div>
         </div>
     );
@@ -245,7 +255,10 @@ const SignupLinks = observer(() => {
             <div className={styles.signupLinks}>
                 {_.orderBy(signupTokenStore.signupTokens, ['createdAt', 'id'], ['desc', 'asc']).map(
                     (token) => (
-                        <SignupLink key={token.id} token={token} />
+                        <>
+                            {!token.isEditing && <SignupLink key={token.id} token={token} />}
+                            {token.isEditing && <EditSignupLink key={token.id} token={token} />}
+                        </>
                     )
                 )}
             </div>

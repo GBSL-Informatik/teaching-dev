@@ -4,12 +4,40 @@
     align-items: flex-start;
 
     .signupLinks {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.5em;
+        // display: flex;
+        // flex-direction: row;
+        // flex-wrap: wrap;
+        // gap: 0.5em;
+        width: 100%;
 
         .signupLink {
+            display: grid;
+            grid-template-columns: 1fr 15fr 1fr 1fr 1fr 1fr;
+            align-items: center;
+            justify-items: start;
+            border: 1px solid var(--ifm-color-gray-500);
+            border-radius: 1em;
+            padding: 1em 1.5em;
+            width: 100%;
+            margin-top: 1em;
+            box-shadow: var(--ifm-global-shadow-lw);
+
+            .description {
+                max-width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .editButtonContainer {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+        }
+
+        .editSignupLink {
             flex-basis: 40em;
 
             display: flex;
