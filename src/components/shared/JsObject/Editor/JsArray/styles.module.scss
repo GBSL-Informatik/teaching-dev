@@ -1,0 +1,28 @@
+.array {
+    // align-items: flex-start;
+    // flex-wrap: wrap;
+    &:has(:focus),
+    &:hover {
+        border-left: 2px dotted var(--ifm-color-info);
+        border-radius: var(--ifm-global-radius);
+        border-left-width: 2px;
+        margin-left: -2px;
+        &:has(:focus) {
+            border-left-style: solid;
+        }
+    }
+    .inArray {
+        flex-grow: 1;
+        flex-shrink: 1;
+    }
+    &.indentValues {
+        margin-left: var(--tdev-js-editor-indent-size);
+    }
+}
+.actions {
+    display: flex;
+    scrollbar-width: thin;
+    .collapse {
+        transform: translateY(15%);
+    }
+}

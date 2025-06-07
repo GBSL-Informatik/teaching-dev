@@ -13,11 +13,14 @@ interface Props {
     labelClassName?: string;
     value?: string;
     type?: HTMLInputTypeAttribute;
-    label?: string;
+    label?: React.ReactNode;
     noSpellCheck?: boolean;
     noAutoFocus?: boolean;
     required?: boolean;
     options?: string[];
+    step?: string | number | undefined;
+    min?: string | number | undefined;
+    max?: string | number | undefined;
 }
 
 const TextInput = observer((props: Props) => {
@@ -55,6 +58,9 @@ const TextInput = observer((props: Props) => {
                 autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
+                step={props.step}
+                min={props.min}
+                max={props.max}
             />
         </>
     );

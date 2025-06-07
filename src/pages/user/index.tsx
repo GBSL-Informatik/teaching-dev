@@ -209,7 +209,7 @@ const UserPage = observer(() => {
                                         disabled={userStore.users.length <= 1}
                                         placeholder={TEST_USER || 'DEFAULT_TEST_USER nicht definiert in .env'}
                                     />
-                                    {(sessionStore.account as any)?.username !== TEST_USER && (
+                                    {(sessionStore.account as any)?.username !== TEST_USER?.toLowerCase() && (
                                         <Button
                                             icon={mdiBackupRestore}
                                             color="primary"
