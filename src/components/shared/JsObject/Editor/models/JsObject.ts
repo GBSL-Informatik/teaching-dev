@@ -1,7 +1,6 @@
-import { action, computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import _ from 'lodash';
-import { toModel } from './toModel';
-import { JsObject as JsObjectType, JsParents, JsTypeName, JsValue } from '../../toJsSchema';
+import { JsObject as JsObjectType, JsParents, JsTypes } from '../../toJsSchema';
 import iParentable from './iParentable';
 
 class JsObject extends iParentable<JsObjectType> {
@@ -14,6 +13,17 @@ class JsObject extends iParentable<JsObjectType> {
     @computed
     get keys(): string[] {
         return [...new Set(this._value.filter((prop) => !!prop.name).map((prop) => prop.name!))].sort();
+    }
+
+    @computed
+    get asJs(): Record<string, JsTypes | JsTypes[]> {
+        const result: Record<string, JsTypes | JsTypes[]> = {};
+        this._value.forEach((prop) => {
+            if (prop.name) {
+                result[prop.name] = prop.asJs;
+            }
+        });
+        return result;
     }
 }
 

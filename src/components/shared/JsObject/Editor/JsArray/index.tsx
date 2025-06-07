@@ -6,7 +6,7 @@ import JsType from '../JsType';
 import { default as JsArrayModel } from '../models/JsArray';
 import JsTypeSwitcher from '../JsType/Switcher';
 import AddValue from '../Actions/AddValue';
-import JsSchemaEditor from '../JsSchemaEditor';
+import JsSchemaEditor from '../SchemaEditor';
 import Button from '@tdev-components/shared/Button';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';

@@ -4,13 +4,11 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import JsTypeSwitcher from '../JsType/Switcher';
 import iParentable from '../models/iParentable';
-import { CustomAction } from '..';
 
 export interface Props {
     schema: iParentable;
     className?: string;
     noName?: boolean;
-    actions?: CustomAction[];
 }
 
 const JsSchemaEditor = observer((props: Props) => {
@@ -18,7 +16,7 @@ const JsSchemaEditor = observer((props: Props) => {
     return (
         <div className={clsx(styles.js, props.noName && styles.noName, props.className)}>
             {schema.value.map((js) => (
-                <JsTypeSwitcher key={js.id} js={js} noName={props.noName} actions={props.actions} />
+                <JsTypeSwitcher key={js.id} js={js} noName={props.noName} />
             ))}
         </div>
     );

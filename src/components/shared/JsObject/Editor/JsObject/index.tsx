@@ -2,15 +2,12 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import JsType, { ColorMap } from '../JsType';
-import { action } from 'mobx';
-import JsObjectEditor from '..';
+import JsType from '../JsType';
 import Button from '@tdev-components/shared/Button';
-import { mdiChevronDown, mdiChevronRight, mdiPlusCircleOutline } from '@mdi/js';
+import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { default as JsObjectModel } from '../models/JsObject';
-import { JsTypeName } from '../../toJsSchema';
-import JsSchemaEditor from '../JsSchemaEditor';
+import JsSchemaEditor from '../SchemaEditor';
 import AddValue from '../Actions/AddValue';
 
 interface Props {
@@ -35,7 +32,7 @@ const JsObject = observer((props: Props) => {
             </div>
             {!js.collapsed && (
                 <div className={clsx(styles.object, js.parent.isArray && styles.indentValues)}>
-                    <JsSchemaEditor schema={js.value} />
+                    <JsSchemaEditor schema={js} />
                 </div>
             )}
         </JsType>

@@ -1,8 +1,21 @@
 .name {
+    position: relative;
+    font-weight: bold;
     .nameInput {
         font-weight: bold;
         font-size: 85%;
         padding: 0.25em 0.5em;
+    }
+    .dirtyIndicator {
+        position: absolute;
+        top: -2px;
+        right: 4px;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        color: var(--ifm-color-warning);
+        &.dirty {
+            opacity: 1;
+        }
     }
 }
 .value {

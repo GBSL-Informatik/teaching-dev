@@ -1,12 +1,13 @@
 import { action, computed, observable } from 'mobx';
-import iJs, { ParentType } from './iJs';
+import iJs from './iJs';
 import { JsNullish as JsNullishType } from '../../toJsSchema';
+import type iParentable from './iParentable';
 
 class JsNullish extends iJs {
     readonly type = 'nullish';
     @observable accessor value: null | undefined;
 
-    constructor(js: JsNullishType, parent: ParentType) {
+    constructor(js: JsNullishType, parent: iParentable) {
         super(js, parent);
         this.value = js.value;
     }
@@ -26,6 +27,11 @@ class JsNullish extends iJs {
             js.name = this.name;
         }
         return js;
+    }
+
+    @computed
+    get asJs(): null | undefined {
+        return this.value;
     }
 }
 

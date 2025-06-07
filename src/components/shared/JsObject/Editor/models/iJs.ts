@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { JsParents, JsValue, type JsTypeName } from '../../toJsSchema';
+import { JsParents, JsTypes, JsValue, type JsTypeName } from '../../toJsSchema';
 import JsNumber from './JsNumber';
 import JsBoolean from './JsBoolean';
 import JsString from './JsString';
@@ -59,6 +59,7 @@ abstract class iJs<T extends JsValue = JsValue> {
     }
 
     abstract get serialized(): T;
+    abstract get asJs(): JsTypes | JsTypes[];
 
     @action
     changeType(type: JsTypeName): void {

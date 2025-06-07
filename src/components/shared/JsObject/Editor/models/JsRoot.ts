@@ -1,13 +1,21 @@
 import { action, computed } from 'mobx';
 import iJs, { JsModelType } from './iJs';
-import { JsTypes, JsRoot as JsRootType } from '../../toJsSchema';
+import { JsTypes, JsRoot as JsRootType, toJsSchema } from '../../toJsSchema';
 import iParentable from './iParentable';
+import { toModel } from './toModel';
 
 class JsRoot extends iParentable<JsRootType> {
     readonly type = 'root';
 
     constructor() {
         super({ type: 'root', value: [] }, null as any);
+    }
+
+    @action
+    buildFromJs(js: Record<string, JsTypes> | JsTypes[]) {
+        const jsSchema = toJsSchema(js);
+        const models = jsSchema.map((js) => toModel(js, this));
+        this.setValues(models);
     }
 
     @action
@@ -36,7 +44,7 @@ class JsRoot extends iParentable<JsRootType> {
     }
 
     @computed
-    get jsObject(): Record<string, JsTypes> | JsTypes[] {
+    get jsSchema(): Record<string, JsTypes> | JsTypes[] {
         const isObject = this._value.some((o) => o.name !== undefined);
         if (isObject) {
             return this._value.reduce(
@@ -51,6 +59,28 @@ class JsRoot extends iParentable<JsRootType> {
             );
         }
         return this._value.map((model) => model.serialized);
+    }
+
+    @computed
+    get asJs(): Record<string, JsTypes> | JsTypes[] {
+        if (this.isArray) {
+            return this._value.map((model) => model.asJs);
+        }
+        return this.value.reduce(
+            (acc, model) => {
+                if (!model.name) {
+                    return acc;
+                }
+                acc[model.name] = model.asJs;
+                return acc;
+            },
+            {} as Record<string, JsTypes>
+        );
+    }
+
+    @action
+    save() {
+        this.buildFromJs(this.asJs);
     }
 }
 

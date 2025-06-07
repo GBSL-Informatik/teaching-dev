@@ -1,14 +1,13 @@
 import { action, computed, observable } from 'mobx';
-import iJs, { JsModelType, ParentType } from './iJs';
-import JsArray from './JsArray';
-import JsObject from './JsObject';
+import iJs from './iJs';
 import { JsBoolean as JsBooleanType } from '../../toJsSchema';
+import type iParentable from './iParentable';
 
 class JsBoolean extends iJs {
     readonly type = 'boolean';
     @observable accessor value: boolean;
 
-    constructor(js: JsBooleanType, parent: ParentType) {
+    constructor(js: JsBooleanType, parent: iParentable) {
         super(js, parent);
         this.value = js.value;
     }
@@ -28,6 +27,11 @@ class JsBoolean extends iJs {
             js.name = this.name;
         }
         return js;
+    }
+
+    @computed
+    get asJs(): boolean {
+        return this.value;
     }
 }
 

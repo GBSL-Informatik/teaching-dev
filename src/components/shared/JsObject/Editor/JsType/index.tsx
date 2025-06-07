@@ -8,13 +8,11 @@ import _ from 'lodash';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import iJs from '../models/iJs';
 import { JsTypeName } from '../../toJsSchema';
-import shared from '../styles.module.scss';
 import ChangeType from '../Actions/ChangeType';
 import RemoveProp from '../Actions/RemoveProp';
 
 interface Props {
     js: iJs;
-    actions?: React.ReactNode;
     children?: React.ReactNode;
     noName?: boolean;
 }
@@ -35,7 +33,7 @@ const JsType = observer((props: Props) => {
     return (
         <>
             {!props.noName && (
-                <div className={clsx(shared.name, styles.name)}>
+                <div className={clsx(styles.name)}>
                     <TextInput
                         value={js.name}
                         onChange={action((value) => {
@@ -45,7 +43,7 @@ const JsType = observer((props: Props) => {
                         placeholder={`Name`}
                         noAutoFocus
                     />
-                    {props.actions && <div className={clsx(styles.actions)}>{props.actions}</div>}
+                    <div className={clsx(styles.dirtyIndicator, js.isDirty && styles.dirty)}>*</div>
                 </div>
             )}
             <div className={clsx(styles.value, styles[js.type])}>
