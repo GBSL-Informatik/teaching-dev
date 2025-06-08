@@ -31,6 +31,8 @@
         right: 0;
         .actions {
             position: absolute;
+            background: var(--ifm-background-surface-color);
+            border-radius: var(--ifm-global-radius);
             display: flex;
             align-items: center;
             right: 0;

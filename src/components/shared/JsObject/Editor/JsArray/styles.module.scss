@@ -5,7 +5,6 @@
     &:hover {
         border-left: 2px dotted var(--ifm-color-info);
         border-radius: var(--ifm-global-radius);
-        border-left-width: 2px;
         margin-left: -2px;
         &:has(:focus) {
             border-left-style: solid;
@@ -14,9 +13,16 @@
     .inArray {
         flex-grow: 1;
         flex-shrink: 1;
+        &:last-child {
+            padding-bottom: 8px;
+        }
     }
     &.indentValues {
         margin-left: var(--tdev-js-editor-indent-size);
+        &:has(:focus),
+        &:hover {
+            margin-left: calc(var(--tdev-js-editor-indent-size) - 2px);
+        }
     }
 }
 .actions {

@@ -17,5 +17,9 @@
     }
     &.indentValues {
         margin-left: var(--tdev-js-editor-indent-size);
+        &:has(:focus),
+        &:hover {
+            margin-left: calc(var(--tdev-js-editor-indent-size) - 2px);
+        }
     }
 }
