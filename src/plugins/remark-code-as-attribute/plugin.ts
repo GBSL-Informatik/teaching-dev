@@ -19,6 +19,10 @@ export interface PluginOptions {
     components: ComponentConfig[];
 }
 
+/**
+ * This plugin transforms inline code and code blocks in MDX files to use
+ * custom MDX components by converting the code content into attributes.
+ */
 const plugin: Plugin<PluginOptions[], Root> = function plugin(
     options = { components: [] }
 ): Transformer<Root> {
