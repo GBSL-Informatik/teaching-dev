@@ -3,10 +3,12 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import CodeBlock from '@theme/CodeBlock';
 import { templateReplacer } from '../templateReplacer';
-import { extractCodeBlockProps } from '@tdev/theme/CodeBlock/extractCodeBlockProps';
+import { CodeAttributes } from '@tdev-plugins/remark-code-as-attribute/plugin';
 
 interface Props {
-    children: React.ReactNode;
+    children?: React.ReactNode;
+    code?: string;
+    codeAttributes?: CodeAttributes;
 }
 
 const TemplateCode = observer((props: Props) => {
@@ -15,19 +17,10 @@ const TemplateCode = observer((props: Props) => {
     if (!current) {
         return null;
     }
-    const childProps = extractCodeBlockProps(props.children);
-    if (!childProps) {
-        return <>{props.children}</>;
-    }
-    if (typeof childProps.children !== 'string') {
-        return <CodeBlock {...childProps} />;
-    }
-
-    const code = templateReplacer(childProps.children, pageStore.current?.dynamicValues);
-    const metastring = templateReplacer(childProps.metastring, pageStore.current?.dynamicValues);
-
+    const code = templateReplacer(props.code, pageStore.current?.dynamicValues);
+    const metastring = templateReplacer(props.codeAttributes?.meta, pageStore.current?.dynamicValues);
     return (
-        <CodeBlock {...childProps} metastring={metastring}>
+        <CodeBlock language={props.codeAttributes?.lang} metastring={metastring}>
             {code}
         </CodeBlock>
     );
