@@ -30,7 +30,6 @@ export const deflistPluginConfig = [
 
 export const codeAsAttributePluginConfig = [
     codeAsAttributePlugin,
-
     {
         components: [
             {
