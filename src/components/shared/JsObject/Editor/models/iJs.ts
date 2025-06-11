@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { JsParents, JsTypes, JsValue, type JsTypeName } from '../../toJsSchema';
+import { EditLevel, JsParents, JsTypes, JsValue, type JsTypeName } from '../../toJsSchema';
 import JsNumber from './JsNumber';
 import JsBoolean from './JsBoolean';
 import JsString from './JsString';
@@ -25,13 +25,16 @@ const generateId = nextId();
 abstract class iJs<T extends JsValue = JsValue> {
     readonly parent: iParentable;
     readonly isParent: boolean = false;
+    readonly editLevel: EditLevel;
     abstract readonly type: JsTypeName;
     readonly _pristine: T;
     readonly id = generateId();
     @observable accessor name: string | undefined;
 
     constructor(js: T, parent: iParentable) {
+        this.editLevel = js.editLevel ?? 'all';
         this._pristine = js;
+        delete this._pristine.editLevel; // Remove editLevel from pristine object
         this.name = js.name;
         this.parent = parent;
     }
@@ -39,6 +42,16 @@ abstract class iJs<T extends JsValue = JsValue> {
     @computed
     get pristineName(): string | undefined {
         return this._pristine.name;
+    }
+
+    @computed
+    get canEditName(): boolean {
+        return this.editLevel === 'all' || this.editLevel === 'name';
+    }
+
+    @computed
+    get canEditValue(): boolean {
+        return this.editLevel === 'all' || this.editLevel === 'value';
     }
 
     @action

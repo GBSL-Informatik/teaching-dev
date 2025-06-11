@@ -1,7 +1,6 @@
 import api from './base';
 import { AxiosPromise } from 'axios';
 import { DocumentType } from './document';
-import { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
 
 export interface AllowedAction {
     id: string;
@@ -24,61 +23,17 @@ export function allowedActions(signal: AbortSignal): AxiosPromise<AllowedAction[
     return api.get(`/admin/allowedActions`, { signal });
 }
 
-export interface JsonString {
-    type: 'string';
-    description?: string;
-}
-
-export interface JsonNumber {
-    type: 'number';
-    description?: string;
-    minimum?: number;
-    maximum?: number;
-}
-
-export interface JsonArray {
-    type: 'array';
-    items: JsonSchemaType;
-    description?: string;
-    minItems?: number;
-    maxItems?: number;
-}
-
-export interface JsonObject {
-    type: 'object';
-    required: Readonly<Array<keyof this['properties']>>;
-    additionalProperties: boolean;
-    description?: string;
-    properties: {
-        [key: string]: JsonSchemaType;
-    };
-}
-
-export type JsonValueType = JsonString | JsonNumber | JsonArray;
-export type JsonSchemaType = JsonValueType | JsonObject;
-
-export interface JsonSchema {
-    name: string;
-    schema: JsonObject;
-    strict: boolean;
-    description?: string;
-}
-
 export interface AiTemplate {
     id: string;
     rateLimit: number;
     rateLimitPeriodMs: number;
     isActive: boolean;
+    authorId: string;
 
-    model: string;
     apiKey: string;
     apiUrl: string;
 
-    temperature: number;
-    maxTokens: number;
-    topP: number;
-    systemMessage?: string;
-    jsonSchema?: JsonSchema | null;
+    config: Record<string, any>;
 
     createdAt: string;
     updatedAt: string;

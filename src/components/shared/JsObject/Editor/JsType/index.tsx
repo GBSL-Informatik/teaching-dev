@@ -41,6 +41,7 @@ const JsType = observer((props: Props) => {
                         })}
                         className={clsx(styles.nameInput)}
                         placeholder={`Name`}
+                        readOnly={!js.canEditName}
                         noAutoFocus
                     />
                     <div className={clsx(styles.dirtyIndicator, js.isDirty && styles.dirty)}>*</div>

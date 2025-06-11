@@ -19,15 +19,22 @@ const AiTemplates = observer((props: Props) => {
                 text="Neues Ai Template erstellen"
                 onClick={() => {
                     aiStore.createTemplate({
-                        model: 'gpt-4.1',
                         apiKey: '',
                         apiUrl: 'https://api.openai.com/v1',
+                        config: {
+                            model: 'gpt-4.1',
+                            temperature: 0.7,
+                            maxTokens: 2048,
+                            topP: 0.85,
+                            systemMessage: '',
+                            text: {
+                                name: 'Response Schema',
+                                schema: {},
+                                strict: true
+                            }
+                        },
                         rateLimit: 10,
-                        rateLimitPeriodMs: 1000 * 60 * 60 * 24 * 30,
-                        temperature: 0.7,
-                        maxTokens: 2048,
-                        topP: 0.85,
-                        systemMessage: ''
+                        rateLimitPeriodMs: 1000 * 60 * 60 * 24 * 30
                     });
                 }}
             />

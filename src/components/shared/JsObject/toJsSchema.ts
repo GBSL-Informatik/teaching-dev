@@ -7,42 +7,47 @@ export type JsParents = JsArray | JsObject | JsRoot;
 export type JsValue = GenericValue | JsParents | JsFunction;
 export type JsTypeName = JsValue['type'];
 
-export interface JsString {
+export type EditLevel = 'all' | 'value' | 'name' | 'none';
+interface JsValueBase {
+    editLevel?: EditLevel;
+}
+
+export interface JsString extends JsValueBase {
     type: 'string';
     value: string;
     name?: string;
 }
-export interface JsNullish {
+export interface JsNullish extends JsValueBase {
     type: 'nullish';
     value: null | undefined;
     name?: string;
 }
-export interface JsFunction {
+export interface JsFunction extends JsValueBase {
     type: 'function';
     value: Function;
     name?: string;
 }
-export interface JsNumber {
+export interface JsNumber extends JsValueBase {
     type: 'number';
     value: number;
     name?: string;
 }
-export interface JsBoolean {
+export interface JsBoolean extends JsValueBase {
     type: 'boolean';
     value: boolean;
     name?: string;
 }
-export interface JsObject {
+export interface JsObject extends JsValueBase {
     type: 'object';
     value: JsValue[];
     name?: string;
 }
-export interface JsArray {
+export interface JsArray extends JsValueBase {
     type: 'array';
     value: JsValue[];
     name?: string;
 }
-export interface JsRoot {
+export interface JsRoot extends JsValueBase {
     type: 'root';
     value: JsValue[];
     name?: string;

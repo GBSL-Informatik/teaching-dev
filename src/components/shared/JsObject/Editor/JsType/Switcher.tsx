@@ -8,11 +8,13 @@ import JsNumber from '../JsNumber';
 import JsBoolean from '../JsBoolean';
 import JsNullish from '../JsNullish';
 import JsFunction from '../../Viewer/JsFunction';
+import { CustomAction } from '..';
 
 export interface Props {
     js: JsModelType;
     className?: string;
     noName?: boolean;
+    actions?: CustomAction[];
 }
 
 const JsTypeSwitcher = observer((props: Props) => {

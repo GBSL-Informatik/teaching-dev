@@ -21,22 +21,22 @@ export class AiStore extends iStore<`update-${string}` | `fetch-${string}`> {
     }
 
     findRequest = computedFn(
-        function <T>(this: AiStore, id?: string): AiRequest<T> | undefined {
+        function <T>(this: AiStore, id?: string): AiRequest | undefined {
             if (!id) {
                 return;
             }
-            return this.aiRequests.find((d) => d.id === id) as AiRequest<T> | undefined;
+            return this.aiRequests.find((d) => d.id === id) as AiRequest | undefined;
         },
         { keepAlive: true }
     );
 
     byTemplateId = computedFn(
-        function <T>(this: AiStore, templateId?: string): AiRequest<T>[] {
+        function <T>(this: AiStore, templateId?: string): AiRequest[] {
             if (!templateId) {
                 return [];
             }
             return _.orderBy(
-                this.aiRequests.filter((d) => d.aiTemplateId === templateId) as AiRequest<T>[],
+                this.aiRequests.filter((d) => d.aiTemplateId === templateId) as AiRequest[],
                 ['createdAt'],
                 ['desc']
             );

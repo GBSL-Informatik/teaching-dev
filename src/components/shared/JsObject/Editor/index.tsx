@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { JsTypes, toJsSchema } from '../toJsSchema';
+import { EditLevel, JsTypes, toJsSchema } from '../toJsSchema';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import JsSchemaEditor from './SchemaEditor';
@@ -11,27 +11,27 @@ import AddValue from './Actions/AddValue';
 import Button from '@tdev-components/shared/Button';
 import { mdiContentSave } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import CodeBlock from '@theme/CodeBlock';
+import _ from 'lodash';
+import iParentable from './models/iParentable';
+
+export type CustomAction = (js: iParentable, className: string, key: string | number) => React.ReactNode;
 
 interface Props {
     className?: string;
     js: Record<string, JsTypes> | JsTypes[];
-    onChange?: (js: Record<string, JsTypes> | JsTypes[]) => void;
+    onSave?: (js: Record<string, JsTypes> | JsTypes[]) => void;
+    onUpdate?: (js: Record<string, JsTypes> | JsTypes[]) => void;
+    actions?: CustomAction[];
+    editLevel?: EditLevel;
 }
 
 const SaveButton = observer(
-    ({
-        onChange,
-        jsRoot
-    }: {
-        onChange?: (js: Record<string, JsTypes> | JsTypes[]) => void;
-        jsRoot: JsRoot;
-    }) => (
+    ({ onSave, jsRoot }: { onSave: (js: Record<string, JsTypes> | JsTypes[]) => void; jsRoot: JsRoot }) => (
         <Button
             color="green"
             onClick={() => {
                 jsRoot.save();
-                onChange?.(jsRoot.asJs);
+                onSave(jsRoot.asJs);
             }}
             size={SIZE_S}
             icon={mdiContentSave}
@@ -44,20 +44,32 @@ const SaveButton = observer(
 
 const JsObjectEditor = observer((props: Props) => {
     const jsRoot = useLocalObservable(() => {
-        const root = new JsRoot();
+        const root = new JsRoot(props.editLevel);
         root.buildFromJs(props.js);
         return root;
     });
+
+    React.useEffect(() => {
+        const { onUpdate } = props;
+        if (onUpdate) {
+            return reaction(
+                () => jsRoot.asJs,
+                (js) => {
+                    onUpdate(js);
+                }
+            );
+        }
+    }, [jsRoot]);
 
     return (
         <div className={clsx(styles.jsObjectEditor, props.className)}>
             <div className={clsx(styles.spacer)} />
             <div>
                 <div className={clsx(styles.header)}>
-                    <AddValue jsParent={jsRoot} className={clsx(styles.actions)} />
-                    <SaveButton onChange={props.onChange} jsRoot={jsRoot} />
+                    <AddValue jsParent={jsRoot} actions={props.actions} className={clsx(styles.actions)} />
+                    {props.onSave && <SaveButton onSave={props.onSave} jsRoot={jsRoot} />}
                 </div>
-                <JsSchemaEditor schema={jsRoot} noName={jsRoot.isArray} />
+                <JsSchemaEditor schema={jsRoot} noName={jsRoot.isArray} actions={props.actions} />
             </div>
             <div className={clsx(styles.spacer)} />
         </div>

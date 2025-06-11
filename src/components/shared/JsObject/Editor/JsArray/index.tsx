@@ -10,10 +10,12 @@ import JsSchemaEditor from '../SchemaEditor';
 import Button from '@tdev-components/shared/Button';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { CustomAction } from '..';
 
 interface Props {
     js: JsArrayModel;
     noName?: boolean;
+    actions?: CustomAction[];
 }
 
 const JsArray = observer((props: Props) => {
@@ -29,14 +31,14 @@ const JsArray = observer((props: Props) => {
                     className={clsx(styles.collapse)}
                     active={js.collapsed}
                 />
-                <AddValue jsParent={js} />
+                <AddValue jsParent={js} actions={props.actions} />
             </div>
             {!js.collapsed && (
                 <div className={clsx(styles.array, js.parent.type === 'array' && styles.indentValues)}>
                     {js.value.map((js) => {
                         return (
                             <div className={clsx(styles.inArray, styles[js.type])} key={js.id}>
-                                <JsTypeSwitcher js={js} noName />
+                                <JsTypeSwitcher js={js} actions={props.actions} noName />
                             </div>
                         );
                     })}

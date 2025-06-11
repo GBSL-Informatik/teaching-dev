@@ -20,10 +20,12 @@ import { ColorMap } from '../../JsType';
 import { action } from 'mobx';
 import { toModel } from '../../models/toModel';
 import Icon from '@mdi/react';
+import { CustomAction } from '../..';
 
 interface Props {
     jsParent: iParentable;
     className?: string;
+    actions?: CustomAction[];
 }
 
 export const IconMap: Record<JsValue['type'], string> = {
@@ -60,6 +62,8 @@ const AddValue = observer((props: Props) => {
                 />
             </div>
             <div className={clsx(styles.addValue)}>
+                {props.actions &&
+                    props.actions.map((cAction, idx) => cAction(props.jsParent, styles.addValueButton, idx))}
                 {(['string', 'number', 'array', 'object', 'boolean', 'nullish'] as JsTypeName[]).map(
                     (type) => (
                         <Button

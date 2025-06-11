@@ -9,10 +9,12 @@ import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { default as JsObjectModel } from '../models/JsObject';
 import JsSchemaEditor from '../SchemaEditor';
 import AddValue from '../Actions/AddValue';
+import { CustomAction } from '..';
 
 interface Props {
     js: JsObjectModel;
     noName?: boolean;
+    actions?: CustomAction[];
 }
 
 const JsObject = observer((props: Props) => {
@@ -28,11 +30,11 @@ const JsObject = observer((props: Props) => {
                     className={clsx(styles.collapse)}
                     active={js.collapsed}
                 />
-                <AddValue jsParent={js} />
+                <AddValue jsParent={js} actions={props.actions} />
             </div>
             {!js.collapsed && (
                 <div className={clsx(styles.object, js.parent.isArray && styles.indentValues)}>
-                    <JsSchemaEditor schema={js} />
+                    <JsSchemaEditor schema={js} actions={props.actions} />
                 </div>
             )}
         </JsType>

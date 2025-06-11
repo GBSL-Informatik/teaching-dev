@@ -1,19 +1,24 @@
 import { action, computed } from 'mobx';
 import iJs, { JsModelType } from './iJs';
-import { JsTypes, JsRoot as JsRootType, toJsSchema } from '../../toJsSchema';
+import { JsTypes, JsRoot as JsRootType, toJsSchema, EditLevel } from '../../toJsSchema';
 import iParentable from './iParentable';
 import { toModel } from './toModel';
 
 class JsRoot extends iParentable<JsRootType> {
     readonly type = 'root';
 
-    constructor() {
-        super({ type: 'root', value: [] }, null as any);
+    constructor(editLevel?: EditLevel) {
+        super({ type: 'root', value: [], editLevel: editLevel }, null as any);
     }
 
     @action
     buildFromJs(js: Record<string, JsTypes> | JsTypes[]) {
         const jsSchema = toJsSchema(js);
+        if (this.editLevel !== 'all') {
+            jsSchema.forEach((prop) => {
+                prop.editLevel = this.editLevel;
+            });
+        }
         const models = jsSchema.map((js) => toModel(js, this));
         this.setValues(models);
     }
