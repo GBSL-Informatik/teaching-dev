@@ -5,7 +5,7 @@ import { computedFn } from 'mobx-utils';
 import iStore from '@tdev-stores/iStore';
 import AiRequest from '@tdev-models/Ai/AiRequest';
 import AiTemplate from '@tdev-models/Ai/AiTemplate';
-import { AiTemplate as AiTemplateProps } from '@tdev-api/admin';
+import { AiTemplate as AiTemplateProps, cloneAiTemplate } from '@tdev-api/admin';
 import { createAiRequest, allAiRequests, AiRequest as ApiAiRequest } from '@tdev-api/aiRequest';
 import { createAiTemplate, updateAiTemplate, deleteAiTemplate, getAllAiTemplates } from '@tdev-api/admin';
 
@@ -68,6 +68,19 @@ export class AiStore extends iStore<`update-${string}` | `fetch-${string}`> {
                     const newTemplate = new AiTemplate(res.data, this);
                     this.aiTemplates.push(newTemplate);
                     return newTemplate;
+                })
+            );
+        });
+    }
+
+    @action
+    duplicateTemplate(template: AiTemplate): Promise<AiTemplate> {
+        return this.withAbortController(`create-clone-${template.id}`, async (ct) => {
+            return cloneAiTemplate(template.id, ct.signal).then(
+                action((res) => {
+                    const clonedTemplate = new AiTemplate(res.data, this);
+                    this.aiTemplates.push(clonedTemplate);
+                    return clonedTemplate;
                 })
             );
         });

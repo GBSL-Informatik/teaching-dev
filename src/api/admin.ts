@@ -45,6 +45,9 @@ export function createAiTemplate(
 ): AxiosPromise<AiTemplate> {
     return api.post('/admin/aiTemplates', data, { signal });
 }
+export function cloneAiTemplate(id: string, signal: AbortSignal): AxiosPromise<AiTemplate> {
+    return api.post(`/admin/aiTemplates/${id}/clone`, {}, { signal });
+}
 
 export function updateAiTemplate(
     id: string,

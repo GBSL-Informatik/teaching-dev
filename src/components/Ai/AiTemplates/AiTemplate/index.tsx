@@ -9,9 +9,9 @@ import Button from '@tdev-components/shared/Button';
 import DefinitionList from '@tdev-components/DefinitionList';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import Edit from './Edit';
-import { mdiFileEdit, mdiTrashCan } from '@mdi/js';
+import { mdiContentCopy, mdiFileEdit, mdiTrashCan } from '@mdi/js';
 import AiPrompt from '@tdev-components/Ai/AiRequest/Prompt';
-import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import { SIZE_M, SIZE_S } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import JsObjectViewer from '@tdev-components/shared/JsObject/Viewer';
 
@@ -24,7 +24,22 @@ const AiTemplate = observer((props: Props) => {
     const aiStore = useStore('aiStore');
     const { template, className } = props;
     return (
-        <Card classNames={{ card: clsx(styles.aiTemplate, className) }}>
+        <Card
+            classNames={{ card: clsx(styles.aiTemplate, className) }}
+            header={
+                <>
+                    <h2>{template._pristine.config?.text?.format?.name || template.id}</h2>
+                    <Button
+                        icon={mdiContentCopy}
+                        size={SIZE_S}
+                        text="Duplizieren"
+                        color="primary"
+                        onClick={() => aiStore.duplicateTemplate(template)}
+                        iconSide="left"
+                    />
+                </>
+            }
+        >
             {template.isEditing ? (
                 <Edit template={template} className={styles.edit} />
             ) : (
