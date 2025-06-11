@@ -4,13 +4,15 @@
     gap: 8px;
     cursor: pointer;
 
-    margin-bottom: var(--ifm-paragraph-margin-bottom);
+    --tdev-task-state-margin-bottom: var(--ifm-paragraph-margin-bottom);
+    margin-bottom: var(--tdev-task-state-margin-bottom);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
 
     &.inline {
         display: inline-flex;
+        --tdev-task-state-margin-bottom: 0;
     }
     .checkbox {
         font-size: 1.2rem;
