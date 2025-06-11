@@ -14,63 +14,12 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import JsObjectEditor from '@tdev-components/shared/JsObject/Editor';
 import { action } from 'mobx';
-import { JsValue } from '@tdev-components/shared/JsObject/toJsSchema';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     template: AiTemplateModel;
     className?: string;
 }
-
-const DEFAULT_STRING_SCHEMA: JsValue = {
-    type: 'object',
-    name: undefined,
-    value: [
-        {
-            type: 'string',
-            name: 'type',
-            value: 'string',
-            editLevel: 'value'
-        },
-        {
-            type: 'string',
-            name: 'description',
-            value: '',
-            editLevel: 'value'
-        }
-    ]
-} as const;
-
-const DEFAULT_NUMBER_SCHEMA: JsValue = {
-    type: 'object',
-    name: undefined,
-    value: [
-        {
-            type: 'string',
-            name: 'type',
-            value: 'number',
-            editLevel: 'value'
-        },
-        {
-            type: 'string',
-            name: 'description',
-            value: '',
-            editLevel: 'value'
-        },
-        {
-            type: 'number',
-            name: 'minimum',
-            value: 1,
-            editLevel: 'value'
-        },
-        {
-            type: 'number',
-            name: 'maximum',
-            value: 6,
-            editLevel: 'value'
-        }
-    ]
-} as const;
 
 const Edit = observer((props: Props) => {
     const { template, className } = props;
@@ -150,54 +99,6 @@ const Edit = observer((props: Props) => {
                                     size={SIZE_S}
                                 />
                             )}
-                            {/* {template.textConfig ? (
-                                <JsObjectEditor
-                                    js={template.textConfig}
-                                    onUpdate={(val) => console.log('mcu2')}
-                                    editLevel="value"
-                                    actions={[
-                                        (js, className, key) => (
-                                            <Button
-                                                size={SIZE_XS}
-                                                color="blue"
-                                                text="str"
-                                                key={key}
-                                                className={className}
-                                                disabled={js.type === 'root'}
-                                                onClick={action((e) => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    js.addValue(toModel({ ...DEFAULT_STRING_SCHEMA }, js));
-                                                })}
-                                            />
-                                        ),
-                                        (js, className, key) => (
-                                            <Button
-                                                size={SIZE_XS}
-                                                color="blue"
-                                                key={key}
-                                                text="num"
-                                                className={className}
-                                                disabled={js.type === 'root'}
-                                                onClick={action((e) => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    js.addValue(toModel({ ...DEFAULT_NUMBER_SCHEMA }, js));
-                                                })}
-                                            />
-                                        )
-                                    ]}
-                                    className={clsx(styles.responseSchema, className)}
-                                />
-                            ) : (
-                                    <Button
-                                        text="Schema hinzufügen"
-                                        onClick={() => template.createTextConfig()}
-                                        icon={mdiPlusCircleOutline}
-                                        color="primary"
-                                        size={SIZE_S}
-                                    />
-                            )} */}
                         </div>
                     </TabItem>
                     <TabItem value="code" label="Code">

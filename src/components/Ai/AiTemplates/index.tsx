@@ -25,12 +25,20 @@ const AiTemplates = observer((props: Props) => {
                             model: 'gpt-4.1',
                             temperature: 0.7,
                             maxTokens: 2048,
-                            topP: 0.85,
+                            top_: 0.85,
                             systemMessage: '',
                             text: {
-                                name: 'Response Schema',
-                                schema: {},
-                                strict: true
+                                format: {
+                                    type: 'json_schema',
+                                    name: 'Response Schema',
+                                    schema: {
+                                        type: 'object',
+                                        properties: {},
+                                        required: [],
+                                        additionalProperties: false
+                                    },
+                                    strict: true
+                                }
                             }
                         },
                         rateLimit: 10,

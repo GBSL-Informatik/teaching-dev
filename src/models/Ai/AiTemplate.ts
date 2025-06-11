@@ -12,12 +12,6 @@ const UpdateableFields: (keyof AiTemplate)[] = [
     'apiUrl'
 ] as const;
 
-const DEFAULT_TEXT_CONFIG = {
-    name: 'Response Schema',
-    schema: {},
-    strict: true
-} as const;
-
 class AiTemplate {
     readonly store: AiStore;
     readonly id: string;
@@ -63,18 +57,6 @@ class AiTemplate {
         return !this.id.startsWith('new-') && this.id.length > 0;
     }
 
-    // @computed
-    // get jsonSchema(): string {
-    //     return JSON.stringify(this.config || {}, null, 2);
-    // }
-
-    // @computed
-    // get modelConfig(): Record<string, any> {
-    //     const config = { ...this.config } as Record<string, any>;
-    //     delete config.text;
-    //     return config;
-    // }
-
     @action
     setModelConfig(config: Record<string, any>) {
         this.modelConfig = config;
@@ -116,29 +98,6 @@ class AiTemplate {
     get stringifiedConfig(): string {
         return JSON.stringify(this.config, null, 2);
     }
-
-    // @computed
-    // get textConfig(): Record<string, any> | undefined {
-    //     if (!this.config.text) {
-    //         return;
-    //     }
-    //     return { ...this.config.text } as Record<string, any>;
-    // }
-
-    // @action
-    // createTextConfig() {
-    //     this.setTextConfig(DEFAULT_TEXT_CONFIG);
-    // }
-
-    // @action
-    // setTextConfig(config: Record<string, any> | null, transformConfig: boolean = true) {
-    //     if (config) {
-    //         this.config = { ...this.modelConfig, text: { ...config } };
-    //     } else {
-    //         const { text, ...rest } = this.config;
-    //         this.config = rest;
-    //     }
-    // }
 
     @action
     discardChanges() {
