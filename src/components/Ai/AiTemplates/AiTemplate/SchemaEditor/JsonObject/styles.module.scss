@@ -1,0 +1,11 @@
+.jsonObject {
+    --tdev-json-padding-left: 1.5em;
+    .children {
+        margin-left: var(--tdev-json-padding-left);
+    }
+    .actions {
+        overflow-x: auto;
+        display: flex;
+        scrollbar-width: thin;
+    }
+}

@@ -19,26 +19,35 @@ interface Props {
     tabClassName?: string;
     label?: string;
     labelClassName?: string;
+    noAutoFocus?: boolean;
 }
 
 const TextAreaInput = observer((props: Props) => {
     const id = React.useId();
     const [text, setText] = React.useState(props.defaultValue || '');
-    const [rows, setRows] = React.useState(
-        Math.max((props.defaultValue || '').split('\n').length, props.minRows || 1)
-    );
     const ref = React.useRef<HTMLTextAreaElement>(null);
+
+    const adjustHeight = React.useCallback(() => {
+        if (ref.current) {
+            ref.current.style.height = 'auto';
+            ref.current.style.height = `${ref.current.scrollHeight}px`;
+        }
+    }, []);
+
     React.useEffect(() => {
-        const lineCount = text.split('\n').length;
-        if (lineCount === rows) {
-            return;
+        adjustHeight();
+    }, [text, ref.current]);
+
+    React.useEffect(() => {
+        if (ref.current) {
+            ref.current.addEventListener('focus', adjustHeight);
+            return () => {
+                if (ref.current) {
+                    ref.current.removeEventListener('focus', adjustHeight);
+                }
+            };
         }
-        if (lineCount > 1) {
-            setRows(lineCount);
-        } else {
-            setRows(Math.max(1, props.minRows || 1));
-        }
-    }, [text, rows]);
+    }, [ref.current]);
 
     const insertTab = () => {
         if (ref.current) {
@@ -49,9 +58,11 @@ const TextAreaInput = observer((props: Props) => {
             props.onChange(newText);
             scheduleMicrotask(() => {
                 inp?.setSelectionRange(selectionStart + 1, selectionStart + 1);
+                adjustHeight();
             });
         }
     };
+
     return (
         <>
             {props.label && (
@@ -81,6 +92,11 @@ const TextAreaInput = observer((props: Props) => {
                     props.showTabButton && styles.showTabButton,
                     props.monospace && styles.monospace
                 )}
+                style={{
+                    minHeight: props.minRows
+                        ? `calc(${props.minRows * 1.1}em + var(--tdev-text-area-height-shift))`
+                        : undefined
+                }}
                 onChange={(e) => {
                     setText(e.target.value);
                     props.onChange(e.target.value);
@@ -93,12 +109,12 @@ const TextAreaInput = observer((props: Props) => {
                         props.onEscape?.();
                     }
                     if (e.key === 'Tab') {
-                        e.preventDefault(); // Prevent the default tab behavior
+                        e.preventDefault();
                         insertTab();
                     }
                 }}
-                rows={rows === 1 ? 1 : rows + 1}
-                autoFocus
+                rows={1}
+                autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
             />
