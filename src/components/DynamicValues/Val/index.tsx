@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { templateReplacer } from '../templateReplacer';
-import { extractCodeBlockProps } from '@tdev/theme/CodeBlock/extractCodeBlockProps';
 
 interface BaseProps {
     as?: 'code' | 'boxed';
@@ -11,7 +10,7 @@ interface NameProps extends BaseProps {
     name: string;
 }
 interface ChildProps extends BaseProps {
-    children: React.ReactNode;
+    code: string;
 }
 
 type Props = NameProps | ChildProps;
@@ -23,12 +22,8 @@ const Val = observer((props: Props) => {
         return null;
     }
     let value = '';
-    if ('children' in props) {
-        const codeProps = extractCodeBlockProps(props.children);
-        if (!codeProps || typeof codeProps.children !== 'string') {
-            return <code>{props.children}</code>;
-        }
-        value = templateReplacer(codeProps.children, pageStore.current?.dynamicValues);
+    if ('code' in props) {
+        value = templateReplacer(props.code, pageStore.current?.dynamicValues);
     } else if ('name' in props) {
         value = current.dynamicValues.get(props.name) || `<${props.name}>`;
     }

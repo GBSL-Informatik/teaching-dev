@@ -6,26 +6,11 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { parse } from '@tdev-models/documents/NetpbmGraphic/parser/parser';
 import { ParserResult } from '@tdev-models/documents/NetpbmGraphic/types';
 import { ApiState } from '@tdev-stores/iStore';
-import { extractCodeBlockProps } from '@tdev/theme/CodeBlock/extractCodeBlockProps';
 
 export interface MetaInit {
     readonly?: boolean;
     default?: string;
-    children?: React.ReactNode;
 }
-
-const getInitialCode = (props: Partial<MetaInit>) => {
-    if (props.children) {
-        if (typeof props.children === 'string') {
-            return props.children; // inline-text
-        }
-        const codeBlock = extractCodeBlockProps(props.children);
-        if (codeBlock && typeof codeBlock.children === 'string') {
-            return codeBlock.children; // code-block
-        }
-    }
-    return props.default || '';
-};
 
 export class ModelMeta extends TypeMeta<DocumentType.NetpbmGraphic> {
     readonly type = DocumentType.NetpbmGraphic;
@@ -36,10 +21,14 @@ export class ModelMeta extends TypeMeta<DocumentType.NetpbmGraphic> {
         super(DocumentType.NetpbmGraphic, props.readonly ? Access.RO_User : undefined);
         /**
          * the default data can be either provided as a string or as a child element.
-         * If it is provided as a child element, the relevant data is extracted.
-         * - inline-text: the default data is provided as a string (<NetpbmGraphic>data</NetpbmGraphic>)
-         * - children: the default data is provided as a child element - because mdx would parse and transform it
-         *             to paragraphs, the content is provided in a code-block. Thus expect it as the child of the first child.
+         * If it is provided as a child element, the relevant data is extracted by the
+         * remark-code-as-attribute plugin. Make sure to configure it correctly.
+         * @remark-code-as-attribute config
+         * ```js
+         * {
+         *      components: [{ name: 'NetpbmEditor', attributeName: 'default' }]
+         * }
+         * ```
          * @example
          * <NetpbmGraphic>
          *   ```
@@ -51,7 +40,7 @@ export class ModelMeta extends TypeMeta<DocumentType.NetpbmGraphic> {
          * </NetpbmGraphic>
          */
         this.readonly = props.readonly;
-        this.default = getInitialCode(props);
+        this.default = props.default;
     }
 
     get defaultData(): TypeDataMapping[DocumentType.NetpbmGraphic] {

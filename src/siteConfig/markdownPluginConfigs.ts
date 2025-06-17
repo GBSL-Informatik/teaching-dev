@@ -13,6 +13,7 @@ import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
+import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
 
@@ -24,6 +25,31 @@ export const deflistPluginConfig = [
         tagNames: {
             dl: 'Dl'
         }
+    }
+];
+
+export const codeAsAttributePluginConfig = [
+    codeAsAttributePlugin,
+    {
+        components: [
+            {
+                name: 'SvgEditor',
+                attributeName: 'code'
+            },
+            {
+                name: 'NetpbmEditor',
+                attributeName: 'default'
+            },
+            {
+                name: 'TemplateCode',
+                attributeName: 'code',
+                codeAttributesName: 'codeAttributes'
+            },
+            {
+                name: 'Val',
+                attributeName: 'code'
+            }
+        ]
     }
 ];
 
@@ -125,7 +151,8 @@ export const recommendedRemarkPlugins = [
     pdfPluginConfig,
     pagePluginConfig,
     commentPluginConfig,
-    linkAnnotationPluginConfig
+    linkAnnotationPluginConfig,
+    codeAsAttributePluginConfig
 ];
 
 export const recommendedRehypePlugins = [rehypeKatexPluginConfig];
