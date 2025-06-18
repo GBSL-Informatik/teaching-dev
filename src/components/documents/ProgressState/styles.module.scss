@@ -1,0 +1,69 @@
+.progress {
+    padding-left: 0;
+    --tdev-progress-bullet-size: 2rem;
+    --tdev-progress-rail-color: var(--ifm-color-secondary-darkest);
+    --guide-width: 2.5px;
+    .item {
+        list-style: none;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        position: relative;
+        .progressButton {
+            width: var(--tdev-progress-bullet-size);
+            height: var(--tdev-progress-bullet-size);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            cursor: pointer;
+            font-weight: bold;
+
+            border-width: 0px;
+            background-color: var(--ifm-background-surface-color);
+            &:hover {
+                background-color: var(--ifm-color-secondary);
+            }
+        }
+        &.current.inactiveLatest {
+            .progressButton {
+                border: 1px dashed var(--ifm-color-primary);
+            }
+        }
+        &.done,
+        &.alreadyDone {
+            --tdev-progress-rail-color: var(--ifm-color-success);
+        }
+        &:not(.active):not(:first-child)::before {
+            content: '';
+            position: absolute;
+            top: calc(-1 * var(--ifm-list-item-margin));
+            height: calc(var(--tdev-progress-bullet-size) / 2);
+            inset-inline-start: calc((var(--tdev-progress-bullet-size) - var(--guide-width)) / 2);
+            width: var(--guide-width);
+            background-color: var(--tdev-progress-rail-color);
+            border-width: 0;
+            pointer-events: none;
+        }
+        &:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: var(--tdev-progress-bullet-size);
+            bottom: calc(-1 * var(--ifm-list-item-margin));
+            inset-inline-start: calc((var(--tdev-progress-bullet-size) - var(--guide-width)) / 2);
+            width: var(--guide-width);
+            background-color: var(--tdev-progress-rail-color);
+            border-width: 0;
+            pointer-events: none;
+        }
+        &:not(:last-child):not(.active) {
+            &:has(> .progressButton) {
+                &::after {
+                    top: calc(var(--tdev-progress-bullet-size) / 2);
+                }
+            }
+        }
+    }
+}
