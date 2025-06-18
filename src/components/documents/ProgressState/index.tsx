@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { MetaInit, ModelMeta } from '@tdev-models/documents/ProgressState';
 import Item from './Item';
+import { useStore } from '@tdev-hooks/useStore';
 
 interface Props extends MetaInit {
     id: string;
@@ -62,11 +63,18 @@ const useExtractedChildren = (children: React.ReactElement): React.ReactNode[] |
 
 const ProgressState = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));
+    const pageStore = useStore('pageStore');
     const doc = useFirstMainDocument(props.id, meta);
     const children = useExtractedChildren(props.children as React.ReactElement);
     React.useEffect(() => {
         doc?.setTotalSteps(children?.length || 0);
     }, [doc, children?.length]);
+
+    React.useEffect(() => {
+        if (doc.root && pageStore.current && !doc.root.isDummy) {
+            pageStore.current.addDocumentRoot(doc);
+        }
+    }, [doc, pageStore.current]);
 
     if (!children) {
         return null;

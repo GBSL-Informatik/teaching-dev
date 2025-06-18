@@ -15,10 +15,32 @@ interface Props extends MetaInit {
 }
 
 const Item = observer((props: Props) => {
+    const ref = React.useRef<HTMLButtonElement>(null);
     const { item, index, label, doc } = props;
+    const [animate, setAnimate] = React.useState(false);
+
     const isLatest = index === doc.progress;
     const isActive = index === doc.viewedIndex;
     const { path, color, state } = doc.iconStateForIndex(index);
+
+    React.useEffect(() => {
+        if (ref.current && doc.scrollTo && isActive) {
+            ref.current.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'start' });
+            doc.setScrollTo(false);
+            setAnimate(true);
+        }
+    }, [ref, doc.scrollTo, isActive]);
+
+    React.useEffect(() => {
+        if (animate) {
+            const timeout = setTimeout(() => {
+                setAnimate(false);
+            }, 2000);
+            return () => {
+                clearTimeout(timeout);
+            };
+        }
+    }, [animate]);
 
     return (
         <li
@@ -31,6 +53,7 @@ const Item = observer((props: Props) => {
             )}
         >
             <button
+                ref={ref}
                 role="button"
                 type="button"
                 onMouseOver={() => {
@@ -46,7 +69,7 @@ const Item = observer((props: Props) => {
                     doc.onStepClicked(index);
                 })}
                 disabled={index > doc.progress + 1}
-                className={clsx(styles.progressButton)}
+                className={clsx(styles.progressButton, animate && styles.animate)}
             >
                 <Icon
                     path={path}

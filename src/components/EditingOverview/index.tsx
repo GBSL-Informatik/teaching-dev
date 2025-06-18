@@ -9,7 +9,7 @@ import { mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
 import { StateType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import Popup from 'reactjs-popup';
-import TaskStateList from './TaskStateList';
+import EditingStateList from './EditingStateList';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import _ from 'lodash';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
@@ -46,7 +46,7 @@ const OverviewIcon = (props: OverviewIconProps) => {
     );
 };
 
-const TaskStateOverview = observer(() => {
+const EditingOverview = observer(() => {
     const isBrowser = useIsBrowser();
     const userStore = useStore('userStore');
     const pageStore = useStore('pageStore');
@@ -55,12 +55,12 @@ const TaskStateOverview = observer(() => {
     if (!isBrowser || !currentUser || !currentPage) {
         return null;
     }
-    const taskStates = currentPage.taskStates.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
+    const taskStates = currentPage.editingState.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
     if (taskStates.length === 0) {
         return null;
     }
-    const someChecked = taskStates.some((d) => d.taskState === 'checked');
-    const allChecked = someChecked && taskStates.every((d) => d.taskState === 'checked');
+    const someChecked = taskStates.some((d) => d.isDone);
+    const allChecked = someChecked && taskStates.every((d) => d.isDone);
     return (
         <div className={clsx(styles.taskStateOverview)}>
             {currentUser.hasElevatedAccess ? (
@@ -84,7 +84,7 @@ const TaskStateOverview = observer(() => {
                             <PageStudentGroupFilter />
                             <div className={clsx(styles.overviewWrapper)}>
                                 {_.orderBy(
-                                    Object.values(currentPage.taskStatesByUsers),
+                                    Object.values(currentPage.editingStateByUsers),
                                     (docs) => docs[0].author?.nameShort,
                                     ['asc']
                                 ).map((docs, idx) => {
@@ -93,7 +93,7 @@ const TaskStateOverview = observer(() => {
                                             <span className={styles.user}>{docs[0].author?.nameShort}</span>
                                             <div>
                                                 <div className={styles.tasks}>
-                                                    <TaskStateList taskStates={docs} />
+                                                    <EditingStateList editingStatus={docs} />
                                                 </div>
                                             </div>
                                         </div>
@@ -108,9 +108,9 @@ const TaskStateOverview = observer(() => {
                     <OverviewIcon allChecked={allChecked} someChecked={someChecked} />
                 </span>
             )}
-            <TaskStateList taskStates={taskStates} />
+            <EditingStateList editingStatus={taskStates} />
         </div>
     );
 });
 
-export default TaskStateOverview;
+export default EditingOverview;

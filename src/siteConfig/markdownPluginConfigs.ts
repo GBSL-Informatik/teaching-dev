@@ -104,7 +104,7 @@ export const remarkMathPluginConfig = remarkMath;
 export const enumerateAnswersPluginConfig = [
     enumerateAnswersPlugin,
     {
-        componentsToEnumerate: ['Answer', 'TaskState', 'SelfCheckTaskState']
+        componentsToEnumerate: ['Answer', 'TaskState', 'SelfCheckTaskState', 'ProgressState']
     }
 ];
 

@@ -11,11 +11,16 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import {
+    mdiCheckboxMultipleMarkedCircleOutline,
     mdiCheckCircle,
+    mdiCheckCircleOutline,
     mdiCircleMedium,
     mdiCircleSlice8,
     mdiCloseCircle,
-    mdiRecordCircleOutline
+    mdiRecordCircleOutline,
+    mdiSpeedometer,
+    mdiSpeedometerMedium,
+    mdiSpeedometerSlow
 } from '@mdi/js';
 
 export interface MetaInit {
@@ -83,6 +88,24 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
         return {
             progress: this._progress
         };
+    }
+
+    @computed
+    get editingIconState() {
+        if (this.isDone) {
+            return { path: mdiCheckCircleOutline, color: 'var(--ifm-color-success)' };
+        }
+        const level = this.progress / this.totalSteps;
+        if (this.progress === 0) {
+            return { path: mdiSpeedometerSlow, color: 'var(--ifm-color-gray-700)' };
+        }
+        if (level < 1 / 3) {
+            return { path: mdiSpeedometerSlow, color: 'var(--ifm-color-danger)' };
+        }
+        if (level < 2 / 3) {
+            return { path: mdiSpeedometerMedium, color: 'var(--ifm-color-warning)' };
+        }
+        return { path: mdiSpeedometer, color: 'var(--ifm-color-success-lightest)' };
     }
 
     @action
