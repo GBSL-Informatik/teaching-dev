@@ -1,27 +1,20 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    DocumentType,
-    Document as DocumentProps,
-    StateType,
-    TypeDataMapping,
-    Access
-} from '@tdev-api/document';
+import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import {
-    mdiCheckboxMultipleMarkedCircleOutline,
     mdiCheckCircle,
     mdiCheckCircleOutline,
     mdiCircleMedium,
     mdiCircleSlice8,
-    mdiCloseCircle,
     mdiRecordCircleOutline,
     mdiSpeedometer,
     mdiSpeedometerMedium,
     mdiSpeedometerSlow
 } from '@mdi/js';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -62,6 +55,8 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
     @observable accessor totalSteps: number = 10;
     @observable accessor hoveredIndex: number | undefined = undefined;
 
+    openSteps = observable.set<number>();
+
     constructor(props: DocumentProps<DocumentType.ProgressState>, store: DocumentStore) {
         super(props, store);
         this._progress = props.data?.progress ?? 0;
@@ -93,19 +88,19 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
     @computed
     get editingIconState() {
         if (this.isDone) {
-            return { path: mdiCheckCircleOutline, color: 'var(--ifm-color-success)' };
+            return { path: mdiCheckCircleOutline, color: IfmColors.green };
         }
         const level = this.progress / this.totalSteps;
         if (this.progress === 0) {
-            return { path: mdiSpeedometerSlow, color: 'var(--ifm-color-gray-700)' };
+            return { path: mdiSpeedometerSlow, color: IfmColors.gray };
         }
         if (level < 1 / 3) {
-            return { path: mdiSpeedometerSlow, color: 'var(--ifm-color-danger)' };
+            return { path: mdiSpeedometerSlow, color: IfmColors.red };
         }
         if (level < 2 / 3) {
-            return { path: mdiSpeedometerMedium, color: 'var(--ifm-color-warning)' };
+            return { path: mdiSpeedometerMedium, color: IfmColors.orange };
         }
-        return { path: mdiSpeedometer, color: 'var(--ifm-color-success-lightest)' };
+        return { path: mdiSpeedometer, color: IfmColors.lightGreen };
     }
 
     @action
@@ -127,37 +122,46 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
         return Array.from({ length: this.totalSteps }, (_, idx) => {
             if (idx === this.progress) {
                 if (this.hoveredIndex === idx && idx === this.viewedIndex) {
-                    return { path: mdiCheckCircle, color: 'var(--ifm-color-success)', state: 'current' };
+                    return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
                 }
                 if (this.hoveredIndex === idx + 1) {
-                    return { path: mdiCheckCircle, color: 'var(--ifm-color-success)', state: 'current' };
+                    return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
                 }
                 if (idx === this.viewedIndex || this.hoveredIndex === idx) {
                     return {
                         path: mdiRecordCircleOutline,
-                        color: 'var(--ifm-color-primary)',
+                        color: IfmColors.primary,
                         state: 'current'
                     };
                 }
-                return { path: mdiCircleMedium, color: 'var(--ifm-color-primary)', state: 'current' };
+                return { path: mdiCircleMedium, color: IfmColors.primary, state: 'current' };
             }
             if (idx === this._viewedIndex) {
                 if (this.hoveredIndex === idx) {
-                    return { path: mdiCircleSlice8, color: 'var(--ifm-color-primary-darker)', state: 'done' };
+                    return { path: mdiCircleSlice8, color: IfmColors.primaryDarker, state: 'done' };
                 }
-                return { path: mdiRecordCircleOutline, color: 'var(--ifm-color-primary)', state: 'done' };
+                return { path: mdiRecordCircleOutline, color: IfmColors.primary, state: 'done' };
             }
             if (idx + 1 === this.totalSteps && this.isDone) {
-                return { path: mdiCheckCircle, color: 'var(--ifm-color-success)', state: 'done' };
+                return { path: mdiCheckCircle, color: IfmColors.green, state: 'done' };
             }
             if (idx < this.progress) {
-                return { path: mdiCircleMedium, color: 'var(--ifm-color-success)', state: 'done' };
+                return { path: mdiCircleMedium, color: IfmColors.green, state: 'done' };
             }
             if (idx === this.hoveredIndex && this.hoveredIndex === this.progress + 1) {
-                return { path: mdiRecordCircleOutline, color: 'var(--ifm-color-primary)', state: 'disabled' };
+                return { path: mdiRecordCircleOutline, color: IfmColors.primary, state: 'disabled' };
             }
             return { path: mdiCircleMedium, color: 'var(--tdev-progress-rail-color)', state: 'disabled' };
         });
+    }
+
+    @action
+    setStepOpen(index: number, open: boolean) {
+        if (open) {
+            this.openSteps.add(index);
+        } else {
+            this.openSteps.delete(index);
+        }
     }
 
     @computed

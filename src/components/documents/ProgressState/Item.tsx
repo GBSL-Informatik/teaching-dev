@@ -6,6 +6,7 @@ import ProgressState, { MetaInit } from '@tdev-models/documents/ProgressState';
 import { action } from 'mobx';
 import Icon from '@mdi/react';
 import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 
 interface Props extends MetaInit {
     item: React.ReactNode;
@@ -41,6 +42,8 @@ const Item = observer((props: Props) => {
             };
         }
     }, [animate]);
+
+    const showContent = isActive || doc.openSteps.has(index);
 
     return (
         <li
@@ -79,16 +82,23 @@ const Item = observer((props: Props) => {
                     title={`Schritt ${index + 1}`}
                 />
             </button>
-            <div>
-                {isActive ? (
-                    <>
-                        <b>{label}</b>
-                        <br />
-                        {item}
-                    </>
-                ) : (
-                    label
-                )}
+            <div className={clsx(styles.content)}>
+                <div
+                    className={clsx(styles.label, showContent && styles.activeLabel)}
+                    onClick={() => doc.setStepOpen(index, !doc.openSteps.has(index))}
+                >
+                    {label}
+                    <Icon
+                        path={showContent ? mdiChevronUp : mdiChevronDown}
+                        size={SIZE_M}
+                        className={clsx(
+                            styles.chevron,
+                            showContent ? styles.up : styles.down,
+                            isActive && styles.activeChevron
+                        )}
+                    />
+                </div>
+                {showContent && item}
             </div>
         </li>
     );
