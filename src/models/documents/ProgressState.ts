@@ -86,7 +86,11 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
 
     @computed
     get togglableSteps() {
-        if (!this.meta || (this.meta.preventTogglingFutureSteps && this.meta.preventTogglingPastSteps)) {
+        if (
+            !this.meta ||
+            !this.canInteract ||
+            (this.meta.preventTogglingFutureSteps && this.meta.preventTogglingPastSteps)
+        ) {
             return new Set<number>();
         }
         if (this.meta.preventTogglingFutureSteps) {
@@ -323,8 +327,18 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
         }
     }
 
+    @computed
+    get canInteract() {
+        const needsAuth =
+            !this.canStepBack || this.meta.preventTogglingFutureSteps || this.meta.preventTogglingPastSteps;
+        return needsAuth ? !(this.root?.isDummy ?? true) : true;
+    }
+
     @action
     setProgress(progress: number) {
+        if (!this.canInteract) {
+            return;
+        }
         if (this._viewedIndex !== undefined) {
             this._viewedIndex = undefined;
         }
