@@ -42,6 +42,8 @@ import ProgressState from '@tdev-components/documents/ProgressState';
 
 ### Mit Bestätigung
 
+Mit der Option `confirm` müssen die einzelnen Schritte bestätigt werden.
+
 ````md
 import ProgressState from '@tdev-components/documents/ProgressState';
 
@@ -70,6 +72,8 @@ import ProgressState from '@tdev-components/documents/ProgressState';
 </BrowserWindow>
 
 ### Kein Zurücksetzen
+
+Mit der Option `preventSteppingBack` kann der aktuelle Bearbeitungsstatus nicht auf einen früheren Zustand zurückgesetzt werden. In diesem Fall müssen alle Schritte bestätigt werden (also `confirm` ist automatisch gesetzt).
 
 ````md
 import ProgressState from '@tdev-components/documents/ProgressState';
@@ -100,6 +104,8 @@ import ProgressState from '@tdev-components/documents/ProgressState';
 </BrowserWindow>
 
 ### Nur den aktuellen Schritt anzeigen
+
+Normalerweise können vergangene- oder künftige Schritte immer aufgeklappt werden. Falls dies jedoch nicht erwünscht ist, kann dies über `preventTogglingPastSteps` und `preventTogglingFutureSteps` unterbunden werden:
 
 ````md
 import ProgressState from '@tdev-components/documents/ProgressState';
