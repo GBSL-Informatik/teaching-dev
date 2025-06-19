@@ -82,12 +82,11 @@ const ProgressState = observer((props: Props) => {
     return (
         <>
             <ol className={clsx(styles.progress)}>
-                {children.map((c, idx) => (
+                {doc.steps.map((c, idx) => (
                     <Item
                         key={idx}
-                        item={c}
-                        index={idx}
-                        doc={doc}
+                        item={children[idx] || null}
+                        step={c}
                         label={props.labels?.[idx] || `Schritt ${idx + 1}`}
                     />
                 ))}

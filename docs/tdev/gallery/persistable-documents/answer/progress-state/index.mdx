@@ -5,6 +5,8 @@ page_id: 189a293b-a9e5-4f69-945b-d9628e51d43b
 import ProgressState from '@tdev-components/documents/ProgressState';
 import TaskState from '@tdev-components/documents/TaskState';
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import { mdiBellRingOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 
 
 # Progress State
@@ -124,6 +126,90 @@ import ProgressState from '@tdev-components/documents/ProgressState';
 
 <BrowserWindow>
     <ProgressState id="831f561b-88c7-44f2-96f2-1dc34e88ceeb" preventTogglingPastSteps preventTogglingFutureSteps>
+
+    1. Hello Bello and Bella
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
+</BrowserWindow>
+
+
+### Alle Schritt offen
+
+Mit der Option `allOpen` werden immer alle Schritte angezeigt:
+
+````md
+import ProgressState from '@tdev-components/documents/ProgressState';
+
+<ProgressState id="dc9dcd21-803f-4ca7-bfce-8145db38d1e6" allOpen>
+
+1. Hello Bello and Bella
+2. World **bla** __foo__
+3. [Link](https://example.com)
+4. `inline code!!`
+    ```js
+    console.log('code block');
+    ```
+</ProgressState>
+````
+
+<BrowserWindow>
+    <ProgressState id="dc9dcd21-803f-4ca7-bfce-8145db38d1e6" allOpen>
+
+    1. Hello Bello and Bella
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
+</BrowserWindow>
+
+### Eigene Labels
+
+
+Mit dem Attribut `labels` können eigene Labels für die Schritte angegeben werden.:
+
+````md
+import ProgressState from '@tdev-components/documents/ProgressState';
+import { mdiBellRingOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+
+<ProgressState 
+    id="aef16ce0-8914-4d1d-9c3b-efe9eaf5846c" 
+    labels={[
+        'S1', 
+        <Icon path={mdiBellRingOutline} size={1} color='var(--ifm-color-warning)' />,
+        'S3', 
+        'S4'
+    ]}
+>
+
+1. Hello Bello and Bella
+2. World **bla** __foo__
+3. [Link](https://example.com)
+4. `inline code!!`
+    ```js
+    console.log('code block');
+    ```
+</ProgressState>
+````
+
+<BrowserWindow>
+    <ProgressState 
+        id="aef16ce0-8914-4d1d-9c3b-efe9eaf5846c" 
+        labels={[
+            'S1', 
+            <Icon path={mdiBellRingOutline} size={1} color='var(--ifm-color-warning)' />,
+            'S3', 
+            'S4'
+        ]}
+    >
 
     1. Hello Bello and Bella
     2. World **bla** __foo__

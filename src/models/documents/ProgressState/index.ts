@@ -4,24 +4,16 @@ import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
-import {
-    mdiCheckCircle,
-    mdiCheckCircleOutline,
-    mdiCircleMedium,
-    mdiCircleSlice8,
-    mdiProgressCheck,
-    mdiRecordCircleOutline,
-    mdiSpeedometer,
-    mdiSpeedometerMedium,
-    mdiSpeedometerSlow
-} from '@mdi/js';
+import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import Step from './Step';
 
 export interface MetaInit {
     readonly?: boolean;
     pagePosition?: number;
     default?: number;
     confirm?: boolean;
+    allOpen?: boolean;
     preventSteppingBack?: boolean;
     preventTogglingFutureSteps?: boolean;
     preventTogglingPastSteps?: boolean;
@@ -37,13 +29,20 @@ export class ModelMeta extends TypeMeta<DocumentType.ProgressState> {
     readonly preventTogglingPastSteps: boolean;
     readonly canStepBack: boolean;
     readonly needsConfirm: boolean;
+    readonly allOpen: boolean = false;
 
     constructor(props: Partial<MetaInit>) {
         super(DocumentType.ProgressState, props.readonly ? Access.RO_User : undefined, props.pagePosition);
         this.default = props.default ?? DEFAULT_PROGRESS;
         this.readonly = !!props.readonly;
-        this.preventTogglingFutureSteps = !!props.preventTogglingFutureSteps;
-        this.preventTogglingPastSteps = !!props.preventTogglingPastSteps;
+        if (props.allOpen) {
+            this.allOpen = true;
+            this.preventTogglingFutureSteps = false;
+            this.preventTogglingPastSteps = false;
+        } else {
+            this.preventTogglingFutureSteps = !!props.preventTogglingFutureSteps;
+            this.preventTogglingPastSteps = !!props.preventTogglingPastSteps;
+        }
         this.canStepBack = !props.preventSteppingBack && !props.preventTogglingPastSteps;
         this.needsConfirm = !this.canStepBack || !!props.confirm;
     }
@@ -55,21 +54,14 @@ export class ModelMeta extends TypeMeta<DocumentType.ProgressState> {
     }
 }
 
-interface ItemState {
-    path: string;
-    color: string;
-    state: 'done' | 'current' | 'disabled';
-}
-
 class ProgressState extends iDocument<DocumentType.ProgressState> {
     @observable accessor _progress: number = 0;
     @observable accessor _viewedIndex: number | undefined = undefined;
     @observable accessor scrollTo: boolean = false;
-    @observable accessor totalSteps: number = 10;
     @observable accessor hoveredIndex: number | undefined = undefined;
     @observable accessor confirmProgressIndex: number | undefined = undefined;
 
-    openSteps = observable.set<number>();
+    steps = observable.array<Step>();
 
     constructor(props: DocumentProps<DocumentType.ProgressState>, store: DocumentStore) {
         super(props, store);
@@ -85,23 +77,14 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
     }
 
     @computed
-    get togglableSteps() {
-        if (
-            !this.meta ||
-            !this.canInteract ||
-            (this.meta.preventTogglingFutureSteps && this.meta.preventTogglingPastSteps)
-        ) {
-            return new Set<number>();
+    get canToggleContent(): boolean {
+        if (!this.meta) {
+            return false;
         }
-        if (this.meta.preventTogglingFutureSteps) {
-            return new Set<number>(Array.from({ length: this.progress }, (_, idx) => idx));
+        if (this.meta.preventTogglingFutureSteps && this.meta.preventTogglingPastSteps) {
+            return false;
         }
-        if (this.meta.preventTogglingPastSteps) {
-            return new Set<number>(
-                Array.from({ length: this.totalSteps }, (_, idx) => idx).slice(this.progress + 1)
-            );
-        }
-        return new Set<number>(Array.from({ length: this.totalSteps }, (_, idx) => idx));
+        return this.canInteract;
     }
 
     @action
@@ -110,7 +93,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
             return;
         }
         const { progress } = data;
-        if (progress && !this.togglableSteps.has(progress) && this.progress + 1 !== progress) {
+        if (progress && !this.steps[progress]?.canToggleContent && this.progress + 1 !== progress) {
             return;
         }
         if (!this.canStepBack && progress < this.progress) {
@@ -162,10 +145,15 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
         }
     }
 
+    @computed
+    get totalSteps(): number {
+        return this.steps.length;
+    }
+
     @action
     setTotalSteps(totalSteps: number) {
         if (this.totalSteps !== totalSteps) {
-            this.totalSteps = totalSteps;
+            this.steps.replace(Array.from({ length: totalSteps }, (_, i) => new Step(i, this)));
         }
     }
 
@@ -175,84 +163,8 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
     }
 
     @computed
-    get itemStates(): ItemState[] {
-        return Array.from({ length: this.totalSteps }, (_, idx) => {
-            if (idx === this.progress) {
-                if (this.needsConfirm) {
-                    if (this.confirmProgressIndex === idx) {
-                        if (this.hoveredIndex === idx) {
-                            return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
-                        }
-                        return { path: mdiProgressCheck, color: IfmColors.blue, state: 'current' };
-                    }
-                    if (this.hoveredIndex === idx && this.viewedIndex === idx) {
-                        return { path: mdiProgressCheck, color: IfmColors.blue, state: 'current' };
-                    }
-                    return {
-                        path: mdiRecordCircleOutline,
-                        color: IfmColors.primary,
-                        state: 'current'
-                    };
-                }
-                if (this.hoveredIndex === idx && idx === this.viewedIndex) {
-                    return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
-                }
-                if (this.hoveredIndex === idx + 1) {
-                    return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
-                }
-                if (idx === this.viewedIndex || this.hoveredIndex === idx) {
-                    return {
-                        path: mdiRecordCircleOutline,
-                        color: IfmColors.primary,
-                        state: 'current'
-                    };
-                }
-                return { path: mdiCircleMedium, color: IfmColors.primary, state: 'current' };
-            }
-            if (idx === this._viewedIndex) {
-                if (this.hoveredIndex === idx) {
-                    return { path: mdiCircleSlice8, color: IfmColors.primaryDarker, state: 'done' };
-                }
-                return { path: mdiRecordCircleOutline, color: IfmColors.primary, state: 'done' };
-            }
-            if (idx + 1 === this.totalSteps && this.isDone) {
-                return { path: mdiCheckCircle, color: IfmColors.green, state: 'done' };
-            }
-            if (idx < this.progress) {
-                return { path: mdiCircleMedium, color: IfmColors.green, state: 'done' };
-            }
-            if (idx === this.hoveredIndex && this.hoveredIndex === this.progress + 1 && !this.needsConfirm) {
-                return { path: mdiRecordCircleOutline, color: IfmColors.primary, state: 'disabled' };
-            }
-            return { path: mdiCircleMedium, color: 'var(--tdev-progress-rail-color)', state: 'disabled' };
-        });
-    }
-
-    @action
-    setStepOpen(index: number, open: boolean) {
-        if (!this.togglableSteps.has(index)) {
-            return;
-        }
-        if (open) {
-            this.openSteps.add(index);
-        } else {
-            this.openSteps.delete(index);
-        }
-    }
-
-    @computed
     get isDone(): boolean {
         return this.progress >= this.totalSteps;
-    }
-
-    iconStateForIndex(index: number): ItemState {
-        return (
-            this.itemStates[index] || {
-                path: mdiCircleMedium,
-                color: 'var(--tdev-progress-rail-color)',
-                state: 'disabled'
-            }
-        );
     }
 
     @action
@@ -290,11 +202,6 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
     }
 
     @computed
-    get isViewingLatest(): boolean {
-        return this._viewedIndex === undefined || this._viewedIndex === this.progress;
-    }
-
-    @computed
     get viewedIndex(): number {
         return Math.min(this._viewedIndex ?? this.progress, this.progress);
     }
@@ -319,7 +226,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
 
     @action
     setViewedIndex(index?: number) {
-        if (!this.togglableSteps.has(index ?? -1)) {
+        if (!this.steps[index ?? -1]?.canToggleContent) {
             return;
         }
         if (this._viewedIndex !== index) {
