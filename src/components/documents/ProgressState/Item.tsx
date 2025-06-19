@@ -3,10 +3,11 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import ProgressState, { MetaInit } from '@tdev-models/documents/ProgressState';
-import { action } from 'mobx';
 import Icon from '@mdi/react';
 import { SIZE_M } from '@tdev-components/shared/iconSizes';
-import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import { mdiChevronDown, mdiChevronUp, mdiCloseCircle } from '@mdi/js';
+import IconButton from '@tdev-components/shared/Button/IconButton';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface Props extends MetaInit {
     item: React.ReactNode;
@@ -16,7 +17,7 @@ interface Props extends MetaInit {
 }
 
 const Item = observer((props: Props) => {
-    const ref = React.useRef<HTMLButtonElement>(null);
+    const ref = React.useRef<HTMLDivElement>(null);
     const { item, index, label, doc } = props;
     const [animate, setAnimate] = React.useState(false);
 
@@ -55,48 +56,57 @@ const Item = observer((props: Props) => {
                 !isActive && isLatest && styles.inactiveLatest
             )}
         >
-            <button
+            <div
+                className={clsx(
+                    styles.bullet,
+                    animate && styles.animate,
+                    index === doc.confirmProgressIndex && styles.confirming
+                )}
                 ref={ref}
-                role="button"
-                type="button"
-                onMouseOver={() => {
-                    if (index > doc.progress + 1) {
-                        return;
-                    }
-                    doc.setHoveredIndex(index);
-                }}
-                onMouseOut={() => {
-                    doc.setHoveredIndex(undefined);
-                }}
-                onClick={action(() => {
-                    doc.onStepClicked(index);
-                })}
-                disabled={index > doc.progress + 1}
-                className={clsx(styles.progressButton, animate && styles.animate)}
             >
-                <Icon
+                <IconButton
                     path={path}
-                    size={SIZE_M}
+                    onHover={(hovered) => doc.setHoveredIndex(hovered ? index : undefined)}
+                    onClick={() => doc.onStepClicked(index)}
+                    disabled={index > doc.progress + 1}
                     color={color}
-                    className={styles.icon}
-                    title={`Schritt ${index + 1}`}
+                    className={clsx(isLatest && !isActive && styles.activeStep)}
+                    size={'var(--tdev-progress-bullet-size)'}
                 />
-            </button>
+                {index === doc.confirmProgressIndex && (
+                    <IconButton
+                        path={mdiCloseCircle}
+                        onClick={(e) => {
+                            doc.setConfirmProgressIndex();
+                        }}
+                        color={IfmColors.red}
+                        size={'var(--tdev-progress-bullet-size)'}
+                    />
+                )}
+            </div>
             <div className={clsx(styles.content)}>
                 <div
-                    className={clsx(styles.label, showContent && styles.activeLabel)}
-                    onClick={() => doc.setStepOpen(index, !doc.openSteps.has(index))}
+                    className={clsx(
+                        styles.label,
+                        doc.togglableSteps.has(index) && styles.toggle,
+                        showContent && styles.activeLabel
+                    )}
+                    onClick={() =>
+                        doc.togglableSteps.has(index) && doc.setStepOpen(index, !doc.openSteps.has(index))
+                    }
                 >
-                    {label}
-                    <Icon
-                        path={showContent ? mdiChevronUp : mdiChevronDown}
-                        size={SIZE_M}
-                        className={clsx(
-                            styles.chevron,
-                            showContent ? styles.up : styles.down,
-                            isActive && styles.activeChevron
-                        )}
-                    />
+                    <div>{label}</div>
+                    {doc.togglableSteps.has(index) && (
+                        <Icon
+                            path={showContent ? mdiChevronUp : mdiChevronDown}
+                            size={SIZE_M}
+                            className={clsx(
+                                styles.chevron,
+                                showContent ? styles.up : styles.down,
+                                isActive && styles.activeChevron
+                            )}
+                        />
+                    )}
                 </div>
                 {showContent && item}
             </div>

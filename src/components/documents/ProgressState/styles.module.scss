@@ -2,7 +2,8 @@
     padding-left: 0;
     --tdev-progress-bullet-size: 2rem;
     --tdev-progress-rail-color: var(--ifm-color-secondary-darkest);
-    --guide-width: 2.5px;
+    --tdev-progress-rail-width: 2.5px;
+    --tdev-progress-rail-shift: 0px;
     .item {
         list-style: none;
         display: flex;
@@ -10,60 +11,34 @@
         justify-content: flex-start;
         gap: 0.5rem;
         position: relative;
-        .progressButton {
-            width: var(--tdev-progress-bullet-size);
-            height: var(--tdev-progress-bullet-size);
-            border-radius: 50%;
+        .bullet {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            cursor: pointer;
-            font-weight: bold;
-
+            border-radius: calc(var(--tdev-progress-bullet-size) / 2);
             border-width: 0px;
-            background-color: var(--ifm-background-surface-color);
-            &:hover {
-                background-color: var(--ifm-color-secondary);
-            }
-            @keyframes flash {
-                0%,
-                100% {
-                    opacity: 1;
-                }
-                50% {
-                    opacity: 0.8;
-                }
-            }
-
-            @keyframes shake {
-                0%,
-                100% {
-                    transform: translateX(0) rotate(0deg);
-                }
-                10%,
-                30%,
-                50%,
-                70%,
-                90% {
-                    transform: translateX(-2px) rotate(-5deg);
-                }
-                20%,
-                40%,
-                60%,
-                80% {
-                    transform: translateX(2px) rotate(5deg);
-                }
-            }
+            padding: 0;
             &.animate {
                 animation:
                     flash 1s normal,
                     shake 1.5s normal;
                 transform-origin: center;
             }
+            &.confirming {
+                border: 1px solid var(--ifm-color-gray-500);
+                background-color: var(--ifm-background-color);
+                z-index: var(--ifm-z-index-dropdown);
+            }
+            .activeStep {
+                border: 1px dashed var(--ifm-color-primary);
+            }
+        }
+        &:has(.bullet.confirming) {
+            margin-left: calc(-1.5px - var(--tdev-progress-bullet-size));
+            --tdev-progress-rail-shift: calc(1.5px + var(--tdev-progress-bullet-size));
         }
         &.current.inactiveLatest {
-            .progressButton {
+            .button {
                 border: 1px dashed var(--ifm-color-primary);
             }
         }
@@ -76,8 +51,11 @@
             position: absolute;
             top: calc(-1 * var(--ifm-list-item-margin));
             height: calc(var(--tdev-progress-bullet-size) / 2);
-            inset-inline-start: calc((var(--tdev-progress-bullet-size) - var(--guide-width)) / 2);
-            width: var(--guide-width);
+            inset-inline-start: calc(
+                (var(--tdev-progress-bullet-size) - var(--tdev-progress-rail-width)) / 2 +
+                    var(--tdev-progress-rail-shift)
+            );
+            width: var(--tdev-progress-rail-width);
             background-color: var(--tdev-progress-rail-color);
             border-width: 0;
             pointer-events: none;
@@ -87,14 +65,17 @@
             position: absolute;
             top: var(--tdev-progress-bullet-size);
             bottom: calc(-1 * var(--ifm-list-item-margin));
-            inset-inline-start: calc((var(--tdev-progress-bullet-size) - var(--guide-width)) / 2);
-            width: var(--guide-width);
+            inset-inline-start: calc(
+                (var(--tdev-progress-bullet-size) - var(--tdev-progress-rail-width)) / 2 +
+                    var(--tdev-progress-rail-shift)
+            );
+            width: var(--tdev-progress-rail-width);
             background-color: var(--tdev-progress-rail-color);
             border-width: 0;
             pointer-events: none;
         }
         &:not(:last-child):not(.active) {
-            &:has(> .progressButton) {
+            &:has(> .bullet) {
                 &::after {
                     top: calc(var(--tdev-progress-bullet-size) / 2);
                 }
@@ -104,57 +85,87 @@
             flex-grow: 1;
         }
         .label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            border-radius: var(--ifm-global-radius);
-            padding: 0;
-            transition: all 0.2s ease-in-out;
-            user-select: none;
             &.activeLabel {
                 font-weight: bold;
+            }
+            &.toggle {
+                user-select: none;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                cursor: pointer;
+                border-radius: var(--ifm-global-radius);
+                padding: 0;
+                transition: all 0.2s ease-in-out;
+                &:hover {
+                    padding: 0 0.5rem;
+                    box-shadow: var(--ifm-global-shadow-md);
+
+                    .chevron:not(.activeChevron) {
+                        opacity: 1;
+                        &.up {
+                            animation: chevron-bounce-up 1s ease-in-out infinite;
+                        }
+                        &.down {
+                            animation: chevron-bounce-down 1s ease-in-out infinite;
+                        }
+                    }
+                }
             }
             .chevron {
                 opacity: 0;
             }
-            &:hover {
-                padding: 0 0.5rem;
-                box-shadow: var(--ifm-global-shadow-md);
-
-                .chevron:not(.activeChevron) {
-                    opacity: 1;
-                    &.up {
-                        animation: chevron-bounce-up 1s ease-in-out infinite;
-                    }
-                    &.down {
-                        animation: chevron-bounce-down 1s ease-in-out infinite;
-                    }
-                }
-            }
         }
-
-        @keyframes chevron-bounce-down {
-            0% {
-                transform: translateY(-3px) scale(0.8);
-            }
-            50% {
-                transform: translateY(3px) scale(1.1);
-            }
-            100% {
-                transform: translateY(-3px) scale(0.8);
-            }
+    }
+    @keyframes chevron-bounce-down {
+        0% {
+            transform: translateY(-3px) scale(0.8);
         }
-        @keyframes chevron-bounce-up {
-            0% {
-                transform: translateY(3px) scale(0.8);
-            }
-            50% {
-                transform: translateY(-3px) scale(1.1);
-            }
-            100% {
-                transform: translateY(3px) scale(0.8);
-            }
+        50% {
+            transform: translateY(3px) scale(1.1);
+        }
+        100% {
+            transform: translateY(-3px) scale(0.8);
+        }
+    }
+    @keyframes chevron-bounce-up {
+        0% {
+            transform: translateY(3px) scale(0.8);
+        }
+        50% {
+            transform: translateY(-3px) scale(1.1);
+        }
+        100% {
+            transform: translateY(3px) scale(0.8);
+        }
+    }
+    @keyframes flash {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.8;
+        }
+    }
+
+    @keyframes shake {
+        0%,
+        100% {
+            transform: translateX(0) rotate(0deg);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+            transform: translateX(-2px) rotate(-5deg);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+            transform: translateX(2px) rotate(5deg);
         }
     }
 }

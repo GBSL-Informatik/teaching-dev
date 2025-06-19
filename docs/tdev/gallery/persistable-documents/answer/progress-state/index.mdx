@@ -9,10 +9,11 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # Progress State
 
+
 ````md
 import ProgressState from '@tdev-components/documents/ProgressState';
 
-<ProgressState id="b0cd293a-d45d-4c59-9bac-a83b986baf27">
+<ProgressState id="e383ca48-5a47-41ba-bb6c-8d241dcabdc5">
 
 1. <TaskState id="c599706c-8422-453d-af02-c23e00686504" inline /> Hello
 2. World **bla** __foo__
@@ -25,9 +26,28 @@ import ProgressState from '@tdev-components/documents/ProgressState';
 ````
 
 <BrowserWindow>
-<ProgressState id="b0cd293a-d45d-4c59-9bac-a83b986baf27">
+    <ProgressState id="e383ca48-5a47-41ba-bb6c-8d241dcabdc5">
 
-1. <TaskState id="c599706c-8422-453d-af02-c23e00686504" inline /> Hello
+    1. <TaskState id="c599706c-8422-453d-af02-c23e00686504" inline /> Hello
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
+</BrowserWindow>
+
+## Optionen
+
+### Mit Bestätigung
+
+````md
+import ProgressState from '@tdev-components/documents/ProgressState';
+
+<ProgressState id="baf83816-1621-403d-b075-309a46d12ab8" confirm>
+
+1. Hello Bello and Bella
 2. World **bla** __foo__
 3. [Link](https://example.com)
 4. `inline code!!`
@@ -35,4 +55,76 @@ import ProgressState from '@tdev-components/documents/ProgressState';
     console.log('code block');
     ```
 </ProgressState>
+````
+<BrowserWindow>
+    <ProgressState id="baf83816-1621-403d-b075-309a46d12ab8" confirm>
+
+    1. Hello Bello and Bella
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
+</BrowserWindow>
+
+### Kein Zurücksetzen
+
+````md
+import ProgressState from '@tdev-components/documents/ProgressState';
+
+<ProgressState id="4558828c-be84-46ec-90ee-737ec5da9595" preventSteppingBack>
+
+1. Hello Bello and Bella
+2. World **bla** __foo__
+3. [Link](https://example.com)
+4. `inline code!!`
+    ```js
+    console.log('code block');
+    ```
+</ProgressState>
+````
+
+<BrowserWindow>
+    <ProgressState id="4558828c-be84-46ec-90ee-737ec5da9595" preventSteppingBack>
+
+    1. Hello Bello and Bella
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
+</BrowserWindow>
+
+### Nur den aktuellen Schritt anzeigen
+
+````md
+import ProgressState from '@tdev-components/documents/ProgressState';
+
+<ProgressState id="831f561b-88c7-44f2-96f2-1dc34e88ceeb" preventTogglingPastSteps preventTogglingFutureSteps>
+
+1. Hello Bello and Bella
+2. World **bla** __foo__
+3. [Link](https://example.com)
+4. `inline code!!`
+    ```js
+    console.log('code block');
+    ```
+</ProgressState>
+````
+
+<BrowserWindow>
+    <ProgressState id="831f561b-88c7-44f2-96f2-1dc34e88ceeb" preventTogglingPastSteps preventTogglingFutureSteps>
+
+    1. Hello Bello and Bella
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
 </BrowserWindow>
