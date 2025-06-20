@@ -1,0 +1,17 @@
+.button {
+    width: var(--tdev-icon-button-size, 1.5rem);
+    height: var(--tdev-icon-button-size, 1.5rem);
+    border-radius: calc(var(--tdev-icon-button-size, 1.5rem) / 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    font-weight: bold;
+
+    border-width: 0px;
+    background-color: transparent;
+    &:hover {
+        background-color: var(--ifm-hover-overlay);
+    }
+}

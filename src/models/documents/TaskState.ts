@@ -10,6 +10,8 @@ import {
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
+import { mdiIcon } from '@tdev-components/documents/TaskState';
+import { mdiColor } from '@tdev-components/EditingOverview';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -69,6 +71,19 @@ class TaskState extends iDocument<DocumentType.TaskState> {
     @computed
     get taskState(): StateType {
         return this.derivedData.state;
+    }
+
+    @computed
+    get isDone(): boolean {
+        return this.taskState === 'checked';
+    }
+
+    @computed
+    get editingIconState() {
+        return {
+            path: mdiIcon[this.taskState],
+            color: `var(${mdiColor[this.taskState]})`
+        };
     }
 
     @computed

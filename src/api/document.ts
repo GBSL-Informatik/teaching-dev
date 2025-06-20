@@ -20,6 +20,7 @@ import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import Excalidoc from '@tdev/excalidoc/model';
+import ProgressState from '@tdev-models/documents/ProgressState';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -37,6 +38,7 @@ export enum DocumentType {
     Script = 'script',
     ScriptVersion = 'script_version',
     TaskState = 'task_state',
+    ProgressState = 'progress_state',
     String = 'string',
     QuillV2 = 'quill_v2',
     Solution = 'solution',
@@ -117,6 +119,9 @@ export type StateType =
 export interface TaskStateData {
     state: StateType;
 }
+export interface ProgressStateData {
+    progress: number;
+}
 
 export interface MdxCommentData {
     type: string;
@@ -154,6 +159,7 @@ export interface NetpbmGraphicData {
 export interface TypeDataMapping {
     [DocumentType.Script]: ScriptData;
     [DocumentType.TaskState]: TaskStateData;
+    [DocumentType.ProgressState]: ProgressStateData;
     [DocumentType.ScriptVersion]: ScriptVersionData;
     [DocumentType.String]: StringData;
     [DocumentType.QuillV2]: QuillV2Data;
@@ -174,6 +180,7 @@ export interface TypeDataMapping {
 export interface TypeModelMapping {
     [DocumentType.Script]: Script;
     [DocumentType.TaskState]: TaskState;
+    [DocumentType.ProgressState]: ProgressState;
     [DocumentType.ScriptVersion]: ScriptVersion;
     [DocumentType.String]: String;
     [DocumentType.QuillV2]: QuillV2;
@@ -212,7 +219,8 @@ export type DocumentTypes =
     | TextMessage
     | DynamicDocumentRootModel
     | DynamicDocumentRoots
-    | NetpbmGraphic;
+    | NetpbmGraphic
+    | ProgressState;
 
 export interface Document<Type extends DocumentType> {
     id: string;

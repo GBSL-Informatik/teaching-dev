@@ -8,6 +8,7 @@ import TaskState from '@tdev-models/documents/TaskState';
 import _ from 'lodash';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
+import ProgressState from './documents/ProgressState';
 
 export default class Page {
     readonly store: PageStore;
@@ -55,10 +56,12 @@ export default class Page {
     }
 
     @computed
-    get taskStates(): TaskState[] {
+    get editingState(): (TaskState | ProgressState)[] {
         return this.documentRoots
             .flatMap((doc) => doc.firstMainDocument)
-            .filter((d): d is TaskState => d instanceof TaskState)
+            .filter(
+                (d): d is TaskState | ProgressState => d instanceof TaskState || d instanceof ProgressState
+            )
             .filter((d) => d?.root?.meta.pagePosition)
             .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
     }
@@ -121,11 +124,14 @@ export default class Page {
     }
 
     @computed
-    get taskStatesByUsers() {
+    get editingStateByUsers() {
         return _.groupBy(
             this.documentRoots
                 .flatMap((dr) => dr.allDocuments)
-                .filter((doc): doc is TaskState => doc instanceof TaskState)
+                .filter(
+                    (d): d is TaskState | ProgressState =>
+                        d instanceof TaskState || d instanceof ProgressState
+                )
                 .filter((doc) => doc.isMain && doc.root?.meta.pagePosition)
                 .filter((doc) =>
                     this.activeStudentGroup ? this.activeStudentGroup.userIds.has(doc.authorId) : true
