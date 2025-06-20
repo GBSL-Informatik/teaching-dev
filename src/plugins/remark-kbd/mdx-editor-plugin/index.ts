@@ -49,8 +49,10 @@ export const kbdPlugin = realmPlugin<{}>({
                 (editor: LexicalEditor) => {
                     return editor.registerCommand<boolean | null>(
                         TOGGLE_KBD_COMMAND,
-                        (payload) => {
-                            $toggleKbd(payload === null ? true : !!payload);
+                        (payload, currentEditor) => {
+                            currentEditor.update(() => {
+                                $toggleKbd(payload === null ? true : !!payload);
+                            });
                             return true;
                         },
                         COMMAND_PRIORITY_LOW

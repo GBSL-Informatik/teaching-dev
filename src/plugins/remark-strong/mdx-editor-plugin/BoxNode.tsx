@@ -129,7 +129,7 @@ export const TOGGLE_BOX_COMMAND: LexicalCommand<boolean | null> = createCommand(
  */
 export function $toggleBoxed(boxOn: boolean): void {
     const selection = $getSelection();
-
+    console.log('TOGGLE_BOX_COMMAND', boxOn, selection);
     if (!$isRangeSelection(selection)) {
         return;
     }
