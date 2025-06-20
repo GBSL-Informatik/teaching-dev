@@ -105,43 +105,42 @@ const internalInsertImage$ = Signal<SrcImageParameters>((r) => {
         if (!theEditor) {
             return;
         }
-        theEditor.focus(
-            () => {
-                theEditor.read(() => {
-                    const selection = $getSelection();
-                    if ($isRangeSelection(selection)) {
-                        const nodes = selection.getNodes();
-                        console.log('nodes', nodes[0]?.getTextContent());
-                        const selectedNode = nodes[0];
-                        if (!selectedNode) {
-                            return;
-                        }
-                        let currentNode = selectedNode;
-                        let parent = selectedNode.getParent();
-                        while (($isElementNode(parent) && parent.isInline()) || $isHeadingNode(parent)) {
-                            currentNode = parent;
-                            parent = currentNode.getParent();
-                        }
-                        theEditor.update(() => {
-                            const imageFigure = $createImageFigureNode();
-                            const imageNode = $createImageNode({
-                                altText: values.altText ?? '',
-                                src: values.src
-                            });
-                            const imageCaption = $createImageCaptionNode();
-                            imageCaption.append($createParagraphNode());
-                            imageFigure.append(imageNode, imageCaption);
-                            if ($isParagraphNode(currentNode.getParent())) {
-                                currentNode.getParent()!.insertAfter(imageFigure);
-                            } else {
-                                currentNode.insertAfter(imageFigure);
-                            }
-                        });
+        // theEditor.focus(
+        //     () => {
+        theEditor.read(() => {
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                const nodes = selection.getNodes();
+                const selectedNode = nodes[0];
+                if (!selectedNode) {
+                    return;
+                }
+                let currentNode = selectedNode;
+                let parent = selectedNode.getParent();
+                while (($isElementNode(parent) && parent.isInline()) || $isHeadingNode(parent)) {
+                    currentNode = parent;
+                    parent = currentNode.getParent();
+                }
+                theEditor.update(() => {
+                    const imageFigure = $createImageFigureNode();
+                    const imageNode = $createImageNode({
+                        altText: values.altText ?? '',
+                        src: values.src
+                    });
+                    const imageCaption = $createImageCaptionNode();
+                    imageCaption.append($createParagraphNode());
+                    imageFigure.append(imageNode, imageCaption);
+                    if ($isParagraphNode(currentNode.getParent())) {
+                        currentNode.getParent()!.insertAfter(imageFigure);
+                    } else {
+                        currentNode.insertAfter(imageFigure, true);
                     }
                 });
-            },
-            { defaultSelection: 'rootEnd' }
-        );
+            }
+        });
+        // },
+        // { defaultSelection: 'rootEnd' }
+        // );
     });
 });
 
