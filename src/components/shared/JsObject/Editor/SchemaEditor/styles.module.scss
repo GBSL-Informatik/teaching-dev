@@ -1,0 +1,11 @@
+.js {
+    scrollbar-width: thin;
+    padding-bottom: 0.25em;
+    padding-left: 2px;
+    --tdev-js-editor-indent-size: 0.75em;
+    &:not(.noName) {
+        display: grid;
+        grid-template-columns: minmax(5em, 1fr) minmax(min-content, 5fr);
+        grid-template-rows: auto;
+    }
+}

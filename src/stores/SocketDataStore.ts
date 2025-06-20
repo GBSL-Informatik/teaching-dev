@@ -16,6 +16,7 @@ import {
     RecordType,
     ServerToClientEvents
 } from '../api/IoEventTypes';
+import { AiRequest as ApiAiRequest } from '@tdev-api/aiRequest';
 import { BACKEND_URL } from '../authConfig';
 import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
@@ -232,6 +233,10 @@ export class SocketDataStore extends iStore<'ping'> {
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;
                 this.root.studentGroupStore.handleUpdate(studentGroup);
+                break;
+            case RecordType.AiRequest:
+                const aiRequest = record as ApiAiRequest;
+                this.root.aiStore.handleUpdate(aiRequest);
                 break;
             default:
                 console.log('changedRecord', type, record);

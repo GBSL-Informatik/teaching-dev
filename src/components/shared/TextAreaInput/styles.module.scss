@@ -1,5 +1,6 @@
 .textAreaInput {
     width: 100%;
+    --tdev-text-area-height-shift: 1em;
     padding: var(--ifm-button-padding-vertical);
     resize: none;
     overflow-y: hidden;
@@ -7,7 +8,9 @@
     border-radius: var(--ifm-global-radius);
     font-size: var(--ifm-font-size-base);
     box-shadow: var(--ifm-global-shadow-md);
-    transition: height 0.3s ease-in-out;
+    min-height: calc(1.1em + var(--tdev-text-area-height-shift)); /* Minimum height for single line */
+    line-height: normal; /* Ensure consistent line height */
+    height: auto; /* Allow height to adjust based on content */
     &:focus {
         border-color: var(--ifm-link-hover-color);
         outline: none;
@@ -16,10 +19,4 @@
     &.monospace {
         font-family: var(--ifm-font-family-monospace);
     }
-}
-
-.label {
-    font-family: var(--ifm-heading-font-family);
-    font-weight: var(--ifm-heading-font-weight);
-    font-size: var(--ifm-h4-font-size);
 }
