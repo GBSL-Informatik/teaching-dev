@@ -19,7 +19,7 @@ export const validateMatchingNumberOfRasterBytes = (
 };
 
 export const validateMaxValue = (maxValue: number, errors: ParserMessage[]) => {
-    if (maxValue <= 1 || maxValue >= 65536) {
+    if (maxValue < 1 || maxValue >= 65536) {
         errors.push(
             <span>
                 Maximalwert <code>{maxValue}</code> ungültig. Der Wert muss grösser als 0 und kleiner als
