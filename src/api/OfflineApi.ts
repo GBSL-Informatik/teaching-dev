@@ -160,7 +160,7 @@ export default class OfflineApi {
     async get<T = any>(url: string, ...config: any): AxiosPromise<T | null> {
         const { model, id, query, parts } = urlParts(url);
 
-        log('get', url);
+        log('get', url, parts);
         switch (model) {
             case 'user':
                 return resolveResponse(OfflineUser as unknown as T);

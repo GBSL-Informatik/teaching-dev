@@ -39,10 +39,14 @@
     --button-separator-color: var(--ifm-color-secondary);
 }
 
-.secondary,
+.secondary {
+    --ifm-badge-background-color: var(--ifm-color-secondary);
+    color: var(--ifm-color-black);
+}
+
 .grey,
 .gray {
-    --ifm-badge-background-color: var(--ifm-color-secondary);
+    --ifm-badge-background-color: var(--ifm-color-gray-600);
     color: var(--ifm-color-black);
 }
 
@@ -65,6 +69,9 @@
         --baseTextContrast: var(--ifm-color-white);
     }
 }
+.buttonGray {
+    --ifm-button-border-color: var(--ifm-color-gray-500);
+}
 .buttonPrimary {
     color: var(--ifm-color-primary);
     --ifm-badge-background-color: var(--ifm-color-primary);
@@ -76,5 +83,8 @@
             --ifm-button-color: var(--ifm-color-black);
             --baseTextContrast: var(--ifm-color-black);
         }
+    }
+    .buttonGray {
+        --ifm-button-border-color: var(--ifm-color-secondary);
     }
 }

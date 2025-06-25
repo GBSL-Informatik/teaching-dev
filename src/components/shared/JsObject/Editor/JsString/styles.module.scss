@@ -1,0 +1,11 @@
+// two classes needed for higher specificity of --tdev-text-area-height-shift
+.jsString {
+    line-height: 0;
+    .string.textArea {
+        min-width: 10em;
+        --ifm-button-padding-vertical: 0.25em;
+        --tdev-text-area-height-shift: 0em;
+        transform: translateY(4px);
+        margin: 0;
+    }
+}
