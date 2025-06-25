@@ -4,6 +4,7 @@ import { unzip } from 'fflate';
 import { XMLParser } from 'fast-xml-parser';
 import CodeBlock from '@theme/CodeBlock';
 import { visit } from '@tdev/docx-grader';
+import { languageExtractor, textExtractor } from '@tdev/docx-grader/extractors';
 
 const unzipFile = (file: File): Promise<{ [path: string]: Uint8Array }> => {
     return new Promise((resolve, reject) => {
@@ -87,27 +88,8 @@ export default function Home(): React.ReactNode {
             setPlainText('');
             return;
         }
-        const parts: string[] = [];
-        visit(
-            parsed,
-            (n) => n === 'w:p',
-            (_, node) => {
-                const inlineParts: string[] = [];
-                visit(
-                    node,
-                    (n) => n === 'w:t',
-                    (_, node) => {
-                        if (node['#text'] !== undefined) {
-                            inlineParts.push(node['#text']);
-                        }
-                        return 'skipChildren';
-                    }
-                );
-                parts.push(inlineParts.join(''));
-                return 'continue';
-            }
-        );
-        setPlainText(parts.join('\n'));
+        setPlainText(textExtractor(parsed));
+        console.log(languageExtractor(parsed));
     }, [shownFile]);
 
     return (

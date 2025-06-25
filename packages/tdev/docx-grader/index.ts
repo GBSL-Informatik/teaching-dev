@@ -5,14 +5,20 @@ interface Attribute {
 export interface Node {
     attributes?: Attribute;
     ['#text']?: string;
+    parent?: Node;
     [key: string]: Node | Node[] | string | number | Attribute | undefined;
 }
 export type Action = 'continue' | 'break' | 'skip' | 'skipChildren';
-export const visit = (
+
+export type Tester = (name: string, node: Node) => boolean;
+export type Visitor = (
+    name: string,
     node: Node,
-    test: (name: string, node: Node) => boolean,
-    visit: (name: string, node: Node, index: number, parent?: { name: string; node: Node }) => Action
-) => {
+    index: number,
+    parent?: { name: string; node: Node }
+) => Action;
+
+export const visit = (node: Node, test: Tester, visit: Visitor) => {
     const visitNode = (
         name: string,
         node: Node,
@@ -28,7 +34,9 @@ export const visit = (
                 return 'continue';
             }
         }
-        const childNames = Object.keys(node).filter((prop) => prop !== 'attributes' && prop !== '#text');
+        const childNames = Object.keys(node).filter(
+            (prop) => prop !== 'attributes' && prop !== '#text' && prop !== 'parent'
+        );
         childNames.forEach((name, idx) => {
             const child = node[name];
             if (Array.isArray(child)) {
