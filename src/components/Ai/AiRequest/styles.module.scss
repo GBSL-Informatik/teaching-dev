@@ -1,0 +1,17 @@
+.response {
+    max-height: 40em;
+    overflow-y: auto;
+}
+.request {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.aiRequest {
+    margin: 0 0.5em;
+}
+.requestInfo {
+    display: block;
+    max-height: 20em;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
