@@ -3,7 +3,7 @@ import Layout from '@theme/Layout';
 import { unzip } from 'fflate';
 import { XMLParser } from 'fast-xml-parser';
 import CodeBlock from '@theme/CodeBlock';
-import { visit } from './visitor';
+import { visit } from '@tdev/docx-grader';
 
 const unzipFile = (file: File): Promise<{ [path: string]: Uint8Array }> => {
     return new Promise((resolve, reject) => {
