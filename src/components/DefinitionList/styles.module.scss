@@ -36,6 +36,8 @@ dl.definitionList {
         overflow-y: hidden;
         display: inline-table;
         padding-left: 0.6rem;
+        table-layout: fixed; // Forces table to respect container width
+        width: 100%; // Set explicit width for the table
         &:last-child {
             padding-bottom: 0.4rem;
         }
@@ -63,7 +65,8 @@ dl.definitionList {
         dd {
             grid-column: 1;
             margin-left: 1.5rem;
-            display: block;
+            max-width: 97%;
+            // display: block;
         }
     }
 }

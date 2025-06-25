@@ -13,11 +13,15 @@ interface Props {
     labelClassName?: string;
     value?: string;
     type?: HTMLInputTypeAttribute;
-    label?: string;
+    label?: React.ReactNode;
     noSpellCheck?: boolean;
     noAutoFocus?: boolean;
     required?: boolean;
     options?: string[];
+    step?: string | number | undefined;
+    min?: string | number | undefined;
+    max?: string | number | undefined;
+    readOnly?: boolean;
 }
 
 const TextInput = observer((props: Props) => {
@@ -38,6 +42,7 @@ const TextInput = observer((props: Props) => {
                 value={props.value ?? text}
                 className={clsx(props.className, styles.textInput)}
                 required={props.required}
+                disabled={props.readOnly}
                 onChange={(e) => {
                     if (props.value === undefined) {
                         setText(e.target.value);
@@ -55,6 +60,9 @@ const TextInput = observer((props: Props) => {
                 autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
+                step={props.step}
+                min={props.min}
+                max={props.max}
             />
         </>
     );

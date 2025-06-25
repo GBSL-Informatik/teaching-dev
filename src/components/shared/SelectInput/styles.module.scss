@@ -6,7 +6,8 @@
     font-size: var(--ifm-font-size-base);
     color: #333;
     cursor: pointer;
-    width: 100%;
+    width: auto;
+    min-width: 0;
     max-width: 300px;
     transition: all 0.3s ease;
 
@@ -18,5 +19,9 @@
 
     option {
         padding: var(--ifm-button-padding-vertical);
+        &.selected {
+            background-color: var(--ifm-color-primary);
+            color: white;
+        }
     }
 }

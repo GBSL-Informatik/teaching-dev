@@ -22,7 +22,9 @@ const { NO_AUTH, OFFLINE_API, TEST_USER, SENTRY_DSN } = siteConfig.customFields 
 };
 export const msalInstance = new PublicClientApplication(msalConfig);
 
-const currentTestUsername = Storage.get('SessionStore', { user: { email: TEST_USER } })?.user?.email;
+const currentTestUsername = Storage.get('SessionStore', {
+    user: { email: TEST_USER }
+})?.user?.email?.toLowerCase();
 
 if (NO_AUTH) {
     if (OFFLINE_API) {
