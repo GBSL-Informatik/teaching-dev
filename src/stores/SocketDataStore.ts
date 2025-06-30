@@ -25,7 +25,7 @@ import { CmsSettings } from '@tdev-api/cms';
 import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
 import StudentGroup from '@tdev-models/StudentGroup';
 import siteConfig from '@generated/docusaurus.config';
-const { OFFLINE_API } = siteConfig.customFields as { OFFLINE_API?: boolean };
+const { OFFLINE_API } = siteConfig.customFields as { OFFLINE_API?: boolean | 'memory' | 'indexDb' };
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**

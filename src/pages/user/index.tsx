@@ -32,7 +32,7 @@ import { set } from 'lodash';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
-    OFFLINE_API?: boolean;
+    OFFLINE_API?: boolean | 'memory' | 'indexDb';
     TEST_USER?: string;
 };
 

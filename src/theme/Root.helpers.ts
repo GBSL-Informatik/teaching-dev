@@ -20,7 +20,24 @@ export const noAuthMessage = (username?: string) => {
     ].join('\n');
 };
 
-export const offlineApiMessage = () => {
+const MEMEORY_ADAPTER_MESSAGE = [
+    '│                                                      │',
+    '│  All API-Calls are handled client-side, all changes  │',
+    '│  will be lost on reload and SocketIo will not work.  │',
+    '│                                                      │',
+    '│  The user will always be offline.user@tdev.ch!       │',
+    '│                                                      │',
+    '│  --> enable api calls by removing "OFFLINE_API" from │',
+    '│      the environment (or the .env file)              │'
+];
+
+const INDEXDB_ADAPTER_MESSAGE = [
+    '│                                                      │',
+    '│ A local IndexDB is used to store changes.            │',
+    '│                                                      │'
+];
+
+export const offlineApiMessage = (dbAdapter: boolean | 'memory' | 'indexDb') => {
     return [
         '',
         '┌──────────────────────────────────────────────────────┐',
@@ -31,14 +48,7 @@ export const offlineApiMessage = () => {
         '│    | |__| | |    | |    | |__ | || |\\  | |____       │',
         '│     \\____/|_|    |_|    |____||_||_| \\_|______|      │',
         '│                                                      │',
-        '│                                                      │',
-        '│  All API-Calls are handled client-side, all changes  │',
-        '│  will be lost on reload and SocketIo will not work.  │',
-        '│                                                      │',
-        '│  The user will always be offline.user@tdev.ch!       │',
-        '│                                                      │',
-        '│  --> enable api calls by removing "OFFLINE_API" from │',
-        '│      the environment (or the .env file)              │',
+        ...(dbAdapter === 'indexDb' ? INDEXDB_ADAPTER_MESSAGE : MEMEORY_ADAPTER_MESSAGE),
         '└──────────────────────────────────────────────────────┘'
     ].join('\n');
 };
