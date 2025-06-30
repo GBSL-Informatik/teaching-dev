@@ -33,5 +33,6 @@
         "ghcr.io/devcontainers/features/node:1": {
             "version": "22.12"
         }
-    }
+    },
+    "runArgs": ["--network=host"]
 }
