@@ -1,0 +1,57 @@
+---
+page_id: 11abd8f9-599e-4f9e-8c5a-66c3f0d820c9
+---
+import Steps from '@tdev-components/Steps';
+
+# Lokale Installation
+
+## Windows
+
+Lokal
+: **Vorteil**: schnell und einfach, besonders für die *Offline-Nutzung* ohne API-Anbindung geeignet.
+: **Nachteil**: API-Anbindung ist schmerzhaft - besser auf WSL ausweichen.
+WSL
+: Windows Subsystem for Linux (WSL)
+: **Vorteil**: Bessere Linux-Kompatibilität, besonders für die *API-Anbindung* geeignet.
+: **Nachteil**: Etwas komplexer bis die Voraussetzungen installiert sind, danach für jedes weitere Projekt einfach einzurichten.
+
+### Lokal
+<Steps>
+1. **NodeJS installieren**: [NodeJS herunterladen](https://nodejs.org/en/download/) und installieren.
+2. Ausführung von Skripts bei **PowerShell** zulassen:
+    - Überprüfen, ob die Ausführung von Skripts erlaubt ist:
+      ```ps
+      Get-ExecutionPolicy   # Restricted | RemoteSigned | Unrestricted
+      ```
+    - Falls die Ausgabe `Restricted` ist, Skriptausführung erlauben:
+        1. PowerShell als Administrator öffnen
+        2. Befehl ausführen:
+           ```ps
+           Set-ExecutionPolicy RemoteSigned
+           ```
+3. Yarn installieren:
+    ```bash
+    npm install --global yarn
+    ```
+4. **Repository klonen** - das Repository von Github klonen und in VS Code öffnen.
+5. Abhängigkeiten installieren: In VS Code __Terminal > Neues Terminal__ öffnen und folgenden Befehl ausführen:
+    ```bash
+    yarn install
+    ```
+6. Entwicklungsserver starten: Im Terminal folgenden Befehl ausführen:
+    ```bash
+    yarn run start
+    ```
+</Steps>
+
+### WSL
+:::info[🚧 WIP]
+TODO
+:::
+
+## macOS
+
+
+:::info[🚧 WIP]
+TODO
+:::
