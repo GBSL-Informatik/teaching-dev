@@ -75,12 +75,13 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
       </TemplateCode>
   4. [http-auth](https://github.com/dokku/dokku-http-auth) aktivieren
      Um die Seite zu schützen, kann HTTP-Auth aktiviert werden. Dies geschieht mit dem Befehl
+      <DynamicInput name="app" default='info-teaching-website' />
       <DynamicInput name="username" />
       <DynamicInput name="password" />
      
       <TemplateCode>
       ```bash title="root@dokku"
-      dokku auth:enable {{app}} {{username}} {{password}}
+      dokku http-auth:enable {{app}} {{username}} {{password}}
       ```
       </TemplateCode>
      Es lassen sich auch weitere Zugänge anlegen:
