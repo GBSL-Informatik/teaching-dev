@@ -26,6 +26,7 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
          ```bash title="root@dokku"
          dokku apps:create {{app}}
          dokku config:set {{app}} NGINX_ROOT=build
+         dokku config:set {{app}} NGINX_DEFAULT_REQUEST=index.html
          # specify the (sub)domain configured in e.g. Cloudflare
          dokku domains:add {{app}} {{domain}}
          # remove default global domain
