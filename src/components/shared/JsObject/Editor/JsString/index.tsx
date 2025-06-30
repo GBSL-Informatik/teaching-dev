@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
+import { default as JsonStringModel } from '@tdev-models/Ai/JsonSchema/JsonString';
 import JsType from '../JsType';
 import { default as JsStringModel } from '../models/JsString';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';

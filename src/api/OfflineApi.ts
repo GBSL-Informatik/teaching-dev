@@ -5,9 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { DocumentRoot } from './documentRoot';
 import { GroupPermission, Permissions, UserPermission } from './permission';
 import { StudentGroup } from './studentGroup';
+import { AiTemplate } from './admin';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = false;
+const LOG_REQUESTS = true;
 
 let OfflineUser: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -77,6 +78,21 @@ const upsertStudentGroupRecord = (data: Partial<StudentGroup>, _id?: string): St
     } as StudentGroup;
 };
 
+const upsertAiTemplateRecord = (data: Partial<AiTemplate>, _id?: string): AiTemplate => {
+    const id = _id || data.id || uuidv4();
+    console.log('id', _id, data.id, id);
+    return {
+        id: id,
+        name: 'Offline Template',
+        description: 'Offline Template Description',
+        content: 'This is an offline template content.',
+        createdAt: TIME_NOW,
+        updatedAt: TIME_NOW,
+        authorId: OfflineUser.id,
+        ...data
+    } as AiTemplate;
+};
+
 const log = (method: string, url: string, data?: any) => {
     if (LOG_REQUESTS) {
         console.log(`[${method}]: ${url}`, data);
@@ -117,6 +133,10 @@ export default class OfflineApi {
         log('post', url, data);
         switch (model) {
             case 'admin':
+                if (url.startsWith('/admin/aiTemplates')) {
+                    const template = upsertAiTemplateRecord(data as Partial<AiTemplate>);
+                    return resolveResponse(template as unknown as T);
+                }
                 return resolveResponse(data as unknown as T);
             case 'cms':
                 return resolveResponse({} as unknown as T);
@@ -231,6 +251,8 @@ export default class OfflineApi {
                 return resolveResponse([] as unknown as T);
             case 'cms':
                 return resolveResponse({} as unknown as T);
+            case 'aiTemplates':
+                return resolveResponse([] as unknown as T);
         }
         return resolveResponse(null);
     }
