@@ -31,12 +31,11 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
          # remove default global domain
          dokku domains:remove {{app}} {{app}}.gbsl.website
 
-         dokku config:set --no-restart {{app}}
-         dokku config:set --no-restart API_URI={{API_URI}}
-         dokku config:set --no-restart APP_URL=https://{{domain}}
-         dokku config:set --no-restart BACKEND_URL={{BACKEND_URL}}
-         dokku config:set --no-restart CLIENT_ID={{CLIENT_ID}}
-         dokku config:set --no-restart TENANT_ID={{TENANT_ID}}
+         dokku config:set --no-restart {{app}} API_URI={{API_URI}}
+         dokku config:set --no-restart {{app}} APP_URL=https://{{domain}}
+         dokku config:set --no-restart {{app}} BACKEND_URL={{BACKEND_URL}}
+         dokku config:set --no-restart {{app}} CLIENT_ID={{CLIENT_ID}}
+         dokku config:set --no-restart {{app}} TENANT_ID={{TENANT_ID}}
          ```
       </TemplateCode>
       :::details[Alternativ: direkt über <Val as="code">`/home/dokku/{{app}}/ENV`</Val>]
@@ -65,7 +64,7 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
 
      Im `app.json` ist spezifiziert, wie die App gebuildet wird (`yarn install && yarn run build`). Zusätzliche Schritte könnten dort definiert werden.
 
-     Die Date `.static` ist für das zweite Buildpack `buildpack-nginx` notwendig - ohne diese (leere) Datei wird die Seite nicht veröffentlicht.
+     Die Datei `.static` ist für das zweite Buildpack `buildpack-nginx` notwendig - ohne diese (leere) Datei wird die Seite nicht veröffentlicht.
      :::
   3. SSL-Zertifikat erstellen
      Sobald die Seite erstmalig veröffentlicht wurde, muss einmalig ein SSL-Zertifikat erstellt werden. Dies geschieht mit dem Befehl
@@ -97,4 +96,67 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
       ```
       </TemplateCode>
   5. (Optional) eine [Github-Action](https://dokku.com/docs/deployment/continuous-integration/github-actions/) erstellen, welche die Seite automatisch veröffentlicht, sobald ein Commit auf `main` gepusht wird.
+
+      ```bash title=".github/workflows/deploy.yml"
+      ---
+      name: 'dokku-deploy'
+
+      on:
+      push:
+         branches:
+            - main
+
+      jobs:
+      deploy:
+         runs-on: ubuntu-24.04
+         steps:
+            # third-party action that cancels previous runs
+            - name: Cancel Previous Runs
+            uses: styfle/cancel-workflow-action@0.12.1
+            with:
+               access_token: ${{ github.token }}
+
+            - name: Cloning repo
+            uses: actions/checkout@v4
+            with:
+               fetch-depth: 0
+
+            - name: Push to dokku
+            uses: dokku/github-action@master
+            with:
+               branch: 'main'
+               git_push_flags: '--force'
+               ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
+               git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE_URL }}
+               ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+      ```
+      `DOKKU_SSH_HOST_KEY`
+      : Der Fingerprint des Dokku-Servers (optional, wenn nicht vorhanden, wird der Host-Key durch ein Keyscan validiert.)
+      : <DynamicInput name="dokku-ip" />
+      :::dd
+      <TemplateCode>
+         ```bash title="@laptop"
+         ssh-keyscan -t rsa {{dokku-ip}}
+         ```
+      </TemplateCode>
+      :::
+      `DOKKU_GIT_REMOTE_URL`
+      :::dd
+      <TemplateCode>
+         ```bash title="@config"
+         ssh://dokku@{{dokku-ip}}:22/{{app}}
+         ```
+      </TemplateCode>
+      :::
+      `DOKKU_SSH_PRIVATE_KEY`
+      : Der private SSH-Key, welcher für den Zugriff auf den Dokku-Server verwendet wird
+      : Erstelle ein neues SSH-Key-Paar mit `ssh-keygen` (nicht auschecken!). Der private Key wird auf Github als Secret hinterlegt, der öffentliche Key muss auf dem Dokku-Server hinterlegt werden.
+      :::dd
+      <TemplateCode>
+      ```bash title="@dokku"
+       dokku ssh-keys:add {{app}} ./path/to/key.pub
+      ```
+      </TemplateCode>
+      :::
+
 </Steps>
