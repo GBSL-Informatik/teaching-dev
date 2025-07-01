@@ -9,6 +9,7 @@ import { DbAdapter } from './Adapter';
 import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
 import getSiteConfig from '@site/siteConfig';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import _ from 'lodash';
 
 const siteConfig = getSiteConfig();
@@ -83,7 +84,7 @@ export default class OfflineApi {
         }
     };
     constructor(mode: boolean | 'memory' | 'indexedDB') {
-        if (mode === 'indexedDB') {
+        if (mode === 'indexedDB' && ExecutionEnvironment.canUseDOM) {
             try {
                 this.dbAdapter = new IndexedDbAdapter(DB_NAME);
             } catch (error) {
