@@ -38,6 +38,14 @@ WSL
     ```bash
     yarn install
     ```
+6. `.env` hinzufügen
+    ```env title=".env"
+    OFFLINE_API="indexedDB"
+    ```
+    :::info[Hinweis]
+    Die `.env`-Datei ist notwendig, um die API-Anbindung zu deaktivieren.
+    Sie sollte nie in einem öffentlichen Repository hochgeladen werden, da sie sensible Informationen enthalten kann.
+    :::
 6. Entwicklungsserver starten: Im Terminal folgenden Befehl ausführen:
     ```bash
     yarn run start

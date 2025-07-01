@@ -6,7 +6,7 @@ import siteConfig from '@generated/docusaurus.config';
 import OfflineApi from './OfflineApi';
 const { NO_AUTH, OFFLINE_API } = siteConfig.customFields as {
     NO_AUTH?: boolean;
-    OFFLINE_API?: boolean | 'memory' | 'indexDb';
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
 };
 
 export namespace Api {

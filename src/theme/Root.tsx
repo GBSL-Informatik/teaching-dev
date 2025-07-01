@@ -18,7 +18,7 @@ const { NO_AUTH, OFFLINE_API, TEST_USER, SENTRY_DSN } = siteConfig.customFields 
     TEST_USER?: string;
     NO_AUTH?: boolean;
     SENTRY_DSN?: string;
-    OFFLINE_API?: boolean | 'memory' | 'indexDb';
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
 };
 export const msalInstance = new PublicClientApplication(msalConfig);
 

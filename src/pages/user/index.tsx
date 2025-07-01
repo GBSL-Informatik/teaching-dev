@@ -28,11 +28,10 @@ import { logout } from '@tdev-api/user';
 import SelectInput from '@tdev-components/shared/SelectInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
-import { set } from 'lodash';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
-    OFFLINE_API?: boolean | 'memory' | 'indexDb';
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
     TEST_USER?: string;
 };
 

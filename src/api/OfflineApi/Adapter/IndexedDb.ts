@@ -2,7 +2,7 @@ import { IDBPDatabase, openDB } from 'idb';
 import { DbAdapter, DBSchema } from '.';
 import { Document, DocumentType } from '@tdev-api/document';
 
-class IndexDbAdapter implements DbAdapter {
+class IndexedDbAdapter implements DbAdapter {
     private dbName: string;
     private dbPromise: Promise<IDBPDatabase<DBSchema>>;
 
@@ -60,4 +60,4 @@ class IndexDbAdapter implements DbAdapter {
     }
 }
 
-export default IndexDbAdapter;
+export default IndexedDbAdapter;

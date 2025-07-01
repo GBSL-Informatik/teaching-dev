@@ -29,8 +29,8 @@ const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
 const OFFLINE_API = process.env.OFFLINE_API === 'false' 
   ? false
-  : process.env.OFFLINE_API === 'indexDb'
-      ? 'indexDb'
+  : process.env.OFFLINE_API === 'indexedDB'
+      ? 'indexedDB'
       : !!process.env.OFFLINE_API || process.env.CODESPACES === 'true';
 
       const TITLE = siteConfig.title ?? 'Teaching-Dev';

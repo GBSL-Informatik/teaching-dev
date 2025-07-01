@@ -33,11 +33,11 @@ const MEMEORY_ADAPTER_MESSAGE = [
 
 const INDEXDB_ADAPTER_MESSAGE = [
     '│                                                      │',
-    '│ A local IndexDB is used to store changes.            │',
+    '│ A local IndexedDB is used to store changes.          │',
     '│                                                      │'
 ];
 
-export const offlineApiMessage = (dbAdapter: boolean | 'memory' | 'indexDb') => {
+export const offlineApiMessage = (dbAdapter: boolean | 'memory' | 'indexedDB') => {
     return [
         '',
         '┌──────────────────────────────────────────────────────┐',
@@ -48,7 +48,7 @@ export const offlineApiMessage = (dbAdapter: boolean | 'memory' | 'indexDb') => 
         '│    | |__| | |    | |    | |__ | || |\\  | |____       │',
         '│     \\____/|_|    |_|    |____||_||_| \\_|______|      │',
         '│                                                      │',
-        ...(dbAdapter === 'indexDb' ? INDEXDB_ADAPTER_MESSAGE : MEMEORY_ADAPTER_MESSAGE),
+        ...(dbAdapter === 'indexedDB' ? INDEXDB_ADAPTER_MESSAGE : MEMEORY_ADAPTER_MESSAGE),
         '└──────────────────────────────────────────────────────┘'
     ].join('\n');
 };

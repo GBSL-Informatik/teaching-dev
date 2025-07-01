@@ -6,10 +6,10 @@ import { DocumentRoot } from '../documentRoot';
 import { GroupPermission, Permissions, UserPermission } from '../permission';
 import { StudentGroup } from '../studentGroup';
 import { DbAdapter } from './Adapter';
-import IndexDbAdapter from './Adapter/IndexDb';
-import _ from 'lodash';
-import getSiteConfig from '@site/siteConfig';
+import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
+import getSiteConfig from '@site/siteConfig';
+import _ from 'lodash';
 
 const siteConfig = getSiteConfig();
 
@@ -82,9 +82,9 @@ export default class OfflineApi {
             use: (onFulfilled: any, onRejected: any) => {}
         }
     };
-    constructor(mode: boolean | 'memory' | 'indexDb') {
-        if (mode === 'indexDb') {
-            this.dbAdapter = new IndexDbAdapter(DB_NAME);
+    constructor(mode: boolean | 'memory' | 'indexedDB') {
+        if (mode === 'indexedDB') {
+            this.dbAdapter = new IndexedDbAdapter(DB_NAME);
         } else {
             this.dbAdapter = new MemoryDbAdapter();
         }
