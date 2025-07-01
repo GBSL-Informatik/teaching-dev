@@ -12,6 +12,7 @@ import {
     mdiDatabaseSyncOutline,
     mdiDeleteEmptyOutline,
     mdiHarddisk,
+    mdiHarddiskRemove,
     mdiLogout,
     mdiRefresh
 } from '@mdi/js';
@@ -32,12 +33,21 @@ import SelectInput from '@tdev-components/shared/SelectInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Badge from '@tdev-components/shared/Badge';
-import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { SIZE_M, SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import api from '@tdev-api/base';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
     TEST_USER?: string;
+};
+
+const API_MODES_DESCRIPTION: Record<string, string> = {
+    api: 'Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten.',
+    indexedDB:
+        'Alle Änderungen werden in einer lokalen Browserdatenbank gespeichert und verlassen den Computer nie. Beim Wechsel des Browsers oder des Laptops gehen die Daten verloren.',
+    memory: 'Änderungen werden nur temporär gespeichert. Sobald die Seite neue geladen wird oder der Browser geschlossen wird, sind die Änderungen verloren.'
 };
 
 const LeftAlign = (text: String) => {
@@ -89,24 +99,19 @@ const UserPage = observer(() => {
                 <DefinitionList className={clsx(styles.userInfo)}>
                     <dt>API-Modus</dt>
                     <dd>
-                        <div className={clsx(styles.apiMode)}>
-                            <Badge color="blue" className={clsx(styles.badge)}>
-                                <Icon
-                                    path={sessionStore.apiModeIcon}
-                                    size={SIZE_XS}
-                                    color={'var(--ifm-color-white'}
-                                    className={clsx(styles.icon)}
-                                />
-                                {sessionStore.apiMode}
-                            </Badge>
-                        </div>
-                    </dd>
-                    <dd>
-                        {sessionStore.apiMode === 'api'
-                            ? 'Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten.'
-                            : sessionStore.apiMode === 'indexedDB'
-                              ? 'Alle Änderungen werden in einer lokalen Browserdatenbank gespeichert und verlassen den Computer nie. Beim Wechsel des Browsers oder des Laptops gehen die Daten verloren.'
-                              : 'Änderungen werden nur temporär gespeichert. Sobald die Seite neue geladen wird oder der Browser geschlossen wird, sind die Änderungen verloren.'}
+                        <Badge
+                            color="blue"
+                            className={clsx(styles.badge)}
+                            title={API_MODES_DESCRIPTION[sessionStore.apiMode]}
+                        >
+                            <Icon
+                                path={sessionStore.apiModeIcon}
+                                size={SIZE_M}
+                                color={'var(--ifm-color-white'}
+                                className={clsx(styles.icon)}
+                            />
+                            {sessionStore.apiMode}
+                        </Badge>
                     </dd>
                     {sessionStore.apiMode === 'api' && (
                         <>
@@ -199,25 +204,27 @@ const UserPage = observer(() => {
                             </dd>
                         </>
                     )}
-                    <dt>Daten</dt>
-                    <dd>
-                        Während der Schulzeit werden alle ausgefüllten Textfelder, Codeblocks und Checkboxes
-                        auf einem Server der Schule gespeichert.
-                    </dd>
-                    <dd>
-                        Am Ende der Schulzeit erhalten die Lernenden einen Datenexport ihrer Daten (so dass
-                        die Webseite offline gebraucht werden kann). Zudem werden alle personenbezogenen Daten
-                        vom Server gelöscht.
-                    </dd>
-                    <dd>
-                        Bei einem Klassenwechsel oder einem Austritt kann die Datenlöschung auch vorgängig
-                        beantragt werden.
-                    </dd>
-                    <dt>Datenlöschung</dt>
-                    <dd>Alle personenbezogenen Daten löschen (Konto, Übungen, Notizen,...).</dd>
-                    <dd>
-                        <Button
-                            href={LeftAlign(`mailto:teachers.name@school.ch?subject=[${window.location.hostname}]: Datenlöschung für ${viewedUser?.email}&body=Guten Tag%0D%0A%0D%0A
+                    {sessionStore.apiMode === 'api' && (
+                        <>
+                            <dt>Daten</dt>
+                            <dd>
+                                Während der Schulzeit werden alle ausgefüllten Textfelder, Codeblocks und
+                                Checkboxes auf einem Server der Schule gespeichert.
+                            </dd>
+                            <dd>
+                                Am Ende der Schulzeit erhalten die Lernenden einen Datenexport ihrer Daten (so
+                                dass die Webseite offline gebraucht werden kann). Zudem werden alle
+                                personenbezogenen Daten vom Server gelöscht.
+                            </dd>
+                            <dd>
+                                Bei einem Klassenwechsel oder einem Austritt kann die Datenlöschung auch
+                                vorgängig beantragt werden.
+                            </dd>
+                            <dt>Datenlöschung</dt>
+                            <dd>Alle personenbezogenen Daten löschen (Konto, Übungen, Notizen,...).</dd>
+                            <dd>
+                                <Button
+                                    href={LeftAlign(`mailto:teachers.name@school.ch?subject=[${window.location.hostname}]: Datenlöschung für ${viewedUser?.email}&body=Guten Tag%0D%0A%0D%0A
                                     Hiermit beantrage ich die vollständige und unwiderrufliche Löschung meiner Daten der Webseite ${window.location.hostname}.%0D%0A%0D%0A
                                     
                                     E-Mail: ${viewedUser?.email}%0D%0A
@@ -227,61 +234,98 @@ const UserPage = observer(() => {
                                     
                                     Freundliche Grüsse,%0D%0A
                                     ${viewedUser?.firstName} ${viewedUser?.lastName} &cc=${viewedUser?.email}`)}
-                            text="Jetzt Beantragen"
-                            icon={mdiDeleteEmptyOutline}
-                            iconSide="left"
-                        />
-                    </dd>
-                    {NO_AUTH && (
-                        <>
-                            <dt>Test-User wechseln</dt>
+                                    text="Jetzt Beantragen"
+                                    icon={mdiDeleteEmptyOutline}
+                                    iconSide="left"
+                                />
+                            </dd>
+                            {NO_AUTH && (
+                                <>
+                                    <dt>Test-User wechseln</dt>
+                                    <dd>
+                                        <div className={clsx(styles.changeTestUser)}>
+                                            <SelectInput
+                                                options={userStore.users.map((user) => user.email)}
+                                                onChange={(username) => setTestUser(username)}
+                                                value={(sessionStore.account as any)?.username}
+                                                disabled={userStore.users.length <= 1}
+                                                placeholder={
+                                                    TEST_USER || 'DEFAULT_TEST_USER nicht definiert in .env'
+                                                }
+                                            />
+                                            {(sessionStore.account as any)?.username !==
+                                                TEST_USER?.toLowerCase() && (
+                                                <Button
+                                                    icon={mdiBackupRestore}
+                                                    color="primary"
+                                                    title={`Zum Standard-Test-User wechseln`}
+                                                    onClick={() => setTestUser(TEST_USER!)}
+                                                />
+                                            )}
+                                        </div>
+                                    </dd>
+                                </>
+                            )}
+                            <dt>Ausloggen</dt>
                             <dd>
-                                <div className={clsx(styles.changeTestUser)}>
-                                    <SelectInput
-                                        options={userStore.users.map((user) => user.email)}
-                                        onChange={(username) => setTestUser(username)}
-                                        value={(sessionStore.account as any)?.username}
-                                        disabled={userStore.users.length <= 1}
-                                        placeholder={TEST_USER || 'DEFAULT_TEST_USER nicht definiert in .env'}
-                                    />
-                                    {(sessionStore.account as any)?.username !== TEST_USER?.toLowerCase() && (
-                                        <Button
-                                            icon={mdiBackupRestore}
-                                            color="primary"
-                                            title={`Zum Standard-Test-User wechseln`}
-                                            onClick={() => setTestUser(TEST_USER!)}
-                                        />
-                                    )}
-                                </div>
+                                <Button
+                                    onClick={() => sessionStore.logout()}
+                                    text="Logout"
+                                    title="User Abmelden"
+                                    color="red"
+                                    icon={mdiLogout}
+                                    iconSide="left"
+                                    noOutline
+                                    className={clsx(styles.logout)}
+                                />
+                            </dd>
+                            <dt>LocalStorage Löschen</dt>
+                            <dd>
+                                <Button
+                                    text="Jetzt Löschen"
+                                    icon={mdiRefresh}
+                                    iconSide="left"
+                                    onClick={() => {
+                                        localStorage.clear();
+                                        window.location.reload();
+                                    }}
+                                    color="orange"
+                                />
                             </dd>
                         </>
                     )}
-                    <dt>Ausloggen</dt>
-                    <dd>
-                        <Button
-                            onClick={() => sessionStore.logout()}
-                            text="Logout"
-                            title="User Abmelden"
-                            color="red"
-                            icon={mdiLogout}
-                            iconSide="left"
-                            noOutline
-                            className={clsx(styles.logout)}
-                        />
-                    </dd>
-                    <dt>LocalStorage Löschen</dt>
-                    <dd>
-                        <Button
-                            text="Jetzt Löschen"
-                            icon={mdiRefresh}
-                            iconSide="left"
-                            onClick={() => {
-                                localStorage.clear();
-                                window.location.reload();
-                            }}
-                            color="orange"
-                        />
-                    </dd>
+                    {sessionStore.apiMode !== 'api' && (
+                        <>
+                            <dt>IndexedDB Daten löschen</dt>
+                            <dd>
+                                <Confirm
+                                    text="Jetzt Löschen"
+                                    confirmText={
+                                        sessionStore.apiMode === 'indexedDB'
+                                            ? 'Wirklich alle gespeicherten Daten löschen?'
+                                            : undefined
+                                    }
+                                    icon={mdiHarddiskRemove}
+                                    iconSide="left"
+                                    onConfirm={() => {
+                                        api
+                                            .destroyDb?.()
+                                            .then(() => {
+                                                console.log('IndexedDB Daten gelöscht');
+                                                window.location.reload();
+                                            })
+                                            .catch((err) => {
+                                                window.alert(
+                                                    'Fehler beim Löschen der IndexedDB Daten: ' + err.message
+                                                );
+                                            });
+                                    }}
+                                    color="orange"
+                                    confirmColor="red"
+                                />
+                            </dd>
+                        </>
+                    )}
                 </DefinitionList>
             </main>
         </Layout>

@@ -67,6 +67,15 @@ class IndexedDbAdapter implements DbAdapter {
             await db.delete(storeName, id);
         });
     }
+
+    async destroyDb(): Promise<void> {
+        return withFallback(async () => {
+            const db = await this.dbPromise;
+            await db.close();
+            // Optionally delete the database
+            await indexedDB.deleteDatabase(this.dbName);
+        });
+    }
 }
 
 export default IndexedDbAdapter;

@@ -17,7 +17,7 @@ export namespace Api {
     }
 }
 
-const api: AxiosInstance & { mode?: 'indexedDB' | 'memory' } = OFFLINE_API
+const api: AxiosInstance & { mode?: 'indexedDB' | 'memory'; destroyDb?: () => Promise<void> } = OFFLINE_API
     ? (new OfflineApi(OFFLINE_API) as unknown as AxiosInstance)
     : axios.create({
           baseURL: Api.BASE_API_URL,

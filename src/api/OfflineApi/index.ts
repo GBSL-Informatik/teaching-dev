@@ -372,4 +372,11 @@ export default class OfflineApi {
         }
         return rejectResponse({} as T, 400, 'Not implemented');
     }
+
+    async destroyDb(): Promise<void> {
+        if (LOG_REQUESTS) {
+            console.log('OfflineApi: destroy');
+        }
+        await this.dbAdapter.destroyDb();
+    }
 }

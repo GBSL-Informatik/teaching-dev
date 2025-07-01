@@ -14,9 +14,10 @@ import NavSetTargetRequest from '@tdev-components/Admin/ActionRequest/NavSetTarg
 const RequestTarget = observer(() => {
     const isBrowser = useIsBrowser();
     const userStore = useStore('userStore');
+    const sessionStore = useStore('sessionStore');
     const studentGroupStore = useStore('studentGroupStore');
 
-    if (!isBrowser || !userStore.current?.hasElevatedAccess) {
+    if (!isBrowser || !userStore.current?.hasElevatedAccess || sessionStore.apiMode !== 'api') {
         return null;
     }
 

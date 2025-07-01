@@ -26,4 +26,5 @@ export interface DbAdapter {
     getAll<T>(storeName: string): Promise<T[]>;
     put<T>(storeName: string, item: T & { id: string }): Promise<void>;
     delete(storeName: string, id: string): Promise<void>;
+    destroyDb(): Promise<void>;
 }

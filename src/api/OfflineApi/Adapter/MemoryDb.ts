@@ -43,6 +43,11 @@ class MemoryDbAdapter implements DbAdapter {
         const allItems = await this.getAll<T>(storeName);
         return allItems.filter(filterFn);
     }
+
+    async destroyDb(): Promise<void> {
+        this.db = {};
+        console.log('MemoryDbAdapter: Database destroyed');
+    }
 }
 
 export default MemoryDbAdapter;

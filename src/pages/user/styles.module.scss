@@ -3,15 +3,10 @@
     --ifm-tabs-padding-vertical: 0.2em;
     --ifm-tabs-padding-horizontal: 0.6em;
     margin: 2em;
-    .apiMode {
-        display: flex;
-        align-items: center;
-        .badge {
-            margin-right: 0.5em;
-            .icon {
-                margin-right: 0.2em;
-                margin-left: -0.2em;
-            }
+    .badge {
+        margin-right: 0.5em;
+        .icon {
+            margin: -0.3em -0.2em -0.3em -0.5em;
         }
     }
     .userInfo {

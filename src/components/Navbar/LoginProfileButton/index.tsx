@@ -10,6 +10,7 @@ import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
 
 const LoginButton = () => {
@@ -33,27 +34,35 @@ const LoginProfileButton = observer(() => {
     return (
         <div className={styles.profileButton}>
             <Button
-                text={userStore.viewedUser?.nameShort || 'Profil'}
-                icon={mdiAccountCircleOutline}
+                text={
+                    sessionStore.apiMode === 'api'
+                        ? userStore.viewedUser?.nameShort || 'Profil'
+                        : (undefined as unknown as string)
+                }
+                icon={sessionStore.apiMode === 'api' ? mdiAccountCircleOutline : sessionStore.apiModeIcon}
                 iconSide="left"
                 color="primary"
                 href="/user"
                 title="Persönlicher Bereich"
             />
-            <Icon
-                path={mdiCircle}
-                size={0.3}
-                color={
-                    (
-                        userStore.isUserSwitched
-                            ? (socketStore.connectedClients.get(userStore.viewedUser?.id || ' ') || 1) - 1 > 0
-                            : isLive
-                    )
-                        ? 'var(--ifm-color-success)'
-                        : 'var(--ifm-color-danger)'
-                }
-                className={clsx(styles.liveIndicator)}
-            />
+            {sessionStore.apiMode === 'api' && (
+                <Icon
+                    path={mdiCircle}
+                    size={0.3}
+                    color={
+                        (
+                            userStore.isUserSwitched
+                                ? (socketStore.connectedClients.get(userStore.viewedUser?.id || ' ') || 1) -
+                                      1 >
+                                  0
+                                : isLive
+                        )
+                            ? 'var(--ifm-color-success)'
+                            : 'var(--ifm-color-danger)'
+                    }
+                    className={clsx(styles.liveIndicator)}
+                />
+            )}
         </div>
     );
 });
