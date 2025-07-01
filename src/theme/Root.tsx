@@ -18,7 +18,7 @@ const { NO_AUTH, OFFLINE_API, TEST_USER, SENTRY_DSN } = siteConfig.customFields 
     TEST_USER?: string;
     NO_AUTH?: boolean;
     SENTRY_DSN?: string;
-    OFFLINE_API?: boolean;
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
 };
 export const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -28,7 +28,7 @@ const currentTestUsername = Storage.get('SessionStore', {
 
 if (NO_AUTH) {
     if (OFFLINE_API) {
-        console.log(offlineApiMessage());
+        console.log(offlineApiMessage(OFFLINE_API ?? 'memory'));
     } else {
         console.log(noAuthMessage(currentTestUsername));
     }

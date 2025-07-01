@@ -55,6 +55,7 @@
         "exceljs": "^4.4.0",
         "gray-matter": "^4.0.3",
         "heic2any": "^0.0.4",
+        "idb": "^8.0.3",
         "js-yaml": "^4.1.0",
         "known-css-properties": "^0.36.0",
         "lodash": "^4.17.21",

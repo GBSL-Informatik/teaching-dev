@@ -63,9 +63,10 @@ const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserBut
 const AccountSwitcher = observer(() => {
     const isBrowser = useIsBrowser();
     const userStore = useStore('userStore');
+    const sessionStore = useStore('sessionStore');
     const location = useLocation();
 
-    if (!isBrowser || !userStore.current?.hasElevatedAccess) {
+    if (!isBrowser || !userStore.current?.hasElevatedAccess || sessionStore.apiMode !== 'api') {
         return null;
     }
     const klass = location.pathname.split('/')[1];

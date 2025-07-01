@@ -4,6 +4,8 @@ import { RootStore } from '@tdev-stores/rootStore';
 import { logout } from '@tdev-api/user';
 import Storage, { PersistedData, StorageKey } from '@tdev-stores/utils/Storage';
 import iStore from '@tdev-stores/iStore';
+import api from '@tdev-api/base';
+import { mdiContentSaveOffOutline, mdiDatabaseSyncOutline, mdiHarddisk } from '@mdi/js';
 
 class State {
     @observable.ref accessor account: AccountInfo | undefined | null = undefined;
@@ -37,6 +39,20 @@ export class SessionStore extends iStore {
             this.authMethod = 'msal';
         }
         this.initialized = true;
+    }
+
+    get apiMode(): 'indexedDB' | 'memory' | 'api' {
+        return api.mode ?? 'api';
+    }
+
+    get apiModeIcon(): string {
+        if (this.apiMode === 'api') {
+            return mdiDatabaseSyncOutline;
+        }
+        if (this.apiMode === 'indexedDB') {
+            return mdiHarddisk; // Use a different icon if needed
+        }
+        return mdiContentSaveOffOutline; // Use a different icon if needed
     }
 
     @action

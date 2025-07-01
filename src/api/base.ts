@@ -3,9 +3,11 @@ import { BACKEND_URL, apiConfig } from '../authConfig';
 import { InteractionRequiredAuthError } from '@azure/msal-browser';
 import { msalInstance } from '../theme/Root';
 import siteConfig from '@generated/docusaurus.config';
-import Storage from '@tdev-stores/utils/Storage';
 import OfflineApi from './OfflineApi';
-const { NO_AUTH, OFFLINE_API } = siteConfig.customFields as { NO_AUTH?: boolean; OFFLINE_API?: boolean };
+const { NO_AUTH, OFFLINE_API } = siteConfig.customFields as {
+    NO_AUTH?: boolean;
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
+};
 
 export namespace Api {
     export const BASE_API_URL = eventsApiUrl();
@@ -15,8 +17,8 @@ export namespace Api {
     }
 }
 
-const api = OFFLINE_API
-    ? (new OfflineApi() as AxiosInstance)
+const api: AxiosInstance & { mode?: 'indexedDB' | 'memory'; destroyDb?: () => Promise<void> } = OFFLINE_API
+    ? (new OfflineApi(OFFLINE_API) as unknown as AxiosInstance)
     : axios.create({
           baseURL: Api.BASE_API_URL,
           withCredentials: true,
