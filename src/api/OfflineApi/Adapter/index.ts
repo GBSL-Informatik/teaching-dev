@@ -18,6 +18,7 @@ export interface DBSchema {
 }
 
 export interface DbAdapter {
+    mode: 'indexedDB' | 'memory';
     get<T>(storeName: string, id: string): Promise<T | undefined>;
     byDocumentRootId<T extends DocumentType>(
         documentRootId: string | undefined | null
@@ -25,5 +26,4 @@ export interface DbAdapter {
     getAll<T>(storeName: string): Promise<T[]>;
     put<T>(storeName: string, item: T & { id: string }): Promise<void>;
     delete(storeName: string, id: string): Promise<void>;
-    filter<T>(storeName: string, filterFn: (item: T) => boolean): Promise<T[]>;
 }

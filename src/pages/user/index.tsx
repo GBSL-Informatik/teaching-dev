@@ -8,7 +8,10 @@ import {
     mdiArrowRightThin,
     mdiBackupRestore,
     mdiCircle,
+    mdiContentSaveOffOutline,
+    mdiDatabaseSyncOutline,
     mdiDeleteEmptyOutline,
+    mdiHarddisk,
     mdiLogout,
     mdiRefresh
 } from '@mdi/js';
@@ -28,6 +31,8 @@ import { logout } from '@tdev-api/user';
 import SelectInput from '@tdev-components/shared/SelectInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
+import Badge from '@tdev-components/shared/Badge';
+import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
@@ -82,55 +87,86 @@ const UserPage = observer(() => {
             <main className={clsx(styles.main)}>
                 <h2>User</h2>
                 <DefinitionList className={clsx(styles.userInfo)}>
-                    <dt>{userStore.isUserSwitched ? 'Ansicht für' : 'Eingeloggt als'}</dt>
+                    <dt>API-Modus</dt>
                     <dd>
-                        {viewedUser?.firstName} {viewedUser?.lastName}
+                        <div className={clsx(styles.apiMode)}>
+                            <Badge color="blue" className={clsx(styles.badge)}>
+                                <Icon
+                                    path={sessionStore.apiModeIcon}
+                                    size={SIZE_XS}
+                                    color={'var(--ifm-color-white'}
+                                    className={clsx(styles.icon)}
+                                />
+                                {sessionStore.apiMode}
+                            </Badge>
+                        </div>
                     </dd>
-                    <dt>Email</dt>
-                    <dd>{viewedUser?.email}</dd>
-                    <dt>Ist mein Gerät mit dem Server Verbunden?</dt>
                     <dd>
-                        <Icon
-                            path={mdiCircle}
-                            size={0.7}
-                            color={isLive ? 'var(--ifm-color-success)' : 'var(--ifm-color-danger)'}
-                        />{' '}
-                        {isLive ? 'Ja' : 'Nein'}
+                        {sessionStore.apiMode === 'api'
+                            ? 'Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten.'
+                            : sessionStore.apiMode === 'indexedDB'
+                              ? 'Alle Änderungen werden in einer lokalen Browserdatenbank gespeichert und verlassen den Computer nie. Beim Wechsel des Browsers oder des Laptops gehen die Daten verloren.'
+                              : 'Änderungen werden nur temporär gespeichert. Sobald die Seite neue geladen wird oder der Browser geschlossen wird, sind die Änderungen verloren.'}
                     </dd>
-                    {viewedUser && (
+                    {sessionStore.apiMode === 'api' && (
                         <>
-                            <dt>Aktuell Online</dt>
+                            <dt>{userStore.isUserSwitched ? 'Ansicht für' : 'Eingeloggt als'}</dt>
                             <dd>
-                                <span className={clsx(styles.connectedClients, 'badge', 'badge--primary')}>
-                                    {userStore.isUserSwitched
-                                        ? (connectedClients || 1) - 1
-                                        : connectedClients}
-                                </span>
+                                {viewedUser?.firstName} {viewedUser?.lastName}
                             </dd>
-                        </>
-                    )}
-                    {viewedUser && !userStore.isUserSwitched && (
-                        <>
-                            <dt>In Gruppen</dt>
-                            {groupStore.studentGroups.map((group) => {
-                                return (
-                                    <React.Fragment key={group.id}>
-                                        <dt className={clsx(styles.studentGroup)}>{group.name}</dt>
-                                        <dd className={clsx(styles.reloadAction)}>
-                                            <span
-                                                className={clsx(
-                                                    styles.connectedClients,
-                                                    'badge',
-                                                    'badge--primary'
-                                                )}
-                                            >
-                                                {socketStore.connectedClients.get(group.id)}
-                                            </span>
-                                            <NavReloadRequest roomIds={[group.id]} />
-                                        </dd>
-                                    </React.Fragment>
-                                );
-                            })}
+                            <dt>Email</dt>
+                            <dd>{viewedUser?.email}</dd>
+                            <dt>Ist mein Gerät mit dem Server Verbunden?</dt>
+                            <dd>
+                                <Icon
+                                    path={mdiCircle}
+                                    size={0.7}
+                                    color={isLive ? 'var(--ifm-color-success)' : 'var(--ifm-color-danger)'}
+                                />{' '}
+                                {isLive ? 'Ja' : 'Nein'}
+                            </dd>
+                            {viewedUser && (
+                                <>
+                                    <dt>Aktuell Online</dt>
+                                    <dd>
+                                        <span
+                                            className={clsx(
+                                                styles.connectedClients,
+                                                'badge',
+                                                'badge--primary'
+                                            )}
+                                        >
+                                            {userStore.isUserSwitched
+                                                ? (connectedClients || 1) - 1
+                                                : connectedClients}
+                                        </span>
+                                    </dd>
+                                </>
+                            )}
+                            {viewedUser && !userStore.isUserSwitched && (
+                                <>
+                                    <dt>In Gruppen</dt>
+                                    {groupStore.studentGroups.map((group) => {
+                                        return (
+                                            <React.Fragment key={group.id}>
+                                                <dt className={clsx(styles.studentGroup)}>{group.name}</dt>
+                                                <dd className={clsx(styles.reloadAction)}>
+                                                    <span
+                                                        className={clsx(
+                                                            styles.connectedClients,
+                                                            'badge',
+                                                            'badge--primary'
+                                                        )}
+                                                    >
+                                                        {socketStore.connectedClients.get(group.id)}
+                                                    </span>
+                                                    <NavReloadRequest roomIds={[group.id]} />
+                                                </dd>
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </>
+                            )}
                         </>
                     )}
                 </DefinitionList>

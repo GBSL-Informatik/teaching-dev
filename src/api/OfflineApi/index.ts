@@ -84,13 +84,22 @@ export default class OfflineApi {
     };
     constructor(mode: boolean | 'memory' | 'indexedDB') {
         if (mode === 'indexedDB') {
-            this.dbAdapter = new IndexedDbAdapter(DB_NAME);
+            try {
+                this.dbAdapter = new IndexedDbAdapter(DB_NAME);
+            } catch (error) {
+                console.error('Failed to initialize IndexedDB:', error);
+                this.dbAdapter = new MemoryDbAdapter();
+            }
         } else {
             this.dbAdapter = new MemoryDbAdapter();
         }
         if (LOG_REQUESTS) {
             console.log('OfflineApi: created');
         }
+    }
+
+    get mode() {
+        return this.dbAdapter.mode;
     }
 
     async documentsBy<T extends DocumentType = any>(

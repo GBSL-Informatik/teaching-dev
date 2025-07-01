@@ -3,6 +3,7 @@ import { DbAdapter } from '.';
 
 class MemoryDbAdapter implements DbAdapter {
     private db: { [storeName: string]: { [id: string]: any } } = {};
+    readonly mode = 'memory';
 
     async get<T>(storeName: string, id: string): Promise<T | undefined> {
         return this.db[storeName]?.[id] as T | undefined;
