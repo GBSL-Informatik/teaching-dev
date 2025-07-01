@@ -88,7 +88,9 @@ async function getLastSyncedCommit(): Promise<string | undefined> {
     const syncMarkerPath = path.join(rootPath, SYNC_MARKER_FILENAME);
 
     if (!fs.existsSync(syncMarkerPath)) {
-        console.log("⚠️   No tdev update marker yet, can't analyze potential changes to non-tracked files.");
+        console.log(
+            `⚠️   No tdev update marker yet, creating ./${SYNC_MARKER_FILENAME}\n    The file contains the current commit and enables tracking of changes to non-tracked files.`
+        );
         return;
     }
 
