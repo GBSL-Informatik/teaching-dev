@@ -8,10 +8,7 @@ import {
     mdiArrowRightThin,
     mdiBackupRestore,
     mdiCircle,
-    mdiContentSaveOffOutline,
-    mdiDatabaseSyncOutline,
     mdiDeleteEmptyOutline,
-    mdiHarddisk,
     mdiHarddiskRemove,
     mdiLogout,
     mdiRefresh
@@ -33,7 +30,7 @@ import SelectInput from '@tdev-components/shared/SelectInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Badge from '@tdev-components/shared/Badge';
-import { SIZE_M, SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import api from '@tdev-api/base';
 

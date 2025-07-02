@@ -8,11 +8,9 @@ import { StudentGroup } from '../studentGroup';
 import { DbAdapter } from './Adapter';
 import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
-import getSiteConfig from '@site/siteConfig';
+import siteConfig from '@generated/docusaurus.config';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import _ from 'lodash';
-
-const siteConfig = getSiteConfig();
 
 const TIME_NOW = new Date().toISOString();
 const LOG_REQUESTS = false;
@@ -27,7 +25,7 @@ let OfflineUser: User = {
     updatedAt: TIME_NOW
 };
 
-const DB_NAME = `${siteConfig.gitHub?.orgName ?? 'gbsl'}-${siteConfig.gitHub?.projectName ?? 'tdev'}-db`;
+const DB_NAME = `${siteConfig.organizationName ?? 'gbsl'}-${siteConfig.projectName ?? 'tdev'}-db`;
 const DOCUMENTS_STORE = 'documents';
 const STUDENT_GROUPS_STORE = 'studentGroups';
 const PERMISSIONS_STORE = 'permissions';
