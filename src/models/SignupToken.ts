@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { SignupToken as SignupTokenProps } from '@tdev-api/signupToken';
+import { SignupMethod, SignupToken as SignupTokenProps } from '@tdev-api/signupToken';
 import _ from 'lodash';
 import { SignupTokenStore } from '@tdev-stores/SignupTokenStore';
 import { formatDateTime } from './helpers/date';
@@ -10,7 +10,7 @@ class SignupToken {
     readonly id: string;
     readonly uses: number;
 
-    @observable accessor method: string;
+    @observable accessor method: SignupMethod;
     @observable accessor description: string;
     @observable accessor validThrough: Date | null;
     @observable accessor maxUses: number;
@@ -63,7 +63,7 @@ class SignupToken {
     }
 
     @action
-    setMethod(method: string) {
+    setMethod(method: SignupMethod) {
         this.method = method;
     }
 

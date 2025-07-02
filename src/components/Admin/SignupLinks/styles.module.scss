@@ -11,26 +11,42 @@
         width: 100%;
 
         .signupLink {
-            display: grid;
-            grid-template-columns: 1fr 15fr 1fr 1fr 1fr 1fr;
+            display: flex;
             align-items: center;
             justify-items: start;
+            gap: 0.5em;
             border: 1px solid var(--ifm-color-gray-500);
             border-radius: 1em;
-            padding: 1em 1.5em;
+            padding: 1em 1em;
             width: 100%;
             margin-top: 1em;
             box-shadow: var(--ifm-global-shadow-lw);
 
+            &.disabled {
+                background-color: var(--ifm-color-gray-100);
+                color: var(--ifm-color-gray-600);
+                border-color: var(--ifm-color-gray-300);
+            }
+
+            .iconBadge {
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                :first-child {
+                    margin-right: 0.5em;
+                }
+            }
+
             .description {
-                max-width: 100%;
+                flex-grow: 1;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
             }
 
             .editButtonContainer {
-                width: 100%;
                 display: flex;
                 flex-direction: row;
                 justify-content: flex-end;

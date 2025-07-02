@@ -1,9 +1,15 @@
 import { AxiosPromise } from 'axios';
 import api from './base';
 
+export enum SignupMethod {
+    MSAL = 'msal',
+    GITHUB = 'github',
+    LOCAL = 'local'
+}
+
 export interface SignupToken {
     id: string;
-    method: string; // TODO: Make enum?
+    method: SignupMethod; // TODO: Make enum?
     description: string;
     validThrough: Date | null;
     uses: number;

@@ -8,18 +8,28 @@ import siteConfig from '@generated/docusaurus.config';
 import _ from 'lodash';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import {
+    mdiAbacus,
+    mdiCalendarAccount,
+    mdiCalendarBadgeOutline,
     mdiCircleEditOutline,
     mdiClipboardOutline,
     mdiCloseCircleOutline,
     mdiContentSave,
+    mdiCounter,
+    mdiCountertopOutline,
     mdiDeleteOutline,
+    mdiFormatListBulletedType,
     mdiInfinity,
+    mdiNumeric,
     mdiPlusCircleOutline
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import SignupToken from '@tdev-models/SignupToken';
 import React from 'react';
 import { action } from 'mobx';
+import Icon from '@mdi/react';
+import SelectInput from '@tdev-components/shared/SelectInput';
+import { SignupMethod } from '@tdev-api/signupToken';
 const { APP_URL } = siteConfig.customFields as {
     APP_URL?: string;
 };
@@ -28,6 +38,15 @@ interface SignupTokenProps {
     token: SignupToken;
 }
 
+const MethodBadge = ({ token }: { token: SignupToken }) => {
+    return (
+        <div className={clsx('badge', 'badge--secondary', styles.iconBadge)}>
+            <Icon path={mdiFormatListBulletedType} size={0.8} />
+            {token.method}
+        </div>
+    );
+};
+
 const UsesBadge = ({ token }: { token: SignupToken }) => {
     return (
         <>
@@ -35,37 +54,47 @@ const UsesBadge = ({ token }: { token: SignupToken }) => {
                 <span
                     className={clsx(
                         'badge',
-                        token.uses >= token.maxUses ? 'badge--danger' : 'badge--primary'
+                        token.uses >= token.maxUses ? 'badge--danger' : 'badge--primary',
+                        styles.iconBadge
                     )}
                 >
+                    <Icon path={mdiCounter} size={0.8} />
                     {token.uses} / {token.maxUses}
                 </span>
             )}
-            {token.maxUses == 0 && <span className={clsx('badge', 'badge--secondary')}>{token.uses}</span>}
+            {token.maxUses == 0 && (
+                <span className={clsx('badge', 'badge--secondary', styles.iconBadge)}>
+                    <Icon path={mdiCounter} size={0.8} />
+
+                    {token.uses}
+                </span>
+            )}
         </>
     );
 };
 
 const ValidityBadge = ({ token }: { token: SignupToken }) => {
     return (
-        <span
+        <div
             className={clsx(
                 'badge',
                 token.validThrough
                     ? new Date() > token.validThrough
                         ? 'badge--danger'
                         : 'badge--primary'
-                    : 'badge--secondary'
+                    : 'badge--secondary',
+                styles.iconBadge
             )}
         >
+            <Icon path={mdiCalendarBadgeOutline} size={0.8} />
             {token.validThrough ? token.fValidThrough : 'Unbegrenzt'}
-        </span>
+        </div>
     );
 };
 
 const SignupLink = observer(({ token }: SignupTokenProps) => {
     return (
-        <div className={clsx(styles.signupLink)}>
+        <div className={clsx(styles.signupLink, token.disabled && styles.disabled)}>
             <Button
                 icon={mdiClipboardOutline}
                 title="Registrierungslink kopieren"
@@ -73,7 +102,7 @@ const SignupLink = observer(({ token }: SignupTokenProps) => {
                 onClick={() => {}}
             />
             <span className={clsx(styles.description)}>{token.description}</span>
-            <span>{token.method}</span>
+            <MethodBadge token={token} />
             <UsesBadge token={token} />
             <ValidityBadge token={token} />
             <div className={clsx(styles.editButtonContainer)}>
@@ -142,7 +171,15 @@ const EditSignupLink = observer(({ token }: SignupTokenProps) => {
                         </div>
                     </dd>
                     <dt>Methode</dt>
-                    <dd>{token.method}</dd>
+                    <dd>
+                        <SelectInput
+                            value={token.method}
+                            options={Object.values(SignupMethod)}
+                            onChange={(value) => {
+                                token.setMethod(value as SignupMethod);
+                            }}
+                        />
+                    </dd>
                     <dt>Gültig bis</dt>
                     <dd>
                         <div className={clsx(styles.inputWithButton)}>
@@ -154,7 +191,7 @@ const EditSignupLink = observer(({ token }: SignupTokenProps) => {
                                 onChange={(e) =>
                                     token.setValidThrough(e.target.value ? new Date(e.target.value) : null)
                                 }
-                                tabIndex={3}
+                                tabIndex={4}
                             />
                             <Button
                                 icon={mdiInfinity}
@@ -179,7 +216,6 @@ const EditSignupLink = observer(({ token }: SignupTokenProps) => {
                                 )}
                                 onClick={() => {
                                     token.setDisabled(false);
-                                    token.save();
                                 }}
                             >
                                 Aktiviert
@@ -192,7 +228,6 @@ const EditSignupLink = observer(({ token }: SignupTokenProps) => {
                                 )}
                                 onClick={() => {
                                     token.setDisabled(true);
-                                    token.save();
                                 }}
                             >
                                 Deaktiviert
