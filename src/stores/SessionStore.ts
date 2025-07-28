@@ -28,6 +28,8 @@ export class SessionStore extends iStore {
 
     @observable accessor storageSyncInitialized = false;
 
+    fileSystemDirectoryHandles = observable.map<string, FileSystemDirectoryHandle>([], { deep: false });
+
     constructor(store: RootStore) {
         super();
         this.root = store;
@@ -62,6 +64,14 @@ export class SessionStore extends iStore {
             return;
         }
         this.currentUserId = data.user?.id;
+    }
+
+    @action
+    setFileSystemDirectoryHandle(key: string, handle?: FileSystemDirectoryHandle) {
+        if (!handle) {
+            return this.fileSystemDirectoryHandles.delete(key);
+        }
+        this.fileSystemDirectoryHandles.set(key, handle);
     }
 
     @action

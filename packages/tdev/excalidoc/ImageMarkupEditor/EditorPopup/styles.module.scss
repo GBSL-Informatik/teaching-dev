@@ -1,0 +1,27 @@
+.card {
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .body {
+        width: 90vw;
+        height: 80vh;
+        :global(.excalidraw) {
+            :global(.App-bottom-bar) {
+                :global(.Island) {
+                    min-width: unset;
+                    width: auto;
+                    :global(.dropdown-menu.dropdown-menu--mobile) {
+                        min-width: 13em;
+                    }
+                    :global(.App-toolbar) {
+                        :global(.App-toolbar-content) {
+                            padding: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

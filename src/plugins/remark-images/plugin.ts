@@ -1,6 +1,6 @@
 import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
-import { Parent, PhrasingContent, Root } from 'mdast';
+import type { MdxJsxAttribute, MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
+import { Image, Parent, PhrasingContent, Root } from 'mdast';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { toJsxAttribute } from '../helpers';
@@ -23,6 +23,7 @@ interface OptionsInput {
     };
     inlineEmptyCaptions?: boolean;
     captionVisitors?: CaptionVisitor[];
+    srcAttr?: string;
 }
 
 const SPACER_SPAN = {
@@ -31,6 +32,7 @@ const SPACER_SPAN = {
     attributes: [toJsxAttribute('style', { flexGrow: 1 })],
     children: []
 } as MdxJsxTextElement;
+const BUILD_LOCATION = process.cwd();
 
 const plugin: Plugin<OptionsInput[], Root> = function plugin(
     this,
@@ -101,12 +103,23 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(
                 return caption;
             },
             figure: (children, options) => {
+                const srcAttr: MdxJsxAttribute[] = [];
+                if (process.env.NODE_ENV !== 'production' && optionsInput?.srcAttr) {
+                    const src = (children[0] as Image)?.url;
+                    try {
+                        new URL(src); // ensure the src has no protocol
+                    } catch (err) {
+                        const fSrc = path.resolve(dir, src).replace(BUILD_LOCATION, '');
+                        srcAttr.push(toJsxAttribute(optionsInput.srcAttr, fSrc));
+                    }
+                }
                 return {
                     type: 'mdxJsxFlowElement',
                     name: optionsInput?.tagNames?.figure || DEFAULT_TAG_NAMES.figure,
                     attributes: [
                         toJsxAttribute('className', clsx('figure', options.className)),
-                        ...(Object.keys(options).length > 0 ? [toJsxAttribute('options', options)] : [])
+                        ...(Object.keys(options).length > 0 ? [toJsxAttribute('options', options)] : []),
+                        ...srcAttr
                     ],
                     children: children
                 } as MdxJsxFlowElement;

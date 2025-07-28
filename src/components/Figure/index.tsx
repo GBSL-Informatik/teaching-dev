@@ -1,6 +1,9 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '@tdev-hooks/useStore';
+import EditorPopup from '@tdev/excalidoc/ImageMarkupEditor/EditorPopup';
 
 const defaultUnit = (value: string | number, unit: string = 'px') => {
     // when only a number is given, add the default unit
@@ -13,11 +16,13 @@ const defaultUnit = (value: string | number, unit: string = 'px') => {
 interface Props {
     children?: React.ReactNode;
     options?: React.CSSProperties;
+    src?: string;
 }
 
 const IMG_STYLE_PROPS = ['width', 'maxWidth', 'maxHeight', 'height'];
 
-export default function Figure(props: Props): React.ReactNode {
+const Figure = observer((props: Props): React.ReactNode => {
+    const sessionStore = useStore('sessionStore');
     const ref = React.useRef<HTMLElement>(null);
     const opts = { ...props.options };
     if (opts) {
@@ -53,6 +58,8 @@ export default function Figure(props: Props): React.ReactNode {
     return (
         <span className={clsx(styles.figure, 'figure')} style={opts} ref={ref}>
             {props.children}
+            {props.src && <EditorPopup className={clsx(styles.editButton)} src={props.src} />}
         </span>
     );
-}
+});
+export default Figure;
