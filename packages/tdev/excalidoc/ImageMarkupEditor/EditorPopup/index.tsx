@@ -11,7 +11,11 @@ import { mdiClose, mdiImageEditOutline } from '@mdi/js';
 import ImageMarkupEditor from '..';
 import requestDocusaurusRootAcess from '@tdev-components/util/localFS/requestDocusaurusRootAcess';
 import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
-import createExcalidrawMarkup, { EXCALIDRAW_BACKGROUND_FILE_ID } from './createExcalidrawMarkup';
+import {
+    createExcalidrawMarkup,
+    EXCALIDRAW_BACKGROUND_FILE_ID,
+    updateRectangleDimensions
+} from './createExcalidrawMarkup';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { PopupActions } from 'reactjs-popup/dist/types';
 
@@ -57,6 +61,7 @@ const EditorPopup = observer((props: Props) => {
             lockScroll
             closeOnEscape={false}
             nested
+            closeOnDocumentClick={false}
             onOpen={async () => {
                 if (!sessionStore.fileSystemDirectoryHandles.get('root')) {
                     const docRootHandle = await requestDocusaurusRootAcess();
@@ -91,7 +96,7 @@ const EditorPopup = observer((props: Props) => {
                             return content.text();
                         })
                         .then((text) => JSON.parse(text) as ExcalidrawInitialDataState);
-                    setExcaliState(data);
+                    setExcaliState(updateRectangleDimensions(data));
                 } catch (error) {
                     console.error('Error processing image:', error);
                     window.alert(`Error processing image: ${error}`);

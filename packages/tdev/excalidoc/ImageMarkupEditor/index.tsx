@@ -10,16 +10,35 @@ import type {
 } from '@excalidraw/excalidraw/types';
 import { useColorMode } from '@docusaurus/theme-common';
 import _ from 'lodash';
-import { mdiContentSave, mdiImageMove, mdiRestoreAlert } from '@mdi/js';
+import {
+    mdiContentSave,
+    mdiFormatColorText,
+    mdiFormatFontSizeDecrease,
+    mdiFormatFontSizeIncrease,
+    mdiImageMove,
+    mdiMinus,
+    mdiPlus,
+    mdiRestoreAlert
+} from '@mdi/js';
 import {
     EXCALIDRAW_BACKGROUND_FILE_ID,
-    EXCALIDRAW_IMAGE_RECTANGLE_ID
+    EXCALIDRAW_IMAGE_RECTANGLE_ID,
+    EXCALIDRAW_RED,
+    EXCALIDRAW_STROKE_TYPES
 } from './EditorPopup/createExcalidrawMarkup';
 import Icon from '@mdi/react';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import styles from './styles.module.scss';
+import clsx from 'clsx';
+import onSaveCallback from './onSaveCallback';
+import { ExcalidrawElement, ExcalidrawTextElement } from '@excalidraw/excalidraw/element/types';
+
+export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
 interface Props {
     initialData?: ExcalidrawInitialDataState | null;
-    onSave?: (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
+    onSave?: OnSave;
     onDiscard?: () => void;
     onRestore?: () => void;
 }
@@ -35,72 +54,78 @@ const ImageMarkupEditor = observer((props: Props) => {
     return <Editor {...props} Lib={Lib} />;
 });
 
+const getSelectedStrokeElements = (api: ExcalidrawImperativeAPI): ExcalidrawElement[] => {
+    const selectedIds = new Set(Object.keys(api.getAppState().selectedElementIds));
+    if (selectedIds.size > 0) {
+        const selectedElements = api.getSceneElements().filter((e) => selectedIds.has(e.id));
+        const hasStrokeWidth = selectedElements.every((e) => EXCALIDRAW_STROKE_TYPES.has(e.type));
+        if (hasStrokeWidth) {
+            return selectedElements;
+        }
+    }
+    return [];
+};
+
+const getSelectedTextElementId = (api: ExcalidrawImperativeAPI): string | null => {
+    const selectedIds = new Set(Object.keys(api.getAppState().selectedElementIds));
+    if (selectedIds.size > 0) {
+        const elements = api.getSceneElements();
+        const selectedElements = elements.filter((e) => selectedIds.has(e.id));
+        const textIds = selectedElements
+            .filter((e) => e.type === 'text' || e.boundElements?.some((be) => be.type === 'text'))
+            .map((e) => (e.type === 'text' ? e.id : e.boundElements!.find((be) => be.type === 'text')!.id));
+        if (textIds.length === 1) {
+            return textIds[0];
+        }
+    }
+    return null;
+};
+
+const updateWith = (
+    api: ExcalidrawImperativeAPI,
+    toUpdate: { id: string }[],
+    updateFn: (e: ExcalidrawElement) => ExcalidrawElement
+) => {
+    const elements = api.getSceneElementsIncludingDeleted();
+    return api.updateScene({
+        elements: elements.map((e) => {
+            if (toUpdate.some((u) => u.id === e.id)) {
+                // invalidate versionNonce to put it to the history
+                return { ...updateFn(e), versionNonce: e.versionNonce + 1 };
+            }
+            return e;
+        }),
+        captureUpdate: 'IMMEDIATELY'
+    });
+};
+const restoreWith = (
+    restoreFn: typeof ExcalidrawLib.restoreElements,
+    api: ExcalidrawImperativeAPI,
+    toUpdate: { id: string }[],
+    updateFn: (e: ExcalidrawElement) => ExcalidrawElement
+) => {
+    const all = api.getSceneElementsIncludingDeleted();
+    const elements = all.map((e) => {
+        if (toUpdate.some((u) => u.id === e.id)) {
+            return { ...updateFn(e), versionNonce: e.versionNonce + 1 };
+        }
+        return e;
+    });
+    return api.updateScene({
+        elements: restoreFn(elements, all, { refreshDimensions: true, repairBindings: true }),
+        captureUpdate: 'IMMEDIATELY'
+    });
+};
+
 const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
     const { Lib } = props;
     const [excalidrawAPI, setExcalidrawAPI] = React.useState<ExcalidrawImperativeAPI | null>(null);
     const initialized = React.useRef<boolean>(false);
     const [hasChanges, setHasChanges] = React.useState(false);
+    const [showLineActions, setShowLineActions] = React.useState(false);
+    const [selectedTextId, setSelectedTextId] = React.useState<string | null>(null);
 
     const { colorMode } = useColorMode();
-    const onSave = React.useCallback(
-        async (api?: ExcalidrawImperativeAPI | null, asWebp: boolean = false) => {
-            if (props.onSave && api) {
-                const elements = api.getSceneElements();
-                const metaRectangleElement = elements.find((e) => e.id === EXCALIDRAW_IMAGE_RECTANGLE_ID);
-                const elementsWithoutMeta = elements.filter((e) => e.id !== EXCALIDRAW_IMAGE_RECTANGLE_ID);
-                const exportAsWebp = asWebp || metaRectangleElement?.customData?.exportFormat === 'webp';
-
-                if (asWebp && metaRectangleElement) {
-                    if (!('customData' in metaRectangleElement)) {
-                        (metaRectangleElement as any).customData = {};
-                    }
-                    metaRectangleElement.customData!.exportFormat = 'webp';
-                }
-                const files = api.getFiles();
-                const initMimeType = files[EXCALIDRAW_BACKGROUND_FILE_ID].mimeType;
-
-                const toExport = {
-                    elements: elementsWithoutMeta,
-                    files: files,
-                    exportPadding: 0,
-                    appState: {
-                        exportBackground: false,
-                        exportEmbedScene: false
-                    }
-                };
-                const data =
-                    initMimeType === 'image/svg+xml' && !exportAsWebp
-                        ? await Lib.exportToSvg({
-                              ...toExport,
-                              type: 'svg',
-                              mimeType: initMimeType
-                          }).then((svg: SVGElement) => {
-                              const serializer = new XMLSerializer();
-                              return new Blob([serializer.serializeToString(svg)], { type: initMimeType });
-                          })
-                        : ((await Lib.exportToBlob({
-                              ...toExport,
-                              getDimensions: (width: number, height: number) => ({
-                                  width: width,
-                                  height: height,
-                                  scale: 1
-                              }),
-                              mimeType: exportAsWebp ? 'image/webp' : initMimeType
-                          })) as Blob);
-                props.onSave(
-                    {
-                        type: 'excalidraw',
-                        version: 2,
-                        elements: elements,
-                        files: files
-                    },
-                    data,
-                    exportAsWebp
-                );
-            }
-        },
-        [props.onSave]
-    );
     React.useEffect(() => {
         if (excalidrawAPI && !initialized.current) {
             if (props.initialData?.elements) {
@@ -110,7 +135,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                 name: 'saveToActiveFile',
                 label: 'buttons.save',
                 perform: (elements, appState, formData, app) => {
-                    onSave(excalidrawAPI);
+                    onSaveCallback(Lib, props.onSave, excalidrawAPI, false);
                     return {
                         captureUpdate: Lib.CaptureUpdateAction.IMMEDIATELY
                     };
@@ -120,22 +145,25 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
             });
             let hasElements = excalidrawAPI.getSceneElements().length > 0;
             let hash = Lib.hashElementsVersion(excalidrawAPI.getSceneElements());
-            const onUnsubscribe = excalidrawAPI.onChange(() => {
+
+            const onUpdate = excalidrawAPI.onChange(() => {
                 if (!hasElements) {
                     hasElements = excalidrawAPI.getSceneElements().length > 0;
                     hash = Lib.hashElementsVersion(excalidrawAPI.getSceneElements());
                     return;
                 }
+                setSelectedTextId(getSelectedTextElementId(excalidrawAPI));
+                setShowLineActions(getSelectedStrokeElements(excalidrawAPI).length > 0);
                 const eHash = Lib.hashElementsVersion(excalidrawAPI.getSceneElements());
                 setHasChanges(hash !== eHash);
             });
             initialized.current = true;
             return () => {
                 initialized.current = false;
-                onUnsubscribe();
+                onUpdate();
             };
         }
-    }, [excalidrawAPI, onSave]);
+    }, [excalidrawAPI, props.onSave, Lib]);
 
     if (!Lib || !Lib.MainMenu) {
         return <Loader label="Initialize Excalidraw..." />;
@@ -149,7 +177,12 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                     objectsSnapModeEnabled: true,
                     zoom: {
                         value: 1.0 as NormalizedZoomValue // 100 %
-                    }
+                    },
+                    currentItemEndArrowhead: 'triangle',
+                    currentItemStrokeColor: EXCALIDRAW_RED,
+                    currentItemStrokeWidth: 8,
+                    currentItemRoughness: 0,
+                    currentItemBackgroundColor: 'transparent'
                 },
                 scrollToContent: true,
                 libraryItems: props.initialData?.libraryItems || []
@@ -163,11 +196,89 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                 tools: { image: true }
             }}
             autoFocus
+            renderTopRightUI={() => {
+                return (
+                    <div className={clsx(styles.topRightUI)}>
+                        {hasChanges && (
+                            <Button
+                                icon={mdiContentSave}
+                                color="green"
+                                title="Speichern und schliessen"
+                                onClick={() => {
+                                    onSaveCallback(Lib, props.onSave, excalidrawAPI, false);
+                                }}
+                            />
+                        )}
+                        {showLineActions && excalidrawAPI && (
+                            <div className={styles.lineActions}>
+                                <Button
+                                    icon={mdiMinus}
+                                    onClick={() => {
+                                        const selectedStrokes = getSelectedStrokeElements(excalidrawAPI);
+                                        if (selectedStrokes.length > 0) {
+                                            updateWith(excalidrawAPI, selectedStrokes, (e) => ({
+                                                ...e,
+                                                strokeWidth: Math.max(1, e.strokeWidth - 2)
+                                            }));
+                                        }
+                                    }}
+                                />
+                                <Button
+                                    icon={mdiPlus}
+                                    onClick={() => {
+                                        const selectedStrokes = getSelectedStrokeElements(excalidrawAPI);
+                                        if (selectedStrokes.length > 0) {
+                                            updateWith(excalidrawAPI, selectedStrokes, (e) => ({
+                                                ...e,
+                                                strokeWidth: e.strokeWidth + 2
+                                            }));
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+                        {selectedTextId && excalidrawAPI && (
+                            <div className={styles.lineActions}>
+                                <Button
+                                    icon={mdiFormatFontSizeDecrease}
+                                    onClick={(e) => {
+                                        restoreWith(
+                                            Lib.restoreElements,
+                                            excalidrawAPI,
+                                            [{ id: selectedTextId }],
+                                            (e) => ({
+                                                ...e,
+                                                fontSize: (e as ExcalidrawTextElement).fontSize / 1.2
+                                            })
+                                        );
+                                        excalidrawAPI.refresh();
+                                    }}
+                                />
+                                <Button
+                                    icon={mdiFormatFontSizeIncrease}
+                                    onClick={(e) => {
+                                        restoreWith(
+                                            Lib.restoreElements,
+                                            excalidrawAPI,
+                                            [{ id: selectedTextId }],
+                                            (e) => ({
+                                                ...e,
+                                                fontSize: (e as ExcalidrawTextElement).fontSize * 1.2
+                                            })
+                                        );
+                                        excalidrawAPI.refresh();
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                );
+            }}
         >
             <Lib.MainMenu>
                 {hasChanges && (
                     <Lib.MainMenu.Item
-                        onSelect={() => onSave(excalidrawAPI)}
+                        onSelect={() => onSaveCallback(Lib, props.onSave, excalidrawAPI, false)}
                         shortcut="Ctrl+S"
                         icon={<Icon path={mdiContentSave} size={0.7} color="var(--ifm-color-success)" />}
                     >
@@ -177,7 +288,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                 <Lib.MainMenu.DefaultItems.Export />
                 <Lib.MainMenu.DefaultItems.SaveAsImage />
                 <Lib.MainMenu.Item
-                    onSelect={() => onSave(excalidrawAPI, true)}
+                    onSelect={() => onSaveCallback(Lib, props.onSave, excalidrawAPI, true)}
                     icon={<Icon path={mdiImageMove} size={0.7} />}
                     title="Achtung, die referenzierenden Markdown-Dateien müssen manuell angepasst werden!"
                 >
