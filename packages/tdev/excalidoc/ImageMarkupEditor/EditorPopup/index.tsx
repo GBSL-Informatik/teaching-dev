@@ -15,37 +15,21 @@ import { createExcalidrawMarkup, updateRectangleDimensions } from '../helpers/cr
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { PopupActions } from 'reactjs-popup/dist/types';
 import { EXCALIDRAW_BACKGROUND_FILE_ID } from '../helpers/constants';
+import extractExalidrawImage from '../helpers/extractExalidrawImage';
+import dataUrlToBlob from '../helpers/dataUrlToBlob';
 
 interface Props {
     src: string;
     className?: string;
 }
 
-const extractExcaliSrc = (src: string): [string, string, string] => {
-    const path = src.split('/');
-    const imgName = path.pop() as string;
-    const excaliName = `${imgName}.excalidraw`;
-    return [excaliName, `${path.join('/')}/${excaliName}`, imgName];
-};
-
-const dataUrlToBlob = (dataUrl: string): Blob => {
-    const parts = dataUrl.split(';base64,');
-    const contentType = parts[0].split(':')[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-    const uInt8Array = new Uint8Array(rawLength);
-
-    for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return new Blob([uInt8Array], { type: contentType });
-};
-
 const EditorPopup = observer((props: Props) => {
     const sessionStore = useStore('sessionStore');
     const ref = React.useRef<PopupActions>(null);
-    const [excaliName, excaliSrc, imgName] = React.useMemo(() => extractExcaliSrc(props.src), [props.src]);
+    const [excaliName, excaliSrc, imgName] = React.useMemo(
+        () => extractExalidrawImage(props.src),
+        [props.src]
+    );
     const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
 
     return (
