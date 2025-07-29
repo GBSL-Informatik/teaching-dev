@@ -1,10 +1,7 @@
-import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
-import {
-    EXCALIDRAW_BACKGROUND_FILE_ID,
-    EXCALIDRAW_IMAGE_RECTANGLE_ID
-} from './EditorPopup/createExcalidrawMarkup';
+import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
+import { EXCALIDRAW_BACKGROUND_FILE_ID, EXCALIDRAW_IMAGE_RECTANGLE_ID } from './constants';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import { OnSave } from '.';
+export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
 const onSaveCallback = async (
     Lib: typeof ExcalidrawLib,

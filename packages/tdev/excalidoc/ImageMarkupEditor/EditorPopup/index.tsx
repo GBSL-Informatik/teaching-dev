@@ -11,13 +11,10 @@ import { mdiClose, mdiImageEditOutline } from '@mdi/js';
 import ImageMarkupEditor from '..';
 import requestDocusaurusRootAcess from '@tdev-components/util/localFS/requestDocusaurusRootAcess';
 import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
-import {
-    createExcalidrawMarkup,
-    EXCALIDRAW_BACKGROUND_FILE_ID,
-    updateRectangleDimensions
-} from './createExcalidrawMarkup';
+import { createExcalidrawMarkup, updateRectangleDimensions } from '../helpers/createExcalidrawMarkup';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { PopupActions } from 'reactjs-popup/dist/types';
+import { EXCALIDRAW_BACKGROUND_FILE_ID } from '../helpers/constants';
 
 interface Props {
     src: string;

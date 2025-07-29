@@ -1,0 +1,31 @@
+import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+
+export const EXCALIDRAW_BACKGROUND_IMAGE_ID = 'TDEV-BACKGROUND-IMAGE' as const;
+export const EXCALIDRAW_IMAGE_RECTANGLE_ID = 'TDEV-IMAGE--RECTANGLE' as const;
+export const EXCALIDRAW_BACKGROUND_FILE_ID = 'TDEV-BACKGROUND--FILE' as const;
+export const EXCALIDRAW_RED = '#e03131' as const;
+export const EXCALIDRAW_STROKE_TYPES = new Set([
+    'arrow',
+    'line',
+    'rectangle',
+    'diamond',
+    'ellipse',
+    'freedraw'
+]);
+
+export const EXCALIDRAW_IMAGE_RECTANGLE = {
+    id: EXCALIDRAW_IMAGE_RECTANGLE_ID,
+    type: 'rectangle',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    strokeColor: '#1e1e1e',
+    backgroundColor: 'transparent',
+    fillStyle: 'solid',
+    strokeWidth: 1,
+    strokeStyle: 'dotted',
+    roughness: 0,
+    opacity: 100,
+    locked: true
+} as ExcalidrawElement;
