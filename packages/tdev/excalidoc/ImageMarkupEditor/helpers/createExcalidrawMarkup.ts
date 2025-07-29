@@ -6,7 +6,9 @@ import {
     EXCALIDRAW_BACKGROUND_FILE_ID,
     EXCALIDRAW_BACKGROUND_IMAGE_ID,
     EXCALIDRAW_IMAGE_RECTANGLE_ID,
-    EXCALIDRAW_IMAGE_RECTANGLE
+    EXCALIDRAW_IMAGE_RECTANGLE,
+    EXCALIDRAW_BACKGROUND_FILE,
+    EXCALIDRAW_BACKGROUND_IMAGE
 } from './constants';
 
 export const createExcalidrawMarkup = async (
@@ -20,18 +22,9 @@ export const createExcalidrawMarkup = async (
         version: 2,
         elements: [
             {
-                id: EXCALIDRAW_BACKGROUND_IMAGE_ID,
-                type: 'image',
-                x: 0,
-                y: 0,
+                ...EXCALIDRAW_BACKGROUND_IMAGE,
                 width: dimensions.width,
-                height: dimensions.height,
-                roughness: 0,
-                opacity: 100,
-                isDeleted: false,
-                fileId: EXCALIDRAW_BACKGROUND_FILE_ID,
-                scale: [1, 1],
-                locked: true
+                height: dimensions.height
             } as ExcalidrawElement,
             {
                 ...EXCALIDRAW_IMAGE_RECTANGLE,
@@ -42,7 +35,7 @@ export const createExcalidrawMarkup = async (
         appState: {},
         files: {
             [EXCALIDRAW_BACKGROUND_FILE_ID]: {
-                id: EXCALIDRAW_BACKGROUND_FILE_ID,
+                ...EXCALIDRAW_BACKGROUND_FILE,
                 mimeType: file.type,
                 dataURL: binData
             } as BinaryFileData

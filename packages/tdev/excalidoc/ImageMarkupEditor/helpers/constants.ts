@@ -1,4 +1,5 @@
-import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawElement, ExcalidrawImageElement } from '@excalidraw/excalidraw/element/types';
+import { BinaryFileData } from '@excalidraw/excalidraw/types';
 
 export const EXCALIDRAW_BACKGROUND_IMAGE_ID = 'TDEV-BACKGROUND-IMAGE' as const;
 export const EXCALIDRAW_IMAGE_RECTANGLE_ID = 'TDEV-IMAGE--RECTANGLE' as const;
@@ -29,3 +30,24 @@ export const EXCALIDRAW_IMAGE_RECTANGLE = {
     opacity: 100,
     locked: true
 } as ExcalidrawElement;
+
+export const EXCALIDRAW_BACKGROUND_IMAGE = {
+    id: EXCALIDRAW_BACKGROUND_IMAGE_ID,
+    type: 'image',
+    x: 0,
+    y: 0,
+    width: 300,
+    height: 200,
+    roughness: 0,
+    opacity: 100,
+    isDeleted: false,
+    fileId: EXCALIDRAW_BACKGROUND_FILE_ID,
+    scale: [1, 1],
+    locked: true
+} as ExcalidrawImageElement;
+
+export const EXCALIDRAW_BACKGROUND_FILE = {
+    id: EXCALIDRAW_BACKGROUND_FILE_ID,
+    mimeType: 'image/webp',
+    dataURL: ''
+} as BinaryFileData;

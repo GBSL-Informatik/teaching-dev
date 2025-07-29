@@ -1,0 +1,91 @@
+.card {
+    .header {
+        min-width: 300px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        > h3 {
+            margin: 0;
+        }
+    }
+}
+
+.dragDrop {
+    background: #fff;
+    border-radius: var(--ifm-global-radius);
+    width: 100%;
+}
+.documentUploader {
+    border: 2px dashed var(--ifm-color-primary);
+    background-color: var(--ifm-color-emphasis-300);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: var(--ifm-global-radius);
+    cursor: pointer;
+
+    &.active {
+        border-color: var(--ifm-color-success);
+    }
+    &.dragover {
+        border-style: dotted;
+        background-color: var(--ifm-color-emphasis-500);
+    }
+
+    .uploadInfo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        gap: 1em;
+        .info {
+            p {
+                margin: 0;
+                font-size: 16px;
+                &:first-child {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+
+    .fileList {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .fileItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: var(--ifm-global-radius);
+
+        .fileInfo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+        }
+    }
+
+    .successFile {
+        display: flex;
+        align-items: center;
+    }
+
+    input[type='file'] {
+        display: none;
+    }
+    .actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+
+        width: 100%;
+    }
+}

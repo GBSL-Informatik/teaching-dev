@@ -9,13 +9,14 @@ import type {
     NormalizedZoomValue
 } from '@excalidraw/excalidraw/types';
 import { useColorMode } from '@docusaurus/theme-common';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import { EXCALIDRAW_RED } from './helpers/constants';
 import onSaveCallback, { OnSave } from './helpers/onSaveCallback';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import { getSelectedStrokeElements } from './helpers/getSelectedStrokeElements';
 import getSelectedTextElementId from './helpers/getSelectedTextElementId';
 import TopRightUi from './TopRightUi';
+import { flushSync } from 'react-dom';
 import MainMenu from './MainMenu';
 
 interface Props {
@@ -39,7 +40,9 @@ const ImageMarkupEditor = observer((props: Props) => {
 const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
     const { Lib } = props;
     const [excalidrawAPI, setExcalidrawAPI] = React.useState<ExcalidrawImperativeAPI | null>(null);
+    const [renderKey, setRenderKey] = React.useState(1);
     const initialized = React.useRef<boolean>(false);
+    const currentState = React.useRef<ExcalidrawInitialDataState | null>(props.initialData || null);
     const [hasChanges, setHasChanges] = React.useState(false);
     const [showLineActions, setShowLineActions] = React.useState(false);
     const [selectedTextId, setSelectedTextId] = React.useState<string | null>(null);
@@ -89,9 +92,10 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
     }
     return (
         <Lib.Excalidraw
+            key={renderKey}
             initialData={{
-                elements: props.initialData?.elements || [],
-                files: props.initialData?.files || {},
+                elements: currentState.current?.elements || [],
+                files: currentState.current?.files || {},
                 appState: {
                     objectsSnapModeEnabled: true,
                     zoom: {
@@ -103,8 +107,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                     currentItemRoughness: 0,
                     currentItemBackgroundColor: 'transparent'
                 },
-                scrollToContent: true,
-                libraryItems: props.initialData?.libraryItems || []
+                scrollToContent: true
             }}
             objectsSnapModeEnabled
             excalidrawAPI={(api) => setExcalidrawAPI(api)}
@@ -124,6 +127,11 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                         api={excalidrawAPI!}
                         onSave={() => onSaveCallback(Lib, props.onSave, excalidrawAPI!, false)}
                         restoreFn={Lib.restoreElements}
+                        onReload={(appState) => {
+                            currentState.current!.elements = appState.elements;
+                            currentState.current!.files = appState.files;
+                            setRenderKey((prev) => prev + 1);
+                        }}
                     />
                 );
             }}

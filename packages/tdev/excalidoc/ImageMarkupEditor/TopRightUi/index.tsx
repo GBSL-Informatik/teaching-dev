@@ -9,15 +9,15 @@ import {
     mdiFormatFontSizeIncrease,
     mdiImageMove,
     mdiMinus,
-    mdiPlus,
-    mdiRestoreAlert
+    mdiPlus
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
+import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { getSelectedStrokeElements } from '../helpers/getSelectedStrokeElements';
 import updateElementsWith from '../helpers/updateElementsWith';
 import restoreElementsWith from '../helpers/restoreElementsWith';
 import { ExcalidrawTextElement } from '@excalidraw/excalidraw/element/types';
+import ChangeSrcPopup from './ChangeSrcPopup';
 
 interface Props {
     onSave: () => void;
@@ -25,6 +25,7 @@ interface Props {
     showLineActions: boolean;
     selectedTextId: string | null;
     api: ExcalidrawImperativeAPI;
+    onReload: (appState: ExcalidrawInitialDataState) => void;
     restoreFn: typeof ExcalidrawLib.restoreElements;
 }
 
@@ -32,6 +33,8 @@ const TopRightUi = observer((props: Props) => {
     const { hasChanges, showLineActions, selectedTextId, api, restoreFn, onSave } = props;
     return (
         <div className={clsx(styles.topRightUI)}>
+            <ChangeSrcPopup onReload={props.onReload} api={api} />
+
             {hasChanges && (
                 <Button
                     icon={mdiContentSave}
