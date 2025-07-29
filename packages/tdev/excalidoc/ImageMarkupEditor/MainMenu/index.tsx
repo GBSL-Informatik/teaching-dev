@@ -15,6 +15,7 @@ interface Props {
 
 const MainMenu = (props: Props) => {
     const { Lib, api, onSave, onRestore, hasChanges } = props;
+
     return (
         <Lib.MainMenu>
             {hasChanges && (
