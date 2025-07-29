@@ -305,8 +305,7 @@ const UserPage = observer(() => {
                                     icon={mdiHarddiskRemove}
                                     iconSide="left"
                                     onConfirm={() => {
-                                        api
-                                            .destroyDb?.()
+                                        api.destroyDb?.()
                                             .then(() => {
                                                 console.log('IndexedDB Daten gelöscht');
                                                 window.location.reload();
