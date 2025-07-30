@@ -9,15 +9,14 @@ import type {
     NormalizedZoomValue
 } from '@excalidraw/excalidraw/types';
 import { useColorMode } from '@docusaurus/theme-common';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { EXCALIDRAW_RED } from './helpers/constants';
 import onSaveCallback, { OnSave } from './helpers/onSaveCallback';
-import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import { getSelectedStrokeElements } from './helpers/getSelectedStrokeElements';
 import getSelectedTextElementId from './helpers/getSelectedTextElementId';
 import TopRightUi from './TopRightUi';
-import { flushSync } from 'react-dom';
 import MainMenu from './MainMenu';
+import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 
 interface Props {
     initialData?: ExcalidrawInitialDataState | null;
@@ -50,9 +49,6 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
     const { colorMode } = useColorMode();
     React.useEffect(() => {
         if (excalidrawAPI && !initialized.current) {
-            if (props.initialData?.elements) {
-                excalidrawAPI.scrollToContent(undefined, { fitToViewport: true });
-            }
             excalidrawAPI.registerAction({
                 name: 'saveToActiveFile',
                 label: 'buttons.save',
@@ -68,7 +64,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
             let hasElements = excalidrawAPI.getSceneElements().length > 0;
             let hash = Lib.hashElementsVersion(excalidrawAPI.getSceneElements());
 
-            const onUpdate = excalidrawAPI.onChange(() => {
+            const onUpdateDisposer = excalidrawAPI.onChange(() => {
                 if (!hasElements) {
                     hasElements = excalidrawAPI.getSceneElements().length > 0;
                     hash = Lib.hashElementsVersion(excalidrawAPI.getSceneElements());
@@ -82,10 +78,18 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
             initialized.current = true;
             return () => {
                 initialized.current = false;
-                onUpdate();
+                onUpdateDisposer();
             };
         }
     }, [excalidrawAPI, props.onSave, Lib]);
+
+    React.useEffect(() => {
+        if (excalidrawAPI) {
+            scheduleMicrotask(() => {
+                excalidrawAPI.scrollToContent(undefined, { fitToViewport: true, animate: false });
+            });
+        }
+    }, [excalidrawAPI]);
 
     if (!Lib || !Lib.MainMenu) {
         return <Loader label="Initialize Excalidraw..." />;
@@ -127,7 +131,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                         api={excalidrawAPI!}
                         onSave={() => onSaveCallback(Lib, props.onSave, excalidrawAPI!, false)}
                         restoreFn={Lib.restoreElements}
-                        onReload={(appState) => {
+                        updateScene={(appState) => {
                             currentState.current!.elements = appState.elements;
                             currentState.current!.files = appState.files;
                             setRenderKey((prev) => prev + 1);

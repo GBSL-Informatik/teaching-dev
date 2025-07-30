@@ -18,19 +18,24 @@ import type {
 } from '@excalidraw/excalidraw/types';
 import fileToDataUrl from '@tdev-components/util/localFS/fileToDataUrl';
 import {
-    EXCALIDRAW_BACKGROUND_FILE,
-    EXCALIDRAW_BACKGROUND_IMAGE,
-    EXCALIDRAW_BACKGROUND_IMAGE_ID
+    EXCALIDRAW_BACKGROUND_FILE_ID,
+    EXCALIDRAW_BACKGROUND_IMAGE_ID,
+    EXCALIDRAW_IMAGE_RECTANGLE_ID
 } from '../../helpers/constants';
-import { ExcalidrawImageElement, OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import getImageDimensions from '@tdev-components/util/localFS/getImageDimensions';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import Alert from '@tdev-components/shared/Alert';
+import {
+    getImageElementFromScene,
+    getImageFileFromScene,
+    getRectangleElementFromScene
+} from '../../helpers/getElementsFromScene';
 
 interface Props {
     api: ExcalidrawImperativeAPI;
     onClose: () => void;
-    onReload: (appState: ExcalidrawInitialDataState) => void;
+    updateScene: (appState: ExcalidrawInitialDataState) => void;
     className?: string;
 }
 
@@ -51,49 +56,54 @@ const ChangeSrc = (props: Props) => {
             const data = await fileToDataUrl(image);
             const dimensions = await getImageDimensions(image);
             const currentElements = props.api.getSceneElementsIncludingDeleted();
-            const imgElement = (currentElements.find(
-                (e) => e.id === EXCALIDRAW_BACKGROUND_IMAGE_ID
-            ) as ExcalidrawImageElement) || {
-                ...EXCALIDRAW_BACKGROUND_IMAGE
-            };
+            const [imgElement, imgIdx] = getImageElementFromScene(currentElements);
+            const [rectElement, rectIdx] = getRectangleElementFromScene(currentElements);
             const currentFiles = props.api.getFiles();
-            const imgFile = currentFiles[imgElement.fileId!] || EXCALIDRAW_BACKGROUND_FILE;
-            const newImageFile = {
-                ...imgFile,
-                dataURL: data,
-                mimeType: image.type
-            } as BinaryFileData;
+            const imgFile = getImageFileFromScene(currentFiles);
+            if (!imgElement || !imgFile || !rectElement) {
+                console.error(
+                    `Corrupt excalidraw scene! Ensure the Elements "${EXCALIDRAW_BACKGROUND_IMAGE_ID}" and "${EXCALIDRAW_IMAGE_RECTANGLE_ID}" and the File "${EXCALIDRAW_BACKGROUND_FILE_ID}" are present!`
+                );
+                return;
+            }
 
-            const newImgElement = {
+            const all = [...currentElements];
+            all.splice(imgIdx, 1, {
                 ...imgElement,
-                fileId: newImageFile.id,
                 width: dimensions.width,
                 height: dimensions.height,
                 scale: [1, 1],
                 isDeleted: false,
                 versionNonce: (imgElement.versionNonce || 1) + 1,
                 locked: true
-            } as ExcalidrawImageElement;
-            const all = [...currentElements];
-            const imgIdx = all.findIndex((e) => e.id === newImgElement.id);
-            if (imgIdx === -1) {
-                all.splice(0, 0, newImgElement as OrderedExcalidrawElement);
-            } else {
-                all.splice(imgIdx, 1, newImgElement as OrderedExcalidrawElement);
-            }
-            props.onReload({
+            } as OrderedExcalidrawElement);
+            all.splice(rectIdx, 1, {
+                ...rectElement,
+                x: imgElement.x,
+                y: imgElement.y,
+                width: dimensions.width,
+                height: dimensions.height,
+                isDeleted: false,
+                versionNonce: (imgElement.versionNonce || 1) + 1,
+                locked: true
+            } as OrderedExcalidrawElement);
+            props.updateScene({
                 type: 'excalidraw',
                 version: 2,
                 elements: all,
                 appState: {},
                 files: {
                     ...props.api.getFiles(),
-                    [newImageFile.id]: newImageFile
+                    [EXCALIDRAW_BACKGROUND_FILE_ID]: {
+                        ...imgFile,
+                        dataURL: data,
+                        mimeType: image.type
+                    } as BinaryFileData
                 }
             });
             props.onClose();
         },
-        [props.api, props.onReload]
+        [props.api, props.updateScene]
     );
 
     const handlePaste = React.useCallback(

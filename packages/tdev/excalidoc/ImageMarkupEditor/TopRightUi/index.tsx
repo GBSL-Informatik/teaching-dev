@@ -25,7 +25,7 @@ interface Props {
     showLineActions: boolean;
     selectedTextId: string | null;
     api: ExcalidrawImperativeAPI;
-    onReload: (appState: ExcalidrawInitialDataState) => void;
+    updateScene: (appState: ExcalidrawInitialDataState) => void;
     restoreFn: typeof ExcalidrawLib.restoreElements;
 }
 
@@ -33,7 +33,7 @@ const TopRightUi = observer((props: Props) => {
     const { hasChanges, showLineActions, selectedTextId, api, restoreFn, onSave } = props;
     return (
         <div className={clsx(styles.topRightUI)}>
-            <ChangeSrcPopup onReload={props.onReload} api={api} />
+            <ChangeSrcPopup updateScene={props.updateScene} api={api} />
 
             {hasChanges && (
                 <Button

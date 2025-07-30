@@ -9,7 +9,7 @@ import ChangeSrc from './ChangeSrc';
 
 interface Props {
     api: ExcalidrawImperativeAPI;
-    onReload: (appState: ExcalidrawInitialDataState) => void;
+    updateScene: (appState: ExcalidrawInitialDataState) => void;
     className?: string;
 }
 
@@ -38,7 +38,7 @@ const ChangeSrcPopup = (props: Props) => {
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
             nested
         >
-            <ChangeSrc api={props.api} onClose={() => ref.current?.close()} onReload={props.onReload} />
+            <ChangeSrc api={props.api} onClose={() => ref.current?.close()} updateScene={props.updateScene} />
         </Popup>
     );
 };
