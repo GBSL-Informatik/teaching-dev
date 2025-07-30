@@ -60,6 +60,7 @@ export const imagePluginConfig = [
             sourceRef: 'SourceRef',
             figure: 'Figure'
         },
+        srcAttr: process.env.NODE_ENV === 'development' ? 'src' : undefined,
         captionVisitors: [
             (ast, caption) =>
                 captionVisitor(ast, caption, (children) => {

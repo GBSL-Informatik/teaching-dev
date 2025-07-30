@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { CaptionVisitor } from '../plugin';
 import { VFile } from 'vfile';
 import { Parent } from 'mdast';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -18,14 +19,14 @@ const alignLeft = (content: string) => {
         .join('\n');
 };
 
-const process = async (content: string, captionVisitors: CaptionVisitor[] = []) => {
+const processSrc = async (content: string, captionVisitors: CaptionVisitor[] = [], srcAttr?: string) => {
     const { default: plugin } = await import('../plugin');
     const file = new VFile({ value: alignLeft(content), history: [__filename] });
 
     const result = await remark()
         .use(remarkMdx)
         .use(remarkDirective)
-        .use(plugin, { captionVisitors: captionVisitors })
+        .use(plugin, { captionVisitors: captionVisitors, srcAttr: srcAttr })
         .process(file);
 
     return result.value;
@@ -37,7 +38,7 @@ describe('#image', () => {
 
             Some content
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toBe(alignLeft(input));
     });
     it('wraps image in figure', async () => {
@@ -45,7 +46,7 @@ describe('#image', () => {
 
             ![](https://example.com/image.png)
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -62,7 +63,7 @@ describe('#image', () => {
           ![](https://example.com/image.png)
           ![](https://example.com/image.png)
       `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -82,7 +83,7 @@ describe('#image', () => {
 
           ![Caption --width=200px](https://example.com/image.png)
       `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
         "# Heading
 
@@ -100,7 +101,7 @@ describe('#image', () => {
 
           ![Foo Bar](https://example.com/image.png "Caption --width=200px")
       `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
         "# Heading
 
@@ -117,7 +118,7 @@ describe('#image', () => {
 
         ![Caption --max-width=200px](https://example.com/image.png)
     `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
       "# Heading
 
@@ -134,7 +135,7 @@ describe('#image', () => {
         const input = `# Heading
             ![image](https://example.com/image.png)
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -151,7 +152,7 @@ describe('#image', () => {
         const input = `# Heading
             ![image [foo.bar](https://foo.bar)](https://example.com/image.png)
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -164,11 +165,27 @@ describe('#image', () => {
         `);
     });
 
+    it('provides src attr for local image', async () => {
+        const input = `# Heading
+            ![](assets/image.svg)
+        `;
+        const result = await processSrc(input, undefined, 'src');
+        const expectedSrc = path.resolve(__filename, '../assets/image.svg').replace(process.cwd(), '');
+        expect(result).toMatchInlineSnapshot(`
+          "# Heading
+
+          <span className="figure" src="${expectedSrc}">
+            ![](assets/image.svg)
+          </span>
+          "
+        `);
+    });
+
     it('wraps local image with bib file to figure with sourceref', async () => {
         const input = `# Heading
             ![](assets/placeholder.svg)
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -185,7 +202,7 @@ describe('#image', () => {
         const input = `# Heading
               Hello ![](assets/placeholder.svg) my friend.
           `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
             "# Heading
 
@@ -205,7 +222,7 @@ describe('#image', () => {
         const input = `# Heading
             Hello ![@inline --width=50px](assets/placeholder.svg) my friend.
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -218,7 +235,7 @@ describe('#image', () => {
 
             ![](https://example.com/image.png) hello 
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -235,7 +252,7 @@ describe('#image', () => {
 
             hello ![](https://example.com/image.png) bello 
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -254,7 +271,7 @@ describe('#image', () => {
 
             cello ![](https://example.com/image.png) hello ![](https://example.com/image.png) bello
         `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
           "# Heading
 
@@ -279,7 +296,7 @@ describe('#image', () => {
         const input = `
       ![a **bold** caption](assets/placeholder.svg)
       `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
         "<span className="figure">
           ![a bold caption](assets/placeholder.svg)
@@ -293,7 +310,7 @@ describe('#image', () => {
         const input = `
       ![a [link](https://link.com) caption](assets/placeholder.svg)
       `;
-        const result = await process(input);
+        const result = await processSrc(input);
         expect(result).toMatchInlineSnapshot(`
         "<span className="figure">
           ![a link caption](assets/placeholder.svg)
@@ -334,7 +351,7 @@ describe('#image', () => {
         const input = `
       ![a [__link__](https://link.com) caption](assets/placeholder.svg)
       `;
-        const result = await process(input, [captionVisitor]);
+        const result = await processSrc(input, [captionVisitor]);
         expect(result).toMatchInlineSnapshot(`
           "<span className="figure">
             ![a link caption](assets/placeholder.svg)

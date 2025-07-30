@@ -30,6 +30,11 @@ export const accountSwitcher: NavbarItem = {
     position: 'right'
 };
 
+export const devModeAccessLocalFS: NavbarItem = {
+    type: 'custom-devModeAccessLocalFS',
+    position: 'right'
+};
+
 export const requestTarget: NavbarItem = {
     type: 'custom-requestTarget',
     position: 'right'

@@ -4,7 +4,12 @@
     "compilerOptions": {
         "baseUrl": ".",
         "experimentalDecorators": false,
-        "types": ["docusaurus-plugin-sass", "@docusaurus/module-type-aliases", "@types/node"],
+        "types": [
+            "docusaurus-plugin-sass",
+            "@docusaurus/module-type-aliases",
+            "@types/node",
+            "@types/wicg-file-system-access"
+        ],
         "module": "esnext",
         "target": "esnext",
         "strict": true,

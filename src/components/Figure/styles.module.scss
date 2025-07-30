@@ -5,6 +5,23 @@
     margin: 0 auto;
     margin-bottom: 1em;
     width: fit-content;
+    .editButton {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        padding: 0.2em;
+        opacity: 50%;
+        &:hover {
+            opacity: 100%;
+        }
+    }
+    > span:global(.markup) {
+        position: absolute;
+        top: 0;
+        left: 0;
+        line-height: 0;
+    }
     span:global(.caption) {
         font-style: italic;
         display: flex;

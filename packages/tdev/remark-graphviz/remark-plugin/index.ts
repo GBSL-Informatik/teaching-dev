@@ -97,17 +97,25 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(this, optionsInput 
             }
         });
         if (svgsToCreate.length > 0) {
-            await fs.mkdir(dotOutputDir, { recursive: true });
-            await fs.writeFile(
-                path.join(dotOutputDir, '.gitignore'),
-                `# Ignore all files in current directory\n/*`,
-                'utf-8'
-            );
+            await fs.mkdir(dotOutputDir, { recursive: true }).catch((err) => {
+                console.error(`Error creating directory ${dotOutputDir}:`, err);
+            });
+            await fs
+                .writeFile(
+                    path.join(dotOutputDir, '.gitignore'),
+                    `# Ignore all files in current directory\n/*`,
+                    'utf-8'
+                )
+                .catch((err) => {
+                    console.error(`Error writing .gitignore in ${dotOutputDir}:`, err);
+                });
             await Promise.all(
                 svgsToCreate.map(({ path: svgPath, value: svg }) => {
                     return fs.writeFile(path.join(markdownDir, svgPath), svg, 'utf-8');
                 })
-            );
+            ).catch((err) => {
+                console.error(`Error writing SVG files in ${dotOutputDir}:`, err);
+            });
         }
     };
 };

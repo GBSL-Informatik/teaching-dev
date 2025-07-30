@@ -88,9 +88,6 @@ export const sentryPluginConfig: PluginConfig = () => {
     const SENTRY_ORG = process.env.SENTRY_ORG;
     const SENTRY_PROJECT = process.env.SENTRY_PROJECT;
     if (!SENTRY_AUTH_TOKEN || !SENTRY_ORG || !SENTRY_PROJECT) {
-        console.warn(
-            'Sentry is not configured. Please set SENTRY_AUTH_TOKEN, SENTRY_ORG and SENTRY_PROJECT in your environment variables.'
-        );
         return { name: 'sentry-configuration' };
     }
     return {

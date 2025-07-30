@@ -14,6 +14,7 @@ import AccountSwitcher from '@tdev-components/Navbar/AccountSwitcher';
 import EditingOverview from '@tdev-components/EditingOverview';
 import RequestTarget from '@tdev-components/Navbar/RequestTarget';
 import PersonalSpaceOverlay from '@tdev-components/Navbar/PersonalSpaceOverlay';
+import DevModeAccessLocalFS from '@tdev-components/Navbar/DevModeAccessLocalFS';
 
 const ComponentTypes: ComponentTypesObject = {
     default: DefaultNavbarItem,
@@ -26,6 +27,7 @@ const ComponentTypes: ComponentTypesObject = {
     docsVersion: DocsVersionNavbarItem,
     docsVersionDropdown: DocsVersionDropdownNavbarItem,
     ['custom-accountSwitcher']: AccountSwitcher,
+    ['custom-devModeAccessLocalFS']: DevModeAccessLocalFS,
     ['custom-loginProfileButton']: LoginProfileButton,
     ['custom-taskStateOverview']: EditingOverview,
     ['custom-requestTarget']: RequestTarget,

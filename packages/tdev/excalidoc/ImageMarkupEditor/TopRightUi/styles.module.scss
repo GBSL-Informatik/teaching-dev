@@ -1,0 +1,10 @@
+.topRightUI {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+}
