@@ -80,7 +80,7 @@ export const calculateDependenciesDiff = (
             );
         devDepsDiff.installable.length > 0 &&
             reportBuilder.appendLine(
-                `yarn add -D ${devDepsDiff.installable.map((entry) => `${entry.packageName}@${entry.version}`).join(' ')}`
+                `yarn add -W -D ${devDepsDiff.installable.map((entry) => `${entry.packageName}@${entry.version}`).join(' ')}`
             );
     }
 
