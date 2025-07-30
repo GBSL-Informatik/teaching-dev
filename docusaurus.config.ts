@@ -104,7 +104,7 @@ const config: Config = applyTransformers({
       swcHtmlMinimizer: true,
       lightningCssMinimizer: true,
       rspackBundler: true,
-      rspackPersistentCache: true,
+      rspackPersistentCache: false,
       mdxCrossCompilerCache: true,
       ssgWorkerThreads: true,
     },
