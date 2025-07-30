@@ -1,10 +1,14 @@
+import siteConfig from '@generated/docusaurus.config';
+const { organizationName, projectName } = siteConfig;
+
 const requestLocalDirectoryAccess = async (
     permission: FileSystemPermissionMode,
     assertFilePresence: string[]
 ) => {
     try {
         const directoryHandle = await window.showDirectoryPicker({
-            mode: permission
+            mode: permission,
+            id: `${organizationName}-${projectName}`
         });
         for (const fileName of assertFilePresence) {
             const fileHandle = await directoryHandle

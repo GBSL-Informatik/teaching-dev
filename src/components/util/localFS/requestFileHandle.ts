@@ -4,7 +4,6 @@ const requestFileHandle = async (
     mode: FileSystemPermissionMode = 'read',
     create: boolean = false
 ) => {
-    parentDir.resolve;
     if (/^\.\.\//.test(filePath)) {
         throw new Error('Invalid file path: cannot access parent directories');
     }
