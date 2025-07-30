@@ -97,6 +97,10 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(this, optionsInput 
             }
         });
         if (svgsToCreate.length > 0) {
+            console.log(`Creating ${svgsToCreate.length} SVG files in ${dotOutputDir}`);
+            svgsToCreate.forEach(({ path: svgPath }) => {
+                console.log(`  - ${svgPath}`);
+            });
             await fs.mkdir(dotOutputDir, { recursive: true }).catch((err) => {
                 console.error(`Error creating directory ${dotOutputDir}:`, err);
             });
