@@ -11,7 +11,7 @@ interface Props {
     type?: BadgeType;
     title?: string;
     style?: React.CSSProperties;
-    onDiscard?: () => void;
+    onDiscard?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const Alert = observer((props: Props) => {
@@ -24,7 +24,7 @@ const Alert = observer((props: Props) => {
             {props.onDiscard && (
                 <button
                     aria-label="Close"
-                    className="clean-btn close"
+                    className={clsx('clean-btn close', styles.close)}
                     type="button"
                     onClick={props.onDiscard}
                 >

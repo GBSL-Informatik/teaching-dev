@@ -5,9 +5,12 @@ import styles from './styles.module.scss';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import Popup from 'reactjs-popup';
 import {
+    mdiButtonCursor,
+    mdiClipboardFileOutline,
     mdiClose,
     mdiCloudArrowUpOutline,
     mdiContentSave,
+    mdiFileUploadOutline,
     mdiImageMove,
     mdiRestoreAlert,
     mdiUploadCircleOutline
@@ -29,6 +32,8 @@ import {
 } from '../../helpers/constants';
 import { ExcalidrawImageElement, OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import getImageDimensions from '@tdev-components/util/localFS/getImageDimensions';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import Alert from '@tdev-components/shared/Alert';
 
 interface Props {
     api: ExcalidrawImperativeAPI;
@@ -41,6 +46,7 @@ const ChangeSrcPopup = (props: Props) => {
     const [isDragOver, setIsDragOver] = React.useState(false);
     const labelRef = React.useRef<HTMLLabelElement>(null);
     const [isOpen, setIsOpen] = React.useState(false);
+    const [clipboardInfo, setClipboardInfo] = React.useState<string | null>(null);
 
     const inputId = React.useId();
     const labelId = React.useId();
@@ -50,6 +56,7 @@ const ChangeSrcPopup = (props: Props) => {
             if (!image) {
                 return;
             }
+            setClipboardInfo(null);
             const data = await fileToDataUrl(image);
             const dimensions = await getImageDimensions(image);
             const currentElements = props.api.getSceneElementsIncludingDeleted();
@@ -98,6 +105,39 @@ const ChangeSrcPopup = (props: Props) => {
         [props.api, props.onReload]
     );
 
+    const handlePaste = React.useCallback(
+        (event: ClipboardEvent) => {
+            const items = event.clipboardData?.items;
+            if (!items) {
+                setClipboardInfo('Aktuell befindet sich kein Inhalt in der Zwischenablage.');
+                return;
+            }
+            const image = Array.from(items).find((item) => item.type.startsWith('image/'));
+            if (!image) {
+                setClipboardInfo('Keine Bilder in der Zwischenablage gefunden.');
+                return;
+            }
+            event.preventDefault(); // Prevent default paste
+            const blob = image.getAsFile();
+            if (blob) {
+                handleFile(blob);
+            }
+        },
+        [handleFile]
+    );
+
+    React.useEffect(() => {
+        if (isOpen) {
+            document.addEventListener('paste', handlePaste);
+        } else {
+            document.removeEventListener('paste', handlePaste);
+        }
+
+        return () => {
+            document.removeEventListener('paste', handlePaste);
+        };
+    }, [isOpen, handlePaste]);
+
     const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const selectedFiles = event.target.files;
         if (selectedFiles && selectedFiles.length > 0) {
@@ -137,7 +177,7 @@ const ChangeSrcPopup = (props: Props) => {
                 classNames={{ header: styles.header, card: styles.card }}
                 header={
                     <>
-                        <h3>Bild ändern</h3>
+                        <h3>Hintergrundbild ändern</h3>
                         <Button
                             icon={mdiClose}
                             text="Schliessen"
@@ -166,7 +206,90 @@ const ChangeSrcPopup = (props: Props) => {
                         <div className={clsx(styles.uploadInfo)}>
                             <Icon path={mdiCloudArrowUpOutline} size={1} color="var(--ifm-color-primary)" />
                             <div className={clsx(styles.info)}>
-                                <p>Bildquelle ändern</p>
+                                <h4>Bildquelle ändern</h4>
+                                <ul>
+                                    <li>
+                                        <Icon
+                                            path={mdiFileUploadOutline}
+                                            size={SIZE_S}
+                                            color="var(--ifm-color-primary)"
+                                        />
+                                        Bild hochladen
+                                    </li>
+                                    <li>
+                                        <Icon
+                                            path={mdiButtonCursor}
+                                            size={SIZE_S}
+                                            color="var(--ifm-color-primary)"
+                                        />
+                                        Bild per Drag & Drop hier ablegen
+                                    </li>
+                                    <li>
+                                        <Icon
+                                            path={mdiClipboardFileOutline}
+                                            size={SIZE_S}
+                                            color="var(--ifm-color-primary)"
+                                        />
+                                        Bild per Copy & Paste einfügen
+                                        {clipboardInfo && (
+                                            <Alert
+                                                className={clsx(styles.alert)}
+                                                type="warning"
+                                                onDiscard={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setClipboardInfo(null);
+                                                }}
+                                            >
+                                                {clipboardInfo}
+                                            </Alert>
+                                        )}
+                                        <Button
+                                            icon={mdiClipboardFileOutline}
+                                            text="Einfügen"
+                                            iconSide="left"
+                                            color="orange"
+                                            noOutline
+                                            size={SIZE_S}
+                                            className={clsx(styles.clipboardButton)}
+                                            onClick={async (e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                const items = await navigator.clipboard.read();
+                                                if (!items) {
+                                                    setClipboardInfo(
+                                                        'Aktuell befindet sich kein Inhalt in der Zwischenablage.'
+                                                    );
+
+                                                    return;
+                                                }
+                                                const image = Array.from(items).find((item) =>
+                                                    item.types.some((e) => e.startsWith('image/'))
+                                                );
+                                                if (!image) {
+                                                    setClipboardInfo(
+                                                        'Keine Bilder in der Zwischenablage gefunden.'
+                                                    );
+                                                    return;
+                                                }
+                                                const mimeType = image.types.find((e) =>
+                                                    e.startsWith('image/')
+                                                );
+                                                const blob = await image.getType(mimeType!);
+                                                if (!blob) {
+                                                    setClipboardInfo(
+                                                        'Keine Bilder in der Zwischenablage gefunden.'
+                                                    );
+                                                    return;
+                                                }
+                                                const file = new File([blob], 'clipboard-content', {
+                                                    type: blob.type
+                                                });
+                                                handleFile(file);
+                                            }}
+                                        />
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <input type="file" hidden id={inputId} onChange={handleFileChange} accept="image/*" />

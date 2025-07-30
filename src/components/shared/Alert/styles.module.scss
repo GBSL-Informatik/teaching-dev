@@ -1,3 +1,6 @@
 .alert {
     margin-bottom: 1em;
+    .close {
+        padding: var(--ifm-alert-padding-vertical) var(--ifm-alert-padding-horizontal);
+    }
 }

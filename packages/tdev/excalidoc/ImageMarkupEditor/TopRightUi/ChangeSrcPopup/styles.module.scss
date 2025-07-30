@@ -1,6 +1,6 @@
 .card {
     .header {
-        min-width: 300px;
+        min-width: min(95vw, 500px);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -37,15 +37,27 @@
 
     .uploadInfo {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         margin-bottom: 1rem;
         gap: 1em;
         .info {
-            p {
-                margin: 0;
-                font-size: 16px;
-                &:first-child {
-                    font-weight: bold;
+            ul {
+                list-style-type: none;
+                padding-left: 0;
+                li {
+                    > svg {
+                        margin-right: 0.25rem;
+                        transform: translateY(15%);
+                    }
+                    .alert {
+                        margin-bottom: 0.25em;
+                        --ifm-alert-padding-vertical: 0.25rem;
+                        --ifm-alert-padding-horizontal: 0.5rem;
+                    }
+                    .alert,
+                    .clipboardButton {
+                        margin-left: 1.5rem;
+                    }
                 }
             }
         }
