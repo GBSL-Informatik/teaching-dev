@@ -1,6 +1,7 @@
 import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { EXCALIDRAW_BACKGROUND_FILE_ID, EXCALIDRAW_IMAGE_RECTANGLE_ID } from './constants';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
+import { getImageElementFromScene, getRectangleElementFromScene } from './getElementsFromScene';
 export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
 const onSaveCallback = async (
@@ -11,15 +12,19 @@ const onSaveCallback = async (
 ) => {
     if (callback && api) {
         const elements = api.getSceneElements();
-        const metaRectangleElement = elements.find((e) => e.id === EXCALIDRAW_IMAGE_RECTANGLE_ID);
+        const [imageElement] = getImageElementFromScene(elements);
+        if (!imageElement) {
+            return;
+        }
+        const [metaRectangleElement] = getRectangleElementFromScene(elements);
         const elementsWithoutMeta = elements.filter((e) => e.id !== EXCALIDRAW_IMAGE_RECTANGLE_ID);
-        const exportAsWebp = asWebp || metaRectangleElement?.customData?.exportFormat === 'webp';
+        const exportAsWebp = asWebp || imageElement?.customData?.exportFormatMimeType === 'image/webp';
 
-        if (asWebp && metaRectangleElement) {
-            if (!('customData' in metaRectangleElement)) {
-                (metaRectangleElement as any).customData = {};
+        if (asWebp) {
+            if (!('customData' in imageElement)) {
+                (imageElement as any).customData = {};
             }
-            metaRectangleElement.customData!.exportFormat = 'webp';
+            imageElement.customData!.exportFormatMimeType = 'image/webp';
         }
         const files = api.getFiles();
         const initMimeType = files[EXCALIDRAW_BACKGROUND_FILE_ID].mimeType;

@@ -24,7 +24,10 @@ export const createExcalidrawMarkup = async (
             {
                 ...EXCALIDRAW_BACKGROUND_IMAGE,
                 width: dimensions.width,
-                height: dimensions.height
+                height: dimensions.height,
+                customData: {
+                    exportFormatMimeType: file.type
+                }
             } as ExcalidrawElement,
             {
                 ...EXCALIDRAW_IMAGE_RECTANGLE,
