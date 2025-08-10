@@ -1,8 +1,21 @@
 import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
-import { EXCALIDRAW_BACKGROUND_FILE_ID, EXCALIDRAW_IMAGE_RECTANGLE_ID } from './constants';
+import {
+    EXCALIDRAW_BACKGROUND_FILE_ID,
+    EXCALIDRAW_EXPORT_QUALITY,
+    EXCALIDRAW_IMAGE_RECTANGLE_ID,
+    EXCALIDRAW_MAX_EXPORT_WIDTH
+} from './constants';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import { getImageElementFromScene, getRectangleElementFromScene } from './getElementsFromScene';
+import { getImageElementFromScene } from './getElementsFromScene';
 export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
+
+const getScale = (imgWidth: number, scaleFactor?: number) => {
+    const initScale = 1 / (scaleFactor || 1);
+    const width = imgWidth * initScale;
+    const scale =
+        width < EXCALIDRAW_MAX_EXPORT_WIDTH ? initScale : initScale * (EXCALIDRAW_MAX_EXPORT_WIDTH / width);
+    return scale;
+};
 
 const onSaveCallback = async (
     Lib: typeof ExcalidrawLib,
@@ -16,7 +29,6 @@ const onSaveCallback = async (
         if (!imageElement) {
             return;
         }
-        const [metaRectangleElement] = getRectangleElementFromScene(elements);
         const elementsWithoutMeta = elements.filter((e) => e.id !== EXCALIDRAW_IMAGE_RECTANGLE_ID);
         const exportAsWebp = asWebp || imageElement?.customData?.exportFormatMimeType === 'image/webp';
 
@@ -38,6 +50,8 @@ const onSaveCallback = async (
                 exportEmbedScene: false
             }
         };
+        const scale = getScale(imageElement.width, imageElement.customData?.scale);
+
         const data =
             initMimeType === 'image/svg+xml' && !exportAsWebp
                 ? await Lib.exportToSvg({
@@ -50,11 +64,14 @@ const onSaveCallback = async (
                   })
                 : ((await Lib.exportToBlob({
                       ...toExport,
-                      getDimensions: (width: number, height: number) => ({
-                          width: width,
-                          height: height,
-                          scale: 1
-                      }),
+                      getDimensions: (width: number, height: number) => {
+                          return {
+                              width: width * scale,
+                              height: height * scale,
+                              scale: scale
+                          };
+                      },
+                      quality: EXCALIDRAW_EXPORT_QUALITY,
                       mimeType: exportAsWebp ? 'image/webp' : initMimeType
                   })) as Blob);
         callback(

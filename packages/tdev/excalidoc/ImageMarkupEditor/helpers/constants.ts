@@ -14,6 +14,15 @@ export const EXCALIDRAW_STROKE_TYPES = new Set([
     'freedraw'
 ]);
 
+export const EXCALIDRAW_MAX_WIDTH = 800;
+export const EXCALIDRAW_MAX_EXPORT_WIDTH = 3840;
+export const EXCALIDRAW_EXPORT_QUALITY = 0.8;
+export interface CustomData {
+    exportFormatMimeType: 'image/webp' | string;
+    scale: number;
+    initExtension: '.png' | '.jpg' | '.jpeg' | '.webp' | string;
+}
+
 export const EXCALIDRAW_IMAGE_RECTANGLE = {
     id: EXCALIDRAW_IMAGE_RECTANGLE_ID,
     type: 'rectangle',

@@ -7,7 +7,6 @@ import {
     mdiContentSave,
     mdiFormatFontSizeDecrease,
     mdiFormatFontSizeIncrease,
-    mdiImageMove,
     mdiMinus,
     mdiPlus
 } from '@mdi/js';
@@ -50,6 +49,7 @@ const TopRightUi = observer((props: Props) => {
                     <Button
                         icon={mdiMinus}
                         title="Linienbreite verringern"
+                        color="black"
                         onClick={() => {
                             const selectedStrokes = getSelectedStrokeElements(api);
                             if (selectedStrokes.length > 0) {
@@ -62,6 +62,7 @@ const TopRightUi = observer((props: Props) => {
                     <Button
                         icon={mdiPlus}
                         title="Linienbreite vergrössern"
+                        color="black"
                         onClick={() => {
                             const selectedStrokes = getSelectedStrokeElements(api);
                             if (selectedStrokes.length > 0) {
@@ -77,6 +78,7 @@ const TopRightUi = observer((props: Props) => {
                 <div className={styles.actions}>
                     <Button
                         icon={mdiFormatFontSizeDecrease}
+                        color="black"
                         title={'Schriftgrösse verringern'}
                         onClick={(e) => {
                             restoreElementsWith(restoreFn, api, [{ id: selectedTextId }], (e) => ({
@@ -87,6 +89,7 @@ const TopRightUi = observer((props: Props) => {
                     <Button
                         icon={mdiFormatFontSizeIncrease}
                         title={'Schriftgrösse vergrössern'}
+                        color="black"
                         onClick={(e) => {
                             restoreElementsWith(restoreFn, api, [{ id: selectedTextId }], (e) => ({
                                 fontSize: (e as ExcalidrawTextElement).fontSize * 1.2

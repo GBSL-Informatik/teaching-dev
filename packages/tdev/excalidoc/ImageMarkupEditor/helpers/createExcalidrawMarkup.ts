@@ -8,7 +8,9 @@ import {
     EXCALIDRAW_IMAGE_RECTANGLE_ID,
     EXCALIDRAW_IMAGE_RECTANGLE,
     EXCALIDRAW_BACKGROUND_FILE,
-    EXCALIDRAW_BACKGROUND_IMAGE
+    EXCALIDRAW_BACKGROUND_IMAGE,
+    EXCALIDRAW_MAX_WIDTH,
+    CustomData
 } from './constants';
 
 export const createExcalidrawMarkup = async (
@@ -16,7 +18,7 @@ export const createExcalidrawMarkup = async (
 ): Promise<ExcalidrawInitialDataState> => {
     const file = await imgFileHandle.getFile();
     const binData = await fileToDataUrl(file);
-    const dimensions = await getImageDimensions(file);
+    const dimensions = await getImageDimensions(file, EXCALIDRAW_MAX_WIDTH);
     return {
         type: 'excalidraw',
         version: 2,
@@ -26,8 +28,10 @@ export const createExcalidrawMarkup = async (
                 width: dimensions.width,
                 height: dimensions.height,
                 customData: {
-                    exportFormatMimeType: file.type
-                }
+                    exportFormatMimeType: file.type,
+                    scale: dimensions.scale,
+                    initExtension: `.${file.name.split('.').pop() || 'png'}`
+                } satisfies CustomData
             } as ExcalidrawElement,
             {
                 ...EXCALIDRAW_IMAGE_RECTANGLE,

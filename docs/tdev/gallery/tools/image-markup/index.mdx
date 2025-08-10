@@ -14,6 +14,13 @@ Mit der [File System Access API](https://developer.mozilla.org/en-US/docs/Web/AP
 Sobald ein Bild editiert wird, wird eine gleichnamige [Excalidraw](https://excalidraw.com/)-Datei erstellt und das Bild als Hintergrund gesetzt. Beim speichern wird das Bild inkl. der Anmerkungen exportiert und gespeichert. Das Originalbild ist fortan als Bildquelle in Excalidraw hinerlegt und kann jederzeit wiederhergestellt werden.
 :::
 
+:::warning[Exportkonfiguration]
+Beim Exportieren wird das Bild in der Regel im Original-Format gespeichert. Folgende Konfigurationen werden angewandt:
+
+- Export mit `92` DPI
+- Bildbreite: wie das Original, aber nicht breiter als `3840px`.
+- Bildqualität von `0.8` (für __.jpeg__ und __.webp__ Bilder).
+:::
 
 
 ## Beispiel

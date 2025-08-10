@@ -107,7 +107,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                     },
                     currentItemEndArrowhead: 'triangle',
                     currentItemStrokeColor: EXCALIDRAW_RED,
-                    currentItemStrokeWidth: 8,
+                    currentItemStrokeWidth: 4,
                     currentItemRoughness: 0,
                     currentItemBackgroundColor: 'transparent'
                 },

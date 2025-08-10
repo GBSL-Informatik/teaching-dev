@@ -1,7 +1,11 @@
 .topRightUI {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    background-color: var(--island-bg-color);
+    border-radius: var(--border-radius-lg);
+    padding: 0px 4px;
+    box-shadow: var(--shadow-island);
     .actions {
         display: flex;
         align-items: center;

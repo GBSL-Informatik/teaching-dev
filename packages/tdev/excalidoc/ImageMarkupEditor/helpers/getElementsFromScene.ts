@@ -27,8 +27,8 @@ export const getRectangleElementFromScene = (
 };
 
 export const getImageFileFromScene = (
-    files: BinaryFiles,
+    files?: BinaryFiles,
     id: string = EXCALIDRAW_BACKGROUND_FILE_ID
 ): BinaryFileData | undefined => {
-    return files[id];
+    return files?.[id];
 };

@@ -1,8 +1,8 @@
-const extractExalidrawImage = (src: string): [string, string, string] => {
+const extractExalidrawImageName = (src: string): [string, string, string] => {
     const path = src.split('/');
     const imgName = path.pop() as string;
     const excaliName = `${imgName}.excalidraw`;
     return [excaliName, `${path.join('/')}/${excaliName}`, imgName];
 };
 
-export default extractExalidrawImage;
+export default extractExalidrawImageName;
