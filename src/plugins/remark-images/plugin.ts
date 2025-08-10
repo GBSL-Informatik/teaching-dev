@@ -13,6 +13,8 @@ const DEFAULT_TAG_NAMES = {
     sourceRef: 'SourceRef'
 };
 
+const STATIC_DIR = '/static' as const;
+
 export type CaptionVisitor = (captionAst: Parent, rawCaption: string) => void;
 
 interface OptionsInput {
@@ -109,7 +111,9 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(
                     try {
                         new URL(src); // ensure the src has no protocol
                     } catch (err) {
-                        const fSrc = path.resolve(dir, src).replace(BUILD_LOCATION, '');
+                        const fSrc = src.startsWith('/')
+                            ? path.join(STATIC_DIR, src)
+                            : path.resolve(dir, src).replace(BUILD_LOCATION, '');
                         srcAttr.push(toJsxAttribute(optionsInput.srcAttr, fSrc));
                     }
                 }

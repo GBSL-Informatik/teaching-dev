@@ -7,12 +7,8 @@ const requestFileHandle = async (
     if (/^\.\.\//.test(filePath)) {
         throw new Error('Invalid file path: cannot access parent directories');
     }
+    // expect filePath to be relative to the `parentDir` directory
     const parts = filePath.replace(/^\//, '').split('/');
-    // map static paths to the static directory
-    if (filePath.startsWith('/')) {
-        parts.splice(0, 0, 'static');
-    }
-    console.log(filePath, parts);
     const fileName = parts.pop();
 
     if (!fileName) {
