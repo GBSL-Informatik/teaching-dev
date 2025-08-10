@@ -18,10 +18,12 @@ import type {
 } from '@excalidraw/excalidraw/types';
 import fileToDataUrl from '@tdev-components/util/localFS/fileToDataUrl';
 import {
+    type CustomData,
     EXCALIDRAW_BACKGROUND_FILE_ID,
     EXCALIDRAW_BACKGROUND_IMAGE_ID,
-    EXCALIDRAW_IMAGE_RECTANGLE_ID
-} from '../../helpers/constants';
+    EXCALIDRAW_IMAGE_RECTANGLE_ID,
+    EXCALIDRAW_MAX_WIDTH
+} from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
 import { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import getImageDimensions from '@tdev-components/util/localFS/getImageDimensions';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
@@ -30,7 +32,7 @@ import {
     getImageElementFromScene,
     getImageFileFromScene,
     getRectangleElementFromScene
-} from '../../helpers/getElementsFromScene';
+} from '@tdev/excalidoc/ImageMarkupEditor/helpers/getElementsFromScene';
 
 interface Props {
     api: ExcalidrawImperativeAPI;
@@ -54,7 +56,7 @@ const ChangeSrc = (props: Props) => {
             }
             setClipboardInfo(null);
             const data = await fileToDataUrl(image);
-            const dimensions = await getImageDimensions(image);
+            const dimensions = await getImageDimensions(image, EXCALIDRAW_MAX_WIDTH);
             const currentElements = props.api.getSceneElementsIncludingDeleted();
             const [imgElement, imgIdx] = getImageElementFromScene(currentElements);
             const [rectElement, rectIdx] = getRectangleElementFromScene(currentElements);
@@ -70,6 +72,11 @@ const ChangeSrc = (props: Props) => {
             const all = [...currentElements];
             all.splice(imgIdx, 1, {
                 ...imgElement,
+                customData: {
+                    ...(imgElement.customData as CustomData),
+                    scale: dimensions.scale,
+                    initExtension: `.${image.name.split('.').pop() || 'png'}`
+                } satisfies CustomData,
                 width: dimensions.width,
                 height: dimensions.height,
                 scale: [1, 1],

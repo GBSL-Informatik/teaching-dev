@@ -14,9 +14,11 @@ import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
 import { createExcalidrawMarkup, updateRectangleDimensions } from '../helpers/createExcalidrawMarkup';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { PopupActions } from 'reactjs-popup/dist/types';
-import { EXCALIDRAW_BACKGROUND_FILE_ID } from '../helpers/constants';
-import extractExalidrawImage from '../helpers/extractExalidrawImage';
+import extractExalidrawImageName from '../helpers/extractExalidrawImageName';
 import dataUrlToBlob from '../helpers/dataUrlToBlob';
+import { getImageElementFromScene, getImageFileFromScene } from '../helpers/getElementsFromScene';
+import type { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import { CustomData } from '../helpers/constants';
 
 interface Props {
     src: string;
@@ -27,7 +29,7 @@ const EditorPopup = observer((props: Props) => {
     const sessionStore = useStore('sessionStore');
     const ref = React.useRef<PopupActions>(null);
     const [excaliName, excaliSrc, imgName] = React.useMemo(
-        () => extractExalidrawImage(props.src),
+        () => extractExalidrawImageName(props.src),
         [props.src]
     );
     const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
@@ -169,14 +171,27 @@ const EditorPopup = observer((props: Props) => {
                                 .getFile()
                                 .then((content) => content.text())
                                 .then((text) => JSON.parse(text) as ExcalidrawInitialDataState);
-                            const backgroundFile = data.files?.[EXCALIDRAW_BACKGROUND_FILE_ID];
-                            if (backgroundFile) {
-                                const imgHandle = await parentDir.getFileHandle(imgName, { create: true });
+                            const [backgroundImage] = getImageElementFromScene(
+                                data.elements as readonly OrderedExcalidrawElement[]
+                            );
+                            const backgroundFile = getImageFileFromScene(data.files);
+                            if (backgroundFile && backgroundImage) {
+                                const data = backgroundImage.customData as Partial<CustomData>;
+                                const initExtension = data.initExtension || '.png';
+                                const restoredName = imgName.endsWith(initExtension)
+                                    ? imgName
+                                    : `${imgName.split('.').slice(0, -1).join('.')}${initExtension}`;
+                                const imgHandle = await parentDir.getFileHandle(restoredName, {
+                                    create: true
+                                });
                                 await imgHandle.createWritable().then(async (writable) => {
                                     await writable.write(dataUrlToBlob(backgroundFile.dataURL));
                                     await writable.close();
                                 });
                                 await parentDir.removeEntry(excaliName);
+                                if (restoredName !== imgName) {
+                                    await parentDir.removeEntry(imgName);
+                                }
                                 ref.current?.close();
                             }
                         }}
