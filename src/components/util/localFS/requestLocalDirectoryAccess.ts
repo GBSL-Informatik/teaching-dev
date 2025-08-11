@@ -8,7 +8,7 @@ const requestLocalDirectoryAccess = async (
     try {
         const directoryHandle = await window.showDirectoryPicker({
             mode: permission,
-            id: `${organizationName}-${projectName}`
+            id: `${organizationName}-${projectName}`.slice(0, 32)
         });
         for (const fileName of assertFilePresence) {
             const fileHandle = await directoryHandle
