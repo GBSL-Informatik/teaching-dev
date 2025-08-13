@@ -46,7 +46,6 @@ const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserBut
             />
             <Button
                 icon={user.isStudent ? mdiAccountCircleOutline : mdiShieldAccount}
-                size={0.8}
                 className={clsx(styles.userButton)}
                 iconSide="left"
                 active={userStore.viewedUserId === user.id}
@@ -95,6 +94,8 @@ const AccountSwitcher = observer(() => {
                             iconSide="left"
                             color="primary"
                             title="Anderen Account Anzeigen"
+                            text="Account Wechseln"
+                            textClassName={clsx(styles.text)}
                         />
                     </div>
                 }

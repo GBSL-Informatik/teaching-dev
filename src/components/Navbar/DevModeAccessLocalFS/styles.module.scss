@@ -1,8 +1,13 @@
-.profileButton {
-    position: relative;
-    .liveIndicator {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
+.buttonWrapper {
+    .text {
+        display: none;
+    }
+}
+
+:global(.navbar-sidebar) {
+    .buttonWrapper {
+        .text {
+            display: inline;
+        }
     }
 }

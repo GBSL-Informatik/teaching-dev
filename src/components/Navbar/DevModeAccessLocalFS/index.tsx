@@ -6,6 +6,7 @@ import { mdiFolderCancel, mdiFolderEditOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import requestDocusaurusRootAcess from '@tdev-components/util/localFS/requestDocusaurusRootAcess';
+import clsx from 'clsx';
 
 const IsDevMode = process.env.NODE_ENV === ('development' as const);
 
@@ -16,7 +17,7 @@ const DevModeAccessLocalFS = observer(() => {
     }
     const rootHandle = sessionStore.fileSystemDirectoryHandles.get('root');
     return (
-        <div className={styles.profileButton}>
+        <div className={styles.buttonWrapper}>
             <Button
                 icon={rootHandle ? mdiFolderEditOutline : mdiFolderCancel}
                 color={rootHandle ? 'primary' : 'grey'}
@@ -25,6 +26,9 @@ const DevModeAccessLocalFS = observer(() => {
                         ? `Zugriff auf lokale Dateien in ${rootHandle.name}`
                         : 'Kein Zugriff auf lokale Dateien'
                 }
+                text="Dateizugriff"
+                textClassName={clsx(styles.text)}
+                iconSide="left"
                 onClick={async () => {
                     const docRootHandle = await requestDocusaurusRootAcess();
                     if (docRootHandle) {

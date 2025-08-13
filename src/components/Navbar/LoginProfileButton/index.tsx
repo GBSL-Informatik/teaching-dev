@@ -33,16 +33,18 @@ const LoginProfileButton = observer(() => {
         return <LoginButton />;
     }
     return (
-        <div className={styles.profileButton}>
+        <div className={clsx(styles.profileButton, isMobile && styles.collapsed)}>
             {sessionStore.apiMode === 'api' ? (
                 <>
                     <Button
-                        text={isMobile ? (undefined as never) : userStore.viewedUser?.nameShort || 'Profil'}
+                        text={userStore.viewedUser?.nameShort || 'Profil'}
                         icon={mdiAccountCircleOutline}
                         iconSide="left"
                         color="primary"
                         href="/user"
                         title="Persönlicher Bereich"
+                        className={clsx(styles.button)}
+                        textClassName={clsx(styles.text)}
                     />
                     <Icon
                         path={mdiCircle}
@@ -59,7 +61,7 @@ const LoginProfileButton = observer(() => {
                                 ? 'var(--ifm-color-success)'
                                 : 'var(--ifm-color-danger)'
                         }
-                        className={clsx(styles.liveIndicator, isMobile && styles.small)}
+                        className={clsx(styles.liveIndicator)}
                     />
                 </>
             ) : (
@@ -69,6 +71,9 @@ const LoginProfileButton = observer(() => {
                     color="primary"
                     href="/user"
                     title="Persönlicher Bereich"
+                    text="Profil"
+                    className={clsx(styles.button)}
+                    textClassName={clsx(styles.text)}
                 />
             )}
         </div>

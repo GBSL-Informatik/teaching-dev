@@ -4,9 +4,29 @@
         position: absolute;
         bottom: 5px;
         right: 5px;
-        &.small {
+    }
+    &.collapsed {
+        .text {
+            display: none;
+        }
+        .liveIndicator {
             bottom: 3px;
             right: 3px;
+        }
+    }
+}
+
+:global(.navbar-sidebar) {
+    .profileButton {
+        display: inline-block;
+        &.collapsed {
+            .text {
+                display: inline;
+            }
+            .liveIndicator {
+                bottom: 5px;
+                right: 5px;
+            }
         }
     }
 }

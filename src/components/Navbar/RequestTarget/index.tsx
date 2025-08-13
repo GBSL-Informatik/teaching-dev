@@ -26,7 +26,7 @@ const RequestTarget = observer(() => {
     return (
         <Popup
             trigger={
-                <div className={styles.accountSwitcher}>
+                <div className={styles.buttonWrapper}>
                     <Button
                         icon={mdiLaptop}
                         size={0.8}
@@ -35,6 +35,8 @@ const RequestTarget = observer(() => {
                         color="primary"
                         title={`Aktuelle Seite anzeigen für`}
                         onClick={() => userStore.switchUser(undefined)}
+                        text="Navigiere nach"
+                        textClassName={clsx(styles.text)}
                     />
                 </div>
             }

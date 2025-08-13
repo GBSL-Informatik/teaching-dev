@@ -2,13 +2,14 @@
     position: relative;
     .accountSwitcherButton {
         height: 1.55rem;
+        .text {
+            display: none;
+        }
     }
 }
 
 .wrapper {
     .body {
-        // overflow-y: hidden;
-        // max-height: 2em;
         .userList {
             max-height: 20em;
             overflow-y: auto;
@@ -23,5 +24,14 @@
         position: absolute;
         left: 3px;
         top: 1px;
+    }
+}
+:global(.navbar-sidebar) {
+    .accountSwitcher {
+        .accountSwitcherButton {
+            .text {
+                display: inline;
+            }
+        }
     }
 }
