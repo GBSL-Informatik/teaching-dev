@@ -3,7 +3,7 @@
     background-color: var(--ifm-background-color);
     color: var(--ifm-color-primary);
     border-radius: var(--ifm-global-radius);
-    padding: 2px 4px;
+    padding: 2px 4px 4px 4px;
     cursor: pointer;
     order: 199;
     z-index: calc(var(--ifm-z-index-fixed) - 2);
@@ -34,6 +34,9 @@
     justify-content: flex-end;
     .refItem {
         flex-shrink: 0;
+        &a {
+            line-height: 0;
+        }
         .iconBadge {
             padding: 0.1em 0.25em;
         }
