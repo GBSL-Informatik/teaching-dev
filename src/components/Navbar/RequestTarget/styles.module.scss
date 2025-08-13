@@ -1,3 +1,18 @@
-.navTarget {
-    padding: 2.5px 0.2rem;
+.buttonWrapper {
+    .navTarget {
+        padding: 2.5px 0.2rem;
+        .text {
+            display: none;
+        }
+    }
+}
+
+:global(.navbar-sidebar) {
+    .buttonWrapper {
+        .navTarget {
+            .text {
+                display: inline;
+            }
+        }
+    }
 }

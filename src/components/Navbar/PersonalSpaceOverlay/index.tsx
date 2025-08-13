@@ -17,14 +17,16 @@ const PersonalSpaceOverlay = () => {
             trigger={
                 <div className={styles.buttonWrapper}>
                     <Button
-                        className={clsx('button--block', styles.button)}
+                        className={clsx(styles.button)}
                         onClick={(e) => {
                             e.preventDefault();
                         }}
                         icon={mdiFolderHomeOutline}
-                        size={0.95}
                         color="blue"
                         iconSide="left"
+                        title="Persönlicher Bereich"
+                        text="Persönlicher Bereich"
+                        textClassName={clsx(styles.text)}
                     />
                 </div>
             }

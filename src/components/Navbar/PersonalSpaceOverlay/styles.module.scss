@@ -19,6 +19,9 @@
 
     .button {
         padding: 0.5px 0.1rem;
+        .text {
+            display: none;
+        }
     }
 }
 
@@ -26,6 +29,16 @@
     .personalSpaceOverlay {
         .content {
             width: 98vw;
+        }
+    }
+}
+
+:global(.navbar-sidebar) {
+    .buttonWrapper {
+        .button {
+            .text {
+                display: inline;
+            }
         }
     }
 }
