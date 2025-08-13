@@ -1,9 +1,9 @@
 .bib {
-    font-size: small;
+    font-size: 13px;
     background-color: var(--ifm-background-color);
     color: var(--ifm-color-primary);
     border-radius: var(--ifm-global-radius);
-    padding: 2px 4px 4px 4px;
+    padding: 1px 4px 2.09px 4px;
     cursor: pointer;
     order: 199;
     z-index: calc(var(--ifm-z-index-fixed) - 2);
@@ -32,13 +32,14 @@
     gap: 0.5em;
     align-items: center;
     justify-content: flex-end;
+    font-size: 13px;
     .refItem {
         flex-shrink: 0;
-        &a {
-            line-height: 0;
-        }
         .iconBadge {
-            padding: 0.1em 0.25em;
+            padding: 1.14px 4px;
         }
+    }
+    a.refItem {
+        line-height: 0;
     }
 }

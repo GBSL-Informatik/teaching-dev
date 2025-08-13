@@ -14,6 +14,8 @@ interface Bib {
 
 interface Props {
     bib: Bib;
+    className?: string;
+    metaClassName?: string;
 }
 
 const SourceRef = (props: Props) => {
@@ -23,13 +25,13 @@ const SourceRef = (props: Props) => {
     return (
         <>
             <span
-                className={clsx(styles.bib, visible ? styles.visible : undefined)}
+                className={clsx(styles.bib, visible ? styles.visible : undefined, props.className)}
                 onClick={() => setVisible(!visible)}
             >
                 @
             </span>
             {visible && (
-                <div className={clsx(styles.meta)}>
+                <div className={clsx(styles.meta, props.metaClassName)}>
                     <span className={clsx('badge badge--secondary', styles.refItem)}>
                         Autor: {bib.author}
                     </span>
