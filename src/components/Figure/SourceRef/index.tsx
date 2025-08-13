@@ -43,7 +43,7 @@ const SourceRef = (props: Props) => {
                     )}
                     <a href={bib.source} target="_blank" className={styles.refItem}>
                         <span className={clsx('badge badge--secondary', styles.iconBadge)}>
-                            <Icon path={mdiOpenInNew} size={0.7} />
+                            <Icon path={mdiOpenInNew} size={0.6} />
                         </span>
                     </a>
                 </div>
