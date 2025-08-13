@@ -32,7 +32,6 @@ const LoginProfileButton = observer(() => {
     if (!sessionStore.isLoggedIn && !NO_AUTH) {
         return <LoginButton />;
     }
-    console.log('rerender');
     return (
         <div className={styles.profileButton}>
             {sessionStore.apiMode === 'api' ? (
