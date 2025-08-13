@@ -10,7 +10,7 @@ import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
 
 const LoginButton = () => {
@@ -19,6 +19,7 @@ const LoginButton = () => {
 
 const LoginProfileButton = observer(() => {
     const isBrowser = useIsBrowser();
+    const isMobile = useIsMobileView(502);
     const userStore = useStore('userStore');
     const sessionStore = useStore('sessionStore');
     const socketStore = useStore('socketStore');
@@ -31,36 +32,44 @@ const LoginProfileButton = observer(() => {
     if (!sessionStore.isLoggedIn && !NO_AUTH) {
         return <LoginButton />;
     }
+    console.log('rerender');
     return (
         <div className={styles.profileButton}>
-            <Button
-                text={
-                    sessionStore.apiMode === 'api'
-                        ? userStore.viewedUser?.nameShort || 'Profil'
-                        : (undefined as unknown as string)
-                }
-                icon={sessionStore.apiMode === 'api' ? mdiAccountCircleOutline : sessionStore.apiModeIcon}
-                iconSide="left"
-                color="primary"
-                href="/user"
-                title="Persönlicher Bereich"
-            />
-            {sessionStore.apiMode === 'api' && (
-                <Icon
-                    path={mdiCircle}
-                    size={0.3}
-                    color={
-                        (
-                            userStore.isUserSwitched
-                                ? (socketStore.connectedClients.get(userStore.viewedUser?.id || ' ') || 1) -
-                                      1 >
-                                  0
-                                : isLive
-                        )
-                            ? 'var(--ifm-color-success)'
-                            : 'var(--ifm-color-danger)'
-                    }
-                    className={clsx(styles.liveIndicator)}
+            {sessionStore.apiMode === 'api' ? (
+                <>
+                    <Button
+                        text={isMobile ? (undefined as never) : userStore.viewedUser?.nameShort || 'Profil'}
+                        icon={mdiAccountCircleOutline}
+                        iconSide="left"
+                        color="primary"
+                        href="/user"
+                        title="Persönlicher Bereich"
+                    />
+                    <Icon
+                        path={mdiCircle}
+                        size={0.3}
+                        color={
+                            (
+                                userStore.isUserSwitched
+                                    ? (socketStore.connectedClients.get(userStore.viewedUser?.id || ' ') ||
+                                          1) -
+                                          1 >
+                                      0
+                                    : isLive
+                            )
+                                ? 'var(--ifm-color-success)'
+                                : 'var(--ifm-color-danger)'
+                        }
+                        className={clsx(styles.liveIndicator, isMobile && styles.small)}
+                    />
+                </>
+            ) : (
+                <Button
+                    icon={sessionStore.apiModeIcon}
+                    iconSide="left"
+                    color="primary"
+                    href="/user"
+                    title="Persönlicher Bereich"
                 />
             )}
         </div>

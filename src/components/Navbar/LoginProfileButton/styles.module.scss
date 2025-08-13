@@ -4,5 +4,9 @@
         position: absolute;
         bottom: 5px;
         right: 5px;
+        &.small {
+            bottom: 3px;
+            right: 3px;
+        }
     }
 }
