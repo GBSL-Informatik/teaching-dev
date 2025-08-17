@@ -112,6 +112,9 @@ div.flex {
     flex-wrap: wrap;
     gap: 0.4em;
     margin-bottom: 1em;
+    &:last-child {
+        margin-bottom: 0;
+    }
     > div.item {
         flex-grow: 1;
         flex-shrink: 1;

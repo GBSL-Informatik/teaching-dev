@@ -5,6 +5,11 @@
     margin: 0 auto;
     margin-bottom: 1em;
     width: fit-content;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
     .editButton {
         position: absolute;
         top: 0;
