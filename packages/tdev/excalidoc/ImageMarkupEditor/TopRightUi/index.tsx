@@ -7,6 +7,7 @@ import {
     mdiContentSave,
     mdiFormatFontSizeDecrease,
     mdiFormatFontSizeIncrease,
+    mdiImageOffOutline,
     mdiMinus,
     mdiPlus
 } from '@mdi/js';
@@ -17,6 +18,8 @@ import updateElementsWith from '../helpers/updateElementsWith';
 import restoreElementsWith from '../helpers/restoreElementsWith';
 import { ExcalidrawTextElement } from '@excalidraw/excalidraw/element/types';
 import ChangeSrcPopup from './ChangeSrcPopup';
+import Icon from '@mdi/react';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     onSave: () => void;
@@ -26,13 +29,22 @@ interface Props {
     api: ExcalidrawImperativeAPI;
     updateScene: (appState: ExcalidrawInitialDataState) => void;
     restoreFn: typeof ExcalidrawLib.restoreElements;
+    hasBGImage: boolean;
 }
 
 const TopRightUi = observer((props: Props) => {
-    const { hasChanges, showLineActions, selectedTextId, api, restoreFn, onSave } = props;
+    const { hasChanges, showLineActions, selectedTextId, api, restoreFn, onSave, hasBGImage } = props;
     return (
         <div className={clsx(styles.topRightUI)}>
-            <ChangeSrcPopup updateScene={props.updateScene} api={api} />
+            {hasBGImage && <ChangeSrcPopup updateScene={props.updateScene} api={api} />}
+            {!hasBGImage && (
+                <Icon
+                    path={mdiImageOffOutline}
+                    color="var(--ifm-color-primary)"
+                    size={SIZE_S}
+                    title="Kein Hintergrundbild vorhanden."
+                />
+            )}
 
             {hasChanges && (
                 <Button

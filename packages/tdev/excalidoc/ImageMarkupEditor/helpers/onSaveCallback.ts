@@ -7,6 +7,11 @@ import {
 } from './constants';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
 import { getImageElementFromScene } from './getElementsFromScene';
+import type {
+    ExcalidrawImageElement,
+    NonDeletedExcalidrawElement,
+    Ordered
+} from '@excalidraw/excalidraw/element/types';
 export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
 const getScale = (imgWidth: number, scaleFactor?: number) => {
@@ -17,31 +22,33 @@ const getScale = (imgWidth: number, scaleFactor?: number) => {
     return scale;
 };
 
-const onSaveCallback = async (
-    Lib: typeof ExcalidrawLib,
-    callback?: OnSave,
-    api?: ExcalidrawImperativeAPI | null,
+const withoutMetaElements = (elements: readonly Ordered<NonDeletedExcalidrawElement>[]) => {
+    return elements.filter((e) => e.id !== EXCALIDRAW_IMAGE_RECTANGLE_ID);
+};
+
+const withBackgroundImage = (
+    imageElement: ExcalidrawImageElement,
+    elements: readonly Ordered<NonDeletedExcalidrawElement>[],
+    api: ExcalidrawImperativeAPI,
     asWebp: boolean = false
 ) => {
-    if (callback && api) {
-        const elements = api.getSceneElements();
-        const [imageElement] = getImageElementFromScene(elements);
-        if (!imageElement) {
-            return;
-        }
-        const elementsWithoutMeta = elements.filter((e) => e.id !== EXCALIDRAW_IMAGE_RECTANGLE_ID);
-        const exportAsWebp = asWebp || imageElement?.customData?.exportFormatMimeType === 'image/webp';
+    const elementsWithoutMeta = withoutMetaElements(elements);
+    const exportAsWebp = asWebp || imageElement.customData?.exportFormatMimeType === 'image/webp';
 
-        if (asWebp) {
-            if (!('customData' in imageElement)) {
-                (imageElement as any).customData = {};
-            }
-            imageElement.customData!.exportFormatMimeType = 'image/webp';
+    if (asWebp) {
+        if (!('customData' in imageElement)) {
+            (imageElement as any).customData = {};
         }
-        const files = api.getFiles();
-        const initMimeType = files[EXCALIDRAW_BACKGROUND_FILE_ID].mimeType;
+        imageElement.customData!.exportFormatMimeType = 'image/webp';
+    }
+    const files = api.getFiles();
+    const initMimeType = files[EXCALIDRAW_BACKGROUND_FILE_ID]?.mimeType;
 
-        const toExport = {
+    return {
+        scale: getScale(imageElement.width, imageElement.customData?.scale),
+        mimeType: initMimeType,
+        asWebp: exportAsWebp,
+        toExport: {
             elements: elementsWithoutMeta,
             files: files,
             exportPadding: 0,
@@ -49,40 +56,78 @@ const onSaveCallback = async (
                 exportBackground: false,
                 exportEmbedScene: false
             }
-        };
-        const scale = getScale(imageElement.width, imageElement.customData?.scale);
+        }
+    };
+};
 
+const plainExcalidrawImage = (
+    elements: readonly Ordered<NonDeletedExcalidrawElement>[],
+    api: ExcalidrawImperativeAPI,
+    mimeType: string
+) => {
+    const elementsWithoutMeta = withoutMetaElements(elements);
+    const files = api.getFiles();
+
+    return {
+        scale: 1,
+        mimeType: mimeType,
+        asWebp: mimeType === 'image/webp',
+        toExport: {
+            elements: elementsWithoutMeta,
+            files: files,
+            exportPadding: 2,
+            appState: {
+                exportBackground: false,
+                exportEmbedScene: false
+            }
+        }
+    };
+};
+
+const onSaveCallback = async (
+    Lib: typeof ExcalidrawLib,
+    mimeType: string,
+    callback?: OnSave,
+    api?: ExcalidrawImperativeAPI | null,
+    asWebp: boolean = false
+) => {
+    if (callback && api) {
+        const elements = api.getSceneElements();
+        const [imageElement] = getImageElementFromScene(elements);
+        const setup = imageElement
+            ? withBackgroundImage(imageElement, elements, api, asWebp)
+            : plainExcalidrawImage(elements, api, mimeType);
         const data =
-            initMimeType === 'image/svg+xml' && !exportAsWebp
+            setup.mimeType === 'image/svg+xml' && !setup.asWebp
                 ? await Lib.exportToSvg({
-                      ...toExport,
+                      ...setup.toExport,
                       type: 'svg',
-                      mimeType: initMimeType
+                      mimeType: setup.mimeType
                   }).then((svg: SVGElement) => {
                       const serializer = new XMLSerializer();
-                      return new Blob([serializer.serializeToString(svg)], { type: initMimeType });
+                      return new Blob([serializer.serializeToString(svg)], { type: setup.mimeType });
                   })
                 : ((await Lib.exportToBlob({
-                      ...toExport,
+                      ...setup.toExport,
                       getDimensions: (width: number, height: number) => {
                           return {
-                              width: width * scale,
-                              height: height * scale,
-                              scale: scale
+                              width: width * setup.scale,
+                              height: height * setup.scale,
+                              scale: setup.scale
                           };
                       },
                       quality: EXCALIDRAW_EXPORT_QUALITY,
-                      mimeType: exportAsWebp ? 'image/webp' : initMimeType
+                      mimeType: setup.asWebp ? 'image/webp' : setup.mimeType
                   })) as Blob);
         callback(
             {
                 type: 'excalidraw',
                 version: 2,
                 elements: elements,
-                files: files
+                files: setup.toExport.files
             },
             data,
-            exportAsWebp
+            asWebp || setup.asWebp
         );
     }
 };
