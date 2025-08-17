@@ -49,7 +49,13 @@ class Step {
 
     @computed
     get isOpen(): boolean {
-        return this.progressState.meta.allOpen || this._isOpen;
+        if (this.progressState.meta.allOpen) {
+            return true;
+        }
+        if (this.progressState.meta.keepPreviousStepsOpen && this.index < this.progressState.progress) {
+            return true;
+        }
+        return this._isOpen;
     }
 
     @computed
@@ -135,11 +141,6 @@ class Step {
     }
 
     @computed
-    get isViewed(): boolean {
-        return this.progressState.viewedIndex === this.index;
-    }
-
-    @computed
     get isFinalStep(): boolean {
         return this.index === this.progressState.totalSteps - 1;
     }
@@ -154,7 +155,7 @@ class Step {
                     }
                     return { path: mdiProgressCheck, color: IfmColors.blue, state: 'current' };
                 }
-                if (this.isHovered && this.isViewed) {
+                if (this.isHovered && this.isActive) {
                     return { path: mdiProgressCheck, color: IfmColors.blue, state: 'current' };
                 }
                 return {
@@ -163,13 +164,13 @@ class Step {
                     state: 'current'
                 };
             }
-            if (this.isHovered && this.isViewed) {
+            if (this.isHovered && this.isActive) {
                 return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
             }
             if (this.isNextHovered) {
                 return { path: mdiCheckCircle, color: IfmColors.green, state: 'current' };
             }
-            if (this.isViewed || this.isHovered) {
+            if (this.isActive || this.isHovered) {
                 return {
                     path: mdiRecordCircleOutline,
                     color: IfmColors.primary,
