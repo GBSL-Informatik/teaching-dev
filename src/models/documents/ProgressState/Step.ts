@@ -36,24 +36,29 @@ class Step {
     readonly index: number;
 
     @observable accessor _isOpen: boolean = false;
+    @observable accessor _initOpen: boolean;
 
     constructor(index: number, model: ProgressState) {
         this.index = index;
         this.progressState = model;
+        this._initOpen =
+            this.progressState.meta.allOpen ||
+            (this.progressState.meta.keepPreviousStepsOpen && this.index < this.progressState.progress);
     }
 
     @action
     setOpen(open: boolean) {
         this._isOpen = open;
+        this._initOpen = open;
     }
 
     @computed
     get isOpen(): boolean {
         if (this.progressState.meta.allOpen) {
-            return true;
+            return this._initOpen;
         }
         if (this.progressState.meta.keepPreviousStepsOpen && this.index < this.progressState.progress) {
-            return true;
+            return this._initOpen;
         }
         return this._isOpen;
     }
