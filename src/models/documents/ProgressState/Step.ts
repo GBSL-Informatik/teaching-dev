@@ -41,15 +41,18 @@ class Step {
     constructor(index: number, model: ProgressState) {
         this.index = index;
         this.progressState = model;
-        this._initOpen =
-            this.progressState.meta.allOpen ||
-            (this.progressState.meta.keepPreviousStepsOpen && this.index < this.progressState.progress);
+        this._initOpen = this.progressState.meta.allOpen || this.progressState.meta.keepPreviousStepsOpen;
     }
 
     @action
     setOpen(open: boolean) {
         this._isOpen = open;
-        this._initOpen = open;
+        if (
+            this.progressState.meta.allOpen ||
+            (this.progressState.meta.keepPreviousStepsOpen && this.index < this.progressState.progress)
+        ) {
+            this._initOpen = open;
+        }
     }
 
     @computed
