@@ -35,14 +35,13 @@
         flex-wrap: wrap;
         gap: 0.2em;
         line-height: 1em;
-        margin-top: -0.4em;
-        margin-bottom: 0.5em;
+        margin: 0;
 
         &:global(.inline) {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            padding: 0.3em;
+            bottom: 0.8em;
+            right: 0.4em;
+            padding: 0;
             opacity: 50%;
 
             &:hover {
