@@ -312,8 +312,8 @@ const config: Config = applyTransformers({
     [
       themeCodeEditor,
       {
-        brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.0/brython.min.js',
-        brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.0/brython_stdlib.js',
+        brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
+        brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
         libDir: '/bry-libs/'
       }
     ]

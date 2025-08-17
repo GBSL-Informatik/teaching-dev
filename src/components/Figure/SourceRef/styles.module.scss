@@ -1,9 +1,8 @@
 .bib {
-    font-size: 13px;
+    font-size: 75%;
     background-color: var(--ifm-background-color);
     color: var(--ifm-color-primary);
     border-radius: var(--ifm-global-radius);
-    padding: 1px 4px 2.09px 4px;
     cursor: pointer;
     order: 199;
     z-index: calc(var(--ifm-z-index-fixed) - 2);
@@ -15,6 +14,8 @@
     /* Old versions of Firefox */
     -moz-user-select: none;
     user-select: none;
+    padding: var(--ifm-badge-padding-vertical);
+    line-height: 1;
 
     &:hover {
         background-color: var(--ifm-color-info-lightest);
@@ -31,6 +32,7 @@
     flex-wrap: wrap;
     gap: 0.5em;
     align-items: center;
+    align-self: center;
     justify-content: flex-end;
     font-size: 13px;
     .refItem {
