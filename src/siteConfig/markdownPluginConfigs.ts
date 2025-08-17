@@ -135,8 +135,8 @@ export const rehypeKatexPluginConfig = rehypeKatex;
 
 export const recommendedBeforeDefaultRemarkPlugins = [
     graphvizPluginConfig,
-    flexCardsPluginConfig,
     deflistPluginConfig,
+    flexCardsPluginConfig,
     imagePluginConfig,
     detailsPluginConfig,
     defboxPluginConfig

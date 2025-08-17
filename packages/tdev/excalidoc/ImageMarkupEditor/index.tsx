@@ -17,8 +17,10 @@ import getSelectedTextElementId from './helpers/getSelectedTextElementId';
 import TopRightUi from './TopRightUi';
 import MainMenu from './MainMenu';
 import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import { getImageElementFromScene } from './helpers/getElementsFromScene';
 
 interface Props {
+    mimeType: string;
     initialData?: ExcalidrawInitialDataState | null;
     onSave?: OnSave;
     onDiscard?: () => void;
@@ -26,6 +28,9 @@ interface Props {
 }
 
 const ImageMarkupEditor = observer((props: Props) => {
+    const hasImageElement = React.useMemo(() => {
+        return !!(props.initialData?.elements && getImageElementFromScene(props.initialData.elements)[0]);
+    }, [props.initialData]);
     const Lib = useClientLib<typeof ExcalidrawLib>(
         () => import('@excalidraw/excalidraw'),
         '@excalidraw/excalidraw'
@@ -33,11 +38,11 @@ const ImageMarkupEditor = observer((props: Props) => {
     if (!Lib) {
         return <Loader />;
     }
-    return <Editor {...props} Lib={Lib} />;
+    return <Editor {...props} Lib={Lib} hasBGImage={hasImageElement} />;
 });
 
-const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
-    const { Lib } = props;
+const Editor = observer((props: Props & { hasBGImage: boolean; Lib: typeof ExcalidrawLib }) => {
+    const { Lib, mimeType } = props;
     const [excalidrawAPI, setExcalidrawAPI] = React.useState<ExcalidrawImperativeAPI | null>(null);
     const [renderKey, setRenderKey] = React.useState(1);
     const initialized = React.useRef<boolean>(false);
@@ -53,7 +58,7 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                 name: 'saveToActiveFile',
                 label: 'buttons.save',
                 perform: (elements, appState, formData, app) => {
-                    onSaveCallback(Lib, props.onSave, excalidrawAPI, false);
+                    onSaveCallback(Lib, mimeType, props.onSave, excalidrawAPI, false);
                     return {
                         captureUpdate: Lib.CaptureUpdateAction.IMMEDIATELY
                     };
@@ -129,13 +134,14 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                         showLineActions={showLineActions}
                         selectedTextId={selectedTextId}
                         api={excalidrawAPI!}
-                        onSave={() => onSaveCallback(Lib, props.onSave, excalidrawAPI!, false)}
+                        onSave={() => onSaveCallback(Lib, mimeType, props.onSave, excalidrawAPI!, false)}
                         restoreFn={Lib.restoreElements}
                         updateScene={(appState) => {
                             currentState.current!.elements = appState.elements;
                             currentState.current!.files = appState.files;
                             setRenderKey((prev) => prev + 1);
                         }}
+                        hasBGImage={props.hasBGImage}
                     />
                 );
             }}
@@ -145,7 +151,9 @@ const Editor = observer((props: Props & { Lib: typeof ExcalidrawLib }) => {
                 api={excalidrawAPI!}
                 onSave={props.onSave}
                 onRestore={props.onRestore}
+                mimeType={mimeType}
                 hasChanges={hasChanges}
+                hasBGImage={props.hasBGImage}
             />
         </Lib.Excalidraw>
     );

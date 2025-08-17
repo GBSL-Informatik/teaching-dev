@@ -1,4 +1,5 @@
 import type {
+    ExcalidrawElement,
     ExcalidrawImageElement,
     ExcalidrawRectangleElement,
     OrderedExcalidrawElement
@@ -11,7 +12,7 @@ import {
 import type { BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types';
 
 export const getImageElementFromScene = (
-    elements: readonly OrderedExcalidrawElement[]
+    elements: readonly (OrderedExcalidrawElement | ExcalidrawElement)[]
 ): [ExcalidrawImageElement | undefined, number] => {
     const imgIdx = elements.findIndex((e) => e.id === EXCALIDRAW_BACKGROUND_IMAGE_ID);
 

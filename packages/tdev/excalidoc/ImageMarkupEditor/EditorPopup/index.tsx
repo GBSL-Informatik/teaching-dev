@@ -28,7 +28,7 @@ interface Props {
 const EditorPopup = observer((props: Props) => {
     const sessionStore = useStore('sessionStore');
     const ref = React.useRef<PopupActions>(null);
-    const [excaliName, excaliSrc, imgName] = React.useMemo(
+    const { excaliName, excaliSrc, imgName, mimeType } = React.useMemo(
         () => extractExalidrawImageName(props.src),
         [props.src]
     );
@@ -111,6 +111,7 @@ const EditorPopup = observer((props: Props) => {
                 {excaliState && (
                     <ImageMarkupEditor
                         initialData={excaliState}
+                        mimeType={mimeType}
                         onDiscard={() => {
                             ref.current?.close();
                         }}

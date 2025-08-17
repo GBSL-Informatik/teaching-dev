@@ -4,6 +4,7 @@ page_id: 30bf535e-5a1d-433e-9856-8e5302170830
 
 # Bilder Annotieren
 
+
 Oft müssen Screenshots oder Bilder annotiert werden. Ansich praktisch, bis sich das Bild ändert, die Anmerkungen aber eigentlich gleich bleiben (z.B. wenn das neue Excel eine leicht andere Benutzeroberfläche hat).
 
 TDev bringt in der Entwicklungsumgebung eine einfache Möglichkeit mit, Bilder zu annotieren, wobei die Originalbilder erhalten und die Anmerkungen weiterhin editierbar bleiben.
@@ -36,4 +37,32 @@ Die Bilder lassen sich auch als webp exportieren:
 
 :::warning[Webp-Export]
 Wird ein Bild als __WebP__ exportiert, müssen die Quellen im Markdown **manuell** angepasst werden.
+:::
+
+## Reine Excalidraw Bilder
+
+Es können auch reine Excalidraw Bilder erstellt werden, die keine Hintergrundbilder enthalten (und bei welchen entsprechend auch das Hintergrundbild nicht ersetzt werden kann).
+
+Um ein solches Bild neu zu erstellen:
+1. Leeres excalidraw file erstellen, bspw. `./images/demo.svg.excalidraw` mit dem Inhalt `{}` (muss ein valides `JSON` sein)
+2. Leeres SVG-Bild erstellen, bspw. `./images/demo.svg`
+3. SVG-Bild im Markdown referenzieren:
+   ```md
+   ![](./images/demo.svg)
+   ```
+
+:::warning[Zu beachten]
+Sobald das SVG-Bild bearbeitet wird, wird die entsprechende `demo.svg.excalidraw` Datei eingelesen um die Szene aufzubauen. Beim Export wird `demo.svg` in jedem Fall überschrieben - es lohn sich also nicht, hier ein hübsches SVG-Bild zu suchen.
+:::
+
+![](./images/demo.svg)
+
+:::note[Technischer Hintergrund]
+Ob ein Hintergrundbild vorhanden ist oder nicht, wird vom Vorhandensein einer Element- & File-ID `TDEV-BACKGROUND-IMAGE` bzw. `TDEV-BACKGROUND--FILE` abgeleitet. Ist keine ID vorhanden, wird stets die Bild-Erweiterung (`.png`, `.jpg`, `.svg`, `.webp`) für das Export-Format verwendet.
+:::
+
+:::info[Empfohlenes Export-Format für reine Excalidraw Bilder]
+Das empfohlene Export-Format für reine Excalidraw Bilder ist `SVG`. Dieses Format ermöglicht eine verlustfreie Skalierung und Bearbeitung der Bilder.
+
+Eine Ausnahme bilden Excalidraw Szenen mit vielen eingefügten Bildern.
 :::
