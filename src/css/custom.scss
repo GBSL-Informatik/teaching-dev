@@ -136,6 +136,17 @@ div.flex {
                 margin-left: auto;
                 margin-right: auto;
             }
+            &:has(> p > video) {
+                > p > video {
+                    width: 100%;
+                }
+                > div[class^='wrapper']:has(> div[class^='comment']) {
+                    display: none;
+                }
+            }
+            &:only-child {
+                line-height: 0;
+            }
 
             figure {
                 margin: 0;
