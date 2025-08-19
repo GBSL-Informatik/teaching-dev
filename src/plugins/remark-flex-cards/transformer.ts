@@ -1,5 +1,5 @@
 import { visit, SKIP } from 'unist-util-visit';
-import { BlockContent, Image, Paragraph, Parent, PhrasingContent, Root, RootContent } from 'mdast';
+import { Node, BlockContent, Image, Paragraph, Parent, PhrasingContent, Root, RootContent } from 'mdast';
 import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import { LeafDirective } from 'mdast-util-directive';
 import { Options, toJsxAttribute, transformAttributes } from '../helpers';
@@ -92,7 +92,11 @@ const visitItems = (
             return [SKIP, idx];
         }
         /** process image */
-        if (!config.skipCardImageProcessing && name === DirectiveCard && node.type === 'image') {
+        if (
+            !config.skipCardImageProcessing &&
+            name === DirectiveCard &&
+            (node.type === 'image' || config.wrapInCardImage?.(node))
+        ) {
             const image = generateImage({
                 type: 'paragraph',
                 children: [node as Image]
@@ -127,6 +131,7 @@ interface Config {
     ) => MdxJsxFlowElement | Parent;
     flexItem: (name: ContainerDirectiveName, options: Options) => MdxJsxFlowElement | Parent;
     itemContent?: (name: ContainerDirectiveName) => MdxJsxFlowElement | Parent;
+    wrapInCardImage?: (node: Node) => boolean;
 }
 
 export const transformer = (ast: Root | MdxJsxFlowElement | Parent, config: Config) => {

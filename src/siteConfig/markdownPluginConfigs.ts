@@ -1,3 +1,5 @@
+import type { Node } from 'mdast';
+import type { LeafDirective } from 'mdast-util-directive';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
 import mdiPlugin from '../plugins/remark-mdi/plugin';
@@ -17,7 +19,14 @@ import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
 
-export const flexCardsPluginConfig = flexCardsPlugin;
+export const flexCardsPluginConfig = [
+    flexCardsPlugin,
+    {
+        wrapInCardImage: (node: Node) => {
+            return node.type === 'leafDirective' && (node as LeafDirective).name === 'video';
+        }
+    }
+];
 
 export const deflistPluginConfig = [
     deflistPlugin,

@@ -1,5 +1,5 @@
 import type { Plugin, Transformer } from 'unified';
-import { BlockContent, Root } from 'mdast';
+import { Node, Root } from 'mdast';
 import { transformer } from './transformer';
 import { MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import { toJsxAttribute } from '../helpers';
@@ -25,7 +25,13 @@ const DEFAULT_CLASSES: {
     }
 };
 
-const plugin: Plugin<unknown[], Root> = function plugin(this): Transformer<Root> {
+interface OptionsInput {
+    wrapInCardImage?: (node: Node) => boolean;
+    skipCardImageProcessing?: boolean;
+}
+
+const plugin: Plugin<OptionsInput[], Root> = function plugin(this, optionsInput = {}): Transformer<Root> {
+    const { skipCardImageProcessing, wrapInCardImage } = optionsInput;
     return async (ast, vfile) => {
         const a = [`${DirectiveCard}`, `${DirectiveFlex}`];
         transformer(ast, {
@@ -67,7 +73,9 @@ const plugin: Plugin<unknown[], Root> = function plugin(this): Transformer<Root>
                     attributes: [toJsxAttribute('className', DEFAULT_CLASSES[name].content)],
                     children: []
                 } as MdxJsxFlowElement;
-            }
+            },
+            skipCardImageProcessing: skipCardImageProcessing,
+            wrapInCardImage: wrapInCardImage
         });
     };
 };
