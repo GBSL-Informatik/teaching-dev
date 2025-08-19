@@ -18,6 +18,7 @@ import TopRightUi from './TopRightUi';
 import MainMenu from './MainMenu';
 import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 import { getImageElementFromScene } from './helpers/getElementsFromScene';
+import { ExcalidrawFreeDrawElement } from '@excalidraw/excalidraw/element/types';
 
 interface Props {
     mimeType: string;
@@ -26,6 +27,16 @@ interface Props {
     onDiscard?: () => void;
     onRestore?: () => void;
 }
+
+const getFreedrawPressureState = (freedrawElements: ExcalidrawFreeDrawElement[]) => {
+    return freedrawElements.length === 0
+        ? null
+        : freedrawElements.every((e) => e.simulatePressure || e.pressures.length > 0)
+          ? 'on'
+          : freedrawElements.some((e) => e.simulatePressure || e.pressures.length > 0)
+            ? 'partial'
+            : 'off';
+};
 
 const ImageMarkupEditor = observer((props: Props) => {
     const hasImageElement = React.useMemo(() => {
@@ -50,6 +61,7 @@ const Editor = observer((props: Props & { hasBGImage: boolean; Lib: typeof Excal
     const [hasChanges, setHasChanges] = React.useState(false);
     const [showLineActions, setShowLineActions] = React.useState(false);
     const [selectedTextId, setSelectedTextId] = React.useState<string | null>(null);
+    const [freedrawState, setFreedrawState] = React.useState<'off' | 'partial' | 'on' | null>(null);
 
     const { colorMode } = useColorMode();
     React.useEffect(() => {
@@ -76,7 +88,10 @@ const Editor = observer((props: Props & { hasBGImage: boolean; Lib: typeof Excal
                     return;
                 }
                 setSelectedTextId(getSelectedTextElementId(excalidrawAPI));
-                setShowLineActions(getSelectedStrokeElements(excalidrawAPI).length > 0);
+                const strokeElements = getSelectedStrokeElements(excalidrawAPI);
+                setShowLineActions(strokeElements.length > 0);
+                const freedrawElements = strokeElements.filter((e) => e.type === 'freedraw');
+                setFreedrawState(getFreedrawPressureState(freedrawElements));
                 const eHash = Lib.hashElementsVersion(excalidrawAPI.getSceneElements());
                 setHasChanges(hash !== eHash);
             });
@@ -96,6 +111,16 @@ const Editor = observer((props: Props & { hasBGImage: boolean; Lib: typeof Excal
         }
     }, [excalidrawAPI]);
 
+    const updateScene = React.useCallback((appState: ExcalidrawInitialDataState) => {
+        currentState.current!.elements = appState.elements;
+        currentState.current!.files = appState.files;
+        setRenderKey((prev) => prev + 1);
+    }, []);
+
+    const onSave = React.useCallback(
+        () => onSaveCallback(Lib, mimeType, props.onSave, excalidrawAPI!, false),
+        [mimeType, Lib, props.onSave, excalidrawAPI]
+    );
     if (!Lib || !Lib.MainMenu) {
         return <Loader label="Initialize Excalidraw..." />;
     }
@@ -131,16 +156,13 @@ const Editor = observer((props: Props & { hasBGImage: boolean; Lib: typeof Excal
                 return (
                     <TopRightUi
                         hasChanges={hasChanges}
+                        freedrawState={freedrawState}
                         showLineActions={showLineActions}
                         selectedTextId={selectedTextId}
                         api={excalidrawAPI!}
-                        onSave={() => onSaveCallback(Lib, mimeType, props.onSave, excalidrawAPI!, false)}
                         restoreFn={Lib.restoreElements}
-                        updateScene={(appState) => {
-                            currentState.current!.elements = appState.elements;
-                            currentState.current!.files = appState.files;
-                            setRenderKey((prev) => prev + 1);
-                        }}
+                        onSave={onSave}
+                        updateScene={updateScene}
                         hasBGImage={props.hasBGImage}
                     />
                 );
