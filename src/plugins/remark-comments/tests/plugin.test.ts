@@ -149,4 +149,28 @@ describe('#comment', () => {
           "
         `);
     });
+
+    it('ignores divs with classname .noComment', async () => {
+        const input = `
+        <div className="noComment">
+            This should not be commented.
+        </div>
+        <div>
+            This should be commented.
+        </div>
+        `;
+        const result = await process(input, undefined, { ignoreFlowElementsWithClass: /noComment/ });
+        expect(result).toMatchInlineSnapshot(`
+          "<div className="noComment">
+            This should not be commented.
+          </div>
+
+          <div>
+            This should be commented.
+
+            <MdxComment nr={1} commentNr={1} type="paragraph" pageId="d2f1b301-fbea-4289-8ab0-19c8a6c4ded0" />
+          </div>
+          "
+        `);
+    });
 });

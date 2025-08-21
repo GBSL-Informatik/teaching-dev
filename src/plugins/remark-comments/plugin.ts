@@ -1,6 +1,6 @@
 import type { Plugin, Transformer } from 'unified';
 import type { Root } from 'mdast';
-import type { MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
 import { toJsxAttribute } from '../helpers';
 
 const COMMENTABLE_BLOCK_TYPES = [
@@ -41,6 +41,17 @@ export interface PluginOptions {
      * @default: []
      */
     ignoreJsxFlowElements?: string[];
+
+    /**
+     * ignore FlowElements with a specific classname
+     * @example
+     * /noComment/
+     * --> <div class="noComment">...</div>
+     * will be ignored
+     * @default: /noComment/
+     */
+    ignoreFlowElementsWithClass?: RegExp;
+
     /**
      * Some Codeblocks (`code`) should not be commentable, e.g. when they
      * render some sort of live code.
@@ -75,6 +86,7 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(options = {}): Tra
         const commentableJsxFlowElements = new Set(options?.commentableJsxFlowElements || []);
         const ignoredJsxFlowElements = new Set(options?.ignoreJsxFlowElements || []);
         const ignoreCodeBlocksWithMeta = options?.ignoreCodeBlocksWithMeta || /noComment/;
+        const ignoreFlowElementsWithClass = options?.ignoreFlowElementsWithClass ?? /noComment/;
         let nodeNr = 0;
         const typeNrMap = new Map<string, number>();
         visit(root, (node, index, parent) => {
@@ -94,7 +106,13 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(options = {}): Tra
                 return [SKIP];
             }
             if (node.type === 'mdxJsxFlowElement' && node.name) {
-                if (ignoredJsxFlowElements.has(node.name)) {
+                const className = node.attributes.find(
+                    (attr) => (attr as MdxJsxAttribute)?.name === 'className'
+                )?.value;
+                if (
+                    ignoredJsxFlowElements.has(node.name) ||
+                    (typeof className === 'string' && ignoreFlowElementsWithClass.test(className))
+                ) {
                     return [SKIP];
                 }
                 if (commentableJsxFlowElements.has(node.name)) {
