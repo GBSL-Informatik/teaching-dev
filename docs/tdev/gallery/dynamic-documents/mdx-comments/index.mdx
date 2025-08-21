@@ -43,6 +43,19 @@ page_id: 694583bd-784f-4db9-99c4-491d6e373b88
 # Ein Dokument ohne Kommentare
 ```
 
+### Einzelne Abschnitte/Elemente nicht kommentierbar machen
+
+Durch das Hinzufügen der Klasse `noComment` zu einem Element kann dieses Element (und alle seine Kind-Elemente) von der Kommentarfunktion ausgeschlossen werden.
+
+```md
+<div className="noComment">
+    This should not be commented.
+</div>
+<div>
+    This should be commented.
+</div>
+```
+
 ## Installation
 
 :::warning[Voraussetzung]
