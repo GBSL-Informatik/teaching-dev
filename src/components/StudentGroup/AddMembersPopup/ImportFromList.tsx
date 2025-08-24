@@ -28,7 +28,7 @@ const ImportFromList = observer((props: _AddMembersPopupPropsInternal) => {
                     icon={mdiAccountArrowLeft}
                     iconSide="left"
                     color="green"
-                    disabled={usersToImport.size === 0 || invalidEntries.length > 0}
+                    disabled={usersToImport.size === 0}
                     onClick={() => {
                         usersToImport.forEach((user) => props.studentGroup.addStudent(user));
                         props.onImported(Array.from(usersToImport).map((user) => user.id));
@@ -36,10 +36,11 @@ const ImportFromList = observer((props: _AddMembersPopupPropsInternal) => {
                     }}
                 />
                 <TextAreaInput
-                    onChange={debounce((val) => {
+                    onChange={debounce((val: string) => {
                         const newInvalidEntries: string[] = [];
                         let duplicatesSkipped = 0;
                         const users = val
+                            .toLowerCase()
                             .split('\n')
                             .filter((emailOrId: string) => !!emailOrId)
                             .map((line: string) => {
@@ -54,7 +55,7 @@ const ImportFromList = observer((props: _AddMembersPopupPropsInternal) => {
 
                                 return user;
                             })
-                            .filter((user: User) => {
+                            .filter((user) => {
                                 if (!user) {
                                     return false;
                                 }
@@ -75,6 +76,8 @@ const ImportFromList = observer((props: _AddMembersPopupPropsInternal) => {
                 />
                 {invalidEntries.length > 0 && (
                     <Admonition type="warning" title="Ungültige Einträge">
+                        {invalidEntries.length === 1 ? '1 Eintrag' : `${invalidEntries.length} Einträge`}{' '}
+                        konnten nicht zugeordnet werden und werden ignoriert:
                         <ul>
                             {invalidEntries.map((entry, index) => (
                                 <li key={index}>{entry}</li>
