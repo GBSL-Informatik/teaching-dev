@@ -167,7 +167,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
 
     @computed
     get isDone(): boolean {
-        return this.progress >= this.totalSteps;
+        return this.progress > 0 && this.progress >= this.totalSteps;
     }
 
     @action
