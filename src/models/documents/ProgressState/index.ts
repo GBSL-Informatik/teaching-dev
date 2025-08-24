@@ -224,6 +224,13 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
 
     @action
     setScrollTo(scrollTo: boolean) {
+        if (this.isDone) {
+            if (scrollTo) {
+                this.setViewedIndex(this.totalSteps - 1);
+            } else {
+                this._viewedIndex = undefined;
+            }
+        }
         this.scrollTo = scrollTo;
     }
 
