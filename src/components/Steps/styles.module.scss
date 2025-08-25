@@ -1,4 +1,5 @@
 .steps {
+    --ifm-list-item-margin: 0;
     &.mdxEditor ol:not(ol ol),
     > ol {
         display: block;
@@ -22,6 +23,12 @@
             *     when there is an active comment
             */
             --dtev-progress-color: var(--comment-ico-color, var(--ifm-color-secondary-darker));
+            > p:first-child {
+                margin-top: 0;
+            }
+            > p:last-child {
+                margin-bottom: 0;
+            }
             > :global(.figure) {
                 margin: 0 0;
             }
