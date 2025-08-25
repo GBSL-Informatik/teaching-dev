@@ -3,6 +3,9 @@ dl.definitionList {
     grid-template-columns: minmax(8em, 1fr) minmax(10em, 2fr);
     grid-auto-flow: row;
     margin-bottom: 1rem;
+    &:last-child {
+        margin-bottom: 0;
+    }
     dt {
         grid-column: 1;
         font-weight: bold;
