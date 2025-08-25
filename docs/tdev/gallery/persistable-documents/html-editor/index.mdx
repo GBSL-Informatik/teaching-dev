@@ -1,0 +1,62 @@
+---
+page_id: 866b2f3a-7a7f-45a8-aac2-0fce7190567b
+tags:
+  - editor
+  - codierung
+---
+
+import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+
+# HTML Editor
+
+Der SVG Editor ist eine Komponente, welche auf dem `CodeBlock` aufbaut - es muss also nichts zusätzlich installiert werden.
+
+````md
+<HtmlEditor id="79ba3332-b43d-421a-8702-e5ac7890435d" title='website.html'>
+    ```html
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>Gummibären</title>
+            <style>
+                img {
+                    border-radius: 8px;
+                    width: 300px;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Gummibären</h1>
+            <p>Bunte <a href="https://de.wikipedia.org/wiki/Gummib%C3%A4r">Gummibären</a> sind beliebte Fruchtgummis.</p>
+            <img alt="Gummibären" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg">
+        </body>
+    </html>
+    ```
+</HtmlEditor>
+````
+
+<BrowserWindow>
+    <HtmlEditor id="79ba3332-b43d-421a-8702-e5ac7890435d" title='website.html'>
+        ```html
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Gummibären</title>
+                <style>
+                    img {
+                        border-radius: 8px;
+                        width: 300px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Gummibären</h1>
+                <p>Bunte <a href="https://de.wikipedia.org/wiki/Gummib%C3%A4r">Gummibären</a> sind beliebte Fruchtgummis.</p>
+                <img alt="Gummibären" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg">
+            </body>
+        </html>
+        ```
+    </HtmlEditor>
+</BrowserWindow>

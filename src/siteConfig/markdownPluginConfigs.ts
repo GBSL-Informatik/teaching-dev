@@ -46,6 +46,10 @@ export const codeAsAttributePluginConfig = [
                 attributeName: 'code'
             },
             {
+                name: 'HtmlEditor',
+                attributeName: 'code'
+            },
+            {
                 name: 'NetpbmEditor',
                 attributeName: 'default'
             },

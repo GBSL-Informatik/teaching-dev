@@ -3,13 +3,9 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
 import AceEditor from 'react-ace';
-import 'ace-builds/src-noconflict/ext-searchbox';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/mode-sql';
-import 'ace-builds/src-noconflict/mode-svg';
-import 'ace-builds/src-noconflict/theme-dracula';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
+import 'ace-builds/esm-resolver';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { DocumentType } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
@@ -80,7 +76,7 @@ const EditorAce = observer(() => {
                 maxLines={script.meta.maxLines}
                 ref={eRef}
                 mode={ALIAS_LANG_MAP_ACE[script.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? script.lang}
-                theme="dracula"
+                theme={script.meta.theme ?? 'dracula'}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     script.setCode(value, e.action);
                 }}
