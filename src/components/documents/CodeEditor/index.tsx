@@ -20,6 +20,7 @@ export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     code: string;
     showLineNumbers: boolean;
     className?: string;
+    theme?: string;
 }
 
 export const CodeEditor = observer((props: Props) => {

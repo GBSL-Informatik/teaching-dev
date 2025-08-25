@@ -1,0 +1,12 @@
+.htmlEditor {
+    .code {
+        margin-bottom: 0.5rem;
+    }
+    .htmlWindow {
+        --ifm-color-emphasis-200: var(--ifm-color-blue);
+        margin-bottom: 0;
+        div[class^='browserWindowHeader'] {
+            padding: 0.2rem 0.8rem;
+        }
+    }
+}
