@@ -5,3 +5,9 @@
         }
     }
 }
+
+:global(.alert) {
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
