@@ -69,7 +69,7 @@ const HtmlEditor = observer((props: Props) => {
                         </div>
                     )}
                 >
-                    <HtmlSandbox src={doc?.code} />
+                    <HtmlSandbox src={doc.code} id={doc.id} />
                 </ErrorBoundary>
             </BrowserWindow>
         </div>

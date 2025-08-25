@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 
 interface IframeErrorMessage {
     type: 'error';
+    id: string;
     error: string;
     lineno: number;
     colno: number;
@@ -14,37 +15,46 @@ interface IframeErrorMessage {
 
 interface IframeResizeMessage {
     type: 'resize';
+    id: string;
     height: number;
 }
 
 type IframeMessage = IframeErrorMessage | IframeResizeMessage;
 
-const ERROR_HANDLING_SCRIPT = `
+const errorHandlingScript = (id: string) => `
 <script>
 function onError(message, source, lineno, colno, error) {
     try {
-        parent.postMessage({type: 'error', error: message, lineno, colno}, "*");
+        parent.postMessage({id: '${id}', type: 'error', error: message, lineno, colno}, "*");
     } catch(_) {
         // Ignore errors
     }
 };
-
 function sendHeight() {
-    try {
-        parent.postMessage({type: 'resize', height: document.body.scrollHeight}, "*");
-    } catch(_) {
-        // Ignore errors
-    }
+    setTimeout(() => {
+        try {
+            const {scrollHeight, clientHeight} = document.body.parentNode;
+            if (scrollHeight !== clientHeight) {
+                parent.postMessage({id: '${id}', type: 'resize', height: scrollHeight}, "*");
+            }
+        } catch(_) {
+            // Ignore errors
+        }
+    }, 200);
 }
+
 window.onerror = onError;
 window.onload = sendHeight;
 window.onresize = sendHeight;
 </script>
 `;
 
-const injectScript = (html: string): string => {
+const injectScript = (id: string, html: string): string => {
     try {
-        if (!html) return ERROR_HANDLING_SCRIPT;
+        const ERROR_HANDLING_SCRIPT = errorHandlingScript(id);
+        if (!html) {
+            return ERROR_HANDLING_SCRIPT;
+        }
         const headMatch = html.match(/<head[^>]*>/i);
         if (headMatch) {
             // insert after <head>
@@ -60,43 +70,47 @@ const injectScript = (html: string): string => {
         return ERROR_HANDLING_SCRIPT + html;
     } catch (err) {
         // Fallback – just prefix
-        return ERROR_HANDLING_SCRIPT + (html || '');
+        return errorHandlingScript(id) + (html || '');
     }
 };
 export interface Props {
     src: string;
+    id: string;
 }
 
-const DEFAULT_HEIGHT = 300;
+const DEFAULT_HEIGHT = 50;
 
 const HtmlSandbox = observer((props: Props) => {
+    const { id } = props;
     const [errorMsg, setErrorMsg] = React.useState<IframeErrorMessage | null>(null);
     const [height, setHeight] = React.useState<number>(DEFAULT_HEIGHT);
-    const [htmlSrc, setHtmlSrc] = React.useState<string>(injectScript(props.src));
+    const [htmlSrc, setHtmlSrc] = React.useState<string>(injectScript(id, props.src));
 
     const throttledUpdate = React.useRef(
         _.throttle(
-            (newSrc: string) => {
+            (newSrc: string, id: string) => {
                 setErrorMsg(null);
-                setHtmlSrc(injectScript(newSrc));
+                setHtmlSrc(injectScript(id, newSrc));
             },
             1000,
             { trailing: true, leading: true }
         )
     );
     React.useEffect(() => {
-        throttledUpdate.current(props.src);
-    }, [props.src]);
+        throttledUpdate.current(props.src, id);
+    }, [props.src, id]);
 
     React.useEffect(() => {
         const onMessage = (e: MessageEvent<IframeMessage>) => {
+            if (e.data.id !== id) {
+                return;
+            }
             switch (e.data.type) {
                 case 'error':
                     setErrorMsg(e.data);
                     break;
                 case 'resize':
-                    // Handle resize messages if needed
-                    setHeight(e.data.height + 40);
+                    setHeight(e.data.height);
                     break;
             }
         };
@@ -104,7 +118,7 @@ const HtmlSandbox = observer((props: Props) => {
         return () => {
             window.removeEventListener('message', onMessage);
         };
-    }, []);
+    }, [id]);
 
     return (
         <div className={clsx(styles.sandbox)}>
