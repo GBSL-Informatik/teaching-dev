@@ -12,5 +12,8 @@
         div[class^='browserWindowHeader'] {
             padding: 0.2rem 0.8rem;
         }
+        .sandbox {
+            background: var(--ifm-color-white);
+        }
     }
 }

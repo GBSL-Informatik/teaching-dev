@@ -17,6 +17,7 @@ export interface MetaProps {
     noHistory: boolean;
     noCompare: boolean;
     maxLines?: number;
+    minLines?: number;
     hideWarning: boolean;
     title: string;
 }

@@ -73,6 +73,7 @@ const EditorAce = observer(() => {
                 }}
                 focus={false}
                 navigateToFileEnd={false}
+                minLines={script.meta.minLines}
                 maxLines={script.meta.maxLines}
                 ref={eRef}
                 mode={ALIAS_LANG_MAP_ACE[script.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? script.lang}

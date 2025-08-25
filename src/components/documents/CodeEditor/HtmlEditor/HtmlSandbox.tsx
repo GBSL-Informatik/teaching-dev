@@ -2,6 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Alert from '@tdev-components/shared/Alert';
 import _ from 'lodash';
+import clsx from 'clsx';
+import styles from './styles.module.scss';
 
 interface IframeErrorMessage {
     type: 'error';
@@ -94,7 +96,7 @@ const HtmlSandbox = observer((props: Props) => {
                     break;
                 case 'resize':
                     // Handle resize messages if needed
-                    setHeight(e.data.height * 1.1);
+                    setHeight(e.data.height + 40);
                     break;
             }
         };
@@ -105,7 +107,7 @@ const HtmlSandbox = observer((props: Props) => {
     }, []);
 
     return (
-        <div>
+        <div className={clsx(styles.sandbox)}>
             {errorMsg && (
                 <Alert type="danger">
                     <div>Invalides HTML 😵‍💫:</div>
