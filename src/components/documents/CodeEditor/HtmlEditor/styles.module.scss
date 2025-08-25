@@ -1,4 +1,8 @@
 .htmlEditor {
+    margin-bottom: 1em;
+    &:last-child {
+        margin-bottom: 0;
+    }
     .code {
         margin-bottom: 0.5rem;
     }
