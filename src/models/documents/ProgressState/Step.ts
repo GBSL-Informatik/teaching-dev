@@ -2,14 +2,10 @@ import { action, computed, observable } from 'mobx';
 import ProgressState from '.';
 import {
     mdiCheckCircle,
-    mdiCheckCircleOutline,
     mdiCircleMedium,
     mdiCircleSlice8,
     mdiProgressCheck,
-    mdiRecordCircleOutline,
-    mdiSpeedometer,
-    mdiSpeedometerMedium,
-    mdiSpeedometerSlow
+    mdiRecordCircleOutline
 } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import _ from 'lodash';
@@ -136,6 +132,17 @@ class Step {
     @action
     onClicked() {
         this.progressState.onStepClicked(this.index);
+    }
+
+    @computed
+    get isScrollingTo(): boolean {
+        if (!this.progressState.scrollTo) {
+            return false;
+        }
+        if (this.progressState.isDone) {
+            return this.isFinalStep;
+        }
+        return this.isActive;
     }
 
     @computed
