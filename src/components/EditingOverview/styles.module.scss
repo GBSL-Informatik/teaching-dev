@@ -38,8 +38,13 @@
     max-height: calc(100vh - 15em);
     overflow: auto;
 
-    > :nth-child(2n) {
-        background-color: var(--ifm-color-secondary-lightest);
+    > .usersTasks {
+        &:nth-child(2n) {
+            background-color: var(--ifm-color-secondary-lightest);
+        }
+        &:hover {
+            background-color: var(--ifm-hover-overlay);
+        }
     }
 }
 
