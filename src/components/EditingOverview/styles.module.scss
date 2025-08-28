@@ -43,13 +43,23 @@
             background-color: var(--ifm-color-secondary-lightest);
         }
         &:hover {
-            background-color: var(--ifm-hover-overlay);
+            background-color: var(--ifm-color-primary-contrast-background);
         }
     }
 }
 
 .button {
     padding: calc(var(--ifm-button-padding-vertical) * 0.1) calc(var(--ifm-button-padding-horizontal) * 0.6);
+}
+
+[data-theme='dark'] {
+    .overviewWrapper {
+        > .usersTasks {
+            &:nth-child(2n) {
+                background-color: var(--ifm-color-secondary-contrast-background);
+            }
+        }
+    }
 }
 
 @media screen and (max-width: 768px) {
