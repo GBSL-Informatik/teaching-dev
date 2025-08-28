@@ -140,4 +140,10 @@ export default class Page {
             (doc) => doc.authorId
         );
     }
+
+    @computed
+    get userIdsWithoutEditingState(): string[] {
+        const editingStates = this.editingStateByUsers;
+        return [...(this.activeStudentGroup?.userIds || [])].filter((userId) => !editingStates[userId]);
+    }
 }
