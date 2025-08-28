@@ -91,7 +91,7 @@
         &:global(.button--active) {
             &:hover {
                 opacity: 0.6;
-                --ifm-button-color: var(--ifm-color-content);
+                --ifm-button-color: var(--ifm-color-content-inverse);
             }
         }
         &.noBorder {
