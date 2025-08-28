@@ -144,6 +144,6 @@ export default class Page {
     @computed
     get userIdsWithoutEditingState(): string[] {
         const editingStates = this.editingStateByUsers;
-        return Array.from(this.activeStudentGroup?.userIds ?? []).filter((userId) => !editingStates[userId]);
+        return [...(this.activeStudentGroup?.userIds || [])].filter((userId) => !editingStates[userId]);
     }
 }
