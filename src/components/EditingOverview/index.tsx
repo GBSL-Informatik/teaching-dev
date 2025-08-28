@@ -99,6 +99,17 @@ const EditingOverview = observer(() => {
                                         </div>
                                     );
                                 })}
+                                {currentPage.userIdsWithoutEditingState.map((userId) => {
+                                    const user = userStore.find(userId);
+                                    return (
+                                        <div key={userId} className={clsx(styles.usersTasks)}>
+                                            <span className={styles.user}>{user!.nameShort}</span>
+                                            <div>
+                                                <span className="badge badge--secondary">nicht geöffnet</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
