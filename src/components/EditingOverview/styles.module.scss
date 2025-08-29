@@ -39,6 +39,7 @@
     overflow: auto;
 
     > .usersTasks {
+        background-color: var(--ifm-background-color);
         &:nth-child(2n) {
             background-color: var(--ifm-color-secondary-lightest);
         }
