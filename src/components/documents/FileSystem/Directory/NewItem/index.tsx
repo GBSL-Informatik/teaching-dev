@@ -4,6 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
 import {
+    mdiFileCode,
     mdiFileDocument,
     mdiFolderOpenOutline,
     mdiFolderPlus,
@@ -37,11 +38,14 @@ const withFile = async (store: DocumentStore, rootId: string, parentId: string, 
     });
 };
 
-const asPyName = (name: string) => {
+const SUPPORTED_EXTENSIONS = ['.py', '.svg', '.html', '.pbm', '.pgm', '.ppm'];
+
+const asCodeName = (name?: string) => {
     if (!name) {
         return 'programm.py';
     }
-    if (/\.py$/i.test(name)) {
+    const extension = name.split('.').pop();
+    if (SUPPORTED_EXTENSIONS.includes(`.${extension}`)) {
         return name;
     }
     return `${name}.py`;
@@ -50,6 +54,9 @@ const asPyName = (name: string) => {
 const NewItem = observer((props: Props) => {
     const ref = React.useRef<PopupActions>(null);
     const [name, setName] = React.useState('');
+    const isPyScript = React.useMemo(() => {
+        return !name.includes('.') || name.split('.').pop() === 'py';
+    }, [name]);
     const documentStore = useStore('documentStore');
     const closeTooltip = () => (ref.current as any)?.close();
     const { directory } = props;
@@ -77,13 +84,13 @@ const NewItem = observer((props: Props) => {
                 <div className={clsx('card__body', styles.body)}>
                     <TextInput onChange={setName} placeholder="Name" />
                     <Button
-                        text="Neues Python Snippet"
+                        text={isPyScript ? 'Neues Python Snippet' : 'Neues Snippet'}
                         color="rgb(19, 165, 0)"
                         size={0.8}
-                        icon={mdiLanguagePython}
+                        icon={isPyScript ? mdiLanguagePython : mdiFileCode}
                         iconSide="left"
                         onClick={async () => {
-                            withFile(documentStore, rootId, directory.id, asPyName(name))
+                            withFile(documentStore, rootId, directory.id, asCodeName(name))
                                 .then((file) => {
                                     if (file) {
                                         return documentStore.create({

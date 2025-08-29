@@ -13,7 +13,7 @@ import Card from '@tdev-components/shared/Card';
 import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 
-export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py' | 'title'> {
+export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' | 'title'> {
     title?: string;
     code?: string;
     showLineNumbers?: boolean;

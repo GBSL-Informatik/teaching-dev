@@ -26,6 +26,8 @@ import {
     mdiExcalidraw,
     mdiExcalidrawOutline
 } from '@tdev/excalidoc/Component';
+import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
+import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
 
 interface Props {
     file: FileModel;
@@ -98,7 +100,20 @@ const File = observer((props: Props) => {
                 {file.document && file.isOpen && (
                     <>
                         {file.document.type === DocumentType.Script && (
-                            <CodeEditorComponent script={file.document} />
+                            <>
+                                {file.document.isCodeEditor ? (
+                                    <CodeEditorComponent script={file.document} />
+                                ) : (
+                                    <>
+                                        {file.document.derivedLang === 'html' && (
+                                            <HtmlEditor id={file.document.id} />
+                                        )}
+                                        {file.document.derivedLang === 'svg' && (
+                                            <SvgEditor id={file.document.id} />
+                                        )}
+                                    </>
+                                )}
+                            </>
                         )}
                         {file.document.type === DocumentType.QuillV2 && (
                             <QuillV2Component quillDoc={file.document} className={styles.quill} />
