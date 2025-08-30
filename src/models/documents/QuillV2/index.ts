@@ -6,7 +6,7 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { getToolbar, TOOLBAR, ToolbarModule, ToolbarOptions } from './helpers/toolbar';
 import { Delta } from 'quill/core';
 import { ApiState } from '@tdev-stores/iStore';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 export interface MetaInit {
     readonly?: boolean;

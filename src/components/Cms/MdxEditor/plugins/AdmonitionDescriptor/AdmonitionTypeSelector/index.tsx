@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '@tdev-components/shared/Button';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { ADMONITION_TYPES } from './admonitionTypes';
 
 interface Props {

@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { Directives } from 'mdast-util-directive';
 import { useMdastNodeUpdater } from '@mdxeditor/editor';
 

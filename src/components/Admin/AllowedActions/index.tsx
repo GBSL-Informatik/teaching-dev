@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import Button from '@tdev-components/shared/Button';
 import { mdiPlusCircle, mdiSortAscending, mdiSortDescending } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { Delete } from '@tdev-components/shared/Button/Delete';
 import { action } from 'mobx';
 import Details from '@theme/Details';

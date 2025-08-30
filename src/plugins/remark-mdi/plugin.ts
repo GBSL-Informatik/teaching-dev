@@ -3,7 +3,7 @@ import type { Plugin, Transformer } from 'unified';
 import type { MdxJsxAttribute, MdxJsxTextElement, MdxjsEsm } from 'mdast-util-mdx';
 import { camelCased, captialize, Options, toJsxAttribute, transformAttributes } from '../helpers';
 import { Root, Text } from 'mdast';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 // const MDI_PROPS = [
 //     {

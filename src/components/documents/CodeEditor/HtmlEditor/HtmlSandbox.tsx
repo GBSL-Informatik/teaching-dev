@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Alert from '@tdev-components/shared/Alert';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 

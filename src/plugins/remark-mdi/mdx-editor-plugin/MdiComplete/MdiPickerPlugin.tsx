@@ -15,7 +15,7 @@ import {
 import Icon from '@mdi/react';
 import Card from '@tdev-components/shared/Card';
 import { $createTextNode, $getSelection, $isRangeSelection, TextNode } from 'lexical';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import * as Mdi from '@mdi/js';
 import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';

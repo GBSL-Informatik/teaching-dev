@@ -15,7 +15,7 @@ import iStore from '@tdev-stores/iStore';
 import GroupPermission from '@tdev-models/GroupPermission';
 import UserPermission from '@tdev-models/UserPermission';
 import { DocumentType } from '@tdev-api/document';
-import { debounce } from 'lodash';
+import _ from 'es-toolkit/compat';
 import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 
@@ -112,7 +112,7 @@ export class DocumentRootStore extends iStore {
      * - or when more then 42 records are queued (@see loadInNextBatch)
      *    (otherwise the URL maxlength would be reached)
      */
-    loadQueued = debounce(action(this._loadQueued), 10, {
+    loadQueued = _.debounce(action(this._loadQueued), 10, {
         leading: false,
         trailing: true,
         maxWait: 15

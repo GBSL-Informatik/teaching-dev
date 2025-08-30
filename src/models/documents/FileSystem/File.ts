@@ -1,7 +1,7 @@
 import { computed } from 'mobx';
 import { DocumentType, Document as DocumentProps } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import iFileSystem, { iFSMeta, MetaInit } from './iFileSystem';
 
 export class ModelMeta extends iFSMeta<DocumentType.File> {

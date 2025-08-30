@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import File from '@tdev-models/cms/File';
 import Save from './Save';
 import Popup from 'reactjs-popup';

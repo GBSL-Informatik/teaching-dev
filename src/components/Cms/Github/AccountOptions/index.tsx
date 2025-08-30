@@ -7,7 +7,7 @@ import { mdiLoading, mdiLogoutVariant, mdiReload } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import NavItem from '@tdev-components/Cms/MdxEditor/EditorNav/BranchPathNav/NavItem';
 import { useHistory } from '@docusaurus/router';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import UserAvatar from './UserAvatar';

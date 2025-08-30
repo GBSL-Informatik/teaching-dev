@@ -13,7 +13,7 @@ import siteConfig from '@generated/docusaurus.config';
 import Dir from '@tdev-models/cms/Dir';
 import { default as FileModel } from '@tdev-models/cms/File';
 import { computedFn } from 'mobx-utils';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import Settings from '@tdev-models/cms/Settings';
 import Github from '@tdev-models/cms/Github';
 import FileStub from '@tdev-models/cms/FileStub';

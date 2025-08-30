@@ -2,7 +2,7 @@ import { action, computed, observable } from 'mobx';
 import iJs, { JsModelType } from './iJs';
 import { toModel } from './toModel';
 import { JsParents, JsValue, sortValues } from '../../toJsSchema';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import type JsRoot from './JsRoot';
 
 abstract class iParentable<T extends JsParents = JsParents> extends iJs<T> {

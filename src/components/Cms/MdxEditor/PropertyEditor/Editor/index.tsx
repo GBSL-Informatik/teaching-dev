@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import Card from '@tdev-components/shared/Card';
 import styles from './styles.module.scss';
 import Button from '@tdev-components/shared/Button';

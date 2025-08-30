@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 export const notEqual = (a: any, b: any) => {
     if (Array.isArray(a)) {

@@ -10,7 +10,7 @@ import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
 import siteConfig from '@generated/docusaurus.config';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 const TIME_NOW = new Date().toISOString();
 const LOG_REQUESTS = false;

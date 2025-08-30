@@ -3,7 +3,7 @@ import { StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
 import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 class StudentGroup {
     readonly store: StudentGroupStore;

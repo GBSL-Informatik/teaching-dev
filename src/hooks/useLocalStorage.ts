@@ -1,5 +1,5 @@
 import Storage, { StorageKey } from '@tdev-stores/utils/Storage';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import React from 'react';
 
 const useLocalStorage = <T = string>(

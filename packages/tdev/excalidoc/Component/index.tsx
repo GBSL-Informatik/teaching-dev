@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import Loader from '@tdev-components/Loader';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import Preview from './Preview';
 import Editor from './Editor';
 import SyncStatus from '@tdev-components/SyncStatus';

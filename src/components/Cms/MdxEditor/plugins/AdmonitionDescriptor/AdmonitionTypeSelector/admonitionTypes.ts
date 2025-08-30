@@ -1,5 +1,5 @@
 import siteConfig from '@generated/docusaurus.config';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const { organizationName, projectName, presets } = siteConfig;

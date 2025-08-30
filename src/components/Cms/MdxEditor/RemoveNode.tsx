@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { useLexicalNodeRemove } from '@mdxeditor/editor';
 import { mdiClose, mdiCloseBox } from '@mdi/js';
 import clsx from 'clsx';

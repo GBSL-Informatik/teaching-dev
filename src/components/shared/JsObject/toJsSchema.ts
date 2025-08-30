@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 export type JsTypes = string | number | boolean | object | Function | bigint | Symbol | null | undefined;
 

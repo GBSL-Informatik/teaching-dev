@@ -22,7 +22,7 @@ import globalData from '@generated/globalData';
 import ScriptVersion from './ScriptVersion';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { Props as CodeEditorProps } from '@tdev-components/documents/CodeEditor';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import File from './FileSystem/File';
 const libDir = (globalData['live-editor-theme'] as { default: { libDir: string } }).default.libDir;
 

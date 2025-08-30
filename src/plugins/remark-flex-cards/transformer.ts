@@ -4,7 +4,7 @@ import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import { LeafDirective } from 'mdast-util-directive';
 import { Options, toJsxAttribute, transformAttributes } from '../helpers';
 import { ContainerDirectiveName, DirectiveBreak, DirectiveCard, DirectiveFlex } from './plugin';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 const MIN_WIDTH = '50px';
 
 const configureFlexOptions = (options: Options, mergeWith?: Partial<Options>) => {

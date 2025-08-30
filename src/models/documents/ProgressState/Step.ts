@@ -8,7 +8,7 @@ import {
     mdiRecordCircleOutline
 } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 export interface MetaInit {
     readonly?: boolean;
     pagePosition?: number;

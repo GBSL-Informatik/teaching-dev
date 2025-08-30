@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import PropertyEditor from '../PropertyEditor';
 import Popup from 'reactjs-popup';
 import { mdiCog } from '@mdi/js';

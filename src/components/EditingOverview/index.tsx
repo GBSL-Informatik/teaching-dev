@@ -11,7 +11,7 @@ import Icon from '@mdi/react';
 import Popup from 'reactjs-popup';
 import EditingStateList from './EditingStateList';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 

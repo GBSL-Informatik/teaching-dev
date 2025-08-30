@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { intersection, difference } from 'lodash';
+import { intersection, difference } from 'es-toolkit';
 import { ReportBuilder } from './report';
 
 interface PackageJson {

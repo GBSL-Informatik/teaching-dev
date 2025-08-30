@@ -1,5 +1,5 @@
 import { computed } from 'mobx';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { JsObject as JsObjectType, JsParents, JsTypes } from '../../toJsSchema';
 import iParentable from './iParentable';
 

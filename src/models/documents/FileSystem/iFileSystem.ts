@@ -10,7 +10,7 @@ import {
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 export interface MetaInit {
     readonly?: boolean;

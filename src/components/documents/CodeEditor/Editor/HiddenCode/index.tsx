@@ -7,7 +7,7 @@ import { useDocument } from '@tdev-hooks/useContextDocument';
 import { DocumentType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import { mdiArrowExpandDown, mdiArrowExpandUp } from '@mdi/js';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 interface Props {
     type: 'pre' | 'post';
