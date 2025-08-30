@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { translate } from '@docusaurus/Translate';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 import CreatableSelect from 'react-select/creatable';
 import { useStore } from '@tdev-hooks/useStore';

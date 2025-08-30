@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import * as Mdi from '@mdi/js';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import TextInput from '@tdev-components/shared/TextInput';
 

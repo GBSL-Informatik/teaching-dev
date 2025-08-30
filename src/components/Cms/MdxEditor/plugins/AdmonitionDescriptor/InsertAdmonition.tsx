@@ -7,7 +7,7 @@ import {
     useTranslation
 } from '@mdxeditor/editor';
 import React from 'react';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';

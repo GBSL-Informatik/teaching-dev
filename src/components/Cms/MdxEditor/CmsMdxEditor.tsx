@@ -34,7 +34,7 @@ import {
     ViewMode,
     viewMode$
 } from '@mdxeditor/editor';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import '@mdxeditor/editor/style.css';
 import { default as FileModel } from '@tdev-models/cms/File';
 import { AdmonitionDirectiveDescriptor } from './plugins/AdmonitionDescriptor';

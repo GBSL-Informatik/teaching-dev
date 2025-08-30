@@ -1,6 +1,6 @@
 import { FullCmsSettings } from '@tdev-api/cms';
 import { CmsStore } from '@tdev-stores/CmsStore';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { action, computed } from 'mobx';
 import File from './File';
 import iEntry from './iEntry';

@@ -17,7 +17,7 @@ import {
     mdiSortDescending
 } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import TextInput from '@tdev-components/shared/TextInput';
 

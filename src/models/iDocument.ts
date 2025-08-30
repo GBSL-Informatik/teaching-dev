@@ -1,7 +1,7 @@
 import { action, computed, IReactionDisposer, observable, reaction } from 'mobx';
 import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import _, { debounce } from 'lodash';
+import _ from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
 import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
@@ -34,7 +34,7 @@ abstract class iDocument<Type extends DocumentType> {
      * Time [s] :    0        1        2        3        4        5        6        7
      * Edits    :    |||  |            |||   ||  |  |     ||  ||||  |||    ||  ||| |||||
      */
-    save = debounce(action(this._save), SAVE_DEBOUNCE_TIME, {
+    save = _.debounce(action(this._save), SAVE_DEBOUNCE_TIME, {
         leading: false,
         trailing: true,
         maxWait: 5 * SAVE_DEBOUNCE_TIME

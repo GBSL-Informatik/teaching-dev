@@ -1,6 +1,6 @@
 import { User } from '@tdev-api/user';
 import siteConfig from '@generated/docusaurus.config';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import MemoryStorage from './MemoryStorage';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 

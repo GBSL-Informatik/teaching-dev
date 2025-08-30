@@ -9,7 +9,7 @@ import type {
     NormalizedZoomValue
 } from '@excalidraw/excalidraw/types';
 import { useColorMode } from '@docusaurus/theme-common';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { EXCALIDRAW_RED } from './helpers/constants';
 import onSaveCallback, { OnSave } from './helpers/onSaveCallback';
 import { getSelectedStrokeElements } from './helpers/getSelectedStrokeElements';

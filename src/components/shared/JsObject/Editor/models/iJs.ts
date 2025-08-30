@@ -7,7 +7,7 @@ import JsObject from './JsObject';
 import JsArray from './JsArray';
 import JsNullish from './JsNullish';
 import JsFunction from './JsFunction';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { castToType, toModel } from './toModel';
 import iParentable from './iParentable';
 

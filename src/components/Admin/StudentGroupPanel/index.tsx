@@ -6,7 +6,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { mdiPlusCircleOutline } from '@mdi/js';
 import StudentGroup from '@tdev-components/StudentGroup';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 import { action } from 'mobx';
 

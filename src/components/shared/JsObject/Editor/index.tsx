@@ -11,7 +11,7 @@ import AddValue from './Actions/AddValue';
 import Button from '@tdev-components/shared/Button';
 import { mdiContentSave } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import iParentable from './models/iParentable';
 
 export type CustomAction = (js: iParentable, className: string, key: string | number) => React.ReactNode;

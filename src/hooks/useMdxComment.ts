@@ -1,7 +1,7 @@
 import { DocumentType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import MdxComment from '@tdev-models/documents/MdxComment';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 /**
  * This hook provides access to the first main document of the rootDocument.

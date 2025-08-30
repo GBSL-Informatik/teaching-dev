@@ -8,7 +8,7 @@ import UserPermission from '.';
 import AccessSelector from '../AccessSelector';
 import Loader from '@tdev-components/Loader';
 import { Access } from '@tdev-api/document';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 interface Props {
     documentRoots: DocumentRoot<any>[];

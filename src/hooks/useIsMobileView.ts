@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { useState, useEffect } from 'react';
 
 const useIsMobileView = (mobileViewWidth: number = 768) => {

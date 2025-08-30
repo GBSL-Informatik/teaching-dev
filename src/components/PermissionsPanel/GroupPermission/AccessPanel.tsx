@@ -9,7 +9,7 @@ import AccessSelector from '@tdev-components/PermissionsPanel/AccessSelector';
 import Loader from '@tdev-components/Loader';
 import { Access } from '@tdev-api/document';
 import { default as GroupPermissionModel } from '@tdev-models/GroupPermission';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 interface Props {
     documentRoots: DocumentRoot<any>[];

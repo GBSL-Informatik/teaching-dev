@@ -14,7 +14,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import Popup from 'reactjs-popup';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { useLocation } from '@docusaurus/router';
 import Icon from '@mdi/react';
 import User from '@tdev-models/User';

@@ -5,7 +5,7 @@
 import { action, computed, observable, ObservableSet } from 'mobx';
 import { PageStore } from '@tdev-stores/PageStore';
 import TaskState from '@tdev-models/documents/TaskState';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import ProgressState from './documents/ProgressState';

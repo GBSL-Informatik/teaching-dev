@@ -1,6 +1,6 @@
 import JsArray from './JsArray';
 import JsNumber from './JsNumber';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { JsModelType } from './iJs';
 import { JsValue } from '../../toJsSchema';
 import JsString from './JsString';

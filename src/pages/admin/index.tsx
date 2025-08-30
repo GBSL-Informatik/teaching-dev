@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import Layout from '@theme/Layout';
 import { observer } from 'mobx-react-lite';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import AdminPanel from '@tdev-components/Admin/AdminPanel';
 
 const StudentGroups = observer(() => {

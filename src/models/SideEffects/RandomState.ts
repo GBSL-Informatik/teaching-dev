@@ -1,6 +1,6 @@
 import { DocumentType, StateType, TypeDataMapping } from '@tdev-api/document';
 import iSideEffect from './iSideEffect';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { UserStore } from '@tdev-stores/UserStore';
 import { computed } from 'mobx';
 

@@ -9,7 +9,7 @@ import { Source } from '@tdev-models/iDocument';
 import { reaction } from 'mobx';
 import { useColorMode } from '@docusaurus/theme-common';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { DocumentType } from '@tdev-api/document';
 import '@excalidraw/excalidraw/index.css';

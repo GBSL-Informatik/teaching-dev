@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 
 /**
  * Based on the current user and page, this component displays a list of

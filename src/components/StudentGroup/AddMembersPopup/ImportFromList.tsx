@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import Button from '@tdev-components/shared/Button';
 import { mdiAccountArrowLeft } from '@mdi/js';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
-import { debounce } from 'lodash';
+import { debounce } from 'es-toolkit';
 import Admonition from '@theme/Admonition';
 
 const ImportFromList = observer((props: _AddMembersPopupPropsInternal) => {

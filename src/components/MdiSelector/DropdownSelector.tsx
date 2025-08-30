@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Mdi from '@mdi/js';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import Select from 'react-select';
 
 const DropdownSelector = (): React.ReactNode => {

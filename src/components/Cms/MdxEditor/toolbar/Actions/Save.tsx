@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import File from '@tdev-models/cms/File';
 import Button from '@tdev-components/shared/Button';
 import { mdiCircle, mdiContentSave } from '@mdi/js';

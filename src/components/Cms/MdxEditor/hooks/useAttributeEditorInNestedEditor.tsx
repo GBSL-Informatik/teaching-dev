@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'es-toolkit/compat';
 import {
     MdxJsxAttribute,
     MdxJsxAttributeValueExpression,
