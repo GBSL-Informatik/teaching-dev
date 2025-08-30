@@ -350,11 +350,6 @@ export default class Script extends iDocument<DocumentType.Script> {
     }
 
     @computed
-    get isCodeEditor(): boolean {
-        return this.derivedLang !== 'html' && this.derivedLang !== 'svg';
-    }
-
-    @computed
     get lang(): string {
         if (this.meta.lang === 'py') {
             return 'python';
