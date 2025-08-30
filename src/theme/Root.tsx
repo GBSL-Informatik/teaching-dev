@@ -255,11 +255,7 @@ function Root({ children }: { children: React.ReactNode }) {
                  * The delay is added to avoid reconnecting too quickly
                  */
                 const timeoutId = setTimeout(() => {
-                    if (rootStore.socketStore.isLive && rootStore.socketStore.socket?.disconnected) {
-                        rootStore.socketStore.reconnect();
-                    } else {
-                        rootStore.socketStore.connect();
-                    }
+                    rootStore.socketStore.reconnect();
                 }, 3000);
                 return () => clearTimeout(timeoutId);
             }

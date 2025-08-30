@@ -75,17 +75,24 @@ export class SocketDataStore extends iStore<'ping'> {
 
     @action
     reconnect() {
-        this.disconnect();
+        const socket = this.socket;
+        this._disconnect(socket);
+        this.setLiveState(false);
         this.connect();
     }
 
     @action
     disconnect() {
-        if (this.socket?.connected) {
-            this.socket.disconnect();
+        this._disconnect(this.socket);
+        this.setLiveState(false);
+    }
+
+    @action
+    _disconnect(socket: TypedSocket | undefined) {
+        if (socket?.connected) {
+            socket.disconnect();
         }
         this.socket = undefined;
-        this.setLiveState(false);
     }
 
     @action
@@ -104,49 +111,77 @@ export class SocketDataStore extends iStore<'ping'> {
             return;
         }
         const ws_url = BACKEND_URL;
-        this.socket = io(ws_url, {
+        const socket = io(ws_url, {
             withCredentials: true,
-            transports: ['websocket', 'webtransport']
+            transports: ['websocket', 'webtransport'],
+            reconnection: false
         });
-        this._socketConfig();
-        this.socket.connect();
+        this._connect(socket);
     }
-    _socketConfig() {
-        if (!this.socket) {
+
+    @action
+    _connect(socket: TypedSocket) {
+        this._socketConfig(socket);
+        socket.connect();
+    }
+
+    _socketConfig(socket: TypedSocket) {
+        if (!socket) {
             return;
         }
-        this.socket.on('connect', () => {
-            /**
-             * maybe there is a newer version to add headers?
-             * @see https://socket.io/docs/v4/client-options/#extraheaders
-             */
-            api.defaults.headers.common['x-metadata-socketid'] = this.socket!.id;
-            this.setLiveState(true);
-        });
-        this.socket.io.on('reconnect_error', (err) => {
-            // disable current reconnection loop
-            this.socket?.io?.reconnection(false);
-        });
-
-        this.socket.on('disconnect', () => {
-            console.log('disconnect', this.socket?.id);
-            this.setLiveState(false);
-        });
-        this.socket.on('connect_error', (err) => {
-            console.log('connection error', err);
-            this.setLiveState(false);
-            this.checkLogin().then((reconnect) => {
-                if (reconnect) {
-                    this.reconnect();
+        socket.on(
+            'connect',
+            action(() => {
+                if (this.socket) {
+                    this._disconnect(this.socket);
                 }
-            });
-        });
-        this.socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
-        this.socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
-        this.socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
-        this.socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
-        this.socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
-        this.socket.on(
+                /**
+                 * maybe there is a newer version to add headers?
+                 * @see https://socket.io/docs/v4/client-options/#extraheaders
+                 */
+                api.defaults.headers.common['x-metadata-socketid'] = socket?.id;
+                this.socket = socket;
+                this.setLiveState(true);
+            })
+        );
+
+        socket.on(
+            'disconnect',
+            action((reason) => {
+                console.log('disconnect', socket?.id);
+                this.socket = undefined;
+                this.setLiveState(false);
+                if (reason !== 'io server disconnect' && reason !== 'io client disconnect') {
+                    // an error happened, try to reconnect
+                    this.checkLogin().then(
+                        action((reconnect) => {
+                            if (reconnect) {
+                                this.reconnect();
+                            }
+                        })
+                    );
+                }
+            })
+        );
+        socket.on(
+            'connect_error',
+            action((err) => {
+                console.log('connection error', err);
+                this.checkLogin().then(
+                    action((reconnect) => {
+                        if (reconnect) {
+                            this.reconnect();
+                        }
+                    })
+                );
+            })
+        );
+        socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
+        socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
+        socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
+        socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
+        socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
+        socket.on(
             IoEvent.ACTION,
             action((data: Action['action']) => {
                 this.actionRequest = data;
