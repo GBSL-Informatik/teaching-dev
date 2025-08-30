@@ -7,10 +7,17 @@ import Directory from '@tdev-components/documents/FileSystem/Directory';
 import React from 'react';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import siteConfig from '@generated/docusaurus.config';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '@tdev-hooks/useStore';
 const { PERSONAL_SPACE_DOC_ROOT_ID } = siteConfig.customFields as { PERSONAL_SPACE_DOC_ROOT_ID: string };
 
-const PersonalSpaceOverlay = () => {
+const PersonalSpaceOverlay = observer(() => {
+    const sessionStore = useStore('sessionStore');
     const popupRef = React.useRef<PopupActions>(null);
+
+    if (sessionStore.apiMode === 'api' && !sessionStore.isLoggedIn) {
+        return null;
+    }
 
     return (
         <Popup
@@ -53,6 +60,6 @@ const PersonalSpaceOverlay = () => {
             </div>
         </Popup>
     );
-};
+});
 
 export default PersonalSpaceOverlay;
