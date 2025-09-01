@@ -1,11 +1,57 @@
 import React from 'react';
 import styles from './styles.module.scss';
 import Button from '@tdev-components/shared/Button';
-import { mdiIncognito, mdiLogin } from '@mdi/js';
+import { mdiCloudOffOutline, mdiIncognito, mdiLogin, mdiReload } from '@mdi/js';
 import Admonition from '@theme/Admonition';
 import { useLocation } from '@docusaurus/router';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
+
+interface WarningContentProps {
+    onDismiss: () => void;
+}
+
+const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
+    return (
+        <div className={styles.content}>
+            <Admonition type="warning" title="Nicht eigenloggt">
+                <p>
+                    Sie sind nicht eingeloggt. Sie können diese Plattform auch ohne Login nutzen, allerdings
+                    wird Ihr <b>Fortschritt nicht gespeichert</b>.
+                </p>
+            </Admonition>
+            <div className={styles.buttons}>
+                <Button icon={mdiLogin} color="primary" size={1.1} href={'/login'}>
+                    Jetzt einloggen
+                </Button>
+                <Button icon={mdiIncognito} color="secondary" size={1.1} onClick={onDismiss}>
+                    Weiter ohne Login
+                </Button>
+            </div>
+        </div>
+    );
+};
+
+const NotConnectedWarning = ({ onDismiss }: WarningContentProps) => {
+    return (
+        <div className={styles.content}>
+            <Admonition type="warning" title="Keine Verbindung zum Server">
+                <p>
+                    Es besteht keine Verbindung zum Server – <b>Ihr Fortschritt wird nicht gespeichert</b>.
+                    Laden Sie die Seite neu, um die Verbindung wiederherzustellen.
+                </p>
+            </Admonition>
+            <div className={styles.buttons}>
+                <Button icon={mdiReload} color="primary" size={1.1} onClick={() => window.location.reload()}>
+                    Seite neu laden
+                </Button>
+                <Button icon={mdiCloudOffOutline} color="secondary" size={1.1} onClick={onDismiss}>
+                    Offline verwenden
+                </Button>
+            </div>
+        </div>
+    );
+};
 
 const LoggedOutOverlay = observer(() => {
     const [closedByUser, setClosedByUser] = React.useState(false);
@@ -15,42 +61,14 @@ const LoggedOutOverlay = observer(() => {
     const socketStore = useStore('socketStore');
 
     React.useEffect(() => {
-        const userLoggedIn = !!userStore.current;
-        //const userConnected = socketStore.connectedClients.get(userStore.current?.id ?? '') || 0 > 0;
         const onLoginPage = location.pathname.startsWith('/login');
-        console.log({ userConnected: userLoggedIn, onLoginPage, closedByUser });
-        setShowOverlay(!userLoggedIn && !closedByUser && !onLoginPage);
-    }, [userStore.current, socketStore.connectedClients, closedByUser, location]);
+        setShowOverlay(!socketStore.isLive && !closedByUser && !onLoginPage);
+    }, [socketStore.isLive, closedByUser, location]);
 
     return showOverlay ? (
         <div className={styles.container}>
-            <div className={styles.content}>
-                <Admonition type="warning" title="Nicht eigenloggt">
-                    <p>
-                        Sie sind nicht eingeloggt. Sie können diese Plattform auch ohne Login nutzen,
-                        allerdings wird Ihr <b>Fortschritt nicht gespeichert</b>.
-                    </p>
-                </Admonition>
-                <div className={styles.buttons}>
-                    <Button
-                        icon={mdiLogin}
-                        color="primary"
-                        size={1.1}
-                        href={'/login'}
-                        onClick={() => setClosedByUser(true)}
-                    >
-                        Jetzt einloggen
-                    </Button>
-                    <Button
-                        icon={mdiIncognito}
-                        color="secondary"
-                        size={1.1}
-                        onClick={() => setClosedByUser(true)}
-                    >
-                        Weiter ohne Login
-                    </Button>
-                </div>
-            </div>
+            {!userStore.current && <NotLoggedInWarning onDismiss={() => setClosedByUser(true)} />}
+            {userStore.current && <NotConnectedWarning onDismiss={() => setClosedByUser(true)} />}
         </div>
     ) : (
         <></>
