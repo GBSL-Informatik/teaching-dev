@@ -88,6 +88,7 @@ export interface Props {
     src: string;
     id: string;
     htmlTransformer?: (raw: string) => string;
+    allowSameOrigin?: boolean;
 }
 
 const DEFAULT_HEIGHT = 50;
@@ -153,7 +154,7 @@ const HtmlSandbox = observer((props: Props) => {
                 width="100%"
                 height={`${height}px`}
                 title="HTML Preview"
-                sandbox="allow-scripts"
+                sandbox={props.allowSameOrigin ? 'allow-same-origin allow-scripts' : 'allow-scripts'}
                 allowFullScreen
             ></iframe>
         </div>

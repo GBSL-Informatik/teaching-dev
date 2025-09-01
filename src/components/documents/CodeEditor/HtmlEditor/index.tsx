@@ -22,6 +22,7 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
     className?: string;
     children?: React.ReactNode;
     htmlTransformer?: (raw: string) => string;
+    allowSameOrigin?: boolean;
 }
 
 const HtmlEditor = observer((props: Props) => {
@@ -70,7 +71,12 @@ const HtmlEditor = observer((props: Props) => {
                         </div>
                     )}
                 >
-                    <HtmlSandbox src={doc.code} id={doc.id} htmlTransformer={props.htmlTransformer} />
+                    <HtmlSandbox
+                        src={doc.code}
+                        id={doc.id}
+                        htmlTransformer={props.htmlTransformer}
+                        allowSameOrigin={props.allowSameOrigin}
+                    />
                 </ErrorBoundary>
             </BrowserWindow>
         </div>
