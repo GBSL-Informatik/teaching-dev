@@ -17,7 +17,6 @@ const countConnectedClients = (userId: string) => {
 
     const connectedClients = socketStore.connectedClients.get(userId) || 0;
     const viewingThisUser = userStore.isUserSwitched && userId === userStore.viewedUser?.id;
-    console.log({ connectedClients, viewingThisUser });
     return Math.max(viewingThisUser ? connectedClients - 1 : connectedClients, 0);
 };
 
