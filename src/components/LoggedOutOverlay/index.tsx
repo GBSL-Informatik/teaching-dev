@@ -16,8 +16,8 @@ const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
         <div className={styles.content}>
             <Admonition type="warning" title="Nicht eigenloggt">
                 <p>
-                    Sie sind nicht eingeloggt. Sie können diese Plattform auch ohne Login nutzen, allerdings
-                    wird Ihr <b>Fortschritt nicht gespeichert</b>.
+                    Sie sind nicht eingeloggt. Wenn Sie ohne Login fortfahren, wird Ihr{' '}
+                    <b>Fortschritt nicht gespeichert</b>.
                 </p>
             </Admonition>
             <div className={styles.buttons}>
@@ -32,7 +32,7 @@ const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
     );
 };
 
-const NotConnectedWarning = ({ onDismiss }: WarningContentProps) => {
+const DisconnectedWarning = ({ onDismiss }: WarningContentProps) => {
     return (
         <div className={styles.content}>
             <Admonition type="warning" title="Keine Verbindung zum Server">
@@ -67,8 +67,11 @@ const LoggedOutOverlay = observer(() => {
 
     return showOverlay ? (
         <div className={styles.container}>
-            {!userStore.current && <NotLoggedInWarning onDismiss={() => setClosedByUser(true)} />}
-            {userStore.current && <NotConnectedWarning onDismiss={() => setClosedByUser(true)} />}
+            {userStore.current ? (
+                <DisconnectedWarning onDismiss={() => setClosedByUser(true)} />
+            ) : (
+                <NotLoggedInWarning onDismiss={() => setClosedByUser(true)} />
+            )}
         </div>
     ) : (
         <></>
