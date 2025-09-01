@@ -6,10 +6,9 @@ import { observer } from 'mobx-react-lite';
 import { default as UserModel } from '@tdev-models/User';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import Icon from '@mdi/react';
-import { mdiCircle } from '@mdi/js';
 import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
 import { useStore } from '@tdev-hooks/useStore';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 
 interface Props {
     user: UserModel;
@@ -26,11 +25,7 @@ const UserTableRow = observer((props: Props) => {
         <tr className={clsx(styles.user)}>
             <td>
                 <div className={clsx(styles.clients)}>
-                    <Icon
-                        path={mdiCircle}
-                        size={0.6}
-                        color={user.connectedClients ? 'var(--ifm-color-success)' : 'var(--ifm-color-danger)'}
-                    />
+                    <LiveStatusIndicator size={0.6} userId={user.id} />
                     {user.connectedClients > 0 && (
                         <span className={clsx('badge badge--primary')}>{user.connectedClients}</span>
                     )}

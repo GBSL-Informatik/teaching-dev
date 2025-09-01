@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { _AddMembersPopupPropsInternal } from './types';
 import Button from '@tdev-components/shared/Button';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 
 const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
     const userStore = useStore('userStore');
@@ -33,33 +34,38 @@ const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
                         setSearchFilter(e.target.value);
                     }}
                 />
-                <div className={styles.listContainer}>
-                    <ul className={clsx(styles.students, styles.list)}>
+                <div>
+                    <div className={clsx(styles.list)}>
                         {userStore.users
                             .filter((user) => searchRegex.test(user.searchTerm))
                             .map((user, idx) => (
-                                <li
+                                <div
                                     key={idx}
                                     className={clsx(
-                                        styles.listItem,
-                                        group.userIds.has(user.id) && styles.disabled
+                                        group.userIds.has(user.id) && styles.disabled,
+                                        styles.addUserListItem
                                     )}
                                     title={user.email}
                                 >
-                                    {user.nameShort}
-                                    <div className={styles.actions}>
-                                        <Button
-                                            onClick={() => {
-                                                group.addStudent(user);
-                                            }}
-                                            disabled={group.userIds.has(user.id)}
-                                            icon={mdiAccountPlus}
-                                            color="green"
-                                        />
+                                    <div className={styles.listItem}>
+                                        <span>
+                                            <LiveStatusIndicator userId={user.id} size={0.3} />{' '}
+                                            {user.nameShort}
+                                        </span>
+                                        <div className={styles.actions}>
+                                            <Button
+                                                onClick={() => {
+                                                    group.addStudent(user);
+                                                }}
+                                                disabled={group.userIds.has(user.id)}
+                                                icon={mdiAccountPlus}
+                                                color="green"
+                                            />
+                                        </div>
                                     </div>
-                                </li>
+                                </div>
                             ))}
-                    </ul>
+                    </div>
                 </div>
             </div>
         </>

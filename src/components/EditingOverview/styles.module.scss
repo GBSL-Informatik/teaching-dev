@@ -24,6 +24,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    white-space: nowrap;
     .tasks {
         margin-right: 0;
     }
@@ -46,6 +47,10 @@
         &:hover {
             background-color: var(--ifm-color-primary-contrast-background);
         }
+    }
+
+    .liveStatusIndicator {
+        margin-right: 0.5em;
     }
 }
 

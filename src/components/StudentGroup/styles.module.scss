@@ -31,6 +31,7 @@
             flex-direction: row;
             padding-left: 0;
             .listItem {
+                position: relative;
                 flex-basis: 10em;
                 flex-grow: 1;
                 display: flex;
@@ -100,4 +101,10 @@
     display: flex;
     flex-direction: row;
     gap: 0.5em;
+}
+
+.liveStatusIndicator {
+    position: absolute;
+    left: 7px;
+    top: 7px;
 }
