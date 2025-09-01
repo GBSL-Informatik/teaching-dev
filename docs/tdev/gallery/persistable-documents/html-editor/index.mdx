@@ -8,7 +8,6 @@ tags:
 import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
-
 # HTML Editor
 
 Der SVG Editor ist eine Komponente, welche auf dem `CodeBlock` aufbaut - es muss also nichts zusätzlich installiert werden.
@@ -57,6 +56,36 @@ Der SVG Editor ist eine Komponente, welche auf dem `CodeBlock` aufbaut - es muss
                 <img alt="Gummibären" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg">
             </body>
         </html>
+        ```
+    </HtmlEditor>
+</BrowserWindow>
+
+## HTML Transformation
+
+Für Übungen, in welchen "lokale" Medien referenziert werden sollen, kann der HTML-Code vorprozessiert werden:
+
+````tsx
+<HtmlEditor 
+    id="b0a6fa06-2275-4744-a6d1-ae51eab6436b"
+    htmlTransformer={(html) => {
+        return html.replaceAll('"./gummibär.jpg"', '"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg"')
+    }}
+>
+    ```html
+    <img src="./gummibär.jpg" width="200">
+    ```
+</HtmlEditor>
+````
+
+<BrowserWindow>
+    <HtmlEditor 
+        id="b0a6fa06-2275-4744-a6d1-ae51eab6436b"
+        htmlTransformer={(html) => {
+            return html.replaceAll('"./gummibär.jpg"', '"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg"')
+        }}
+    >
+        ```html
+        <img src="./gummibär.jpg" width="200">
         ```
     </HtmlEditor>
 </BrowserWindow>

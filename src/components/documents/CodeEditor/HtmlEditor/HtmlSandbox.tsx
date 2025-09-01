@@ -36,17 +36,28 @@ function sendHeight() {
             const {scrollHeight, clientHeight} = document.body.parentNode;
             if (scrollHeight !== clientHeight) {
                 parent.postMessage({id: '${id}', type: 'resize', height: scrollHeight}, "*");
+            } else {
+                const mTop = parseFloat(getComputedStyle(document.body).marginTop);
+                const mBottom = parseFloat(getComputedStyle(document.body).marginBottom);
+                const total = mTop + mBottom;
+                if (scrollHeight > document.body.clientHeight + total) {
+                    parent.postMessage({id: '${id}', type: 'resize', height: document.body.clientHeight + total}, "*");
+                }
             }
         } catch(_) {
             // Ignore errors
         }
     }, 200);
 }
-
 window.onerror = onError;
 window.onload = sendHeight;
 window.onresize = sendHeight;
 </script>
+<style>
+body {
+    display: flow-root;
+}
+</style>
 `;
 
 const injectScript = (id: string, html: string): string => {
@@ -76,21 +87,23 @@ const injectScript = (id: string, html: string): string => {
 export interface Props {
     src: string;
     id: string;
+    htmlTransformer?: (raw: string) => string;
 }
 
 const DEFAULT_HEIGHT = 50;
 
 const HtmlSandbox = observer((props: Props) => {
     const { id } = props;
+    const htmlTransformer = props.htmlTransformer || ((raw: string) => raw);
     const [errorMsg, setErrorMsg] = React.useState<IframeErrorMessage | null>(null);
     const [height, setHeight] = React.useState<number>(DEFAULT_HEIGHT);
-    const [htmlSrc, setHtmlSrc] = React.useState<string>(injectScript(id, props.src));
+    const [htmlSrc, setHtmlSrc] = React.useState<string>(injectScript(id, htmlTransformer(props.src)));
 
     const throttledUpdate = React.useRef(
         _.throttle(
             (newSrc: string, id: string) => {
                 setErrorMsg(null);
-                setHtmlSrc(injectScript(id, newSrc));
+                setHtmlSrc(injectScript(id, htmlTransformer(newSrc)));
             },
             1000,
             { trailing: true, leading: true }

@@ -21,6 +21,7 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
     showLineNumbers?: boolean;
     className?: string;
     children?: React.ReactNode;
+    htmlTransformer?: (raw: string) => string;
 }
 
 const HtmlEditor = observer((props: Props) => {
@@ -69,7 +70,7 @@ const HtmlEditor = observer((props: Props) => {
                         </div>
                     )}
                 >
-                    <HtmlSandbox src={doc.code} id={doc.id} />
+                    <HtmlSandbox src={doc.code} id={doc.id} htmlTransformer={props.htmlTransformer} />
                 </ErrorBoundary>
             </BrowserWindow>
         </div>
