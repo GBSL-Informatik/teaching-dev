@@ -11,6 +11,7 @@ import Icon from '@mdi/react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
 
 const LoginButton = () => {
@@ -46,23 +47,7 @@ const LoginProfileButton = observer(() => {
                         className={clsx(styles.button)}
                         textClassName={clsx(styles.text)}
                     />
-                    <Icon
-                        path={mdiCircle}
-                        size={0.3}
-                        color={
-                            (
-                                userStore.isUserSwitched
-                                    ? (socketStore.connectedClients.get(userStore.viewedUser?.id || ' ') ||
-                                          1) -
-                                          1 >
-                                      0
-                                    : isLive
-                            )
-                                ? 'var(--ifm-color-success)'
-                                : 'var(--ifm-color-danger)'
-                        }
-                        className={clsx(styles.liveIndicator)}
-                    />
+                    <LiveStatusIndicator size={0.3} className={clsx(styles.liveIndicator)} />
                 </>
             ) : (
                 <Button
