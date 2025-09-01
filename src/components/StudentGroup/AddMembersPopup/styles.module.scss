@@ -8,6 +8,29 @@
     --ifm-tabs-padding-horizontal: 0.6em;
 }
 
+.list {
+    > :nth-child(2n) {
+        background-color: var(--ifm-color-secondary-lightest);
+    }
+
+    > :hover {
+        background-color: var(--ifm-color-primary-contrast-background);
+    }
+
+    .listItem {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+[data-theme='dark'] {
+    .list {
+        > :nth-child(2n) {
+            background-color: var(--ifm-color-secondary-contrast-background);
+        }
+    }
+}
+
 .addUserCardTitle {
     display: flex;
     flex-direction: row;
