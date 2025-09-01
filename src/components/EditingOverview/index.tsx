@@ -14,6 +14,7 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import _ from 'es-toolkit/compat';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 
 export const mdiColor: { [key in StateType]: string } = {
     checked: '--ifm-color-success',
@@ -90,7 +91,16 @@ const EditingOverview = observer(() => {
                                 ).map((docs, idx) => {
                                     return (
                                         <div key={idx} className={clsx(styles.usersTasks)}>
-                                            <span className={styles.user}>{docs[0].author?.nameShort}</span>
+                                            <div>
+                                                <LiveStatusIndicator
+                                                    size={0.3}
+                                                    userId={docs[0].author?.id}
+                                                    className={clsx(styles.liveStatusIndicator)}
+                                                />
+                                                <span className={styles.user}>
+                                                    {docs[0].author?.nameShort}
+                                                </span>
+                                            </div>
                                             <div>
                                                 <div className={styles.tasks}>
                                                     <EditingStateList editingStatus={docs} />
@@ -103,7 +113,14 @@ const EditingOverview = observer(() => {
                                     const user = userStore.find(userId);
                                     return (
                                         <div key={userId} className={clsx(styles.usersTasks)}>
-                                            <span className={styles.user}>{user!.nameShort}</span>
+                                            <div>
+                                                <LiveStatusIndicator
+                                                    size={0.3}
+                                                    userId={user!.id}
+                                                    className={clsx(styles.liveStatusIndicator)}
+                                                />
+                                                <span className={styles.user}>{user!.nameShort}</span>
+                                            </div>
                                             <div>
                                                 <span className="badge badge--secondary">nicht geöffnet</span>
                                             </div>
