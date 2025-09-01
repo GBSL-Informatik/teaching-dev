@@ -18,6 +18,7 @@ import _ from 'es-toolkit/compat';
 import { useLocation } from '@docusaurus/router';
 import Icon from '@mdi/react';
 import User from '@tdev-models/User';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 
 interface SwitchToUserButtonProps {
     user: User;
@@ -26,24 +27,10 @@ interface SwitchToUserButtonProps {
 
 const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserButtonProps) => {
     const userStore = useStore('userStore');
-    const socketStore = useStore('socketStore');
 
     return (
         <div className={clsx(styles.switchToUserButton)}>
-            <Icon
-                path={mdiCircle}
-                size={0.3}
-                color={
-                    (
-                        userStore.isUserSwitched && userStore.viewedUser?.id == user.id
-                            ? (socketStore.connectedClients.get(user.id) || 0) >= 2
-                            : (socketStore.connectedClients.get(user.id) || 0) >= 1
-                    )
-                        ? 'var(--ifm-color-success)'
-                        : 'var(--ifm-color-danger)'
-                }
-                className={clsx(styles.liveIndicator)}
-            />
+            <LiveStatusIndicator userId={user.id} size={0.3} className={clsx(styles.liveIndicator)} />
             <Button
                 icon={user.isStudent ? mdiAccountCircleOutline : mdiShieldAccount}
                 className={clsx(styles.userButton)}
