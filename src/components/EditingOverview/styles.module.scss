@@ -24,6 +24,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    white-space: nowrap;
     .tasks {
         margin-right: 0;
     }
