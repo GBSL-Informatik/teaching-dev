@@ -32,12 +32,12 @@ const ImportGroup = observer((props: _AddMembersPopupPropsInternal) => {
                     }}
                 />
                 <div className={styles.listContainer}>
-                    <ul className={clsx(styles.students, styles.list)}>
+                    <div className={clsx(styles.list)}>
                         {studentGroupStore.managedStudentGroups
                             .filter((group) => group.id !== props.studentGroup.id)
                             .filter((user) => searchRegex.test(user.searchTerm))
                             .map((group, idx) => (
-                                <li
+                                <div
                                     key={idx}
                                     className={clsx(
                                         styles.listItem,
@@ -66,9 +66,9 @@ const ImportGroup = observer((props: _AddMembersPopupPropsInternal) => {
                                             color="green"
                                         />
                                     </div>
-                                </li>
+                                </div>
                             ))}
-                    </ul>
+                    </div>
                 </div>
             </div>
         </>

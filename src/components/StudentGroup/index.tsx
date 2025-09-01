@@ -24,6 +24,7 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Undo from './Undo';
 import AddUserPopup from './AddMembersPopup';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 
 interface Props {
     studentGroup: StudentGroupModel;
@@ -268,6 +269,11 @@ const StudentGroup = observer((props: Props) => {
                             <ul className={clsx(styles.students, styles.list)}>
                                 {group.students.map((student, idx) => (
                                     <li key={idx} className={clsx(styles.listItem)}>
+                                        <LiveStatusIndicator
+                                            userId={student.id}
+                                            size={0.3}
+                                            className={clsx(styles.liveStatusIndicator)}
+                                        />
                                         {student.nameShort}
                                         {isAdmin && (
                                             <div className={styles.actions}>
