@@ -81,6 +81,9 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib; onChangeSrc: () => 
                             }
                         }}
                         onError={(err) => {
+                            setTimeout(() => {
+                                props.onChangeSrc();
+                            }, 30);
                             setError('Die Kamera konnte nicht gestartet werden.');
                         }}
                         constraints={{
