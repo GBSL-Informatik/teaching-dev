@@ -54,3 +54,31 @@
         max-height: 500px;
     }
 }
+
+.addUserListItem {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    text-wrap: nowrap;
+
+    .userInfo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-grow: 0;
+        flex-shrink: 0;
+        gap: 0.2em;
+    }
+
+    .groupMembershipBadges {
+        width: 100%;
+        flex-grow: 1;
+        flex-shrink: 1;
+        margin: 0 0.5em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+}

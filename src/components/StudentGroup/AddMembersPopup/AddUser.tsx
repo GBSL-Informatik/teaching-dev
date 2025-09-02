@@ -47,11 +47,16 @@ const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
                                     )}
                                     title={user.email}
                                 >
-                                    <div className={styles.listItem}>
-                                        <span>
+                                    <div className={clsx(styles.listItem, styles.addUserListItem)}>
+                                        <div className={styles.userInfo}>
                                             <LiveStatusIndicator userId={user.id} size={0.3} />{' '}
                                             {user.nameShort}
-                                        </span>
+                                        </div>
+                                        <div className={styles.groupMembershipBadges}>
+                                            {user.studentGroups.map((group) => (
+                                                <span className="badge badge--primary">{group.name}</span>
+                                            ))}
+                                        </div>
                                         <div className={styles.actions}>
                                             <Button
                                                 onClick={() => {
