@@ -49,7 +49,7 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
     const showFooter = qr || devices.length > 1 || error;
     return (
         <div className={clsx('card', styles.qr)}>
-            <div className={clsx(styles.scanner, 'card__body')}>
+            <div className={clsx(styles.scanner, 'card__body')} key={deviceId}>
                 {devices.length > 0 ? (
                     <Lib.Scanner
                         paused={!!qr}
