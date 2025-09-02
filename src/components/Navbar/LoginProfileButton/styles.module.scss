@@ -27,6 +27,13 @@
     }
 }
 
+.adminNavButtonText {
+    display: inline-flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
 :global(.navbar-sidebar) {
     .profileButton {
         display: inline-block;

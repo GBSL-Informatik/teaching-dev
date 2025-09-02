@@ -7,7 +7,6 @@ import {
     mdiAccountCircleOutline,
     mdiAccountDetailsOutline,
     mdiAccountSupervisorOutline,
-    mdiGroup,
     mdiLogin,
     mdiShieldAccountOutline
 } from '@mdi/js';
@@ -61,6 +60,26 @@ const ProfileButton = () => {
     );
 };
 
+interface AdminNavButtonProps {
+    href: string;
+    text: string;
+    icon: string;
+}
+
+const AdminNavButton = ({ href, text, icon }: AdminNavButtonProps) => {
+    return (
+        <Button
+            href={href}
+            text={text}
+            icon={icon}
+            iconSide="left"
+            color="primary"
+            className={clsx(styles.adminNavButton)}
+            textClassName={clsx(styles.adminNavButtonText)}
+        />
+    );
+};
+
 const LoginProfileButton = observer(() => {
     const isBrowser = useIsBrowser();
     const sessionStore = useStore('sessionStore');
@@ -90,26 +109,20 @@ const LoginProfileButton = observer(() => {
             closeOnEscape
         >
             <div className={clsx(styles.adminNavPopup)}>
-                <Button
+                <AdminNavButton
                     href="/admin?panel=studentGroups"
                     text="Lerngruppen"
                     icon={mdiAccountSupervisorOutline}
-                    iconSide="left"
-                    className={clsx(styles.adminNavButton)}
                 />
-                <Button
+                <AdminNavButton
                     href="/admin?panel=accounts"
                     text="Accounts"
                     icon={mdiAccountDetailsOutline}
-                    iconSide="left"
-                    className={clsx(styles.adminNavButton)}
                 />
-                <Button
+                <AdminNavButton
                     href="/admin?panel=allowedActions"
                     text="Erlaubte Aktionen"
                     icon={mdiShieldAccountOutline}
-                    iconSide="left"
-                    className={clsx(styles.adminNavButton)}
                 />
             </div>
         </Popup>
