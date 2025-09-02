@@ -13,6 +13,7 @@ import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 import HtmlSandbox from './HtmlSandbox';
+import { useStore } from '@tdev-hooks/useStore';
 
 export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' | 'title'> {
     title?: string;
@@ -27,6 +28,7 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
 
 const HtmlEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
+    const userStore = useStore('userStore');
     const [meta] = React.useState(
         new ScriptMeta({
             title: 'website.html',
@@ -41,7 +43,7 @@ const HtmlEditor = observer((props: Props) => {
     if (!isBrowser || !doc) {
         return <CodeBlock language="html">{props.code}</CodeBlock>;
     }
-    if (!doc.canDisplay && props.id) {
+    if (!doc.canDisplay && props.id && !userStore.isUserSwitched) {
         return (
             <div>
                 <PermissionsPanel documentRootId={props.id} />
