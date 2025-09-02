@@ -7,6 +7,7 @@ import { useClientLib } from '@tdev-hooks/useClientLib';
 import type { default as QrScannerLib } from '@yudiel/react-qr-scanner';
 import Storage from '@tdev-stores/utils/Storage';
 import { mdiCameraFlipOutline } from '@mdi/js';
+import SelectInput from '@tdev-components/shared/SelectInput';
 import CodeBlockWrapper from '@tdev/theme/CodeBlock';
 
 interface Props {
@@ -116,21 +117,30 @@ const ScannerComponent = (
             {showFooter && (
                 <div className="card__footer">
                     {devices.length > 1 && (
-                        <Button
-                            icon={mdiCameraFlipOutline}
-                            text={
-                                devices.length > 2
-                                    ? `${(deviceIdx >= 0 ? deviceIdx : 0) + 1}/${devices.length}`
-                                    : ''
-                            }
-                            onClick={() => {
-                                const nextDeviceIdx = ((deviceIdx >= 0 ? deviceIdx : 0) + 1) % devices.length;
-                                const deviceId = devices[nextDeviceIdx].deviceId;
-                                Storage.set('QrScannerDeviceId', deviceId);
-                                props.onChangeSrc(deviceId);
+                        <SelectInput
+                            value={deviceId || ''}
+                            onChange={(id) => {
+                                Storage.set('QrScannerDeviceId', id);
+                                props.onChangeSrc(id);
                             }}
-                            iconSide="left"
+                            options={devices.map((d) => d.deviceId)}
+                            labels={devices.map((d, idx) => d.label || `${d.kind}-${idx}`)}
                         />
+                        // <Button
+                        //     icon={mdiCameraFlipOutline}
+                        //     text={
+                        //         devices.length > 2
+                        //             ? `${(deviceIdx >= 0 ? deviceIdx : 0) + 1}/${devices.length}`
+                        //             : ''
+                        //     }
+                        //     onClick={() => {
+                        //         const nextDeviceIdx = ((deviceIdx >= 0 ? deviceIdx : 0) + 1) % devices.length;
+                        //         const deviceId = devices[nextDeviceIdx].deviceId;
+                        //         Storage.set('QrScannerDeviceId', deviceId);
+                        //         props.onChangeSrc(deviceId);
+                        //     }}
+                        //     iconSide="left"
+                        // />
                     )}
                     {qr && (
                         <>
