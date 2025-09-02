@@ -1,9 +1,16 @@
-import { mdiAccountDetailsOutline, mdiAccountSupervisorOutline, mdiShieldAccountOutline } from '@mdi/js';
+import {
+    mdiAccountCircleOutline,
+    mdiAccountDetailsOutline,
+    mdiAccountSupervisorOutline,
+    mdiShieldAccountOutline
+} from '@mdi/js';
 import clsx from 'clsx';
 import Popup from 'reactjs-popup';
 import styles from './styles.module.scss';
 import ProfileButton from './ProfileButton';
 import Button from '@tdev-components/shared/Button';
+import { useLocation } from '@docusaurus/router';
+import { useStore } from '@tdev-hooks/useStore';
 
 interface AdminNavButtonProps {
     href: string;
@@ -12,6 +19,8 @@ interface AdminNavButtonProps {
 }
 
 const AdminNavButton = ({ href, text, icon }: AdminNavButtonProps) => {
+    const location = useLocation();
+
     return (
         <Button
             href={href}
@@ -19,6 +28,7 @@ const AdminNavButton = ({ href, text, icon }: AdminNavButtonProps) => {
             icon={icon}
             iconSide="left"
             color="primary"
+            active={location.pathname + location.search === href}
             className={clsx(styles.adminNavButton)}
             textClassName={clsx(styles.adminNavButtonText)}
         />
@@ -26,6 +36,8 @@ const AdminNavButton = ({ href, text, icon }: AdminNavButtonProps) => {
 };
 
 const AdminNavPopup = () => {
+    const userStore = useStore('userStore');
+
     return (
         <Popup
             trigger={
@@ -38,6 +50,7 @@ const AdminNavPopup = () => {
             closeOnEscape
         >
             <div className={clsx(styles.adminNavPopup)}>
+                <AdminNavButton href="/user" text="Benutzer" icon={mdiAccountCircleOutline} />
                 <AdminNavButton
                     href="/admin?panel=studentGroups"
                     text="Lerngruppen"
