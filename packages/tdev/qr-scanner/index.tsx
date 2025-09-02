@@ -17,6 +17,7 @@ interface Props {
 }
 const Scanner = (props: Props) => {
     const [reloadKey, setReloadKey] = React.useState(1);
+    const deviceId = React.useRef<string | undefined>(Storage.get('QrScannerDeviceId'));
     const Lib = useClientLib<typeof QrScannerLib>(
         () => import('@yudiel/react-qr-scanner'),
         '@yudiel/react-qr-scanner'
@@ -28,13 +29,22 @@ const Scanner = (props: Props) => {
         <ScannerComponent
             key={reloadKey}
             Lib={Lib}
-            onChangeSrc={() => setReloadKey((prev) => prev + 1)}
+            onChangeSrc={(id) => {
+                if (deviceId.current === id && reloadKey > 5) {
+                    setReloadKey(1);
+                    Storage.remove('QrScannerDeviceId');
+                } else {
+                    setReloadKey((prev) => prev + 1);
+                }
+            }}
             {...props}
         />
     );
 };
 
-const ScannerComponent = (props: { Lib: typeof QrScannerLib; onChangeSrc: () => void } & Props) => {
+const ScannerComponent = (
+    props: { Lib: typeof QrScannerLib; onChangeSrc: (id?: string) => void } & Props
+) => {
     const { Lib } = props;
     const [error, setError] = React.useState<string | undefined>();
     const [qr, setQr] = React.useState('');
@@ -82,7 +92,7 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib; onChangeSrc: () => 
                         }}
                         onError={(err) => {
                             setTimeout(() => {
-                                props.onChangeSrc();
+                                props.onChangeSrc(deviceId);
                             }, 30);
                             setError('Die Kamera konnte nicht gestartet werden.');
                         }}
@@ -114,8 +124,9 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib; onChangeSrc: () => 
                             }
                             onClick={() => {
                                 const nextDeviceIdx = ((deviceIdx >= 0 ? deviceIdx : 0) + 1) % devices.length;
-                                Storage.set('QrScannerDeviceId', devices[nextDeviceIdx].deviceId);
-                                props.onChangeSrc();
+                                const deviceId = devices[nextDeviceIdx].deviceId;
+                                Storage.set('QrScannerDeviceId', deviceId);
+                                props.onChangeSrc(deviceId);
                             }}
                             iconSide="left"
                         />
