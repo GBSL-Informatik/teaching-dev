@@ -16,6 +16,7 @@ interface Props {
     onScan?: (qr: string) => void;
 }
 const Scanner = (props: Props) => {
+    const [reloadKey, setReloadKey] = React.useState(1);
     const Lib = useClientLib<typeof QrScannerLib>(
         () => import('@yudiel/react-qr-scanner'),
         '@yudiel/react-qr-scanner'
@@ -23,10 +24,17 @@ const Scanner = (props: Props) => {
     if (!Lib) {
         return <Loader />;
     }
-    return <ScannerComponent Lib={Lib} {...props} />;
+    return (
+        <ScannerComponent
+            key={reloadKey}
+            Lib={Lib}
+            onChangeSrc={() => setReloadKey((prev) => prev + 1)}
+            {...props}
+        />
+    );
 };
 
-const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
+const ScannerComponent = (props: { Lib: typeof QrScannerLib; onChangeSrc: () => void } & Props) => {
     const { Lib } = props;
     const [error, setError] = React.useState<string | undefined>();
     const [qr, setQr] = React.useState('');
@@ -45,11 +53,11 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
     const clearErrorMessage = React.useCallback(() => {
         setError(undefined);
     }, []);
-    const deviceIdx = devices.findIndex((d) => d.deviceId === deviceId) || 0;
+    const deviceIdx = devices.findIndex((d) => d.deviceId === deviceId);
     const showFooter = qr || devices.length > 1 || error;
     return (
         <div className={clsx('card', styles.qr)}>
-            <div className={clsx(styles.scanner, 'card__body')} key={deviceId}>
+            <div className={clsx(styles.scanner, 'card__body')}>
                 {devices.length > 0 ? (
                     <Lib.Scanner
                         paused={!!qr}
@@ -104,7 +112,7 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
                             onClick={() => {
                                 const nextDeviceIdx = ((deviceIdx >= 0 ? deviceIdx : 0) + 1) % devices.length;
                                 Storage.set('QrScannerDeviceId', devices[nextDeviceIdx].deviceId);
-                                setDeviceId(devices[nextDeviceIdx].deviceId);
+                                props.onChangeSrc();
                             }}
                             iconSide="left"
                         />
