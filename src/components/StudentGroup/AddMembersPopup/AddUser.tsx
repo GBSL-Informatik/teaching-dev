@@ -52,10 +52,12 @@ const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
                                             <LiveStatusIndicator userId={user.id} size={0.3} />{' '}
                                             {user.nameShort}
                                         </div>
-                                        <div className={styles.groupMembershipBadges}>
-                                            {user.studentGroups.map((group) => (
-                                                <span className="badge badge--primary">{group.name}</span>
-                                            ))}
+                                        <div className={styles.groupMembership}>
+                                            <div className={styles.groupMembershipBadges}>
+                                                {user.studentGroups.map((group) => (
+                                                    <span className="badge badge--primary">{group.name}</span>
+                                                ))}
+                                            </div>
                                         </div>
                                         <div className={styles.actions}>
                                             <Button
