@@ -1,0 +1,122 @@
+---
+page_id: e831b10f-8331-4e6f-a6d5-8503cbffec54
+tags: ["tools"]
+---
+
+import { mdiEarth } from '@mdi/js'
+
+import QrCode from '@tdev-scanner'
+
+import BrowserWindow from '@tdev-components/BrowserWindow'
+
+# QR Codes
+
+QR Codes sind praktisch um Inhalte wie URLs oder anderes schnell zu teilen.
+
+```mdx
+import QrCode from '@tdev-components/shared/QrCode';
+
+<QrCode text="Hello World" />
+```
+
+<BrowserWindow>
+  <QrCode text="Hello World" />
+</BrowserWindow>
+
+## Inhalt anzeigen
+
+```mdx
+<QrCode showText text="Hello World" />
+```
+
+<BrowserWindow>
+  <QrCode showText text="Hello World" />
+</BrowserWindow>
+
+## Mit Texteingabe
+
+```mdx
+<QrCode withInput size="20em" text="Hello World" />
+```
+
+<BrowserWindow>
+  <QrCode withInput size="20em" text="Hello World" />
+</BrowserWindow>
+
+## Mit Icon
+
+Es können auch MdiIcons im QR Code eingebettet werden.
+
+:::warning[Grösse und Farbe]
+Da das Icon als SVG eingebettet wird, muss die Grösse als Zahl (in Pixel) und die Farbe als HTML-Farbe angegeben werden. CSS-Variablen oder -Grössen funktionieren nicht.
+:::
+
+```mdx
+<QrCode icon={mdiEarth} text="Hello World" />
+<QrCode icon={mdiEarth} iconSize="48" iconColor='#01f0bc' text="Hello World in Cyan" download/>
+```
+
+<BrowserWindow>
+  :::flex{justifyContent="space-around"}
+    <QrCode icon={mdiEarth} text="Hello World" />
+
+  ::br
+
+    <QrCode icon={mdiEarth} iconSize="48" iconColor="#01f0bc" text="Hello World in Cyan" download/>
+  :::
+</BrowserWindow>
+
+## Optionen
+
+`text`
+: Der Text, der im QR Code codiert wird.
+: `string`
+`showText`
+: Zeigt den Text unter dem QR Code an.
+: `boolean`
+: Standard: `false`
+`isLink`
+: Der Text wird als Link interpretiert und als `<Link>`-Tag dargestellt.
+`linkText`
+: Linktext der anstelle des `text`-Feldes angezeigt werden soll.
+: Standard: die URL im `text` Feld
+`withInput`
+: Zeigt ein Input Feld um den Text zu ändern.
+: `boolean`
+: Standard: `false`
+`size`
+: Die Grösse des QR Codes.
+: `string` - CSS Grösse, z.B. `20em`
+: Standard: `15em` (im css gesetzt)
+`className`
+: Eine CSS Klasse für den umgebenden `div`-Container.
+: `string`
+`icon`
+: Ein MdiIcon (oder ein SVG-Path), das im QR Code eingebettet wird.
+: `string`
+`download`
+: Es wird ein Download-Button angezeigt und der QR-Code kann als `.png` heruntergeladen werden.
+: Standard: `false`
+`iconSize`
+: Die Grösse des Icons.
+: `number` - eine Zahl in Pixel (kann nicht als CSS-Grösse angegeben werden!)
+: Standard: `32`
+`iconColor`
+: Die Farbe des Icons.
+: `string` - eine HTML-Farbe (kann nicht als CSS-Variable angegeben werden!)
+: Standard: <span className="badge badge--primary" style={{['--ifm-badge-background-color']: '#306cce'}}>#306cce</span>
+`qrProps`
+: Weitere Props für das `QRCode`-Element.
+: [QRCode.React](https://www.npmjs.com/package/qrcode.react#props)
+
+## Installation
+
+:::info[Code]
+- `src/components/shared/QrCode`
+:::
+
+:::info[npm]
+```bash
+yarn add qrcode.react
+```
+:::
