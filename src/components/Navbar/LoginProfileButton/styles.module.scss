@@ -16,6 +16,17 @@
     }
 }
 
+.adminNavPopup {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--ifm-global-radius);
+
+    .adminNavButton {
+        width: 100%;
+    }
+}
+
 :global(.navbar-sidebar) {
     .profileButton {
         display: inline-block;
