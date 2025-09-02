@@ -36,6 +36,7 @@ const Scanner = (props: Props) => {
                 } else {
                     setReloadKey((prev) => prev + 1);
                 }
+                deviceId.current = id;
             }}
             {...props}
         />
