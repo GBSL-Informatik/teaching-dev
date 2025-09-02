@@ -14,6 +14,7 @@ import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
 import { useHistory } from '@docusaurus/router';
 import Storage from '@tdev-stores/utils/Storage';
 import { noAuthMessage, offlineApiMessage } from './Root.helpers';
+import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 const { NO_AUTH, OFFLINE_API, TEST_USER, SENTRY_DSN } = siteConfig.customFields as {
     TEST_USER?: string;
     NO_AUTH?: boolean;
@@ -277,6 +278,7 @@ function Root({ children }: { children: React.ReactNode }) {
             <StoresProvider value={rootStore}>
                 <MsalWrapper>{children}</MsalWrapper>
                 <RemoteNavigationHandler />
+                <LoggedOutOverlay />
             </StoresProvider>
         </>
     );
