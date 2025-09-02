@@ -42,52 +42,54 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
             }
         }
     }, [devices]);
-    const clearErrorMessage = () => {
-        if (error) {
-            setError(undefined);
-        }
-    };
+    const clearErrorMessage = React.useCallback(() => {
+        setError(undefined);
+    }, []);
     const deviceIdx = devices.findIndex((d) => d.deviceId === deviceId) || 0;
     const showFooter = qr || devices.length > 1 || error;
     return (
         <div className={clsx('card', styles.qr)}>
             <div className={clsx(styles.scanner, 'card__body')}>
-                <Lib.Scanner
-                    paused={!!qr}
-                    onScan={(result) => {
-                        clearErrorMessage();
-                        setQr(result[0].rawValue);
-                        if (props.onScan) {
-                            props.onScan(result[0].rawValue);
-                        }
-                        if (props.redirect) {
-                            try {
-                                const url = new URL(result[0].rawValue);
-                                if (props.inNewTab) {
-                                    window.open(url.href, '_blank');
-                                } else {
-                                    window.location.href = url.href;
-                                }
-                            } catch (e) {
-                                setError(`Invalide URL: "${result[0].rawValue}"`);
+                {devices.length > 0 ? (
+                    <Lib.Scanner
+                        paused={!!qr}
+                        onScan={(result) => {
+                            clearErrorMessage();
+                            setQr(result[0].rawValue);
+                            if (props.onScan) {
+                                props.onScan(result[0].rawValue);
                             }
-                        }
-                    }}
-                    onError={(err) => {
-                        setError('Die Kamera konnte nicht gestartet werden.');
-                    }}
-                    constraints={{
-                        deviceId: deviceId
-                    }}
-                    allowMultiple={false}
-                    components={{
-                        torch: true,
-                        finder: true,
-                        zoom: true,
-                        onOff: true
-                    }}
-                    sound={false}
-                />
+                            if (props.redirect) {
+                                try {
+                                    const url = new URL(result[0].rawValue);
+                                    if (props.inNewTab) {
+                                        window.open(url.href, '_blank');
+                                    } else {
+                                        window.location.href = url.href;
+                                    }
+                                } catch (e) {
+                                    setError(`Invalide URL: "${result[0].rawValue}"`);
+                                }
+                            }
+                        }}
+                        onError={(err) => {
+                            setError('Die Kamera konnte nicht gestartet werden.');
+                        }}
+                        constraints={{
+                            deviceId: deviceId
+                        }}
+                        allowMultiple={false}
+                        components={{
+                            torch: true,
+                            finder: true,
+                            zoom: true,
+                            onOff: true
+                        }}
+                        sound={false}
+                    />
+                ) : (
+                    <Loader />
+                )}
             </div>
             {showFooter && (
                 <div className="card__footer">
