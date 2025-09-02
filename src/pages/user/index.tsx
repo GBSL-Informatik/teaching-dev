@@ -171,22 +171,6 @@ const UserPage = observer(() => {
                             )}
                         </>
                     )}
-                </DefinitionList>
-                {userStore.current?.hasElevatedAccess && (
-                    <div>
-                        <h2>User Tabelle</h2>
-                        <div className={clsx(styles.userTable)}>
-                            <UserTable
-                                filterClassName={styles.filter}
-                                defaultSortColumn="connectedClients"
-                                defaultSortDirection="desc"
-                                showAll
-                            />
-                        </div>
-                    </div>
-                )}
-                <h2>Account</h2>
-                <DefinitionList>
                     {current?.hasElevatedAccess && (
                         <>
                             <dt>Admin</dt>
