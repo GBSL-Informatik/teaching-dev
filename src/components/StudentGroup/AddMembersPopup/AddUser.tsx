@@ -69,7 +69,7 @@ const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
             <div className={clsx('card__header', styles.header)}>
                 <h3>Benutzer:in hinzufügen</h3>
             </div>
-            <div className={clsx('card__body')}>
+            <div className={clsx('card__body', styles.addUserCardBody)}>
                 <input
                     type="text"
                     placeholder="Suche..."
