@@ -47,7 +47,7 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
             setError(undefined);
         }
     };
-    const deviceIdx = devices.findIndex((d) => d.deviceId === deviceId);
+    const deviceIdx = devices.findIndex((d) => d.deviceId === deviceId) || 0;
     const showFooter = qr || devices.length > 1 || error;
     return (
         <div className={clsx('card', styles.qr)}>
@@ -101,8 +101,8 @@ const ScannerComponent = (props: { Lib: typeof QrScannerLib } & Props) => {
                             }
                             onClick={() => {
                                 const nextDeviceIdx = ((deviceIdx >= 0 ? deviceIdx : 0) + 1) % devices.length;
-                                setDeviceId(devices[nextDeviceIdx].deviceId);
                                 Storage.set('QrScannerDeviceId', devices[nextDeviceIdx].deviceId);
+                                setDeviceId(devices[nextDeviceIdx].deviceId);
                             }}
                             iconSide="left"
                         />
