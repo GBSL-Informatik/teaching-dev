@@ -1,0 +1,19 @@
+{
+    "name": "@tdev/qr-scanner",
+    "version": "1.0.0",
+    "main": "index.tsx",
+    "types": "index.tsx",
+    "dependencies": {
+        "@yudiel/react-qr-scanner": "^2.3.1"
+    },
+    "devDependencies": {
+        "vitest": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@docusaurus/core": "*",
+        "@docusaurus/theme-classic": "*",
+        "@types/node": "*"
+    },
+    "peerDependencies": {
+        "@tdev/core": "1.0.0"
+    }
+}
