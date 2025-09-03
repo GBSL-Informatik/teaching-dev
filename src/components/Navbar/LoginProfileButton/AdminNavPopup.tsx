@@ -47,6 +47,7 @@ const AdminNavPopup = () => {
                 </div>
             }
             on={['hover']}
+            keepTooltipInside="#__docusaurus"
             closeOnDocumentClick
             closeOnEscape
         >
