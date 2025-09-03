@@ -16,6 +16,28 @@
     }
 }
 
+.adminNavPopup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    background-color: var(--ifm-background-color);
+    border-radius: var(--ifm-global-radius);
+    padding: 0.3em;
+    box-shadow: var(--ifm-global-shadow-md);
+
+    .adminNavButton {
+        width: 100%;
+    }
+}
+
+.adminNavButtonText {
+    display: inline-flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
 :global(.navbar-sidebar) {
     .profileButton {
         display: inline-block;
