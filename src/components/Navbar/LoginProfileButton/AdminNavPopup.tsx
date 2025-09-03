@@ -43,7 +43,7 @@ const AdminNavPopup = () => {
         <Popup
             trigger={
                 <div>
-                    <ProfileButton />
+                    <ProfileButton preventClick={true} />
                 </div>
             }
             on={['hover']}
