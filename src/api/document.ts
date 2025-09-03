@@ -21,6 +21,7 @@ import type { BinaryFiles } from '@excalidraw/excalidraw/types';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import Excalidoc from '@tdev/excalidoc/model';
 import ProgressState from '@tdev-models/documents/ProgressState';
+import Node from '@tdev/nand-game/model';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -51,7 +52,8 @@ export enum DocumentType {
     TextMessage = 'text_message',
     DynamicDocumentRoot = 'dynamic_document_root',
     DynamicDocumentRoots = 'dynamic_document_roots',
-    NetpbmGraphic = 'netpbm_graphic'
+    NetpbmGraphic = 'netpbm_graphic',
+    Node = 'node'
 }
 
 /**
@@ -104,6 +106,11 @@ export interface ExcaliData {
     files: BinaryFiles;
     elements: readonly ExcalidrawElement[];
     image: string;
+}
+
+export interface NodeData {
+    inputs: string[];
+    outputs: string[];
 }
 
 export type StateType =
@@ -174,6 +181,7 @@ export interface TypeDataMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
     [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
+    [DocumentType.Node]: NodeData;
     // Add more mappings as needed
 }
 
@@ -195,6 +203,8 @@ export interface TypeModelMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
     [DocumentType.NetpbmGraphic]: NetpbmGraphic;
+    [DocumentType.Node]: Node;
+
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
