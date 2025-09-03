@@ -278,7 +278,7 @@ function Root({ children }: { children: React.ReactNode }) {
             <StoresProvider value={rootStore}>
                 <MsalWrapper>{children}</MsalWrapper>
                 <RemoteNavigationHandler />
-                <LoggedOutOverlay />
+                {!OFFLINE_API && <LoggedOutOverlay />}
             </StoresProvider>
         </>
     );
