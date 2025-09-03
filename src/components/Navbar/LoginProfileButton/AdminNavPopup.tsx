@@ -10,7 +10,7 @@ import styles from './styles.module.scss';
 import ProfileButton from './ProfileButton';
 import Button from '@tdev-components/shared/Button';
 import { useLocation } from '@docusaurus/router';
-import { useStore } from '@tdev-hooks/useStore';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 interface AdminNavButtonProps {
     href: string;
@@ -36,7 +36,8 @@ const AdminNavButton = ({ href, text, icon }: AdminNavButtonProps) => {
 };
 
 const AdminNavPopup = () => {
-    const userStore = useStore('userStore');
+    const userUrl = useBaseUrl('/user');
+    const adminUrl = useBaseUrl('/admin');
 
     return (
         <Popup
@@ -50,19 +51,19 @@ const AdminNavPopup = () => {
             closeOnEscape
         >
             <div className={clsx(styles.adminNavPopup)}>
-                <AdminNavButton href="/user" text="Benutzer" icon={mdiAccountCircleOutline} />
+                <AdminNavButton href={userUrl} text="Benutzer" icon={mdiAccountCircleOutline} />
                 <AdminNavButton
-                    href="/admin?panel=studentGroups"
+                    href={`${adminUrl}?panel=studentGroups`}
                     text="Lerngruppen"
                     icon={mdiAccountSupervisorOutline}
                 />
                 <AdminNavButton
-                    href="/admin?panel=accounts"
+                    href={`${adminUrl}?panel=accounts`}
                     text="Accounts"
                     icon={mdiAccountDetailsOutline}
                 />
                 <AdminNavButton
-                    href="/admin?panel=allowedActions"
+                    href={`${adminUrl}?panel=allowedActions`}
                     text="Erlaubte Aktionen"
                     icon={mdiShieldAccountOutline}
                 />
