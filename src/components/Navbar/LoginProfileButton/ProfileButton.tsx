@@ -5,11 +5,17 @@ import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
-const ProfileButton = () => {
+interface Props {
+    preventClick?: boolean;
+}
+
+const ProfileButton = ({ preventClick = false }: Props) => {
     const isMobile = useIsMobileView(502);
     const userStore = useStore('userStore');
     const sessionStore = useStore('sessionStore');
+    const userUrl = useBaseUrl('/user');
 
     return (
         <div className={clsx(styles.profileButton, isMobile && styles.collapsed)}>
@@ -20,7 +26,7 @@ const ProfileButton = () => {
                         icon={mdiAccountCircleOutline}
                         iconSide="left"
                         color="primary"
-                        href="/user"
+                        href={preventClick ? undefined : userUrl}
                         title="Persönlicher Bereich"
                         className={clsx(styles.button)}
                         textClassName={clsx(styles.text)}
@@ -32,7 +38,7 @@ const ProfileButton = () => {
                     icon={sessionStore.apiModeIcon}
                     iconSide="left"
                     color="primary"
-                    href="/user"
+                    href={preventClick ? undefined : userUrl}
                     title="Persönlicher Bereich"
                     text="Profil"
                     className={clsx(styles.button)}

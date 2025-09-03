@@ -6,10 +6,13 @@ import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import AdminNavPopup from './AdminNavPopup';
 import ProfileButton from './ProfileButton';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
 
 const LoginButton = () => {
-    return <Button href={'/login'} text="Login" icon={mdiLogin} color="primary" iconSide="left" />;
+    const loginUrl = useBaseUrl('/login');
+
+    return <Button href={loginUrl} text="Login" icon={mdiLogin} color="primary" iconSide="left" />;
 };
 
 const LoginProfileButton = observer(() => {

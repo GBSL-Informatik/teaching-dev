@@ -23,7 +23,8 @@
     padding: 0;
     background-color: var(--ifm-background-color);
     border-radius: var(--ifm-global-radius);
-    padding: 0.2em;
+    padding: 0.3em;
+    box-shadow: var(--ifm-global-shadow-md);
 
     .adminNavButton {
         width: 100%;
