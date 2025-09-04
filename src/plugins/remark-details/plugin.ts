@@ -26,9 +26,11 @@ export interface PluginOptions<T extends readonly string[] = readonly string[]> 
 const plugin: Plugin<PluginOptions[], Root> = function plugin(optionsInput = {}): Transformer<Root> {
     const TAG_NAMES = { details: 'details', summary: 'summary', ...optionsInput.tagNames };
     const DIRECTIVE_NAMES = new Set(['details', ...(optionsInput.directiveNames || [])]);
-    const getClassNameAttribute = (tag: string): MdxJsxAttribute[] => {
-        const className = (optionsInput.classNames || {})[tag];
-        return className ? [{ type: 'mdxJsxAttribute', name: 'className', value: className }] : [];
+    const getClassNameAttribute = (tag: string, directiveClass?: string | null): MdxJsxAttribute[] => {
+        const classNames = [(optionsInput.classNames || {})[tag], directiveClass].filter(Boolean) as string[];
+        return classNames.length > 0
+            ? [{ type: 'mdxJsxAttribute', name: 'className', value: classNames.join(' ') }]
+            : [];
     };
 
     return async (ast, vfile) => {
@@ -57,10 +59,14 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(optionsInput = {})
                     children: summaryTitle as BlockContent[]
                 });
             }
+            const attributes = [...getClassNameAttribute(node.name, node.attributes?.class)];
+            if (node.attributes?.open !== undefined) {
+                attributes.push({ type: 'mdxJsxAttribute', name: 'open', value: 'true' });
+            }
             const details = {
                 type: 'mdxJsxFlowElement',
                 name: TAG_NAMES.details,
-                attributes: [...getClassNameAttribute(node.name)],
+                attributes: attributes,
                 children: children
             } as MdxJsxFlowElement;
             parent.children.splice(idx || 0, 1, details);
