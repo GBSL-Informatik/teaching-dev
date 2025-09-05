@@ -53,7 +53,12 @@ const DisconnectedWarning = ({ onDismiss }: WarningContentProps) => {
     );
 };
 
-const LoggedOutOverlay = observer(() => {
+interface Props {
+    delayMs?: number;
+}
+
+const LoggedOutOverlay = observer((props: Props) => {
+    const [delayExpired, setDelayExpired] = React.useState((props.delayMs ?? 0) > 0 ? false : true);
     const [closedByUser, setClosedByUser] = React.useState(false);
     const [showOverlay, setShowOverlay] = React.useState(false);
     const location = useLocation();
@@ -61,9 +66,22 @@ const LoggedOutOverlay = observer(() => {
     const socketStore = useStore('socketStore');
 
     React.useEffect(() => {
+        if (props.delayMs) {
+            const timeout = setTimeout(() => {
+                setDelayExpired(true);
+            }, props.delayMs);
+            return () => clearTimeout(timeout);
+        }
+    }, [props.delayMs]);
+
+    React.useEffect(() => {
         const onLoginPage = location.pathname.startsWith('/login');
         setShowOverlay(!socketStore.isLive && !closedByUser && !onLoginPage);
     }, [socketStore.isLive, closedByUser, location]);
+
+    if (!delayExpired) {
+        return false;
+    }
 
     return showOverlay ? (
         <div className={styles.container}>
