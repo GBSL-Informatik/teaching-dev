@@ -3,6 +3,7 @@ import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
 import { highestAccess, NoneAccess, RWAccess } from './helpers/accessPolicy';
+import { isDummyId } from '@tdev-hooks/useDummyId';
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
@@ -51,6 +52,11 @@ class DocumentRoot<T extends DocumentType> {
         if (!isDummy) {
             this.setLoaded();
         }
+    }
+
+    @action
+    isLoadable() {
+        return !isDummyId(this.id) && this.store.root.sessionStore.isLoggedIn;
     }
 
     @action
