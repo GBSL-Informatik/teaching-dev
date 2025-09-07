@@ -11,9 +11,17 @@ interface WarningContentProps {
     onDismiss: () => void;
 }
 
+const Overlay = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <div className={styles.container}>
+            <div className={styles.content}>{children}</div>
+        </div>
+    );
+};
+
 const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
     return (
-        <div className={styles.content}>
+        <Overlay>
             <Admonition type="warning" title="Nicht eigenloggt">
                 <p>
                     Sie sind nicht eingeloggt. Wenn Sie ohne Login fortfahren, wird Ihr{' '}
@@ -28,13 +36,13 @@ const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
                     Weiter ohne Login
                 </Button>
             </div>
-        </div>
+        </Overlay>
     );
 };
 
 const DisconnectedWarning = ({ onDismiss }: WarningContentProps) => {
     return (
-        <div className={styles.content}>
+        <Overlay>
             <Admonition type="warning" title="Keine Verbindung zum Server">
                 <p>
                     Es besteht keine Verbindung zum Server – <b>Ihr Fortschritt wird nicht gespeichert</b>.
@@ -49,13 +57,13 @@ const DisconnectedWarning = ({ onDismiss }: WarningContentProps) => {
                     Offline verwenden
                 </Button>
             </div>
-        </div>
+        </Overlay>
     );
 };
 
 const StalledWarning = ({ onDismiss }: WarningContentProps) => {
     return (
-        <div className={styles.content}>
+        <Overlay>
             <Admonition type="warning" title="Keine Verbindung zum Server">
                 <p>
                     Einige Dokumente wurden nicht korrekt geladen –{' '}
@@ -71,7 +79,7 @@ const StalledWarning = ({ onDismiss }: WarningContentProps) => {
                     Ignorieren
                 </Button>
             </div>
-        </div>
+        </Overlay>
     );
 };
 
