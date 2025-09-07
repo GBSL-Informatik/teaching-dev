@@ -90,6 +90,7 @@ interface Props {
 }
 
 const LoggedOutOverlay = observer((props: Props) => {
+    const [isVisible, setIsVisible] = React.useState<boolean>(false);
     const [delayExpired, setDelayExpired] = React.useState((props.delayMs ?? 0) > 0 ? false : true);
     const [ignoredIssues, setIgnoredIssues] = React.useState<Set<'offline' | 'not-logged-in' | 'stalled'>>(
         new Set()
@@ -101,16 +102,29 @@ const LoggedOutOverlay = observer((props: Props) => {
     const socketStore = useStore('socketStore');
 
     React.useEffect(() => {
-        if (props.delayMs) {
+        const onVisibilityChange = () => {
+            setIsVisible(document.visibilityState === 'visible');
+            setSyncIssue((issue) => (issue === 'offline' ? 'offline' : null));
+            setDelayExpired(false);
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+        onVisibilityChange();
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, []);
+
+    React.useEffect(() => {
+        if (props.delayMs && isVisible) {
             const timeout = setTimeout(() => {
                 setDelayExpired(true);
             }, props.delayMs);
             return () => clearTimeout(timeout);
         }
-    }, [props.delayMs]);
+    }, [props.delayMs, isVisible]);
 
     React.useEffect(() => {
-        if (props.stalledCheckIntervalMs) {
+        if (props.stalledCheckIntervalMs && isVisible) {
             const interval = setInterval(() => {
                 const now = Date.now();
                 // Check for stalled document roots
@@ -126,6 +140,9 @@ const LoggedOutOverlay = observer((props: Props) => {
     }, [props.stalledCheckIntervalMs, documentRootStore]);
 
     React.useEffect(() => {
+        // this effect is not dependent on isVisible, because when the
+        // connection is lost, the data is probably not in sync anymore, so better
+        // ask the user to reload the page
         const onLoginPage = location.pathname.startsWith('/login');
         if (socketStore.isLive || onLoginPage) {
             return;
@@ -137,6 +154,10 @@ const LoggedOutOverlay = observer((props: Props) => {
         // when "isLive" becomes true in the meantime, the timeout should be cleared
         return () => clearTimeout(timeout);
     }, [socketStore.isLive, ignoredIssues, location]);
+
+    if (!isVisible) {
+        return null;
+    }
 
     if (!delayExpired || !syncIssue || ignoredIssues.has(syncIssue) || ignoredIssues.has('not-logged-in')) {
         return null;
