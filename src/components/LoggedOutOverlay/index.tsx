@@ -133,10 +133,10 @@ const LoggedOutOverlay = observer((props: Props) => {
         setSyncIssue((current) => current ?? 'offline');
     }, [socketStore.isLive, ignoredIssues, location]);
 
-    if (!delayExpired || !syncIssue || ignoredIssues.has(syncIssue)) {
+    if (!delayExpired || !syncIssue || ignoredIssues.has(syncIssue) || ignoredIssues.has('not-logged-in')) {
         return null;
     }
-    if (!userStore.current && !ignoredIssues.has('not-logged-in')) {
+    if (!userStore.current) {
         return (
             <NotLoggedInWarning
                 onDismiss={() => {
