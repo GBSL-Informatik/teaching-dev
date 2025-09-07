@@ -104,7 +104,7 @@ const LoggedOutOverlay = observer((props: Props) => {
     React.useEffect(() => {
         const onVisibilityChange = () => {
             setIsVisible(document.visibilityState === 'visible');
-            setSyncIssue((issue) => (issue === 'offline' ? 'offline' : null));
+            setSyncIssue(null);
             setDelayExpired(false);
         };
         document.addEventListener('visibilitychange', onVisibilityChange);
@@ -137,14 +137,11 @@ const LoggedOutOverlay = observer((props: Props) => {
             }, props.stalledCheckIntervalMs);
             return () => clearInterval(interval);
         }
-    }, [props.stalledCheckIntervalMs, documentRootStore]);
+    }, [props.stalledCheckIntervalMs, documentRootStore, isVisible]);
 
     React.useEffect(() => {
-        // this effect is not dependent on isVisible, because when the
-        // connection is lost, the data is probably not in sync anymore, so better
-        // ask the user to reload the page
         const onLoginPage = location.pathname.startsWith('/login');
-        if (socketStore.isLive || onLoginPage) {
+        if (socketStore.isLive || onLoginPage || !isVisible) {
             return;
         }
         // check back in 5 seconds, whether the connection is restored
@@ -153,7 +150,7 @@ const LoggedOutOverlay = observer((props: Props) => {
         }, 5_000);
         // when "isLive" becomes true in the meantime, the timeout should be cleared
         return () => clearTimeout(timeout);
-    }, [socketStore.isLive, ignoredIssues, location]);
+    }, [socketStore.isLive, ignoredIssues, location, isVisible]);
 
     if (!isVisible) {
         return null;
