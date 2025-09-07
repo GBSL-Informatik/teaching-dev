@@ -37,6 +37,7 @@ class DocumentRoot<T extends DocumentType> {
      * in offline mode.
      */
     readonly isDummy: boolean;
+    readonly initializedAt: number;
 
     @observable accessor isLoaded: boolean = false;
     @observable accessor _access: Access;
@@ -49,13 +50,14 @@ class DocumentRoot<T extends DocumentType> {
         this._access = props.access;
         this._sharedAccess = props.sharedAccess;
         this.isDummy = !!isDummy;
+        this.initializedAt = Date.now();
         if (!isDummy) {
             this.setLoaded();
         }
     }
 
-    @action
-    isLoadable() {
+    @computed
+    get isLoadable() {
         return !isDummyId(this.id) && this.store.root.sessionStore.isLoggedIn;
     }
 

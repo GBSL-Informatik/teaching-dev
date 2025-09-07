@@ -278,7 +278,7 @@ function Root({ children }: { children: React.ReactNode }) {
             <StoresProvider value={rootStore}>
                 <MsalWrapper>{children}</MsalWrapper>
                 <RemoteNavigationHandler />
-                {!OFFLINE_API && <LoggedOutOverlay delayMs={5000} />}
+                {!OFFLINE_API && <LoggedOutOverlay delayMs={5_000} stalledCheckIntervalMs={15_000} />}
             </StoresProvider>
         </>
     );
