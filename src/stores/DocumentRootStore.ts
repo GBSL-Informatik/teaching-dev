@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, runInAction } from 'mobx';
 import { RootStore } from '@tdev-stores/rootStore';
 import { computedFn } from 'mobx-utils';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
@@ -164,16 +164,16 @@ export class DocumentRootStore extends iStore {
         this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
             const models = await apiFindManyFor(userId, keys, isUserSwitched, signal.signal);
             // create all loaded models
-            models.data.forEach(
-                action((data) => {
+            runInAction(() => {
+                models.data.forEach((data) => {
                     const config = current.get(data.id);
                     if (!config) {
                         return;
                     }
                     this.addApiResultToStore(data, config);
                     current.delete(data.id);
-                })
-            );
+                });
+            });
             if (!isUserSwitched) {
                 // create all missing root documents
                 const created = await Promise.all(
@@ -208,11 +208,13 @@ export class DocumentRootStore extends iStore {
                     });
             }
             // mark all remaining roots as loaded
-            [...current.keys()].forEach((id) => {
-                const dummyModel = this.find(id);
-                if (dummyModel && dummyModel.isDummy) {
-                    dummyModel.setLoaded();
-                }
+            runInAction(() => {
+                [...current.keys()].forEach((id) => {
+                    const dummyModel = this.find(id);
+                    if (dummyModel && dummyModel.isDummy) {
+                        dummyModel.setLoaded();
+                    }
+                });
             });
         });
     }
