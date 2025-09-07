@@ -130,7 +130,12 @@ const LoggedOutOverlay = observer((props: Props) => {
         if (socketStore.isLive || onLoginPage) {
             return;
         }
-        setSyncIssue((current) => current ?? 'offline');
+        // check back in 5 seconds, whether the connection is restored
+        const timeout = setTimeout(() => {
+            setSyncIssue((current) => current ?? 'offline');
+        }, 5_000);
+        // when "isLive" becomes true in the meantime, the timeout should be cleared
+        return () => clearTimeout(timeout);
     }, [socketStore.isLive, ignoredIssues, location]);
 
     if (!delayExpired || !syncIssue || ignoredIssues.has(syncIssue) || ignoredIssues.has('not-logged-in')) {
