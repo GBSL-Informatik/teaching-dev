@@ -3,20 +3,13 @@ import clsx from 'clsx';
 
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import {
-    mdiAccountCircleOutline,
-    mdiAccountSwitch,
-    mdiCircle,
-    mdiHomeAccount,
-    mdiShieldAccount
-} from '@mdi/js';
+import { mdiAccountCircleOutline, mdiAccountSwitch, mdiHomeAccount, mdiShieldAccount } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import Popup from 'reactjs-popup';
 import _ from 'es-toolkit/compat';
 import { useLocation } from '@docusaurus/router';
-import Icon from '@mdi/react';
 import User from '@tdev-models/User';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 

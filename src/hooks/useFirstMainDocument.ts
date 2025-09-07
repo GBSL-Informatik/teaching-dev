@@ -1,10 +1,11 @@
-import React, { useId } from 'react';
+import React from 'react';
 import { DocumentType } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { CreateDocumentModel } from '@tdev-stores/DocumentStore';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
+import { isDummyId, useDummyId } from './useDummyId';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
@@ -22,7 +23,7 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     createDocument: boolean = true,
     access: Partial<Config> = {}
 ) => {
-    const defaultDocId = useId();
+    const defaultDocId = useDummyId(documentRootId);
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles.module.scss';
 import Button from '@tdev-components/shared/Button';
-import { mdiCloudOffOutline, mdiIncognito, mdiLogin, mdiReload } from '@mdi/js';
+import { mdiCloudOffOutline, mdiIncognito, mdiLogin, mdiReload, mdiSyncOff } from '@mdi/js';
 import Admonition from '@theme/Admonition';
 import { useLocation } from '@docusaurus/router';
 import { useStore } from '@tdev-hooks/useStore';
@@ -11,9 +11,17 @@ interface WarningContentProps {
     onDismiss: () => void;
 }
 
+const Overlay = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <div className={styles.container}>
+            <div className={styles.content}>{children}</div>
+        </div>
+    );
+};
+
 const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
     return (
-        <div className={styles.content}>
+        <Overlay>
             <Admonition type="warning" title="Nicht eigenloggt">
                 <p>
                     Sie sind nicht eingeloggt. Wenn Sie ohne Login fortfahren, wird Ihr{' '}
@@ -28,13 +36,13 @@ const NotLoggedInWarning = ({ onDismiss }: WarningContentProps) => {
                     Weiter ohne Login
                 </Button>
             </div>
-        </div>
+        </Overlay>
     );
 };
 
 const DisconnectedWarning = ({ onDismiss }: WarningContentProps) => {
     return (
-        <div className={styles.content}>
+        <Overlay>
             <Admonition type="warning" title="Keine Verbindung zum Server">
                 <p>
                     Es besteht keine Verbindung zum Server – <b>Ihr Fortschritt wird nicht gespeichert</b>.
@@ -49,20 +57,47 @@ const DisconnectedWarning = ({ onDismiss }: WarningContentProps) => {
                     Offline verwenden
                 </Button>
             </div>
-        </div>
+        </Overlay>
+    );
+};
+
+const StalledWarning = ({ onDismiss }: WarningContentProps) => {
+    return (
+        <Overlay>
+            <Admonition type="warning" title="Keine Verbindung zum Server">
+                <p>
+                    Einige Dokumente wurden nicht korrekt geladen –{' '}
+                    <b>Änderungen werden nicht zuverlässig gespeichert</b>. Laden Sie die Seite neu, um die
+                    Dokumente erneut zu laden.
+                </p>
+            </Admonition>
+            <div className={styles.buttons}>
+                <Button icon={mdiReload} color="primary" size={1.1} onClick={() => window.location.reload()}>
+                    Seite neu laden
+                </Button>
+                <Button icon={mdiSyncOff} color="secondary" size={1.1} onClick={onDismiss}>
+                    Ignorieren
+                </Button>
+            </div>
+        </Overlay>
     );
 };
 
 interface Props {
     delayMs?: number;
+    // intervall to check for stalled document roots
+    stalledCheckIntervalMs?: number;
 }
 
 const LoggedOutOverlay = observer((props: Props) => {
     const [delayExpired, setDelayExpired] = React.useState((props.delayMs ?? 0) > 0 ? false : true);
-    const [closedByUser, setClosedByUser] = React.useState(false);
-    const [showOverlay, setShowOverlay] = React.useState(false);
+    const [ignoredIssues, setIgnoredIssues] = React.useState<Set<'offline' | 'not-logged-in' | 'stalled'>>(
+        new Set()
+    );
+    const [syncIssue, setSyncIssue] = React.useState<null | 'offline' | 'stalled'>(null);
     const location = useLocation();
     const userStore = useStore('userStore');
+    const documentRootStore = useStore('documentRootStore');
     const socketStore = useStore('socketStore');
 
     React.useEffect(() => {
@@ -75,25 +110,68 @@ const LoggedOutOverlay = observer((props: Props) => {
     }, [props.delayMs]);
 
     React.useEffect(() => {
+        if (props.stalledCheckIntervalMs) {
+            const interval = setInterval(() => {
+                const now = Date.now();
+                // Check for stalled document roots
+                const stalled = documentRootStore.documentRoots.filter(
+                    (dr) => dr.isLoadable && dr.isDummy && now - dr.initializedAt > 5000
+                );
+                if (stalled.length > 0) {
+                    setSyncIssue((r) => r ?? 'stalled');
+                }
+            }, props.stalledCheckIntervalMs);
+            return () => clearInterval(interval);
+        }
+    }, [props.stalledCheckIntervalMs, documentRootStore]);
+
+    React.useEffect(() => {
         const onLoginPage = location.pathname.startsWith('/login');
-        setShowOverlay(!socketStore.isLive && !closedByUser && !onLoginPage);
-    }, [socketStore.isLive, closedByUser, location]);
+        if (socketStore.isLive || onLoginPage) {
+            return;
+        }
+        // check back in 5 seconds, whether the connection is restored
+        const timeout = setTimeout(() => {
+            setSyncIssue((current) => current ?? 'offline');
+        }, 5_000);
+        // when "isLive" becomes true in the meantime, the timeout should be cleared
+        return () => clearTimeout(timeout);
+    }, [socketStore.isLive, ignoredIssues, location]);
 
-    if (!delayExpired) {
-        return false;
+    if (!delayExpired || !syncIssue || ignoredIssues.has(syncIssue) || ignoredIssues.has('not-logged-in')) {
+        return null;
     }
-
-    return showOverlay ? (
-        <div className={styles.container}>
-            {userStore.current ? (
-                <DisconnectedWarning onDismiss={() => setClosedByUser(true)} />
-            ) : (
-                <NotLoggedInWarning onDismiss={() => setClosedByUser(true)} />
-            )}
-        </div>
-    ) : (
-        <></>
-    );
+    if (!userStore.current) {
+        return (
+            <NotLoggedInWarning
+                onDismiss={() => {
+                    setIgnoredIssues((s) => new Set([...s, 'not-logged-in']));
+                    setSyncIssue(null);
+                }}
+            />
+        );
+    }
+    switch (syncIssue) {
+        case 'offline':
+            return (
+                <DisconnectedWarning
+                    onDismiss={() => {
+                        setIgnoredIssues((s) => new Set([...s, 'offline']));
+                        setSyncIssue(null);
+                    }}
+                />
+            );
+        case 'stalled':
+            return (
+                <StalledWarning
+                    onDismiss={() => {
+                        setIgnoredIssues((s) => new Set([...s, 'stalled']));
+                        setSyncIssue(null);
+                    }}
+                />
+            );
+    }
+    return null;
 });
 
 export default LoggedOutOverlay;

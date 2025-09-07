@@ -2,10 +2,8 @@ import useIsBrowser from '@docusaurus/useIsBrowser';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import type { default as QuillV2Type, Props } from './QuillV2';
-import { DUMMY_DOCUMENT_ID, useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { default as QuillV2Model, ModelMeta } from '@tdev-models/documents/QuillV2';
 import { DocContext } from '@tdev-components/documents/DocumentContext';
-import { useStore } from '@tdev-hooks/useStore';
 import Loader from '@tdev-components/Loader';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 

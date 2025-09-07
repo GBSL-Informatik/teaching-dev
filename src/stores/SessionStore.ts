@@ -4,7 +4,7 @@ import { RootStore } from '@tdev-stores/rootStore';
 import { logout } from '@tdev-api/user';
 import Storage, { PersistedData, StorageKey } from '@tdev-stores/utils/Storage';
 import iStore from '@tdev-stores/iStore';
-import api from '@tdev-api/base';
+import api, { checkLogin as apiCheckLogin } from '@tdev-api/base';
 import { mdiContentSaveOffOutline, mdiDatabaseSyncOutline, mdiHarddisk } from '@mdi/js';
 
 class State {
@@ -15,7 +15,7 @@ class State {
     constructor() {}
 }
 
-export class SessionStore extends iStore {
+export class SessionStore extends iStore<'checkLogin'> {
     readonly root: RootStore;
 
     @observable.ref private accessor stateRef: State = new State();
