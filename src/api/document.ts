@@ -22,8 +22,8 @@ import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type Excalidoc from '@tdev/excalidoc/model';
 import type ProgressState from '@tdev-models/documents/ProgressState';
 import FlowNode from '@tdev/circuit/models/FlowNode';
-import { Node } from '@xyflow/react';
-import CircuitRoom from '@tdev/circuit/models/CircuitRoom';
+import { Edge, Node } from '@xyflow/react';
+import FlowEdge from '@tdev/circuit/models/FlowEdge';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -55,7 +55,8 @@ export enum DocumentType {
     DynamicDocumentRoot = 'dynamic_document_root',
     DynamicDocumentRoots = 'dynamic_document_roots',
     NetpbmGraphic = 'netpbm_graphic',
-    FlowNode = 'flow_node'
+    FlowNode = 'flow_node',
+    FlowEdge = 'flow_edge'
 }
 
 /**
@@ -111,6 +112,7 @@ export interface ExcaliData {
 }
 
 export type FlowNodeData = Omit<Node, 'id'>;
+export type FlowEdgeData = Omit<Edge, 'id'>;
 
 export type StateType =
     | 'checked'
@@ -182,6 +184,7 @@ export interface TypeDataMapping {
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
     [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
     [DocumentType.FlowNode]: FlowNodeData;
+    [DocumentType.FlowEdge]: FlowEdgeData;
     // Add more mappings as needed
 }
 
@@ -204,6 +207,7 @@ export interface TypeModelMapping {
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
     [DocumentType.NetpbmGraphic]: NetpbmGraphic;
     [DocumentType.FlowNode]: FlowNode;
+    [DocumentType.FlowEdge]: FlowEdge;
 
     /**
      * Add more mappings as needed
@@ -231,7 +235,8 @@ export type DocumentTypes =
     | DynamicDocumentRoots
     | NetpbmGraphic
     | ProgressState
-    | FlowNode;
+    | FlowNode
+    | FlowEdge;
 
 export interface Document<Type extends DocumentType> {
     id: string;

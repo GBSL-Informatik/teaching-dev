@@ -22,6 +22,7 @@ import TextMessages from './TextMessages';
 import Circuit from '@tdev/circuit/components/Circuit';
 import { default as DynamiDocumentRootMeta } from '@tdev-models/documents/DynamicDocumentRoot';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
+import type DocumentRoot from '@tdev-models/DocumentRoot';
 
 const NoRoom = () => {
     return (
@@ -66,11 +67,38 @@ const NoUser = () => {
 type PathParams = { parentRootId: string; documentRootId: string };
 const PATHNAME_PATTERN = '/rooms/:parentRootId/:documentRootId?' as const;
 
+interface RoomSwitcherProps {
+    roomType: RoomType;
+    dynamicRoot: DynamicDocumentRootMeta<RoomType>;
+    documentRoot: DocumentRoot<DocumentType.DynamicDocumentRoot>;
+    roomProps: DynamicDocumentRoot;
+}
+
+const RoomSwitcher = observer((props: RoomSwitcherProps) => {
+    const { roomType, documentRoot, dynamicRoot, roomProps } = props;
+    const socketStore = useStore('socketStore');
+    React.useEffect(() => {
+        socketStore.joinRoom(documentRoot.id);
+        return () => {
+            socketStore.leaveRoom(documentRoot.id);
+        };
+    }, [documentRoot, socketStore.socket?.id]);
+    switch (roomType) {
+        case RoomType.Messages:
+            return <TextMessages documentRoot={documentRoot} roomProps={roomProps} />;
+        case RoomType.Circuit:
+            return <Circuit dynamicRoot={dynamicRoot as DynamiDocumentRootMeta<RoomType.Circuit>} />;
+        default:
+            return <NoType dynamicRoot={dynamicRoot} />;
+    }
+});
+
 interface Props {
     roomProps: DynamicDocumentRoot;
     parentDocumentId: string;
     roomType: RoomType;
 }
+
 const RoomComponent = observer((props: Props): React.ReactNode => {
     const documentStore = useStore('documentStore');
     const { roomProps, roomType } = props;
@@ -96,14 +124,14 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
             </>
         );
     }
-    switch (roomType) {
-        case RoomType.Messages:
-            return <TextMessages documentRoot={documentRoot} roomProps={roomProps} />;
-        case RoomType.Circuit:
-            return <Circuit dynamicRoot={dynamicRoot as DynamiDocumentRootMeta<RoomType.Circuit>} />;
-        default:
-            return <NoType dynamicRoot={dynamicRoot} />;
-    }
+    return (
+        <RoomSwitcher
+            documentRoot={documentRoot}
+            dynamicRoot={dynamicRoot}
+            roomProps={roomProps}
+            roomType={roomType}
+        />
+    );
 });
 
 interface WithParentRootProps {

@@ -5,49 +5,41 @@ import {
     Document as DocumentProps,
     TypeDataMapping,
     Access,
-    FlowNodeData
+    FlowEdgeData
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { Node } from '@xyflow/react';
-import { merge, toMerged } from 'es-toolkit';
 
 export interface MetaInit {
     readonly?: boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.FlowNode> {
-    readonly type = DocumentType.FlowNode;
+export class ModelMeta extends TypeMeta<DocumentType.FlowEdge> {
+    readonly type = DocumentType.FlowEdge;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.FlowNode, props.readonly ? Access.RO_User : undefined);
+        super(DocumentType.FlowEdge, props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.FlowNode] {
+    get defaultData(): TypeDataMapping[DocumentType.FlowEdge] {
         return {
-            data: {},
-            position: {
-                x: 0,
-                y: 0
-            }
+            source: '',
+            target: ''
         };
     }
 }
 
-class FlowNode extends iDocument<DocumentType.FlowNode> {
-    @observable.ref accessor flowData: FlowNodeData;
-    constructor(props: DocumentProps<DocumentType.FlowNode>, store: DocumentStore) {
-        super(props, store);
+class FlowEdge extends iDocument<DocumentType.FlowEdge> {
+    @observable.ref accessor flowData: FlowEdgeData;
+    constructor(props: DocumentProps<DocumentType.FlowEdge>, store: DocumentStore) {
+        super(props, store, 15);
         this.flowData = props.data;
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.FlowNode], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping[DocumentType.FlowEdge], from: Source, updatedAt?: Date): void {
         delete data.type;
-        this.flowData = data;
-        if (updatedAt) {
-            this.updatedAt = new Date(updatedAt);
-        }
+        this.flowData = data as any;
         if (from === Source.LOCAL) {
             /**
              * Assumption:
@@ -61,24 +53,27 @@ class FlowNode extends iDocument<DocumentType.FlowNode> {
                 updatedAt: this.updatedAt.toISOString()
             });
         }
+        if (updatedAt) {
+            this.updatedAt = new Date(updatedAt);
+        }
     }
 
-    get data(): TypeDataMapping[DocumentType.FlowNode] {
+    get data(): TypeDataMapping[DocumentType.FlowEdge] {
         return { ...this.flowData };
     }
 
     @computed
-    get nodeData() {
-        return { ...this.flowData, data: { ...this.flowData.data, label: this.id }, id: this.id };
+    get edgeData() {
+        return { ...this.flowData, id: this.id };
     }
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.FlowNode) {
+        if (this.root?.type === DocumentType.FlowEdge) {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});
     }
 }
 
-export default FlowNode;
+export default FlowEdge;

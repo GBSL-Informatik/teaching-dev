@@ -36,7 +36,9 @@ const RecordsToCreate = new Set<DocumentType>([
     DocumentType.File,
     DocumentType.MdxComment,
     DocumentType.DynamicDocumentRoots,
-    DocumentType.TextMessage
+    DocumentType.TextMessage,
+    DocumentType.FlowNode,
+    DocumentType.FlowEdge
 ]);
 
 export class SocketDataStore extends iStore<'ping'> {
@@ -187,6 +189,14 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.actionRequest = data;
             })
         );
+    }
+
+    /**
+     * stream updates to all connected group members (stream to the `documentRootId` id the payload)
+     */
+    @action
+    streamUpdate(roomId: string, payload: ChangedDocument) {
+        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId });
     }
 
     @action

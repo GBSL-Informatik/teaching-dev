@@ -37,7 +37,7 @@ import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import Excalidoc from '@tdev/excalidoc/model';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import FlowNode from '@tdev/circuit/models/FlowNode';
-import CircuitRoom from '@tdev/circuit/models/CircuitRoom';
+import FlowEdge from '@tdev/circuit/models/FlowEdge';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -91,6 +91,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new ProgressState(data as DocumentProps<DocumentType.ProgressState>, store);
         case DocumentType.FlowNode:
             return new FlowNode(data as DocumentProps<DocumentType.FlowNode>, store);
+        case DocumentType.FlowEdge:
+            return new FlowEdge(data as DocumentProps<DocumentType.FlowEdge>, store);
     }
 }
 class DocumentStore extends iStore<`delete-${string}`> {
@@ -270,6 +272,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
     handleUpdate(change: ChangedDocument) {
         const model = this.find(change.id);
         if (model) {
+            const updatedAt = new Date(change.updatedAt);
+            if (model.updatedAt.getTime() >= updatedAt.getTime()) {
+                // ignore stalled updates
+                return;
+            }
             model.setData(change.data as any, Source.API, new Date(change.updatedAt));
         }
     }

@@ -4,37 +4,33 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import DocumentRoot from '@tdev-models/DocumentRoot';
-import {
-    ReactFlow,
-    MiniMap,
-    Controls,
-    Background,
-    useNodesState,
-    useEdgesState,
-    addEdge,
+import { Background, ReactFlow, MiniMap, Controls, Panel } from '@xyflow/react';
+import type {
     OnConnect,
-    ControlButton,
-    Panel,
     Edge,
-    NodeChange
+    OnEdgesChange,
+    OnNodesChange,
+    Node,
+    OnReconnect,
+    FinalConnectionState,
+    HandleType
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import Icon from '@mdi/react';
 import { mdiWizardHat } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
 import { RoomType } from '@tdev-api/document';
+import { useStore } from '@tdev-hooks/useStore';
 
-const initialNodes = [
-    { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } }
-    // { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } }
-];
+type OnReconnectEnd = (
+    event: MouseEvent | TouchEvent,
+    edge: Edge,
+    handleType: HandleType,
+    connectionState: FinalConnectionState
+) => void;
 
-// const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-const initialEdges: Edge[] = [];
+type OnReconnectStart = (event: React.MouseEvent, edge: Edge, handleType: HandleType) => void;
 
 interface Props {
     dynamicRoot: DynamicDocumentRoot<RoomType.Circuit>;
@@ -42,23 +38,48 @@ interface Props {
 
 const Circuit = observer((props: Props): React.ReactNode => {
     const { dynamicRoot } = props;
-
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const onConnect = React.useCallback(
-        (params: OnConnect['arguments']) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges]
-    );
-    const onChange = React.useCallback(
-        (change: NodeChange[]) => {
+    const documentStore = useStore('documentStore');
+    const edgeReconnectSuccessful = React.useRef(true);
+    const onChange = React.useCallback<OnNodesChange<Node>>(
+        (change) => {
             dynamicRoot.room.onNodesChange(change);
         },
         [dynamicRoot.room]
     );
+    const onChangeEdge = React.useCallback<OnEdgesChange<Edge>>(
+        (change) => {
+            dynamicRoot.room.onEdgeChange(change);
+        },
+        [dynamicRoot.room]
+    );
+    const onConnect = React.useCallback<OnConnect>(
+        (connection) => {
+            dynamicRoot.room.onConnect(connection);
+        },
+        [dynamicRoot.room]
+    );
+    const onReconnectStart = React.useCallback<OnReconnectStart>(() => {
+        edgeReconnectSuccessful.current = false;
+    }, []);
+
+    const onReconnect = React.useCallback<OnReconnect>((oldEdge, newConnection) => {
+        edgeReconnectSuccessful.current = true;
+        // setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
+    }, []);
+
+    const onReconnectEnd = React.useCallback<OnReconnectEnd>((_, edge) => {
+        if (!edgeReconnectSuccessful.current) {
+            const doc = documentStore.find(edge.id);
+            if (doc) {
+                documentStore.apiDelete(doc);
+            }
+        }
+
+        edgeReconnectSuccessful.current = true;
+    }, []);
     if (!dynamicRoot) {
         return null;
     }
-    console.log('rerender', dynamicRoot.room.nodes);
 
     return (
         <div className={clsx(styles.wrapper)}>
@@ -69,12 +90,13 @@ const Circuit = observer((props: Props): React.ReactNode => {
                 <div style={{ width: '100%', height: '80vh' }}>
                     <ReactFlow
                         nodes={dynamicRoot.room.nodes}
-                        // nodes={nodes}
-                        edges={edges}
+                        edges={dynamicRoot.room.edges}
                         onNodesChange={onChange}
-                        // onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
+                        onEdgesChange={onChangeEdge}
                         onConnect={onConnect}
+                        onReconnect={onReconnect}
+                        onReconnectStart={onReconnectStart}
+                        onReconnectEnd={onReconnectEnd}
                         fitView
                     >
                         <MiniMap />
