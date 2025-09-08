@@ -4,45 +4,50 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { RoomType } from '@tdev-api/document';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
+import SelectInput from '@tdev-components/shared/SelectInput';
 
 interface Props {
     dynamicRoot: DynamicDocumentRoot;
+    onChange?: (type: RoomType) => void;
 }
 
 export const RoomTypeLabel: { [key in RoomType]: string } = {
-    [RoomType.Messages]: 'Textnachrichten'
+    [RoomType.Messages]: 'Textnachrichten',
+    [RoomType.Circuit]: 'Schaltkreis'
 };
 
 export const RoomTypeDescription: { [key in RoomType]: string } = {
-    [RoomType.Messages]: 'Textnachrichten können in einem Chat versandt- und empfangen werden.'
+    [RoomType.Messages]: 'Textnachrichten können in einem Chat versandt- und empfangen werden.',
+    [RoomType.Circuit]: 'Interaktive Schaltkreise erzeugen.'
 };
 
 const ValidRoomType = new Set<string>(Object.values(RoomType));
 
 const RoomTypeSelector = observer((props: Props) => {
     const { dynamicRoot } = props;
-    const invalidRoomType = !ValidRoomType.has(dynamicRoot.props?.type || '');
+    const options = React.useMemo(() => {
+        const values = Object.values(RoomType);
+        if (dynamicRoot.props?.type && !ValidRoomType.has(dynamicRoot.props?.type || '')) {
+            values.push(dynamicRoot.props.type);
+        }
+        return values.map((o) => {
+            return {
+                value: o,
+                label: RoomTypeLabel[o] ?? o,
+                disabled: !ValidRoomType.has(o)
+            };
+        });
+    }, [dynamicRoot.props?.type]);
+
     return (
-        <div className={clsx(styles.typeSelector)}>
-            <select
-                className={clsx(styles.select, invalidRoomType && styles.invalid)}
-                value={dynamicRoot.props?.type || ''}
-                onChange={(e) => {
-                    dynamicRoot.setRoomType(e.target.value as RoomType);
-                }}
-            >
-                {invalidRoomType && (
-                    <option value={dynamicRoot.props?.type || ''} disabled>
-                        {dynamicRoot.props?.type || '-'}
-                    </option>
-                )}
-                {Object.values(RoomType).map((type) => (
-                    <option key={type} value={type} title={RoomTypeDescription[type]}>
-                        {RoomTypeLabel[type]}
-                    </option>
-                ))}
-            </select>
-        </div>
+        <SelectInput
+            options={options}
+            value={dynamicRoot.props?.type || ''}
+            onChange={(value) => {
+                dynamicRoot.setRoomType(value as RoomType);
+                props?.onChange?.(value as RoomType);
+            }}
+        />
     );
 });
 

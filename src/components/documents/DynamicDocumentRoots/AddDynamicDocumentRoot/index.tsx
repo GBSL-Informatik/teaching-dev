@@ -16,10 +16,15 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
     const { dynamicDocumentRoots } = props;
     const userStore = useStore('userStore');
     const user = userStore.current;
+    const permissionStore = useStore('permissionStore');
+    React.useEffect(() => {
+        if (dynamicDocumentRoots.root) {
+            permissionStore.loadPermissions(dynamicDocumentRoots.root);
+        }
+    }, [dynamicDocumentRoots]);
     if (!user || !user.hasElevatedAccess) {
         return null;
     }
-
     return (
         <div>
             <Button
@@ -27,7 +32,7 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
                 title='Neue "Document Root" hinzufügen'
                 icon={mdiPlusCircleOutline}
                 iconSide="left"
-                disabled={!RWAccess.has(dynamicDocumentRoots.root?.permission)}
+                disabled={!dynamicDocumentRoots || !RWAccess.has(dynamicDocumentRoots.root?.permission)}
                 onClick={() => {
                     const newId = uuidv4();
                     dynamicDocumentRoots.addDynamicDocumentRoot(

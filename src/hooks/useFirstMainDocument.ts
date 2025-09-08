@@ -63,7 +63,7 @@ export const useFirstMainDocument = <Type extends DocumentType>(
                 );
             }
         }
-    }, [documentRoot, userStore.current]);
+    }, [documentRoot, userStore.current, createDocument]);
 
     return documentRoot?.firstMainDocument || dummyDocument;
 };
