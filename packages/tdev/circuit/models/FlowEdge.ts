@@ -68,6 +68,11 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
     }
 
     @computed
+    get isSelected() {
+        return this.flowData.selected;
+    }
+
+    @computed
     get meta(): ModelMeta {
         if (this.root?.type === DocumentType.FlowEdge) {
             return this.root.meta as ModelMeta;

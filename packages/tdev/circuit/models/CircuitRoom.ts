@@ -14,9 +14,12 @@ import {
     OnEdgesChange,
     Edge,
     OnNodesChange,
-    OnConnect
+    OnConnect,
+    Connection,
+    reconnectEdge
 } from '@xyflow/react';
 import { Source } from '@tdev-models/iDocument';
+import FlowEdge from './FlowEdge';
 
 class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
     constructor(dynamicRoot: DynamicDocumentRoot<RoomType.Circuit>, documentStore: DocumentStore) {
@@ -25,7 +28,6 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
 
     @computed
     get flowNodes() {
-        console.log('rerun flow nodes');
         return this.documents.filter((doc) => doc.type === DocumentType.FlowNode);
     }
 
@@ -42,6 +44,15 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
     @computed
     get edges() {
         return this.flowEdges.map((fn) => fn.edgeData);
+    }
+
+    @action
+    reconnectEdge(id: string, connection: Connection) {
+        const edge = this.documentStore.find(id) as FlowEdge;
+        if (edge) {
+            const reconnected = reconnectEdge(edge.edgeData, connection, [edge.edgeData])[0];
+            edge.setData(reconnected, Source.LOCAL, new Date());
+        }
     }
 
     @action

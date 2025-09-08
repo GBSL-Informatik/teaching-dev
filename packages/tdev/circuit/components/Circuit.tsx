@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { Background, ReactFlow, MiniMap, Controls, Panel } from '@xyflow/react';
+import { Background, ReactFlow, MiniMap, Controls, Panel, reconnectEdge } from '@xyflow/react';
 import type {
     OnConnect,
     Edge,
@@ -62,10 +62,13 @@ const Circuit = observer((props: Props): React.ReactNode => {
         edgeReconnectSuccessful.current = false;
     }, []);
 
-    const onReconnect = React.useCallback<OnReconnect>((oldEdge, newConnection) => {
-        edgeReconnectSuccessful.current = true;
-        // setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
-    }, []);
+    const onReconnect = React.useCallback<OnReconnect>(
+        (oldEdge, newConnection) => {
+            edgeReconnectSuccessful.current = true;
+            dynamicRoot.room.reconnectEdge(oldEdge.id, newConnection);
+        },
+        [dynamicRoot.room]
+    );
 
     const onReconnectEnd = React.useCallback<OnReconnectEnd>((_, edge) => {
         if (!edgeReconnectSuccessful.current) {
