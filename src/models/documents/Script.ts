@@ -1,5 +1,5 @@
 import { action, computed, observable, reaction } from 'mobx';
-import throttle from 'lodash/throttle';
+import { throttle } from 'es-toolkit/compat';
 import {
     CANVAS_OUTPUT_TESTER,
     DOM_ELEMENT_IDS,
