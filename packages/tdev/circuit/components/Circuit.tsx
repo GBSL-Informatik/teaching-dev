@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { Background, ReactFlow, MiniMap, Controls, Panel, reconnectEdge } from '@xyflow/react';
+import { Background, ReactFlow, MiniMap, Controls, Panel } from '@xyflow/react';
 import type {
     OnConnect,
     Edge,
@@ -101,6 +101,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                         onReconnectStart={onReconnectStart}
                         onReconnectEnd={onReconnectEnd}
                         fitView
+                        proOptions={{ hideAttribution: true }}
                     >
                         <MiniMap />
                         <Controls />
