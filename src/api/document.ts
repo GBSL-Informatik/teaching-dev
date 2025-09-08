@@ -21,7 +21,8 @@ import type { BinaryFiles } from '@excalidraw/excalidraw/types';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import Excalidoc from '@tdev/excalidoc/model';
 import ProgressState from '@tdev-models/documents/ProgressState';
-import Node from '@tdev/nand-game/model';
+import FlowNode from '@tdev/nand-game/models/FlowNode';
+import Flow from '@tdev/nand-game/models/Flow';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -53,7 +54,8 @@ export enum DocumentType {
     DynamicDocumentRoot = 'dynamic_document_root',
     DynamicDocumentRoots = 'dynamic_document_roots',
     NetpbmGraphic = 'netpbm_graphic',
-    Node = 'node'
+    Flow = 'react_flow',
+    FlowNode = 'flow_node'
 }
 
 /**
@@ -108,7 +110,9 @@ export interface ExcaliData {
     image: string;
 }
 
-export interface NodeData {
+export interface FlowData {}
+
+export interface FlowNodeData {
     inputs: string[];
     outputs: string[];
 }
@@ -181,7 +185,8 @@ export interface TypeDataMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
     [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
-    [DocumentType.Node]: NodeData;
+    [DocumentType.Flow]: FlowData;
+    [DocumentType.FlowNode]: FlowNodeData;
     // Add more mappings as needed
 }
 
@@ -203,7 +208,8 @@ export interface TypeModelMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
     [DocumentType.NetpbmGraphic]: NetpbmGraphic;
-    [DocumentType.Node]: Node;
+    [DocumentType.Flow]: Flow;
+    [DocumentType.FlowNode]: FlowNode;
 
     /**
      * Add more mappings as needed
@@ -230,7 +236,9 @@ export type DocumentTypes =
     | DynamicDocumentRootModel
     | DynamicDocumentRoots
     | NetpbmGraphic
-    | ProgressState;
+    | ProgressState
+    | Flow
+    | FlowNode;
 
 export interface Document<Type extends DocumentType> {
     id: string;

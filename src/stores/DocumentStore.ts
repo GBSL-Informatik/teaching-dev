@@ -37,7 +37,8 @@ import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocument
 import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import Excalidoc from '@tdev/excalidoc/model';
 import ProgressState from '@tdev-models/documents/ProgressState';
-import Node from '@tdev/nand-game/model';
+import FlowNode from '@tdev/nand-game/models/FlowNode';
+import Flow from '@tdev/nand-game/models/Flow';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -92,8 +93,10 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new NetpbmGraphic(data as DocumentProps<DocumentType.NetpbmGraphic>, store);
         case DocumentType.ProgressState:
             return new ProgressState(data as DocumentProps<DocumentType.ProgressState>, store);
-        case DocumentType.Node:
-            return new Node(data as DocumentProps<DocumentType.Node>, store);
+        case DocumentType.Flow:
+            return new Flow(data as DocumentProps<DocumentType.Flow>, store);
+        case DocumentType.FlowNode:
+            return new FlowNode(data as DocumentProps<DocumentType.FlowNode>, store);
     }
 }
 class DocumentStore extends iStore<`delete-${string}`> {
