@@ -1,17 +1,17 @@
 .textInput {
     width: 100%;
-    padding: var(--ifm-button-padding-vertical);
+    padding: 3px;
     border: 1px solid var(--ifm-color-gray-500);
     border-radius: var(--ifm-global-radius);
     font-size: var(--ifm-font-size-base);
-    box-shadow: var(--ifm-global-shadow-md);
+    box-shadow: var(--ifm-global-shadow-ld);
     transition:
         border-color 0.3s,
         box-shadow 0.3s;
     &:focus {
         border-color: var(--ifm-link-hover-color);
         outline: none;
-        box-shadow: 0 0 8px var(--ifm-link-hover-color);
+        box-shadow: 0 0 2px var(--ifm-link-hover-color);
     }
 }
 .label {
