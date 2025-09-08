@@ -17,19 +17,26 @@ import {
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { default as DynamicDocumentRootMeta } from '@tdev-models/documents/DynamicDocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import RoomTypeSelector, { RoomTypeLabel } from '../RoomTypeSelector';
+import { RoomTypeLabel } from '../RoomTypeSelector';
 import TextInput from '@tdev-components/shared/TextInput';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import { RoomType } from '@tdev-api/document';
 
 interface Props extends MetaInit {
     id: string;
     dynamicRootsDocumentId: string;
+    roomType: RoomType;
 }
 
 const DynamicDocumentRoot = observer((props: Props) => {
     const documentStore = useStore('documentStore');
     const [meta] = React.useState(
-        new DynamicDocumentRootMeta({}, props.id, props.dynamicRootsDocumentId, documentStore)
+        new DynamicDocumentRootMeta(
+            { roomType: props.roomType },
+            props.id,
+            props.dynamicRootsDocumentId,
+            documentStore
+        )
     );
     const [edit, setEdit] = React.useState(false);
     const [title, setTitle] = React.useState('');
@@ -40,6 +47,11 @@ const DynamicDocumentRoot = observer((props: Props) => {
             permissionStore.loadPermissions(docRoot);
         }
     }, [docRoot]);
+    React.useEffect(() => {
+        if (props.roomType && meta.roomType !== props.roomType) {
+            meta.setRoomType(props.roomType);
+        }
+    }, [props.roomType, meta.roomType]);
     if (!docRoot || docRoot.isDummy) {
         return (
             <div>
@@ -70,9 +82,7 @@ const DynamicDocumentRoot = observer((props: Props) => {
             ) : (
                 <div className={clsx(styles.roomName)}>{meta.name}</div>
             )}
-            {edit ? (
-                <RoomTypeSelector dynamicRoot={meta} onChange={() => setEdit(false)} />
-            ) : (
+            {!edit && (
                 <div className={clsx(styles.roomType, 'badge', 'badge--info')}>
                     {meta.roomType ? RoomTypeLabel[meta.roomType] : '-'}
                 </div>

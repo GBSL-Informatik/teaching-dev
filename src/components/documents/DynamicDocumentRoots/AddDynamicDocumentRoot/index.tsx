@@ -5,10 +5,9 @@ import { useStore } from '@tdev-hooks/useStore';
 import { v4 as uuidv4 } from 'uuid';
 import Button from '@tdev-components/shared/Button';
 import { mdiPlusCircleOutline } from '@mdi/js';
-import { RoomType } from '@tdev-api/document';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 
-interface Props extends MetaInit {
+interface Props extends Partial<MetaInit> {
     dynamicDocumentRoots: DynamicDocumentRoots;
 }
 
@@ -37,8 +36,7 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
                     const newId = uuidv4();
                     dynamicDocumentRoots.addDynamicDocumentRoot(
                         newId,
-                        `Neue Gruppe (${dynamicDocumentRoots.dynamicDocumentRoots.length + 1})`,
-                        RoomType.Messages
+                        `Neue Gruppe (${dynamicDocumentRoots.dynamicDocumentRoots.length + 1})`
                     );
                 }}
             />

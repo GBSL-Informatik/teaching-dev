@@ -1,16 +1,16 @@
 {
-    "name": "@tdev/nand-game",
+    "name": "@tdev/circuit",
     "version": "1.0.0",
     "main": "index.ts",
     "types": "index.ts",
     "dependencies": {
-        "reactflow": "^11.11.4"
+        "@xyflow/react": "^12.8.4"
     },
     "devDependencies": {
-        "vitest": "*",
-        "@docusaurus/module-type-aliases": "*",
         "@docusaurus/core": "*",
-        "@types/node": "*"
+        "@docusaurus/module-type-aliases": "*",
+        "@types/node": "*",
+        "vitest": "*"
     },
     "peerDependencies": {
         "@tdev/core": "1.0.0"

@@ -15,14 +15,15 @@ import { Color } from '@tdev-components/shared/Colors';
 import CmsText from '@tdev-models/documents/CmsText';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
+import type { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
+import type NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import Excalidoc from '@tdev/excalidoc/model';
-import ProgressState from '@tdev-models/documents/ProgressState';
-import FlowNode from '@tdev/nand-game/models/FlowNode';
-import Flow from '@tdev/nand-game/models/Flow';
+import type Excalidoc from '@tdev/excalidoc/model';
+import type ProgressState from '@tdev-models/documents/ProgressState';
+import FlowNode from '@tdev/circuit/models/FlowNode';
+import { Node } from '@xyflow/react';
+import CircuitRoom from '@tdev/circuit/models/CircuitRoom';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -54,7 +55,6 @@ export enum DocumentType {
     DynamicDocumentRoot = 'dynamic_document_root',
     DynamicDocumentRoots = 'dynamic_document_roots',
     NetpbmGraphic = 'netpbm_graphic',
-    Flow = 'react_flow',
     FlowNode = 'flow_node'
 }
 
@@ -110,12 +110,7 @@ export interface ExcaliData {
     image: string;
 }
 
-export interface FlowData {}
-
-export interface FlowNodeData {
-    inputs: string[];
-    outputs: string[];
-}
+export type FlowNodeData = Omit<Node, 'id'>;
 
 export type StateType =
     | 'checked'
@@ -151,15 +146,16 @@ export interface DynamicDocumentRootData {
 }
 
 export enum RoomType {
-    Messages = 'text_messages'
+    Messages = 'text_messages',
+    Circuit = 'circuit'
 }
 export interface DynamicDocumentRoot {
     id: string;
     name: string;
-    type: RoomType;
 }
 
 export interface DynamicDocumentRootsData {
+    roomType: RoomType;
     documentRoots: DynamicDocumentRoot[];
 }
 
@@ -185,7 +181,6 @@ export interface TypeDataMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
     [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
-    [DocumentType.Flow]: FlowData;
     [DocumentType.FlowNode]: FlowNodeData;
     // Add more mappings as needed
 }
@@ -208,7 +203,6 @@ export interface TypeModelMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
     [DocumentType.NetpbmGraphic]: NetpbmGraphic;
-    [DocumentType.Flow]: Flow;
     [DocumentType.FlowNode]: FlowNode;
 
     /**
@@ -237,7 +231,6 @@ export type DocumentTypes =
     | DynamicDocumentRoots
     | NetpbmGraphic
     | ProgressState
-    | Flow
     | FlowNode;
 
 export interface Document<Type extends DocumentType> {

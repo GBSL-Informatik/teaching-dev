@@ -1,8 +1,16 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
+import {
+    DocumentType,
+    Document as DocumentProps,
+    TypeDataMapping,
+    Access,
+    FlowNodeData
+} from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { Node } from '@xyflow/react';
+import { merge, toMerged } from 'es-toolkit';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -17,25 +25,25 @@ export class ModelMeta extends TypeMeta<DocumentType.FlowNode> {
 
     get defaultData(): TypeDataMapping[DocumentType.FlowNode] {
         return {
-            inputs: [],
-            outputs: []
+            data: {},
+            position: {
+                x: 0,
+                y: 0
+            }
         };
     }
 }
 
 class FlowNode extends iDocument<DocumentType.FlowNode> {
-    @observable.ref accessor inputs: string[];
-    @observable.ref accessor outputs: string[];
+    @observable.ref accessor flowData: FlowNodeData;
     constructor(props: DocumentProps<DocumentType.FlowNode>, store: DocumentStore) {
-        super(props, store);
-        this.inputs = props.data.inputs || [];
-        this.outputs = props.data.outputs || [];
+        super(props, store, 5);
+        this.flowData = props.data;
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.FlowNode], from: Source, updatedAt?: Date): void {
-        this.inputs = [...data.inputs];
-        this.outputs = [...data.outputs];
+    setData(data: Partial<TypeDataMapping[DocumentType.FlowNode]>, from: Source, updatedAt?: Date): void {
+        this.flowData = toMerged(this.flowData, data);
         if (from === Source.LOCAL) {
             /**
              * Assumption:
@@ -50,10 +58,12 @@ class FlowNode extends iDocument<DocumentType.FlowNode> {
     }
 
     get data(): TypeDataMapping[DocumentType.FlowNode] {
-        return {
-            inputs: this.inputs,
-            outputs: this.outputs
-        };
+        return { ...this.flowData };
+    }
+
+    @computed
+    get nodeData() {
+        return { ...this.flowData, data: { ...this.flowData.data, label: this.id }, id: this.id };
     }
 
     @computed
