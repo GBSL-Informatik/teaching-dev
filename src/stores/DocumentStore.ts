@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import {
@@ -154,6 +154,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
             return;
         }
         const model = CreateDocumentModel(data, this);
+        // TODO: should we try to load the root in this case?
         if (!model?.root) {
             return;
         }
@@ -182,39 +183,9 @@ class DocumentStore extends iStore<`delete-${string}`> {
         return document;
     }
 
-    @action
-    loadModel<Type extends DocumentType>(id: string) {
-        if (!id) {
-            return Promise.resolve(undefined);
-        }
-        return this.withAbortController(`load-${id}`, (sig) => {
-            return apiFind<Type>(id, sig.signal);
-        })
-            .then(
-                action(({ data }) => {
-                    if (data && Object.keys(data).length > 0) {
-                        return this.addToStore(data);
-                    } else {
-                        /** apparently the model is not present anymore - remove it from the store */
-                        const old = this.find(id);
-                        return this.removeFromStore(old);
-                    }
-                })
-            )
-            .catch((err) => {
-                if (axios.isCancel(err)) {
-                    return;
-                } else if (err.response) {
-                    /**
-                     * https://github.com/axios/axios#handling-errors
-                     * the api responded with a non-2xx status code - apparently the model is not present anymore
-                     * and can/should be removed from the store
-                     */
-                    const old = this.find(id);
-                    this.removeFromStore(old);
-                    return;
-                }
-            });
+    @computed
+    get canSave() {
+        return this.root.sessionStore.isLoggedIn;
     }
 
     @action

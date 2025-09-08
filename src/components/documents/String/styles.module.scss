@@ -5,6 +5,13 @@
     align-items: stretch;
     position: relative;
     --ifm-color-secondary: var(--ifm-color-emphasis-400);
+    &.monospace {
+        .label,
+        .input {
+            font-family: var(--ifm-font-family-monospace);
+            font-size: var(--ifm-code-font-size);
+        }
+    }
     .input {
         font-size: 1em;
         padding: 0.5em;

@@ -7,7 +7,7 @@
  * @see https://github.com/mudoo/quill-resize-module
  */
 
-import defaultsDeep from 'lodash/defaultsDeep';
+import { defaultsDeep } from 'es-toolkit/compat';
 import DefaultOptions from './DefaultOptions';
 import Toolbar from './Toolbar';
 import Resize from './Resize';

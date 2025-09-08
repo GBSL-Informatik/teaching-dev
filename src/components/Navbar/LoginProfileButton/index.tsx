@@ -1,26 +1,24 @@
-import React from 'react';
-import clsx from 'clsx';
-
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { mdiAccountCircleOutline, mdiLogin } from '@mdi/js';
-import siteConfig from '@generated/docusaurus.config';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
-import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import siteConfig from '@generated/docusaurus.config';
+import { mdiLogin } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import { useStore } from '@tdev-hooks/useStore';
+import { observer } from 'mobx-react-lite';
+import AdminNavPopup from './AdminNavPopup';
+import ProfileButton from './ProfileButton';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
 
 const LoginButton = () => {
-    return <Button href={'/login'} text="Login" icon={mdiLogin} color="primary" iconSide="left" />;
+    const loginUrl = useBaseUrl('/login');
+
+    return <Button href={loginUrl} text="Login" icon={mdiLogin} color="primary" iconSide="left" />;
 };
 
 const LoginProfileButton = observer(() => {
     const isBrowser = useIsBrowser();
-    const isMobile = useIsMobileView(502);
-    const userStore = useStore('userStore');
     const sessionStore = useStore('sessionStore');
+    const userStore = useStore('userStore');
 
     if (!isBrowser) {
         return null;
@@ -29,36 +27,12 @@ const LoginProfileButton = observer(() => {
     if (!sessionStore.isLoggedIn && !NO_AUTH) {
         return <LoginButton />;
     }
-    return (
-        <div className={clsx(styles.profileButton, isMobile && styles.collapsed)}>
-            {sessionStore.apiMode === 'api' ? (
-                <>
-                    <Button
-                        text={userStore.viewedUser?.nameShort || 'Profil'}
-                        icon={mdiAccountCircleOutline}
-                        iconSide="left"
-                        color="primary"
-                        href="/user"
-                        title="Persönlicher Bereich"
-                        className={clsx(styles.button)}
-                        textClassName={clsx(styles.text)}
-                    />
-                    <LiveStatusIndicator size={0.3} className={clsx(styles.liveIndicator)} />
-                </>
-            ) : (
-                <Button
-                    icon={sessionStore.apiModeIcon}
-                    iconSide="left"
-                    color="primary"
-                    href="/user"
-                    title="Persönlicher Bereich"
-                    text="Profil"
-                    className={clsx(styles.button)}
-                    textClassName={clsx(styles.text)}
-                />
-            )}
-        </div>
-    );
+
+    if (userStore.current?.isAdmin || userStore.current?.isTeacher) {
+        return <AdminNavPopup />;
+    }
+
+    return <ProfileButton />;
 });
 
 export default LoginProfileButton;

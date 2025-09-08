@@ -3,6 +3,7 @@ import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
 import { highestAccess, NoneAccess, RWAccess } from './helpers/accessPolicy';
+import { isDummyId } from '@tdev-hooks/useDummyId';
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
@@ -36,6 +37,7 @@ class DocumentRoot<T extends DocumentType> {
      * in offline mode.
      */
     readonly isDummy: boolean;
+    readonly initializedAt: number;
 
     @observable accessor isLoaded: boolean = false;
     @observable accessor _access: Access;
@@ -48,9 +50,15 @@ class DocumentRoot<T extends DocumentType> {
         this._access = props.access;
         this._sharedAccess = props.sharedAccess;
         this.isDummy = !!isDummy;
+        this.initializedAt = Date.now();
         if (!isDummy) {
             this.setLoaded();
         }
+    }
+
+    @computed
+    get isLoadable() {
+        return !isDummyId(this.id) && this.store.root.sessionStore.isLoggedIn;
     }
 
     @action

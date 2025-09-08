@@ -1,10 +1,12 @@
-import { action, computed, IReactionDisposer, observable, reaction } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction, set } from 'mobx';
 import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _ from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
 import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
+import { DUMMY_DOCUMENT_ID } from '@tdev-hooks/useFirstMainDocument';
+import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 
 /**
  * normally, save only once all 1000ms
@@ -73,6 +75,10 @@ abstract class iDocument<Type extends DocumentType> {
                 }
             }
         );
+    }
+
+    get isLoadable() {
+        return !isTempId(this.id) && this.store.canSave;
     }
 
     @computed

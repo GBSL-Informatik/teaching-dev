@@ -1,8 +1,9 @@
-import React, { useId } from 'react';
+import React from 'react';
 import { Access, DocumentType } from '@tdev-api/document';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
+import { useDummyId } from './useDummyId';
 
 /**
  * 1. create a dummy documentRoot with default (meta) data
@@ -21,7 +22,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     access: Partial<Config> = {},
     skipCreate?: boolean
 ) => {
-    const defaultRootDocId = useId();
+    const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
     const [dummyDocumentRoot] = React.useState<DocumentRoot<Type>>(
@@ -58,7 +59,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
         return () => {
             documentRootStore.removeFromStore(defaultRootDocId, false);
         };
-    }, []);
+    }, [documentRootStore]);
 
     React.useEffect(() => {
         if (!userStore.isUserSwitched || !id) {
