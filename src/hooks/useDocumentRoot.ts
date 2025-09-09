@@ -62,7 +62,11 @@ export const useDocumentRoot = <Type extends DocumentType>(
     }, [documentRootStore]);
 
     React.useEffect(() => {
-        if (!userStore.isUserSwitched || !id) {
+        if (!id) {
+            return;
+        }
+        const requestNeeded = userStore.isUserSwitched || !documentRootStore.find(id)?.firstMainDocument;
+        if (!requestNeeded) {
             return;
         }
         documentRootStore.loadInNextBatch(id, meta, {
