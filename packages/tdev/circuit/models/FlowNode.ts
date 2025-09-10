@@ -85,7 +85,7 @@ class FlowNode<NType extends NodeType> extends iDocument<DocumentType.FlowNode> 
             this.store.root.socketStore.streamUpdate(this.documentRootId, {
                 id: this.id,
                 data: data,
-                updatedAt: this.updatedAt.toISOString()
+                updatedAt: (this.updatedAt || new Date()).toISOString()
             });
         }
     }
