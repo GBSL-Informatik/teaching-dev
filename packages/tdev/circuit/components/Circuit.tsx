@@ -17,11 +17,12 @@ import type {
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import { mdiWizardHat } from '@mdi/js';
+import { mdiElectricSwitch, mdiWizardHat } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
-import { RoomType } from '@tdev-api/document';
+import { NodeType, RoomType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
+import { nodeTypes } from './Nodes';
 
 type OnReconnectEnd = (
     event: MouseEvent | TouchEvent,
@@ -92,6 +93,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                 </h1>
                 <div style={{ width: '100%', height: '80vh' }}>
                     <ReactFlow
+                        nodeTypes={nodeTypes}
                         nodes={dynamicRoot.room.nodes}
                         edges={dynamicRoot.room.edges}
                         onNodesChange={onChange}
@@ -107,11 +109,27 @@ const Circuit = observer((props: Props): React.ReactNode => {
                         <Controls />
                         <Panel position="top-right">
                             <Button
-                                icon={mdiWizardHat}
+                                icon={mdiElectricSwitch}
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode();
+                                    dynamicRoot.room.addFlowNode(NodeType.SwitchNode, { power: 0 });
+                                }}
+                            />
+                            <Button
+                                text="OR"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.OrNode, {});
+                                }}
+                            />
+                            <Button
+                                text="AND"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.AndNode, {});
                                 }}
                             />
                         </Panel>

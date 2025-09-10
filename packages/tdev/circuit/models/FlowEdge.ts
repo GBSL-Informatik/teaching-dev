@@ -9,6 +9,7 @@ import {
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import FlowNode from './FlowNode';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -65,6 +66,22 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
     @computed
     get edgeData() {
         return { ...this.flowData, id: this.id };
+    }
+
+    get sourceId() {
+        return this.data.source;
+    }
+
+    get source(): FlowNode<any> | undefined {
+        return this.store.find(this.sourceId) as FlowNode<any>;
+    }
+
+    get targetId() {
+        return this.data.target;
+    }
+
+    get target(): FlowNode<any> | undefined {
+        return this.store.find(this.targetId) as FlowNode<any>;
     }
 
     @computed

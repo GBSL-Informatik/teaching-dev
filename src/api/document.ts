@@ -111,7 +111,22 @@ export interface ExcaliData {
     image: string;
 }
 
-export type FlowNodeData = Omit<Node, 'id'>;
+export enum NodeType {
+    SwitchNode = 'SwitchNode',
+    OrNode = 'OrNode',
+    AndNode = 'AndNode'
+}
+
+export interface NodeDataMapping {
+    [NodeType.OrNode]: {};
+    [NodeType.AndNode]: {};
+    [NodeType.SwitchNode]: {
+        power: 0 | 1;
+    };
+}
+
+export type FlowNodeDataFull<T extends NodeType> = Node<NodeDataMapping[T], T>;
+export type FlowNodeData<T extends NodeType> = Omit<FlowNodeDataFull<T>, 'id'>;
 export type FlowEdgeData = Omit<Edge, 'id'>;
 
 export type StateType =
@@ -183,7 +198,7 @@ export interface TypeDataMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
     [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
-    [DocumentType.FlowNode]: FlowNodeData;
+    [DocumentType.FlowNode]: FlowNodeData<NodeType>;
     [DocumentType.FlowEdge]: FlowEdgeData;
     // Add more mappings as needed
 }
@@ -206,7 +221,7 @@ export interface TypeModelMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
     [DocumentType.NetpbmGraphic]: NetpbmGraphic;
-    [DocumentType.FlowNode]: FlowNode;
+    [DocumentType.FlowNode]: FlowNode<NodeType>;
     [DocumentType.FlowEdge]: FlowEdge;
 
     /**
@@ -235,7 +250,7 @@ export type DocumentTypes =
     | DynamicDocumentRoots
     | NetpbmGraphic
     | ProgressState
-    | FlowNode
+    | FlowNode<NodeType>
     | FlowEdge;
 
 export interface Document<Type extends DocumentType> {

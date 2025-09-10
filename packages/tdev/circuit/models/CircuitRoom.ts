@@ -1,6 +1,6 @@
 import DynamicRoom from '@tdev-models/documents/DynamicRooms';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
-import { DocumentType, RoomType } from '@tdev-api/document';
+import { DocumentType, FlowNodeData, NodeDataMapping, NodeType, RoomType } from '@tdev-api/document';
 import { action, computed, observable } from 'mobx';
 import FlowNode from './FlowNode';
 import DocumentStore from '@tdev-stores/DocumentStore';
@@ -38,7 +38,7 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
 
     @computed
     get nodes() {
-        return this.flowNodes.map((fn) => fn.nodeData);
+        return this.flowNodes.map((fn) => fn.node);
     }
 
     @computed
@@ -63,7 +63,11 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
             }
             const node = this.flowNodes.find((doc) => doc.id === change.id);
             if (node) {
-                node.setData(applyNodeChanges([change], [node.nodeData])[0], Source.LOCAL, new Date());
+                node.setData(
+                    applyNodeChanges([change], [node.node])[0] as FlowNodeData<NodeType>,
+                    Source.LOCAL,
+                    new Date()
+                );
             }
         });
     }
@@ -96,12 +100,13 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
     }
 
     @action
-    addFlowNode() {
+    addFlowNode<N extends NodeType>(type: N, data: NodeDataMapping[N]) {
         this.documentStore.create({
             documentRootId: this.dynamicRoot.rootDocumentId,
             type: DocumentType.FlowNode,
             data: {
-                data: {},
+                data: data,
+                type: type,
                 position: {
                     x: 100,
                     y: 100
