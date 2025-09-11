@@ -1,6 +1,4 @@
 import type { NodeType } from '@tdev-api/document';
-import type { Node } from '@xyflow/react';
-import { action, computed, observable } from 'mobx';
 import type FlowNode from '../FlowNode';
 
 class iDeriver<NType extends NodeType> {
@@ -10,7 +8,7 @@ class iDeriver<NType extends NodeType> {
     }
 
     get power() {
-        return 0;
+        return (this.flowNode.flowData.data as { power?: number }).power ?? 0;
     }
 }
 

@@ -1,4 +1,4 @@
-import iDeriver from '.';
+import iDeriver from './iDeriver';
 import type FlowNode from '../FlowNode';
 import { NodeType } from '@tdev-api/document';
 import { computed } from 'mobx';
@@ -10,7 +10,7 @@ class Or extends iDeriver<NodeType.OrNode> {
 
     @computed
     get output(): boolean {
-        return this.flowNode.targetEdges.some((e) => (e.source?.power || 0) > 0);
+        return this.flowNode.targetEdges.some((e) => e.source?.deriver?.power > 0);
     }
 
     get power(): number {

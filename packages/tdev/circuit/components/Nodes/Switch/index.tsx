@@ -19,9 +19,9 @@ const SwitchNode = observer((props: NodeProps<SwitchNode>) => {
         (e) => {
             e.preventDefault();
             e.stopPropagation();
-            doc?.setData({ ...doc.flowData, data: { power: 1 - doc.power } }, Source.LOCAL);
+            doc?.setData({ ...doc.flowData, data: { power: 1 - doc.deriver.power } }, Source.LOCAL);
         },
-        [props.id, doc, doc?.power]
+        [props.id, doc, doc]
     );
     return (
         <div className={clsx(styles.buttonNode)}>
