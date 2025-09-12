@@ -8,6 +8,9 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 
 [Docusaurus](https://docusaurus.io/docs/api/themes/@docusaurus/theme-mermaid) unterstützt [Mermaid](https://docs.mermaidchart.com/mermaid-oss/intro/index.html) Diagramme in Markdown Dateien.
 
+
+[Live Editor](https://mermaid.live/)
+
 ## Beispiele
 Beispiele von [https://docs.mermaidchart.com](https://docs.mermaidchart.com/mermaid-oss/syntax/flowchart.html)
 
@@ -65,9 +68,24 @@ sequenceDiagram
         end
     end
 ```
+oder
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    Alice->>Alice: private Farbe mischen
+    Bob->>Bob: private Farbe mischen
+    Alice->>Bob: Gemeinsame Farbe
+    Alice->>Bob: privat + gemeinsam
+    Bob->>Alice: privat + gemeinsam
+    Bob->>Bob: erhalten + privat
+    Alice->>Alice: erhalten + privat
+```
 ````
 
 <BrowserWindow>
+:::flex{flexBasis=220px}
 ```mermaid
 sequenceDiagram
     loop Daily query
@@ -83,6 +101,21 @@ sequenceDiagram
         end
     end
 ```
+
+::br
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    Alice->>Alice: private Farbe mischen
+    Bob->>Bob: private Farbe mischen
+    Alice->>Bob: Gemeinsame Farbe
+    Alice->>Bob: privat + gemeinsam
+    Bob->>Alice: privat + gemeinsam
+    Bob->>Bob: erhalten + privat
+    Alice->>Alice: erhalten + privat
+```
+:::
 </BrowserWindow>
 
 ### Git Graph
