@@ -117,6 +117,9 @@ export interface SiteConfig {
     /** Overrides for the theme config (see https://docusaurus.io/docs/api/themes/configuration). */
     themeConfig?: Preset.ThemeConfig;
 
+    /** additional themes you want to include */
+    themes?: PluginConfig[];
+
     /** List of plugins to be loaded before the default remark plugins. */
     beforeDefaultRemarkPlugins?: PluginOptions[];
 
