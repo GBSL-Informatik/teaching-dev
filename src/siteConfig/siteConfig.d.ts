@@ -1,7 +1,7 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
 import { PluginOptions } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
-import type { DeepPartial, DeepPartialArray } from 'utility-types';
+import type { DeepPartial } from 'utility-types';
 import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
 import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-blog';
 import type { Options as PagesPluginOptions } from '@docusaurus/plugin-content-pages';
