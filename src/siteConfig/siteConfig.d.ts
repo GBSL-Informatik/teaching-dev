@@ -1,6 +1,7 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
 import { PluginOptions } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
+import type { DeepPartial, DeepPartialArray } from 'utility-types';
 import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
 import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-blog';
 import type { Options as PagesPluginOptions } from '@docusaurus/plugin-content-pages';
@@ -125,6 +126,9 @@ export interface SiteConfig {
     /** List of rehype plugins to be loaded. */
     rehypePlugins?: PluginOptions[];
 
+    /** docusaurus markdown config */
+    markdown?: DeepPartial<MarkdownConfig>;
+
     /** List of Docusaurus plugins to be loaded. */
     plugins?: PluginOptions[];
 
@@ -132,13 +136,13 @@ export interface SiteConfig {
      * An array of scripts to load. The values can be either strings or plain objects of attribute-value maps.
      * The `<script>` tags will be inserted in the HTML `<head>`.
      */
-    scripts?: _DeepPartialArray<
+    scripts?: (
         | string
         | {
               [key: string]: string | boolean | undefined;
               src: string;
           }
-    >;
+    )[];
 
     /** GitHub coordinates for your project. */
     gitHub?: {
