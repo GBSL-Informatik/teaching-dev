@@ -187,7 +187,9 @@ const config: Config = applyTransformers({
         }
       }
       return result;
-    }
+    },
+    mermaid: true,
+    ...siteConfig.markdown
   },
   presets: [
     [
@@ -309,6 +311,7 @@ const config: Config = applyTransformers({
     ]
   ],
   themes: [
+    '@docusaurus/theme-mermaid',
     [
       themeCodeEditor,
       {
@@ -316,7 +319,8 @@ const config: Config = applyTransformers({
         brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
         libDir: '/bry-libs/'
       }
-    ]
+    ],
+    ...(siteConfig.themes || [])
   ],
   stylesheets: [
     {
