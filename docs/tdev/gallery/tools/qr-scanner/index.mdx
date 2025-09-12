@@ -1,0 +1,69 @@
+---
+page_id: e831b10f-8331-4e6f-a6d5-8503cbffec54
+tags: ["tools"]
+---
+
+import Scanner from '@tdev/qr-scanner';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# QR Code Scanner
+
+QR Codes sind praktisch um Inhalte wie URLs oder anderes schnell zu teilen. Mit dem QR Code Scanner können Sie QR Codes scannen und die darin enthaltenen Informationen anzeigen.
+
+```mdx
+import Scanner from '@tdev/qr-scanner';
+
+<Scanner />
+```
+
+<BrowserWindow>
+    <Scanner />
+</BrowserWindow>
+
+
+## Links direkt öffnen
+
+```mdx
+import Scanner from '@tdev-components/shared/QR-Code/Scanner';
+
+<Scanner redirect inNewTab />
+```
+
+<BrowserWindow>
+    <Scanner redirect inNewTab />
+</BrowserWindow>
+
+## Optionen
+
+`onScan`
+: Callback Funktion, die aufgerufen wird, wenn ein QR Code gescannt wurde.
+:::dd
+```tsx
+<Scanner onScan={(content: sring) => console.log(content)} />
+```
+:::
+`hideOpenLinkButton`
+: Versteckt den Button zum Öffnen des Inhalts als Link.
+: `boolean`
+: Standard: `false`
+`redirect`
+: Der Inhalt des QR Codes als URL behandelt und direkt geöffnet.
+: `boolean`
+: Standard: `false`
+:::dd
+`inNewTab`
+: Der Inhalt des QR Codes wird in einem neuen Tab geöffnet.
+: `boolean`
+: Standard: `false`
+:::
+## Installation
+
+:::info[Code]
+- `packages/tdev/qr-scanner`
+:::
+
+:::info[npm]
+```bash
+yarn add @yudiel/react-qr-scanner
+```
+:::
