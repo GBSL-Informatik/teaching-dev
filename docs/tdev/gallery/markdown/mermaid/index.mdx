@@ -1,0 +1,225 @@
+---
+page_id: 105787ee-e4f3-4d3a-aeee-4183e914615a
+tags: [markdown, visualization, mermaid]
+---
+
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# Mermaid
+
+[Docusaurus](https://docusaurus.io/docs/api/themes/@docusaurus/theme-mermaid) unterstützt [Mermaid](https://docs.mermaidchart.com/mermaid-oss/intro/index.html) Diagramme in Markdown Dateien.
+
+
+[Live Editor](https://mermaid.live/)
+
+## Beispiele
+Beispiele von [https://docs.mermaidchart.com](https://docs.mermaidchart.com/mermaid-oss/syntax/flowchart.html)
+
+### Graph
+````md
+```mermaid
+graph LR
+    A[Square Rect] -- Link text --> B((Circle))
+    A --> C(Round Rect)
+    B --> D{Rhombus}
+    C --> D
+```
+````
+<BrowserWindow>
+```mermaid
+graph LR
+    A[Square Rect] -- Link text --> B((Circle))
+    A --> C(Round Rect)
+    B --> D{Rhombus}
+    C --> D
+```
+</BrowserWindow>
+
+### Pie Chart
+````md
+```mermaid
+pie title NETFLIX
+    "Time spent looking for movie" : 90
+    "Time spent watching it" : 10
+```
+````
+
+<BrowserWindow>
+```mermaid
+pie title NETFLIX
+    "Time spent looking for movie" : 90
+    "Time spent watching it" : 10
+```
+</BrowserWindow>
+
+
+### Sequence Diagram
+````md
+```mermaid
+sequenceDiagram
+    loop Daily query
+        Alice->>Bob: Hello Bob, how are you?
+        alt is sick
+            Bob->>Alice: Not so good :(
+        else is well
+            Bob->>Alice: Feeling fresh like a daisy
+        end
+
+        opt Extra response
+            Bob->>Alice: Thanks for asking
+        end
+    end
+```
+oder
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    Alice->>Alice: private Farbe mischen
+    Bob->>Bob: private Farbe mischen
+    Alice->>Bob: Gemeinsame Farbe
+    Alice->>Bob: privat + gemeinsam
+    Bob->>Alice: privat + gemeinsam
+    Bob->>Bob: erhalten + privat
+    Alice->>Alice: erhalten + privat
+```
+````
+
+<BrowserWindow>
+:::flex{flexBasis=220px}
+```mermaid
+sequenceDiagram
+    loop Daily query
+        Alice->>Bob: Hello Bob, how are you?
+        alt is sick
+            Bob->>Alice: Not so good :(
+        else is well
+            Bob->>Alice: Feeling fresh like a daisy
+        end
+
+        opt Extra response
+            Bob->>Alice: Thanks for asking
+        end
+    end
+```
+
+::br
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    Alice->>Alice: private Farbe mischen
+    Bob->>Bob: private Farbe mischen
+    Alice->>Bob: Gemeinsame Farbe
+    Alice->>Bob: privat + gemeinsam
+    Bob->>Alice: privat + gemeinsam
+    Bob->>Bob: erhalten + privat
+    Alice->>Alice: erhalten + privat
+```
+:::
+</BrowserWindow>
+
+### Git Graph
+````md
+```mermaid
+gitGraph:
+    commit "Ashish"
+    branch newbranch
+    checkout newbranch
+    commit id:"1111"
+    commit tag:"test"
+    checkout main
+    commit type: HIGHLIGHT
+    commit
+    merge newbranch
+    commit
+    branch b2
+    commit
+```
+````
+
+<BrowserWindow>
+```mermaid
+gitGraph:
+    commit "Ashish"
+    branch newbranch
+    checkout newbranch
+    commit id:"1111"
+    commit tag:"test"
+    checkout main
+    commit type: HIGHLIGHT
+    commit
+    merge newbranch
+    commit
+    branch b2
+    commit
+```
+</BrowserWindow>
+
+````md
+
+### State Diagram
+
+```mermaid
+---
+title: Simple sample
+---
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+```
+````
+
+<BrowserWindow>
+```mermaid
+---
+title: Simple sample
+---
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+```
+</BrowserWindow>
+
+### Gantt Chart
+
+````md
+
+```mermaid
+gantt
+    title A Gantt Diagram
+    dateFormat YYYY-MM-DD
+    section Section
+        A task          :a1, 2014-01-01, 30d
+        Another task    :after a1, 20d
+    section Another
+        Task in Another :2014-01-12, 12d
+        another task    :24d
+```
+```` 
+
+<BrowserWindow>
+
+```mermaid
+gantt
+    title A Gantt Diagram
+    dateFormat YYYY-MM-DD
+    section Section
+        A task          :a1, 2014-01-01, 30d
+        Another task    :after a1, 20d
+    section Another
+        Task in Another :2014-01-12, 12d
+        another task    :24d
+```
+</BrowserWindow>

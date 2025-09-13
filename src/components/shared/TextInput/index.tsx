@@ -4,6 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 
 interface Props {
+    id?: string;
     defaultValue?: string;
     placeholder?: string;
     onChange: (text: string) => void;
@@ -26,7 +27,8 @@ interface Props {
 }
 
 const TextInput = observer((props: Props) => {
-    const id = React.useId();
+    const _id = React.useId();
+    const id = props.id || _id;
     const [text, setText] = React.useState(props.defaultValue || '');
     return (
         <>
