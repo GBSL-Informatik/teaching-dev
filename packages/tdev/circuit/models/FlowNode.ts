@@ -20,6 +20,7 @@ import Or from './derivers/Or';
 import And from './derivers/And';
 import Switch from './derivers/Switch';
 import Battery from './derivers/Battery';
+import Led from './derivers/Led';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -45,6 +46,7 @@ export class ModelMeta extends TypeMeta<DocumentType.FlowNode> {
 }
 
 interface DeriverMapping {
+    [NodeType.LedNode]: Led;
     [NodeType.BatteryNode]: Battery;
     [NodeType.SwitchNode]: Switch;
     [NodeType.OrNode]: Or;
@@ -59,6 +61,8 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
             return new And(node as FlowNode<NodeType.AndNode>) as DeriverMapping[NType];
         case NodeType.BatteryNode:
             return new Battery(node as FlowNode<NodeType.BatteryNode>) as DeriverMapping[NType];
+        case NodeType.LedNode:
+            return new Led(node as FlowNode<NodeType.LedNode>) as DeriverMapping[NType];
         case NodeType.SwitchNode:
             return new Switch(node as unknown as FlowNode<NodeType.SwitchNode>) as DeriverMapping[NType];
         default:

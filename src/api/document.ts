@@ -112,6 +112,7 @@ export interface ExcaliData {
 }
 
 export enum NodeType {
+    LedNode = 'LedNode',
     BatteryNode = 'BatteryNode',
     SwitchNode = 'SwitchNode',
     OrNode = 'OrNode',
@@ -119,6 +120,7 @@ export enum NodeType {
 }
 
 export interface NodeDataMapping {
+    [NodeType.LedNode]: {};
     [NodeType.BatteryNode]: {};
     [NodeType.OrNode]: {};
     [NodeType.AndNode]: {};
