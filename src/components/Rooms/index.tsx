@@ -134,12 +134,13 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
     );
 });
 
-interface WithParentRootProps {
-    path: string;
+interface WithModelProps {
+    parentRootId: string;
+    documentRootId?: string;
 }
-const WithParentRoot = observer((props: WithParentRootProps): React.ReactNode => {
-    const routeParams = matchPath<PathParams>(props.path, PATHNAME_PATTERN);
-    const { parentRootId, documentRootId } = routeParams?.params || {};
+
+const WithParentRoot = observer((props: WithModelProps): React.ReactNode => {
+    const { parentRootId, documentRootId } = props;
     const [rootsMeta] = React.useState(new RootsMeta({ roomType: RoomType.Messages }));
     const dynDocRoots = useDocumentRoot(parentRootId, rootsMeta, false, {}, true);
     if (dynDocRoots.isDummy) {
@@ -169,12 +170,24 @@ const WithParentRoot = observer((props: WithParentRootProps): React.ReactNode =>
     );
 });
 
+interface WithParentRootProps {
+    path: string;
+}
+const WithRouteParams = observer((props: WithParentRootProps) => {
+    const routeParams = matchPath<PathParams>(props.path, PATHNAME_PATTERN);
+    const { parentRootId, documentRootId } = routeParams?.params || {};
+    if (!parentRootId) {
+        return <NoRoom />;
+    }
+    return <WithParentRoot parentRootId={parentRootId} documentRootId={documentRootId} />;
+});
+
 const Rooms = observer(() => {
     const location = useLocation();
     return (
         <Layout title={`Räume`} description="Nachrichtenräume">
             <BrowserOnly fallback={<Loader />}>
-                {() => <WithParentRoot path={location.pathname} />}
+                {() => <WithRouteParams path={location.pathname} />}
             </BrowserOnly>
         </Layout>
     );

@@ -16,7 +16,8 @@ import {
     OnNodesChange,
     OnConnect,
     Connection,
-    reconnectEdge
+    reconnectEdge,
+    OnNodesDelete
 } from '@xyflow/react';
 import { Source } from '@tdev-models/iDocument';
 import FlowEdge from './FlowEdge';
@@ -100,7 +101,22 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
     }
 
     @action
+    onDelete(deleted: Parameters<OnNodesDelete>[0]) {
+        deleted.forEach((node) => {
+            const doc = this.documentStore.find(node.id) as FlowNode<NodeType>;
+            if (!doc) {
+                return;
+            }
+            doc.edges.forEach((edge) => {
+                this.documentStore.apiDelete(edge);
+            });
+            this.documentStore.apiDelete(doc);
+        });
+    }
+
+    @action
     addFlowNode<N extends NodeType>(type: N, data: NodeDataMapping[N]) {
+        console.log(this.flowNodes.find((n) => n.flowData.selected));
         this.documentStore.create({
             documentRootId: this.dynamicRoot.rootDocumentId,
             type: DocumentType.FlowNode,

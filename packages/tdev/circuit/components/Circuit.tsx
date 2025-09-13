@@ -13,7 +13,8 @@ import type {
     Node,
     OnReconnect,
     FinalConnectionState,
-    HandleType
+    HandleType,
+    OnNodesDelete
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -59,6 +60,13 @@ const Circuit = observer((props: Props): React.ReactNode => {
         },
         [dynamicRoot.room]
     );
+    const onNodesDelete = React.useCallback<OnNodesDelete>(
+        (deleted) => {
+            edgeReconnectSuccessful.current = true;
+            dynamicRoot.room.onDelete(deleted);
+        },
+        [dynamicRoot.room]
+    );
     const onReconnectStart = React.useCallback<OnReconnectStart>(() => {
         edgeReconnectSuccessful.current = false;
     }, []);
@@ -96,6 +104,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                         nodeTypes={nodeTypes}
                         nodes={dynamicRoot.room.nodes}
                         edges={dynamicRoot.room.edges}
+                        onNodesDelete={onNodesDelete}
                         onNodesChange={onChange}
                         onEdgesChange={onChangeEdge}
                         onConnect={onConnect}
@@ -107,13 +116,37 @@ const Circuit = observer((props: Props): React.ReactNode => {
                     >
                         <MiniMap />
                         <Controls />
-                        <Panel position="top-right">
+                        <Panel position="top-right" className={clsx(styles.panel)}>
                             <Button
                                 icon={mdiElectricSwitch}
                                 size={1}
                                 color="blue"
                                 onClick={() => {
                                     dynamicRoot.room.addFlowNode(NodeType.SwitchNode, { power: 0 });
+                                }}
+                            />
+                            <Button
+                                text="OR"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.OrNode, {});
+                                }}
+                            />
+                            <Button
+                                text="XOR"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.XorNode, {});
+                                }}
+                            />
+                            <Button
+                                text="AND"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.AndNode, {});
                                 }}
                             />
                             <Button
@@ -130,22 +163,6 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 color="blue"
                                 onClick={() => {
                                     dynamicRoot.room.addFlowNode(NodeType.BatteryNode, { pins: 5 });
-                                }}
-                            />
-                            <Button
-                                text="OR"
-                                size={1}
-                                color="blue"
-                                onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.OrNode, {});
-                                }}
-                            />
-                            <Button
-                                text="AND"
-                                size={1}
-                                color="blue"
-                                onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.AndNode, {});
                                 }}
                             />
                         </Panel>

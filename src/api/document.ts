@@ -116,6 +116,7 @@ export enum NodeType {
     BatteryNode = 'BatteryNode',
     SwitchNode = 'SwitchNode',
     OrNode = 'OrNode',
+    XorNode = 'XorNode',
     AndNode = 'AndNode'
 }
 
@@ -123,6 +124,7 @@ export interface NodeDataMapping {
     [NodeType.LedNode]: {};
     [NodeType.BatteryNode]: { pins: number };
     [NodeType.OrNode]: {};
+    [NodeType.XorNode]: {};
     [NodeType.AndNode]: {};
     [NodeType.SwitchNode]: {
         power: 0 | 1;

@@ -18,6 +18,10 @@
             justify-content: space-between;
             align-items: center;
         }
+        .panel {
+            display: flex;
+            gap: 0.2em;
+        }
     }
 }
 

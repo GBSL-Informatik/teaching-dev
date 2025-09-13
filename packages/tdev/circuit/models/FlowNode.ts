@@ -21,6 +21,7 @@ import And from './derivers/And';
 import Switch from './derivers/Switch';
 import Battery from './derivers/Battery';
 import Led from './derivers/Led';
+import Xor from './derivers/Xor';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -50,6 +51,7 @@ interface DeriverMapping {
     [NodeType.BatteryNode]: Battery;
     [NodeType.SwitchNode]: Switch;
     [NodeType.OrNode]: Or;
+    [NodeType.XorNode]: Xor;
     [NodeType.AndNode]: And;
 }
 
@@ -57,6 +59,8 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
     switch (node.flowData.type) {
         case NodeType.OrNode:
             return new Or(node as FlowNode<NodeType.OrNode>) as DeriverMapping[NType];
+        case NodeType.XorNode:
+            return new Xor(node as FlowNode<NodeType.XorNode>) as DeriverMapping[NType];
         case NodeType.AndNode:
             return new And(node as FlowNode<NodeType.AndNode>) as DeriverMapping[NType];
         case NodeType.BatteryNode:
