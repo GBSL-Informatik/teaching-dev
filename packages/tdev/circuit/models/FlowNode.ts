@@ -60,7 +60,7 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
         case NodeType.AndNode:
             return new And(node as FlowNode<NodeType.AndNode>) as DeriverMapping[NType];
         case NodeType.BatteryNode:
-            return new Battery(node as FlowNode<NodeType.BatteryNode>) as DeriverMapping[NType];
+            return new Battery(node as unknown as FlowNode<NodeType.BatteryNode>) as DeriverMapping[NType];
         case NodeType.LedNode:
             return new Led(node as FlowNode<NodeType.LedNode>) as DeriverMapping[NType];
         case NodeType.SwitchNode:

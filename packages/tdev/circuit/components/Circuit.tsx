@@ -129,7 +129,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.BatteryNode, {});
+                                    dynamicRoot.room.addFlowNode(NodeType.BatteryNode, { pins: 5 });
                                 }}
                             />
                             <Button

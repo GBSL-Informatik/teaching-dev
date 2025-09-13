@@ -121,7 +121,7 @@ export enum NodeType {
 
 export interface NodeDataMapping {
     [NodeType.LedNode]: {};
-    [NodeType.BatteryNode]: {};
+    [NodeType.BatteryNode]: { pins: number };
     [NodeType.OrNode]: {};
     [NodeType.AndNode]: {};
     [NodeType.SwitchNode]: {

@@ -20,20 +20,22 @@ const LedNode = observer((props: NodeProps<LedNode>) => {
         <div className={clsx(styles.buttonNode)}>
             <Icon
                 path={isPowered ? mdiLedOn : mdiLedOff}
-                size={1}
+                size={2}
                 color={isPowered ? 'var(--tdev-circuit-power-color)' : 'var(--ifm-color-secondary)'}
             />
             <Handle
                 type="target"
                 id="a"
-                position={Position.Left}
+                style={{ left: '20px', bottom: '7px' }}
+                position={Position.Bottom}
                 className={clsx(doc?.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
             />
-            {/* <Handle
+            <Handle
                 type="source"
-                position={Position.Right}
+                position={Position.Bottom}
                 className={clsx(isPowered && shared.on, shared.handle)}
-            /> */}
+                style={{ left: '28px', bottom: '12px' }}
+            />
         </div>
     );
 });
