@@ -172,8 +172,8 @@ export default class OfflineApi {
                 return resolveResponse(document as unknown as T);
             case 'documentRoots':
                 return resolveResponse({
-                    access: Access.RW_DocumentRoot,
-                    sharedAccess: Access.RW_DocumentRoot,
+                    access: (data as DocumentRoot).access ?? Access.RW_DocumentRoot,
+                    sharedAccess: (data as DocumentRoot).sharedAccess ?? Access.RW_DocumentRoot,
                     userPermissions: [],
                     groupPermissions: [],
                     documents: [], //documentsBy(id), // Fetching is only on GET/PUT, avoid circular dependency
@@ -215,6 +215,7 @@ export default class OfflineApi {
             case 'users':
                 if (parts.length === 1 && parts[0] === 'documentRoots') {
                     const ids = query.getAll('ids');
+                    console.log('ids', ids);
                     if (ids.length === 0) {
                         resolveResponse([] as unknown as T);
                     }
@@ -321,7 +322,7 @@ export default class OfflineApi {
     // Method to handle PUT requests
     async put<T = any>(url: string, data: Partial<T>, ...config: any): AxiosPromise<T | null> {
         const { model, id, parts } = urlParts(url);
-        log('put', url, data);
+        log('put', `${url} -> id: ${id}`, data);
 
         switch (model) {
             case 'documents':

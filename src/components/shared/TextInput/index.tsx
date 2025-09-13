@@ -10,6 +10,7 @@ interface Props {
     onChange: (text: string) => void;
     onEnter?: () => void;
     onEscape?: () => void;
+    onSave?: () => void;
     className?: string;
     labelClassName?: string;
     value?: string;
@@ -57,6 +58,9 @@ const TextInput = observer((props: Props) => {
                     }
                     if (e.key === 'Escape') {
                         props.onEscape?.();
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        props.onSave?.();
                     }
                 }}
                 autoFocus={!props.noAutoFocus}

@@ -15,12 +15,15 @@ import { Color } from '@tdev-components/shared/Colors';
 import CmsText from '@tdev-models/documents/CmsText';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
+import type { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
+import type NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import Excalidoc from '@tdev/excalidoc/model';
-import ProgressState from '@tdev-models/documents/ProgressState';
+import type Excalidoc from '@tdev/excalidoc/model';
+import type ProgressState from '@tdev-models/documents/ProgressState';
+import FlowNode from '@tdev/circuit/models/FlowNode';
+import { Edge, Node } from '@xyflow/react';
+import FlowEdge from '@tdev/circuit/models/FlowEdge';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -51,7 +54,9 @@ export enum DocumentType {
     TextMessage = 'text_message',
     DynamicDocumentRoot = 'dynamic_document_root',
     DynamicDocumentRoots = 'dynamic_document_roots',
-    NetpbmGraphic = 'netpbm_graphic'
+    NetpbmGraphic = 'netpbm_graphic',
+    FlowNode = 'flow_node',
+    FlowEdge = 'flow_edge'
 }
 
 /**
@@ -106,6 +111,28 @@ export interface ExcaliData {
     image: string;
 }
 
+export enum NodeType {
+    LedNode = 'LedNode',
+    BatteryNode = 'BatteryNode',
+    SwitchNode = 'SwitchNode',
+    OrNode = 'OrNode',
+    AndNode = 'AndNode'
+}
+
+export interface NodeDataMapping {
+    [NodeType.LedNode]: {};
+    [NodeType.BatteryNode]: {};
+    [NodeType.OrNode]: {};
+    [NodeType.AndNode]: {};
+    [NodeType.SwitchNode]: {
+        power: 0 | 1;
+    };
+}
+
+export type FlowNodeDataFull<T extends NodeType> = Node<NodeDataMapping[T], T>;
+export type FlowNodeData<T extends NodeType> = Omit<FlowNodeDataFull<T>, 'id'>;
+export type FlowEdgeData = Omit<Edge, 'id'>;
+
 export type StateType =
     | 'checked'
     | 'question'
@@ -140,15 +167,16 @@ export interface DynamicDocumentRootData {
 }
 
 export enum RoomType {
-    Messages = 'text_messages'
+    Messages = 'text_messages',
+    Circuit = 'circuit'
 }
 export interface DynamicDocumentRoot {
     id: string;
     name: string;
-    type: RoomType;
 }
 
 export interface DynamicDocumentRootsData {
+    roomType: RoomType;
     documentRoots: DynamicDocumentRoot[];
 }
 
@@ -174,6 +202,8 @@ export interface TypeDataMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
     [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
+    [DocumentType.FlowNode]: FlowNodeData<NodeType>;
+    [DocumentType.FlowEdge]: FlowEdgeData;
     // Add more mappings as needed
 }
 
@@ -195,6 +225,9 @@ export interface TypeModelMapping {
     [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
     [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
     [DocumentType.NetpbmGraphic]: NetpbmGraphic;
+    [DocumentType.FlowNode]: FlowNode<NodeType>;
+    [DocumentType.FlowEdge]: FlowEdge;
+
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
@@ -220,7 +253,9 @@ export type DocumentTypes =
     | DynamicDocumentRootModel
     | DynamicDocumentRoots
     | NetpbmGraphic
-    | ProgressState;
+    | ProgressState
+    | FlowNode<NodeType>
+    | FlowEdge;
 
 export interface Document<Type extends DocumentType> {
     id: string;

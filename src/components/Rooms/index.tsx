@@ -19,7 +19,10 @@ import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
 import TextMessages from './TextMessages';
+import Circuit from '@tdev/circuit/components/Circuit';
+import { default as DynamiDocumentRootMeta } from '@tdev-models/documents/DynamicDocumentRoot';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
+import type DocumentRoot from '@tdev-models/DocumentRoot';
 
 const NoRoom = () => {
     return (
@@ -30,11 +33,11 @@ const NoRoom = () => {
     );
 };
 
-const NoType = ({ dynamicRoot }: { dynamicRoot: DynamicDocumentRootMeta }) => {
+const NoType = ({ dynamicRoot }: { dynamicRoot: DynamicDocumentRootMeta<RoomType> }) => {
     return (
         <div className={clsx('alert alert--warning', styles.alert)} role="alert">
             <Icon path={mdiEmoticonSad} size={1} color="var(--ifm-color-warning)" />
-            Unbekannter Raum-Typ "{dynamicRoot.props?.type}"
+            Unbekannter Raum-Typ "{dynamicRoot.roomType}"
             <div style={{ flexGrow: 1, flexBasis: 0 }} />
             <RoomTypeSelector dynamicRoot={dynamicRoot} />
         </div>
@@ -64,17 +67,49 @@ const NoUser = () => {
 type PathParams = { parentRootId: string; documentRootId: string };
 const PATHNAME_PATTERN = '/rooms/:parentRootId/:documentRootId?' as const;
 
+interface RoomSwitcherProps {
+    roomType: RoomType;
+    dynamicRoot: DynamicDocumentRootMeta<RoomType>;
+    documentRoot: DocumentRoot<DocumentType.DynamicDocumentRoot>;
+    roomProps: DynamicDocumentRoot;
+}
+
+const RoomSwitcher = observer((props: RoomSwitcherProps) => {
+    const { roomType, documentRoot, dynamicRoot, roomProps } = props;
+    const socketStore = useStore('socketStore');
+    React.useEffect(() => {
+        socketStore.joinRoom(documentRoot.id);
+        return () => {
+            socketStore.leaveRoom(documentRoot.id);
+        };
+    }, [documentRoot, socketStore.socket?.id]);
+    switch (roomType) {
+        case RoomType.Messages:
+            return <TextMessages documentRoot={documentRoot} roomProps={roomProps} />;
+        case RoomType.Circuit:
+            return <Circuit dynamicRoot={dynamicRoot as DynamiDocumentRootMeta<RoomType.Circuit>} />;
+        default:
+            return <NoType dynamicRoot={dynamicRoot} />;
+    }
+});
+
 interface Props {
     roomProps: DynamicDocumentRoot;
     parentDocumentId: string;
+    roomType: RoomType;
 }
+
 const RoomComponent = observer((props: Props): React.ReactNode => {
     const documentStore = useStore('documentStore');
-    const drStore = useStore('documentRootStore');
-    const { roomProps } = props;
-    const [dynamicRoot] = React.useState(
-        new DynamicDocumentRootMeta({}, roomProps.id, props.parentDocumentId, documentStore)
-    );
+    const { roomProps, roomType } = props;
+    const dynamicRoot = React.useMemo(() => {
+        return new DynamicDocumentRootMeta(
+            { roomType: roomType },
+            roomProps.id,
+            props.parentDocumentId,
+            documentStore
+        );
+    }, [roomProps.id, roomType]);
     const documentRoot = useDocumentRoot(roomProps.id, dynamicRoot, false, {}, true);
 
     if (!documentRoot || documentRoot.type !== DocumentType.DynamicDocumentRoot) {
@@ -89,12 +124,14 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
             </>
         );
     }
-    switch (roomProps.type) {
-        case RoomType.Messages:
-            return <TextMessages documentRoot={documentRoot} roomProps={roomProps} />;
-        default:
-            return <NoType dynamicRoot={dynamicRoot} />;
-    }
+    return (
+        <RoomSwitcher
+            documentRoot={documentRoot}
+            dynamicRoot={dynamicRoot}
+            roomProps={roomProps}
+            roomType={roomType}
+        />
+    );
 });
 
 interface WithParentRootProps {
@@ -103,7 +140,7 @@ interface WithParentRootProps {
 const WithParentRoot = observer((props: WithParentRootProps): React.ReactNode => {
     const routeParams = matchPath<PathParams>(props.path, PATHNAME_PATTERN);
     const { parentRootId, documentRootId } = routeParams?.params || {};
-    const [rootsMeta] = React.useState(new RootsMeta({}));
+    const [rootsMeta] = React.useState(new RootsMeta({ roomType: RoomType.Messages }));
     const dynDocRoots = useDocumentRoot(parentRootId, rootsMeta, false, {}, true);
     if (dynDocRoots.isDummy) {
         return <NotCreated />;
@@ -115,15 +152,21 @@ const WithParentRoot = observer((props: WithParentRootProps): React.ReactNode =>
         return <Loader />;
     }
     if (!documentRootId || !dynDocRoots.firstMainDocument?.id) {
-        return <DynamicDocumentRoots id={parentRootId} />;
+        return <DynamicDocumentRoots id={parentRootId} roomType={dynDocRoots.meta.defaultData.roomType} />;
     }
     const dynamicRoot = dynDocRoots.firstMainDocument.dynamicDocumentRoots.find(
         (ddr) => ddr.id === documentRootId
     );
     if (!dynamicRoot) {
-        return <DynamicDocumentRoots id={parentRootId} />;
+        return <DynamicDocumentRoots id={parentRootId} roomType={dynDocRoots.meta.defaultData.roomType} />;
     }
-    return <RoomComponent roomProps={dynamicRoot} parentDocumentId={dynDocRoots.firstMainDocument.id} />;
+    return (
+        <RoomComponent
+            roomProps={dynamicRoot}
+            roomType={dynDocRoots.firstMainDocument.roomType}
+            parentDocumentId={dynDocRoots.firstMainDocument.id}
+        />
+    );
 });
 
 const Rooms = observer(() => {
