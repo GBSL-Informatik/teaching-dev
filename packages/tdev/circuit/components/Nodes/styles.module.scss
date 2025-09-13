@@ -1,0 +1,8 @@
+.handle {
+    border-color: var(--ifm-color-danger);
+    background: var(--ifm-color-danger);
+    &.on {
+        border-color: var(--ifm-color-success);
+        background: var(--ifm-color-success);
+    }
+}

@@ -112,12 +112,14 @@ export interface ExcaliData {
 }
 
 export enum NodeType {
+    BatteryNode = 'BatteryNode',
     SwitchNode = 'SwitchNode',
     OrNode = 'OrNode',
     AndNode = 'AndNode'
 }
 
 export interface NodeDataMapping {
+    [NodeType.BatteryNode]: {};
     [NodeType.OrNode]: {};
     [NodeType.AndNode]: {};
     [NodeType.SwitchNode]: {

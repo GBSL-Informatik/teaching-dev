@@ -10,7 +10,7 @@ class Or extends iDeriver<NodeType.OrNode> {
 
     @computed
     get output(): boolean {
-        return this.flowNode.targetEdges.some((e) => e.source?.deriver?.power > 0);
+        return this.flowNode.edgesIn.some((e) => e.source?.deriver?.power > 0);
     }
 
     get power(): number {

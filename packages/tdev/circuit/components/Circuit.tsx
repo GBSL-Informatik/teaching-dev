@@ -17,7 +17,7 @@ import type {
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import { mdiElectricSwitch, mdiWizardHat } from '@mdi/js';
+import { mdiBatteryChargingHigh, mdiCarBattery, mdiElectricSwitch, mdiWizardHat } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
 import { NodeType, RoomType } from '@tdev-api/document';
@@ -114,6 +114,14 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 color="blue"
                                 onClick={() => {
                                     dynamicRoot.room.addFlowNode(NodeType.SwitchNode, { power: 0 });
+                                }}
+                            />
+                            <Button
+                                icon={mdiCarBattery}
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.BatteryNode, {});
                                 }}
                             />
                             <Button

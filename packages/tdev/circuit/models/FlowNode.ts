@@ -19,6 +19,7 @@ import iDeriver from './derivers/iDeriver';
 import Or from './derivers/Or';
 import And from './derivers/And';
 import Switch from './derivers/Switch';
+import Battery from './derivers/Battery';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -44,6 +45,7 @@ export class ModelMeta extends TypeMeta<DocumentType.FlowNode> {
 }
 
 interface DeriverMapping {
+    [NodeType.BatteryNode]: Battery;
     [NodeType.SwitchNode]: Switch;
     [NodeType.OrNode]: Or;
     [NodeType.AndNode]: And;
@@ -55,6 +57,8 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
             return new Or(node as FlowNode<NodeType.OrNode>) as DeriverMapping[NType];
         case NodeType.AndNode:
             return new And(node as FlowNode<NodeType.AndNode>) as DeriverMapping[NType];
+        case NodeType.BatteryNode:
+            return new Battery(node as FlowNode<NodeType.BatteryNode>) as DeriverMapping[NType];
         case NodeType.SwitchNode:
             return new Switch(node as unknown as FlowNode<NodeType.SwitchNode>) as DeriverMapping[NType];
         default:
@@ -133,13 +137,22 @@ class FlowNode<NType extends NodeType> extends iDocument<DocumentType.FlowNode> 
     }
 
     @computed
-    get sourceEdges(): FlowEdge[] {
+    get edgesOut(): FlowEdge[] {
         return this.edges.filter((edge) => edge.sourceId === this.id);
     }
 
     @computed
-    get targetEdges(): FlowEdge[] {
+    get edgesIn(): FlowEdge[] {
         return this.edges.filter((edge) => edge.targetId === this.id);
+    }
+
+    @computed
+    get inputEdgeA(): FlowEdge | undefined {
+        return this.edgesIn.find((edge) => edge.flowData.targetHandle === 'a');
+    }
+    @computed
+    get inputEdgeB(): FlowEdge | undefined {
+        return this.edgesIn.find((edge) => edge.flowData.targetHandle === 'b');
     }
 }
 

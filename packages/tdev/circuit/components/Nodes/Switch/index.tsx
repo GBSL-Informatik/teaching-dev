@@ -1,11 +1,19 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, NodeToolbar, Position, useReactFlow } from '@xyflow/react';
 import Button from '@tdev-components/shared/Button';
-import { mdiButtonPointer, mdiElectricSwitch, mdiElectricSwitchClosed } from '@mdi/js';
+import {
+    mdiButtonPointer,
+    mdiElectricSwitch,
+    mdiElectricSwitchClosed,
+    mdiToggleSwitch,
+    mdiToggleSwitchOff,
+    mdiToggleSwitchOffOutline
+} from '@mdi/js';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { Source } from '@tdev-models/iDocument';
 import { NodeType } from '@tdev-api/document';
@@ -23,14 +31,26 @@ const SwitchNode = observer((props: NodeProps<SwitchNode>) => {
         },
         [props.id, doc, doc?.deriver.power]
     );
+    const isPowered = doc?.inputEdgeA ? doc?.deriver.power : 0;
     return (
         <div className={clsx(styles.buttonNode)}>
             <Button
-                active={doc?.deriver.power === 1}
-                icon={doc?.deriver.power === 1 ? mdiElectricSwitchClosed : mdiElectricSwitch}
+                color={isPowered ? 'green' : undefined}
+                icon={doc?.deriver.power ? mdiElectricSwitchClosed : mdiElectricSwitch}
+                size={0.6}
                 onClick={onClick}
             />
-            <Handle type="source" position={Position.Right} />
+            <Handle
+                type="target"
+                id="a"
+                position={Position.Left}
+                className={clsx(doc?.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
+            />
+            <Handle
+                type="source"
+                position={Position.Right}
+                className={clsx(isPowered && shared.on, shared.handle)}
+            />
         </div>
     );
 });

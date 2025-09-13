@@ -3,6 +3,7 @@
     flex-direction: row;
     justify-content: center;
     margin: 0 1em;
+    --tdev-circuit-power-color: #f8bf03;
 
     .rooms {
         display: flex;
@@ -26,4 +27,9 @@
     gap: 1em;
     align-items: center;
     margin: 1em;
+}
+[data-theme='dark'] {
+    .wrapper {
+        --tdev-circuit-power-color: #ddff00;
+    }
 }

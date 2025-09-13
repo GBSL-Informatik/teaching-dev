@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
@@ -15,14 +16,31 @@ const OrNode = observer((props: NodeProps<OrNode>) => {
     if (!doc) {
         return null;
     }
-    // const state = React.useMemo(() => {
-    // }, []);
     return (
-        <div className={clsx(styles.buttonNode)}>
-            OR {doc.deriver.output ? 1 : 0}
-            <Handle type="target" position={Position.Left} style={{ top: 0 }} id="a" />
-            <Handle type="target" position={Position.Left} style={{ top: 25 }} id="b" />
-            <Handle type="source" position={Position.Right} style={{ left: 20 }} />
+        <div className={clsx(styles.or)}>
+            OR
+            <div className={clsx(styles.inputs)}></div>
+            <Handle
+                type="target"
+                className={clsx(doc.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
+                position={Position.Left}
+                style={{ top: '2.25px', left: '-12px' }}
+                id="a"
+            />
+            <Handle
+                type="target"
+                className={clsx(doc.inputEdgeB?.isPowerOn && shared.on, shared.handle)}
+                position={Position.Left}
+                style={{ top: '16.5px', left: '-12px' }}
+                id="b"
+            />
+            <div className={clsx(styles.output)}></div>
+            <Handle
+                type="source"
+                className={clsx(doc.deriver.output && shared.on, shared.handle)}
+                position={Position.Right}
+                style={{ left: '28px' }}
+            />
         </div>
     );
 });

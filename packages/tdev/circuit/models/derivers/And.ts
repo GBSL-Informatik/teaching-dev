@@ -11,8 +11,8 @@ class And extends iDeriver<NodeType.AndNode> {
     @computed
     get output(): boolean {
         return (
-            this.flowNode.targetEdges.length >= 2 &&
-            this.flowNode.targetEdges.every((e) => e.source?.deriver?.power > 0)
+            this.flowNode.edgesIn.length >= 2 &&
+            this.flowNode.edgesIn.every((e) => e.source?.deriver?.power > 0)
         );
     }
 

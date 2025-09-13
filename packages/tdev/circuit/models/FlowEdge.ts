@@ -5,7 +5,8 @@ import {
     Document as DocumentProps,
     TypeDataMapping,
     Access,
-    FlowEdgeData
+    FlowEdgeData,
+    NodeType
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
@@ -64,12 +65,34 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
     }
 
     @computed
+    get isPowerOn() {
+        return this.source?.deriver?.power > 0;
+    }
+
+    @computed
+    get isGround() {
+        return this.isPowerOn && this.target?.flowData.type === NodeType.BatteryNode;
+    }
+
+    @computed
     get edgeData() {
-        return { ...this.flowData, id: this.id };
+        return {
+            ...this.flowData,
+            animated: this.isPowerOn,
+            style: {
+                stroke: this.isPowerOn
+                    ? this.isGround
+                        ? 'var(--ifm-color-danger)'
+                        : 'var(--tdev-circuit-power-color)'
+                    : undefined,
+                strokeWidth: this.isPowerOn ? 2 : undefined
+            },
+            id: this.id
+        };
     }
 
     get sourceId() {
-        return this.data.source;
+        return this.flowData.source;
     }
 
     get source(): FlowNode<any> | undefined {
@@ -77,16 +100,19 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
     }
 
     get targetId() {
-        return this.data.target;
+        return this.flowData.target;
     }
 
     get target(): FlowNode<any> | undefined {
         return this.store.find(this.targetId) as FlowNode<any>;
     }
 
-    @computed
     get isSelected() {
         return this.flowData.selected;
+    }
+
+    get isAnimated() {
+        return this.edgeData.animated;
     }
 
     @computed
