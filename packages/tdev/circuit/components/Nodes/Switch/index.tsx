@@ -19,15 +19,15 @@ const SwitchNode = observer((props: NodeProps<SwitchNode>) => {
         (e) => {
             e.preventDefault();
             e.stopPropagation();
-            doc?.setData({ ...doc.flowData, data: { power: 1 - doc.deriver.power } }, Source.LOCAL);
+            doc?.deriver.toggle();
         },
-        [props.id, doc, doc]
+        [props.id, doc, doc?.deriver.power]
     );
     return (
         <div className={clsx(styles.buttonNode)}>
             <Button
-                active={doc?.flowData.data.power === 1}
-                icon={doc?.flowData.data.power === 1 ? mdiElectricSwitchClosed : mdiElectricSwitch}
+                active={doc?.deriver.power === 1}
+                icon={doc?.deriver.power === 1 ? mdiElectricSwitchClosed : mdiElectricSwitch}
                 onClick={onClick}
             />
             <Handle type="source" position={Position.Right} />

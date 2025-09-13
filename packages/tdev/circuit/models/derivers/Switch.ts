@@ -11,7 +11,11 @@ class Switch extends iDeriver<NodeType.SwitchNode> {
 
     @action
     toggle() {
-        this.flowNode.setData({ ...this.flowNode.flowData, data: { power: 1 - this.power } }, Source.LOCAL);
+        this.flowNode.setData(
+            { ...this.flowNode.flowData, data: { power: 1 - this.power } },
+            Source.LOCAL,
+            new Date()
+        );
     }
 }
 
