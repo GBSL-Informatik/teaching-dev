@@ -112,6 +112,8 @@ const Circuit = observer((props: Props): React.ReactNode => {
                         onReconnectStart={onReconnectStart}
                         onReconnectEnd={onReconnectEnd}
                         fitView
+                        snapToGrid={true}
+                        snapGrid={[10, 10]}
                         proOptions={{ hideAttribution: true }}
                     >
                         <MiniMap />
@@ -147,6 +149,14 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 color="blue"
                                 onClick={() => {
                                     dynamicRoot.room.addFlowNode(NodeType.AndNode, {});
+                                }}
+                            />
+                            <Button
+                                text="123"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.DecimalDisplayNode, { pins: 4 });
                                 }}
                             />
                             <Button

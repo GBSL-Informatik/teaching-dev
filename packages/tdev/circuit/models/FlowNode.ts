@@ -23,6 +23,7 @@ import Battery from './derivers/Battery';
 import Led from './derivers/Led';
 import Xor from './derivers/Xor';
 import Not from './derivers/Not';
+import DecimalDisplay from './derivers/DecimalDisplay';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -55,6 +56,7 @@ interface DeriverMapping {
     [NodeType.NotNode]: Not;
     [NodeType.XorNode]: Xor;
     [NodeType.AndNode]: And;
+    [NodeType.DecimalDisplayNode]: DecimalDisplay;
 }
 
 function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMapping[NType] {
@@ -73,6 +75,10 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
             return new Switch(node as unknown as FlowNode<NodeType.SwitchNode>) as DeriverMapping[NType];
         case NodeType.NotNode:
             return new Not(node as FlowNode<NodeType.NotNode>) as DeriverMapping[NType];
+        case NodeType.DecimalDisplayNode:
+            return new DecimalDisplay(
+                node as unknown as FlowNode<NodeType.DecimalDisplayNode>
+            ) as DeriverMapping[NType];
         default:
             return new iDeriver(node) as unknown as DeriverMapping[NType];
     }
