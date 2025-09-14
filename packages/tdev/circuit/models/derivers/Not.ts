@@ -11,8 +11,7 @@ class Not extends iDeriver<NodeType.NotNode> {
 
     @computed
     get power(): number {
-        const data = (this.flowNode.inputEdgeA?.source as FlowNode)?.deriver;
-        return (data?.power ?? 0) > 0 ? 0 : 1;
+        return (this.flowNode.inputEdgeA?.source?.deriver?.power ?? 0) > 0 ? 0 : 1;
     }
 }
 
