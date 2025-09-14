@@ -21,6 +21,7 @@ import {
 } from '@xyflow/react';
 import { Source } from '@tdev-models/iDocument';
 import FlowEdge from './FlowEdge';
+const MULTI_INPUTS_ALLOWED = new Set<NodeType | undefined>([NodeType.BatteryNode]);
 
 class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
     constructor(dynamicRoot: DynamicDocumentRoot<RoomType.Circuit>, documentStore: DocumentStore) {
@@ -88,16 +89,26 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
 
     @action
     onConnect(connection: Parameters<OnConnect>[0]) {
-        this.documentStore.create({
-            documentRootId: this.dynamicRoot.rootDocumentId,
-            type: DocumentType.FlowEdge,
-            data: {
-                source: connection.source,
-                target: connection.target,
-                sourceHandle: connection.sourceHandle,
-                targetHandle: connection.targetHandle
-            }
+        const currentEdge = this.flowEdges.find((e) => {
+            return e.targetId === connection.target && e.flowData.targetHandle === connection.targetHandle;
         });
+        this.documentStore
+            .create({
+                documentRootId: this.dynamicRoot.rootDocumentId,
+                type: DocumentType.FlowEdge,
+                data: {
+                    source: connection.source,
+                    target: connection.target,
+                    sourceHandle: connection.sourceHandle,
+                    targetHandle: connection.targetHandle
+                }
+            })
+            .then((newEdge) => {
+                const nType = currentEdge?.target?.flowData?.type as NodeType | undefined;
+                if (newEdge && currentEdge && !MULTI_INPUTS_ALLOWED.has(nType)) {
+                    this.documentStore.apiDelete(currentEdge);
+                }
+            });
     }
 
     @action

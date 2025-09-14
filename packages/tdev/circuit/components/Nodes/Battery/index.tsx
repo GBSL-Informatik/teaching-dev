@@ -4,7 +4,15 @@ import styles from './styles.module.scss';
 import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import { Handle, Node, NodeProps, NodeToolbar, Position, useReactFlow } from '@xyflow/react';
+import {
+    Handle,
+    Node,
+    NodeProps,
+    NodeToolbar,
+    Position,
+    useReactFlow,
+    useUpdateNodeInternals
+} from '@xyflow/react';
 import { mdiBatteryHigh, mdiCarBattery, mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
@@ -16,9 +24,9 @@ export type BatteryNode = Node<{}, 'BatteryNode'>;
 
 const BatteryNode = observer((props: NodeProps<BatteryNode>) => {
     const documentStore = useStore('documentStore');
+    const updateNodeInternals = useUpdateNodeInternals();
     const doc = documentStore.find(props.id) as FlowNode<NodeType.BatteryNode> | undefined;
     const pins = doc?.deriver.pins ?? 3;
-    console.log('render battery', pins);
     return (
         <div className={clsx(styles.battery)}>
             <Icon path={mdiCarBattery} color="var(--ifm-color-primary)" size={1} />
@@ -43,13 +51,19 @@ const BatteryNode = observer((props: NodeProps<BatteryNode>) => {
                     icon={mdiPlusCircle}
                     size={0.3}
                     className={clsx(styles.pin, styles.pinAdd)}
-                    onClick={() => doc?.deriver.addPin()}
+                    onClick={() => {
+                        doc?.deriver.addPin();
+                        updateNodeInternals(props.id);
+                    }}
                 />
                 <Button
                     icon={mdiMinusCircle}
                     size={0.3}
                     className={clsx(styles.pin, styles.pinRemove)}
-                    onClick={() => doc?.deriver.removePin()}
+                    onClick={() => {
+                        doc?.deriver.removePin();
+                        updateNodeInternals(props.id);
+                    }}
                 />
             </div>
         </div>

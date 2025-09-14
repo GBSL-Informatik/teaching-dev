@@ -79,6 +79,11 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
         return {
             ...this.flowData,
             animated: this.isPowerOn,
+            type:
+                this.source?.flowData.type === NodeType.BatteryNode ||
+                this.target?.flowData.type === NodeType.BatteryNode
+                    ? 'smoothstep'
+                    : 'default',
             style: {
                 stroke: this.isPowerOn
                     ? this.isGround
