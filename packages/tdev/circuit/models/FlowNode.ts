@@ -22,6 +22,7 @@ import Switch from './derivers/Switch';
 import Battery from './derivers/Battery';
 import Led from './derivers/Led';
 import Xor from './derivers/Xor';
+import Not from './derivers/Not';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -51,6 +52,7 @@ interface DeriverMapping {
     [NodeType.BatteryNode]: Battery;
     [NodeType.SwitchNode]: Switch;
     [NodeType.OrNode]: Or;
+    [NodeType.NotNode]: Not;
     [NodeType.XorNode]: Xor;
     [NodeType.AndNode]: And;
 }
@@ -69,12 +71,14 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
             return new Led(node as FlowNode<NodeType.LedNode>) as DeriverMapping[NType];
         case NodeType.SwitchNode:
             return new Switch(node as unknown as FlowNode<NodeType.SwitchNode>) as DeriverMapping[NType];
+        case NodeType.NotNode:
+            return new Not(node as FlowNode<NodeType.NotNode>) as DeriverMapping[NType];
         default:
             return new iDeriver(node) as unknown as DeriverMapping[NType];
     }
 }
 
-class FlowNode<NType extends NodeType> extends iDocument<DocumentType.FlowNode> {
+class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType.FlowNode> {
     @observable.ref accessor flowData: FlowNodeData<NType>;
     @observable.ref accessor deriver: DeriverMapping[NType];
 

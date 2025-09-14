@@ -150,6 +150,14 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 }}
                             />
                             <Button
+                                text="NOT"
+                                size={1}
+                                color="blue"
+                                onClick={() => {
+                                    dynamicRoot.room.addFlowNode(NodeType.NotNode, {});
+                                }}
+                            />
+                            <Button
                                 icon={mdiLedOn}
                                 size={1}
                                 color="blue"
