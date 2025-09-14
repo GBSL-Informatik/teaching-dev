@@ -1,0 +1,20 @@
+.battery {
+    .ground {
+        position: absolute;
+        border-top: 1px solid var(--ifm-color-danger);
+        width: var(--data-width);
+        bottom: 5px;
+        margin-top: -1px;
+        margin-left: 6px;
+        .pin {
+            position: absolute;
+            bottom: -22px;
+            &.pinAdd {
+                right: -30px;
+            }
+            &.pinRemove {
+                right: 15px;
+            }
+        }
+    }
+}

@@ -44,7 +44,9 @@ const MissingPermissionsBadge = ({ available, total }: { available: number; tota
 
 const PermissionsPanel = observer((props: Props) => {
     const { documentRootId, documentRootIds, position } = props;
-    const docRootIds = documentRootIds || [documentRootId];
+    const docRootIds = React.useMemo(() => {
+        return documentRootIds || [documentRootId];
+    }, [documentRootId, documentRootIds]);
     const [isOpen, setIsOpen] = React.useState(false);
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
