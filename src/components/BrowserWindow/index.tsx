@@ -13,7 +13,7 @@ import styles from './styles.module.css';
 
 interface Props {
     children: ReactNode;
-    minHeight?: number;
+    minHeight?: number | string;
     maxHeight?: number | string;
     url?: string;
     style?: CSSProperties;
