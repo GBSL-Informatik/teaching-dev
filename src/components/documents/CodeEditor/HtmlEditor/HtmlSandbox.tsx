@@ -18,8 +18,13 @@ interface IframeResizeMessage {
     id: string;
     height: number;
 }
+interface IframeHrefMessage {
+    type: 'href';
+    id: string;
+    href: string;
+}
 
-type IframeMessage = IframeErrorMessage | IframeResizeMessage;
+type IframeMessage = IframeErrorMessage | IframeResizeMessage | IframeHrefMessage;
 
 const errorHandlingScript = (id: string) => `
 <script>
@@ -48,10 +53,26 @@ function sendHeight() {
             // Ignore errors
         }
     }, 200);
-}
+};
+function onClick(event) {
+    const target = event.target;
+    const isLink = target && (target.tagName === 'A' || target.tagName === 'a') && target.href;
+    if (!isLink) {
+        return;
+    }
+    const href = target.getAttribute('href');
+    const isExternal = href.startsWith('http://') || href.startsWith('https://');
+    if (isExternal) {
+        return; // Let the browser handle external links
+    }
+    event.preventDefault();
+    parent.postMessage({id: '${id}', type: 'href', href: href}, "*");
+    
+};
 window.onerror = onError;
 window.onload = sendHeight;
 window.onresize = sendHeight;
+window.onclick = onClick;
 </script>
 <style>
 body {
@@ -88,6 +109,7 @@ export interface Props {
     src: string;
     id: string;
     htmlTransformer?: (raw: string) => string;
+    onNavigate?: (href: string) => void;
     allowSameOrigin?: boolean;
 }
 
@@ -126,13 +148,16 @@ const HtmlSandbox = observer((props: Props) => {
                 case 'resize':
                     setHeight(e.data.height);
                     break;
+                case 'href':
+                    props.onNavigate?.(e.data.href);
+                    break;
             }
         };
         window.addEventListener('message', onMessage);
         return () => {
             window.removeEventListener('message', onMessage);
         };
-    }, [id]);
+    }, [id, props.onNavigate]);
 
     return (
         <div className={clsx(styles.sandbox)}>

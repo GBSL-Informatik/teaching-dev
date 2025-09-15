@@ -23,6 +23,7 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
     className?: string;
     children?: React.ReactNode;
     htmlTransformer?: (raw: string) => string;
+    onNavigate?: (href: string) => void;
     allowSameOrigin?: boolean;
 }
 
@@ -78,6 +79,7 @@ const HtmlEditor = observer((props: Props) => {
                         id={doc.id}
                         htmlTransformer={props.htmlTransformer}
                         allowSameOrigin={props.allowSameOrigin}
+                        onNavigate={props.onNavigate}
                     />
                 </ErrorBoundary>
             </BrowserWindow>
