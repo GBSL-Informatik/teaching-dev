@@ -50,6 +50,11 @@ export const codeAsAttributePluginConfig = [
                 attributeName: 'code'
             },
             {
+                name: 'HtmlIDE',
+                attributeName: 'files',
+                processMultiple: true
+            },
+            {
                 name: 'NetpbmEditor',
                 attributeName: 'default'
             },

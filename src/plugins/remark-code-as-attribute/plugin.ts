@@ -12,12 +12,27 @@ interface ComponentConfig {
     name: string;
     attributeName: string;
     codeAttributesName?: string;
-    allowMultiple?: boolean;
+    processMultiple?: boolean;
 }
 
 export interface PluginOptions {
     components: ComponentConfig[];
 }
+
+export interface MultiCode extends CodeAttributes {
+    code: string;
+}
+
+const extractCodeAttributes = (node: Code): CodeAttributes => {
+    const attrs: CodeAttributes = {};
+    if (node.meta) {
+        attrs.meta = node.meta;
+    }
+    if (node.lang) {
+        attrs.lang = node.lang;
+    }
+    return attrs;
+};
 
 /**
  * This plugin transforms inline code and code blocks in MDX files to use
@@ -33,33 +48,50 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(
             return;
         }
         const { visit, SKIP, CONTINUE } = await import('unist-util-visit');
+        const currentAttributes: MultiCode[] = [];
         const transform = (
             node: InlineCode | Code,
             parent: MdxJsxFlowElement | MdxJsxTextElement,
             index: number
-        ) => {
+        ): undefined | boolean | typeof SKIP | [typeof SKIP, number] => {
             const component = components.find((c) => c.name === parent.name)!;
-            // escape {
+
             const code = node.value;
-            parent.attributes.splice(0, 0, {
-                type: 'mdxJsxAttribute',
-                name: component.attributeName,
-                value: code
-            });
-            if (node.type === 'code' && component.codeAttributesName) {
-                const attrs: CodeAttributes = {};
-                if (node.meta) {
-                    attrs.meta = node.meta;
+
+            if (component.processMultiple && node.type === 'code') {
+                const attrIdx = parent.attributes.findIndex(
+                    (attr) => attr.type === 'mdxJsxAttribute' && attr.name === component.attributeName
+                );
+                const multiCode: MultiCode = {
+                    code: code,
+                    ...extractCodeAttributes(node)
+                };
+                currentAttributes.push(multiCode);
+                if (attrIdx >= 0) {
+                    parent.attributes.splice(
+                        attrIdx,
+                        1,
+                        toJsxAttribute(component.attributeName, currentAttributes)
+                    );
+                } else {
+                    parent.attributes.splice(0, 0, toJsxAttribute(component.attributeName, [multiCode]));
                 }
-                if (node.lang) {
-                    attrs.lang = node.lang;
-                }
-                if (Object.keys(attrs).length > 0) {
-                    parent.attributes.splice(0, 0, toJsxAttribute(component.codeAttributesName, attrs));
+            } else {
+                parent.attributes.splice(0, 0, {
+                    type: 'mdxJsxAttribute',
+                    name: component.attributeName,
+                    value: code
+                });
+                if (node.type === 'code' && component.codeAttributesName) {
+                    const attrs = extractCodeAttributes(node);
+                    if (Object.keys(attrs).length > 0) {
+                        parent.attributes.splice(0, 0, toJsxAttribute(component.codeAttributesName, attrs));
+                    }
                 }
             }
-            if (component.allowMultiple) {
+            if (component.processMultiple) {
                 parent.children.splice(index, 1);
+                return [SKIP, index];
             } else {
                 parent.children.splice(0, parent.children.length);
                 return SKIP;
@@ -77,12 +109,17 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(
 
             return transform(node, parent, index);
         });
+        let currentParent: MdxJsxFlowElement | null = null;
         visit(root, 'code', (node, index, parent) => {
             if (index === undefined) {
                 return;
             }
             if (parent?.type !== 'mdxJsxFlowElement' || !names.has(parent.name as string)) {
                 return CONTINUE;
+            }
+            if (currentParent !== parent) {
+                currentAttributes.splice(0, currentAttributes.length);
+                currentParent = parent;
             }
             return transform(node, parent, index);
         });
