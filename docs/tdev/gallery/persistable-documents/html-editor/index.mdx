@@ -6,9 +6,23 @@ tags:
 ---
 
 import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
+import HtmlIDE from '@tdev-components/documents/CodeEditor/HtmlEditor/HtmlIDE';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # HTML Editor
+
+
+<HtmlIDE>
+```html path=/index.html id=a877cf87-8505-4309-8129-c3a60ed831ad
+<h1>Foo Bar</h1>
+<a href="./dir/sub.html">Zu SubPage</a>
+```
+```html path=/dir/sub.html id=c1d27537-aaba-493d-8da5-15c45d5b05c4
+<h1>SubPage</h1>
+<a href="../index.html">Zurück zur Startseite</a>
+```
+</HtmlIDE>
+
 
 Der SVG Editor ist eine Komponente, welche auf dem `CodeBlock` aufbaut - es muss also nichts zusätzlich installiert werden.
 
