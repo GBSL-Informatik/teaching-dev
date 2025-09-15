@@ -11,6 +11,7 @@ import { resolvePath } from '@tdev-models/helpers/resolvePath';
 interface MetaProps {
     id?: string;
     path: string;
+    hideWarning?: boolean | string | number;
 }
 
 interface DirFile {
@@ -31,6 +32,7 @@ interface WrapperProps {
     file: DirFile;
     onNavigate?: (href: string) => void;
     transformer?: ((s: string) => string)[];
+    hideWarning?: boolean;
 }
 
 const HtmlEditorWrapper = observer((props: WrapperProps) => {
@@ -55,6 +57,7 @@ const HtmlEditorWrapper = observer((props: WrapperProps) => {
                 title={file?.path}
                 onNavigate={props.onNavigate}
                 htmlTransformer={htmlTransformer}
+                hideWarning={props.hideWarning}
             />
         </div>
     );
@@ -138,9 +141,10 @@ const HtmlIDE = observer((props: Props) => {
             }
             let absPath = fName;
             if (fName.startsWith('.')) {
-                const basePathParts = (selectedFile?.meta.path.split('/') ?? []).slice(0, -1);
-                const basePath = basePathParts.join('/');
-                absPath = `/${resolvePath(basePath, fName)}`;
+                const basePathParts = (selectedFile?.meta.path.split('/') ?? [])
+                    .slice(0, -1)
+                    .filter((a) => a.length > 0);
+                absPath = `/${resolvePath(...basePathParts, fName.replace(/^\.\//, ''))}`;
             }
             const file = files.find((f) => f.meta.path === absPath);
             setSelectedFile(file || null);
@@ -161,6 +165,7 @@ const HtmlIDE = observer((props: Props) => {
                 file={selectedFile || files[0]}
                 onNavigate={onSelect}
                 transformer={transformer}
+                hideWarning={!!selectedFile?.meta?.hideWarning}
             />
         </div>
     );
