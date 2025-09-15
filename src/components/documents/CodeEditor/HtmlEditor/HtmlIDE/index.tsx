@@ -91,7 +91,6 @@ const HtmlIDE = observer((props: Props) => {
     const [selectedFile, setSelectedFile] = React.useState<DirFile | null>(null);
     const onSelect = React.useCallback(
         (fName?: string) => {
-            console.log('select', fName);
             if (!fName) {
                 setSelectedFile(null);
                 return;
@@ -101,7 +100,6 @@ const HtmlIDE = observer((props: Props) => {
                 const basePathParts = (selectedFile?.meta.path.split('/') ?? []).slice(0, -1);
                 const basePath = basePathParts.join('/');
                 absPath = `/${resolvePath(basePath, fName)}`;
-                console.log('resolve', fName, '->', absPath);
             }
             const file = files.find((f) => f.meta.path === absPath);
             setSelectedFile(file || null);

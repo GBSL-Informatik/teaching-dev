@@ -44,8 +44,9 @@ const DirComponent = observer((props: Props & { level: number }) => {
         },
         [dir.name, props.onSelect]
     );
-
-    const isActive = activePath[props.level] === dir.name;
+    const isActive =
+        activePath[props.level] === dir.name ||
+        (activePath.length === 2 && props.level === 0 && dir.children.includes(activePath[1]));
 
     return (
         <li className={clsx(styles.dir, styles.item)}>
@@ -100,7 +101,6 @@ const Dir = observer((props: Props & { path?: string; className?: string }) => {
     const [path, setPath] = React.useState<string[]>(props.path ? props.path.split('/') : []);
     React.useEffect(() => {
         if (props.path) {
-            console.log('set path', props.path);
             setPath(props.path.split('/'));
         }
     }, [props.path]);
