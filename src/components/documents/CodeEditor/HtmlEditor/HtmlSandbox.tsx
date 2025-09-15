@@ -117,24 +117,28 @@ const DEFAULT_HEIGHT = 50;
 
 const HtmlSandbox = observer((props: Props) => {
     const { id } = props;
-    const htmlTransformer = props.htmlTransformer || ((raw: string) => raw);
     const [errorMsg, setErrorMsg] = React.useState<IframeErrorMessage | null>(null);
     const [height, setHeight] = React.useState<number>(DEFAULT_HEIGHT);
-    const [htmlSrc, setHtmlSrc] = React.useState<string>(injectScript(id, htmlTransformer(props.src)));
+    const [htmlSrc, setHtmlSrc] = React.useState<string>(
+        injectScript(id, props.htmlTransformer ? props.htmlTransformer(props.src) : props.src)
+    );
 
-    const throttledUpdate = React.useRef(
+    const throttledUpdate = React.useCallback(
         _.throttle(
             (newSrc: string, id: string) => {
                 setErrorMsg(null);
-                setHtmlSrc(injectScript(id, htmlTransformer(newSrc)));
+                const transformer = props.htmlTransformer || ((s: string) => s);
+                setHtmlSrc(injectScript(id, transformer(newSrc)));
             },
-            1000,
+            500,
             { trailing: true, leading: true }
-        )
+        ),
+        [props.htmlTransformer]
     );
+
     React.useEffect(() => {
-        throttledUpdate.current(props.src, id);
-    }, [props.src, id]);
+        throttledUpdate(props.src, id);
+    }, [props.src, id, throttledUpdate]);
 
     React.useEffect(() => {
         const onMessage = (e: MessageEvent<IframeMessage>) => {

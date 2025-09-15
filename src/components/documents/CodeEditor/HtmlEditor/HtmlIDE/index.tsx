@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import Dir, { DirType } from '@tdev-components/FileSystem/Dir';
 import HtmlEditor from '..';
 import { MultiCode } from '@tdev-plugins/remark-code-as-attribute/plugin';
@@ -25,10 +24,27 @@ interface DirFile {
 interface Props {
     files: MultiCode[];
     dir?: DirType;
+    assets?: Record<string, string>;
 }
 
-const HtmlEditorWrapper = observer((props: { file: DirFile; onNavigate?: (href: string) => void }) => {
+interface WrapperProps {
+    file: DirFile;
+    onNavigate?: (href: string) => void;
+    transformer?: ((s: string) => string)[];
+}
+
+const HtmlEditorWrapper = observer((props: WrapperProps) => {
     const { file } = props;
+    const htmlTransformer = React.useCallback(
+        (raw: string) => {
+            if (!props.transformer) {
+                return raw;
+            }
+            return props.transformer.reduce((acc, t) => t(acc), raw);
+        },
+        [props.transformer]
+    );
+
     return (
         <div className={clsx(styles.editor)}>
             <HtmlEditor
@@ -38,6 +54,7 @@ const HtmlEditorWrapper = observer((props: { file: DirFile; onNavigate?: (href: 
                 code={file?.code}
                 title={file?.path}
                 onNavigate={props.onNavigate}
+                htmlTransformer={htmlTransformer}
             />
         </div>
     );
@@ -64,8 +81,8 @@ const HtmlIDE = observer((props: Props) => {
             name: '/',
             children: []
         };
-        files.forEach((f) => {
-            const parts = f.meta.path.split('/').filter((p) => p.length > 0);
+        [...files.map((f) => f.path), ...Object.keys(props.assets || {})].forEach((f) => {
+            const parts = f.split('/').filter((p) => p.length > 0);
             let currentDir = fs;
             parts.forEach((part, idx) => {
                 const isLast = idx === parts.length - 1;
@@ -86,11 +103,35 @@ const HtmlIDE = observer((props: Props) => {
             });
         });
         return fs;
-    }, [files, props.dir]);
+    }, [files, props.assets, props.dir]);
 
     const [selectedFile, setSelectedFile] = React.useState<DirFile | null>(null);
+
+    const transformer = React.useMemo(() => {
+        const fileParts = (selectedFile?.path.split('/') || []).slice(0, -1).filter((p) => p.length > 0);
+        const relTransformers: ((raw: string) => string)[] = [];
+        Object.entries(props.assets || {}).forEach(([key, val]) => {
+            const parts = key.split('/').filter((p) => p.length > 0);
+            const fParts = [...fileParts];
+            while (fParts[0] === parts[0]) {
+                fParts.shift();
+                parts.shift();
+            }
+            if (fParts.length === 0) {
+                parts.splice(0, 0, '.');
+            } else {
+                parts.splice(0, 0, ...new Array(fParts.length).fill('..'));
+            }
+            relTransformers.push((raw: string) => raw.replaceAll(`"${key}"`, `"${val}"`));
+            relTransformers.push((raw: string) => raw.replaceAll(`"${parts.join('/')}"`, `"${val}"`));
+        });
+        return relTransformers;
+    }, [props.assets, selectedFile]);
     const onSelect = React.useCallback(
         (fName?: string) => {
+            if (fName && !fName.endsWith('.html')) {
+                return;
+            }
             if (!fName) {
                 setSelectedFile(null);
                 return;
@@ -116,7 +157,11 @@ const HtmlIDE = observer((props: Props) => {
                 onSelect={onSelect}
                 path={selectedFile?.path}
             />
-            <HtmlEditorWrapper file={selectedFile || files[0]} onNavigate={onSelect} />
+            <HtmlEditorWrapper
+                file={selectedFile || files[0]}
+                onNavigate={onSelect}
+                transformer={transformer}
+            />
         </div>
     );
 });
