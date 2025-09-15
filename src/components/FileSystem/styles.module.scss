@@ -1,0 +1,93 @@
+.file,
+.dir {
+    &.item {
+        list-style: none;
+        .active {
+            font-weight: 500;
+        }
+    }
+    .name {
+        white-space: nowrap;
+    }
+}
+.dir {
+    --tdev-file-left-padding: 1.5em;
+    --ifm-list-left-padding: var(--tdev-file-left-padding);
+    --cms-tree-dir-indicator-line-width: 1px;
+    position: relative;
+    &::before {
+        content: '';
+        border-left: 1.5px solid var(--ifm-color-gray-600);
+        height: calc(100% - 32px - 6px);
+        position: absolute;
+        top: 26px;
+        left: 4px;
+    }
+    .dirName {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .dir {
+            cursor: pointer;
+            text-wrap: nowrap;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            gap: 0.25em;
+            user-select: none;
+            &:not(.root)::after {
+                content: '';
+                position: absolute;
+                width: calc(var(--tdev-file-left-padding) - 0.5em);
+                left: calc(-1 * var(--tdev-file-left-padding) + 0.25em);
+                top: calc(50% + 0.5px);
+                height: 1px;
+                border-top: 1.5px solid var(--ifm-color-gray-600);
+            }
+        }
+        .onHover {
+            display: none;
+        }
+        &:hover {
+            box-shadow: var(--ifm-global-shadow-md);
+            .onHover {
+                display: flex;
+            }
+        }
+    }
+
+    .file {
+        cursor: pointer;
+        display: flex;
+        align-items: flex-start;
+        gap: 0 0.5em;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        position: relative;
+        .fileLink {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.25em;
+        }
+        .fName {
+            text-wrap: break-word;
+        }
+        &:hover {
+            box-shadow: var(--ifm-global-shadow-md);
+        }
+        &::after {
+            content: '';
+            position: absolute;
+            width: calc(var(--tdev-file-left-padding) - 0.5em);
+            left: calc(-1 * var(--tdev-file-left-padding) + 0.25em);
+            top: calc(50% + 0.5px);
+            height: 1px;
+            border-top: 1.5px solid var(--ifm-color-gray-600);
+        }
+    }
+}
+.rootContainer {
+    overflow: auto;
+    scrollbar-width: thin;
+}
