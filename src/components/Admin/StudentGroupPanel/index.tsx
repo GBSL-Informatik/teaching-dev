@@ -64,15 +64,50 @@ const StudentGroupPanel = observer(() => {
                 </div>
             </div>
             <div className={clsx(styles.studentGroups)}>
-                {_.orderBy(
-                    groupStore.managedStudentGroups
+                {(() => {
+                    const matches = groupStore.managedStudentGroups
                         .filter((g) => !g.parentId)
-                        .filter((user) => searchRegex.test(user.searchTerm)),
-                    ['_pristine.name', 'createdAt'],
-                    ['asc', 'desc']
-                ).map((group) => (
-                    <StudentGroup key={group.id} studentGroup={group} className={clsx(styles.studentGroup)} />
-                ))}
+                        .map((group) => {
+                            let matchPriority = 0;
+
+                            if (searchRegex) {
+                                const nameMatch = searchRegex.test(group.name);
+                                const studentMatch = group.students?.some(
+                                    (s) => searchRegex.test(s.name) || searchRegex.test(s.email)
+                                );
+                                const descriptionMatch = searchRegex.test(group.description ?? '');
+
+                                if (nameMatch) {
+                                    matchPriority = 1;
+                                } else if (studentMatch) {
+                                    matchPriority = 2;
+                                } else if (descriptionMatch) {
+                                    matchPriority = 3;
+                                } else {
+                                    // We have a search filter and this doesn't match it.
+                                    return null;
+                                }
+                            }
+
+                            return {
+                                group: group,
+                                matchPriority
+                            };
+                        })
+                        .filter((group) => !!group); // Non-matched groups are null - filter them out.
+
+                    return _.orderBy(
+                        matches,
+                        ['matchPriority', '_pristine.name', 'createdAt'],
+                        ['asc', 'asc', 'desc']
+                    ).map((match) => (
+                        <StudentGroup
+                            key={match.group.id}
+                            studentGroup={match.group}
+                            className={clsx(styles.studentGroup)}
+                        />
+                    ));
+                })()}
             </div>
         </div>
     );
