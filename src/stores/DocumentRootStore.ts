@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, computed, observable, runInAction } from 'mobx';
 import { RootStore } from '@tdev-stores/rootStore';
 import { computedFn } from 'mobx-utils';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
@@ -40,11 +40,17 @@ type BatchedMeta = {
 export class DocumentRootStore extends iStore {
     readonly root: RootStore;
     documentRoots = observable.array<DocumentRoot<DocumentType>>([]);
+    createAttempts = new Map<string, number>();
     queued = new Map<string, BatchedMeta>();
 
     constructor(root: RootStore) {
         super();
         this.root = root;
+    }
+
+    @computed
+    get hasApiAccess() {
+        return this.root.sessionStore.isLoggedIn;
     }
 
     @action
@@ -156,18 +162,19 @@ export class DocumentRootStore extends iStore {
          */
         const keys = [...current.keys()].sort();
         this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
-            const models = await apiFindManyFor(userId, keys, isUserSwitched, signal.signal);
+            const ignoreMissingRoots = isUserSwitched && keys.every((id) => this.find(id)?.isLoaded);
+            const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal);
             // create all loaded models
-            models.data.forEach(
-                action((data) => {
+            runInAction(() => {
+                models.data.forEach((data) => {
                     const config = current.get(data.id);
                     if (!config) {
                         return;
                     }
                     this.addApiResultToStore(data, config);
                     current.delete(data.id);
-                })
-            );
+                });
+            });
             if (!isUserSwitched) {
                 // create all missing root documents
                 const created = await Promise.all(
@@ -176,7 +183,20 @@ export class DocumentRootStore extends iStore {
                         .map((id) => {
                             const config = current.get(id);
                             if (config && config.meta) {
-                                return this.create(id, config.meta, config.access).catch(() => undefined);
+                                return this.create(id, config.meta, config.access).catch(() => {
+                                    // queue it up for loading later - the model was probably generated in the mean time?
+                                    if (this.createAttempts.has(id)) {
+                                        this.createAttempts.set(id, this.createAttempts.get(id)! + 1);
+                                        if (this.createAttempts.get(id)! >= 5) {
+                                            // prevent infinite loading cycle
+                                            return undefined;
+                                        }
+                                    } else {
+                                        this.createAttempts.set(id, 1);
+                                    }
+                                    this.loadInNextBatch(id, config.meta, config.load, config.access);
+                                    return Promise.resolve({ id: id });
+                                });
                             }
                             return Promise.resolve(undefined);
                         })
@@ -189,11 +209,13 @@ export class DocumentRootStore extends iStore {
                     });
             }
             // mark all remaining roots as loaded
-            [...current.keys()].forEach((id) => {
-                const dummyModel = this.find(id);
-                if (dummyModel && dummyModel.isDummy) {
-                    dummyModel.setLoaded();
-                }
+            runInAction(() => {
+                [...current.keys()].forEach((id) => {
+                    const dummyModel = this.find(id);
+                    if (dummyModel && dummyModel.isDummy) {
+                        dummyModel.setLoaded();
+                    }
+                });
             });
         });
     }

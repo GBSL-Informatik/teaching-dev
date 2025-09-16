@@ -6,9 +6,11 @@ tags:
 ---
 
 import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
+import HtmlIDE from '@tdev-components/documents/CodeEditor/HtmlEditor/HtmlIDE';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # HTML Editor
+
 
 Der SVG Editor ist eine Komponente, welche auf dem `CodeBlock` aufbaut - es muss also nichts zusätzlich installiert werden.
 
@@ -88,4 +90,82 @@ Für Übungen, in welchen "lokale" Medien referenziert werden sollen, kann der H
         <img src="./gummibär.jpg" width="200">
         ```
     </HtmlEditor>
+</BrowserWindow>
+
+## HTML IDE
+
+Der HTML IDE ist eine Komponente, welche auf dem `CodeBlock` und dem `HtmlEditor` aufbaut - es muss also nichts zusätzlich installiert werden. Sie ermöglicht das Editieren von mehreren Dateien in einem Dateibaum, wobei auch relative Verlinkungen möglich sind.
+
+````tsx
+<HtmlIDE>
+    ```html path=/index.html id=a877cf87-8505-4309-8129-c3a60ed831ad
+    <h1>Foo Bar</h1>
+    <a href="./dir/sub.html">Zu SubPage</a>
+    ```
+    ```html path=/dir/sub.html id=c1d27537-aaba-493d-8da5-15c45d5b05c4
+    <h1>SubPage</h1>
+    <a href="../index.html">Zurück zur Startseite</a>
+    ```
+</HtmlIDE>
+````
+
+<BrowserWindow>
+    <HtmlIDE>
+    ```html path=/index.html id=a877cf87-8505-4309-8129-c3a60ed831ad
+    <h1>Foo Bar</h1>
+    <a href="./dir/sub.html">Zu SubPage</a>
+    ```
+    ```html path=/dir/sub.html id=c1d27537-aaba-493d-8da5-15c45d5b05c4
+    <h1>SubPage</h1>
+    <a href="../index.html">Zurück zur Startseite</a>
+    ```
+    </HtmlIDE>
+</BrowserWindow>
+
+
+````tsx
+import HtmlIDE from '@tdev-components/documents/CodeEditor/HtmlEditor/HtmlIDE';
+<HtmlIDE
+    assets={{
+        '/gummibär.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg',
+        '/dir/example.png': 'https://cdn-icons-png.flaticon.com/512/9584/9584876.png'
+    }}
+>
+```html path=/index.html id=c80067ae-1cd2-4117-b44d-4605fc847d50
+<h1>Foo Bar</h1>
+<img src="./gummibär.jpg" width="100">
+<img src="./dir/example.png" width="100">
+<a href="./dir/sub.html">Zu SubPage</a>
+```
+```html path=/dir/sub.html id=edc961ef-f629-46a3-8f87-c49460e8b32b
+<h1>SubPage</h1>
+<img src="../gummibär.jpg" width="100">
+<img src="./example.png" width="100">
+<img src="/gummibär.jpg" width="50">
+<a href="../index.html">Zurück zur Startseite</a>
+```
+</HtmlIDE>
+````
+
+<BrowserWindow>
+    <HtmlIDE
+        assets={{
+            '/gummibär.jpg': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Gummy_bears.jpg/1200px-Gummy_bears.jpg',
+            '/dir/example.png': 'https://cdn-icons-png.flaticon.com/512/9584/9584876.png'
+        }}
+    >
+    ```html path=/index.html id=c80067ae-1cd2-4117-b44d-4605fc847d50
+    <h1>Foo Bar</h1>
+    <img src="./gummibär.jpg" width="100">
+    <img src="./dir/example.png" width="100">
+    <a href="./dir/sub.html">Zu SubPage</a>
+    ```
+    ```html path=/dir/sub.html id=edc961ef-f629-46a3-8f87-c49460e8b32b
+    <h1>SubPage</h1>
+    <img src="../gummibär.jpg" width="100">
+    <img src="./example.png" width="100">
+    <img src="/gummibär.jpg" width="50">
+    <a href="../index.html">Zurück zur Startseite</a>
+    ```
+    </HtmlIDE>
 </BrowserWindow>

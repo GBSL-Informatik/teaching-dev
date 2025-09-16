@@ -16,7 +16,8 @@ const DownloadCode = observer((props: { title: string }) => {
                 const file = new Blob([script.code], { type: 'text/plain;charset=utf-8' });
                 downloadLink.href = URL.createObjectURL(file);
                 const fExt = script.lang === 'python' ? '.py' : `.${script.lang}`;
-                const fTitle = props.title === script.lang ? script.id : props.title;
+                const fTitle =
+                    props.title === script.lang ? script.id : (props.title.split('/').pop() ?? script.id);
                 const fName = fTitle.endsWith(fExt) ? fTitle : `${fTitle}${fExt}`;
                 downloadLink.download = fName;
                 document.body.appendChild(downloadLink);

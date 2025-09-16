@@ -99,7 +99,7 @@ const InputWrapper = observer(
     }
 );
 
-const String = observer((props: Props) => {
+const String = observer((props: Props & { monospace?: boolean; disabled?: boolean }) => {
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstMainDocument(props.id, meta);
     const inputId = useId();
@@ -147,7 +147,8 @@ const String = observer((props: Props) => {
                 props.unit && styles.withUnit,
                 styles[doc.answer],
                 styles[props.type || 'text'],
-                'notranslate'
+                'notranslate',
+                props.monospace && styles.monospace
             )}
             inline={props.inline}
         >
@@ -182,7 +183,7 @@ const String = observer((props: Props) => {
                         className={clsx(styles.input, props.fullWidth && styles.fullWidth)}
                         value={doc.text}
                         placeholder={props.placeholder}
-                        disabled={props.readonly || !doc.canEdit}
+                        disabled={props.readonly || props.disabled || !doc.canEdit}
                         onKeyDown={handleKeyDown}
                     />
                     {stateIconsPosition === 'inside' && <StateIcons />}

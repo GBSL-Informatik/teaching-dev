@@ -28,11 +28,11 @@ const LoginProfileButton = observer(() => {
         return <LoginButton />;
     }
 
-    if (!userStore.current?.isAdmin && !userStore.current?.isTeacher) {
-        return <ProfileButton />;
+    if (userStore.current?.isAdmin || userStore.current?.isTeacher) {
+        return <AdminNavPopup />;
     }
 
-    return <AdminNavPopup />;
+    return <ProfileButton />;
 });
 
 export default LoginProfileButton;

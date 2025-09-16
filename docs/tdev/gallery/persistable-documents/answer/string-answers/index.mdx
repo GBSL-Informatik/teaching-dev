@@ -195,6 +195,10 @@ Ohne `id` wird der Zustand nicht gespeichert, was mit einem :mdi[flash-triangle-
 : Es kann eine `React.ReactNode` übergeben werden, die dann anstelle des Textes angezeigt wird.
 `unitWidth`
 : Wie `labelWidth`, kann die Breite der Einheit gesetzt werden.
+`disabled`
+: Deaktiviert das Eingabefeld - verhindert aber nicht, dass das Feld anderswo aktiv ist (was passieren kann, wenn `readonly` verwendet wird).
+`monospace`
+: Verwendet eine monospace Schriftart.
 
 ```mdx
 <String label="inside" stateIconsPosition="inside" />
@@ -202,6 +206,8 @@ Ohne `id` wird der Zustand nicht gespeichert, was mit einem :mdi[flash-triangle-
 <String label="outside" stateIconsPosition="outside" />
 <String label="none" stateIconsPosition="none" />
 <String label="fullWidth" fullWidth />
+<String label="disabled" disabled />
+<String label="monospace" monospace />
 ```
 
 <BrowserWindow>
@@ -210,4 +216,6 @@ Ohne `id` wird der Zustand nicht gespeichert, was mit einem :mdi[flash-triangle-
     <String label="outside" stateIconsPosition="outside" />
     <String label="none" stateIconsPosition="none" />
     <String label="fullWidth" fullWidth />
+    <String label="disabled" disabled />
+    <String label="monospace" monospace />
 </BrowserWindow>

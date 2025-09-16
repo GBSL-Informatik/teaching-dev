@@ -3,20 +3,13 @@ import clsx from 'clsx';
 
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import {
-    mdiAccountCircleOutline,
-    mdiAccountSwitch,
-    mdiCircle,
-    mdiHomeAccount,
-    mdiShieldAccount
-} from '@mdi/js';
+import { mdiAccountCircleOutline, mdiAccountSwitch, mdiHomeAccount, mdiShieldAccount } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import Popup from 'reactjs-popup';
 import _ from 'es-toolkit/compat';
 import { useLocation } from '@docusaurus/router';
-import Icon from '@mdi/react';
 import User from '@tdev-models/User';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 
@@ -27,6 +20,7 @@ interface SwitchToUserButtonProps {
 
 const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserButtonProps) => {
     const userStore = useStore('userStore');
+    const pageStore = useStore('pageStore');
 
     return (
         <div className={clsx(styles.switchToUserButton)}>
@@ -36,7 +30,14 @@ const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserBut
                 className={clsx(styles.userButton)}
                 iconSide="left"
                 active={userStore.viewedUserId === user.id}
-                color={isInCurrentClass ? 'primary' : 'secondary'}
+                color={
+                    userStore.current?.id !== user.id &&
+                    pageStore.current?.userIdsWithoutEditingState?.includes(user.id)
+                        ? 'grey'
+                        : isInCurrentClass
+                          ? 'primary'
+                          : 'secondary'
+                }
                 title={`Inhalte anzeigen für ${user.firstName} ${user.lastName}`}
                 onClick={() => userStore.switchUser(user.id)}
             >
