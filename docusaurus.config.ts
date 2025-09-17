@@ -90,7 +90,10 @@ const config: Config = applyTransformers({
     GIT_COMMIT_SHA: GIT_COMMIT_SHA,
     SENTRY_DSN: process.env.SENTRY_DSN,
     GH_OAUTH_CLIENT_ID: GH_OAUTH_CLIENT_ID,
-    PERSONAL_SPACE_DOC_ROOT_ID: siteConfig.personalSpaceDocRootId || '2686fc4e-10e7-4288-bf41-e6175e489b8e'
+    PERSONAL_SPACE_DOC_ROOT_ID: siteConfig.personalSpaceDocRootId || '2686fc4e-10e7-4288-bf41-e6175e489b8e',
+    showEditThisPage: siteConfig.showEditThisPage ?? 'teachers',
+    showEditThisPageOptions: siteConfig.showEditThisPageOptions ?? ['github', 'github-dev', 'cms'],
+    editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
   },
   future: {
     v4: true,

@@ -1,0 +1,10 @@
+.editThisPage {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    .edit {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+    }
+}
