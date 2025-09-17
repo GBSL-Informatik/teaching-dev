@@ -31,13 +31,14 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
     if (!editUrl || search.has('edit')) {
         return;
     }
+    const isLoggedIn = !!userStore.current;
     switch (showEditThisPage) {
         case 'always':
             break;
         case 'never':
             return null;
         case 'loggedIn':
-            if (!userStore.current) {
+            if (!isLoggedIn) {
                 return null;
             }
             break;
@@ -75,7 +76,7 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
                     .dev
                 </Link>
             )}
-            {DisplayBadgeFor.has('cms') && (
+            {DisplayBadgeFor.has('cms') && isLoggedIn && (
                 <Link
                     to={`${CMS_EDIT_URL}${editUrl}`}
                     className={clsx(ThemeClassNames.common.editThisPage, styles.edit)}
