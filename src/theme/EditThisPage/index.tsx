@@ -62,6 +62,7 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
                 <Link
                     to={`${GH_EDIT_URL}${editUrl}`}
                     className={clsx(ThemeClassNames.common.editThisPage, styles.edit)}
+                    title="Auf GitHub bearbeiten."
                 >
                     <Icon path={mdiGithub} size={0.7} />
                     Github
@@ -71,6 +72,7 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
                 <Link
                     to={`${GH_DEV_EDIT_URL}${editUrl}`}
                     className={clsx(ThemeClassNames.common.editThisPage, styles.edit)}
+                    title="Auf GitHub.dev mit Web-VSCode bearbeiten."
                 >
                     <Icon path={mdiMicrosoftVisualStudioCode} size={0.7} />
                     .dev
@@ -80,8 +82,9 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
                 <Link
                     to={`${CMS_EDIT_URL}${editUrl}`}
                     className={clsx(ThemeClassNames.common.editThisPage, styles.edit)}
+                    title="Im tdev-CMS bearbeiten (Vorschau)."
                 >
-                    <Icon path={mdiInfinity} size={0.7} />
+                    <Icon path={mdiInfinity} size={0.7} className={clsx(styles.cms)} />
                     cms
                 </Link>
             )}
