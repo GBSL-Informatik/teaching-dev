@@ -6,6 +6,9 @@
         display: flex;
         align-items: center;
         gap: 0.2rem;
+        &.noUser {
+            --ifm-link-color: var(--ifm-color-gray-600);
+        }
         .cms {
             transform: translateY(2px);
         }

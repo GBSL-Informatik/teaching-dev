@@ -78,11 +78,19 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
                     .dev
                 </Link>
             )}
-            {DisplayBadgeFor.has('cms') && isLoggedIn && (
+            {DisplayBadgeFor.has('cms') && (
                 <Link
                     to={`${CMS_EDIT_URL}${editUrl}`}
-                    className={clsx(ThemeClassNames.common.editThisPage, styles.edit)}
-                    title="Im tdev-CMS bearbeiten (Vorschau)."
+                    className={clsx(
+                        ThemeClassNames.common.editThisPage,
+                        styles.edit,
+                        !isLoggedIn && styles.noUser
+                    )}
+                    title={
+                        isLoggedIn
+                            ? 'Im tdev-CMS bearbeiten (Vorschau).'
+                            : 'Im tdev-CMS bearbeiten (Vorschau, Anmeldung erforderlich).'
+                    }
                 >
                     <Icon path={mdiInfinity} size={0.7} className={clsx(styles.cms)} />
                     cms
