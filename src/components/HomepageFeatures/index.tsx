@@ -3,12 +3,17 @@ import styles from './styles.module.scss';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import DefinitionList from '@tdev-components/DefinitionList';
-import { BACKEND_URL } from '@tdev/authConfig';
 import Icon from '@mdi/react';
 import { mdiCheckCircle, mdiCloseCircle, mdiConnection } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Card from '@tdev-components/shared/Card';
+import siteConfig from '@generated/docusaurus.config';
+const { BACKEND_URL, NO_AUTH, OFFLINE_API } = siteConfig.customFields as {
+    BACKEND_URL: string;
+    NO_AUTH?: boolean;
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
+};
 
 const HomepageFeatures = observer(() => {
     const socketStore = useStore('socketStore');
@@ -45,6 +50,10 @@ const HomepageFeatures = observer(() => {
                                 </dd>
                             </>
                         )}
+                        <dt>Offline API</dt>
+                        <dd>{OFFLINE_API || '-'}</dd>
+                        <dt>No Auth</dt>
+                        <dd>{NO_AUTH ? 'Ja' : 'Nein'}</dd>
                         <dt>Connection</dt>
                         <dd>
                             <Button

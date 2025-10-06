@@ -13,9 +13,6 @@ import {
     mdiLogout,
     mdiRefresh
 } from '@mdi/js';
-import { useMsal } from '@azure/msal-react';
-import { useIsAuthenticated } from '@azure/msal-react';
-import { InteractionStatus } from '@azure/msal-browser';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
@@ -33,6 +30,7 @@ import Badge from '@tdev-components/shared/Badge';
 import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import api from '@tdev-api/base';
+import { authClient } from '@tdev/auth-client';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
@@ -59,35 +57,23 @@ const LeftAlign = (text: String) => {
 const UserPage = observer(() => {
     const isBrowser = useIsBrowser();
     const sessionStore = useStore('sessionStore');
+    const authStore = useStore('authStore');
     const userStore = useStore('userStore');
     const socketStore = useStore('socketStore');
     const groupStore = useStore('studentGroupStore');
-    const isAuthenticated = useIsAuthenticated();
-    const { inProgress } = useMsal();
+    const { data: session } = authClient.useSession();
     const isLive = useIsLive();
     const { viewedUser, current } = userStore;
     if (OFFLINE_API && !isBrowser) {
         return <Loader />;
     }
-    if (
-        !NO_AUTH &&
-        ((sessionStore.currentUserId && !sessionStore.isLoggedIn) || inProgress !== InteractionStatus.None)
-    ) {
+    if (!NO_AUTH && sessionStore.currentUserId && !session?.user) {
         return <Loader />;
     }
-    if (!NO_AUTH && !(sessionStore.isLoggedIn || isAuthenticated)) {
+    if (!NO_AUTH && !session?.user) {
         return <Redirect to={'/login'} />;
     }
     const connectedClients = socketStore.connectedClients.get(viewedUser?.id || ' ');
-
-    const setTestUser = (username: string) => {
-        sessionStore.setAccount({ username: username } as any);
-        Storage.set('SessionStore', {
-            user: { email: username }
-        });
-        logout(new AbortController().signal);
-        window.location.reload();
-    };
 
     return (
         <Layout>
@@ -236,37 +222,10 @@ const UserPage = observer(() => {
                                     iconSide="left"
                                 />
                             </dd>
-                            {NO_AUTH && (
-                                <>
-                                    <dt>Test-User wechseln</dt>
-                                    <dd>
-                                        <div className={clsx(styles.changeTestUser)}>
-                                            <SelectInput
-                                                options={userStore.users.map((user) => user.email)}
-                                                onChange={(username) => setTestUser(username)}
-                                                value={(sessionStore.account as any)?.username}
-                                                disabled={userStore.users.length <= 1}
-                                                placeholder={
-                                                    TEST_USER || 'DEFAULT_TEST_USER nicht definiert in .env'
-                                                }
-                                            />
-                                            {(sessionStore.account as any)?.username !==
-                                                TEST_USER?.toLowerCase() && (
-                                                <Button
-                                                    icon={mdiBackupRestore}
-                                                    color="primary"
-                                                    title={`Zum Standard-Test-User wechseln`}
-                                                    onClick={() => setTestUser(TEST_USER!)}
-                                                />
-                                            )}
-                                        </div>
-                                    </dd>
-                                </>
-                            )}
                             <dt>Ausloggen</dt>
                             <dd>
                                 <Button
-                                    onClick={() => sessionStore.logout()}
+                                    onClick={() => authStore.signOut()}
                                     text="Logout"
                                     title="User Abmelden"
                                     color="red"

@@ -236,8 +236,6 @@ export default class OfflineApi {
                 return resolveResponse([] as unknown as T);
             case 'allowedActions':
                 return resolveResponse([] as unknown as T);
-            case 'checklogin':
-                return resolveResponse({ user: OfflineUser } as unknown as T, 200, 'ok');
             case 'documents':
                 if (id) {
                     const document = await this.dbAdapter.get<Document<any>>(DOCUMENTS_STORE, id);

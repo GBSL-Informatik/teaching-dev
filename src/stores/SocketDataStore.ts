@@ -1,7 +1,7 @@
 import { RootStore } from '@tdev-stores/rootStore';
 import { io, Socket } from 'socket.io-client';
 import { action, observable, reaction } from 'mobx';
-import { checkLogin as pingApi, default as api } from '@tdev-api/base';
+import { default as api } from '@tdev-api/base';
 import iStore from '@tdev-stores/iStore';
 import {
     Action,
@@ -16,7 +16,6 @@ import {
     RecordType,
     ServerToClientEvents
 } from '../api/IoEventTypes';
-import { BACKEND_URL } from '../authConfig';
 import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
 import { Document, DocumentType } from '../api/document';
@@ -25,7 +24,11 @@ import { CmsSettings } from '@tdev-api/cms';
 import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
 import StudentGroup from '@tdev-models/StudentGroup';
 import siteConfig from '@generated/docusaurus.config';
-const { OFFLINE_API } = siteConfig.customFields as { OFFLINE_API?: boolean | 'memory' | 'indexedDB' };
+import { authClient } from '@tdev/auth-client';
+const { OFFLINE_API, BACKEND_URL } = siteConfig.customFields as {
+    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
+    BACKEND_URL: string;
+};
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**
@@ -46,8 +49,6 @@ export class SocketDataStore extends iStore<'ping'> {
 
     @observable accessor isLive: boolean = false;
 
-    @observable accessor isConfigured = false;
-
     @observable.ref accessor actionRequest: Action['action'] | undefined = undefined;
 
     connectedClients = observable.map<string, number>();
@@ -56,15 +57,6 @@ export class SocketDataStore extends iStore<'ping'> {
         super();
         this.root = root;
 
-        api.interceptors.response.use(
-            (res) => res,
-            (error) => {
-                if (error.response?.status === 401) {
-                    this.disconnect();
-                }
-                return Promise.reject(error);
-            }
-        );
         reaction(
             () => this.isLive,
             action((isLive) => {
@@ -100,7 +92,7 @@ export class SocketDataStore extends iStore<'ping'> {
         this.isLive = isLive;
     }
 
-    connect() {
+    async connect() {
         if (OFFLINE_API) {
             if (!this.isLive) {
                 this.setLiveState(true);
@@ -110,12 +102,25 @@ export class SocketDataStore extends iStore<'ping'> {
         if (this.socket?.connected) {
             return;
         }
+
+        const { data, error } = await authClient.oneTimeToken.generate().catch((e) => {
+            return { data: { token: undefined }, error: e };
+        });
+        if (error || !data?.token) {
+            console.log('cannot get one-time-token', error);
+            setTimeout(() => this.connect(), 1000);
+            return;
+        }
         const ws_url = BACKEND_URL;
         const socket = io(ws_url, {
-            withCredentials: true,
+            autoConnect: false,
+            auth: {
+                token: data.token
+            },
             transports: ['websocket', 'webtransport'],
             reconnection: false
         });
+
         this._connect(socket);
     }
 
@@ -136,10 +141,10 @@ export class SocketDataStore extends iStore<'ping'> {
                     this._disconnect(this.socket);
                 }
                 /**
-                 * maybe there is a newer version to add headers?
-                 * @see https://socket.io/docs/v4/client-options/#extraheaders
+                 * add sid to the api headers, so that the api can broadcast messages to
+                 * the user except the initiating client.
                  */
-                api.defaults.headers.common['x-metadata-socketid'] = socket?.id;
+                api.defaults.headers.common['x-metadata-sid'] = socket?.id;
                 this.socket = socket;
                 this.setLiveState(true);
             })
@@ -153,13 +158,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.setLiveState(false);
                 if (reason !== 'io server disconnect' && reason !== 'io client disconnect') {
                     // an error happened, try to reconnect
-                    this.checkLogin().then(
-                        action((reconnect) => {
-                            if (reconnect) {
-                                this.reconnect();
-                            }
-                        })
-                    );
+                    this.reconnect();
                 }
             })
         );
@@ -167,13 +166,7 @@ export class SocketDataStore extends iStore<'ping'> {
             'connect_error',
             action((err) => {
                 console.log('connection error', err);
-                this.checkLogin().then(
-                    action((reconnect) => {
-                        if (reconnect) {
-                            this.reconnect();
-                        }
-                    })
-                );
+                // TODO: should we try to connect again in 1s?
             })
         );
         socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
@@ -320,45 +313,10 @@ export class SocketDataStore extends iStore<'ping'> {
         }
     }
 
-    checkLogin() {
-        if (this.root.sessionStore.isLoggedIn) {
-            return this.withAbortController('ping', (sig) => {
-                return pingApi(sig.signal)
-                    .then(({ status }) => {
-                        if (status === 200 && !this.isLive) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    })
-                    .catch((err) => {
-                        return false;
-                    });
-            });
-        }
-        return Promise.resolve(false);
-    }
-
     @action
     resetUserData() {
         this.disconnect();
         api.defaults.headers.common['x-metadata-socketid'] = undefined;
-    }
-
-    @action
-    configure() {
-        return this.checkLogin()
-            .then((reconnect) => {
-                if (reconnect) {
-                    this.reconnect();
-                }
-                return [];
-            })
-            .finally(
-                action(() => {
-                    this.isConfigured = true;
-                })
-            );
     }
 
     @action

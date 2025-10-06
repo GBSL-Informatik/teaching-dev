@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import AdminNavPopup from './AdminNavPopup';
 import ProfileButton from './ProfileButton';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { authClient } from '@tdev/auth-client';
 const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
 
 const LoginButton = () => {
@@ -17,14 +18,15 @@ const LoginButton = () => {
 
 const LoginProfileButton = observer(() => {
     const isBrowser = useIsBrowser();
-    const sessionStore = useStore('sessionStore');
+
+    const { data: session } = authClient.useSession();
     const userStore = useStore('userStore');
 
     if (!isBrowser) {
         return null;
     }
 
-    if (!sessionStore.isLoggedIn && !NO_AUTH) {
+    if (!session?.user && !NO_AUTH) {
         return <LoginButton />;
     }
 
