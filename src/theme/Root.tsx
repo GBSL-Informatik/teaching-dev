@@ -118,7 +118,7 @@ function Root({ children }: { children: React.ReactNode }) {
     }, [rootStore]);
 
     React.useEffect(() => {
-        let timeoutId: ReturnType<typeof setTimeout>;
+        // let timeoutId: ReturnType<typeof setTimeout>;
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 /**
@@ -131,16 +131,17 @@ function Root({ children }: { children: React.ReactNode }) {
                  * make sure to reconnect the socket when the user returns to the page
                  * The delay is added to avoid reconnecting too quickly
                  */
-                timeoutId = setTimeout(() => {
-                    rootStore.socketStore.reconnect();
-                }, 3000);
+                // timeoutId = setTimeout(() => {
+                //     rootStore.socketStore.reconnect();
+                // }, 3000);
             }
         };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
+
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            clearTimeout(timeoutId);
+            // clearTimeout(timeoutId);
         };
     }, [rootStore]);
 

@@ -45,7 +45,8 @@ export class RootStore {
 
     @action
     load(userId: string) {
-        this.sessionStore.setUserId(userId);
+        this.sessionStore.setCurrentUserId(userId);
+        this.sessionStore.setIsLoggedIn(!!userId);
         this.userStore.loadCurrent().then((user) => {
             if (user) {
                 this.socketStore.reconnect();
@@ -68,6 +69,7 @@ export class RootStore {
          * could be probably ignored since the page gets reloaded on logout?
          */
         console.log('cleanup data stores');
+        this.sessionStore.setIsLoggedIn(false);
         this.userStore.cleanup();
         this.socketStore.cleanup();
         this.studentGroupStore.cleanup();

@@ -60,7 +60,7 @@ const LoginPage = observer(() => {
 
 const Login = observer(() => {
     const { data: session } = authClient.useSession();
-    console.log(session);
+
     if (session?.user || NO_AUTH) {
         return <Redirect to={'/user'} />;
     }

@@ -153,7 +153,6 @@ export class SocketDataStore extends iStore<'ping'> {
         socket.on(
             'disconnect',
             action((reason) => {
-                console.log('disconnect', socket?.id);
                 this.socket = undefined;
                 this.setLiveState(false);
                 if (reason !== 'io server disconnect' && reason !== 'io client disconnect') {

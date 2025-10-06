@@ -8,6 +8,7 @@ export class SessionStore extends iStore<'checkLogin'> {
     readonly root: RootStore;
 
     @observable accessor initialized = false;
+    @observable accessor isLoggedIn = false;
 
     @observable accessor currentUserId: string | undefined;
     @observable accessor storageSyncInitialized = false;
@@ -21,8 +22,13 @@ export class SessionStore extends iStore<'checkLogin'> {
     }
 
     @action
-    setUserId(userId: string | undefined) {
+    setCurrentUserId(userId: string | undefined) {
         this.currentUserId = userId;
+    }
+
+    @action
+    setIsLoggedIn(loggedIn: boolean) {
+        this.isLoggedIn = loggedIn;
     }
 
     get apiMode(): 'indexedDB' | 'memory' | 'api' {
