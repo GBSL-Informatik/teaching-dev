@@ -238,6 +238,9 @@ const config: Config = applyTransformers({
   ],
   themeConfig: {
     image: siteConfig.socialCard ?? 'img/social-card.jpg',
+    announcementBar: {
+      content: 'Aktuell keine API-Anbindung, siehe PR #246'
+    },
     navbar: {
       title: TITLE,
       logo: {
