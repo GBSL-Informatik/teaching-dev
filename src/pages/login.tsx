@@ -10,7 +10,7 @@ import siteConfig from '@generated/docusaurus.config';
 import Translate from '@docusaurus/Translate';
 import { useStore } from '@tdev-hooks/useStore';
 import { authClient } from '@tdev/auth-client';
-const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
+const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
@@ -39,7 +39,7 @@ const LoginPage = observer(() => {
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'microsoft',
-                                callbackURL: 'http://localhost:3000/user' // The URL to redirect to after the sign in
+                                callbackURL: `${APP_URL}/user`
                             })
                         }
                         className="button button--warning"
