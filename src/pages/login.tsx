@@ -39,7 +39,7 @@ const LoginPage = observer(() => {
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'microsoft',
-                                callbackURL: `${APP_URL}/user`
+                                callbackURL: `/user`
                             })
                         }
                         className="button button--warning"
