@@ -13,6 +13,6 @@ export const { BACKEND_URL, CLIENT_ID, APP_URL, TENANT_ID, API_URI } =
 
 export const authClient = createAuthClient({
     /** The base URL of the server (optional if you're using the same domain) */
-    baseURL: BACKEND_URL,
+    baseURL: APP_URL,
     plugins: [oneTimeTokenClient()]
 });
