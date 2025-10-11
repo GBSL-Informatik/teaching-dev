@@ -8,7 +8,6 @@ import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
 import siteConfig from '@generated/docusaurus.config';
 import Translate from '@docusaurus/Translate';
-import { useStore } from '@tdev-hooks/useStore';
 import { authClient } from '@tdev/auth-client';
 const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 

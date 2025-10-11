@@ -58,6 +58,7 @@ export class AuthStore {
 
     @action
     signOut() {
+        this.root.socketStore.disconnect();
         return authClient.signOut();
     }
 }
