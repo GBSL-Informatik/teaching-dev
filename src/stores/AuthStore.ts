@@ -10,12 +10,14 @@ export class AuthStore {
     }
 
     @action
-    signUp(email: string, password: string, name: string) {
+    signUp(email: string, password: string, firstName: string, lastName: string) {
         return authClient.signUp.email(
             {
-                email, // user email address
-                password, // user password -> min 8 characters by default
-                name // user display name
+                email,
+                password,
+                firstName,
+                lastName,
+                name: `${firstName} ${lastName}`
             },
             {
                 onRequest: (ctx) => {

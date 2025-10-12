@@ -1,0 +1,8 @@
+.form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    > input {
+        flex-basis: 20em;
+    }
+}
