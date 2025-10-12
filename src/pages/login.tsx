@@ -9,6 +9,8 @@ import { Redirect } from '@docusaurus/router';
 import siteConfig from '@generated/docusaurus.config';
 import Translate from '@docusaurus/Translate';
 import { authClient } from '@tdev/auth-client';
+import Button from '@tdev-components/shared/Button';
+import { mdiGithub, mdiMicrosoft } from '@mdi/js';
 const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {
@@ -33,24 +35,30 @@ const LoginPage = observer(() => {
             <HomepageHeader />
             <main>
                 <div className={clsx(styles.loginPage)}>
-                    <Link
-                        to="/"
+                    <Button
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'microsoft',
                                 callbackURL: `${APP_URL}/user`
                             })
                         }
-                        className="button button--warning"
-                        style={{ color: 'black' }}
-                    >
-                        <Translate
-                            id="login.button.with.school.account.text"
-                            description="the text of the button login with school account"
-                        >
-                            Login mit Schul-Account
-                        </Translate>
-                    </Link>
+                        text="Schul-Account"
+                        icon={mdiMicrosoft}
+                        iconSide="left"
+                        color="blue"
+                    />
+                    <Button
+                        onClick={() =>
+                            authClient.signIn.social({
+                                provider: 'github',
+                                callbackURL: `${APP_URL}/user`
+                            })
+                        }
+                        text="Github"
+                        icon={mdiGithub}
+                        iconSide="left"
+                        color="black"
+                    />
                 </div>
             </main>
         </Layout>

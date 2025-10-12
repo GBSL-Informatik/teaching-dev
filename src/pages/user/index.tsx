@@ -225,7 +225,11 @@ const UserPage = observer(() => {
                             <dt>Ausloggen</dt>
                             <dd>
                                 <Button
-                                    onClick={() => authStore.signOut()}
+                                    onClick={() => {
+                                        authStore.signOut().then(() => {
+                                            window.location.reload();
+                                        });
+                                    }}
                                     text="Logout"
                                     title="User Abmelden"
                                     color="red"
