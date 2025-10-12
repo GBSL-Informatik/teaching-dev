@@ -2,9 +2,9 @@ import api from './base';
 import { AxiosPromise } from 'axios';
 
 export enum Role {
-    STUDENT = 'STUDENT',
-    TEACHER = 'TEACHER',
-    ADMIN = 'ADMIN'
+    STUDENT = 'student',
+    TEACHER = 'teacher',
+    ADMIN = 'admin'
 }
 
 export const RoleNames: { [key in Role]: string } = {
