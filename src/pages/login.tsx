@@ -10,7 +10,8 @@ import siteConfig from '@generated/docusaurus.config';
 import Translate from '@docusaurus/Translate';
 import { authClient } from '@tdev/auth-client';
 import Button from '@tdev-components/shared/Button';
-import { mdiGithub, mdiMicrosoft } from '@mdi/js';
+import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {
@@ -27,6 +28,7 @@ function HomepageHeader() {
 
 const LoginPage = observer(() => {
     const { data: session } = authClient.useSession();
+    const signInPage = useBaseUrl('/signIn');
     if (session?.user || NO_AUTH) {
         return <Redirect to={'/user'} />;
     }
@@ -59,6 +61,7 @@ const LoginPage = observer(() => {
                         iconSide="left"
                         color="black"
                     />
+                    <Button href={signInPage} color="grey" text="Email" icon={mdiEmail} iconSide="left" />
                 </div>
             </main>
         </Layout>

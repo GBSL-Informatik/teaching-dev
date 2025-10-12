@@ -8,6 +8,7 @@ import TabItem from '@theme/TabItem';
 import StudentGroupPanel from '@tdev-components/Admin/StudentGroupPanel';
 import UserTable from '@tdev-components/Admin/UserTable';
 import AllowedActions from '../AllowedActions';
+import CreateUser from '../CreateUser';
 
 const AdminPanel = observer(() => {
     const userStore = useStore('userStore');
@@ -32,6 +33,9 @@ const AdminPanel = observer(() => {
                 </TabItem>
                 <TabItem value="allowedActions" label="Erlaubte Aktionen">
                     <AllowedActions />
+                </TabItem>
+                <TabItem value="createUser" label="Benutzer erstellen">
+                    <CreateUser />
                 </TabItem>
             </Tabs>
         </div>

@@ -10,29 +10,16 @@ export class AuthStore {
     }
 
     @action
-    signUp(email: string, password: string, firstName: string, lastName: string) {
-        return authClient.signUp.email(
-            {
-                email,
-                password,
+    createUser(email: string, password: string, firstName: string, lastName: string) {
+        return authClient.admin.createUser({
+            email,
+            password,
+            name: `${firstName} ${lastName}`,
+            data: {
                 firstName,
-                lastName,
-                name: `${firstName} ${lastName}`
-            },
-            {
-                onRequest: (ctx) => {
-                    console.log('sign up request started', ctx);
-                },
-                onSuccess: (ctx) => {
-                    console.log('sign up successful', ctx);
-                    //redirect to the dashboard or sign in page
-                },
-                onError: (ctx) => {
-                    // display the error message
-                    console.log('sign up failed', ctx.error.message);
-                }
+                lastName
             }
-        );
+        });
     }
 
     @action

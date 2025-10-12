@@ -9,6 +9,9 @@ import { formatDateTime } from '@tdev-models/helpers/date';
 import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import Icon from '@mdi/react';
+import { mdiLink } from '@mdi/js';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     user: UserModel;

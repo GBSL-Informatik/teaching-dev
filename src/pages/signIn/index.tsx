@@ -8,6 +8,7 @@ import Button from '../../components/shared/Button';
 import { authClient } from '@site/src/auth-client';
 import { Redirect } from '@docusaurus/router';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import TextInput from '@tdev-components/shared/TextInput';
 
 export default function SignIn(): React.ReactNode {
     const [email, setEmail] = React.useState('');
@@ -26,21 +27,14 @@ export default function SignIn(): React.ReactNode {
             <main>
                 <h2>Einloggen</h2>
                 <div className={clsx(styles.form)}>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input
+                    <TextInput type="email" label="Email" value={email} onChange={(val) => setEmail(val)} />
+                    <TextInput
                         type="password"
-                        name="password"
-                        placeholder="Password"
+                        label="Passwort"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && email && password) {
+                        onChange={(val) => setPassword(val)}
+                        onEnter={() => {
+                            if (email && password) {
                                 authStore.signInWithEmail(email, password);
                             }
                         }}
@@ -52,7 +46,7 @@ export default function SignIn(): React.ReactNode {
                             authStore.signInWithEmail(email, password);
                         }}
                     >
-                        Sign In
+                        Einloggen
                     </Button>
                 </div>
             </main>

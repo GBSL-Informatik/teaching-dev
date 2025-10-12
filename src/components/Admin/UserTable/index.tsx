@@ -16,6 +16,7 @@ type SortColumn =
     | 'accessLevel'
     | 'firstName'
     | 'lastName'
+    | 'linkedAccounts'
     | 'createdAt'
     | 'updatedAt'
     | 'groups'
