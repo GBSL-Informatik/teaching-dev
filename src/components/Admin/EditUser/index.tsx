@@ -21,7 +21,14 @@ interface Props {
     close: () => void;
 }
 
-type SpinState = 'deleting' | 'linking' | 'unlinking' | 'change-pw' | 'block-user' | 'unblock-user';
+type SpinState =
+    | 'deleting'
+    | 'linking'
+    | 'unlinking'
+    | 'change-pw'
+    | 'block-user'
+    | 'unblock-user'
+    | 'update-user';
 
 const SPIN_TEXT = {
     deleting: 'Löschen...',
@@ -29,7 +36,8 @@ const SPIN_TEXT = {
     unlinking: 'Verknüpfung aufheben...',
     'change-pw': 'Passwort ändern...',
     'block-user': 'User blockieren...',
-    'unblock-user': 'Blockierung aufheben...'
+    'unblock-user': 'Blockierung aufheben...',
+    'update-user': 'Speichern...'
 };
 
 const pwValidator = (pw: string) => (pw.length > 7 ? null : 'Passwort muss min. 8 Zeichen haben');
@@ -82,19 +90,14 @@ const EditUser = observer((props: Props) => {
                                         ? `${firstName} ${lastName}`
                                         : name
                             };
+                            setSpinState('update-user');
                             authClient.admin
                                 .updateUser({
                                     userId: user.id,
                                     data: update
                                 })
                                 .then((res) => {
-                                    if (res.data) {
-                                        userStore.addToStore({
-                                            ...user.props,
-                                            ...res.data
-                                        } as unknown as UserProps);
-                                    }
-                                    props.close();
+                                    setSpinState(null);
                                 });
                         }}
                         text="Speichern"
@@ -140,21 +143,9 @@ const EditUser = observer((props: Props) => {
                             disabled={!!spinState || user.id === userStore.current?.id}
                             onConfirm={() => {
                                 setSpinState('unblock-user');
-                                authClient.admin
-                                    .unbanUser({ userId: user.id })
-                                    .then(
-                                        action((res) => {
-                                            if (res.data) {
-                                                userStore.addToStore({
-                                                    ...user.props,
-                                                    ...res.data.user
-                                                } as unknown as UserProps);
-                                            }
-                                        })
-                                    )
-                                    .finally(() => {
-                                        setSpinState(null);
-                                    });
+                                authClient.admin.unbanUser({ userId: user.id }).finally(() => {
+                                    setSpinState(null);
+                                });
                             }}
                             size={SIZE_XS}
                         />
@@ -167,21 +158,9 @@ const EditUser = observer((props: Props) => {
                             disabled={!!spinState || user.id === userStore.current?.id}
                             onConfirm={() => {
                                 setSpinState('block-user');
-                                authClient.admin
-                                    .banUser({ userId: user.id })
-                                    .then(
-                                        action((res) => {
-                                            if (res.data) {
-                                                userStore.addToStore({
-                                                    ...user.props,
-                                                    ...res.data.user
-                                                } as unknown as UserProps);
-                                            }
-                                        })
-                                    )
-                                    .finally(() => {
-                                        setSpinState(null);
-                                    });
+                                authClient.admin.banUser({ userId: user.id }).finally(() => {
+                                    setSpinState(null);
+                                });
                             }}
                             size={SIZE_XS}
                         />
@@ -241,10 +220,6 @@ const EditUser = observer((props: Props) => {
                                     .setUserPassword({ userId: user.id, newPassword: password })
                                     .then((res) => {
                                         if (res.data) {
-                                            userStore.addToStore({
-                                                ...user.props,
-                                                ...res.data
-                                            } as unknown as UserProps);
                                             setPwState('success');
                                         } else {
                                             setPwState('error');
