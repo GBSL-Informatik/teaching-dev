@@ -10,7 +10,7 @@ import { AuthProviderColor, AuthProviderIcons, RoleColors, RoleNames } from '@td
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Icon from '@mdi/react';
-import { mdiAccountEdit, mdiCloudQuestion } from '@mdi/js';
+import { mdiAccountCancel, mdiAccountEdit, mdiCloudQuestion } from '@mdi/js';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import Button from '@tdev-components/shared/Button';
 import Popup from 'reactjs-popup';
@@ -18,6 +18,7 @@ import EditUser from '../EditUser';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import Badge from '@tdev-components/shared/Badge';
 import NavReloadRequest from '../ActionRequest/NavReloadRequest';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface Props {
     user: UserModel;
@@ -39,6 +40,7 @@ const UserTableRow = observer((props: Props) => {
                     {user.connectedClients > 0 && (
                         <span className={clsx('badge badge--primary')}>{user.connectedClients}</span>
                     )}
+                    {user.banned && <Icon path={mdiAccountCancel} size={SIZE_XS} color={IfmColors.red} />}
                 </div>
             </td>
             <td>{user.email}</td>

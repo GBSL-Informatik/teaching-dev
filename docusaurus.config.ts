@@ -71,8 +71,6 @@ const config: Config = applyTransformers({
     /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
     TEST_USER: DEFAULT_TEST_USER,
     OFFLINE_API: OFFLINE_API,
-    /** User.ts#isStudent returns `true` for users matching this pattern. If unset, it returns `true` for all non-admin users. */
-    STUDENT_USERNAME_PATTERN: process.env.STUDENT_USERNAME_PATTERN,
     NO_AUTH: (process.env.NODE_ENV !== 'production' || OFFLINE_API) && !!DEFAULT_TEST_USER,
     /** The Domain Name where the api is running */
     APP_URL: process.env.NETLIFY
@@ -82,12 +80,6 @@ const config: Config = applyTransformers({
       : process.env.APP_URL || 'http://localhost:3000',
     /** The Domain Name of this app */
     BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
-    /** The application id generated in https://portal.azure.com */
-    CLIENT_ID: process.env.CLIENT_ID,
-    /** Tenant / Verzeichnis-ID (Mandant) */
-    TENANT_ID: process.env.TENANT_ID,
-    /** The application id uri generated in https://portal.azure.com */
-    API_URI: process.env.API_URI,
     GIT_COMMIT_SHA: GIT_COMMIT_SHA,
     SENTRY_DSN: process.env.SENTRY_DSN,
     GH_OAUTH_CLIENT_ID: GH_OAUTH_CLIENT_ID,

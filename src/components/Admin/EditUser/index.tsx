@@ -21,11 +21,15 @@ interface Props {
     close: () => void;
 }
 
+type SpinState = 'deleting' | 'linking' | 'unlinking' | 'change-pw' | 'block-user' | 'unblock-user';
+
 const SPIN_TEXT = {
     deleting: 'Löschen...',
     linking: 'Verknüpfen...',
     unlinking: 'Verknüpfung aufheben...',
-    'change-pw': 'Passwort ändern...'
+    'change-pw': 'Passwort ändern...',
+    'block-user': 'User blockieren...',
+    'unblock-user': 'Blockierung aufheben...'
 };
 
 const pwValidator = (pw: string) => (pw.length > 7 ? null : 'Passwort muss min. 8 Zeichen haben');
@@ -34,9 +38,7 @@ const EditUser = observer((props: Props) => {
     const { user } = props;
     const userStore = useStore('userStore');
     const adminStore = useStore('adminStore');
-    const [spinState, setSpinState] = React.useState<
-        null | 'deleting' | 'linking' | 'unlinking' | 'change-pw'
-    >(null);
+    const [spinState, setSpinState] = React.useState<null | SpinState>(null);
     const [password, setPassword] = React.useState('');
     const [pwState, setPwState] = React.useState<'error' | 'success' | null>(null);
 
@@ -65,7 +67,7 @@ const EditUser = observer((props: Props) => {
                             props.close();
                         }}
                         color="black"
-                        text="Abbrechen"
+                        text="Schliessen"
                         disabled={!!spinState}
                     />
                     <Button
@@ -132,38 +134,54 @@ const EditUser = observer((props: Props) => {
                     {user.banned ? (
                         <Confirm
                             text="Blockierung aufheben"
+                            confirmText="Wirklick aufheben?"
                             icon={mdiAccountCheck}
                             color="warning"
+                            disabled={!!spinState || user.id === userStore.current?.id}
                             onConfirm={() => {
-                                authClient.admin.unbanUser({ userId: user.id }).then(
-                                    action((res) => {
-                                        if (res.data) {
-                                            userStore.addToStore({
-                                                ...user.props,
-                                                ...res.data
-                                            } as unknown as UserProps);
-                                        }
-                                    })
-                                );
+                                setSpinState('unblock-user');
+                                authClient.admin
+                                    .unbanUser({ userId: user.id })
+                                    .then(
+                                        action((res) => {
+                                            if (res.data) {
+                                                userStore.addToStore({
+                                                    ...user.props,
+                                                    ...res.data.user
+                                                } as unknown as UserProps);
+                                            }
+                                        })
+                                    )
+                                    .finally(() => {
+                                        setSpinState(null);
+                                    });
                             }}
                             size={SIZE_XS}
                         />
                     ) : (
                         <Confirm
                             text="User blockieren"
+                            confirmText="Wirklick blockieren?"
                             color="red"
                             icon={mdiAccountCancel}
+                            disabled={!!spinState || user.id === userStore.current?.id}
                             onConfirm={() => {
-                                authClient.admin.banUser({ userId: user.id }).then(
-                                    action((res) => {
-                                        if (res.data) {
-                                            userStore.addToStore({
-                                                ...user.props,
-                                                ...res.data
-                                            } as unknown as UserProps);
-                                        }
-                                    })
-                                );
+                                setSpinState('block-user');
+                                authClient.admin
+                                    .banUser({ userId: user.id })
+                                    .then(
+                                        action((res) => {
+                                            if (res.data) {
+                                                userStore.addToStore({
+                                                    ...user.props,
+                                                    ...res.data.user
+                                                } as unknown as UserProps);
+                                            }
+                                        })
+                                    )
+                                    .finally(() => {
+                                        setSpinState(null);
+                                    });
                             }}
                             size={SIZE_XS}
                         />
@@ -300,7 +318,7 @@ const EditUser = observer((props: Props) => {
                 }}
                 color="red"
                 confirmText="Wirklich löschen?"
-                disabled={!userStore.current?.isAdmin}
+                disabled={!userStore.current?.isAdmin || user.id === userStore.current?.id}
             />
             {!!spinState && <Loader overlay label={SPIN_TEXT[spinState]} />}
         </Card>

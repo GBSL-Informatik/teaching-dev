@@ -2,7 +2,6 @@ import { action, computed, observable } from 'mobx';
 import { AuthProvider, Role, RoleAccessLevel, User as UserProps } from '@tdev-api/user';
 import { UserStore } from '@tdev-stores/UserStore';
 import siteConfig from '@generated/docusaurus.config';
-const { STUDENT_USERNAME_PATTERN } = siteConfig.customFields as { STUDENT_USERNAME_PATTERN?: string };
 
 export default class User {
     readonly store: UserStore;
