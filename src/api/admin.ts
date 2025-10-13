@@ -30,3 +30,7 @@ export function linkUserPassword(
 ): AxiosPromise<AllowedAction[]> {
     return api.post(`/admin/users/${userId}/linkUserPassword`, { pw: userPW }, { signal });
 }
+
+export function revokeUserPassword(userId: string, signal: AbortSignal): AxiosPromise<AllowedAction[]> {
+    return api.post(`/admin/users/${userId}/revokeUserPassword`, { signal });
+}

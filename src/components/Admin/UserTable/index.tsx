@@ -121,6 +121,7 @@ const UserTable = observer((props: Props) => {
                                     onClick={() => setSortColumn('accessLevel')}
                                 />
                             </th>
+                            <th></th>
                             <th>
                                 <Button
                                     size={SIZE_S}

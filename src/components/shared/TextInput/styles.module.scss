@@ -26,4 +26,8 @@
         content: ' *';
         color: var(--ifm-color-primary);
     }
+    &.dirty::after {
+        content: ' *';
+        color: var(--ifm-color-warning);
+    }
 }

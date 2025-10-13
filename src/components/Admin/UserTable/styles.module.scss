@@ -25,6 +25,10 @@
                     display: inline-block;
                     margin-right: 0.5em;
                 }
+                .limitWidth {
+                    max-width: 10em;
+                    overflow-x: auto;
+                }
             }
             td,
             .nowrap {

@@ -24,6 +24,7 @@ interface Props {
     min?: string | number | undefined;
     max?: string | number | undefined;
     readOnly?: boolean;
+    isDirty?: boolean;
 }
 
 const TextInput = observer((props: Props) => {
@@ -35,7 +36,12 @@ const TextInput = observer((props: Props) => {
         <>
             {props.label && (
                 <label
-                    className={clsx(styles.label, props.labelClassName, props.required && styles.required)}
+                    className={clsx(
+                        styles.label,
+                        props.labelClassName,
+                        props.required && styles.required,
+                        props.isDirty && styles.dirty
+                    )}
                     htmlFor={id}
                 >
                     {props.label}

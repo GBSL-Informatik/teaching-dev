@@ -1,0 +1,13 @@
+.editUser {
+    position: relative;
+    .body {
+        max-height: 80vh;
+        overflow-y: auto;
+        .delete {
+            justify-content: flex-end;
+        }
+        :global(.card) {
+            margin-bottom: 0.5em;
+        }
+    }
+}

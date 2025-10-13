@@ -9,6 +9,7 @@ export default class User {
 
     readonly id: string;
     readonly email: string;
+    readonly name: string;
     readonly firstName: string;
     readonly lastName: string;
 
@@ -21,6 +22,7 @@ export default class User {
         this.id = props.id;
         this.email = props.email;
         this.role = props.role || Role.STUDENT;
+        this.name = props.name;
         this.firstName = props.firstName;
         this.lastName = props.lastName;
         this.createdAt = new Date(props.createdAt);
@@ -30,6 +32,16 @@ export default class User {
     @computed
     get accessLevel() {
         return RoleAccessLevel[this.role] || 0;
+    }
+
+    @computed
+    get hasDefaultName() {
+        return this.name === this.defaultName;
+    }
+
+    @computed
+    get defaultName() {
+        return `${this.firstName} ${this.lastName}`;
     }
 
     @computed
@@ -51,11 +63,6 @@ export default class User {
     }
 
     @computed
-    get name() {
-        return `${this.firstName} ${this.lastName}`;
-    }
-
-    @computed
     get nameShort() {
         if (this.isStudent) {
             return `${this.firstName} ${this.lastName.slice(0, 1)}.`;
@@ -69,6 +76,7 @@ export default class User {
             id: this.id,
             email: this.email,
             role: this.role,
+            name: this.name,
             firstName: this.firstName,
             lastName: this.lastName,
             createdAt: this.createdAt.toISOString(),

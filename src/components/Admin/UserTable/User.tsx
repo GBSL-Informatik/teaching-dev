@@ -6,15 +6,20 @@ import { observer } from 'mobx-react-lite';
 import { default as UserModel } from '@tdev-models/User';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
+import { Role, RoleAccessLevel, RoleColors, RoleNames } from '@tdev-api/user';
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Icon from '@mdi/react';
-import { mdiLink, mdiTrashCan } from '@mdi/js';
+import { mdiAccountEdit, mdiLink, mdiTrashCan } from '@mdi/js';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { authClient } from '@tdev/auth-client';
 import { action } from 'mobx';
+import Button from '@tdev-components/shared/Button';
+import Popup from 'reactjs-popup';
+import EditUser from '../EditUser';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import Badge from '@tdev-components/shared/Badge';
 
 interface Props {
     user: UserModel;
@@ -24,6 +29,7 @@ const UserTableRow = observer((props: Props) => {
     const { user } = props;
     const userStore = useStore('userStore');
     const { current } = userStore;
+    const ref = React.useRef<PopupActions>(null);
     if (!current) {
         return null;
     }
@@ -39,34 +45,28 @@ const UserTableRow = observer((props: Props) => {
             </td>
             <td>{user.email}</td>
             <td>
-                <div className={clsx(styles.role, 'button-group')}>
-                    {Object.values(Role).map((role, idx) => (
-                        <button
-                            key={idx}
-                            className={clsx(
-                                'button',
-                                'button--sm',
-                                role === user.role ? 'button--primary' : 'button--secondary'
-                            )}
-                            onClick={() => {
-                                user.setRole(role);
-                            }}
-                            disabled={
-                                user.id === current.id ||
-                                current.accessLevel < RoleAccessLevel[role] ||
-                                user.accessLevel > current.accessLevel
-                            }
-                        >
-                            {RoleNames[role]}
-                        </button>
-                    ))}
-                </div>
+                <Badge color={RoleColors[user.role]}>{RoleNames[user.role]}</Badge>
+            </td>
+            <td>
+                <Popup
+                    trigger={
+                        <span>
+                            <Button icon={mdiAccountEdit} size={SIZE_S} color="orange" />
+                        </span>
+                    }
+                    modal
+                    ref={ref}
+                    overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
+                    on={'click'}
+                >
+                    <EditUser user={user.props} close={() => ref.current?.close()} />
+                </Popup>
             </td>
             <td>{user.firstName}</td>
             <td>{user.lastName}</td>
             <td>{formatDateTime(user.createdAt)}</td>
             <td>{formatDateTime(user.updatedAt)}</td>
-            <td>
+            <td className={clsx(styles.limitWidth)}>
                 {user.studentGroups.map((group, idx) => (
                     <span className={clsx('badge badge--primary', styles.groupBadge)} key={idx}>
                         {group.name}
@@ -74,22 +74,10 @@ const UserTableRow = observer((props: Props) => {
                 ))}
             </td>
             <td>
-                <CopyBadge value={user.id} className={clsx(styles.nowrap)} />
-                <Confirm
-                    icon={mdiTrashCan}
-                    size={SIZE_XS}
-                    onConfirm={() => {
-                        authClient.admin.removeUser({ userId: user.id }).then(
-                            action((res) => {
-                                if (res.data?.success) {
-                                    userStore.removeFromStore(user.id);
-                                }
-                            })
-                        );
-                    }}
-                    color="red"
-                    confirmText="Wirklich löschen?"
-                    disabled={!current.isAdmin}
+                <CopyBadge
+                    value={user.id}
+                    label={`${user.id.slice(0, 20)}...`}
+                    className={clsx(styles.nowrap)}
                 />
             </td>
         </tr>

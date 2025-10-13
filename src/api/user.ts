@@ -13,6 +13,12 @@ export const RoleNames: { [key in Role]: string } = {
     [Role.ADMIN]: 'Admin'
 };
 
+export const RoleColors: { [key in Role]: string } = {
+    [Role.STUDENT]: 'blue',
+    [Role.TEACHER]: 'green',
+    [Role.ADMIN]: 'red'
+};
+
 export const RoleAccessLevel: { [key in Role]: number } = {
     [Role.STUDENT]: 0,
     [Role.TEACHER]: 1,
@@ -22,6 +28,7 @@ export const RoleAccessLevel: { [key in Role]: number } = {
 export type User = {
     id: string;
     email: string;
+    name: string;
     firstName: string;
     lastName: string;
     role: Role;
