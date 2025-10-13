@@ -31,11 +31,11 @@ const AdminPanel = observer(() => {
                 <TabItem value="accounts" label="Accounts">
                     <UserTable />
                 </TabItem>
+                <TabItem value="createUser" label="Account erstellen">
+                    <CreateUser />
+                </TabItem>
                 <TabItem value="allowedActions" label="Erlaubte Aktionen">
                     <AllowedActions />
-                </TabItem>
-                <TabItem value="createUser" label="Benutzer erstellen">
-                    <CreateUser />
                 </TabItem>
             </Tabs>
         </div>
