@@ -86,7 +86,6 @@ export class UserStore extends iStore<`update-${string}`> {
         if (!data) {
             return;
         }
-        console.log('UserStore#addToStore', data);
         const newUser = this.createModel(data);
         this.removeFromStore(newUser.id);
         this.users.push(newUser);
