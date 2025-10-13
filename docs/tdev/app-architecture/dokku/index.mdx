@@ -4,6 +4,7 @@ page_id: 323ff390-40d6-4bd5-ac6c-7a05f3515526
 
 import Steps from '@tdev-components/Steps'
 import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+import { generateRandomBase64 } from '../helpers/secureToken';
 
 # Dokku Deploy
 
@@ -18,8 +19,8 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
   1. Eine neue App __<Val name="app" />__ auf dem Server erstellen
       <DynamicInput name="app" default='info-teaching-website' />
       <DynamicInput name="domain" default='info.gbsl.website' />
-      <DynamicInput name="API_URI" default='api://xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
-      <DynamicInput name="BACKEND_URL" default='https://xxx-api.gbsl.website' />
+      <DynamicInput name="BETTER_AUTH_URL" default='https://xxx-api.gbsl.website' />
+      <DynamicInput name="BETTER_AUTH_SECRET" monospace default='$(openssl rand -base64 32)' onRecalculate={() => generateRandomBase64()} />
       <DynamicInput name="CLIENT_ID" default='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
       <DynamicInput name="TENANT_ID" default='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
       <TemplateCode>
@@ -34,7 +35,7 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
 
          dokku config:set --no-restart {{app}} API_URI={{API_URI}}
          dokku config:set --no-restart {{app}} APP_URL=https://{{domain}}
-         dokku config:set --no-restart {{app}} BACKEND_URL={{BACKEND_URL}}
+         dokku config:set --no-restart {{app}} BETTER_AUTH_URL={{BETTER_AUTH_URL}}
          dokku config:set --no-restart {{app}} CLIENT_ID={{CLIENT_ID}}
          dokku config:set --no-restart {{app}} TENANT_ID={{TENANT_ID}}
          ```
@@ -44,7 +45,7 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
          ```bash title="/home/dokku/{{app}}/ENV"
          API_URI="{{API_URI}}"
          APP_URL="https://{{domain}}"
-         BACKEND_URL="{{BACKEND_URL}}"
+         BETTER_AUTH_URL="{{BETTER_AUTH_URL}}"
          CLIENT_ID="{{CLIENT_ID}}"
          TENANT_ID="{{TENANT_ID}}"
          NGINX_ROOT="build"
