@@ -32,6 +32,7 @@ export type User = {
     firstName: string;
     lastName: string;
     role: Role;
+    authProviders?: string[];
     createdAt: string;
     updatedAt: string;
 };

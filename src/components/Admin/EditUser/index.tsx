@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { Role, RoleAccessLevel, RoleNames, User } from '@tdev-api/user';
+import { Role, RoleAccessLevel, RoleNames, User as UserProps } from '@tdev-api/user';
 import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
 import Button from '@tdev-components/shared/Button';
@@ -13,18 +13,24 @@ import { mdiLoading, mdiTrashCan } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { action } from 'mobx';
 import Loader from '@tdev-components/Loader';
+import type User from '@tdev-models/User';
 
 interface Props {
     user: User;
     close: () => void;
 }
 
+const SPIN_TEXT = {
+    deleting: 'Löschen...',
+    linking: 'Verknüpfen...',
+    unlinking: 'Verknüpfung aufheben...'
+};
+
 const EditUser = observer((props: Props) => {
     const { user } = props;
     const userStore = useStore('userStore');
     const adminStore = useStore('adminStore');
-    const userModel = userStore.findById(user.id);
-    const [isDeleting, setIsDeleting] = React.useState(false);
+    const [spinState, setSpinState] = React.useState<null | 'deleting' | 'linking' | 'unlinking'>(null);
     const [password, setPassword] = React.useState('');
 
     const defaultName = React.useRef(`${user.firstName} ${user.lastName}`);
@@ -44,7 +50,7 @@ const EditUser = observer((props: Props) => {
                         }}
                         color="black"
                         text="Abbrechen"
-                        disabled={isDeleting}
+                        disabled={!!spinState}
                     />
                     <Button
                         className={clsx('button--block')}
@@ -65,13 +71,16 @@ const EditUser = observer((props: Props) => {
                                 })
                                 .then((res) => {
                                     if (res.data) {
-                                        userStore.addToStore(res.data as unknown as User);
+                                        userStore.addToStore({
+                                            ...user.props,
+                                            ...res.data
+                                        } as unknown as UserProps);
                                     }
                                     props.close();
                                 });
                         }}
                         text="Speichern"
-                        disabled={isDeleting}
+                        disabled={!!spinState}
                     />
                 </div>
             }
@@ -87,14 +96,14 @@ const EditUser = observer((props: Props) => {
                                 role === user.role ? 'button--primary' : 'button--secondary'
                             )}
                             onClick={() => {
-                                userModel?.setRole(role);
+                                user?.setRole(role);
                             }}
                             disabled={
                                 !userStore.current ||
-                                !userModel ||
+                                !user ||
                                 user.id === userStore.current.id ||
                                 userStore.current.accessLevel < RoleAccessLevel[role] ||
-                                userModel.accessLevel > userStore.current.accessLevel
+                                user.accessLevel > userStore.current.accessLevel
                             }
                         >
                             {RoleNames[role]}
@@ -118,32 +127,67 @@ const EditUser = observer((props: Props) => {
                 />
             </Card>
             <Card header={<h4>Account</h4>}>
-                <TextInput label="Passwort" value={password} onChange={setPassword} isDirty={!!password} />
-                <Button
-                    text="PW-Login erstellen"
-                    onClick={() => {
-                        adminStore.setUserPassword(user.id, password);
-                    }}
-                    color="primary"
-                    disabled={!password}
+                <TextInput
+                    label={user.hasEmailPasswordAuth ? 'Neues Passwort' : 'Passwort'}
+                    type="password"
+                    value={password}
+                    onChange={setPassword}
+                    isDirty={!!password}
                 />
-
-                <Button
-                    text="PW-Login entfernen"
-                    color="red"
-                    onClick={() => {
-                        adminStore.revokeUserPassword(user.id);
-                    }}
-                />
+                {user.hasEmailPasswordAuth ? (
+                    <>
+                        <Button
+                            text="PW-Login entfernen"
+                            color="primary"
+                            disabled={!!password || !!spinState}
+                            onClick={() => {
+                                authClient.admin
+                                    .setUserPassword({ userId: user.id, newPassword: password })
+                                    .then((res) => {
+                                        if (res.data) {
+                                            userStore.addToStore({
+                                                ...user.props,
+                                                ...res.data
+                                            } as unknown as UserProps);
+                                        }
+                                    });
+                            }}
+                        />
+                        <Button
+                            text="PW-Login entfernen"
+                            color="red"
+                            onClick={() => {
+                                setSpinState('unlinking');
+                                adminStore.revokeUserPassword(user.id).finally(() => {
+                                    setSpinState(null);
+                                });
+                            }}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <Button
+                            text="PW-Login erstellen"
+                            onClick={() => {
+                                setSpinState('linking');
+                                adminStore.setUserPassword(user.id, password).finally(() => {
+                                    setSpinState(null);
+                                });
+                            }}
+                            color="primary"
+                            disabled={!password}
+                        />
+                    </>
+                )}
             </Card>
             <Confirm
-                icon={isDeleting ? mdiLoading : mdiTrashCan}
+                icon={spinState ? mdiLoading : mdiTrashCan}
                 text="Löschen"
                 size={SIZE_XS}
-                spin={isDeleting}
+                spin={spinState === 'deleting'}
                 className={clsx(styles.delete)}
                 onConfirm={() => {
-                    setIsDeleting(true);
+                    setSpinState('deleting');
                     authClient.admin.removeUser({ userId: user.id }).then(
                         action((res) => {
                             if (res.data?.success) {
@@ -157,7 +201,7 @@ const EditUser = observer((props: Props) => {
                 confirmText="Wirklich löschen?"
                 disabled={!userStore.current?.isAdmin}
             />
-            {isDeleting && <Loader overlay title="Löschen..." />}
+            {!!spinState && <Loader overlay title={SPIN_TEXT[spinState]} />}
         </Card>
     );
 });

@@ -9,6 +9,7 @@ export default class User {
 
     readonly id: string;
     readonly email: string;
+    readonly authProviders: string[];
     readonly name: string;
     readonly firstName: string;
     readonly lastName: string;
@@ -22,6 +23,7 @@ export default class User {
         this.id = props.id;
         this.email = props.email;
         this.role = props.role || Role.STUDENT;
+        this.authProviders = props.authProviders || [];
         this.name = props.name;
         this.firstName = props.firstName;
         this.lastName = props.lastName;
@@ -77,6 +79,7 @@ export default class User {
             email: this.email,
             role: this.role,
             name: this.name,
+            authProviders: this.authProviders,
             firstName: this.firstName,
             lastName: this.lastName,
             createdAt: this.createdAt.toISOString(),
@@ -111,5 +114,10 @@ export default class User {
     @computed
     get connectedClients() {
         return this.store.root.socketStore.connectedClients.get(this.id) || 0;
+    }
+
+    @computed
+    get hasEmailPasswordAuth() {
+        return this.authProviders.includes('credential');
     }
 }

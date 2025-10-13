@@ -25,6 +25,7 @@ import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
 import StudentGroup from '@tdev-models/StudentGroup';
 import siteConfig from '@generated/docusaurus.config';
 import { authClient } from '@tdev/auth-client';
+import { User } from '@tdev-api/user';
 const { OFFLINE_API, BACKEND_URL } = siteConfig.customFields as {
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
     BACKEND_URL: string;
@@ -259,6 +260,10 @@ export class SocketDataStore extends iStore<'ping'> {
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;
                 this.root.studentGroupStore.handleUpdate(studentGroup);
+                break;
+            case RecordType.User:
+                console.log('updating user', record);
+                this.root.userStore.addToStore(record as User);
                 break;
             default:
                 console.log('changedRecord', type, record);

@@ -10,20 +10,38 @@ import { Role, RoleAccessLevel, RoleColors, RoleNames } from '@tdev-api/user';
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Icon from '@mdi/react';
-import { mdiAccountEdit, mdiLink, mdiTrashCan } from '@mdi/js';
+import {
+    mdiAccountEdit,
+    mdiCloudQuestion,
+    mdiEmailLock,
+    mdiGithub,
+    mdiLink,
+    mdiMicrosoft,
+    mdiTrashCan
+} from '@mdi/js';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import { authClient } from '@tdev/auth-client';
-import { action } from 'mobx';
 import Button from '@tdev-components/shared/Button';
 import Popup from 'reactjs-popup';
 import EditUser from '../EditUser';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import Badge from '@tdev-components/shared/Badge';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface Props {
     user: UserModel;
 }
+
+const AuthProviderIcons: { [key: string]: string } = {
+    microsoft: mdiMicrosoft,
+    credential: mdiEmailLock,
+    github: mdiGithub
+};
+
+const AuthProviderColor: { [key: string]: string } = {
+    microsoft: IfmColors.blue,
+    credential: IfmColors.info,
+    github: IfmColors.black
+};
 
 const UserTableRow = observer((props: Props) => {
     const { user } = props;
@@ -59,11 +77,22 @@ const UserTableRow = observer((props: Props) => {
                     overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
                     on={'click'}
                 >
-                    <EditUser user={user.props} close={() => ref.current?.close()} />
+                    <EditUser user={user} close={() => ref.current?.close()} />
                 </Popup>
             </td>
             <td>{user.firstName}</td>
             <td>{user.lastName}</td>
+            <td>
+                {user.authProviders.map((u, idx) => (
+                    <Icon
+                        path={AuthProviderIcons[u] || mdiCloudQuestion}
+                        size={SIZE_XS}
+                        color={AuthProviderColor[u]}
+                        key={idx}
+                        title={u}
+                    />
+                ))}
+            </td>
             <td>{formatDateTime(user.createdAt)}</td>
             <td>{formatDateTime(user.updatedAt)}</td>
             <td className={clsx(styles.limitWidth)}>

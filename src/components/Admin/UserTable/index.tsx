@@ -140,6 +140,7 @@ const UserTable = observer((props: Props) => {
                                     onClick={() => setSortColumn('lastName')}
                                 />
                             </th>
+                            <th>Auth Provider</th>
                             <th>
                                 <Button
                                     size={SIZE_S}
