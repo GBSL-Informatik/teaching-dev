@@ -1,5 +1,7 @@
+import { mdiEmailLock, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import api from './base';
 import { AxiosPromise } from 'axios';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 export enum Role {
     STUDENT = 'student',
@@ -25,6 +27,24 @@ export const RoleAccessLevel: { [key in Role]: number } = {
     [Role.ADMIN]: 2
 };
 
+export enum AuthProvider {
+    MICROSOFT = 'microsoft',
+    CREDENTIAL = 'credential',
+    GITHUB = 'github'
+}
+
+export const AuthProviderIcons = {
+    [AuthProvider.MICROSOFT]: mdiMicrosoft,
+    [AuthProvider.CREDENTIAL]: mdiEmailLock,
+    [AuthProvider.GITHUB]: mdiGithub
+};
+
+export const AuthProviderColor = {
+    [AuthProvider.MICROSOFT]: IfmColors.blue,
+    [AuthProvider.CREDENTIAL]: IfmColors.info,
+    [AuthProvider.GITHUB]: IfmColors.black
+};
+
 export type User = {
     id: string;
     email: string;
@@ -32,7 +52,10 @@ export type User = {
     firstName: string;
     lastName: string;
     role: Role;
-    authProviders?: string[];
+    authProviders?: AuthProvider[];
+    banned?: boolean;
+    banReason?: string;
+    banExpires?: Date;
     createdAt: string;
     updatedAt: string;
 };

@@ -128,7 +128,11 @@ export class SocketDataStore extends iStore<'ping'> {
     @action
     _connect(socket: TypedSocket) {
         this._socketConfig(socket);
+        const winSock: { tdevSockets?: Socket[] } = window as any;
+        winSock.tdevSockets = (winSock.tdevSockets || []).filter((s: Socket) => s.connected || s.active);
+        winSock.tdevSockets.forEach((s: Socket) => s.disconnect());
         socket.connect();
+        winSock.tdevSockets.push(socket);
     }
 
     _socketConfig(socket: TypedSocket) {
@@ -347,6 +351,11 @@ export class SocketDataStore extends iStore<'ping'> {
                 resolve(ok);
             });
         });
+    }
+
+    @action
+    requestReload(roomIds: string[], userIds: string[]) {
+        return this.requestNavigation(roomIds || [], userIds || [], { type: 'nav-reload' });
     }
 
     @action

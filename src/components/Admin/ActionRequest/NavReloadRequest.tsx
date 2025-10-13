@@ -9,6 +9,7 @@ import { mdiLoading, mdiReloadAlert, mdiWebRefresh } from '@mdi/js';
 interface Props {
     roomIds?: string[];
     userIds?: string[];
+    slim?: boolean;
 }
 
 const NavReloadRequest = observer((props: Props) => {
@@ -30,9 +31,9 @@ const NavReloadRequest = observer((props: Props) => {
 
     return (
         <Confirm
-            text="Neu laden"
+            text={props.slim ? undefined : 'Neu laden'}
             title="Clients neu laden"
-            confirmText="Clients neu laden?"
+            confirmText={props.slim ? 'Sicher?' : 'Clients neu laden?'}
             icon={isLoading ? mdiLoading : mdiWebRefresh}
             iconSide="left"
             confirmIcon={mdiReloadAlert}
@@ -40,11 +41,9 @@ const NavReloadRequest = observer((props: Props) => {
             spin={isLoading}
             onConfirm={() => {
                 setIsLoading(true);
-                socketStore
-                    .requestNavigation(props.roomIds || [], props.userIds || [], { type: 'nav-reload' })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
+                socketStore.requestReload(props.roomIds || [], props.userIds || []).finally(() => {
+                    setIsLoading(false);
+                });
             }}
         />
     );

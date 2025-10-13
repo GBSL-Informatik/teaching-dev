@@ -9,9 +9,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useHistory } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
-const { NO_AUTH, OFFLINE_API, TEST_USER, SENTRY_DSN } = siteConfig.customFields as {
-    TEST_USER?: string;
-    NO_AUTH?: boolean;
+const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
 };
@@ -84,65 +82,12 @@ const Sentry = observer(() => {
 });
 
 function Root({ children }: { children: React.ReactNode }) {
-    React.useEffect(() => {
-        if (!rootStore) {
-            return;
-        }
-        if (window) {
-            if ((window as any).store && (window as any).store !== rootStore) {
-                try {
-                    (window as any).store.cleanup();
-                } catch (e) {
-                    console.error('Failed to cleanup the store', e);
-                }
-            }
-            (window as any).store = rootStore;
-        }
-        return () => {
-            /**
-             * TODO: cleanup the store
-             * - remove all listeners
-             * - clear all data
-             * - disconnect all sockets
-             */
-            // rootStore?.cleanup();
-        };
-    }, [rootStore]);
-
     const { siteConfig } = useDocusaurusContext();
     React.useEffect(() => {
         /**
          * Expose the store to the window object
          */
         (window as any).store = rootStore;
-    }, [rootStore]);
-
-    React.useEffect(() => {
-        // let timeoutId: ReturnType<typeof setTimeout>;
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                /**
-                 * eventuall we could disconnect the socket
-                 * or at least indicate to admins that the user has left the page (e.g. for exams)
-                 */
-                // rootStore.socketStore.disconnect();
-            } else {
-                /**
-                 * make sure to reconnect the socket when the user returns to the page
-                 * The delay is added to avoid reconnecting too quickly
-                 */
-                // timeoutId = setTimeout(() => {
-                //     rootStore.socketStore.reconnect();
-                // }, 3000);
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            // clearTimeout(timeoutId);
-        };
     }, [rootStore]);
 
     return (
@@ -170,3 +115,26 @@ function Root({ children }: { children: React.ReactNode }) {
 }
 
 export default Root;
+
+// React.useEffect(() => {
+//     // let timeoutId: ReturnType<typeof setTimeout>;
+//     const handleVisibilityChange = () => {
+//         if (document.hidden) {
+//             /**
+//              * The Browser-Window is now hidden
+//              * we could indicate to admins that the user has left the page
+//              * (e.g. for exams)
+//              */
+//         } else {
+//             /**
+//              * The Browser-Window is now visible again
+//              */
+//         }
+//     };
+
+//     document.addEventListener('visibilitychange', handleVisibilityChange);
+
+//     return () => {
+//         document.removeEventListener('visibilitychange', handleVisibilityChange);
+//     };
+// }, [rootStore]);

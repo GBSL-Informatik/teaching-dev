@@ -8,6 +8,7 @@ import {
     mdiArrowRightThin,
     mdiBackupRestore,
     mdiCircle,
+    mdiCloudQuestion,
     mdiDeleteEmptyOutline,
     mdiHarddiskRemove,
     mdiLogout,
@@ -22,12 +23,12 @@ import Icon from '@mdi/react';
 import UserTable from '@tdev-components/Admin/UserTable';
 import NavReloadRequest from '@tdev-components/Admin/ActionRequest/NavReloadRequest';
 import Storage from '@tdev-stores/utils/Storage';
-import { logout } from '@tdev-api/user';
+import { AuthProviderColor, AuthProviderIcons, logout } from '@tdev-api/user';
 import SelectInput from '@tdev-components/shared/SelectInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Badge from '@tdev-components/shared/Badge';
-import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import { SIZE_M, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import api from '@tdev-api/base';
 import { authClient } from '@tdev/auth-client';
@@ -80,12 +81,6 @@ const UserPage = observer(() => {
         <Layout>
             <main className={clsx(styles.main)}>
                 <h2>User</h2>
-                <Button
-                    text="SetPW"
-                    onClick={() => {
-                        adminStore.setUserPassword(current!.id, 'asdfasdf');
-                    }}
-                />
                 <DefinitionList className={clsx(styles.userInfo)}>
                     <dt>API-Modus</dt>
                     <dd>
@@ -111,6 +106,18 @@ const UserPage = observer(() => {
                             </dd>
                             <dt>Email</dt>
                             <dd>{viewedUser?.email}</dd>
+                            <dt>Anmelden über</dt>
+                            <dd>
+                                {viewedUser?.authProviders?.map((auth, idx) => (
+                                    <Icon
+                                        path={AuthProviderIcons[auth] || mdiCloudQuestion}
+                                        size={SIZE_XS}
+                                        color={AuthProviderColor[auth]}
+                                        key={idx}
+                                        title={auth}
+                                    />
+                                ))}
+                            </dd>
                             <dt>Ist mein Gerät mit dem Server Verbunden?</dt>
                             <dd>
                                 <Icon
@@ -244,19 +251,6 @@ const UserPage = observer(() => {
                                     iconSide="left"
                                     noOutline
                                     className={clsx(styles.logout)}
-                                />
-                            </dd>
-                            <dt>LocalStorage Löschen</dt>
-                            <dd>
-                                <Button
-                                    text="Jetzt Löschen"
-                                    icon={mdiRefresh}
-                                    iconSide="left"
-                                    onClick={() => {
-                                        localStorage.clear();
-                                        window.location.reload();
-                                    }}
-                                    color="orange"
                                 />
                             </dd>
                         </>
