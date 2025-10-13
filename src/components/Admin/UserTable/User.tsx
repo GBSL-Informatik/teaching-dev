@@ -10,8 +10,11 @@ import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Icon from '@mdi/react';
-import { mdiLink } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { mdiLink, mdiTrashCan } from '@mdi/js';
+import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import { authClient } from '@tdev/auth-client';
+import { action } from 'mobx';
 
 interface Props {
     user: UserModel;
@@ -72,6 +75,22 @@ const UserTableRow = observer((props: Props) => {
             </td>
             <td>
                 <CopyBadge value={user.id} className={clsx(styles.nowrap)} />
+                <Confirm
+                    icon={mdiTrashCan}
+                    size={SIZE_XS}
+                    onConfirm={() => {
+                        authClient.admin.removeUser({ userId: user.id }).then(
+                            action((res) => {
+                                if (res.data?.success) {
+                                    userStore.removeFromStore(user.id);
+                                }
+                            })
+                        );
+                    }}
+                    color="red"
+                    confirmText="Wirklich löschen?"
+                    disabled={!current.isAdmin}
+                />
             </td>
         </tr>
     );
