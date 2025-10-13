@@ -22,3 +22,11 @@ export function createAllowedAction(
 export function allowedActions(signal: AbortSignal): AxiosPromise<AllowedAction[]> {
     return api.get(`/admin/allowedActions`, { signal });
 }
+
+export function linkUserPassword(
+    userId: string,
+    userPW: string,
+    signal: AbortSignal
+): AxiosPromise<AllowedAction[]> {
+    return api.post(`/admin/users/${userId}/linkUserPassword`, { pw: userPW }, { signal });
+}

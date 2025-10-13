@@ -58,6 +58,7 @@ const UserPage = observer(() => {
     const isBrowser = useIsBrowser();
     const sessionStore = useStore('sessionStore');
     const authStore = useStore('authStore');
+    const adminStore = useStore('adminStore');
     const userStore = useStore('userStore');
     const socketStore = useStore('socketStore');
     const groupStore = useStore('studentGroupStore');
@@ -79,6 +80,12 @@ const UserPage = observer(() => {
         <Layout>
             <main className={clsx(styles.main)}>
                 <h2>User</h2>
+                <Button
+                    text="SetPW"
+                    onClick={() => {
+                        adminStore.setUserPassword(current!.id, 'asdfasdf');
+                    }}
+                />
                 <DefinitionList className={clsx(styles.userInfo)}>
                     <dt>API-Modus</dt>
                     <dd>

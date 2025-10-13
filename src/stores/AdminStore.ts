@@ -6,11 +6,12 @@ import {
     AllowedAction,
     allowedActions as apiAllowedActions,
     deleteAllowedAction as apiDeleteAllowedAction,
-    createAllowedAction as apiCreateAllowedAction
+    createAllowedAction as apiCreateAllowedAction,
+    linkUserPassword
 } from '@tdev-api/admin';
 import { DocumentType } from '@tdev-api/document';
 
-export class AdminStore extends iStore {
+export class AdminStore extends iStore<`set-user-pw-${string}`> {
     readonly root: RootStore;
     allowedActions = observable<AllowedAction>([]);
     constructor(root: RootStore) {
@@ -52,6 +53,13 @@ export class AdminStore extends iStore {
                     this.allowedActions.push(res.data);
                 })
             );
+        });
+    }
+
+    @action
+    setUserPassword(userId: string, newPassword: string) {
+        return this.withAbortController(`set-user-pw-${userId}`, async (ct) => {
+            return linkUserPassword(userId, newPassword, ct.signal);
         });
     }
 }
