@@ -7,6 +7,8 @@ import { useLocation } from '@docusaurus/router';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
 
+const ALLOWED_PATHS = new Set(['/login', '/signIn'].map((p) => p.toLowerCase()));
+
 interface WarningContentProps {
     onDismiss: () => void;
 }
@@ -141,8 +143,7 @@ const LoggedOutOverlay = observer((props: Props) => {
     }, [props.stalledCheckIntervalMs, documentRootStore, isVisible, isUserSwitched]);
 
     React.useEffect(() => {
-        const onLoginPage = location.pathname.startsWith('/login');
-        if (socketStore.isLive || onLoginPage || !isVisible || isUserSwitched) {
+        if (socketStore.isLive || !isVisible || isUserSwitched) {
             return;
         }
         // check back in 5 seconds, whether the connection is restored
@@ -154,6 +155,9 @@ const LoggedOutOverlay = observer((props: Props) => {
     }, [socketStore.isLive, ignoredIssues, location, isVisible, isUserSwitched]);
 
     if (!isVisible) {
+        return null;
+    }
+    if (ALLOWED_PATHS.has(location.pathname.toLowerCase())) {
         return null;
     }
 
