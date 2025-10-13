@@ -266,7 +266,6 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.root.studentGroupStore.handleUpdate(studentGroup);
                 break;
             case RecordType.User:
-                console.log('updating user', record);
                 this.root.userStore.addToStore(record as User);
                 break;
             default:
