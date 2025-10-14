@@ -64,7 +64,7 @@ const LoginPage = observer(() => {
                         iconSide="left"
                         color="black"
                     />
-                    <Button href={signInPage} color="grey" text="Email" icon={mdiEmail} iconSide="left" />
+                    <Button href={signInPage} color="black" text="Email" icon={mdiEmail} iconSide="left" />
                 </div>
             </main>
         </Layout>
