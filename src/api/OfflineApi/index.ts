@@ -18,6 +18,7 @@ const LOG_REQUESTS = false;
 let OfflineUser: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
     email: 'offline.user@tdev.ch',
+    name: 'Offline User',
     firstName: 'Offline',
     lastName: 'User',
     role: process.env.NODE_ENV === 'production' ? Role.STUDENT : Role.ADMIN,
@@ -29,6 +30,7 @@ const DB_NAME = `${siteConfig.organizationName ?? 'gbsl'}-${siteConfig.projectNa
 const DOCUMENTS_STORE = 'documents';
 const STUDENT_GROUPS_STORE = 'studentGroups';
 const PERMISSIONS_STORE = 'permissions';
+export const getOfflineUser = () => ({ ...OfflineUser });
 
 const resolveResponse = <T>(data: T, statusCode: number = 200, statusText: string = ''): AxiosPromise<T> => {
     return Promise.resolve({
@@ -90,6 +92,7 @@ export default class OfflineApi {
                 this.dbAdapter = new MemoryDbAdapter();
             }
         } else {
+            console.log('setup memory adapter');
             this.dbAdapter = new MemoryDbAdapter();
         }
         if (LOG_REQUESTS) {
@@ -236,8 +239,6 @@ export default class OfflineApi {
                 return resolveResponse([] as unknown as T);
             case 'allowedActions':
                 return resolveResponse([] as unknown as T);
-            case 'checklogin':
-                return resolveResponse({ user: OfflineUser } as unknown as T, 200, 'ok');
             case 'documents':
                 if (id) {
                     const document = await this.dbAdapter.get<Document<any>>(DOCUMENTS_STORE, id);

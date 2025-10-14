@@ -16,6 +16,7 @@ type SortColumn =
     | 'accessLevel'
     | 'firstName'
     | 'lastName'
+    | 'linkedAccounts'
     | 'createdAt'
     | 'updatedAt'
     | 'groups'
@@ -120,6 +121,7 @@ const UserTable = observer((props: Props) => {
                                     onClick={() => setSortColumn('accessLevel')}
                                 />
                             </th>
+                            <th></th>
                             <th>
                                 <Button
                                     size={SIZE_S}
@@ -138,6 +140,7 @@ const UserTable = observer((props: Props) => {
                                     onClick={() => setSortColumn('lastName')}
                                 />
                             </th>
+                            <th>Auth Provider</th>
                             <th>
                                 <Button
                                     size={SIZE_S}

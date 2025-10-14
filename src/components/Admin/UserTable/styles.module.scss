@@ -15,6 +15,11 @@
             display: table;
             --ifm-table-cell-padding: 0.2em 0.5em;
             .user {
+                .flex {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5em;
+                }
                 .clients {
                     display: flex;
                     justify-content: space-between;
@@ -24,6 +29,10 @@
                 .groupBadge:not(:last-child) {
                     display: inline-block;
                     margin-right: 0.5em;
+                }
+                .limitWidth {
+                    max-width: 10em;
+                    overflow-x: auto;
                 }
             }
             td,
