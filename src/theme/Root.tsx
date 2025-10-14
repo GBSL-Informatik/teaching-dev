@@ -9,6 +9,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useHistory } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
+import { getOfflineUser } from '@tdev-api/OfflineApi';
 const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
@@ -43,11 +44,18 @@ const RemoteNavigationHandler = observer(() => {
     return null;
 });
 
-const Authentication = observer(() => {
-    const { data: session } = authClient.useSession();
+const ExposeRootStoreToWindow = observer(() => {
     React.useEffect(() => {
+        /**
+         * Expose the store to the window object
+         */
         (window as any).store = rootStore;
     }, [rootStore]);
+    return null;
+});
+
+const Authentication = observer(() => {
+    const { data: session } = authClient.useSession();
     React.useEffect(() => {
         if (!rootStore) {
             return;
@@ -58,6 +66,18 @@ const Authentication = observer(() => {
             rootStore.cleanup();
         }
     }, [session?.user, rootStore]);
+    return null;
+});
+
+const OfflineApi = observer(() => {
+    React.useEffect(() => {
+        if (!OFFLINE_API) {
+            return;
+        }
+        console.log('Using Offline API mode:', OFFLINE_API);
+        const offlineUser = getOfflineUser();
+        rootStore.load(offlineUser.id);
+    }, []);
     return null;
 });
 
@@ -83,12 +103,6 @@ const Sentry = observer(() => {
 
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
-    React.useEffect(() => {
-        /**
-         * Expose the store to the window object
-         */
-        (window as any).store = rootStore;
-    }, [rootStore]);
 
     return (
         <>
@@ -100,7 +114,10 @@ function Root({ children }: { children: React.ReactNode }) {
                 />
             </Head>
             <StoresProvider value={rootStore}>
-                {!OFFLINE_API && (
+                <ExposeRootStoreToWindow />
+                {OFFLINE_API ? (
+                    <OfflineApi />
+                ) : (
                     <>
                         <Authentication />
                         <RemoteNavigationHandler />

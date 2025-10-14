@@ -61,7 +61,9 @@ export class SocketDataStore extends iStore<'ping'> {
         reaction(
             () => this.isLive,
             action((isLive) => {
-                console.log('Socket.IO live:', isLive);
+                if (!OFFLINE_API) {
+                    console.log('Socket.IO live:', isLive);
+                }
             })
         );
     }
