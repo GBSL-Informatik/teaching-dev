@@ -42,6 +42,7 @@
         "@mdi/react": "^1.6.1",
         "@mdx-js/react": "^3.0.0",
         "@mdxeditor/editor": "^3.37.0",
+        "@mermaid-js/layout-elk": "^0.2.0",
         "@octokit/rest": "^21.1.0",
         "@sentry/react": "^9.12.0",
         "@sentry/webpack-plugin": "^3.3.1",
