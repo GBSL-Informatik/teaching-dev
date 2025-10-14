@@ -14,17 +14,21 @@ import { default as DynamicDocRootMeta } from '@tdev-models/documents/DynamicDoc
 
 export interface MetaInit {
     readonly?: boolean;
+    roomType: RoomType;
 }
 
 export class ModelMeta extends TypeMeta<DocumentType.DynamicDocumentRoots> {
     readonly type = DocumentType.DynamicDocumentRoots;
+    readonly roomType: RoomType;
 
-    constructor(props: Partial<MetaInit>) {
+    constructor(props: MetaInit) {
         super(DocumentType.DynamicDocumentRoots, props.readonly ? Access.RO_User : undefined);
+        this.roomType = props.roomType;
     }
 
     get defaultData(): TypeDataMapping[DocumentType.DynamicDocumentRoots] {
         return {
+            roomType: this.roomType,
             documentRoots: []
         };
     }
@@ -33,10 +37,12 @@ export class ModelMeta extends TypeMeta<DocumentType.DynamicDocumentRoots> {
 class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> {
     readonly type = DocumentType.DynamicDocumentRoots;
     dynamicDocumentRoots = observable.array<DynamicDocumentRoot>([]);
+    @observable accessor roomType: RoomType;
 
     constructor(props: DocumentProps<DocumentType.DynamicDocumentRoots>, store: DocumentStore) {
         super(props, store);
         this.dynamicDocumentRoots.replace(props.data.documentRoots);
+        this.roomType = props.data.roomType;
     }
 
     @action
@@ -63,20 +69,24 @@ class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> 
             { ...current, name: name },
             ...this.dynamicDocumentRoots.filter((dr) => dr.id !== id)
         ];
-        this.setData({ documentRoots: renamedRoots }, Source.LOCAL, new Date());
+        this.setData({ roomType: this.roomType, documentRoots: renamedRoots }, Source.LOCAL, new Date());
+    }
+
+    @computed
+    get canChangeType() {
+        return this.linkedDynamicDocumentRoots.every((dr) => dr.allDocuments.length === 0);
     }
 
     @action
-    setRoomType(id: string, roomType: RoomType) {
-        const current = this.dynamicDocumentRoots.find((dr) => dr.id === id);
-        if (!current) {
+    setRoomType(roomType: RoomType) {
+        if (!this.canChangeType) {
             return;
         }
-        const renamedRoots: DynamicDocumentRoot[] = [
-            { ...current, type: roomType },
-            ...this.dynamicDocumentRoots.filter((dr) => dr.id !== id)
-        ];
-        this.setData({ documentRoots: renamedRoots }, Source.LOCAL, new Date());
+        this.setData(
+            { roomType: roomType, documentRoots: this.dynamicDocumentRoots.slice() },
+            Source.LOCAL,
+            new Date()
+        );
     }
 
     containsDynamicDocumentRoot(id: string): boolean {
@@ -84,20 +94,27 @@ class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> 
     }
 
     @action
-    addDynamicDocumentRoot(id: string, name: string, roomType: RoomType) {
+    addDynamicDocumentRoot(id: string, name: string) {
         this.store.root.documentRootStore
-            .create(id, new DynamicDocRootMeta({}, id, this.id, this.store.root.documentStore), {
-                access: Access.None_DocumentRoot,
-                sharedAccess: Access.RO_DocumentRoot
-            })
+            .create(
+                id,
+                new DynamicDocRootMeta(
+                    { roomType: this.roomType },
+                    id,
+                    this.id,
+                    this.store.root.documentStore
+                ),
+                {
+                    access: Access.None_DocumentRoot,
+                    sharedAccess: Access.RO_DocumentRoot
+                }
+            )
             .then(
                 action((dynRoot) => {
                     this.setData(
                         {
-                            documentRoots: [
-                                ...this.dynamicDocumentRoots,
-                                { id: id, name: name, type: roomType }
-                            ]
+                            roomType: this.roomType,
+                            documentRoots: [...this.dynamicDocumentRoots, { id: id, name: name }]
                         },
                         Source.LOCAL,
                         new Date()
@@ -127,17 +144,23 @@ class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> 
         const linkedRoot = this.linkedDynamicDocumentRoots.find((dr) => dr.id === id);
         /** first remove the doc root from the state, otherwise it will be recreated immediately... */
         this.setData(
-            { documentRoots: this.dynamicDocumentRoots.filter((dr) => dr.id !== id) },
+            {
+                roomType: this.roomType,
+                documentRoots: this.dynamicDocumentRoots.filter((dr) => dr.id !== id)
+            },
             Source.LOCAL,
             new Date()
         );
-        (this.saveNow() || Promise.resolve()).then(() => {
+        this.saveNow().then(() => {
             if (linkedRoot) {
                 this.store.root.documentRootStore.destroy(linkedRoot).then((success) => {
                     if (!success) {
                         /** undo the removal */
                         this.setData(
-                            { documentRoots: [...this.dynamicDocumentRoots, ddRoot] },
+                            {
+                                roomType: this.roomType,
+                                documentRoots: [...this.dynamicDocumentRoots, ddRoot]
+                            },
                             Source.LOCAL,
                             new Date()
                         );
@@ -149,6 +172,7 @@ class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> 
 
     get data(): TypeDataMapping[DocumentType.DynamicDocumentRoots] {
         return {
+            roomType: this.roomType,
             documentRoots: this.dynamicDocumentRoots.slice()
         };
     }
@@ -165,7 +189,7 @@ class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> 
         if (this.root?.type === DocumentType.DynamicDocumentRoots) {
             return this.root.meta as ModelMeta;
         }
-        return new ModelMeta({});
+        return new ModelMeta({ roomType: this.roomType });
     }
 }
 

@@ -33,10 +33,11 @@ import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import Excalidoc from '@tdev/excalidoc/model';
 import ProgressState from '@tdev-models/documents/ProgressState';
+import FlowNode from '@tdev/circuit/models/FlowNode';
+import FlowEdge from '@tdev/circuit/models/FlowEdge';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -81,16 +82,17 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
         case DocumentType.TextMessage:
             return new TextMessage(data as DocumentProps<DocumentType.TextMessage>, store);
         case DocumentType.DynamicDocumentRoot:
-            return new DynamicDocumentRootModel(
-                data as DocumentProps<DocumentType.DynamicDocumentRoot>,
-                store
-            );
+            throw new Error(`Dynamic Document Root's can't be instantiated.`);
         case DocumentType.DynamicDocumentRoots:
             return new DynamicDocumentRoots(data as DocumentProps<DocumentType.DynamicDocumentRoots>, store);
         case DocumentType.NetpbmGraphic:
             return new NetpbmGraphic(data as DocumentProps<DocumentType.NetpbmGraphic>, store);
         case DocumentType.ProgressState:
             return new ProgressState(data as DocumentProps<DocumentType.ProgressState>, store);
+        case DocumentType.FlowNode:
+            return new FlowNode(data as DocumentProps<DocumentType.FlowNode>, store);
+        case DocumentType.FlowEdge:
+            return new FlowEdge(data as DocumentProps<DocumentType.FlowEdge>, store);
     }
 }
 class DocumentStore extends iStore<`delete-${string}`> {
@@ -270,6 +272,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
     handleUpdate(change: ChangedDocument) {
         const model = this.find(change.id);
         if (model) {
+            const updatedAt = new Date(change.updatedAt);
+            if (model.updatedAt.getTime() >= updatedAt.getTime()) {
+                // ignore stalled updates
+                return;
+            }
             model.setData(change.data as any, Source.API, new Date(change.updatedAt));
         }
     }
