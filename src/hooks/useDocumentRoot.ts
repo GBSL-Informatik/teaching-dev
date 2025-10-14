@@ -62,10 +62,10 @@ export const useDocumentRoot = <Type extends DocumentType>(
     }, [documentRootStore]);
 
     React.useEffect(() => {
-        if (!id) {
+        if (!id || !userStore.isUserSwitched) {
             return;
         }
-        const requestNeeded = userStore.isUserSwitched || !documentRootStore.find(id)?.firstMainDocument;
+        const requestNeeded = !documentRootStore.find(id)?.firstMainDocument;
         if (!requestNeeded) {
             return;
         }
