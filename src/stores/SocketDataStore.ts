@@ -69,6 +69,20 @@ export class SocketDataStore extends iStore<'ping'> {
     }
 
     @action
+    checkLiveState() {
+        if (OFFLINE_API) {
+            return;
+        }
+        if (this.socket?.connected) {
+            if (!this.isLive) {
+                this.setLiveState(true);
+            }
+            return;
+        }
+        this.reconnect();
+    }
+
+    @action
     reconnect() {
         const socket = this.socket;
         this._disconnect(socket);

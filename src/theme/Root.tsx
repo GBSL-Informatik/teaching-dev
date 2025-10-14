@@ -101,6 +101,52 @@ const Sentry = observer(() => {
     return null;
 });
 
+const LivenessChecker = observer(() => {
+    const lastHiddenTimeRef = React.useRef<number | null>(null);
+    React.useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!rootStore.sessionStore.isLoggedIn) {
+                return;
+            }
+            if (document.hidden) {
+                /**
+                 * The Browser-Window is now hidden
+                 * we could indicate to admins that the user has left the page
+                 * (e.g. for exams)
+                 */
+                lastHiddenTimeRef.current = Date.now();
+            } else {
+                /**
+                 * The Browser-Window is now visible again
+                 */
+                const elapsedSec = lastHiddenTimeRef.current
+                    ? (Date.now() - lastHiddenTimeRef.current) / 1000
+                    : 0;
+                lastHiddenTimeRef.current = null;
+                if (elapsedSec < 5) {
+                    return;
+                }
+                authClient.getSession().then((res) => {
+                    if (res.error) {
+                        window.location.reload();
+                        return;
+                    } else {
+                        rootStore.socketStore?.checkLiveState();
+                    }
+                });
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [rootStore]);
+
+    return null;
+});
+
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
 
@@ -122,6 +168,7 @@ function Root({ children }: { children: React.ReactNode }) {
                         <Authentication />
                         <RemoteNavigationHandler />
                         <LoggedOutOverlay delayMs={5_000} stalledCheckIntervalMs={15_000} />
+                        <LivenessChecker />
                     </>
                 )}
                 {SENTRY_DSN && <Sentry />}
@@ -132,26 +179,3 @@ function Root({ children }: { children: React.ReactNode }) {
 }
 
 export default Root;
-
-// React.useEffect(() => {
-//     // let timeoutId: ReturnType<typeof setTimeout>;
-//     const handleVisibilityChange = () => {
-//         if (document.hidden) {
-//             /**
-//              * The Browser-Window is now hidden
-//              * we could indicate to admins that the user has left the page
-//              * (e.g. for exams)
-//              */
-//         } else {
-//             /**
-//              * The Browser-Window is now visible again
-//              */
-//         }
-//     };
-
-//     document.addEventListener('visibilitychange', handleVisibilityChange);
-
-//     return () => {
-//         document.removeEventListener('visibilitychange', handleVisibilityChange);
-//     };
-// }, [rootStore]);

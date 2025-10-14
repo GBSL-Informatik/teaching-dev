@@ -119,7 +119,7 @@ export class UserStore extends iStore<`update-${string}`> {
     @computed
     get viewedUserId() {
         if (!this.current?.hasElevatedAccess) {
-            return this.current?.id;
+            return this.current?.id || this.root.sessionStore.currentUserId;
         }
         return this._viewedUserId || this.current?.id || this.root.sessionStore.currentUserId;
     }
