@@ -33,7 +33,6 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
          # remove default global domain
          dokku domains:remove {{app}} {{app}}.gbsl.website
 
-         dokku config:set --no-restart {{app}} API_URI={{API_URI}}
          dokku config:set --no-restart {{app}} APP_URL=https://{{domain}}
          dokku config:set --no-restart {{app}} BETTER_AUTH_URL={{BETTER_AUTH_URL}}
          dokku config:set --no-restart {{app}} CLIENT_ID={{CLIENT_ID}}
@@ -43,7 +42,6 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
       :::details[Alternativ: direkt über <Val as="code">`/home/dokku/{{app}}/ENV`</Val>]
       <TemplateCode>
          ```bash title="/home/dokku/{{app}}/ENV"
-         API_URI="{{API_URI}}"
          APP_URL="https://{{domain}}"
          BETTER_AUTH_URL="{{BETTER_AUTH_URL}}"
          CLIENT_ID="{{CLIENT_ID}}"
