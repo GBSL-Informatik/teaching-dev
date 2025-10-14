@@ -14,7 +14,7 @@ const getCopyPlugin = (currentBundler: CurrentBundler): typeof CopyWebpackPlugin
     return CopyWebpackPlugin;
 };
 
-export const remarkPdfPluginConfig: PluginConfig = () => {
+export const remarkPdfPluginConfig = (() => {
     return {
         name: 'pdfjs-copy-dependencies',
         configureWebpack(config, isServer, { currentBundler }) {
@@ -38,4 +38,4 @@ export const remarkPdfPluginConfig: PluginConfig = () => {
             };
         }
     };
-};
+}) satisfies PluginConfig;

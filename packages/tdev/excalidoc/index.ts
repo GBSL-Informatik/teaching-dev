@@ -1,7 +1,7 @@
-import type { PluginConfig } from '@docusaurus/types';
 import path from 'path';
+import type { PluginModule } from '@docusaurus/types';
 
-export const excalidrawPluginConfig: PluginConfig = () => {
+export const excalidrawPluginConfig = (() => {
     return {
         name: 'excalidraw-config',
         configureWebpack(config, isServer, { currentBundler }) {
@@ -34,4 +34,4 @@ export const excalidrawPluginConfig: PluginConfig = () => {
             };
         }
     };
-};
+}) satisfies PluginModule;
