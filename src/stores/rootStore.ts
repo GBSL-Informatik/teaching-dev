@@ -50,6 +50,7 @@ export class RootStore {
         this.userStore.loadCurrent().then((user) => {
             if (user) {
                 this.socketStore.reconnect();
+                this.documentRootStore.loadQueued();
                 /**
                  * load stores
                  */
