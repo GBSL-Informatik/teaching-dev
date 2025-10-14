@@ -131,7 +131,7 @@ export class DocumentRootStore extends iStore {
     @action
     _loadQueued() {
         const userId = this.root.userStore.viewedUserId;
-        if (!this.root.userStore.current || !userId) {
+        if (!this.root.userStore.current || !userId || this.queued.size === 0) {
             return;
         }
         const batch = [...this.queued];
