@@ -65,7 +65,6 @@ const config: Config = applyTransformers({
   projectName: PROJECT_NAME, // Usually your repo name.
 
   onBrokenLinks: siteConfig.onBrokenLinks ?? 'throw',
-  onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
 
   customFields: {
     /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
@@ -185,6 +184,9 @@ const config: Config = applyTransformers({
       return result;
     },
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
+    },
     ...siteConfig.markdown
   },
   presets: [
