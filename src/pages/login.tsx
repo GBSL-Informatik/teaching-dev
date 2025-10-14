@@ -12,6 +12,7 @@ import { authClient } from '@tdev/auth-client';
 import Button from '@tdev-components/shared/Button';
 import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { SIZE_LG, SIZE_M } from '@tdev-components/shared/iconSizes';
 const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {
@@ -48,6 +49,8 @@ const LoginPage = observer(() => {
                         icon={mdiMicrosoft}
                         iconSide="left"
                         color="blue"
+                        size={2}
+                        className={clsx(styles.mainLoginMethod)}
                     />
                     <Button
                         onClick={() =>

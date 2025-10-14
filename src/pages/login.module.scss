@@ -1,8 +1,14 @@
 .loginPage {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1em;
     margin: 3em;
+    .mainLoginMethod {
+        span[class^='icon'] {
+            line-height: 1;
+        }
+    }
 }
 .heroBanner {
     padding: 4rem 0;
