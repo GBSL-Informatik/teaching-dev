@@ -95,4 +95,37 @@ Some content
           "
         `);
     });
+
+    it('allows to process multiple code blocks', async () => {
+        const input = `# Code
+        
+        <Foo>
+        \`\`\`py
+        print('hello world')
+        print('foobar!')
+        \`\`\`
+        \`\`\`ts id="123" path="./foo/bar.ts"
+        print('hello world')
+        print('foobazz!')
+        \`\`\`
+        </Foo>
+
+        `;
+        const result = await process(input, {
+            components: [
+                {
+                    name: 'Foo',
+                    attributeName: 'blocks',
+                    codeAttributesName: 'codeAttributes',
+                    processMultiple: true
+                }
+            ]
+        });
+        expect(result).toMatchInlineSnapshot(`
+          "# Code
+
+          <Foo blocks={[{"code":"print('hello world')\\nprint('foobar!')","lang":"py"},{"code":"print('hello world')\\nprint('foobazz!')","meta":"id=\\"123\\" path=\\"./foo/bar.ts\\"","lang":"ts"}]} />
+          "
+        `);
+    });
 });

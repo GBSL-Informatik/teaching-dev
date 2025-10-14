@@ -19,24 +19,28 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
     title?: string;
     code?: string;
     maxHeight?: string | number;
+    minHeight?: string | number;
     showLineNumbers?: boolean;
     className?: string;
     children?: React.ReactNode;
     htmlTransformer?: (raw: string) => string;
+    onNavigate?: (href: string) => void;
     allowSameOrigin?: boolean;
 }
 
 const HtmlEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
     const userStore = useStore('userStore');
-    const [meta] = React.useState(
-        new ScriptMeta({
-            title: 'website.html',
-            ...props,
-            code: props.code || '',
-            lang: 'html',
-            theme: 'xcode'
-        })
+    const meta = React.useMemo(
+        () =>
+            new ScriptMeta({
+                title: 'website.html',
+                ...props,
+                code: props.code || '',
+                lang: 'html',
+                theme: 'xcode'
+            }),
+        [props.id, props.code]
     );
     const doc = useFirstMainDocument(id, meta);
     const isBrowser = useIsBrowser();
@@ -60,6 +64,7 @@ const HtmlEditor = observer((props: Props) => {
                 className={clsx(styles.htmlWindow)}
                 bodyStyle={{ padding: 0 }}
                 maxHeight={props.maxHeight ?? '400px'}
+                minHeight={props.minHeight ?? '6em'}
                 url={`file:///${doc.meta.title}`}
             >
                 <ErrorBoundary
@@ -78,6 +83,7 @@ const HtmlEditor = observer((props: Props) => {
                         id={doc.id}
                         htmlTransformer={props.htmlTransformer}
                         allowSameOrigin={props.allowSameOrigin}
+                        onNavigate={props.onNavigate}
                     />
                 </ErrorBoundary>
             </BrowserWindow>

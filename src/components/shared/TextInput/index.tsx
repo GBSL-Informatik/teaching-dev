@@ -11,6 +11,7 @@ interface Props {
     onEnter?: () => void;
     onEscape?: () => void;
     onSave?: () => void;
+    validator?: (text: string) => string | null;
     className?: string;
     labelClassName?: string;
     value?: string;
@@ -24,16 +25,26 @@ interface Props {
     min?: string | number | undefined;
     max?: string | number | undefined;
     readOnly?: boolean;
+    isDirty?: boolean;
 }
 
 const TextInput = observer((props: Props) => {
     const _id = React.useId();
     const id = props.id || _id;
     const [text, setText] = React.useState(props.defaultValue || '');
+    const validator = React.useCallback(props.validator ?? ((text: string) => null), [props.validator]);
     return (
         <>
             {props.label && (
-                <label className={clsx(styles.label, props.labelClassName)} htmlFor={id}>
+                <label
+                    className={clsx(
+                        styles.label,
+                        props.labelClassName,
+                        props.required && styles.required,
+                        props.isDirty && styles.dirty
+                    )}
+                    htmlFor={id}
+                >
                     {props.label}
                 </label>
             )}
@@ -61,6 +72,19 @@ const TextInput = observer((props: Props) => {
                     }
                     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                         props.onSave?.();
+                    }
+                }}
+                onInput={(e) => {
+                    const validity = e.currentTarget.validity;
+                    const error = validator(e.currentTarget.value);
+                    if (error === null) {
+                        e.currentTarget.setCustomValidity('');
+                    } else {
+                        e.currentTarget.setCustomValidity(error);
+                    }
+                    e.currentTarget.classList.add(styles.touched);
+                    if ((props.required || e.currentTarget.value.length > 0) && !validity.valid) {
+                        e.currentTarget.reportValidity();
                     }
                 }}
                 autoFocus={!props.noAutoFocus}

@@ -1,0 +1,15 @@
+.ide {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    .dir {
+        flex-basis: 120px;
+        flex-grow: 1;
+        border-radius: var(--ifm-global-radius);
+        border: 1px solid var(--ifm-color-content);
+    }
+    .editor {
+        flex-grow: 3;
+        flex-basis: 425px;
+    }
+}

@@ -1,20 +1,17 @@
 .copyBadge {
     cursor: pointer;
     position: relative;
-    transition-property: padding;
-    transition-duration: 1s;
     font-family: monospace;
     font-size: inherit;
     .copyIcon {
-        display: none;
+        transition: all 0.4s ease;
         position: absolute;
         right: 4px;
-        transform: translateY(-10%);
+        transform: scale(0) translateY(-10%);
     }
     &:hover {
-        padding-right: 18px;
         .copyIcon {
-            display: inline;
+            transform: scale(1) translateY(-10%);
         }
     }
 }
