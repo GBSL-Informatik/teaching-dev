@@ -260,7 +260,6 @@ export default class OfflineApi {
                 }
                 if (query.has('rids')) {
                     const rids = query.getAll('rids');
-                    console.log('rids', rids);
 
                     const allDocuments = await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE);
 
