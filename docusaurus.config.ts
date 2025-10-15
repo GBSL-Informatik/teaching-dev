@@ -23,6 +23,7 @@ import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recomm
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { excalidrawPluginConfig } from '@tdev/excalidoc';
 import { EditThisPageOption, ShowEditThisPage } from '@tdev/siteConfig/siteConfig';
+import type { ParseFrontMatterResult } from '@docusaurus/types/src/markdown';
 
 const siteConfig = getSiteConfig();
 
@@ -47,6 +48,21 @@ const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
 const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
+
+/**
+ * exposes the `page_id` frontmatter as `pid` in `sidebar_custom_props`
+ * this way the sidebar can access the page_id without additional plugins
+ * and we can use it to access the page model for the current page in the sidebar
+ */
+const exposePidToSidebar = (fm: ParseFrontMatterResult) => {
+  if (!('sidebar_custom_props' in fm.frontMatter)) {
+    fm.frontMatter.sidebar_custom_props = {};
+  }
+  if (!('pid' in (fm.frontMatter as any).sidebar_custom_props) && ('page_id' in fm.frontMatter)) {
+    (fm.frontMatter.sidebar_custom_props as any).pid = fm.frontMatter.page_id;
+  }
+  return fm;
+};
 
 const config: Config = applyTransformers({
   title: TITLE,
@@ -137,7 +153,7 @@ const config: Config = applyTransformers({
     parseFrontMatter: async (params) => {
       const result = await params.defaultParseFrontMatter(params);
       if (process.env.NODE_ENV === 'production') {
-        return result;
+        return exposePidToSidebar(result);
       }
       /**
        * don't add frontmatter to partials
@@ -145,13 +161,13 @@ const config: Config = applyTransformers({
       const fileName = path.basename(params.filePath);
       if (fileName.startsWith('_')) {
         // it is a partial, don't add frontmatter
-        return result;
+        return exposePidToSidebar(result);
       }
       /**
        * don't edit blogs frontmatter
        */
       if (params.filePath.startsWith(`${BUILD_LOCATION}/blog/`)) {
-        return result;
+        return exposePidToSidebar(result);
       }
       if (process.env.NODE_ENV !== 'production') {
         let needsRewrite = false;
@@ -181,7 +197,7 @@ const config: Config = applyTransformers({
           )
         }
       }
-      return result;
+      return exposePidToSidebar(result);
     },
     mermaid: true,
     hooks: {
