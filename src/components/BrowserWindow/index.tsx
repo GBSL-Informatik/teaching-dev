@@ -16,13 +16,14 @@ interface Props {
     minHeight?: number | string;
     maxHeight?: number | string;
     url?: string;
+    href?: string;
     style?: CSSProperties;
     bodyStyle?: CSSProperties;
     className?: string;
 }
 
 export default function BrowserWindow(props: Props): React.ReactNode {
-    const { children, minHeight, maxHeight, url, className, style, bodyStyle } = props;
+    const { children, minHeight, maxHeight, url, href, className, style, bodyStyle } = props;
     return (
         <div className={clsx(styles.browserWindow, className)} style={style}>
             <div className={styles.browserWindowHeader}>
@@ -31,8 +32,14 @@ export default function BrowserWindow(props: Props): React.ReactNode {
                     <span className={styles.dot} style={{ background: '#fbbe3c' }} />
                     <span className={styles.dot} style={{ background: '#58cb42' }} />
                 </div>
-                <div className={clsx(styles.browserWindowAddressBar, 'text--truncate')}>
-                    {url || 'http://localhost:3000'}
+                <div className={clsx(styles.browserWindowAddressBar, href && styles.href, 'text--truncate')}>
+                    {href ? (
+                        <a href={href} target="_blank">
+                            {url ?? href}
+                        </a>
+                    ) : (
+                        <>{url || 'http://localhost:3000'}</>
+                    )}
                 </div>
                 <div className={styles.browserWindowMenuIcon}>
                     <div>
