@@ -127,7 +127,7 @@ const LivenessChecker = observer(() => {
                     return;
                 }
                 authClient.getSession().then((res) => {
-                    if (res.error) {
+                    if (!res || res.error) {
                         window.location.reload();
                         return;
                     } else {
