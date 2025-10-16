@@ -4,7 +4,6 @@ import { RootStore } from '@tdev-stores/rootStore';
 import Page from '@tdev-models/Page';
 import { computedFn } from 'mobx-utils';
 import { allDocuments as apiAllDocuments } from '@tdev-api/document';
-import { Axios } from 'axios';
 
 export class PageStore extends iStore {
     readonly root: RootStore;
