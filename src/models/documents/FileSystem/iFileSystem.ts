@@ -48,7 +48,7 @@ class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
-        this.name = props.data?.name || this.meta.name;
+        this.name = props.data?.name || this.meta?.name || '';
         this.isOpen = props.data?.isOpen ?? true;
     }
 
