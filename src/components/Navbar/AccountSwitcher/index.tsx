@@ -74,11 +74,11 @@ const AccountSwitcher = observer(() => {
             )}
             <Popup
                 trigger={
-                    <div className={styles.accountSwitcher}>
+                    <div className={styles.buttonWrapper}>
                         <Button
                             icon={mdiAccountSwitch}
                             size={0.8}
-                            className={clsx(styles.accountSwitcherButton)}
+                            className={clsx(styles.button)}
                             iconSide="left"
                             color="primary"
                             title="Anderen Account Anzeigen"
