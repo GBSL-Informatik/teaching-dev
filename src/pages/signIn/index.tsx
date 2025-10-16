@@ -9,8 +9,9 @@ import { authClient } from '@site/src/auth-client';
 import { Redirect } from '@docusaurus/router';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import TextInput from '@tdev-components/shared/TextInput';
+import { observer } from 'mobx-react-lite';
 
-export default function SignIn(): React.ReactNode {
+const SignIn = observer((): React.ReactNode => {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const authStore = useStore('authStore');
@@ -52,4 +53,5 @@ export default function SignIn(): React.ReactNode {
             </main>
         </Layout>
     );
-}
+});
+export default SignIn;

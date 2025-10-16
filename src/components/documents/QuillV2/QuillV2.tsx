@@ -173,7 +173,7 @@ const QuillV2 = observer((props: Props) => {
             quill.keyboard.addBinding({
                 key: 's',
                 shortKey: true,
-                handler: action(function () {
+                handler: action(() => {
                     doc.saveNow();
                 })
             });
