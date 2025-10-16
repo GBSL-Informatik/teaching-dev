@@ -13,6 +13,7 @@ import ProgressState from './documents/ProgressState';
 export default class Page {
     readonly store: PageStore;
     readonly id: string;
+    refetchTimestamps: number[] = [];
 
     @observable.ref accessor primaryStudentGroup: StudentGroup | undefined = undefined;
     @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
@@ -94,7 +95,15 @@ export default class Page {
      */
     @action
     loadLinkedDocumentRoots() {
-        return this.store.loadAllDocuments(this);
+        this.refetchTimestamps.push(Date.now());
+        return this.store.loadAllDocuments(this).catch((err) => {
+            const now = Date.now();
+            const ts = this.refetchTimestamps.filter((ts) => now - ts < 10_000);
+            if (ts.length < 5) {
+                setTimeout(() => this.loadLinkedDocumentRoots(), 500);
+            }
+            console.warn('Failed to load linked document roots for page', this, err);
+        });
     }
 
     @action

@@ -98,16 +98,21 @@ const CmsImporter = observer((props: Props) => {
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
             onOpen={() => {
                 setIsOpen(true);
-                documentStore.apiLoadDocumentsFrom(Object.values(toAssign)).then((models) => {
-                    if (
-                        documentStore.apiStateFor(`load-docs-${Object.values(toAssign).join('::')}`) ===
-                        ApiState.SUCCESS
-                    ) {
-                        setReady(true);
-                    } else {
-                        console.log('Error loading documents');
-                    }
-                });
+                documentStore
+                    .apiLoadDocumentsFrom(Object.values(toAssign))
+                    .then((models) => {
+                        if (
+                            documentStore.apiStateFor(`load-docs-${Object.values(toAssign).join('::')}`) ===
+                            ApiState.SUCCESS
+                        ) {
+                            setReady(true);
+                        } else {
+                            console.log('Error loading documents');
+                        }
+                    })
+                    .catch((err) => {
+                        console.warn('Error loading documents', err);
+                    });
             }}
             closeOnEscape={true}
             onClose={() => {
