@@ -36,7 +36,7 @@ const PersonalSpaceOverlay = observer(() => {
                             e.preventDefault();
                         }}
                         icon={mdiFolderHomeOutline}
-                        color="blue"
+                        color="primary"
                         iconSide="left"
                         title="Persönlicher Bereich"
                         text="Persönlicher Bereich"
