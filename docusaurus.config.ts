@@ -70,7 +70,7 @@ const config: Config = applyTransformers({
     /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
     TEST_USER: DEFAULT_TEST_USER,
     OFFLINE_API: OFFLINE_API,
-    NO_AUTH: (process.env.NODE_ENV !== 'production' || OFFLINE_API) && !!DEFAULT_TEST_USER,
+    NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
     /** The Domain Name where the api is running */
     APP_URL: process.env.NETLIFY
       ? process.env.CONTEXT === 'production'
