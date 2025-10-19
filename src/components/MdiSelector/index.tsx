@@ -7,7 +7,7 @@ import _ from 'es-toolkit/compat';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import TextInput from '@tdev-components/shared/TextInput';
 
-export default function MdiSelector(): React.ReactNode {
+const MdiSelector = (): React.ReactNode => {
     const [showNr, setShowNr] = React.useState(300);
     const [icons, setIcons] = React.useState<string[]>([]);
     const [filter, setFilter] = React.useState('');
@@ -71,4 +71,5 @@ export default function MdiSelector(): React.ReactNode {
             </div>
         </div>
     );
-}
+};
+export default MdiSelector;

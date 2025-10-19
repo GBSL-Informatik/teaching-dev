@@ -26,7 +26,7 @@ function HomepageHeader() {
     );
 }
 
-export default function Home(): React.ReactNode {
+const Home = (): React.ReactNode => {
     const { siteConfig } = useDocusaurusContext();
     return (
         <Layout
@@ -39,4 +39,6 @@ export default function Home(): React.ReactNode {
             </main>
         </Layout>
     );
-}
+};
+
+export default Home;

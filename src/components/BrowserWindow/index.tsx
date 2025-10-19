@@ -22,7 +22,7 @@ interface Props {
     className?: string;
 }
 
-export default function BrowserWindow(props: Props): React.ReactNode {
+const BrowserWindow = (props: Props): React.ReactNode => {
     const { children, minHeight, maxHeight, url, href, className, style, bodyStyle } = props;
     return (
         <div className={clsx(styles.browserWindow, className)} style={style}>
@@ -58,4 +58,5 @@ export default function BrowserWindow(props: Props): React.ReactNode {
             </div>
         </div>
     );
-}
+};
+export default BrowserWindow;
