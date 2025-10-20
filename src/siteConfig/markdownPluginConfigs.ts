@@ -1,5 +1,7 @@
 import type { Node } from 'mdast';
+import path from 'path';
 import type { LeafDirective } from 'mdast-util-directive';
+import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
 import mdiPlugin from '../plugins/remark-mdi/plugin';
@@ -129,7 +131,39 @@ export const enumerateAnswersPluginConfig = [
 
 export const pdfPluginConfig = pdfPlugin;
 
-export const pagePluginConfig = pagePlugin;
+const cwd = process.cwd();
+const indexPath = path.resolve(cwd, './src/.page-index');
+const ComponentsWithId = new Set(['TaskState', 'ProgressState']);
+const AnswerTypes = new Set(['state', 'progress']);
+export const pagePluginConfig = [
+    pagePlugin,
+    {
+        exportDir: indexPath,
+        extractors: [
+            {
+                test: (_node: Node) => {
+                    if (_node.type !== 'mdxJsxFlowElement') {
+                        return false;
+                    }
+                    const node = _node as MdxJsxFlowElement;
+                    const name = node.name as string;
+                    return (
+                        ComponentsWithId.has(name) ||
+                        node.attributes.some(
+                            (a) =>
+                                (a as { name?: string }).name === 'type' && AnswerTypes.has(a.value as string)
+                        )
+                    );
+                },
+                getDocumentRootIds: (node: Node) => {
+                    const jsxNode = node as MdxJsxFlowElement;
+                    const idAttr = jsxNode.attributes.find((attr) => (attr as any).name === 'id');
+                    return idAttr ? [idAttr.value] : [];
+                }
+            }
+        ]
+    }
+];
 export const graphvizPluginConfig = graphvizPlugin;
 
 export const commentPluginConfig = [
