@@ -22,7 +22,7 @@ import path from 'path';
 import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recommendedRemarkPlugins } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { excalidrawPluginConfig } from '@tdev/excalidoc';
-import { EditThisPageOption, ShowEditThisPage } from '@tdev/siteConfig/siteConfig';
+import type { EditThisPageOption, ShowEditThisPage, TdevConfig } from '@tdev/siteConfig/siteConfig';
 
 const siteConfig = getSiteConfig();
 
@@ -86,6 +86,7 @@ const config: Config = applyTransformers({
     showEditThisPage: siteConfig.showEditThisPage ?? 'always' satisfies ShowEditThisPage,
     showEditThisPageOptions: siteConfig.showEditThisPageOptions ?? ['github', 'github-dev', 'cms'] satisfies EditThisPageOption[],
     editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
+    tdevConfig: siteConfig.tdevConfig ?? {} satisfies Partial<TdevConfig>,
   },
   future: {
     v4: true,

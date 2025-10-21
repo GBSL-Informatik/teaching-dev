@@ -15,6 +15,11 @@ import _ from 'es-toolkit/compat';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import siteConfig from '@generated/docusaurus.config';
+import type { TdevConfig } from '@tdev/siteConfig/siteConfig';
+const { tdevConfig } = siteConfig.customFields as {
+    tdevConfig: Partial<TdevConfig>;
+};
 
 export const mdiColor: { [key in StateType]: string } = {
     checked: '--ifm-color-success',
@@ -89,6 +94,12 @@ const EditingOverview = observer(() => {
                                     (docs) => docs[0].author?.nameShort,
                                     ['asc']
                                 ).map((docs, idx) => {
+                                    if (
+                                        docs[0].author?.hasElevatedAccess &&
+                                        tdevConfig.taskStateOverview?.hideTeachers
+                                    ) {
+                                        return null;
+                                    }
                                     return (
                                         <div key={idx} className={clsx(styles.usersTasks)}>
                                             <div>
