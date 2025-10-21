@@ -86,7 +86,7 @@ const config: Config = applyTransformers({
     showEditThisPage: siteConfig.showEditThisPage ?? 'always' satisfies ShowEditThisPage,
     showEditThisPageOptions: siteConfig.showEditThisPageOptions ?? ['github', 'github-dev', 'cms'] satisfies EditThisPageOption[],
     editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
-    tdevConfig: siteConfig.tdevConfig ?? { taskStateOverview: { hideTeachers: true } } satisfies Partial<TdevConfig>,
+    tdevConfig: siteConfig.tdevConfig ?? {} satisfies Partial<TdevConfig>,
   },
   future: {
     v4: true,
