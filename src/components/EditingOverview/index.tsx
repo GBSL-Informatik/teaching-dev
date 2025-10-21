@@ -95,7 +95,7 @@ const EditingOverview = observer(() => {
                                     ['asc']
                                 ).map((docs, idx) => {
                                     if (
-                                        docs[0].author?.isTeacher &&
+                                        docs[0].author?.hasElevatedAccess &&
                                         tdevConfig.taskStateOverview?.hideTeachers
                                     ) {
                                         return null;
