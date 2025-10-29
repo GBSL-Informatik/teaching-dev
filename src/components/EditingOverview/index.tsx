@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
-import { mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
+import { mdiAccountAlert, mdiAccountSyncOutline, mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
 import { StateType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import Popup from 'reactjs-popup';
@@ -17,6 +17,7 @@ import useIsBrowser from '@docusaurus/useIsBrowser';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import siteConfig from '@generated/docusaurus.config';
 import type { TdevConfig } from '@tdev/siteConfig/siteConfig';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 const { tdevConfig } = siteConfig.customFields as {
     tdevConfig: Partial<TdevConfig>;
 };
@@ -122,6 +123,20 @@ const EditingOverview = observer(() => {
                                 })}
                                 {currentPage.userIdsWithoutEditingState.map((userId) => {
                                     const user = userStore.find(userId);
+                                    if (!user) {
+                                        /**
+                                         * Happens only in rear cases, when the user list is not fully loaded yet, but the
+                                         * groups are already loaded and assigned to the page.
+                                         */
+                                        return (
+                                            <div key={userId}>
+                                                <div>
+                                                    <Icon path={mdiAccountSyncOutline} size={SIZE_XS} />
+                                                    <div>{userId.slice(0, 8)}...</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
                                     return (
                                         <div key={userId} className={clsx(styles.usersTasks)}>
                                             <div>
