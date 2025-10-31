@@ -72,7 +72,6 @@ const FsDetails = ({ summary, model, lazy, children, ...props }: DetailsProps): 
             <Collapsible
                 lazy={!!lazy} // Here we don't care about SEO
                 collapsed={!model.isOpen}
-                disableSSRStyle // Allows component to work fine even with JS disabled!
             >
                 <div className={clsx(styles.collapsibleContent)}>{children}</div>
             </Collapsible>

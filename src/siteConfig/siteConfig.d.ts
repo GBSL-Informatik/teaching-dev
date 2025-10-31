@@ -7,6 +7,14 @@ import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-bl
 import type { Options as PagesPluginOptions } from '@docusaurus/plugin-content-pages';
 export type ShowEditThisPage = 'always' | 'never' | 'loggedIn' | 'teachers' | 'admins';
 export type EditThisPageOption = 'github' | 'github-dev' | 'cms';
+
+export interface TdevConfig {
+    taskStateOverview: {
+        /** don't include teachers in the task state overview */
+        hideTeachers?: boolean;
+    };
+}
+
 export interface SiteConfig {
     /** The title of the site. */
     title?: string;
@@ -139,6 +147,7 @@ export interface SiteConfig {
         /** Additional languages for code syntax hightlighting. */
         additionalLanguages?: string[]; //
     };
+    tdevConfig?: Partial<TdevConfig>;
 
     /** Overrides for the theme config (see https://docusaurus.io/docs/api/themes/configuration). */
     themeConfig?: Preset.ThemeConfig;
