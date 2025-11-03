@@ -15,6 +15,7 @@ import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
+import pageProgressStatePlugin from '@tdev/page-progress-state/remark-plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
@@ -135,10 +136,11 @@ const cwd = process.cwd();
 const indexPath = path.resolve(cwd, './src/.page-index');
 const ComponentsWithId = new Set(['TaskState', 'ProgressState']);
 const AnswerTypes = new Set(['state', 'progress']);
-export const pagePluginConfig = [
-    pagePlugin,
+export const pagePluginConfig = [pagePlugin, {}];
+
+export const pageProgressStatePluginConfig = [
+    pageProgressStatePlugin,
     {
-        exportDir: indexPath,
         extractors: [
             {
                 test: (_node: Node) => {
@@ -164,6 +166,7 @@ export const pagePluginConfig = [
         ]
     }
 ];
+
 export const graphvizPluginConfig = graphvizPlugin;
 
 export const commentPluginConfig = [
@@ -203,6 +206,7 @@ export const recommendedRemarkPlugins = [
     enumerateAnswersPluginConfig,
     pdfPluginConfig,
     pagePluginConfig,
+    pageProgressStatePluginConfig,
     commentPluginConfig,
     linkAnnotationPluginConfig,
     codeAsAttributePluginConfig

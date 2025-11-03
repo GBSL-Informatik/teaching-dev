@@ -8,9 +8,9 @@ import Icon from '@mdi/react';
 import { mdiCheck, mdiCheckCircle, mdiProgressQuestion } from '@mdi/js';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import { useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
 
 type Props = WrapperProps<typeof DocSidebarItemType>;
-
 const DocSidebarItemWrapper = observer((props: Props): ReactNode => {
     const pageStore = useStore('pageStore');
     const { pid } = (props.item.customProps || {}) as { pid?: string };
