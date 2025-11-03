@@ -7,6 +7,12 @@
 }
 
 :global(.alert) {
+    p:has(+ ol),
+    p:has(+ ul),
+    p:has(+ div[class^='wrapper'] + ol),
+    p:has(+ div[class^='wrapper'] + ul) {
+        --ifm-paragraph-margin-bottom: calc(0.25 * 1rem);
+    }
     &:last-child {
         margin-bottom: 0;
     }
