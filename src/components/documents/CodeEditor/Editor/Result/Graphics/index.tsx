@@ -39,7 +39,7 @@ const Graphics = observer((props: Props) => {
                 </div>
                 <div
                     id={DOM_ELEMENT_IDS.graphicsResult(script.codeId)}
-                    className="brython-graphics-result"
+                    className={clsx('brython-graphics-result', styles.brythonGraphicsResultMain)}
                     key={`exec-${script.graphicsModalExecutionNr}`}
                 >
                     {props.main}
