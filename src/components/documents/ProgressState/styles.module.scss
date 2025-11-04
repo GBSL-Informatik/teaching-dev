@@ -27,7 +27,7 @@
             &.confirming {
                 border: 1px solid var(--ifm-color-gray-500);
                 background-color: var(--ifm-background-color);
-                z-index: calc(var(--ifm-z-index-dropdown) + 1);
+                z-index: calc(var(--ifm-z-index-fixed) - 1);
                 &.floatRight {
                     margin-right: calc(
                         -1 * var(--tdev-progress-bullet-size) - var(--tdev-progress-rail-width) / 2
