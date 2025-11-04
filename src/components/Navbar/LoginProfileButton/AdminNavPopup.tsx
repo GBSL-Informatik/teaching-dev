@@ -11,6 +11,7 @@ import ProfileButton from './ProfileButton';
 import Button from '@tdev-components/shared/Button';
 import { useLocation } from '@docusaurus/router';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { observer } from 'mobx-react-lite';
 
 interface AdminNavButtonProps {
     href: string;
@@ -35,7 +36,7 @@ const AdminNavButton = ({ href, text, icon }: AdminNavButtonProps) => {
     );
 };
 
-const AdminNavPopup = () => {
+const AdminNavPopup = observer(() => {
     const userUrl = useBaseUrl('/user');
     const adminUrl = useBaseUrl('/admin');
 
@@ -71,6 +72,6 @@ const AdminNavPopup = () => {
             </div>
         </Popup>
     );
-};
+});
 
 export default AdminNavPopup;
