@@ -9,6 +9,7 @@ import { useStore } from '@tdev-hooks/useStore';
 
 interface Props extends MetaInit {
     id: string;
+    float?: 'left' | 'right';
     children?: React.ReactNode;
     labels?: React.ReactNode[];
 }
@@ -87,6 +88,7 @@ const ProgressState = observer((props: Props) => {
                         key={idx}
                         item={children[idx] || null}
                         step={c}
+                        float={props.float}
                         label={props.labels?.[idx] || `Schritt ${idx + 1}`}
                     />
                 ))}

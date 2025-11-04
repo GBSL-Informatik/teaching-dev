@@ -13,6 +13,7 @@ import Step from '@tdev-models/documents/ProgressState/Step';
 interface Props extends MetaInit {
     item: React.ReactNode;
     step: Step;
+    float?: 'left' | 'right';
     label: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ const Item = observer((props: Props) => {
     const ref = React.useRef<HTMLDivElement>(null);
     const { item, label, step } = props;
     const [animate, setAnimate] = React.useState(false);
+    const float = props.float ?? 'left';
     React.useEffect(() => {
         if (ref.current && step.isScrollingTo) {
             ref.current.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'start' });
@@ -52,19 +54,22 @@ const Item = observer((props: Props) => {
                 className={clsx(
                     styles.bullet,
                     animate && styles.animate,
-                    step.isConfirmed && styles.confirming
+                    step.isConfirmed && styles.confirming,
+                    float === 'right' && styles.floatRight
                 )}
                 ref={ref}
             >
-                <IconButton
-                    path={step.iconState.path}
-                    onHover={(hovered) => step.setHovered(hovered)}
-                    onClick={() => step.onClicked()}
-                    disabled={step.isDisabled}
-                    color={step.iconState.color}
-                    className={clsx(step.isLatest && !step.isActive && styles.activeStep)}
-                    size={'var(--tdev-progress-bullet-size)'}
-                />
+                {float === 'left' && (
+                    <IconButton
+                        path={step.iconState.path}
+                        onHover={(hovered) => step.setHovered(hovered)}
+                        onClick={() => step.onClicked()}
+                        disabled={step.isDisabled}
+                        color={step.iconState.color}
+                        className={clsx(step.isLatest && !step.isActive && styles.activeStep)}
+                        size={'var(--tdev-progress-bullet-size)'}
+                    />
+                )}
                 {step.isConfirmed && (
                     <IconButton
                         path={mdiCloseCircle}
@@ -72,6 +77,17 @@ const Item = observer((props: Props) => {
                             step.setConfirmed(false);
                         }}
                         color={IfmColors.red}
+                        size={'var(--tdev-progress-bullet-size)'}
+                    />
+                )}
+                {float === 'right' && (
+                    <IconButton
+                        path={step.iconState.path}
+                        onHover={(hovered) => step.setHovered(hovered)}
+                        onClick={() => step.onClicked()}
+                        disabled={step.isDisabled}
+                        color={step.iconState.color}
+                        className={clsx(step.isLatest && !step.isActive && styles.activeStep)}
                         size={'var(--tdev-progress-bullet-size)'}
                     />
                 )}

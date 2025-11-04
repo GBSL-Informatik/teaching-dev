@@ -73,6 +73,39 @@ import ProgressState from '@tdev-components/documents/ProgressState';
     </ProgressState>
 </BrowserWindow>
 
+### Bestätigung nach rechts öffnen
+
+Mit `float='right'` fährt der Bestätigungs-Button nach Rechts aus. Praktisch, wenn links zu wenig Platz oder abdeckende Elemente vorhanden sind.
+
+
+````md
+import ProgressState from '@tdev-components/documents/ProgressState';
+
+<ProgressState id="baf83816-1621-403d-b075-309a46d12ab8" confirm float="right">
+
+1. Hello Bello and Bella
+2. World **bla** __foo__
+3. [Link](https://example.com)
+4. `inline code!!`
+    ```js
+    console.log('code block');
+    ```
+</ProgressState>
+````
+<BrowserWindow>
+    <ProgressState id="baf83816-1621-403d-b075-309a46d12ab8" confirm float="right">
+
+    1. Hello Bello and Bella
+    2. World **bla** __foo__
+    3. [Link](https://example.com)
+    4. `inline code!!`
+        ```js
+        console.log('code block');
+        ```
+    </ProgressState>
+</BrowserWindow>
+
+
 ### Abgeschlossene Schritte geöffnet lassen
 
 Mit der Option `keepPreviousStepsOpen` bleiben abgeschlossene Schritte geöffnet.

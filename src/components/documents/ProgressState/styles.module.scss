@@ -27,7 +27,12 @@
             &.confirming {
                 border: 1px solid var(--ifm-color-gray-500);
                 background-color: var(--ifm-background-color);
-                z-index: var(--ifm-z-index-dropdown);
+                z-index: calc(var(--ifm-z-index-dropdown) + 1);
+                &.floatRight {
+                    margin-right: calc(
+                        -1 * var(--tdev-progress-bullet-size) - var(--tdev-progress-rail-width) / 2
+                    );
+                }
             }
             .activeStep {
                 border: 1px dashed var(--ifm-color-primary);
@@ -36,6 +41,10 @@
         &:has(.bullet.confirming) {
             margin-left: calc(-1.5px - var(--tdev-progress-bullet-size));
             --tdev-progress-rail-shift: calc(1.5px + var(--tdev-progress-bullet-size));
+            &:has(.floatRight) {
+                margin-left: 0;
+                --tdev-progress-rail-shift: 0px;
+            }
         }
         &.current.inactiveLatest {
             .button {
