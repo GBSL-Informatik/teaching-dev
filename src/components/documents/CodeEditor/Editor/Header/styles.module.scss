@@ -4,7 +4,7 @@
     align-items: center;
     letter-spacing: 0.08em;
 
-    z-index: calc(var(--ifm-z-index-fixed) - 2);
+    z-index: var(--ifm-z-index-dropdown);
     padding: 0.2em;
     padding-left: 0.5em;
     text-transform: uppercase;
