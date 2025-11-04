@@ -1,5 +1,5 @@
 .button {
-    z-index: var(--ifm-z-index-dropdown);
+    z-index: calc(var(--ifm-z-index-fixed) - 2);
     border: none;
     border-radius: 6px;
     padding: 6px 12px;

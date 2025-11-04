@@ -18,7 +18,7 @@
     grid-auto-flow: row;
     grid-template-areas: 'editor controls' 'result result';
     .headerButton {
-        z-index: var(--ifm-z-index-dropdown);
+        z-index: calc(var(--ifm-z-index-fixed) - 2);
         height: 100%;
         border-radius: 0px;
         padding: 2px 6px;
