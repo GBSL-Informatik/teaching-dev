@@ -3,10 +3,11 @@ import {
     EXCALIDRAW_BACKGROUND_FILE_ID,
     EXCALIDRAW_EXPORT_QUALITY,
     EXCALIDRAW_IMAGE_RECTANGLE_ID,
-    EXCALIDRAW_MAX_EXPORT_WIDTH
+    EXCALIDRAW_MAX_EXPORT_WIDTH,
+    EXCALIDRAW_STANDALONE_DRAWING_ID
 } from './constants';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import { getImageElementFromScene } from './getElementsFromScene';
+import { getImageElementFromScene, withoutMetaElements } from './getElementsFromScene';
 import type {
     ExcalidrawImageElement,
     NonDeletedExcalidrawElement,
@@ -20,10 +21,6 @@ const getScale = (imgWidth: number, scaleFactor?: number) => {
     const scale =
         width < EXCALIDRAW_MAX_EXPORT_WIDTH ? initScale : initScale * (EXCALIDRAW_MAX_EXPORT_WIDTH / width);
     return scale;
-};
-
-const withoutMetaElements = (elements: readonly Ordered<NonDeletedExcalidrawElement>[]) => {
-    return elements.filter((e) => e.id !== EXCALIDRAW_IMAGE_RECTANGLE_ID);
 };
 
 const withBackgroundImage = (
@@ -65,17 +62,25 @@ const plainExcalidrawImage = (
     api: ExcalidrawImperativeAPI,
     mimeType: string
 ) => {
+    const isStandaloneDrawing = elements.some((e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID);
     const elementsWithoutMeta = withoutMetaElements(elements);
+    const minX = Math.min(...elementsWithoutMeta.map((e) => e.x));
+    const maxX = Math.max(...elementsWithoutMeta.map((e) => e.x + e.width));
+    const dX = Math.max(maxX - minX, 1);
     const files = api.getFiles();
-
+    const padding = Math.max(
+        ...elementsWithoutMeta.map((e) => (e.type === 'freedraw' ? e.strokeWidth : e.strokeWidth)),
+        2
+    );
+    const scale = isStandaloneDrawing ? (dX < 50 ? 15 : dX < 100 ? 8 : dX < 200 ? 4 : dX < 400 ? 3 : 1) : 1;
     return {
-        scale: 1,
+        scale: scale,
         mimeType: mimeType,
         asWebp: mimeType === 'image/webp',
         toExport: {
             elements: elementsWithoutMeta,
             files: files,
-            exportPadding: 2,
+            exportPadding: padding,
             appState: {
                 exportBackground: false,
                 exportEmbedScene: false

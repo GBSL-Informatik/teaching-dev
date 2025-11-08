@@ -10,8 +10,11 @@ import {
     EXCALIDRAW_BACKGROUND_FILE,
     EXCALIDRAW_BACKGROUND_IMAGE,
     EXCALIDRAW_MAX_WIDTH,
-    CustomData
+    CustomData,
+    EXCALIDRAW_STANDALONE_DRAWING_ID
 } from './constants';
+import { withoutMetaElements } from './getElementsFromScene';
+import { getBoundingRect } from './getBoundingRect';
 
 export const createExcalidrawMarkup = async (
     imgFileHandle: FileSystemFileHandle
@@ -50,11 +53,39 @@ export const createExcalidrawMarkup = async (
     };
 };
 
+const handleStandaloneDrawing = (excalidrawState: ExcalidrawInitialDataState): ExcalidrawInitialDataState => {
+    if (!excalidrawState.elements) {
+        return excalidrawState;
+    }
+    const standaloneDrawingIdx = excalidrawState.elements.findIndex(
+        (e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID
+    );
+    if (standaloneDrawingIdx < 0) {
+        return excalidrawState;
+    }
+    const elements = withoutMetaElements(excalidrawState.elements);
+    const { x, y, width, height } = getBoundingRect(elements);
+    (excalidrawState.elements as ExcalidrawElement[]).splice(standaloneDrawingIdx, 1, {
+        ...excalidrawState.elements[standaloneDrawingIdx],
+        width,
+        height,
+        x: x,
+        y: y
+    });
+    return excalidrawState;
+};
+
 export const updateRectangleDimensions = (
     excalidrawState: ExcalidrawInitialDataState
 ): ExcalidrawInitialDataState => {
     if (!excalidrawState.elements) {
         return excalidrawState;
+    }
+    const isStandaloneDrawing = excalidrawState.elements.some(
+        (e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID
+    );
+    if (isStandaloneDrawing) {
+        return handleStandaloneDrawing(excalidrawState);
     }
     const backgroundImage = excalidrawState.elements.find((e) => e.id === EXCALIDRAW_BACKGROUND_IMAGE_ID);
     if (!backgroundImage || backgroundImage.type !== 'image') {

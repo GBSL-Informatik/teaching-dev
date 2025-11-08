@@ -4,6 +4,7 @@ import { BinaryFileData } from '@excalidraw/excalidraw/types';
 export const EXCALIDRAW_BACKGROUND_IMAGE_ID = 'TDEV-BACKGROUND-IMAGE' as const;
 export const EXCALIDRAW_IMAGE_RECTANGLE_ID = 'TDEV-IMAGE--RECTANGLE' as const;
 export const EXCALIDRAW_BACKGROUND_FILE_ID = 'TDEV-BACKGROUND--FILE' as const;
+export const EXCALIDRAW_STANDALONE_DRAWING_ID = 'TDEV-STANDALONE-DRAWING' as const;
 export const EXCALIDRAW_RED = '#e03131' as const;
 export const EXCALIDRAW_STROKE_TYPES = new Set([
     'arrow',
@@ -39,6 +40,33 @@ export const EXCALIDRAW_IMAGE_RECTANGLE = {
     opacity: 100,
     locked: true
 } as ExcalidrawElement;
+
+export const EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE = {
+    id: EXCALIDRAW_STANDALONE_DRAWING_ID,
+    type: 'rectangle',
+    x: 0,
+    y: 0,
+    width: 400,
+    height: 300,
+    strokeColor: '#1e1e1e',
+    backgroundColor: 'transparent',
+    fillStyle: 'solid',
+    strokeWidth: 1,
+    strokeStyle: 'dotted',
+    roughness: 0,
+    opacity: 100,
+    locked: true
+} as ExcalidrawElement;
+
+export const NEW_EXCALIDRAW_DRAWING = {
+    type: 'excalidraw',
+    version: 2,
+    elements: [EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE],
+    appState: {},
+    files: {}
+};
+
+export const VALID_EXPORT_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.svg', '.webp']);
 
 export const EXCALIDRAW_BACKGROUND_IMAGE = {
     id: EXCALIDRAW_BACKGROUND_IMAGE_ID,
