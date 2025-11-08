@@ -147,6 +147,23 @@ import ExcalidocWithCodeEditor from '@tdev/excalidoc/Component/WithCodeEditor';
     />
 </BrowserWindow>
 
+## Content-Editing Tools
+
+Währenddem Docusaurus im `development`-Modus läuft, steht in der Toolbar das `Edit Document`-Icon zur Verfügung, um das Excalidraw-Dokument direkt zu bearbeiten.
+
+### Neue Excalidraw-Zeichnung erstellen
+
+Eine neue Excalidraw-Zeichnung kann erstellt werden, indem im Markdown ein neuer Bild-Pfad angegeben wird:
+
+```mdx
+
+![Neue Excalidraw-Zeichnung](./images/zeichnung.webp.new)
+```
+
+Das Plugin wandelt dann
+- den Pfad im Markdown-Bild automatisch um ohne das `.new` Suffix
+- erstellt eine neue Excalidraw-Zeichnung am angegebenen Pfad (und erstellt ggf. den angegebenen Ordner)
+
 
 ## Installation
 
