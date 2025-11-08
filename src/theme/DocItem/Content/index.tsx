@@ -6,10 +6,17 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { useLocation } from '@docusaurus/router';
 type Props = WrapperProps<typeof ContentType>;
+import { useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
 
 const ContentWrapper = observer((props: Props): React.ReactNode => {
     const pageStore = useStore('pageStore');
     const location = useLocation();
+    const sidebar = useDocsSidebar();
+    React.useEffect(() => {
+        if (sidebar?.name) {
+            pageStore.configureSidebar(sidebar.name, sidebar);
+        }
+    }, [sidebar, pageStore]);
 
     React.useEffect(() => {
         if (pageStore.current) {
