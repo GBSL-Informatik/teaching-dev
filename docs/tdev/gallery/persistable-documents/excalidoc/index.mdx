@@ -155,14 +155,25 @@ Währenddem Docusaurus im `development`-Modus läuft, steht in der Toolbar das `
 
 Eine neue Excalidraw-Zeichnung kann erstellt werden, indem im Markdown ein neuer Bild-Pfad angegeben wird:
 
-```mdx
-
+```md
 ![Neue Excalidraw-Zeichnung](./images/zeichnung.webp.new)
 ```
 
-Das Plugin wandelt dann
-- den Pfad im Markdown-Bild automatisch um ohne das `.new` Suffix
-- erstellt eine neue Excalidraw-Zeichnung am angegebenen Pfad (und erstellt ggf. den angegebenen Ordner)
+Das Plugin...
+- erzeugt basierend auf der Dateiendung ein neues Bild beim angegebenen Pfad (erzeugt wenn nötig auch die Ordnerstruktur)
+- überschreibt den Pfad im Markdown-Bild ohne das `.new` Suffix
+- erstellt eine neue, leere Excalidraw-Zeichnung am angegebenen Pfad (hier `./images/zeichnung.webp.excalidraw`)
+
+```md
+![Neue Excalidraw-Zeichnung](./images/zeichnung.webp)
+```
+
+Unterstützte Bildformate:
+- `.png`
+- `.jpg`
+- `.jpeg`
+- `.svg`
+- `.webp`
 
 
 ## Installation
@@ -174,7 +185,7 @@ Das Plugin wandelt dann
 
 :::info[NPM]
 ```bash
-yarn add @excalidraw/excalidraw@^0.17.6
+yarn add @excalidraw/excalidraw@^0.18.0
 ```
 :::
 
@@ -229,6 +240,11 @@ Zudem erwartet Excalidraw client-seitig die Env-Variable `IS_PREACT`, die über 
 
 ```ts
 const config: Config = {
+    hooks: {
+      onBrokenMarkdownImages: process.env.NODE_ENV === 'production' 
+        ? siteConfig.onBrokenImages ?? 'throw'
+        : onNewExcalidrawSketch /* only register the onNewExcalidrawSketch hook in dev mode */
+    },
     plugins: [
         () => {
             return {

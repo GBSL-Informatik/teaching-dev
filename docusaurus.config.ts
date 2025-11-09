@@ -192,7 +192,7 @@ const config: Config = applyTransformers({
       onBrokenMarkdownImages: process.env.NODE_ENV === 'production' 
         ? siteConfig.onBrokenImages ?? 'throw' 
         : onNewExcalidrawSketch
-      },
+    },
     ...siteConfig.markdown
   },
   presets: [
