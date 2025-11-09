@@ -1,19 +1,36 @@
 ---
 page_id: 30bf535e-5a1d-433e-9856-8e5302170830
+tags: [excalidraw, bilder]
 ---
 
 # Bilder Annotieren
 
+:::warning[Nur für Chrome-Browser]
+Die Excalidraw-Integration für das Editieren von Bildern basiert auf der [Local File System Access API](https://developer.mozilla.org/de/docs/Web/API/Window/showOpenFilePicker), welche aktuell nur unter Chrome-basierten Browsern (z.B. Google Chrome, Microsoft Edge) unterstützt wird.
+:::
 
 Oft müssen Screenshots oder Bilder annotiert werden. Ansich praktisch, bis sich das Bild ändert, die Anmerkungen aber eigentlich gleich bleiben (z.B. wenn das neue Excel eine leicht andere Benutzeroberfläche hat).
 
 TDev bringt in der Entwicklungsumgebung eine einfache Möglichkeit mit, Bilder zu annotieren, wobei die Originalbilder erhalten und die Anmerkungen weiterhin editierbar bleiben.
 
 :::info[Technischer Hintergrund]
-Mit der [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API) können lokale Dateien und Ordner im Browser geöffnet und bearbeitet werden.
+Die Excalidraw-Integration für das Editieren von Bildern basiert auf der [Local File System Access API](https://developer.mozilla.org/de/docs/Web/API/Window/showOpenFilePicker), welche aktuell nur unter Chrome-basierten Browsern (z.B. Google Chrome, Microsoft Edge) unterstützt wird.
 
 Sobald ein Bild editiert wird, wird eine gleichnamige [Excalidraw](https://excalidraw.com/)-Datei erstellt und das Bild als Hintergrund gesetzt. Beim speichern wird das Bild inkl. der Anmerkungen exportiert und gespeichert. Das Originalbild ist fortan als Bildquelle in Excalidraw hinerlegt und kann jederzeit wiederhergestellt werden.
 :::
+
+Nach dem Speichern im Editor wird die Excalidraw-Datei (`.excalidraw`) im gleichen Ordner wie das Bild abgelegt.
+
+
+![](./images/image-structure.jpg)
+
+
+Dies hat den Vorteil, dass die Anotierungen unabhängig von der Bilddatei gespeichert werden. Dies hat mehrere Vorteile:
+- Die Original-Bilddatei bleibt unverändert (und kann wiederhergestellt werden)
+- Die servierte Bilddatei bleibt klein, da das Bild und die Anotierungen getrennt gespeichert werden
+- Die Anotierungen können jederzeit wieder angepasst werden
+- Das Hintergrundbild kann ausgetauscht werden, ohne die Anotierungen zu verlieren 
+
 
 :::warning[Exportkonfiguration]
 Beim Exportieren wird das Bild in der Regel im Original-Format gespeichert. Folgende Konfigurationen werden angewandt:
@@ -39,7 +56,34 @@ Die Bilder lassen sich auch als webp exportieren:
 Wird ein Bild als __WebP__ exportiert, müssen die Quellen im Markdown **manuell** angepasst werden.
 :::
 
-## Reine Excalidraw Bilder
+
+## Neue Excalidraw-Zeichnung erstellen
+
+Es können auch neue Excalidraw-Zeichnungen erstellt werden, indem im Markdown ein neuer Bild-Pfad angegeben wird:
+
+```md
+![Neue Excalidraw-Zeichnung](./images/zeichnung.webp.new)
+```
+
+Dann wird:
+- basierend auf der Dateiendung ein neues Bild beim angegebenen Pfad erzeugt (erzeugt wenn nötig auch die Ordnerstruktur)
+- der Pfad im Markdown-Bild ohne das `.new` Suffix überschrieben
+- eine neue, leere Excalidraw-Zeichnung am angegebenen Pfad (hier `./images/zeichnung.webp.excalidraw`) erstellt
+
+```md
+![Neue Excalidraw-Zeichnung](./images/zeichnung.webp)
+```
+
+Unterstützte Bildformate:
+- `.png`
+- `.jpg`
+- `.jpeg`
+- `.svg`
+- `.webp`
+
+::video[./images/excalidraw-standalone.mp4]
+
+## Manuell ein Excalidraw Bild hinzufügen
 
 Es können auch reine Excalidraw Bilder erstellt werden, die keine Hintergrundbilder enthalten (und bei welchen entsprechend auch das Hintergrundbild nicht ersetzt werden kann).
 
