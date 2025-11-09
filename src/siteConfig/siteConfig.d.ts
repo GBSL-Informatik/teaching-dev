@@ -48,6 +48,7 @@ export interface SiteConfig {
 
     /** The behavior for broken links. */
     onBrokenLinks?: 'throw' | 'ignore' | 'log' | 'warn';
+    onBrokenImages?: 'throw' | 'ignore' | 'log' | 'warn';
 
     /** The behavior for markdown broken links. */
     onBrokenMarkdownLinks?: 'throw' | 'ignore' | 'log' | 'warn';

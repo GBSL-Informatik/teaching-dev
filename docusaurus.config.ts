@@ -1,7 +1,7 @@
 require('dotenv').config();
 import getSiteConfig from './siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
-import type { Config, } from '@docusaurus/types';
+import type { Config, OnBrokenMarkdownImagesFunction, } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import themeCodeEditor from './src/plugins/theme-code-editor'
 import { v4 as uuidv4 } from 'uuid';
@@ -23,6 +23,7 @@ import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recomm
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { excalidrawPluginConfig } from '@tdev/excalidoc';
 import type { EditThisPageOption, ShowEditThisPage, TdevConfig } from '@tdev/siteConfig/siteConfig';
+import onNewExcalidrawSketch from '@tdev/excalidoc/ImageMarkupEditor/onNewExcalidrawSketch';
 
 const siteConfig = getSiteConfig();
 
@@ -47,6 +48,7 @@ const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
 const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
+
 
 const config: Config = applyTransformers({
   title: TITLE,
@@ -187,6 +189,9 @@ const config: Config = applyTransformers({
     mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
+      onBrokenMarkdownImages: process.env.NODE_ENV === 'production' 
+        ? siteConfig.onBrokenImages ?? 'throw' 
+        : onNewExcalidrawSketch
     },
     ...siteConfig.markdown
   },

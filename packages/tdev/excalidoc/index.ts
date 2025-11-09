@@ -1,7 +1,7 @@
 import path from 'path';
-import type { PluginModule } from '@docusaurus/types';
+import type { PluginConfig, PluginModule } from '@docusaurus/types';
 
-export const excalidrawPluginConfig = (() => {
+export const excalidrawPluginConfig: PluginConfig = (() => {
     return {
         name: 'excalidraw-config',
         configureWebpack(config, isServer, { currentBundler }) {
