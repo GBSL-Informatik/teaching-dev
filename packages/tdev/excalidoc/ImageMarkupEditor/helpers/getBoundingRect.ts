@@ -27,6 +27,9 @@ const extractMaxY = (element: ExcalidrawFreeDrawElement): number => {
 };
 
 export const getBoundingRect = (elements: readonly ExcalidrawElement[]): Rect => {
+    if (elements.length === 0) {
+        return { x: 0, y: 0, width: 400, height: 300 };
+    }
     const minX = Math.min(
         ...elements.map((e) => (e.type === 'freedraw' ? extractMinX(e) : e.x - e.strokeWidth / 2))
     );

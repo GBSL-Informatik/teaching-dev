@@ -65,6 +65,7 @@ const handleStandaloneDrawing = (excalidrawState: ExcalidrawInitialDataState): E
     }
     const elements = withoutMetaElements(excalidrawState.elements);
     const { x, y, width, height } = getBoundingRect(elements);
+
     (excalidrawState.elements as ExcalidrawElement[]).splice(standaloneDrawingIdx, 1, {
         ...excalidrawState.elements[standaloneDrawingIdx],
         width,

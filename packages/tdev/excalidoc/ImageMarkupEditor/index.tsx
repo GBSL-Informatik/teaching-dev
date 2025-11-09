@@ -133,7 +133,7 @@ const Editor = observer((props: Props & { hasBGImage: boolean; Lib: typeof Excal
                 appState: {
                     objectsSnapModeEnabled: true,
                     zoom: {
-                        value: 0.8 as NormalizedZoomValue // 80 %
+                        value: 1.0 as NormalizedZoomValue // 80 %
                     },
                     currentItemEndArrowhead: 'triangle',
                     currentItemStrokeColor: EXCALIDRAW_RED,
