@@ -5,6 +5,7 @@
         "lukas-tr.materialdesignicons-intellisense",
         "pomdtr.excalidraw-editor",
         "dbaeumer.vscode-eslint",
-        "motivesoft.vscode-uuid-generator"
+        "motivesoft.vscode-uuid-generator",
+        "bierner.lit-html"
     ]
 }
