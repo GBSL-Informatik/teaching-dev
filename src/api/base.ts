@@ -2,6 +2,8 @@ import axios, { AxiosInstance } from 'axios';
 import OfflineApi from './OfflineApi';
 import IndexedDbAdapter from './OfflineApi/Adapter/IndexedDb';
 import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import MemoryDbAdapter from './OfflineApi/Adapter/MemoryDb';
 export namespace Api {
     export const BASE_API_URL = eventsApiUrl();
 
@@ -21,7 +23,9 @@ const api: AxiosInstance & { mode?: 'indexedDB' | 'memory'; destroyDb?: () => Pr
 const indexedDb =
     OFFLINE_API === 'indexedDB'
         ? ((api as unknown as OfflineApi).dbAdapter as IndexedDbAdapter)
-        : new IndexedDbAdapter(DB_NAME, false);
+        : ExecutionEnvironment.canUseDOM
+          ? new IndexedDbAdapter(DB_NAME, false)
+          : new MemoryDbAdapter();
 
 export { indexedDb };
 export default api;

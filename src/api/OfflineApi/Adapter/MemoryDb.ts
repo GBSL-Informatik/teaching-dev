@@ -26,12 +26,13 @@ class MemoryDbAdapter implements DbAdapter {
             this.filter('documents', (doc) => doc.documentRootId === documentRootId) as Promise<Document<T>[]>
         );
     }
-
-    async put<T>(storeName: string, item: T & { id: string }): Promise<void> {
+    async put<T>(storeName: string, item: T, id: IDBKeyRange | IDBValidKey): Promise<void>;
+    async put<T>(storeName: string, item: T & { id: string }): Promise<void>;
+    async put<T>(storeName: string, item: T & { id: string }, id?: IDBKeyRange | IDBValidKey): Promise<void> {
         if (!this.db[storeName]) {
             this.db[storeName] = {};
         }
-        this.db[storeName][item.id] = item;
+        this.db[storeName][item.id ?? id] = item;
         return Promise.resolve();
     }
 
