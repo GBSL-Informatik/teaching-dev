@@ -24,7 +24,9 @@ export interface DbAdapter {
         documentRootId: string | undefined | null
     ): Promise<Document<T>[]>;
     getAll<T>(storeName: string): Promise<T[]>;
+    put<T>(storeName: string, item: T, id: IDBKeyRange | IDBValidKey): Promise<void>;
     put<T>(storeName: string, item: T & { id: string }): Promise<void>;
+    put<T>(storeName: string, item: T & { id: string }, id?: IDBKeyRange | IDBValidKey): Promise<void>;
     delete(storeName: string, id: string): Promise<void>;
     destroyDb(): Promise<void>;
 }
