@@ -25,7 +25,7 @@ class IndexedDbAdapter implements DbAdapter {
                 if (!db.objectStoreNames.contains('fsHandles')) {
                     db.createObjectStore('fsHandles');
                 }
-                if (initializeStores) {
+                if (process.env.NODE_ENV !== 'production' || initializeStores) {
                     if (!db.objectStoreNames.contains('documents')) {
                         const store = db.createObjectStore('documents', { keyPath: 'id' });
                         store.createIndex('documentRootId', 'documentRootId', { unique: false });
