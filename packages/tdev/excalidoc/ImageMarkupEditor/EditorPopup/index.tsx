@@ -47,10 +47,7 @@ const EditorPopup = observer((props: Props) => {
             closeOnDocumentClick={false}
             onOpen={async () => {
                 if (!sessionStore.fileSystemDirectoryHandles.get('root')) {
-                    const docRootHandle = await requestDocusaurusRootAcess();
-                    if (docRootHandle) {
-                        sessionStore.setFileSystemDirectoryHandle('root', docRootHandle);
-                    }
+                    await requestDocusaurusRootAcess();
                 }
                 const root = sessionStore.fileSystemDirectoryHandles.get('root');
                 if (!root) {
