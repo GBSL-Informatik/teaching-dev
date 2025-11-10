@@ -24,6 +24,7 @@ export const exportNameCards = (users: User[]) => {
         <html>
             <head>
                 <title>Namenskarten</title>
+                <meta charset="UTF-8" />
                 <style>
                     @page {
                         size: A4;
