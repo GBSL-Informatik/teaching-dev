@@ -72,7 +72,7 @@ export const exportNameCards = (users: User[]) => {
                     .map(
                         (name) =>
                             html`<div class="page">
-                                <h1 class="${name.length > 10 ? 'small' : ''}">${name}</h1>
+                                <h1 class="${name.length > 9 ? 'small' : ''}">${name}</h1>
                             </div>`
                     )
                     .join('')}
