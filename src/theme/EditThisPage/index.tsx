@@ -20,9 +20,9 @@ const { showEditThisPage, showEditThisPageOptions, editThisPageCmsUrl } = custom
 const DisplayBadgeFor = new Set<EditThisPageOption>(
     showEditThisPageOptions.length === 0 ? ['github', 'github-dev', 'cms'] : showEditThisPageOptions
 );
-const GH_EDIT_URL = `https://github.com/${organizationName}/${projectName}/edit/main/`;
-const GH_DEV_EDIT_URL = `https://github.dev/${organizationName}/${projectName}/blob/main/`;
-const CMS_EDIT_URL = `${editThisPageCmsUrl}${organizationName}/${projectName}/`;
+const GH_EDIT_URL = `https://github.com/${organizationName}/${projectName}/edit/main`;
+const GH_DEV_EDIT_URL = `https://github.dev/${organizationName}/${projectName}/blob/main`;
+const CMS_EDIT_URL = `${editThisPageCmsUrl}${organizationName}/${projectName}`;
 
 const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
     const userStore = useStore('userStore');

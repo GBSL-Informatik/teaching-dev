@@ -203,8 +203,7 @@ const config: Config = applyTransformers({
           sidebarPath: './sidebars.ts',
           // Remove this to remove the "edit this page" links.
           path: DOCS_PATH,
-          editUrl:
-            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+          editUrl: '/',
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
@@ -214,8 +213,7 @@ const config: Config = applyTransformers({
           path: BLOG_PATH,
           showReadingTime: true,
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+          editUrl: '/',
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
@@ -227,7 +225,7 @@ const config: Config = applyTransformers({
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-          editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+          editUrl: '/',
           ...(siteConfig.pages || {})
         },
         theme: {
