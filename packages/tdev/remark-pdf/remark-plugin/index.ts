@@ -49,6 +49,7 @@ const PdfViewerNode = (
             attr.scroll !== undefined && toJsxAttribute('scroll', attr.scroll),
             attr.page !== undefined && toJsxAttribute('page', attr.page),
             attr.width !== undefined && toJsxAttribute('width', attr.width),
+            attr.maxHeight !== undefined && toJsxAttribute('maxHeight', attr.maxHeight),
             attr.minWidth !== undefined && toJsxAttribute('minWidth', attr.minWidth),
             attr.noDownload !== undefined && toJsxAttribute('noDownload', attr.noDownload),
             attr.scale !== undefined && toJsxAttribute('scale', attr.scale),

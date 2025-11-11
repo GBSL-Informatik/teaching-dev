@@ -7,11 +7,11 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 # PDF Viewer
 
 ```md
-::pdf[./assets/lehrplan-ofi.pdf]
+::pdf[./assets/lehrplan-ofi.pdf]{maxHeight=450px}
 ```
 
-<BrowserWindow maxHeight={'450px'}>
-::pdf[./assets/lehrplan-ofi.pdf]
+<BrowserWindow>
+::pdf[./assets/lehrplan-ofi.pdf]{maxHeight=450px}
 </BrowserWindow>
 
 ## Optionen
@@ -30,10 +30,10 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 : Breite des PDF Viewers.
 : Standardmässig auf __100%__ gesetzt.
 : z.B. `width=200px`
-`height`
-: Höhe des PDF Viewers.
+`maxHeight`
+: Höhe des PDF Viewers, nicht aber des PDF Dokuments.
 : Standardmässig wird eine ganze Seite angezeigt.
-: z.B. `height=200px`
+: z.B. `maxHeight=200px`
 
 
 ### Einzelne Seite anzeigen (`page`)

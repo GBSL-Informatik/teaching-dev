@@ -17,6 +17,7 @@ export interface Props {
     page?: number;
     scroll?: boolean;
     width?: number;
+    maxHeight?: number | string;
     minWidth?: number;
     scale?: number;
     noDownload?: boolean;
@@ -128,6 +129,7 @@ const PdfViewer = (props: Props) => {
                 props.scroll && styles.scroll,
                 (numPages <= 1 || props.page !== undefined) && styles.singlepage
             )}
+            style={{ maxHeight: props.maxHeight, overflowY: props.maxHeight ? 'auto' : undefined }}
             ref={ref}
         >
             <div style={{ height: `${height + 8}px` }}>
