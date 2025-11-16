@@ -1,8 +1,6 @@
 import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import {
     EXCALIDRAW_BACKGROUND_FILE_ID,
-    EXCALIDRAW_EXPORT_QUALITY,
-    EXCALIDRAW_IMAGE_RECTANGLE_ID,
     EXCALIDRAW_MAX_EXPORT_WIDTH,
     EXCALIDRAW_STANDALONE_DRAWING_ID
 } from './constants';
@@ -13,6 +11,7 @@ import type {
     NonDeletedExcalidrawElement,
     Ordered
 } from '@excalidraw/excalidraw/element/types';
+import { getCustomProps } from './customProps';
 export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
 const getScale = (imgWidth: number, scaleFactor?: number) => {
@@ -31,6 +30,7 @@ const withBackgroundImage = (
 ) => {
     const elementsWithoutMeta = withoutMetaElements(elements);
     const exportAsWebp = asWebp || imageElement.customData?.exportFormatMimeType === 'image/webp';
+    const exportProps = getCustomProps(imageElement);
 
     if (asWebp) {
         if (!('customData' in imageElement)) {
@@ -42,15 +42,16 @@ const withBackgroundImage = (
     const initMimeType = files[EXCALIDRAW_BACKGROUND_FILE_ID]?.mimeType;
 
     return {
-        scale: getScale(imageElement.width, imageElement.customData?.scale),
+        scale: exportProps.scale,
         mimeType: initMimeType,
         asWebp: exportAsWebp,
         toExport: {
             elements: elementsWithoutMeta,
             files: files,
-            exportPadding: 0,
+            exportPadding: exportProps.exportPadding,
+            quality: exportProps.quality,
             appState: {
-                exportBackground: false,
+                exportBackground: exportProps.exportBackground,
                 exportEmbedScene: false
             }
         }
@@ -62,27 +63,21 @@ const plainExcalidrawImage = (
     api: ExcalidrawImperativeAPI,
     mimeType: string
 ) => {
-    const isStandaloneDrawing = elements.some((e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID);
+    const metaElement = elements.find((e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID);
     const elementsWithoutMeta = withoutMetaElements(elements);
-    const minX = Math.min(...elementsWithoutMeta.map((e) => e.x));
-    const maxX = Math.max(...elementsWithoutMeta.map((e) => e.x + e.width));
-    const dX = Math.max(maxX - minX, 1);
     const files = api.getFiles();
-    const padding = Math.max(
-        ...elementsWithoutMeta.map((e) => (e.type === 'freedraw' ? e.strokeWidth : e.strokeWidth)),
-        2
-    );
-    const scale = isStandaloneDrawing ? (dX < 50 ? 15 : dX < 100 ? 8 : dX < 200 ? 4 : dX < 400 ? 3 : 1) : 1;
+    const exportProps = getCustomProps(metaElement);
     return {
-        scale: scale,
+        scale: exportProps.scale,
         mimeType: mimeType,
-        asWebp: mimeType === 'image/webp',
+        asWebp: exportProps.exportFormatMimeType === 'image/webp',
         toExport: {
             elements: elementsWithoutMeta,
             files: files,
-            exportPadding: padding,
+            exportPadding: exportProps.exportPadding,
+            quality: exportProps.quality,
             appState: {
-                exportBackground: false,
+                exportBackground: exportProps.exportBackground,
                 exportEmbedScene: false
             }
         }
@@ -115,13 +110,13 @@ const onSaveCallback = async (
                 : ((await Lib.exportToBlob({
                       ...setup.toExport,
                       getDimensions: (width: number, height: number) => {
+                          console.log('getDimensions', width, height, setup.scale);
                           return {
                               width: width * setup.scale,
                               height: height * setup.scale,
                               scale: setup.scale
                           };
                       },
-                      quality: EXCALIDRAW_EXPORT_QUALITY,
                       mimeType: setup.asWebp ? 'image/webp' : setup.mimeType
                   })) as Blob);
         callback(

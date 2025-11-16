@@ -30,6 +30,14 @@ export const getRectangleElementFromScene = (
     return [elements[rectIdx] as ExcalidrawRectangleElement, rectIdx];
 };
 
+/**
+ * @return either the EXCALIDRAW_BACKGROUND_IMAGE or the EXCALIDRAW_STANDALONE_DRAWING Element
+ */
+export const getMetaElementFromScene = (elements: readonly OrderedExcalidrawElement[]) => {
+    const metaIds = new Set<string>([EXCALIDRAW_BACKGROUND_IMAGE_ID, EXCALIDRAW_STANDALONE_DRAWING_ID]);
+    return elements.find((e) => metaIds.has(e.id));
+};
+
 export const getImageFileFromScene = (
     files?: BinaryFiles,
     id: string = EXCALIDRAW_BACKGROUND_FILE_ID
