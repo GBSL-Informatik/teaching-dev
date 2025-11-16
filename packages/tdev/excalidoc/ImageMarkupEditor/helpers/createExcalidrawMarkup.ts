@@ -11,7 +11,8 @@ import {
     EXCALIDRAW_BACKGROUND_IMAGE,
     EXCALIDRAW_MAX_WIDTH,
     CustomData,
-    EXCALIDRAW_STANDALONE_DRAWING_ID
+    EXCALIDRAW_STANDALONE_DRAWING_ID,
+    EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE
 } from './constants';
 import { withoutMetaElements } from './getElementsFromScene';
 import { getBoundingRect } from './getBoundingRect';
@@ -68,6 +69,8 @@ const handleStandaloneDrawing = (excalidrawState: ExcalidrawInitialDataState): E
 
     (excalidrawState.elements as ExcalidrawElement[]).splice(standaloneDrawingIdx, 1, {
         ...excalidrawState.elements[standaloneDrawingIdx],
+        strokeWidth: EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE.strokeWidth,
+        strokeColor: EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE.strokeColor,
         width,
         height,
         x: x,
@@ -82,13 +85,19 @@ export const updateRectangleDimensions = (
     if (!excalidrawState.elements) {
         return excalidrawState;
     }
-    const isStandaloneDrawing = excalidrawState.elements.some(
-        (e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID
-    );
-    if (isStandaloneDrawing) {
+    const backgroundImage = excalidrawState.elements.find((e) => e.id === EXCALIDRAW_BACKGROUND_IMAGE_ID);
+    if (!backgroundImage) {
+        const isStandaloneDrawing = excalidrawState.elements.some(
+            (e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID
+        );
+        if (!isStandaloneDrawing) {
+            // add standalone markup drawing rectangle
+            (excalidrawState.elements as ExcalidrawElement[]).splice(0, 0, {
+                ...EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE
+            });
+        }
         return handleStandaloneDrawing(excalidrawState);
     }
-    const backgroundImage = excalidrawState.elements.find((e) => e.id === EXCALIDRAW_BACKGROUND_IMAGE_ID);
     if (!backgroundImage || backgroundImage.type !== 'image') {
         return excalidrawState;
     }
