@@ -6,7 +6,7 @@ tags: [excalidraw, bilder]
 # Bilder Annotieren
 
 :::warning[Nur für Chrome-Browser]
-Die Excalidraw-Integration für das Editieren von Bildern basiert auf der [Local File System Access API](https://developer.mozilla.org/de/docs/Web/API/Window/showOpenFilePicker), welche aktuell nur unter Chrome-basierten Browsern (z.B. Google Chrome, Microsoft Edge) unterstützt wird.
+Die Excalidraw-Integration für das Editieren von Bildern basiert auf der [Local File System Access API](https://developer.mozilla.org/de/docs/Web/API/Window/showOpenFilePicker), welche aktuell nur unter Chromium-basierten Browsern (z.B. Google Chrome, Microsoft Edge) unterstützt wird.
 :::
 
 Oft müssen Screenshots oder Bilder annotiert werden. Ansich praktisch, bis sich das Bild ändert, die Anmerkungen aber eigentlich gleich bleiben (z.B. wenn das neue Excel eine leicht andere Benutzeroberfläche hat).
@@ -103,6 +103,8 @@ Sobald das SVG-Bild bearbeitet wird, wird die entsprechende `demo.svg.excalidraw
 
 :::note[Technischer Hintergrund]
 Ob ein Hintergrundbild vorhanden ist oder nicht, wird vom Vorhandensein einer Element- & File-ID `TDEV-BACKGROUND-IMAGE` bzw. `TDEV-BACKGROUND--FILE` abgeleitet. Ist keine ID vorhanden, wird stets die Bild-Erweiterung (`.png`, `.jpg`, `.svg`, `.webp`) für das Export-Format verwendet.
+
+Für Zeichnungen ohne Hintergrundbild wird ein Meta-Element `TDEV-STANDALONE-DRAWING` hinzugefügt, welches zusätzliche Export-relevante Informationen enthält.
 :::
 
 :::info[Empfohlenes Export-Format für reine Excalidraw Bilder]

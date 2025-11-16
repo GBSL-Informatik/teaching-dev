@@ -19,12 +19,10 @@
       ],
       "locked": true,
       "customData": {
-        "exportFormatMimeType": "image/jpeg",
-        "scale": 1,
-        "initExtension": ".jpg"
+        "scale": 2
       },
       "version": 2,
-      "versionNonce": 1904448331,
+      "versionNonce": 1904448334,
       "index": "a0",
       "fillStyle": "solid",
       "strokeWidth": 2,
