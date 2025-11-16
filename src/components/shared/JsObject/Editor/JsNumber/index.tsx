@@ -6,6 +6,7 @@ import JsType from '../JsType';
 import { default as JsNumberModel } from '../models/JsNumber';
 import TextInput from '@tdev-components/shared/TextInput';
 import { action } from 'mobx';
+import { JsRootContext } from '..';
 
 interface Props {
     js: JsNumberModel;
@@ -13,6 +14,7 @@ interface Props {
 }
 const JsNumber = observer((props: Props) => {
     const { js } = props;
+    const jsRoot = React.useContext(JsRootContext);
     return (
         <JsType js={js} noName={props.noName}>
             <TextInput
@@ -21,7 +23,7 @@ const JsNumber = observer((props: Props) => {
                 onChange={action((value) => {
                     js.setValue(Number(value));
                 })}
-                step={0.01}
+                step={jsRoot?.editorConfig.numberStep || 0.01}
                 className={clsx(styles.jsNumber)}
                 noAutoFocus
             />

@@ -26,7 +26,7 @@ const normalizeRotation = (element: ExcalidrawElement) => {
     return { x, y, width, height, strokeWidth: element.strokeWidth };
 };
 
-export const getBoundingRect = (elements: readonly ExcalidrawElement[]): Rect => {
+export const getBoundingRect = (elements: readonly ExcalidrawElement[] | ExcalidrawElement[]): Rect => {
     if (elements.length === 0) {
         return { x: 0, y: 0, width: 400, height: 300 };
     }
