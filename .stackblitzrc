@@ -4,6 +4,6 @@
   "env": {
     "NODE_ENV": "development",
     "OFFLINE_API": "indexedDB",
-    "STACKBLITZ": "1"
+    "STACKBLITZ": "true"
   }
 }
