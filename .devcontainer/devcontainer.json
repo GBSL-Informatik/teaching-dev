@@ -31,7 +31,7 @@
     "forwardPorts": [3000],
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "22.12"
+            "version": "22.15"
         }
     },
     "runArgs": ["--network=host"]

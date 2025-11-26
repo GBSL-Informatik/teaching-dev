@@ -48,6 +48,7 @@ const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
 const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
+const RUNS_IN_STACKBLITZ = !!process.env.STACKBLITZ;
 
 
 const config: Config = applyTransformers({
@@ -92,41 +93,45 @@ const config: Config = applyTransformers({
   },
   future: {
     v4: true,
-    experimental_faster: {
-      /**
-       * no config options for swcJsLoader so far. 
-       * Instead configure it over the jsLoader in the next step 
-       */
-      swcJsLoader: false,
-      swcJsMinimizer: true,
-      swcHtmlMinimizer: true,
-      lightningCssMinimizer: true,
-      rspackBundler: true,
-      rspackPersistentCache: process.env.NETLIFY ? false : true,
-      mdxCrossCompilerCache: true,
-      ssgWorkerThreads: true,
-    },
+    experimental_faster: RUNS_IN_STACKBLITZ 
+      ? false 
+      : {
+        /**
+         * no config options for swcJsLoader so far. 
+         * Instead configure it over the jsLoader in the next step 
+         */
+        swcJsLoader: false,
+        swcJsMinimizer: true,
+        swcHtmlMinimizer: true,
+        lightningCssMinimizer: true,
+        rspackBundler: true,
+        rspackPersistentCache: process.env.NETLIFY ? false : true,
+        mdxCrossCompilerCache: true,
+        ssgWorkerThreads: true,
+      },
   },
   webpack: {
-    jsLoader: (isServer) => {
-      const defaultOptions = require("@docusaurus/faster").getSwcLoaderOptions({ isServer });
-      return {
-        loader: 'builtin:swc-loader', // (only works with Rspack)
-        options: {
-          ...defaultOptions,
-          jsc: {
-            parser: {
-              ...defaultOptions.jsc.parser,
-              decorators: true
+    jsLoader: RUNS_IN_STACKBLITZ 
+      ? undefined 
+      : (isServer) => {
+        const defaultOptions = require("@docusaurus/faster").getSwcLoaderOptions({ isServer });
+        return {
+          loader: 'builtin:swc-loader', // (only works with Rspack)
+          options: {
+            ...defaultOptions,
+            jsc: {
+              parser: {
+                ...defaultOptions.jsc.parser,
+                decorators: true
+              },
+              transform: {
+                ...defaultOptions.jsc.transform,
+                decoratorVersion: '2022-03',
+              }
             },
-            transform: {
-              ...defaultOptions.jsc.transform,
-              decoratorVersion: '2022-03',
-            }
           },
-        },
-      }
-    },
+        }
+      },
   },
 
   // Even if you don't use internationalization, you can use this field to set
