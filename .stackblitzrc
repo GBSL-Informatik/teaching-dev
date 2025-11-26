@@ -3,6 +3,7 @@
   "startCommand": "yarn run start",
   "env": {
     "NODE_ENV": "development",
-    "OFFLINE_API": "indexedDB"
+    "OFFLINE_API": "indexedDB",
+    "STACKBLITZ": "1"
   }
 }
