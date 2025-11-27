@@ -1,7 +1,7 @@
 require('dotenv').config();
 import getSiteConfig from './siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
-import type { Config, OnBrokenMarkdownImagesFunction, } from '@docusaurus/types';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import themeCodeEditor from './src/plugins/theme-code-editor'
 import { v4 as uuidv4 } from 'uuid';
@@ -48,7 +48,6 @@ const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
 const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
-const RUNS_IN_STACKBLITZ = !!process.env.STACKBLITZ;
 
 
 const config: Config = applyTransformers({
@@ -93,9 +92,7 @@ const config: Config = applyTransformers({
   },
   future: {
     v4: true,
-    experimental_faster: RUNS_IN_STACKBLITZ 
-      ? false 
-      : {
+    experimental_faster: {
         /**
          * no config options for swcJsLoader so far. 
          * Instead configure it over the jsLoader in the next step 
@@ -111,9 +108,7 @@ const config: Config = applyTransformers({
       },
   },
   webpack: {
-    jsLoader: RUNS_IN_STACKBLITZ 
-      ? undefined 
-      : (isServer) => {
+    jsLoader: (isServer) => {
         const defaultOptions = require("@docusaurus/faster").getSwcLoaderOptions({ isServer });
         return {
           loader: 'builtin:swc-loader', // (only works with Rspack)
