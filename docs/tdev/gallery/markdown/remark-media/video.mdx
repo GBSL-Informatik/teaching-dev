@@ -36,14 +36,18 @@ Fügt ein lokales Video ein.
 : Breite des Videos.
 : Standardmässig auf die natürliche Breite des Videos gesetzt (wobei `max-width=100%` gesetzt wird).
 : z.B. `width=200px`
+`controls`
+: Blendet die Steuerelemente des Videos ein oder aus.
+: Standardmässig `true`.
+: z.B. `controls=false`
 css Eigenschaften
 : Es können beliebige css-Eigenschaften in Form `eigenschaft=wert` angegeben werden, die auf das Video angewendet werden.
 
 
 ```mdx
-::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red"}
+::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red" controls=false}
 ```
 
 <BrowserWindow>
-::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red"}
+::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red" controls=false}
 </BrowserWindow>

@@ -49,6 +49,18 @@ describe('#medialinks', () => {
           "
         `);
     });
+    it('respects controls=false for video', async () => {
+        const input = `
+            ::video[./bunny.mp4]{controls=false}
+        `;
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<video style={{"maxWidth":"100%"}}>
+            <source src={require('./bunny.mp4').default} />
+          </video>
+          "
+        `);
+    });
     it('can convert audio directive', async () => {
         const input = `
             ::audio[./song.mp3]

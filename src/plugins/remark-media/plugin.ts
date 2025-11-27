@@ -52,7 +52,9 @@ const plugin: Plugin<unknown[], Root> = function plugin(): Transformer<Root> {
                         newNode.attributes.push(toJsxAttribute('loop', attributes.loop));
                     }
                     newNode.attributes.push(toJsxAttribute('style', { maxWidth: '100%', ...style }));
-                    newNode.attributes.push(toJsxAttribute('controls', ''));
+                    if (!('controls' in attributes) || attributes.controls) {
+                        newNode.attributes.push(toJsxAttribute('controls', ''));
+                    }
                     newNode.children.push({
                         type: 'mdxJsxFlowElement',
                         name: 'source',
