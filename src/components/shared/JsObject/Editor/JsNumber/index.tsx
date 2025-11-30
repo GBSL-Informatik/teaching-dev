@@ -6,7 +6,6 @@ import JsType from '../JsType';
 import { default as JsNumberModel } from '../models/JsNumber';
 import TextInput from '@tdev-components/shared/TextInput';
 import { action } from 'mobx';
-import { JsRootContext } from '..';
 
 interface Props {
     js: JsNumberModel;
@@ -14,16 +13,20 @@ interface Props {
 }
 const JsNumber = observer((props: Props) => {
     const { js } = props;
-    const jsRoot = React.useContext(JsRootContext);
     return (
         <JsType js={js} noName={props.noName}>
             <TextInput
                 type="number"
-                value={`${js.value}`}
+                value={js._inputValue}
                 onChange={action((value) => {
-                    js.setValue(Number(value));
+                    js.setValue(value);
                 })}
-                step={jsRoot?.editorConfig.numberStep || 0.01}
+                validator={(text) => {
+                    if (isNaN(Number(text))) {
+                        return 'Bitte eine gültige Zahl eingeben';
+                    }
+                    return null;
+                }}
                 className={clsx(styles.jsNumber)}
                 noAutoFocus
             />

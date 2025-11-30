@@ -5,7 +5,7 @@ import iParentable from './iParentable';
 import { toModel } from './toModel';
 
 export interface EditorConfig {
-    numberStep: number;
+    numberStep?: number;
 }
 
 class JsRoot extends iParentable<JsRootType> {
@@ -16,7 +16,6 @@ class JsRoot extends iParentable<JsRootType> {
     constructor(editLevel?: EditLevel, config?: Partial<EditorConfig>) {
         super({ type: 'root', value: [], editLevel: editLevel }, null as any);
         this.editorConfig = {
-            numberStep: 0.01,
             ...(config || {})
         };
     }

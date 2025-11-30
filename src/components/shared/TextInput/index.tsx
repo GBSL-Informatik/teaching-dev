@@ -73,7 +73,6 @@ const TextInput = observer((props: Props) => {
                     }
                 }}
                 onInput={(e) => {
-                    const validity = e.currentTarget.validity;
                     const error = validator(e.currentTarget.value);
                     if (error === null) {
                         e.currentTarget.setCustomValidity('');
@@ -81,14 +80,12 @@ const TextInput = observer((props: Props) => {
                         e.currentTarget.setCustomValidity(error);
                     }
                     e.currentTarget.classList.add(styles.touched);
-                    if ((props.required || e.currentTarget.value.length > 0) && !validity.valid) {
-                        e.currentTarget.reportValidity();
-                    }
+                    e.currentTarget.reportValidity();
                 }}
                 autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
-                step={props.step}
+                step={props.step ?? 'any'}
                 min={props.min}
                 max={props.max}
             />

@@ -5,16 +5,26 @@ import type iParentable from './iParentable';
 
 class JsNumber extends iJs {
     readonly type = 'number';
+    @observable accessor _inputValue: string;
     @observable accessor value: number;
 
     constructor(js: JsNumberType, parent: iParentable) {
         super(js, parent);
         this.value = js.value;
+        this._inputValue = String(js.value);
     }
 
     @action
-    setValue(value: number) {
-        this.value = value;
+    setValue(value: number | string) {
+        this._inputValue = String(value);
+        try {
+            const num = Number(value);
+            if (!isNaN(num)) {
+                this.value = num;
+            }
+        } catch {
+            // keep the old value
+        }
     }
 
     @computed

@@ -47,9 +47,6 @@ const UpdateCustomProps = (props: Props) => {
                     <JsObjectEditor
                         js={tdevProps as unknown as Record<string, JsTypes>}
                         hideAddValue={true}
-                        editorConfig={{
-                            numberStep: 1
-                        }}
                         onSave={(js) => {
                             updateCustomProps(props.api, js as unknown as CustomProps);
                             ref.current?.close();
