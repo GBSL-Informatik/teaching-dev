@@ -2,6 +2,7 @@
 page_id: bf5bdc44-6258-440c-ab5c-ed9c289774c4
 ---
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeBlock from '@theme/CodeBlock';
 
 # Codeblöcke
 
@@ -180,4 +181,30 @@ Um Codeblöcke in Listen zu verwenden, muss die Einrückung korrekt sein.
        ```
     3. Weiter im Text
 - Dritter Punkt
+</BrowserWindow>
+
+## Codeblöcke mit externen Dateien
+
+Mithilfe des `!!raw-loader`-Plugins von Webpack können Codeblöcke auch aus externen Dateien geladen werden.
+
+````jsx
+import triangles from '!!raw-loader!./assets/triangles.py';
+import CodeBlock from '@theme/CodeBlock';
+
+<CodeBlock language="py" showLineNumbers>
+    {triangles}
+</CodeBlock>
+<CodeBlock language="py" metastring="live_py slim">
+    {triangles}
+</CodeBlock>
+````
+import triangles from '!!raw-loader!./assets/triangles.py';
+
+<BrowserWindow>
+    <CodeBlock language="py" showLineNumbers>
+        {triangles}
+    </CodeBlock>
+    <CodeBlock language="py" metastring="live_py slim">
+        {triangles}
+    </CodeBlock>
 </BrowserWindow>
