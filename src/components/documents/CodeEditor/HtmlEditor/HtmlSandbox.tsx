@@ -47,7 +47,8 @@ function sendHeight() {
                 const mTop = parseFloat(getComputedStyle(document.body).marginTop);
                 const mBottom = parseFloat(getComputedStyle(document.body).marginBottom);
                 const total = mTop + mBottom + borderTopWidth + borderBottomWidth;
-                if (scrollHeight > document.body.clientHeight + total) {
+                // change height only if it differs by at least one line
+                if (scrollHeight > document.body.clientHeight + total + 15) {
                     parent.postMessage({id: '${id}', type: 'resize', height: document.body.clientHeight + total}, "*");
                 }
             }
@@ -152,7 +153,8 @@ const HtmlSandbox = observer((props: Props) => {
                     setErrorMsg(e.data);
                     break;
                 case 'resize':
-                    setHeight(e.data.height);
+                    const height = e.data.height;
+                    setHeight(height);
                     break;
                 case 'href':
                     props.onNavigate?.(e.data.href);
