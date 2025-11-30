@@ -1,11 +1,12 @@
 {
     "recommendations": [
-        "unifiedjs.vscode-mdx",
-        "esbenp.prettier-vscode",
-        "lukas-tr.materialdesignicons-intellisense",
         "pomdtr.excalidraw-editor",
+        "zhuangtongfa.Material-theme",
+        "mhutchie.git-graph",
+        "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
+        "unifiedjs.vscode-mdx",
         "motivesoft.vscode-uuid-generator",
-        "bierner.lit-html"
+        "lukas-tr.materialdesignicons-intellisense"
     ]
 }
