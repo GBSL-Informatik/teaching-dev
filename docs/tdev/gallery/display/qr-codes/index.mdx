@@ -39,10 +39,15 @@ import QrCode from '@tdev-components/shared/QrCode';
 
 ```mdx
 <QrCode withInput size="20em" text="Hello World" />
+<QrCode withInput size="20em" text="https://teaching-dev.gbsl.website" isLink />
 ```
 
 <BrowserWindow>
-  <QrCode withInput size="20em" text="Hello World" />
+  :::flex
+  <QrCode withInput size="20em" text="Hello World" download/>
+  ::br
+  <QrCode withInput size="20em" text="https://teaching-dev.gbsl.website" isLink download/>
+  :::
 </BrowserWindow>
 
 ## Mit Icon
