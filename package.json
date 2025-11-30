@@ -69,6 +69,7 @@
         "mobx-utils": "^6.1.1",
         "qrcode.react": "^4.2.0",
         "quill": "^2.0.3",
+        "raw-loader": "^4.0.2",
         "rc-slider": "^11.1.8",
         "react": "^19.2.0",
         "react-ace": "^14.0.1",
