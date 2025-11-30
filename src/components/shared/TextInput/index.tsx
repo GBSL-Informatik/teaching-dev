@@ -15,6 +15,7 @@ interface Props {
     labelClassName?: string;
     value?: string;
     type?: HTMLInputTypeAttribute;
+    title?: string;
     label?: React.ReactNode;
     noSpellCheck?: boolean;
     noAutoFocus?: boolean;
@@ -43,6 +44,7 @@ const TextInput = observer((props: Props) => {
                         props.isDirty && styles.dirty
                     )}
                     htmlFor={id}
+                    title={props.title}
                 >
                     {props.label}
                 </label>

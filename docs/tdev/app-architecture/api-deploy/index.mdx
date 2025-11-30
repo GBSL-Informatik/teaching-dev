@@ -72,11 +72,8 @@ import { generateRandomBase64 } from '../helpers/secureToken';
         </TemplateCode>
         :::
         :::info[Deploy Preview mit Netlify]
-        Ermöglicht den Zugriff von Deploy-Previews von Netlify Deploy-Previews mit der Domain
-
-        <Val as="code">`https://deploy-preview-\d+--{{NETLIFY_PROJECT_NAME}}.netlify.app`</Val>
-
-        auf die API. Dies ist notwendig, um die API in Netlify-Deploy-Previews zu verwenden.
+        Ermöglicht den Zugriff von Deploy-Previews von Netlify mit der Domain  
+        <Val as="code">`https://deploy-preview-\d+--{{NETLIFY_PROJECT_NAME}}.netlify.app`</Val>  auf die API.
 
         <DynamicInput name="NETLIFY_PROJECT_NAME" default={(page) => page.dynamicValues.get('app')}/>
         <TemplateCode>

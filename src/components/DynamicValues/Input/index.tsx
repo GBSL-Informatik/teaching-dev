@@ -57,6 +57,7 @@ const DynamicInput = observer((props: Props) => {
                 }}
                 defaultValue={defaultValue}
                 label={props.label || props.name}
+                title={props.derived ? 'Abgeleiteter Wert' : undefined}
                 labelClassName={clsx(styles.label, props.derived && styles.derived)}
                 className={clsx(styles.input, props.monospace && styles.monospace)}
                 placeholder={props.placeholder}
