@@ -26,6 +26,16 @@
     --tdev-sync-status-syncing-color: var(--ifm-color-secondary);
     --tdev-sync-status-success-color: var(--ifm-color-primary);
     --tdev-sync-status-error-color: var(--ifm-color-danger);
+
+    --tdev-admonition-aufgabe-background-color: #0095ff0f;
+    --tdev-admonition-aufgabe-background-color-highlight: #0095ff1a;
+    --tdev-admonition-aufgabe-foreground-color: var(--ifm-color-content);
+    --tdev-admonition-aufgabe-border-color: #0095ff73;
+
+    --tdev-admonition-definition-background-color: #faefe7;
+    --tdev-admonition-definition-background-color-highlight: #eaded7;
+    --tdev-admonition-definition-foreground-color: #003100;
+    --tdev-admonition-definition-border-color: #988c8a;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -36,6 +46,15 @@
     --ifm-global-shadow-tl: 0 8px 16px 0 rgba(0, 119, 110, 0.08), 0 2px 4px 0 rgba(0, 119, 110, 0.05);
     --ifm-color-boxed: #8395ef;
     --prism-background-color: #282a36;
+
+    --tdev-admonition-aufgabe-background-color: #0095ff1a;
+    --tdev-admonition-aufgabe-background-color-highlight: #0095ff44;
+    --tdev-admonition-aufgabe-border-color: #0095ffa0;
+
+    --tdev-admonition-definition-background-color: #3e3532;
+    --tdev-admonition-definition-background-color-highlight: #4e4542;
+    --tdev-admonition-definition-foreground-color: #b8e6b8;
+    --tdev-admonition-definition-border-color: #6a5f5d;
 }
 
 strong.boxed {

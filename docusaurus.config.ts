@@ -49,6 +49,12 @@ const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
 
+const DEFAULT_ADMONITION_CONFIG = {
+    admonitions: {
+        keywords: ['aufgabe', 'finding', 'insight', 'definition'],
+        extendDefaults: true
+    }
+};
 
 const config: Config = applyTransformers({
   title: TITLE,
@@ -207,6 +213,7 @@ const config: Config = applyTransformers({
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+          ...DEFAULT_ADMONITION_CONFIG,
           ...(siteConfig.docs || {})
         } : false,
         blog: BLOG_PATH ? {
@@ -217,6 +224,7 @@ const config: Config = applyTransformers({
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+          ...DEFAULT_ADMONITION_CONFIG,
           ...(siteConfig.blog || {})
         } : false,
         pages: {
@@ -226,6 +234,7 @@ const config: Config = applyTransformers({
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
           editUrl: '/',
+          ...DEFAULT_ADMONITION_CONFIG,
           ...(siteConfig.pages || {})
         },
         theme: {
