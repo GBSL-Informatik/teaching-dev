@@ -14,14 +14,6 @@ import type {
 import { getCustomProps } from './customProps';
 export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
-const getScale = (imgWidth: number, scaleFactor?: number) => {
-    const initScale = 1 / (scaleFactor || 1);
-    const width = imgWidth * initScale;
-    const scale =
-        width < EXCALIDRAW_MAX_EXPORT_WIDTH ? initScale : initScale * (EXCALIDRAW_MAX_EXPORT_WIDTH / width);
-    return scale;
-};
-
 const withBackgroundImage = (
     imageElement: ExcalidrawImageElement,
     elements: readonly Ordered<NonDeletedExcalidrawElement>[],
@@ -97,6 +89,7 @@ const onSaveCallback = async (
         const setup = imageElement
             ? withBackgroundImage(imageElement, elements, api, asWebp)
             : plainExcalidrawImage(elements, api, mimeType);
+
         const data =
             setup.mimeType === 'image/svg+xml' && !setup.asWebp
                 ? await Lib.exportToSvg({
@@ -110,7 +103,6 @@ const onSaveCallback = async (
                 : ((await Lib.exportToBlob({
                       ...setup.toExport,
                       getDimensions: (width: number, height: number) => {
-                          console.log('getDimensions', width, height, setup.scale);
                           return {
                               width: width * setup.scale,
                               height: height * setup.scale,

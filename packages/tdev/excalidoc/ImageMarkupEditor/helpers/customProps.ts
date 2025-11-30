@@ -15,9 +15,9 @@ export interface CustomProps {
 
 type NullableCustomProps = { [key in keyof CustomProps]: null };
 
-const getScale = (width: number, height: number) => {
+export const getScale = (width: number, height: number) => {
     if (width > EXCALIDRAW_MAX_EXPORT_WIDTH) {
-        return EXCALIDRAW_MAX_EXPORT_WIDTH;
+        return Math.round((EXCALIDRAW_MAX_EXPORT_WIDTH / width) * 100) / 100;
     }
     const size = Math.max(width, height, 1);
     if (size < 50) {
@@ -32,14 +32,17 @@ const getScale = (width: number, height: number) => {
     if (size < 400) {
         return 4;
     }
-    if (size < 800) {
+    if (size < 600) {
         return 3;
     }
-    if (size < 1200) {
+    if (size < 800) {
         return 2;
     }
-    if (size < 1600) {
+    if (size < 1200) {
         return 1.5;
+    }
+    if (size < 1600) {
+        return 1.2;
     }
     return 1;
 };

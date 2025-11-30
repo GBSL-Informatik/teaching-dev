@@ -19,11 +19,10 @@
       ],
       "locked": true,
       "customData": {
-        "exportFormatMimeType": "image/png",
-        "scale": 1.5
+        "exportFormatMimeType": "image/png"
       },
       "version": 2,
-      "versionNonce": 349235480,
+      "versionNonce": 349235481,
       "index": "a0",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -94,7 +93,7 @@
       "version": 73,
       "versionNonce": 487729945,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1764499419391,
       "link": null,
       "locked": false,

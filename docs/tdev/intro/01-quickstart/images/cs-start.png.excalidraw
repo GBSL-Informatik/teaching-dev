@@ -19,11 +19,10 @@
       ],
       "locked": true,
       "customData": {
-        "exportFormatMimeType": "image/png",
-        "scale": 1.5
+        "exportFormatMimeType": "image/png"
       },
       "version": 2,
-      "versionNonce": 1728203610,
+      "versionNonce": 1728203611,
       "index": "a0",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -129,7 +128,7 @@
       "version": 186,
       "versionNonce": 353254329,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1764499308957,
       "link": null,
       "locked": false,
@@ -223,7 +222,7 @@
       "version": 17,
       "versionNonce": 1540653271,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1764499342064,
       "link": null,
       "locked": false,
