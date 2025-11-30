@@ -1,18 +1,22 @@
 ---
 page_id: 56283e98-1a31-4b64-adcc-93813c454ddd
 ---
-import Steps from '@tdev-components/Steps';
+import ProgressState from '@tdev-components/documents/ProgressState';
 import Dice from './components/Dice';
 import DiceHistory from './components/DiceHistory';
+import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # Würfeln
 
 :::info[Diese interaktive Komponente wird erstellt]
-<DiceHistory />
+<BrowserWindow>
+    <DiceHistory />
+</BrowserWindow>
 :::
 
-<Steps>
-1. Neues Dokument anlegen, in welchem wir den Würfel später verwenden.:
+<div className="compactDeflist">
+<ProgressState>
+1. Neues Dokument anlegen, in welchem wir den Würfel später verwenden.
     ```md title="docs/tdev/dice/index.mdx"
     # Würfeln
     ```
@@ -52,8 +56,9 @@ import DiceHistory from './components/DiceHistory';
     :::
 
     Die Vorschau sollte nun den Text "Würfel" anzeigen.
-
+    <BrowserWindow>
     ![--width=500](./images/dice-component-basic.png)
+    </BrowserWindow>
 4. Nun soll anstelle des "Würfel"-Textes eine Zahl zwischen 1 und 6 angezeigt werden.
 
     ```tsx title="docs/tdev/dice/Dice.tsx" showLineNumbers
@@ -79,13 +84,14 @@ import DiceHistory from './components/DiceHistory';
 
     export default Dice;
     ```
-    
+    :::note
     Zeilen 3-5
     : Die Funktion `rollDice` wird definiert - sie gibt eine Zufallszahl zwischen 1 und 6 zurück.
     Zeile 8
     : `rollDice` wird aufgerufen und das Ergebnis in der Konstante `num` gespeichert.
     Zeile 12
     : Die Konstante `num` wird in geschweifte Klammern `{num}` gesetzt. Somit wird der Inhalt **evaluiert**/ausgewertet und das Ergebnis angezeigt.
+    :::
 
     :::info[Zufallszahl]
     Jedesmal beim Neuladen der Seite (oder wenn beim "Hinnavigieren" auf die Seite) wird eine neue Zufallszahl generiert. In React-Sprache sagt man, "wenn die Komponente neu gerendert wird, wird eine neue Zufallszahl generiert".
@@ -117,7 +123,7 @@ import DiceHistory from './components/DiceHistory';
 
     export default Dice;
     ```
-
+    ::::note
     Zeile 8
     : `React.useState` ist ein sog. **Hook**. Ein Hook ist eine Funktion, die es ermöglicht, den Zustand einer Komponente zu speichern und zu aktualisieren. `useState` gibt ein Array mit zwei Werten zurück:
     :::dd
@@ -128,7 +134,7 @@ import DiceHistory from './components/DiceHistory';
     :::
     Zeile 11
     : im `onClick`-Event wird die Funktion `setNum` aufgerufen, um den aktuellen Wert zu aktualisieren.
-
+    ::::
     :::tip[Ausprobieren]
     Beim Klicken auf den Würfel wird nun eine neue Zahl angezeigt.
     :::
@@ -174,19 +180,23 @@ import DiceHistory from './components/DiceHistory';
 
     export default Dice;
     ```
+    :::note
     Zeile 2
     : Die CSS-Datei wird als JS-Objekt importiert.
     Zeile 12
     : Die CSS-Klasse `dice` wird mit `className={styles.dice}` auf das `div`-Element angewendet.
-
-    :::cards
-    ![Jetzt mit Style 😎 --width=300](./images/dice-styled.png)
     :::
+
+    <BrowserWindow>
+    ![Jetzt mit Style 😎 --width=300](./images/dice-styled.png)
+    </BrowserWindow>
 
 7. Eine Animation fürs Würfeln Hhinzufügen
     Dass der Würfel am würfeln ist, soll visualisiert werden.
 
+    <BrowserWindow>
     <Dice />
+    </BrowserWindow>
 
     Dazu brauchen wir einen zusätzlichen Zustand `isRolling`, der beim Würfeln auf `true` gesetzt wird und nach 1 Sekunde wieder auf `false`. Falls `isRolling` `true` ist, wird eine CSS-Klasse `isRolling` zum `div`-Element hinzugefügt.
 
@@ -232,7 +242,7 @@ import DiceHistory from './components/DiceHistory';
 
     export default Dice;
     ```
-
+    :::::note
     Zeile 11
     : Ein neuer Zustand `isRolling` wird hinzugefügt. Beim Klicken auf den Würfel wird in Zeile 27 `isRolling` auf `true` gesetzt.
     ::::dd
@@ -256,7 +266,7 @@ import DiceHistory from './components/DiceHistory';
     Zeile 24
     : Falls `isRolling` `true` ist, wird die CSS-Klasse `isRolling` zum `div`-Element hinzugefügt. Damit nicht von Hand einzelne CSS-Klassen hinzugefügt werden müssen, wird die Bibliothek `clsx` verwendet. `clsx` sortierte `falsey` Werte aus und gibt nur die aktuell aktiven CSS-Klassen zurück.
     : So wäre bei `clsx('foo', false, 1 > 0 && 'bar', 0 > 1 && 'baz')` der Rückgabewert `'foo bar'`.
-
+    :::::
     Damit der Würfel auch wirklich animiert ist, muss noch das CSS angepasst werden.
 
     ```css title="docs/tdev/dice/Dice.module.css" showLineNumbers
@@ -300,7 +310,7 @@ import DiceHistory from './components/DiceHistory';
 
     // highlight-start
     interface Props {
-        num: number;
+        num: number | null;
         onRoll?: () => void;
         isRolling?: boolean;
     }
@@ -323,7 +333,7 @@ import DiceHistory from './components/DiceHistory';
         const [num, setNum] = React.useState(rollDice());
         const [isRolling, setIsRolling] = React.useState(false);
         // highlight-next-line
-        const [history, setHistory] = React.useState<number[]>([]);
+        const [history, setHistory] = React.useState<(number | null)[]>([null, null, null, null, null]);
 
         React.useEffect(() => {
             if (isRolling) {
@@ -359,7 +369,7 @@ import DiceHistory from './components/DiceHistory';
 
     export default Dice;
     ```
-
+    :::::note
     Zeilen 15-24
     : Ein einzelner Würfel wird in eine eigene Komponente `DiceComponent` ausgelagert. Diese erhält die Props `onRoll`, `isRolling` und `num`. Da TypeScript verwendet wird, werden diese Props auf Zeilen 9-13 im Interface `Props` definiert.
     : Auf Zeile 10 steht: `num: number` - `num` muss übergeben werden, bspw. `<DiceComponent num={3} />`.
@@ -422,6 +432,7 @@ import DiceHistory from './components/DiceHistory';
     );
     ```
     ::::
+    :::::
 
     Das Stylesheet muss ebenfalls angepasst werden, so dass die Würfel in der History farblich anders dargestellt werden.
     ```css title="docs/tdev/dice/Dice.module.css"
@@ -463,15 +474,6 @@ import DiceHistory from './components/DiceHistory';
         }
     }
     ```
+</ProgressState>
 
-
-
-
-
-
-
-
-
-
-</Steps>
-
+</div>
