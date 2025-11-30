@@ -1,0 +1,45 @@
+---
+page_id: b15c9931-79fc-446a-b5ed-9c2965ac0e60
+---
+
+import BrowserWindow from '@site/src/components/BrowserWindow';
+
+# Tabs
+
+Docusaurus stellt standardmässig [Tab-Komponenten](https://docusaurus.io/docs/markdown-features/tabs) zur Verfügung:
+
+```md
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="apple" label="Apple" default>
+    This is an apple 🍎
+  </TabItem>
+  <TabItem value="orange" label="Orange">
+    This is an orange 🍊
+  </TabItem>
+  <TabItem value="banana" label="Banana">
+    This is a banana 🍌
+  </TabItem>
+</Tabs>
+```
+
+<BrowserWindow>
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="apple" label="Apple" default>
+    This is an apple 🍎
+  </TabItem>
+  <TabItem value="orange" label="Orange">
+    This is an orange 🍊
+  </TabItem>
+  <TabItem value="banana" label="Banana">
+    This is a banana 🍌
+  </TabItem>
+</Tabs>
+</BrowserWindow>
+
+Weitere Optionen und Anpassungen sind in der [Docusaurus-Dokumentation](https://docusaurus.io/docs/markdown-features/tabs) beschrieben.
