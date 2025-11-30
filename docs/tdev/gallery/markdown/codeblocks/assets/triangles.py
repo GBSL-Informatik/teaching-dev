@@ -2,7 +2,7 @@ from turtle import *
 from math import sqrt
 import random
 
-GRID_SIZE = 5, 5
+GRID_SIZE = [5, 5]
 
 def move_to(x, y):
     penup()
