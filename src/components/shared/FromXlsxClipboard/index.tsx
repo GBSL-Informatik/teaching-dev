@@ -9,7 +9,8 @@ import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
 
 interface Props {
     matchUsers?: boolean;
-    onDone?: (table?: string[][]) => void;
+    withoutKnownUsers?: boolean;
+    onDone?: (table?: string[][], hasHeader?: boolean) => void;
     importLabel?: string;
     cancelLabel?: string;
     cancelIcon?: string;
@@ -86,7 +87,26 @@ const FromXlsxClipboard = (props: Props) => {
                     </div>
                     <div className={clsx(styles.preview)}>
                         {table.length > 0 && (
-                            <Table cells={table} withHeader={withHeader} trimmedCells={{ [0]: 7 }} />
+                            <Table
+                                cells={table}
+                                withHeader={withHeader}
+                                trimmedCells={{ [0]: 7 }}
+                                cellStyler={
+                                    props.matchUsers && props.withoutKnownUsers
+                                        ? (row, col, val) => {
+                                              if (withHeader && row === 0) {
+                                                  return;
+                                              }
+                                              if (table[row][0]) {
+                                                  return {
+                                                      textDecoration: 'line-through',
+                                                      color: 'red'
+                                                  };
+                                              }
+                                          }
+                                        : undefined
+                                }
+                            />
                         )}
                     </div>
                 </div>
@@ -110,17 +130,17 @@ const FromXlsxClipboard = (props: Props) => {
                             if (props.onDone) {
                                 if (props.includeHeader) {
                                     if (withHeader) {
-                                        props.onDone(table);
+                                        props.onDone(table, true);
                                     } else {
                                         const size = table[0].length;
                                         const hTable = [[], ...table];
                                         for (let i = 0; i < size; i++) {
                                             hTable[0].push(`Spalte ${i + 1}`);
                                         }
-                                        props.onDone(hTable);
+                                        props.onDone(hTable, true);
                                     }
                                 } else {
-                                    props.onDone(table.slice(withHeader ? 1 : 0));
+                                    props.onDone(table.slice(withHeader ? 1 : 0), false);
                                 }
                             }
                         }}
