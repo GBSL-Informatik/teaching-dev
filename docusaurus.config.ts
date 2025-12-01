@@ -1,7 +1,7 @@
 require('dotenv').config();
 import getSiteConfig from './siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
-import type { Config, } from '@docusaurus/types';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import themeCodeEditor from './src/plugins/theme-code-editor'
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +22,8 @@ import path from 'path';
 import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recommendedRemarkPlugins } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { excalidrawPluginConfig } from '@tdev/excalidoc';
-import { EditThisPageOption, ShowEditThisPage } from '@tdev/siteConfig/siteConfig';
+import type { EditThisPageOption, ShowEditThisPage, TdevConfig } from '@tdev/siteConfig/siteConfig';
+import onNewExcalidrawSketch from '@tdev/excalidoc/ImageMarkupEditor/onNewExcalidrawSketch';
 
 const siteConfig = getSiteConfig();
 
@@ -48,6 +49,13 @@ const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
 
+const DEFAULT_ADMONITION_CONFIG = {
+    admonitions: {
+        keywords: ['aufgabe', 'finding', 'insight', 'definition'],
+        extendDefaults: true
+    }
+};
+
 const config: Config = applyTransformers({
   title: TITLE,
   tagline: siteConfig.tagline ?? 'Eine Plattform zur Gestaltung interaktiver Lernerlebnisse',
@@ -70,7 +78,7 @@ const config: Config = applyTransformers({
     /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
     TEST_USER: DEFAULT_TEST_USER,
     OFFLINE_API: OFFLINE_API,
-    NO_AUTH: (process.env.NODE_ENV !== 'production' || OFFLINE_API) && !!DEFAULT_TEST_USER,
+    NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
     /** The Domain Name where the api is running */
     APP_URL: process.env.NETLIFY
       ? process.env.CONTEXT === 'production'
@@ -86,44 +94,45 @@ const config: Config = applyTransformers({
     showEditThisPage: siteConfig.showEditThisPage ?? 'always' satisfies ShowEditThisPage,
     showEditThisPageOptions: siteConfig.showEditThisPageOptions ?? ['github', 'github-dev', 'cms'] satisfies EditThisPageOption[],
     editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
+    tdevConfig: siteConfig.tdevConfig ?? {} satisfies Partial<TdevConfig>,
   },
   future: {
     v4: true,
     experimental_faster: {
-      /**
-       * no config options for swcJsLoader so far. 
-       * Instead configure it over the jsLoader in the next step 
-       */
-      swcJsLoader: false,
-      swcJsMinimizer: true,
-      swcHtmlMinimizer: true,
-      lightningCssMinimizer: true,
-      rspackBundler: true,
-      rspackPersistentCache: process.env.NETLIFY ? false : true,
-      mdxCrossCompilerCache: true,
-      ssgWorkerThreads: true,
-    },
+        /**
+         * no config options for swcJsLoader so far. 
+         * Instead configure it over the jsLoader in the next step 
+         */
+        swcJsLoader: false,
+        swcJsMinimizer: true,
+        swcHtmlMinimizer: true,
+        lightningCssMinimizer: true,
+        rspackBundler: true,
+        rspackPersistentCache: process.env.NETLIFY ? false : true,
+        mdxCrossCompilerCache: true,
+        ssgWorkerThreads: true,
+      },
   },
   webpack: {
     jsLoader: (isServer) => {
-      const defaultOptions = require("@docusaurus/faster").getSwcLoaderOptions({ isServer });
-      return {
-        loader: 'builtin:swc-loader', // (only works with Rspack)
-        options: {
-          ...defaultOptions,
-          jsc: {
-            parser: {
-              ...defaultOptions.jsc.parser,
-              decorators: true
+        const defaultOptions = require("@docusaurus/faster").getSwcLoaderOptions({ isServer });
+        return {
+          loader: 'builtin:swc-loader', // (only works with Rspack)
+          options: {
+            ...defaultOptions,
+            jsc: {
+              parser: {
+                ...defaultOptions.jsc.parser,
+                decorators: true
+              },
+              transform: {
+                ...defaultOptions.jsc.transform,
+                decoratorVersion: '2022-03',
+              }
             },
-            transform: {
-              ...defaultOptions.jsc.transform,
-              decoratorVersion: '2022-03',
-            }
           },
-        },
-      }
-    },
+        }
+      },
   },
 
   // Even if you don't use internationalization, you can use this field to set
@@ -186,6 +195,9 @@ const config: Config = applyTransformers({
     mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
+      onBrokenMarkdownImages: process.env.NODE_ENV === 'production' 
+        ? siteConfig.onBrokenImages ?? 'throw' 
+        : onNewExcalidrawSketch
     },
     ...siteConfig.markdown
   },
@@ -197,22 +209,22 @@ const config: Config = applyTransformers({
           sidebarPath: './sidebars.ts',
           // Remove this to remove the "edit this page" links.
           path: DOCS_PATH,
-          editUrl:
-            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+          editUrl: '/',
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+          ...DEFAULT_ADMONITION_CONFIG,
           ...(siteConfig.docs || {})
         } : false,
         blog: BLOG_PATH ? {
           path: BLOG_PATH,
           showReadingTime: true,
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+          editUrl: '/',
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+          ...DEFAULT_ADMONITION_CONFIG,
           ...(siteConfig.blog || {})
         } : false,
         pages: {
@@ -221,7 +233,8 @@ const config: Config = applyTransformers({
           remarkPlugins: REMARK_PLUGINS,
           rehypePlugins: REHYPE_PLUGINS,
           beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-          editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+          editUrl: '/',
+          ...DEFAULT_ADMONITION_CONFIG,
           ...(siteConfig.pages || {})
         },
         theme: {

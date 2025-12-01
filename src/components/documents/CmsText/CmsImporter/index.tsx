@@ -17,6 +17,7 @@ import ImportPreview from './ImportPreview';
 import XlsxImport from './XlsxImport';
 import CodeImport from './CodeImport';
 import { PopupActions } from 'reactjs-popup/dist/types';
+import Badge from '@tdev-components/shared/Badge';
 
 interface Props {
     className?: string;
@@ -98,16 +99,21 @@ const CmsImporter = observer((props: Props) => {
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
             onOpen={() => {
                 setIsOpen(true);
-                documentStore.apiLoadDocumentsFrom(Object.values(toAssign)).then((models) => {
-                    if (
-                        documentStore.apiStateFor(`load-docs-${Object.values(toAssign).join('::')}`) ===
-                        ApiState.SUCCESS
-                    ) {
-                        setReady(true);
-                    } else {
-                        console.log('Error loading documents');
-                    }
-                });
+                documentStore
+                    .apiLoadDocumentsFrom(Object.values(toAssign))
+                    .then((models) => {
+                        if (
+                            documentStore.apiStateFor(`load-docs-${Object.values(toAssign).join('::')}`) ===
+                            ApiState.SUCCESS
+                        ) {
+                            setReady(true);
+                        } else {
+                            console.log('Error loading documents');
+                        }
+                    })
+                    .catch((err) => {
+                        console.warn('Error loading documents', err);
+                    });
             }}
             closeOnEscape={true}
             onClose={() => {
@@ -119,6 +125,13 @@ const CmsImporter = observer((props: Props) => {
             <div className={clsx(styles.wrapper, 'card')}>
                 <div className={clsx('card__header', styles.header)}>
                     <h3>CMS Texte erstellen</h3>
+                    <div className={clsx(styles.importLabels)}>
+                        {Object.keys(toAssign).map((item, idx) => (
+                            <Badge key={idx} type="primary" title={toAssign[item as keyof CmsTextEntries]}>
+                                {item}
+                            </Badge>
+                        ))}
+                    </div>
                 </div>
                 <div className={clsx('card__body', styles.cardBody)}>
                     {table.length === 0 ? (

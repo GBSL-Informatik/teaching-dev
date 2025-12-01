@@ -16,6 +16,7 @@ interface Props {
     labelClassName?: string;
     value?: string;
     type?: HTMLInputTypeAttribute;
+    title?: string;
     label?: React.ReactNode;
     noSpellCheck?: boolean;
     noAutoFocus?: boolean;
@@ -44,6 +45,7 @@ const TextInput = observer((props: Props) => {
                         props.isDirty && styles.dirty
                     )}
                     htmlFor={id}
+                    title={props.title}
                 >
                     {props.label}
                 </label>
@@ -75,7 +77,6 @@ const TextInput = observer((props: Props) => {
                     }
                 }}
                 onInput={(e) => {
-                    const validity = e.currentTarget.validity;
                     const error = validator(e.currentTarget.value);
                     if (error === null) {
                         e.currentTarget.setCustomValidity('');
@@ -83,14 +84,12 @@ const TextInput = observer((props: Props) => {
                         e.currentTarget.setCustomValidity(error);
                     }
                     e.currentTarget.classList.add(styles.touched);
-                    if ((props.required || e.currentTarget.value.length > 0) && !validity.valid) {
-                        e.currentTarget.reportValidity();
-                    }
+                    e.currentTarget.reportValidity();
                 }}
                 autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
-                step={props.step}
+                step={props.step ?? 'any'}
                 min={props.min}
                 max={props.max}
             />

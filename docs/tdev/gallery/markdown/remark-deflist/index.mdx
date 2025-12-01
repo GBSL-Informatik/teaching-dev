@@ -1,8 +1,9 @@
 ---
-page_id: 9a0e84c3-778f-43e6-948c-79ea7f70a48f
+page_id: ebe2c231-95d4-4c9d-aab7-2d90138601c2
 tags: [remark]
 ---
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import DefinitionList from "@tdev-components/DefinitionList";
 
 # Deflist
 
@@ -108,6 +109,98 @@ Hallo Welt in Live
     ```
 :::
 </BrowserWindow>
+
+## Kontext durch Eltern-Klassen
+
+Die Definitionen können auch durch Eltern-Klassen kontextualisiert werden. Dies ermöglicht eine bessere Organisation und Strukturierung der Inhalte.
+
+```md
+`default`
+: The simplest example
+World
+: Our planet
+
+---
+
+<div className="compactDeflist">
+`compactDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+
+---
+
+<div className="smallDeflist">
+`smallDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+```
+
+<BrowserWindow>
+
+`default`
+: The simplest example
+World
+: Our planet
+
+---
+
+<div className="compactDeflist">
+`compactDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+
+---
+
+<div className="smallDeflist">
+`smallDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+</BrowserWindow>
+
+## Manuelle Verwendung
+
+Es kann auch direkt die entsprechende React-Komponente verwendet werden:
+
+```md
+import DefinitionList from "@tdev-components/DefinitionList";
+
+<DefinitionList>
+    <dt>Hello World</dt>
+    <dd>The simplest example</dd>
+    <dt>World</dt>
+    <dd>Our planet</dd>
+</DefinitionList>
+```
+
+<BrowserWindow>
+<DefinitionList>
+    <dt>Hello World</dt>
+    <dd>The simplest example</dd>
+    <dt>World</dt>
+    <dd>Our planet</dd>
+</DefinitionList>
+</BrowserWindow>
+
+### Attribute
+
+`small`
+: Stellt `dt` und `dd` untereinander dar - standardmässig auf kleiner Displaygrösse aktiviert.
+`compact`
+: Reduziert den links-seitigen Abstand und richtet die `dt` Elemente linksbündig aus.
+`gridTemplateColumns`
+: Ermöglicht ie Übergabe einer eigenen Definitionder Anordnung von `dt` und `dd` Elementen.
+: **default**: `minmax(8em, 1fr) minmax(10em, 2fr)`
+`ignoreMediaQueries`
+: Ignoriert die automatische Anpassung der Darstellung basierend auf der Displaygrösse.
+: **deault**: Ist das Display kleiner als `620px` Breit, so wird automatisch `small` aktiviert.
 
 ## Installation
 

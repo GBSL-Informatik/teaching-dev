@@ -21,6 +21,7 @@ import type { ExcalidrawFreeDrawElement, ExcalidrawTextElement } from '@excalidr
 import ChangeSrcPopup from './ChangeSrcPopup';
 import Icon from '@mdi/react';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import UpdateCustomProps from './UpdateCustomProps';
 
 interface Props {
     onSave: () => void;
@@ -70,7 +71,7 @@ const TopRightUi = observer((props: Props) => {
                     title="Kein Hintergrundbild vorhanden."
                 />
             )}
-
+            <UpdateCustomProps api={api} onSave={onSave} />
             {hasChanges && (
                 <Button
                     icon={mdiContentSave}

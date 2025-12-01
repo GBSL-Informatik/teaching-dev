@@ -98,11 +98,11 @@ Der Text "<CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3"/>" wurde aus der Da
 CMS Text kann auch nützlich sein, um bspw. Prüfungsinhalte erst zur gegebenen Zeit mit einer __Shared Permission__ anzuzeigen. Das Permissions Panel kann deshalb optional angezeigt werden:
 
 ```md
-<BrowserWindow>
-Diskutieren Sie das nachfolgende Zitat:
-> <CmsText id="30918f4b-8400-42d9-8e1f-f19d27357494" showActions/>
+import CmsText from '@tdev-components/documents/CmsText';
 
-</BrowserWindow>
+Diskutieren Sie das nachfolgende Zitat:
+
+> <CmsText id="30918f4b-8400-42d9-8e1f-f19d27357494" showActions/>
 ```
 
 <BrowserWindow>
@@ -228,6 +228,10 @@ Im folgenden Beispiel wird die gesamte `<DefinitionList>` nur dann angezeigt, we
 Zusätzlich wird ein weiterer CMS-Text mit der ID `2c0c085d-388a-48cd-9871-975bab0ffda3` verwendet. Wenn dort das entsprechende Dokument fehlt, bleibt der Eintrag einfach leer.
 
 ```md
+import WithCmsText from '@tdev-components/documents/CmsText/WithCmsText';
+import CmsText from '@tdev-components/documents/CmsText';
+import DefinitionList from "@tdev-components/DefinitionList";
+
 <WithCmsText 
     entries={{
         demo: "30918f4b-8400-42d9-8e1f-f19d27357494", 

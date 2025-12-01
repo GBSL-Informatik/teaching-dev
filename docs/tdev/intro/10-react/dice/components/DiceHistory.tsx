@@ -9,16 +9,13 @@ const rollDice = () => {
 interface Props {
     onRoll?: () => void;
     isRolling?: boolean;
-    num: number;
+    num: number | null;
 }
 
 const Dice = (props: Props) => {
     return (
-        <div
-            className={clsx(styles.dice, props.isRolling && styles.isRolling)}
-            onClick={props.onRoll}
-        >
-            {props.num}
+        <div className={clsx(styles.dice, props.isRolling && styles.isRolling)} onClick={props.onRoll}>
+            {props.num ?? ''}
         </div>
     );
 };
@@ -26,7 +23,7 @@ const Dice = (props: Props) => {
 const DiceHistory = () => {
     const [num, setNum] = React.useState(rollDice());
     const [isRolling, setIsRolling] = React.useState(false);
-    const [history, setHistory] = React.useState<number[]>([]);
+    const [history, setHistory] = React.useState<(number | null)[]>([null, null, null, null, null]);
 
     React.useEffect(() => {
         if (isRolling) {
@@ -46,7 +43,7 @@ const DiceHistory = () => {
                 onRoll={() => {
                     setNum(rollDice());
                     setIsRolling(true);
-                }} 
+                }}
             />
             <div className={clsx(styles.history)}>
                 {history.map((val, idx) => {

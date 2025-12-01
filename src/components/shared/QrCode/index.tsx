@@ -123,7 +123,9 @@ const QrCode = (props: Props) => {
                             {props.linkText || props.text}
                         </Link>
                     ) : (
-                        <div className={clsx(styles.qrText)}>{props.linkText || props.text}</div>
+                        <div className={clsx(styles.qrText)}>
+                            {props.withInput ? text : props.linkText || props.text}
+                        </div>
                     )}
                     {props.download && <Button icon={mdiDownload} onClick={onDownload} size={SIZE_S} />}
                 </div>

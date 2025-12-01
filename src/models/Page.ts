@@ -13,8 +13,9 @@ import ProgressState from './documents/ProgressState';
 export default class Page {
     readonly store: PageStore;
     readonly id: string;
+    refetchTimestamps: number[] = [];
 
-    @observable.ref accessor primaryStudentGroup: StudentGroup | undefined = undefined;
+    @observable.ref accessor _primaryStudentGroupName: string | undefined = undefined;
     @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
     documentRootIds: ObservableSet<string>;
 
@@ -68,8 +69,14 @@ export default class Page {
 
     @action
     setPrimaryStudentGroupName(name?: string) {
-        const group = this.store.root.studentGroupStore.findByName(name);
-        this.setPrimaryStudentGroup(group);
+        this._primaryStudentGroupName = name;
+    }
+
+    @computed
+    get primaryStudentGroup() {
+        return this._primaryStudentGroupName
+            ? this.store.root.studentGroupStore.findByName(this._primaryStudentGroupName)
+            : undefined;
     }
 
     @action
@@ -79,11 +86,11 @@ export default class Page {
             (group.id === this.primaryStudentGroup?.id ||
                 this._activeStudentGroup?.parentIds.includes(group.id))
         ) {
-            this.primaryStudentGroup = undefined;
+            this.setPrimaryStudentGroupName(undefined);
             this._activeStudentGroup = undefined;
             return;
         }
-        this.primaryStudentGroup = group;
+        this.setPrimaryStudentGroupName(group?.name);
         if (group) {
             this._activeStudentGroup = undefined;
         }
@@ -94,7 +101,15 @@ export default class Page {
      */
     @action
     loadLinkedDocumentRoots() {
-        return this.store.loadAllDocuments(this);
+        this.refetchTimestamps.push(Date.now());
+        return this.store.loadAllDocuments(this).catch((err) => {
+            const now = Date.now();
+            const ts = this.refetchTimestamps.filter((ts) => now - ts < 10_000);
+            if (ts.length < 5) {
+                setTimeout(() => this.loadLinkedDocumentRoots(), 500);
+            }
+            console.warn('Failed to load linked document roots for page', this, err);
+        });
     }
 
     @action
@@ -144,6 +159,10 @@ export default class Page {
     @computed
     get userIdsWithoutEditingState(): string[] {
         const editingStates = this.editingStateByUsers;
-        return [...(this.activeStudentGroup?.userIds || [])].filter((userId) => !editingStates[userId]);
+        const userIds = new Set<string>(
+            this.activeStudentGroup?.userIds ||
+                this.store.root.studentGroupStore.managedStudentGroups.flatMap((g) => [...g.userIds])
+        );
+        return [...userIds].filter((userId) => !editingStates[userId]);
     }
 }

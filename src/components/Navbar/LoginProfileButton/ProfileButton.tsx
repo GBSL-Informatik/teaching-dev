@@ -6,12 +6,13 @@ import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     preventClick?: boolean;
 }
 
-const ProfileButton = ({ preventClick = false }: Props) => {
+const ProfileButton = observer(({ preventClick = false }: Props) => {
     const isMobile = useIsMobileView(502);
     const userStore = useStore('userStore');
     const sessionStore = useStore('sessionStore');
@@ -47,6 +48,6 @@ const ProfileButton = ({ preventClick = false }: Props) => {
             )}
         </div>
     );
-};
+});
 
 export default ProfileButton;

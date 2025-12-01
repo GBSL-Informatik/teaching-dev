@@ -3,16 +3,13 @@ import clsx from 'clsx';
 import styles from './login.module.scss';
 import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Link from '@docusaurus/Link';
 import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
 import siteConfig from '@generated/docusaurus.config';
-import Translate from '@docusaurus/Translate';
 import { authClient } from '@tdev/auth-client';
 import Button from '@tdev-components/shared/Button';
 import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import { SIZE_LG, SIZE_M } from '@tdev-components/shared/iconSizes';
 const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {

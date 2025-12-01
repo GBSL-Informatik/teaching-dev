@@ -20,11 +20,11 @@
       "locked": true,
       "customData": {
         "exportFormatMimeType": "image/webp",
-        "scale": 0.4038364462,
-        "initExtension": ".webp"
+        "exportPadding": 2,
+        "scale": 2
       },
       "version": 2,
-      "versionNonce": 1141052185,
+      "versionNonce": 1141052194,
       "index": "a0",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -412,51 +412,6 @@
       "originalText": "1",
       "autoResize": true,
       "lineHeight": 1.15
-    },
-    {
-      "id": "Lj1WGHyEa6pCEoeS9CEQ0",
-      "type": "line",
-      "x": -44.888824076497336,
-      "y": 36.26413686658643,
-      "width": 0,
-      "height": 145.33333333333337,
-      "angle": 0,
-      "strokeColor": "transparent",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 4,
-      "strokeStyle": "solid",
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": null,
-      "index": "aH",
-      "roundness": {
-        "type": 2
-      },
-      "seed": 1168197022,
-      "version": 70,
-      "versionNonce": 1798543554,
-      "isDeleted": false,
-      "boundElements": [],
-      "updated": 1754817126541,
-      "link": null,
-      "locked": false,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          0,
-          145.33333333333337
-        ]
-      ],
-      "lastCommittedPoint": null,
-      "startBinding": null,
-      "endBinding": null,
-      "startArrowhead": null,
-      "endArrowhead": null
     }
   ],
   "files": {

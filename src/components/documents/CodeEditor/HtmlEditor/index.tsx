@@ -18,6 +18,7 @@ import { useStore } from '@tdev-hooks/useStore';
 export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' | 'title'> {
     title?: string;
     code?: string;
+    lang?: 'html' | 'css' | 'scss';
     maxHeight?: string | number;
     minHeight?: string | number;
     showLineNumbers?: boolean;
@@ -37,7 +38,7 @@ const HtmlEditor = observer((props: Props) => {
                 title: 'website.html',
                 ...props,
                 code: props.code || '',
-                lang: 'html',
+                lang: props.lang ?? 'html',
                 theme: 'xcode'
             }),
         [props.id, props.code]

@@ -11,6 +11,7 @@
         grid-area: label;
         font-weight: var(--ifm-font-weight-semibold);
         font-family: var(--ifm-font-family-monospace);
+        background-color: var(--ifm-color-gray-200);
         border: 1px solid var(--ifm-color-gray-600);
         border-top-left-radius: var(--ifm-global-radius);
         border-bottom-left-radius: var(--ifm-global-radius);
@@ -60,6 +61,22 @@
             margin-bottom: 0;
             border-bottom-left-radius: var(--ifm-global-radius);
             border-left-width: 1px;
+        }
+    }
+}
+
+[data-theme='dark'] {
+    .dynamicInput {
+        .label {
+            background-color: var(--ifm-color-gray-700);
+            border-color: var(--ifm-color-gray-500);
+            &.derived {
+                background-color: var(--ifm-color-gray-800);
+                border-color: var(--ifm-color-primary);
+            }
+        }
+        .input {
+            border-color: var(--ifm-color-gray-500);
         }
     }
 }

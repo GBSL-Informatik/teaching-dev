@@ -19,7 +19,7 @@ export interface MetaInit {
 
 type SystemType = DocumentType.File | DocumentType.Dir;
 
-const DefaultName = {
+export const DefaultName = {
     [DocumentType.File]: 'Dokument',
     [DocumentType.Dir]: 'Ordner'
 };
@@ -41,14 +41,14 @@ export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
     }
 }
 
-class iFileSystem<T extends SystemType> extends iDocument<T> {
+abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
     @observable accessor name: string;
     @observable accessor isOpen: boolean = true;
     @observable accessor isEditing: boolean = false;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
-        this.name = props.data?.name || this.meta.name;
+        this.name = props.data?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
         this.isOpen = props.data?.isOpen ?? true;
     }
 
@@ -79,9 +79,7 @@ class iFileSystem<T extends SystemType> extends iDocument<T> {
         };
     }
 
-    get meta(): iFSMeta<T> {
-        throw new Error('Not implemented');
-    }
+    abstract get meta(): iFSMeta<T>;
 
     @computed
     get path() {

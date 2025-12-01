@@ -16,14 +16,13 @@ interface Props {
     onRecalculate?: (page: Page) => string;
     placeholder?: string;
     monospace?: boolean;
-    last?: boolean;
-    derived?: boolean;
     hidden?: boolean;
 }
 
 const DynamicInput = observer((props: Props) => {
     const pageStore = useStore('pageStore');
     const { current } = pageStore;
+    const isDerived = typeof props.default === 'function';
     React.useEffect(() => {
         if (current && !current.dynamicValues.has(props.name)) {
             current.setDynamicValue(
@@ -35,10 +34,10 @@ const DynamicInput = observer((props: Props) => {
     const defaultValue =
         typeof props.default === 'function' ? (current ? props.default(current) : '') : props.default;
     React.useEffect(() => {
-        if (current && props.derived && defaultValue) {
+        if (current && isDerived && defaultValue) {
             current.setDynamicValue(props.name, defaultValue);
         }
-    }, [current, defaultValue, props.derived]);
+    }, [current, defaultValue, isDerived]);
     if (!current) {
         return null;
     }
@@ -48,7 +47,7 @@ const DynamicInput = observer((props: Props) => {
         return null;
     }
     return (
-        <div className={clsx(styles.dynamicInput, props.last && styles.last)}>
+        <div className={clsx(styles.dynamicInput)}>
             <TextInput
                 noAutoFocus
                 value={value ?? defaultValue ?? ''}
@@ -57,7 +56,8 @@ const DynamicInput = observer((props: Props) => {
                 }}
                 defaultValue={defaultValue}
                 label={props.label || props.name}
-                labelClassName={clsx(styles.label, props.derived && styles.derived)}
+                title={isDerived ? 'Abgeleiteter Wert' : undefined}
+                labelClassName={clsx(styles.label, isDerived && styles.derived)}
                 className={clsx(styles.input, props.monospace && styles.monospace)}
                 placeholder={props.placeholder}
             />

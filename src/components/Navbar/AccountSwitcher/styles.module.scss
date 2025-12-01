@@ -1,6 +1,6 @@
-.accountSwitcher {
+.buttonWrapper {
     position: relative;
-    .accountSwitcherButton {
+    .button {
         height: 1.55rem;
         .text {
             display: none;
@@ -27,8 +27,8 @@
     }
 }
 :global(.navbar-sidebar) {
-    .accountSwitcher {
-        .accountSwitcherButton {
+    .buttonWrapper {
+        .button {
             .text {
                 display: inline;
             }
