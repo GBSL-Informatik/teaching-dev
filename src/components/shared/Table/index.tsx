@@ -13,6 +13,11 @@ interface Props {
     className?: string;
     onSelectColumn?: (index: number) => void;
     highlightedColumns?: HighlightedColumn[];
+    cellStyler?: (
+        rowIndex: number,
+        columnIndex: number,
+        cellValue: string | number | boolean | null | undefined
+    ) => React.CSSProperties | undefined;
     trimmedCells?: { [key: number]: number };
 }
 
@@ -21,6 +26,7 @@ const Table = (props: Props) => {
     const trimmedCells = new Map<number, number>(
         Object.entries(props.trimmedCells || {}).map(([k, v]) => [parseInt(k), v])
     );
+    const shift = props.withHeader ? 1 : 0;
     return (
         <table className={clsx(styles.table, props.className, props.onSelectColumn && styles.selecteable)}>
             {props.withHeader && (
@@ -30,7 +36,10 @@ const Table = (props: Props) => {
                             <th
                                 key={i}
                                 className={clsx(toHighlight.has(i) && styles.highlight)}
-                                style={{ backgroundColor: toHighlight.get(i) }}
+                                style={{
+                                    backgroundColor: toHighlight.get(i),
+                                    ...(props.cellStyler ? props.cellStyler(0, i, cell) : {})
+                                }}
                                 onClick={(e) => {
                                     if (props.onSelectColumn) {
                                         props.onSelectColumn(i);
@@ -45,7 +54,7 @@ const Table = (props: Props) => {
                 </thead>
             )}
             <tbody>
-                {props.cells.slice(props.withHeader ? 1 : 0).map((row, i) => (
+                {props.cells.slice(shift).map((row, i) => (
                     <tr key={i}>
                         {row.map((cell, j) => (
                             <td
@@ -56,7 +65,8 @@ const Table = (props: Props) => {
                                 )}
                                 style={{
                                     backgroundColor:
-                                        `${cell}`.trim().length > 0 ? toHighlight.get(j) : undefined
+                                        `${cell}`.trim().length > 0 ? toHighlight.get(j) : undefined,
+                                    ...(props.cellStyler ? props.cellStyler(i + shift, j, cell) : {})
                                 }}
                                 onClick={(e) => {
                                     if (props.onSelectColumn) {
