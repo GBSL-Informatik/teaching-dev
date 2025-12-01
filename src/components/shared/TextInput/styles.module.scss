@@ -1,6 +1,6 @@
 .textInput {
     width: 100%;
-    padding: var(--ifm-button-padding-vertical);
+    padding: 2.5px;
     border: 1px solid var(--ifm-color-gray-500);
     border-radius: var(--ifm-global-radius);
     font-size: var(--ifm-font-size-base);
@@ -11,11 +11,11 @@
     &:focus {
         border-color: var(--ifm-link-hover-color);
         outline: none;
-        box-shadow: 0 0 8px var(--ifm-link-hover-color);
+        box-shadow: 0 0 2px var(--ifm-link-hover-color);
     }
     &.touched:invalid {
         border-color: var(--ifm-color-danger);
-        box-shadow: 0 0 8px var(--ifm-color-danger);
+        box-shadow: 0 0 2px var(--ifm-color-danger);
     }
 }
 .label {

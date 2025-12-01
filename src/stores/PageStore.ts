@@ -62,11 +62,9 @@ export class PageStore extends iStore {
     loadAllDocuments(page: Page) {
         return this.withAbortController(`load-all-${page.id}`, (sig) => {
             return apiAllDocuments([...page.documentRootIds], sig.signal).then(({ data }) => {
-                return Promise.all(
-                    data.map((doc) => {
-                        this.root.documentStore.addToStore(doc);
-                    })
-                );
+                return data.map((doc) => {
+                    this.root.documentStore.addToStore(doc);
+                });
             });
         });
     }
