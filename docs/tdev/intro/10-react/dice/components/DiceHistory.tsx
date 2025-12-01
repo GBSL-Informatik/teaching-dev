@@ -14,10 +14,7 @@ interface Props {
 
 const Dice = (props: Props) => {
     return (
-        <div
-            className={clsx(styles.dice, props.isRolling && styles.isRolling)}
-            onClick={props.onRoll}
-        >
+        <div className={clsx(styles.dice, props.isRolling && styles.isRolling)} onClick={props.onRoll}>
             {props.num ?? ''}
         </div>
     );
@@ -46,7 +43,7 @@ const DiceHistory = () => {
                 onRoll={() => {
                     setNum(rollDice());
                     setIsRolling(true);
-                }} 
+                }}
             />
             <div className={clsx(styles.history)}>
                 {history.map((val, idx) => {

@@ -6,10 +6,16 @@ coverage
 .docusaurus
 .github
 .drone.yml
-
-docs
+versioned_docs
 
 *.md
+*.mdx
+docs/**/*.py
+docs/**/*.svg
+docs/**/*.xml
+docs/**/*.yml
+docs/**/*.yaml
+docs/**/*.json
 
 i18n
 versions.json
@@ -18,3 +24,8 @@ versioned_sidebars/*.json
 
 static/katex/katex.min.css
 .vscode/*.code-snippets
+*.mp4
+*.mp3
+*.jpeg
+*.jpg
+*.png
