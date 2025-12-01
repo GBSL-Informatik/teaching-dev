@@ -1,8 +1,17 @@
-from browser import window
+from browser import window, alert
 
 def languages(print_langs=True):
     langs = []
-    for v in window.speechSynthesis.getVoices():
+    browser_langs = window.speechSynthesis.getVoices()
+    # some browsers return empty list at first call
+    if len(browser_langs) == 0:
+        t0 = window.performance.now()
+        while window.performance.now() - t0 < 1000 and window.speechSynthesis.getVoices().length == 0:
+            pass
+        browser_langs = window.speechSynthesis.getVoices()
+    if len(browser_langs) == 0:
+        alert('Stimmen werden im Hintergrund heruntergeladen, versuchen Sie es in einigen Sekunden nochmals.')
+    for v in browser_langs:
         if v.lang not in langs:
             langs.append(v.lang)
             if print_langs:
