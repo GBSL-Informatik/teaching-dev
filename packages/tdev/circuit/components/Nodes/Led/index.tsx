@@ -9,6 +9,7 @@ import { mdiLedOff, mdiLedOn } from '@mdi/js';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
 import Icon from '@mdi/react';
+import NodeWrapper from '../NodeWrapper';
 
 export type LedNode = Node<{}, 'LedNode'>;
 
@@ -16,8 +17,11 @@ const LedNode = observer((props: NodeProps<LedNode>) => {
     const documentStore = useStore('documentStore');
     const doc = documentStore.find(props.id) as FlowNode<NodeType.LedNode> | undefined;
     const isPowered = doc?.inputEdgeA ? doc?.deriver.power : 0;
+    if (!doc) {
+        return null;
+    }
     return (
-        <div className={clsx(styles.buttonNode)}>
+        <NodeWrapper node={doc} className={styles.buttonNode}>
             <Icon
                 path={isPowered ? mdiLedOn : mdiLedOff}
                 size={2}
@@ -36,7 +40,7 @@ const LedNode = observer((props: NodeProps<LedNode>) => {
                 className={clsx(isPowered && shared.on, shared.handle)}
                 style={{ left: '28px', bottom: '12px' }}
             />
-        </div>
+        </NodeWrapper>
     );
 });
 

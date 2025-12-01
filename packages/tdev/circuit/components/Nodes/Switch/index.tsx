@@ -17,6 +17,7 @@ import {
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { Source } from '@tdev-models/iDocument';
 import { NodeType } from '@tdev-api/document';
+import NodeWrapper from '../NodeWrapper';
 
 export type SwitchNode = Node<{}, 'SwitchNode'>;
 
@@ -32,8 +33,11 @@ const SwitchNode = observer((props: NodeProps<SwitchNode>) => {
         [props.id, doc, doc?.deriver.power]
     );
     const isPowered = doc?.inputEdgeA ? doc?.deriver.power : 0;
+    if (!doc) {
+        return null;
+    }
     return (
-        <div className={clsx(styles.buttonNode)}>
+        <NodeWrapper node={doc} className={styles.buttonNode}>
             <Button
                 color={isPowered ? 'green' : undefined}
                 icon={doc?.deriver.power ? mdiElectricSwitchClosed : mdiElectricSwitch}
@@ -51,7 +55,7 @@ const SwitchNode = observer((props: NodeProps<SwitchNode>) => {
                 position={Position.Right}
                 className={clsx(isPowered && shared.on, shared.handle)}
             />
-        </div>
+        </NodeWrapper>
     );
 });
 

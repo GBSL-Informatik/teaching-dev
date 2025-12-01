@@ -4,21 +4,13 @@ import styles from './styles.module.scss';
 import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import {
-    Handle,
-    Node,
-    NodeProps,
-    NodeToolbar,
-    Position,
-    useReactFlow,
-    useUpdateNodeInternals
-} from '@xyflow/react';
-import { mdiBatteryHigh, mdiCarBattery, mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
+import { Handle, Node, NodeProps, Position, useUpdateNodeInternals } from '@xyflow/react';
+import { mdiCarBattery, mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
-import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
+import NodeWrapper from '../NodeWrapper';
 
 export type BatteryNode = Node<{}, 'BatteryNode'>;
 
@@ -26,9 +18,12 @@ const BatteryNode = observer((props: NodeProps<BatteryNode>) => {
     const documentStore = useStore('documentStore');
     const updateNodeInternals = useUpdateNodeInternals();
     const doc = documentStore.find(props.id) as FlowNode<NodeType.BatteryNode> | undefined;
+    if (!doc) {
+        return null;
+    }
     const pins = doc?.deriver.pins ?? 3;
     return (
-        <div className={clsx(styles.battery)}>
+        <NodeWrapper node={doc} className={styles.battery}>
             <Icon path={mdiCarBattery} color="var(--ifm-color-primary)" size={1} />
             <Handle
                 type="source"
@@ -66,7 +61,7 @@ const BatteryNode = observer((props: NodeProps<BatteryNode>) => {
                     }}
                 />
             </div>
-        </div>
+        </NodeWrapper>
     );
 });
 

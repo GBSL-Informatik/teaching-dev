@@ -30,7 +30,9 @@ interface Props extends MetaInit {
 }
 
 const DynamicDocumentRoot = observer((props: Props) => {
+    const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
+    const socketStore = useStore('socketStore');
     const [meta] = React.useState(
         new DynamicDocumentRootMeta(
             { roomType: props.roomType },
@@ -45,10 +47,11 @@ const DynamicDocumentRoot = observer((props: Props) => {
     const roomUrl = useBaseUrl(`/rooms/${meta.parentRoot?.id}/${docRoot.id}`);
     const permissionStore = useStore('permissionStore');
     React.useEffect(() => {
-        if (docRoot) {
-            permissionStore.loadPermissions(docRoot);
+        if (!docRoot || !userStore.current?.hasElevatedAccess) {
+            return;
         }
-    }, [docRoot]);
+        permissionStore.loadPermissions(docRoot);
+    }, [docRoot, userStore.current]);
     React.useEffect(() => {
         if (props.roomType && meta.roomType !== props.roomType) {
             meta.setRoomType(props.roomType);

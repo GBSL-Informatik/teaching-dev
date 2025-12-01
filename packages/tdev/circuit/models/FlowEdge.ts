@@ -40,6 +40,10 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
 
     @action
     setData(data: TypeDataMapping[DocumentType.FlowEdge], from: Source, updatedAt?: Date): void {
+        if (!data) {
+            this.store.apiDelete(this);
+            return;
+        };
         delete data.type;
         this.flowData = data as any;
         if (from === Source.LOCAL) {

@@ -7,6 +7,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
+import NodeWrapper from '../NodeWrapper';
 
 export type AndNode = Node<{}, 'AndNode'>;
 
@@ -17,7 +18,7 @@ const AndNode = observer((props: NodeProps<AndNode>) => {
         return null;
     }
     return (
-        <div className={clsx(styles.and)}>
+        <NodeWrapper node={doc} className={styles.and}>
             AND
             <div className={clsx(styles.inputs)}></div>
             <Handle
@@ -43,7 +44,7 @@ const AndNode = observer((props: NodeProps<AndNode>) => {
                 }}
                 className={clsx(doc.deriver.output && shared.on, shared.handle)}
             />
-        </div>
+        </NodeWrapper>
     );
 });
 

@@ -17,10 +17,11 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
     const user = userStore.current;
     const permissionStore = useStore('permissionStore');
     React.useEffect(() => {
-        if (dynamicDocumentRoots.root) {
-            permissionStore.loadPermissions(dynamicDocumentRoots.root);
+        if (!dynamicDocumentRoots.root || !user?.hasElevatedAccess) {
+            return;
         }
-    }, [dynamicDocumentRoots]);
+        permissionStore.loadPermissions(dynamicDocumentRoots.root);
+    }, [dynamicDocumentRoots?.root, user?.hasElevatedAccess]);
     if (!user || !user.hasElevatedAccess) {
         return null;
     }

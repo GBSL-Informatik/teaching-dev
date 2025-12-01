@@ -7,6 +7,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
+import NodeWrapper from '../NodeWrapper';
 
 export type OrNode = Node<{}, 'OrNode'>;
 
@@ -17,7 +18,7 @@ const OrNode = observer((props: NodeProps<OrNode>) => {
         return null;
     }
     return (
-        <div className={clsx(styles.or)}>
+        <NodeWrapper node={doc} className={styles.or}>
             OR
             <div className={clsx(styles.inputs)}></div>
             <Handle
@@ -41,7 +42,7 @@ const OrNode = observer((props: NodeProps<OrNode>) => {
                 position={Position.Right}
                 style={{ left: '28px' }}
             />
-        </div>
+        </NodeWrapper>
     );
 });
 

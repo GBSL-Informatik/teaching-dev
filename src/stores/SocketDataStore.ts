@@ -209,6 +209,7 @@ export class SocketDataStore extends iStore<'ping'> {
      */
     @action
     streamUpdate(roomId: string, payload: ChangedDocument) {
+        console.log('streamUpdate', roomId, payload);
         this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId });
     }
 

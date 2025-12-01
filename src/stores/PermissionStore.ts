@@ -243,6 +243,7 @@ class PermissionStore extends iStore<`update-${string}`> {
             return Promise.resolve();
         }
         this.withAbortController(`load-permissions-${documentRoot.id}`, async (signal) => {
+            console.log('Loading permissions for document root', documentRoot.id);
             return permissionsFor(documentRoot.id, signal.signal).then(
                 action(({ data }) => {
                     const docRootId = data.id;

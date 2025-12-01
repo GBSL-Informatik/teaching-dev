@@ -7,6 +7,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
+import NodeWrapper from '../NodeWrapper';
 
 export type NotNode = Node<{}, 'NotNode'>;
 
@@ -17,7 +18,7 @@ const NotNode = observer((props: NodeProps<NotNode>) => {
         return null;
     }
     return (
-        <div className={clsx(styles.not)}>
+        <NodeWrapper node={doc} className={styles.not}>
             <svg viewBox="0 0 140 100" className={clsx(styles.background)} xmlns="http://www.w3.org/2000/svg">
                 <path
                     fill="var(--ifm-font-color-base)"
@@ -42,7 +43,7 @@ const NotNode = observer((props: NodeProps<NotNode>) => {
                 position={Position.Right}
                 style={{ right: '2px' }}
             />
-        </div>
+        </NodeWrapper>
     );
 });
 

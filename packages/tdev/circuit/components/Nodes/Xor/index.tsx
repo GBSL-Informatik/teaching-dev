@@ -7,6 +7,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
+import NodeWrapper from '../NodeWrapper';
 
 export type XorNode = Node<{}, 'XXorNode'>;
 
@@ -17,7 +18,7 @@ const XorNode = observer((props: NodeProps<XorNode>) => {
         return null;
     }
     return (
-        <div className={clsx(styles.xor)}>
+        <NodeWrapper node={doc} className={styles.xor}>
             XOR
             <div className={clsx(styles.inputs)}></div>
             <div className={clsx(styles.leftWall)}></div>
@@ -42,7 +43,7 @@ const XorNode = observer((props: NodeProps<XorNode>) => {
                 position={Position.Right}
                 style={{ left: '28px' }}
             />
-        </div>
+        </NodeWrapper>
     );
 });
 

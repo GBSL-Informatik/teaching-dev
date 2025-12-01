@@ -8,7 +8,8 @@ import {
     FlowNodeData,
     NodeType,
     FlowNodeDataFull,
-    NodeDataMapping
+    NodeDataMapping,
+    DocumentTypes
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
@@ -96,6 +97,10 @@ class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType
 
     @action
     setData(data: TypeDataMapping[DocumentType.FlowNode], from: Source, updatedAt?: Date): void {
+        if (!data) {
+            this.store.apiDelete(this as DocumentTypes);
+            return;
+        };
         this.flowData = data as FlowNodeData<NType>;
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
@@ -121,6 +126,11 @@ class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType
     @computed
     get data(): TypeDataMapping[DocumentType.FlowNode] {
         return { ...this.flowData } as TypeDataMapping[DocumentType.FlowNode];
+    }
+
+    @computed
+    get isSelected() {
+        return this.node.selected;
     }
 
     /**

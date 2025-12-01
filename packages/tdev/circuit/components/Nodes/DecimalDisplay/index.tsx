@@ -9,6 +9,7 @@ import FlowNode from '@tdev/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
 import Button from '@tdev-components/shared/Button';
 import { mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
+import NodeWrapper from '../NodeWrapper';
 
 export type DecimalDisplayNode = Node<{}, 'DecimalDisplayNode'>;
 
@@ -23,7 +24,7 @@ const DecimalDisplayNode = observer((props: NodeProps<DecimalDisplayNode>) => {
     }
     const pins = doc.deriver.pins;
     return (
-        <div className={clsx(styles.decimal)} style={{ ['--data-size' as any]: `${pins * PIN_HEIGHT}px` }}>
+        <NodeWrapper node={doc} className={styles.decimal} style={{ ['--data-size' as any]: `${pins * PIN_HEIGHT}px` }}>
             <div className={clsx(styles.pins)}>
                 {Array.from({ length: pins }).map((_, i) => {
                     const handle = i === 0 ? 'a' : i === 1 ? 'b' : `p${i}`;
@@ -68,7 +69,7 @@ const DecimalDisplayNode = observer((props: NodeProps<DecimalDisplayNode>) => {
                     }}
                 />
             </div>
-        </div>
+        </NodeWrapper>
     );
 });
 

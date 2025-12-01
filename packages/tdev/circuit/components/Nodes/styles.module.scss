@@ -6,3 +6,15 @@
         background: var(--ifm-color-success);
     }
 }
+
+.node {
+    border-radius: var(--ifm-global-radius);
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-lw);
+    }
+    &.selected {
+        box-shadow: var(--ifm-global-shadow-tl);
+        color: var(--ifm-color-blue);
+        font-weight: 900;
+    }
+}

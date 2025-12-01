@@ -270,6 +270,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
 
     @action
     handleUpdate(change: ChangedDocument) {
+        console.log('DocumentStore.handleUpdate', change);
         const model = this.find(change.id);
         if (model) {
             const updatedAt = new Date(change.updatedAt);
