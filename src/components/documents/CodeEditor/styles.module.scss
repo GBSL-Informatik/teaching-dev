@@ -24,6 +24,9 @@
         padding: 2px 6px;
         margin: 0px;
     }
+    &.lightTheme {
+        border: 1px solid var(--ifm-color-gray-400);
+    }
 }
 
 .playgroundContainer {
