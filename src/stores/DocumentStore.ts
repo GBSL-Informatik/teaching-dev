@@ -93,13 +93,29 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new ProgressState(data as DocumentProps<DocumentType.ProgressState>, store);
     }
 }
+
+type Factory = (data: DocumentProps<DocumentType>, store: DocumentStore) => DocumentTypes;
+
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentTypes>([]);
+    factories = new Map<string, Factory>();
 
     constructor(root: RootStore) {
         super();
         this.root = root;
+    }
+
+    registerFactory<T>(type: string, factory: Factory) {
+        this.factories.set(type, factory);
+    }
+
+    createDocument(data: DocumentProps<DocumentType>) {
+        const factory = this.factories.get(data.type);
+        if (!factory) {
+            return null;
+        }
+        return factory(data, this);
     }
 
     @action
