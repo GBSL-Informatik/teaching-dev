@@ -27,14 +27,12 @@ interface Props {
 }
 
 const CodeThemeToggle = (props: Props) => {
-    const { codeTheme, setCodeTheme, colorMode } = useCodeTheme();
+    const { codeTheme, setCodeTheme, systemTheme } = useCodeTheme();
     const toggleCodeTheme = React.useCallback(() => {
         setCodeTheme(codeTheme === 'light' ? 'dark' : 'light');
     }, [codeTheme]);
-    const text =
-        codeTheme === 'system'
-            ? `${CodeThemeText.system} (${CodeThemeText[colorMode]})`
-            : CodeThemeText[codeTheme];
+    const systemMode = `(${CodeThemeText[systemTheme]})`;
+    const text = codeTheme === 'system' ? `${CodeThemeText.system} ${systemMode}` : CodeThemeText[codeTheme];
     return (
         <div className={clsx(props.className, styles.codeThemeToggleWrapper)}>
             <Button
@@ -44,12 +42,12 @@ const CodeThemeToggle = (props: Props) => {
                 className={clsx(styles.codeThemeToggle)}
                 iconSide="left"
                 color="primary"
-                title={`${CodeThemeTitle[codeTheme]}${codeTheme === 'system' ? ` (${CodeThemeText[colorMode]})` : ''}`}
+                title={`${CodeThemeTitle[codeTheme]}${codeTheme === 'system' ? ` ${systemMode}` : ''}`}
             />
             {codeTheme !== 'system' && (
                 <Button
                     icon={mdiBackupRestore}
-                    title={`Code Theme auf Standard zurücksetzen (${CodeThemeText[colorMode]})`}
+                    title={`Code Theme auf Standard zurücksetzen ${systemMode}`}
                     onClick={() => setCodeTheme('system')}
                     className={clsx(styles.resetButton)}
                     color="secondary"

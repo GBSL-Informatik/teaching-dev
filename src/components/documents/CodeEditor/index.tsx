@@ -11,6 +11,7 @@ import { MetaProps } from '@tdev/theme/CodeBlock';
 import { observer } from 'mobx-react-lite';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { DocContext } from '@tdev-components/documents/DocumentContext';
+import useCodeTheme from '@tdev-hooks/useCodeTheme';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -44,12 +45,14 @@ export interface ScriptProps {
 
 const CodeEditorComponent = observer((props: ScriptProps) => {
     const { script } = props;
+    const { codeTheme } = useCodeTheme();
     return (
         <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
             <DocContext.Provider value={script}>
                 <div
                     className={clsx(
                         styles.playgroundContainer,
+                        codeTheme && styles.lightTheme,
                         script.meta.slim ? styles.containerSlim : styles.containerBig,
                         'live_py'
                     )}

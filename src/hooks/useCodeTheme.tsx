@@ -18,7 +18,8 @@ const useCodeTheme = () => {
     return {
         codeTheme: codeTheme,
         setCodeTheme: setValue,
-        colorMode,
+        systemTheme: colorMode,
+        colorMode: codeTheme === 'system' ? colorMode : codeTheme,
         aceTheme: codeTheme === 'system' ? AceThemeMap[colorMode] : AceThemeMap[codeTheme]
     } as const;
 };

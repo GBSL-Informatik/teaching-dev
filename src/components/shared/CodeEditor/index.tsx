@@ -36,11 +36,6 @@ interface Props {
     hideLineNumbers?: boolean;
 }
 
-const ThemeMap = {
-    light: 'xcode',
-    dark: 'dracula'
-};
-
 const CodeEditor = (props: Props) => {
     const ref = React.useRef<AceEditor>(null);
     const { aceTheme } = useCodeTheme();
