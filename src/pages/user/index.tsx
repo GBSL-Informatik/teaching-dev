@@ -12,7 +12,10 @@ import {
     mdiDeleteEmptyOutline,
     mdiHarddiskRemove,
     mdiLogout,
-    mdiRefresh
+    mdiMoonWaxingCrescent,
+    mdiRefresh,
+    mdiThemeLightDark,
+    mdiWhiteBalanceSunny
 } from '@mdi/js';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
@@ -32,6 +35,8 @@ import { SIZE_M, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import api from '@tdev-api/base';
 import { authClient } from '@tdev/auth-client';
+import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
     NO_AUTH?: boolean;
@@ -187,6 +192,10 @@ const UserPage = observer(() => {
                 )}
                 <h2>Account</h2>
                 <DefinitionList>
+                    <dt>Code Theme</dt>
+                    <dd>
+                        <CodeThemeToggle showText />
+                    </dd>
                     {current?.hasElevatedAccess && (
                         <>
                             <dt>Admin</dt>

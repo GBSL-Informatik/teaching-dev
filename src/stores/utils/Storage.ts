@@ -11,7 +11,8 @@ export type PersistedData = {
 export const StorageKey = Object.freeze({
     SessionStore: _.upperFirst(_.camelCase(`SessionStore${siteConfig.projectName || ''}`)),
     QrScannerDeviceId: 'QrScannerDeviceId',
-    CmsViewMode: 'CmsViewMode'
+    CmsViewMode: 'CmsViewMode',
+    CodeTheme: 'CodeTheme'
 });
 
 /**
