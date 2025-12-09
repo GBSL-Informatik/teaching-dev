@@ -52,7 +52,7 @@ const CodeEditorComponent = observer((props: ScriptProps) => {
                 <div
                     className={clsx(
                         styles.playgroundContainer,
-                        codeTheme && styles.lightTheme,
+                        codeTheme === 'light' && styles.lightTheme,
                         script.meta.slim ? styles.containerSlim : styles.containerBig,
                         'live_py'
                     )}
