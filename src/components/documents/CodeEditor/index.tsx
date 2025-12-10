@@ -45,14 +45,14 @@ export interface ScriptProps {
 
 const CodeEditorComponent = observer((props: ScriptProps) => {
     const { script } = props;
-    const { codeTheme } = useCodeTheme();
+    const { colorMode } = useCodeTheme();
     return (
         <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
             <DocContext.Provider value={script}>
                 <div
                     className={clsx(
                         styles.playgroundContainer,
-                        codeTheme === 'light' && styles.lightTheme,
+                        colorMode === 'light' && styles.lightTheme,
                         script.meta.slim ? styles.containerSlim : styles.containerBig,
                         'live_py'
                     )}
