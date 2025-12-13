@@ -4,7 +4,7 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
-import { isDummyId, useDummyId } from './useDummyId';
+import { useDummyId } from './useDummyId';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 

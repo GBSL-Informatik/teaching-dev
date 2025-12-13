@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 import React from 'react';
 import clsx from 'clsx';
 import ImageCanvas from './ImageCanvas';
-import NetpbmGraphic, { MetaInit, ModelMeta } from '@tdev-models/documents/NetpbmGraphic';
+import NetpbmGraphic from '@tdev/netpbm-graphic/model/index';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { Source } from '@tdev-models/iDocument';
 import SyncStatus from '@tdev-components/SyncStatus';
@@ -19,6 +19,8 @@ import {
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { ApiState } from '@tdev-stores/iStore';
+import { MetaInit, ModelMeta } from '../model/ModelMeta';
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 
 const StateIcons = observer(({ doc }: { doc: NetpbmGraphic }) => (
     <span className={clsx(styles.stateIcons)}>
@@ -62,6 +64,10 @@ const NetpbmEditor = observer((props: Props) => {
             ref.current?.removeEventListener('wheel', handleWheel);
         };
     }, []);
+
+    if (!doc) {
+        return <UnknownDocumentType type={meta.type} />;
+    }
 
     return (
         <div className={clsx(styles.netpbm)}>

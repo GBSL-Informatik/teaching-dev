@@ -32,7 +32,7 @@ import CmsText from '@tdev-models/documents/CmsText';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
+import NetpbmGraphic from '@tdev/netpbm-graphic/model/index';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import Script from '@tdev-models/documents/Script';
 import TaskState from '@tdev-models/documents/TaskState';
@@ -81,8 +81,6 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new DynamicDocumentRootModel(data as DocumentProps<'dynamic_document_root'>, store);
         case 'dynamic_document_roots':
             return new DynamicDocumentRoots(data as DocumentProps<'dynamic_document_roots'>, store);
-        case 'netpbm_graphic':
-            return new NetpbmGraphic(data as DocumentProps<'netpbm_graphic'>, store);
         case 'progress_state':
             return new ProgressState(data as DocumentProps<'progress_state'>, store);
     }
@@ -103,8 +101,7 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['cms_text', CreateDocumentModel],
     ['text_message', CreateDocumentModel],
     ['dynamic_document_root', CreateDocumentModel],
-    ['dynamic_document_roots', CreateDocumentModel],
-    ['netpbm_graphic', CreateDocumentModel]
+    ['dynamic_document_roots', CreateDocumentModel]
 ];
 
 class DocumentStore extends iStore<`delete-${string}`> {
@@ -127,7 +124,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
-    registerFactory<T>(type: DocumentType, factory: Factory) {
+    registerFactory(type: DocumentType, factory: Factory) {
         this.factories.set(type, factory);
     }
 
@@ -136,12 +133,13 @@ class DocumentStore extends iStore<`delete-${string}`> {
         return Array.from(this.factories.keys()) as DocumentType[];
     }
 
-    createDocument(data: DocumentProps<DocumentType>) {
+    createDocument<Type extends DocumentType>(data: DocumentProps<Type>): TypeModelMapping[Type] | null {
         const factory = this.factories.get(data.type);
         if (!factory) {
+            console.warn(`No factory registered for document type ${data.type}`);
             return null;
         }
-        return factory(data, this);
+        return factory(data, this) as TypeModelMapping[Type];
     }
 
     @action

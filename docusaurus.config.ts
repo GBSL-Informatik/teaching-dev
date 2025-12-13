@@ -343,7 +343,8 @@ const config: Config = applyTransformers({
     },
   ],
   clientModules: [
-    require.resolve('@tdev/excalidoc/register')
+    require.resolve('@tdev/excalidoc/register'),
+    require.resolve('@tdev/netpbm-graphic/register')
   ],
   scripts: siteConfig.scripts,
 }, siteConfig.transformers ?? {});

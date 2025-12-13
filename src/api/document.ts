@@ -16,7 +16,6 @@ import CmsText from '@tdev-models/documents/CmsText';
 import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import type DocumentStore from '@tdev-stores/DocumentStore';
 
@@ -118,10 +117,6 @@ export interface DynamicDocumentRootsData {
     documentRoots: DynamicDocumentRoot[];
 }
 
-export interface NetpbmGraphicData {
-    imageData: string;
-}
-
 export interface TypeDataMapping {
     ['script']: ScriptData;
     ['task_state']: TaskStateData;
@@ -138,7 +133,6 @@ export interface TypeDataMapping {
     ['text_message']: TextMessageData;
     ['dynamic_document_root']: DynamicDocumentRootData;
     ['dynamic_document_roots']: DynamicDocumentRootsData;
-    ['netpbm_graphic']: NetpbmGraphicData;
     // Add more mappings as needed
 }
 
@@ -158,7 +152,6 @@ export interface TypeModelMapping {
     ['text_message']: TextMessage;
     ['dynamic_document_root']: DynamicDocumentRootModel;
     ['dynamic_document_roots']: DynamicDocumentRoots;
-    ['netpbm_graphic']: NetpbmGraphic;
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
@@ -190,7 +183,10 @@ export interface Document<Type extends DocumentType> {
     updatedAt: string;
 }
 
-export type Factory = (data: Document<DocumentType>, store: DocumentStore) => TypeModelMapping[DocumentType];
+export type Factory<Type extends DocumentType = DocumentType> = (
+    data: Document<Type>,
+    store: DocumentStore
+) => TypeModelMapping[Type];
 
 export function find<Type extends DocumentType>(
     id: string,

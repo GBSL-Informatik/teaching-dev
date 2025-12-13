@@ -1,54 +1,15 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { parse } from '@tdev-models/documents/NetpbmGraphic/parser/parser';
-import { ParserResult } from '@tdev-models/documents/NetpbmGraphic/types';
+import { parse } from '@tdev/netpbm-graphic/model/parser/parser';
+import { ParserResult } from '@tdev/netpbm-graphic/model/types';
 import { ApiState } from '@tdev-stores/iStore';
+import { ModelMeta } from './ModelMeta';
 
-export interface MetaInit {
-    readonly?: boolean;
-    default?: string;
-}
-
-export class ModelMeta extends TypeMeta<'netpbm_graphic'> {
-    readonly type = 'netpbm_graphic';
-    readonly readonly?: boolean;
-    readonly default?: string;
-
-    constructor(props: Partial<MetaInit>) {
-        super('netpbm_graphic', props.readonly ? Access.RO_User : undefined);
-        /**
-         * the default data can be either provided as a string or as a child element.
-         * If it is provided as a child element, the relevant data is extracted by the
-         * remark-code-as-attribute plugin. Make sure to configure it correctly.
-         * @remark-code-as-attribute config
-         * ```js
-         * {
-         *      components: [{ name: 'NetpbmEditor', attributeName: 'default' }]
-         * }
-         * ```
-         * @example
-         * <NetpbmGraphic>
-         *   ```
-         *   P1
-         *   2 4
-         *   1 0
-         *   0 1
-         *   ```
-         * </NetpbmGraphic>
-         */
-        this.readonly = props.readonly;
-        this.default = props.default;
-    }
-
-    get defaultData(): TypeDataMapping['netpbm_graphic'] {
-        return {
-            imageData: this.default || ''
-        };
-    }
-}
+export const createModel: Factory<'netpbm_graphic'> = (data, store) => {
+    return new NetpbmGraphic(data, store);
+};
 
 class NetpbmGraphic extends iDocument<'netpbm_graphic'> {
     @observable accessor imageData: string;

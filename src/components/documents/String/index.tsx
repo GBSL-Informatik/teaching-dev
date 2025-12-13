@@ -11,6 +11,7 @@ import SyncStatus from '@tdev-components/SyncStatus';
 import { Source } from '@tdev-models/iDocument';
 import { mdiCheckCircle, mdiCloseCircle, mdiFlashTriangle, mdiHelpCircleOutline } from '@mdi/js';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 
 interface Props extends MetaInit {
     id: string;
@@ -114,7 +115,10 @@ const String = observer((props: Props & { monospace?: boolean; disabled?: boolea
         }
     }, [doc]);
 
-    if (!doc || !isBrowser) {
+    if (!doc) {
+        return <UnknownDocumentType type={meta.type} />;
+    }
+    if (!isBrowser) {
         return <Loader />;
     }
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
