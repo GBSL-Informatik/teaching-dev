@@ -86,12 +86,12 @@ export interface MdxCommentData {
 }
 export interface TypeDataMapping {
     /* ... */
-    [DocumentType.MdxComment]: MdxCommentData;
+    ['mdx_comment']: MdxCommentData;
 }
 
 export interface TypeModelMapping {
     /* ... */
-    [DocumentType.MdxComment]: MdxComment;
+    ['mdx_comment']: MdxComment;
 }
 
 export type DocumentTypes =
@@ -106,8 +106,8 @@ export type DocumentTypes =
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
     switch (data.type) {
         /* ... */
-        case DocumentType.MdxComment:
-            return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
+        case 'mdx_comment':
+            return new MdxComment(data as DocumentProps<'mdx_comment'>, store);
     }
 }
 ```
@@ -116,7 +116,7 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
-const RecordsToCreate = new Set<DocumentType>([DocumentType.MdxComment, /* ... */]);
+const RecordsToCreate = new Set<DocumentType>(['mdx_comment', /* ... */]);
 /* ... */
 ```
 

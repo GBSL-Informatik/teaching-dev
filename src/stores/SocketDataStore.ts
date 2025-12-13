@@ -36,11 +36,11 @@ type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
 const RecordsToCreate = new Set<DocumentType>([
-    DocumentType.Dir,
-    DocumentType.File,
-    DocumentType.MdxComment,
-    DocumentType.DynamicDocumentRoots,
-    DocumentType.TextMessage
+    'dir',
+    'file',
+    'mdx_comment',
+    'dynamic_document_roots',
+    'text_message'
 ]);
 
 export class SocketDataStore extends iStore<'ping'> {

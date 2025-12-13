@@ -6,7 +6,7 @@ import { computed } from 'mobx';
 
 const States: StateType[] = ['checked', 'question', 'unset', 'star', 'star-half', 'star-empty'] as const;
 
-class RandomState extends iSideEffect<DocumentType.TaskState> {
+class RandomState extends iSideEffect<'task_state'> {
     readonly store: UserStore;
 
     constructor(userStore: UserStore) {
@@ -16,7 +16,7 @@ class RandomState extends iSideEffect<DocumentType.TaskState> {
 
     @computed
     get transformer() {
-        return (docData: TypeDataMapping[DocumentType.TaskState]) => {
+        return (docData: TypeDataMapping['task_state']) => {
             if (!this.store.viewedUser) {
                 return docData;
             }

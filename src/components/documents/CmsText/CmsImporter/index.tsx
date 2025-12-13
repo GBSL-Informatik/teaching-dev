@@ -51,7 +51,7 @@ const createCmsTexts = async (
             } else {
                 // create a new document with the text
                 await documentStore.create({
-                    type: DocumentType.CmsText,
+                    type: 'cms_text',
                     authorId: userId,
                     documentRootId: assignment.id,
                     data: { text: row[assignment.idx] }

@@ -15,7 +15,6 @@ import type * as ExcalidrawLib from '@excalidraw/excalidraw';
 import Image from './Preview/Image';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useDocument } from '@tdev-hooks/useDocument';
-import { DocumentType } from '@tdev-api/document';
 import { useClientLib } from '@tdev-hooks/useClientLib';
 import { MetaInit, ModelMeta } from '@tdev/excalidoc/model';
 
@@ -67,7 +66,7 @@ export const ExcalidocComponent = observer(
             () => import('@excalidraw/excalidraw'),
             '@excalidraw/excalidraw'
         );
-        const doc = useDocument<DocumentType.Excalidoc>(props.documentId);
+        const doc = useDocument<'excalidoc'>(props.documentId);
         const onEdit = React.useCallback(
             (edit: boolean) => {
                 setEdit(edit);

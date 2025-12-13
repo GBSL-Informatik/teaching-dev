@@ -77,7 +77,7 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
     );
     const documentRoot = useDocumentRoot(roomProps.id, dynamicRoot, false, {}, true);
 
-    if (!documentRoot || documentRoot.type !== DocumentType.DynamicDocumentRoot) {
+    if (!documentRoot || documentRoot.type !== 'dynamic_document_root') {
         return <NoRoom />;
     }
     if (NoneAccess.has(documentRoot.permission)) {

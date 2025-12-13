@@ -95,11 +95,7 @@ const Actions = observer((props: Props) => {
                                             <Button
                                                 text="Verschieben"
                                                 color="blue"
-                                                icon={
-                                                    item.type === DocumentType.Dir
-                                                        ? mdiFolderMove
-                                                        : mdiFileMove
-                                                }
+                                                icon={item.type === 'dir' ? mdiFolderMove : mdiFileMove}
                                                 size={1}
                                             />
                                         </span>

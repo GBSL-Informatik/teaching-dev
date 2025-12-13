@@ -17,20 +17,20 @@ export interface MetaInit {
     defaultImage?: string;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.Excalidoc> {
-    readonly type = DocumentType.Excalidoc;
+export class ModelMeta extends TypeMeta<'excalidoc'> {
+    readonly type = 'excalidoc';
     readonly defaultElements: readonly ExcalidrawElement[];
     readonly defaultFiles: BinaryFiles;
     readonly defaultImage: string;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.Excalidoc, props.readonly ? Access.RO_User : undefined);
+        super('excalidoc', props.readonly ? Access.RO_User : undefined);
         this.defaultElements = props.defaultElements || [];
         this.defaultFiles = props.defaultFiles || {};
         this.defaultImage = props.defaultImage || '';
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.Excalidoc] {
+    get defaultData(): TypeDataMapping['excalidoc'] {
         return {
             elements: this.defaultElements,
             files: this.defaultFiles,
@@ -48,11 +48,11 @@ const blobToBase64 = (blob: Blob): Promise<string | null | ArrayBuffer> => {
     });
 };
 
-class Excalidoc extends iDocument<DocumentType.Excalidoc> {
+class Excalidoc extends iDocument<'excalidoc'> {
     @observable.ref accessor elements: readonly ExcalidrawElement[];
     @observable.ref accessor files: BinaryFiles;
     @observable.ref accessor image: string;
-    constructor(props: DocumentProps<DocumentType.Excalidoc>, store: DocumentStore) {
+    constructor(props: DocumentProps<'excalidoc'>, store: DocumentStore) {
         super(props, store);
         this.elements = props.data.elements || [];
         this.files = props.data.files || {};
@@ -61,7 +61,7 @@ class Excalidoc extends iDocument<DocumentType.Excalidoc> {
 
     @action
     setData(
-        data: TypeDataMapping[DocumentType.Excalidoc],
+        data: TypeDataMapping['excalidoc'],
         from: Source,
         updatedAt?: Date,
         lib?: { exportToBlob: ExportToBlob } | null
@@ -119,7 +119,7 @@ class Excalidoc extends iDocument<DocumentType.Excalidoc> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.Excalidoc] {
+    get data(): TypeDataMapping['excalidoc'] {
         return {
             elements: this.elements,
             files: this.files,
@@ -129,7 +129,7 @@ class Excalidoc extends iDocument<DocumentType.Excalidoc> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.Excalidoc) {
+        if (this.root?.type === 'excalidoc') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

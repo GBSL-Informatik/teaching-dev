@@ -16,7 +16,7 @@ interface Props {
 const MoveItem = observer((props: Props) => {
     const { item } = props;
     const documentStore = useStore('documentStore');
-    const root = item.path.filter((p) => p.type === DocumentType.Dir)[0];
+    const root = item.path.filter((p) => p.type === 'dir')[0];
     if (!root) {
         return null;
     }

@@ -6,7 +6,7 @@ import { useDocument } from '@tdev-hooks/useContextDocument';
 import { observer } from 'mobx-react-lite';
 
 const Result = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const logs = script.logs;
     if (logs.length === 0) {
         return null;

@@ -6,14 +6,14 @@ import File from './File';
 import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
 import { formatDateTime } from '@tdev-models/helpers/date';
 
-export class ModelMeta extends iFSMeta<DocumentType.Dir> {
+export class ModelMeta extends iFSMeta<'dir'> {
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.Dir, props);
+        super('dir', props);
     }
 }
 
-class Directory extends iFileSystem<DocumentType.Dir> {
-    constructor(props: DocumentProps<DocumentType.Dir>, store: DocumentStore) {
+class Directory extends iFileSystem<'dir'> {
+    constructor(props: DocumentProps<'dir'>, store: DocumentStore) {
         super(props, store);
         this.name =
             props.data?.name || this.meta?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
@@ -21,7 +21,7 @@ class Directory extends iFileSystem<DocumentType.Dir> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.Dir) {
+        if (this.root?.type === 'dir') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});
@@ -33,9 +33,7 @@ class Directory extends iFileSystem<DocumentType.Dir> {
             return [];
         }
         return _.orderBy(
-            this.root.documents.filter(
-                (d) => d.parentId === this.id && d.type === DocumentType.File
-            ) as File[],
+            this.root.documents.filter((d) => d.parentId === this.id && d.type === 'file') as File[],
             [(f) => `${f.name}`.replace(/\d+/g, (n) => n.padStart(10, '0'))],
             ['asc']
         );
@@ -47,9 +45,7 @@ class Directory extends iFileSystem<DocumentType.Dir> {
             return [];
         }
         return _.orderBy(
-            this.root.documents.filter(
-                (d) => d.parentId === this.id && d.type === DocumentType.Dir
-            ) as Directory[],
+            this.root.documents.filter((d) => d.parentId === this.id && d.type === 'dir') as Directory[],
             [(d) => `${d.name}`.replace(/\d+/g, (n) => n.padStart(10, '0'))],
             ['asc']
         );

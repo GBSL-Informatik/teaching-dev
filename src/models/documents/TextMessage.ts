@@ -8,29 +8,29 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.TextMessage> {
-    readonly type = DocumentType.TextMessage;
+export class ModelMeta extends TypeMeta<'text_message'> {
+    readonly type = 'text_message';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.TextMessage, props.readonly ? Access.RO_User : undefined);
+        super('text_message', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.TextMessage] {
+    get defaultData(): TypeDataMapping['text_message'] {
         return {
             text: ''
         };
     }
 }
 
-class TextMessage extends iDocument<DocumentType.TextMessage> {
+class TextMessage extends iDocument<'text_message'> {
     @observable accessor text: string;
-    constructor(props: DocumentProps<DocumentType.TextMessage>, store: DocumentStore) {
+    constructor(props: DocumentProps<'text_message'>, store: DocumentStore) {
         super(props, store);
         this.text = props.data.text;
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.TextMessage], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['text_message'], from: Source, updatedAt?: Date): void {
         this.text = data.text;
         if (from === Source.LOCAL) {
             this.save();
@@ -40,7 +40,7 @@ class TextMessage extends iDocument<DocumentType.TextMessage> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.TextMessage] {
+    get data(): TypeDataMapping['text_message'] {
         return {
             text: this.text
         };
@@ -48,7 +48,7 @@ class TextMessage extends iDocument<DocumentType.TextMessage> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.TextMessage) {
+        if (this.root?.type === 'text_message') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

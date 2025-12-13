@@ -13,7 +13,7 @@ import Icon from '@mdi/react';
 import { mdiFlashTriangle } from '@mdi/js';
 
 const Header = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const notifyUnpersisted = script.root?.isDummy && !script.meta.slim && !script.meta.hideWarning;
     return (
         <div

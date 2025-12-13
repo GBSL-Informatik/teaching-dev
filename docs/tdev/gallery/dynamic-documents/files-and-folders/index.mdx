@@ -48,14 +48,14 @@ export interface FileData {
 }
 export interface TypeDataMapping {
     /* ... */
-    [DocumentType.Dir]: DirData;
-    [DocumentType.File]: FileData;
+    ['dir']: DirData;
+    ['file']: FileData;
 }
 
 export interface TypeModelMapping {
     /* ... */
-    [DocumentType.Dir]: Directory;
-    [DocumentType.File]: File;
+    ['dir']: Directory;
+    ['file']: File;
 }
 
 export type DocumentTypes =
@@ -71,10 +71,10 @@ export type DocumentTypes =
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
     switch (data.type) {
         /* ... */
-        case DocumentType.Dir:
-            return new Directory(data as DocumentProps<DocumentType.Dir>, store);
-        case DocumentType.File:
-            return new File(data as DocumentProps<DocumentType.File>, store);
+        case 'dir':
+            return new Directory(data as DocumentProps<'dir'>, store);
+        case 'file':
+            return new File(data as DocumentProps<'file'>, store);
     }
 }
 ```
@@ -83,7 +83,7 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
-const RecordsToCreate = new Set<DocumentType>([DocumentType.Dir, DocumentType.File/* ... */]);
+const RecordsToCreate = new Set<DocumentType>(['dir', 'file'/* ... */]);
 /* ... */
 ```
 :::

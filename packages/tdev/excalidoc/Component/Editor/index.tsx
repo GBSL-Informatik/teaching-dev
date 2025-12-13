@@ -26,7 +26,7 @@ export interface Props extends MetaInit {
 
 const Editor = observer((props: Props) => {
     const { Lib, documentId } = props;
-    const excalidoc = useDocument<DocumentType.Excalidoc>(documentId);
+    const excalidoc = useDocument<'excalidoc'>(documentId);
     const renderedSceneVersion = React.useRef(0);
     const initialized = React.useRef<boolean>(false);
     const apiSceneVersion = React.useRef(0);

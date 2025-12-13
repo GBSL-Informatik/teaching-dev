@@ -11,7 +11,7 @@ import NewMessage from './Text/NewMessage';
 
 interface Props {
     roomProps: DynamicDocumentRoot;
-    documentRoot: DocumentRoot<DocumentType.DynamicDocumentRoot>;
+    documentRoot: DocumentRoot<'dynamic_document_root'>;
 }
 
 const TextMessages = observer((props: Props): React.ReactNode => {

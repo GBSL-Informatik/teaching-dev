@@ -206,12 +206,12 @@ export interface ExcaliData {
 
 export interface TypeDataMapping {
     /* ... */
-    [DocumentType.Excalidoc]: ExcaliData;
+    ['excalidoc']: ExcaliData;
 }
 
 export interface TypeModelMapping {
     /* ... */
-    [DocumentType.Excalidoc]: Excalidoc;
+    ['excalidoc']: Excalidoc;
 }
 
 export type DocumentTypes =
@@ -226,8 +226,8 @@ export type DocumentTypes =
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
     switch (data.type) {
         /* ... */
-        case DocumentType.Excalidoc:
-            return new Excalidoc(data as DocumentProps<DocumentType.Excalidoc>, store);
+        case 'excalidoc':
+            return new Excalidoc(data as DocumentProps<'excalidoc'>, store);
     }
 }
 ```

@@ -7,7 +7,7 @@ import DocumentRoot from '@tdev-models/DocumentRoot';
 import { DocumentType } from '@tdev-api/document';
 
 interface Props {
-    group: DocumentRoot<DocumentType.DynamicDocumentRoot>;
+    group: DocumentRoot<'dynamic_document_root'>;
 }
 
 const Conversation = observer((props: Props) => {
@@ -21,7 +21,7 @@ const Conversation = observer((props: Props) => {
     return (
         <div className={clsx(styles.conversation)} ref={ref}>
             {group.allDocuments
-                .filter((msg) => msg.type === DocumentType.TextMessage)
+                .filter((msg) => msg.type === 'text_message')
                 .map((message, index) => {
                     return <TextMessage key={index} message={message} />;
                 })}

@@ -12,13 +12,13 @@ export interface MetaInit {
     default?: string;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.NetpbmGraphic> {
-    readonly type = DocumentType.NetpbmGraphic;
+export class ModelMeta extends TypeMeta<'netpbm_graphic'> {
+    readonly type = 'netpbm_graphic';
     readonly readonly?: boolean;
     readonly default?: string;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.NetpbmGraphic, props.readonly ? Access.RO_User : undefined);
+        super('netpbm_graphic', props.readonly ? Access.RO_User : undefined);
         /**
          * the default data can be either provided as a string or as a child element.
          * If it is provided as a child element, the relevant data is extracted by the
@@ -43,23 +43,23 @@ export class ModelMeta extends TypeMeta<DocumentType.NetpbmGraphic> {
         this.default = props.default;
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.NetpbmGraphic] {
+    get defaultData(): TypeDataMapping['netpbm_graphic'] {
         return {
             imageData: this.default || ''
         };
     }
 }
 
-class NetpbmGraphic extends iDocument<DocumentType.NetpbmGraphic> {
+class NetpbmGraphic extends iDocument<'netpbm_graphic'> {
     @observable accessor imageData: string;
     @observable accessor formattingState: ApiState = ApiState.IDLE;
-    constructor(props: DocumentProps<DocumentType.NetpbmGraphic>, store: DocumentStore) {
+    constructor(props: DocumentProps<'netpbm_graphic'>, store: DocumentStore) {
         super(props, store);
         this.imageData = props.data?.imageData || '';
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.NetpbmGraphic], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['netpbm_graphic'], from: Source, updatedAt?: Date): void {
         this.imageData = data.imageData;
         if (from === Source.LOCAL) {
             this.save();
@@ -179,7 +179,7 @@ class NetpbmGraphic extends iDocument<DocumentType.NetpbmGraphic> {
         );
     }
 
-    get data(): TypeDataMapping[DocumentType.NetpbmGraphic] {
+    get data(): TypeDataMapping['netpbm_graphic'] {
         return {
             imageData: this.imageData
         };
@@ -187,7 +187,7 @@ class NetpbmGraphic extends iDocument<DocumentType.NetpbmGraphic> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.NetpbmGraphic) {
+        if (this.root?.type === 'netpbm_graphic') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

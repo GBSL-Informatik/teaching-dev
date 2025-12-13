@@ -15,26 +15,26 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-// TODO: replace all DocumentType.TaskState values to your new models Type
-export class ModelMeta extends TypeMeta<DocumentType.TaskState> {
-    readonly type = DocumentType.TaskState;
+// TODO: replace all 'task_state' values to your new models Type
+export class ModelMeta extends TypeMeta<'task_state'> {
+    readonly type = 'task_state';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.TaskState, props.readonly ? Access.RO_User : undefined);
+        super('task_state', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.TaskState] {
+    get defaultData(): TypeDataMapping['task_state'] {
         throw 'Not Implemented';
     }
 }
 
-class Model extends iDocument<DocumentType.TaskState> {
-    constructor(props: DocumentProps<DocumentType.TaskState>, store: DocumentStore) {
+class Model extends iDocument<'task_state'> {
+    constructor(props: DocumentProps<'task_state'>, store: DocumentStore) {
         super(props, store);
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.TaskState], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['task_state'], from: Source, updatedAt?: Date): void {
         // TODO: change state according to data
         if (from === Source.LOCAL) {
             this.save();
@@ -44,14 +44,14 @@ class Model extends iDocument<DocumentType.TaskState> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.TaskState] {
+    get data(): TypeDataMapping['task_state'] {
         // TODO: return correct data
         return {} as any;
     }
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.TaskState) {
+        if (this.root?.type === 'task_state') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

@@ -342,6 +342,9 @@ const config: Config = applyTransformers({
       crossorigin: 'anonymous',
     },
   ],
+  clientModules: [
+    require.resolve('@tdev/excalidoc/register')
+  ],
   scripts: siteConfig.scripts,
 }, siteConfig.transformers ?? {});
 

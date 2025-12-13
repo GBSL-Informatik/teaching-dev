@@ -5,14 +5,14 @@ import _ from 'es-toolkit/compat';
 import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
 import { formatDateTime } from '@tdev-models/helpers/date';
 
-export class ModelMeta extends iFSMeta<DocumentType.File> {
+export class ModelMeta extends iFSMeta<'file'> {
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.File, props);
+        super('file', props);
     }
 }
 
-class File extends iFileSystem<DocumentType.File> {
-    constructor(props: DocumentProps<DocumentType.File>, store: DocumentStore) {
+class File extends iFileSystem<'file'> {
+    constructor(props: DocumentProps<'file'>, store: DocumentStore) {
         super(props, store);
         this.name =
             props.data?.name || this.meta?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
@@ -20,7 +20,7 @@ class File extends iFileSystem<DocumentType.File> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.File) {
+        if (this.root?.type === 'file') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

@@ -9,7 +9,7 @@ import DocumentRoot from '@tdev-models/DocumentRoot';
 import { DocumentType } from '@tdev-api/document';
 
 interface Props {
-    group: DocumentRoot<DocumentType.DynamicDocumentRoot>;
+    group: DocumentRoot<'dynamic_document_root'>;
 }
 
 const NewMessage = observer((props: Props) => {
@@ -24,7 +24,7 @@ const NewMessage = observer((props: Props) => {
         documentStore
             .create({
                 documentRootId: group.id,
-                type: DocumentType.TextMessage,
+                type: 'text_message',
                 data: {
                     text: message
                 }

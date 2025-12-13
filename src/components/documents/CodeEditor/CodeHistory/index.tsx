@@ -28,7 +28,7 @@ const highlightSyntax = (str: string) => {
 };
 
 const CodeHistory = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const [version, setVersion] = React.useState(1);
     if (script.versions?.length < 2) {
         return null;

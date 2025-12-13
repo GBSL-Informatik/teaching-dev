@@ -101,16 +101,16 @@ export interface DynamicDocumentRootsData {
 }
 export interface TypeDataMapping {
     /* ... */
-    [DocumentType.TextMessage]: TextMessageData;
-    [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
-    [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
+    ['text_message']: TextMessageData;
+    ['dynamic_document_root']: DynamicDocumentRootData;
+    ['dynamic_document_roots']: DynamicDocumentRootsData;
 }
 
 export interface TypeModelMapping {
     /* ... */
-    [DocumentType.TextMessage]: TextMessage;
-    [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
-    [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
+    ['text_message']: TextMessage;
+    ['dynamic_document_root']: DynamicDocumentRootModel;
+    ['dynamic_document_roots']: DynamicDocumentRoots;
 }
 
 export type DocumentTypes =
@@ -126,15 +126,15 @@ export type DocumentTypes =
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
     switch (data.type) {
         /* ... */
-        case DocumentType.TextMessage:
-            return new TextMessage(data as DocumentProps<DocumentType.TextMessage>, store);
-        case DocumentType.DynamicDocumentRoot:
+        case 'text_message':
+            return new TextMessage(data as DocumentProps<'text_message'>, store);
+        case 'dynamic_document_root':
             return new DynamicDocumentRootModel(
-                data as DocumentProps<DocumentType.DynamicDocumentRoot>,
+                data as DocumentProps<'dynamic_document_root'>,
                 store
             );
-        case DocumentType.DynamicDocumentRoots:
-            return new DynamicDocumentRoots(data as DocumentProps<DocumentType.DynamicDocumentRoots>, store);
+        case 'dynamic_document_roots':
+            return new DynamicDocumentRoots(data as DocumentProps<'dynamic_document_roots'>, store);
     }
 }
 ```
@@ -143,7 +143,7 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
-const RecordsToCreate = new Set<DocumentType>([DocumentType.DynamicDocumentRoots, DocumentType.TextMessage /* ... */]);
+const RecordsToCreate = new Set<DocumentType>(['dynamic_document_roots', 'text_message' /* ... */]);
 /* ... */
 ```
 :::
