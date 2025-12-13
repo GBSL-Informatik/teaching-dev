@@ -1,6 +1,12 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
+import {
+    Document,
+    DocumentType,
+    Document as DocumentProps,
+    TypeDataMapping,
+    Access
+} from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import type { exportToBlob } from '@excalidraw/excalidraw';
@@ -9,6 +15,10 @@ import type { BinaryFiles } from '@excalidraw/excalidraw/types';
 type ExportToBlobArgs = Parameters<typeof exportToBlob>[0];
 type ExportToBlobReturn = ReturnType<typeof exportToBlob>;
 type ExportToBlob = (args: ExportToBlobArgs) => Promise<ExportToBlobReturn>;
+
+export const createModel = (data: Document<DocumentType>, store: DocumentStore) => {
+    return new Excalidoc(data as Document<'excalidoc'>, store);
+};
 
 export interface MetaInit {
     readonly?: boolean;
