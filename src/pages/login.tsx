@@ -10,6 +10,8 @@ import { authClient } from '@tdev/auth-client';
 import Button from '@tdev-components/shared/Button';
 import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import DefinitionList from '@tdev-components/DefinitionList';
+import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
 const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {
@@ -63,6 +65,13 @@ const LoginPage = observer(() => {
                     />
                     <Button href={signInPage} color="black" text="Email" icon={mdiEmail} iconSide="left" />
                 </div>
+                <h3>Weitere Optionen</h3>
+                <DefinitionList>
+                    <dt>Code Theme</dt>
+                    <dd>
+                        <CodeThemeToggle showText />
+                    </dd>
+                </DefinitionList>
             </main>
         </Layout>
     );
