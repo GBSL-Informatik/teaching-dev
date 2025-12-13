@@ -88,7 +88,7 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
     }
 }
 
-const FactoryDefault: [string, Factory][] = [
+const FactoryDefault: [DocumentType, Factory][] = [
     ['script', CreateDocumentModel],
     ['task_state', CreateDocumentModel],
     ['progress_state', CreateDocumentModel],
@@ -110,7 +110,7 @@ const FactoryDefault: [string, Factory][] = [
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentTypes>([]);
-    factories = new Map<string, Factory>(FactoryDefault);
+    factories = new Map<DocumentType, Factory>(FactoryDefault);
 
     constructor(root: RootStore) {
         super();
@@ -127,7 +127,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
-    registerFactory<T>(type: string, factory: Factory) {
+    registerFactory<T>(type: DocumentType, factory: Factory) {
         this.factories.set(type, factory);
     }
 
