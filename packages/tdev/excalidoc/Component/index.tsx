@@ -16,7 +16,7 @@ import Image from './Preview/Image';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { useClientLib } from '@tdev-hooks/useClientLib';
-import { MetaInit, ModelMeta } from '@tdev/excalidoc/model';
+import { MetaInit, ModelMeta } from '@tdev/excalidoc/model/ModelMeta';
 
 export const DEFAULT_HEIGHT = '600px' as const;
 export const mdiExcalidraw =
