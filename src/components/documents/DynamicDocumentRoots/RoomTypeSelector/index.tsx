@@ -4,20 +4,14 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { RoomType } from '@tdev-api/document';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
+import RoomComponents from '@tdev-components/Rooms/RoomComponents';
 
 interface Props {
     dynamicRoot: DynamicDocumentRoot;
 }
 
-export const RoomTypeLabel: { [key in RoomType]: string } = {
-    [RoomType.Messages]: 'Textnachrichten'
-};
-
-export const RoomTypeDescription: { [key in RoomType]: string } = {
-    [RoomType.Messages]: 'Textnachrichten können in einem Chat versandt- und empfangen werden.'
-};
-
-const ValidRoomType = new Set<string>(Object.values(RoomType));
+const roomTypes = Object.keys(RoomComponents) as RoomType[];
+const ValidRoomType = new Set<string>(roomTypes);
 
 const RoomTypeSelector = observer((props: Props) => {
     const { dynamicRoot } = props;
@@ -36,9 +30,9 @@ const RoomTypeSelector = observer((props: Props) => {
                         {dynamicRoot.props?.type || '-'}
                     </option>
                 )}
-                {Object.values(RoomType).map((type) => (
-                    <option key={type} value={type} title={RoomTypeDescription[type]}>
-                        {RoomTypeLabel[type]}
+                {roomTypes.map((type) => (
+                    <option key={type} value={type} title={RoomComponents[type]!.description}>
+                        {RoomComponents[type]!.name}
                     </option>
                 ))}
             </select>

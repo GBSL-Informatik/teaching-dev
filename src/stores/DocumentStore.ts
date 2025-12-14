@@ -29,7 +29,6 @@ import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
-import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
@@ -74,8 +73,6 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new Restricted(data as DocumentProps<'restricted'>, store);
         case 'cms_text':
             return new CmsText(data as DocumentProps<'cms_text'>, store);
-        case 'text_message':
-            return new TextMessage(data as DocumentProps<'text_message'>, store);
         case 'dynamic_document_root':
             return new DynamicDocumentRootModel(data as DocumentProps<'dynamic_document_root'>, store);
         case 'dynamic_document_roots':
@@ -98,7 +95,6 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['mdx_comment', CreateDocumentModel],
     ['restricted', CreateDocumentModel],
     ['cms_text', CreateDocumentModel],
-    ['text_message', CreateDocumentModel],
     ['dynamic_document_root', CreateDocumentModel],
     ['dynamic_document_roots', CreateDocumentModel]
 ];

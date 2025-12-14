@@ -18,7 +18,7 @@ import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoot
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
-import TextMessages from './TextMessages';
+import TextMessages from '../../../packages/tdev/text-message/TextMessages';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
 
 const NoRoom = () => {
@@ -90,7 +90,7 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
         );
     }
     switch (roomProps.type) {
-        case RoomType.Messages:
+        case 'text_message':
             return <TextMessages documentRoot={documentRoot} roomProps={roomProps} />;
         default:
             return <NoType dynamicRoot={dynamicRoot} />;

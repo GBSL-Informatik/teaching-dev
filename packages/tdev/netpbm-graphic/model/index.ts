@@ -7,8 +7,8 @@ import { ParserResult } from '@tdev/netpbm-graphic/model/types';
 import { ApiState } from '@tdev-stores/iStore';
 import { ModelMeta } from './ModelMeta';
 
-export const createModel: Factory<'netpbm_graphic'> = (data, store) => {
-    return new NetpbmGraphic(data, store);
+export const createModel: Factory = (data, store) => {
+    return new NetpbmGraphic(data as DocumentProps<'netpbm_graphic'>, store);
 };
 
 class NetpbmGraphic extends iDocument<'netpbm_graphic'> {

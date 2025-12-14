@@ -1,26 +1,12 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { ModelMeta } from './ModelMeta';
 
-export interface MetaInit {
-    readonly?: boolean;
-}
-
-export class ModelMeta extends TypeMeta<'text_message'> {
-    readonly type = 'text_message';
-
-    constructor(props: Partial<MetaInit>) {
-        super('text_message', props.readonly ? Access.RO_User : undefined);
-    }
-
-    get defaultData(): TypeDataMapping['text_message'] {
-        return {
-            text: ''
-        };
-    }
-}
+export const createModel: Factory = (data, store) => {
+    return new TextMessage(data as DocumentProps<'text_message'>, store);
+};
 
 class TextMessage extends iDocument<'text_message'> {
     @observable accessor text: string;

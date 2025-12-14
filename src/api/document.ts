@@ -13,7 +13,6 @@ import Restricted from '@tdev-models/documents/Restricted';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import { Color } from '@tdev-components/shared/Colors';
 import CmsText from '@tdev-models/documents/CmsText';
-import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
@@ -95,18 +94,26 @@ export interface MdxCommentData {
     isOpen: boolean;
     color: Color;
 }
-
-export interface TextMessageData {
-    text: string;
-}
-
 export interface DynamicDocumentRootData {
     /** such a document is never created - it's only the document root that is needed */
 }
 
-export enum RoomType {
-    Messages = 'text_messages'
-}
+/**
+ * This is the extendable mapping - only the key matters,
+ * the value is in principle irrelevant.
+ * @example
+ * ```ts
+ * declare module '@tdev-api/document' {
+ *   export interface RoomTypeNames {
+ *     ['my_room_type']: 'my_room_type';
+ *   }
+ * }
+ * ```
+ */
+export interface RoomTypeNames {}
+
+export type RoomType = keyof RoomTypeNames;
+
 export interface DynamicDocumentRoot {
     id: string;
     name: string;
@@ -130,7 +137,6 @@ export interface TypeDataMapping {
     ['mdx_comment']: MdxCommentData;
     ['restricted']: RestrictedData;
     ['cms_text']: CmsTextData;
-    ['text_message']: TextMessageData;
     ['dynamic_document_root']: DynamicDocumentRootData;
     ['dynamic_document_roots']: DynamicDocumentRootsData;
     // Add more mappings as needed
@@ -149,7 +155,6 @@ export interface TypeModelMapping {
     ['mdx_comment']: MdxComment;
     ['restricted']: Restricted;
     ['cms_text']: CmsText;
-    ['text_message']: TextMessage;
     ['dynamic_document_root']: DynamicDocumentRootModel;
     ['dynamic_document_roots']: DynamicDocumentRoots;
     /**
