@@ -6,7 +6,7 @@ export interface TextMessageData {
 
 declare module '@tdev-api/document' {
     export interface RoomTypeNames {
-        ['text_message']: 'text_message';
+        ['text_messages']: 'text_messages';
     }
     export interface TypeDataMapping {
         ['text_message']: TextMessageData;
