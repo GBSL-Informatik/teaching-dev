@@ -213,6 +213,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.Document:
                 const doc = record as Document<any>;
+                console.log('New Document:', doc.id, doc.type, doc);
                 if (RecordsToCreate.has(doc.type) || doc.parentId) {
                     this.root.documentStore.addToStore(doc);
                 }
