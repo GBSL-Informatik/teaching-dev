@@ -11,8 +11,8 @@ type ExportToBlobArgs = Parameters<typeof exportToBlob>[0];
 type ExportToBlobReturn = ReturnType<typeof exportToBlob>;
 type ExportToBlob = (args: ExportToBlobArgs) => Promise<ExportToBlobReturn>;
 
-export const createModel: Factory<'excalidoc'> = (data, store) => {
-    return new Excalidoc(data, store);
+export const createModel: Factory = (data, store) => {
+    return new Excalidoc(data as DocumentProps<'excalidoc'>, store);
 };
 
 class Excalidoc extends iDocument<'excalidoc'> {
