@@ -15,7 +15,6 @@ import {
 } from '@mdi/js';
 import SyncStatus from '../../../SyncStatus';
 import { DocumentType } from '@tdev-api/document';
-import CodeEditorComponent from '../../CodeEditor';
 import { QuillV2Component } from '../../QuillV2';
 import Actions from '../Actions';
 import Name from '../Name';
@@ -26,8 +25,6 @@ import {
     mdiExcalidraw,
     mdiExcalidrawOutline
 } from '@tdev/excalidoc/Component';
-import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
-import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
 import CodeEditorSelector from './CodeEditorSelector';
 
 interface Props {
