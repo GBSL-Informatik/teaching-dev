@@ -35,13 +35,7 @@ type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
-const RecordsToCreate = new Set<DocumentType>([
-    'dir',
-    'file',
-    'mdx_comment',
-    'dynamic_document_roots',
-    'text_message'
-]);
+const RecordsToCreate: DocumentType[] = ['dir', 'file', 'mdx_comment', 'dynamic_document_roots'] as const;
 
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
@@ -51,6 +45,8 @@ export class SocketDataStore extends iStore<'ping'> {
     @observable accessor isLive: boolean = false;
 
     @observable.ref accessor actionRequest: Action['action'] | undefined = undefined;
+
+    recordsToCreate = observable.set<DocumentType>(RecordsToCreate);
 
     connectedClients = observable.map<string, number>();
 
@@ -66,6 +62,11 @@ export class SocketDataStore extends iStore<'ping'> {
                 }
             })
         );
+    }
+
+    @action
+    registerRecordToCreate(docType: DocumentType) {
+        this.recordsToCreate.add(docType);
     }
 
     @action
@@ -213,8 +214,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.Document:
                 const doc = record as Document<any>;
-                console.log('New Document:', doc.id, doc.type, doc);
-                if (RecordsToCreate.has(doc.type) || doc.parentId) {
+                if (this.recordsToCreate.has(doc.type) || doc.parentId) {
                     this.root.documentStore.addToStore(doc);
                 }
                 break;
