@@ -3,12 +3,14 @@ page_id: f8630fb0-80d2-4957-ac5c-756cc95121ad
 tags:
   - editor
   - codierung
+  - persistable
+  - '@tdev/'
 ---
 
 import NetpbmEditor from '@tdev/netpbm-graphic/NetpbmEditor';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
-# Netpbm Editor
+# netpbm-graphic
 Netpbm ist eine Familie von einfachen Dateiformaten zur Speicherung von Rastergrafiken.
 
 Die `<NetpbmEditor>`-Komponente bietet einen Live Viewer und einen speicherbaren Editor für Netpbm-Bilddateien.
@@ -21,7 +23,9 @@ Die Implementation ist nah am offiziellen Netpbm-Standard gehalten, kann aber ge
 Es werden zurzeit nur die ASCII-basierten Formate P1-P3 unterstützt. Die binären Formate P4-P6 sind nicht implementiert.
 :::
 
-````mdx
+````tsx
+import NetpbmEditor from '@tdev/netpbm-graphic/NetpbmEditor';
+
 <NetpbmEditor>
     ```
     P3
@@ -50,7 +54,7 @@ Mit dem Parameter `default` kann ein Standardwert für den Editor festgelegt wer
 
 **Beispiel für eine P1 Portable Bitmap:**
 
-````mdx
+````tsx
 <NetpbmEditor id="275bde1c-6db0-473e-ac3e-cf22dbad6a82">
     ```
     # Beispiel einer Bitmap für den Buchstaben 'J'
@@ -90,7 +94,7 @@ Mit dem Parameter `default` kann ein Standardwert für den Editor festgelegt wer
 
 Der Editor kann auch ohne Persistierung verwendet werden, indem der `id`-Parameter weggelassen wird:
 
-```mdx
+```tsx
 <NetpbmEditor default="P1
     # Beispiel einer Bitmap für den Buchstaben 'J'
     7 9
@@ -122,7 +126,7 @@ Der Editor kann auch ohne Persistierung verwendet werden, indem der `id`-Paramet
 
 **Beispiel für eine P2 Portable Graymap:**
 
-```mdx
+```tsx
 <NetpbmEditor id="fdd7b474-709e-4ed2-a2c2-adf4973e5624" default="P2
     # Beispiel einer PGM Graustufen-Grafik
     19 19
@@ -494,7 +498,7 @@ Der Editor kann auch ohne Persistierung verwendet werden, indem der `id`-Paramet
 ## `readonly` & `noEditor`
 Sollen die Benutzer:innen den Inhalt des Editors nicht verändern können, kann der Parameter `readonly` verwendet werden.
 
-```mdx
+```tsx
 <NetpbmEditor readonly default="P1
     # Readonly-Beispiel einer Bitmap für den Buchstaben 'J'
     7 9
@@ -526,7 +530,7 @@ Sollen die Benutzer:innen den Inhalt des Editors nicht verändern können, kann 
 
 Die Komponente kann auch als reiner Viewer verwendet werden, indem man mit dem Parameter `noEditor` den Editor deaktiviert.
 
-```mdx
+```tsx
 <NetpbmEditor noEditor default="P1
     # Beispiel einer Bitmap für den Buchstaben 'J' ohne Editor
     7 9
@@ -560,3 +564,18 @@ Die Komponente kann auch als reiner Viewer verwendet werden, indem man mit dem P
 - [ ] Editor zurücksetzen auf Default-Wert?
 - [x] Download als PNG?
 - [ ] Upload aus Datei?
+
+
+
+## Installation
+
+:::info[`siteConfig.ts`]
+
+```ts
+const config: SiteConfigProvider = {
+    apiDocumentProviders: [
+        require.resolve('@tdev/netpbm-graphic/register'),
+    ]
+}
+```
+:::
