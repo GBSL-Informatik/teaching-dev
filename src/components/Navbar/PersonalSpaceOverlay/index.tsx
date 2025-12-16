@@ -10,9 +10,11 @@ import siteConfig from '@generated/docusaurus.config';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { authClient } from '@tdev/auth-client';
 const { PERSONAL_SPACE_DOC_ROOT_ID } = siteConfig.customFields as { PERSONAL_SPACE_DOC_ROOT_ID: string };
 
 const PersonalSpaceOverlay = observer(() => {
+    const { data: session } = authClient.useSession();
     const isBrowser = useIsBrowser();
     const sessionStore = useStore('sessionStore');
     const popupRef = React.useRef<PopupActions>(null);
@@ -20,7 +22,7 @@ const PersonalSpaceOverlay = observer(() => {
         return null;
     }
 
-    if (sessionStore.apiMode === 'api' && !sessionStore.isLoggedIn) {
+    if (sessionStore.apiMode === 'api' && !session?.user) {
         return null;
     }
 
@@ -34,7 +36,7 @@ const PersonalSpaceOverlay = observer(() => {
                             e.preventDefault();
                         }}
                         icon={mdiFolderHomeOutline}
-                        color="blue"
+                        color="primary"
                         iconSide="left"
                         title="Persönlicher Bereich"
                         text="Persönlicher Bereich"

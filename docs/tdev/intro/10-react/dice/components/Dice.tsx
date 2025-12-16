@@ -20,8 +20,8 @@ const Dice = () => {
     }, [isRolling]);
 
     return (
-        <div 
-            className={clsx(styles.dice, isRolling && styles.isRolling)} 
+        <div
+            className={clsx(styles.dice, isRolling && styles.isRolling)}
             onClick={() => {
                 setNum(rollDice());
                 setIsRolling(true);

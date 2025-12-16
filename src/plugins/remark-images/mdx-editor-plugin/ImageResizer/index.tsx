@@ -27,7 +27,7 @@ const Direction = {
     west: 1 << 2
 };
 
-export default function ImageResizer({
+const ImageResizer = ({
     onResizeStart,
     onResizeEnd,
     imageRef,
@@ -39,7 +39,7 @@ export default function ImageResizer({
     maxWidth?: number;
     onResizeEnd: (width: number, height: number) => void;
     onResizeStart: () => void;
-}): React.ReactNode {
+}): React.ReactNode => {
     const controlWrapperRef = useRef<HTMLDivElement>(null);
     const userSelect = useRef({
         priority: '',
@@ -251,4 +251,5 @@ export default function ImageResizer({
             />
         </div>
     );
-}
+};
+export default ImageResizer;

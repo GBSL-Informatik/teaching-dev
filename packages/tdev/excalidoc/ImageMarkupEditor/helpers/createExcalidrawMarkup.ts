@@ -10,8 +10,12 @@ import {
     EXCALIDRAW_BACKGROUND_FILE,
     EXCALIDRAW_BACKGROUND_IMAGE,
     EXCALIDRAW_MAX_WIDTH,
-    CustomData
+    CustomData,
+    EXCALIDRAW_STANDALONE_DRAWING_ID,
+    EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE
 } from './constants';
+import { withoutMetaElements } from './getElementsFromScene';
+import { getBoundingRect } from './getBoundingRect';
 
 export const createExcalidrawMarkup = async (
     imgFileHandle: FileSystemFileHandle
@@ -50,6 +54,35 @@ export const createExcalidrawMarkup = async (
     };
 };
 
+const handleStandaloneDrawing = (excalidrawState: ExcalidrawInitialDataState): ExcalidrawInitialDataState => {
+    if (!excalidrawState.elements) {
+        return excalidrawState;
+    }
+    const standaloneDrawingIdx = excalidrawState.elements.findIndex(
+        (e) => e.id === EXCALIDRAW_STANDALONE_DRAWING_ID
+    );
+    const standaloneElement =
+        standaloneDrawingIdx < 0
+            ? EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE
+            : excalidrawState.elements[standaloneDrawingIdx];
+    if (standaloneDrawingIdx >= 0) {
+        (excalidrawState.elements as ExcalidrawElement[]).splice(standaloneDrawingIdx, 1);
+    }
+    const elements = withoutMetaElements(excalidrawState.elements);
+    const { x, y, width, height } = getBoundingRect(elements);
+
+    (excalidrawState.elements as ExcalidrawElement[]).splice(0, 0, {
+        ...standaloneElement,
+        strokeWidth: EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE.strokeWidth,
+        strokeColor: EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE.strokeColor,
+        width,
+        height,
+        x: x,
+        y: y
+    });
+    return excalidrawState;
+};
+
 export const updateRectangleDimensions = (
     excalidrawState: ExcalidrawInitialDataState
 ): ExcalidrawInitialDataState => {
@@ -57,6 +90,9 @@ export const updateRectangleDimensions = (
         return excalidrawState;
     }
     const backgroundImage = excalidrawState.elements.find((e) => e.id === EXCALIDRAW_BACKGROUND_IMAGE_ID);
+    if (!backgroundImage) {
+        return handleStandaloneDrawing(excalidrawState);
+    }
     if (!backgroundImage || backgroundImage.type !== 'image') {
         return excalidrawState;
     }

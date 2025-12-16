@@ -130,8 +130,19 @@ export class DocumentRootStore extends iStore {
      */
     @action
     _loadQueued() {
-        const current = new Map([...this.queued]);
+        const userId = this.root.userStore.viewedUserId;
+        if (!userId || this.queued.size === 0) {
+            return;
+        }
+        const batch = [...this.queued];
         this.queued.clear();
+        if (batch.length > 42) {
+            const postponed = batch.splice(42);
+            postponed.forEach((item) => this.queued.set(item[0], item[1]));
+            this.loadQueued();
+            console.log('Postponing', postponed.length, 'document roots for next batch');
+        }
+        const current = new Map(batch);
         /**
          * if the user is not logged in, we can't load the documents
          * so we just mark all queued documents as loaded
@@ -145,18 +156,7 @@ export class DocumentRootStore extends iStore {
             });
             return;
         }
-        const userId = this.root.userStore.viewedUserId;
         const isUserSwitched = this.root.userStore.isUserSwitched;
-        /**
-         * the user is not yet loaded, but a session is active
-         */
-        if (!userId) {
-            for (const [id, meta] of current.entries()) {
-                this.queued.set(id, meta);
-            }
-            this.loadQueued();
-            return;
-        }
         /**
          * load all queued documents
          */
@@ -164,6 +164,7 @@ export class DocumentRootStore extends iStore {
         this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
             const ignoreMissingRoots = isUserSwitched && keys.every((id) => this.find(id)?.isLoaded);
             const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal);
+
             // create all loaded models
             runInAction(() => {
                 models.data.forEach((data) => {

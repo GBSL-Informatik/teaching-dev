@@ -11,6 +11,7 @@ import { PageStore } from '@tdev-stores/PageStore';
 import { AdminStore } from '@tdev-stores/AdminStore';
 import { CmsStore } from '@tdev-stores/CmsStore';
 import SiteStore from '@tdev-stores/SiteStore';
+import { AuthStore } from './AuthStore';
 
 export class RootStore {
     documentRootStore: DocumentRootStore;
@@ -24,6 +25,7 @@ export class RootStore {
     adminStore: AdminStore;
     cmsStore: CmsStore;
     siteStore: SiteStore;
+    authStore: AuthStore;
 
     // @observable accessor initialized = false;
     constructor() {
@@ -38,17 +40,17 @@ export class RootStore {
         this.adminStore = new AdminStore(this);
         this.cmsStore = new CmsStore(this);
         this.siteStore = new SiteStore(this);
-
-        if (this.sessionStore.isLoggedIn) {
-            this.load();
-        }
+        this.authStore = new AuthStore(this);
     }
 
     @action
-    load() {
+    load(userId: string) {
+        this.sessionStore.setCurrentUserId(userId);
+        this.sessionStore.setIsLoggedIn(!!userId);
         this.userStore.loadCurrent().then((user) => {
             if (user) {
                 this.socketStore.reconnect();
+                this.documentRootStore.loadQueued();
                 /**
                  * load stores
                  */
@@ -68,6 +70,7 @@ export class RootStore {
          * could be probably ignored since the page gets reloaded on logout?
          */
         console.log('cleanup data stores');
+        this.sessionStore.setIsLoggedIn(false);
         this.userStore.cleanup();
         this.socketStore.cleanup();
         this.studentGroupStore.cleanup();

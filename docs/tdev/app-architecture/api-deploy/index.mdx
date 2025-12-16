@@ -5,7 +5,7 @@ page_id: 560cfd4d-4464-42ff-a121-a3d116ea1994
 import Steps from '@tdev-components/Steps'
 import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
 import _ from 'es-toolkit/compat';
-import { generateRandomBase64 } from './secureToken';
+import { generateRandomBase64 } from '../helpers/secureToken';
 
 # API Aufsetzen
 
@@ -15,8 +15,7 @@ import { generateRandomBase64 } from './secureToken';
   1. Eine neue App __<Val name="app" />__ auf dem Server erstellen
       <DynamicInput name="app" default='inf-teaching-api' />
       <DynamicInput name="domain" default='teaching-api.gbsl.website' />
-      <DynamicInput name="APP_NAME" derived default={(page) => _.camelCase((page.dynamicValues.get('app') || 'inf-teaching-api'))} />
-      <DynamicInput name="API_URI" placeholder='api://xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
+      <DynamicInput name="APP_NAME" default={(page) => _.camelCase((page.dynamicValues.get('app') || 'inf-teaching-api'))} />
       <DynamicInput name="ALLOWED_ORIGINS" default='gbsl.website' />
       <DynamicInput name="ALLOW_SUBDOMAINS" default='true' />
       <DynamicInput name="SESSION_SECRET" monospace default='$(openssl rand -base64 32)' onRecalculate={() => generateRandomBase64()} />
@@ -73,11 +72,8 @@ import { generateRandomBase64 } from './secureToken';
         </TemplateCode>
         :::
         :::info[Deploy Preview mit Netlify]
-        Ermöglicht den Zugriff von Deploy-Previews von Netlify Deploy-Previews mit der Domain
-
-        <Val as="code">`https://deploy-preview-\d+--{{NETLIFY_PROJECT_NAME}}.netlify.app`</Val>
-
-        auf die API. Dies ist notwendig, um die API in Netlify-Deploy-Previews zu verwenden.
+        Ermöglicht den Zugriff von Deploy-Previews von Netlify mit der Domain  
+        <Val as="code">`https://deploy-preview-\d+--{{NETLIFY_PROJECT_NAME}}.netlify.app`</Val>  auf die API.
 
         <DynamicInput name="NETLIFY_PROJECT_NAME" default={(page) => page.dynamicValues.get('app')}/>
         <TemplateCode>

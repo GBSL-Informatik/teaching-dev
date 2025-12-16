@@ -3,7 +3,8 @@ import { DocumentType, Document as DocumentProps } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _ from 'es-toolkit/compat';
 import File from './File';
-import iFileSystem, { iFSMeta, MetaInit } from './iFileSystem';
+import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
+import { formatDateTime } from '@tdev-models/helpers/date';
 
 export class ModelMeta extends iFSMeta<DocumentType.Dir> {
     constructor(props: Partial<MetaInit>) {
@@ -14,6 +15,8 @@ export class ModelMeta extends iFSMeta<DocumentType.Dir> {
 class Directory extends iFileSystem<DocumentType.Dir> {
     constructor(props: DocumentProps<DocumentType.Dir>, store: DocumentStore) {
         super(props, store);
+        this.name =
+            props.data?.name || this.meta?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
     }
 
     @computed

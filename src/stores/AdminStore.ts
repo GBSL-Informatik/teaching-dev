@@ -6,11 +6,13 @@ import {
     AllowedAction,
     allowedActions as apiAllowedActions,
     deleteAllowedAction as apiDeleteAllowedAction,
-    createAllowedAction as apiCreateAllowedAction
+    createAllowedAction as apiCreateAllowedAction,
+    linkUserPassword,
+    revokeUserPassword
 } from '@tdev-api/admin';
 import { DocumentType } from '@tdev-api/document';
 
-export class AdminStore extends iStore {
+export class AdminStore extends iStore<`set-user-pw-${string}` | `revoke-user-pw-${string}`> {
     readonly root: RootStore;
     allowedActions = observable<AllowedAction>([]);
     constructor(root: RootStore) {
@@ -52,6 +54,26 @@ export class AdminStore extends iStore {
                     this.allowedActions.push(res.data);
                 })
             );
+        });
+    }
+
+    @action
+    setUserPassword(userId: string, newPassword: string) {
+        if (!this.root.userStore.current?.isAdmin) {
+            return Promise.reject(new Error('Not authorized'));
+        }
+        return this.withAbortController(`set-user-pw-${userId}`, async (ct) => {
+            return linkUserPassword(userId, newPassword, ct.signal);
+        });
+    }
+
+    @action
+    revokeUserPassword(userId: string) {
+        if (!this.root.userStore.current?.isAdmin) {
+            return Promise.reject(new Error('Not authorized'));
+        }
+        return this.withAbortController(`revoke-user-pw-${userId}`, async (ct) => {
+            return revokeUserPassword(userId, ct.signal);
         });
     }
 }

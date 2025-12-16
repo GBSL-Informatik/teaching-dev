@@ -4,7 +4,7 @@
     border: 1px solid var(--ifm-color-gray-500);
     border-radius: var(--ifm-global-radius);
     font-size: var(--ifm-font-size-base);
-    box-shadow: var(--ifm-global-shadow-md);
+    box-shadow: var(--ifm-global-shadow-lw);
     transition:
         border-color 0.3s,
         box-shadow 0.3s;
@@ -13,9 +13,21 @@
         outline: none;
         box-shadow: 0 0 8px var(--ifm-link-hover-color);
     }
+    &.touched:invalid {
+        border-color: var(--ifm-color-danger);
+        box-shadow: 0 0 8px var(--ifm-color-danger);
+    }
 }
 .label {
     font-family: var(--ifm-heading-font-family);
     font-weight: var(--ifm-heading-font-weight);
     font-size: var(--ifm-h4-font-size);
+    &.required::after {
+        content: ' *';
+        color: var(--ifm-color-primary);
+    }
+    &.dirty::after {
+        content: ' *';
+        color: var(--ifm-color-warning);
+    }
 }

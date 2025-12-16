@@ -39,7 +39,7 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
         if (!this.root.userStore.current) {
             return [];
         }
-        if (this.root.userStore.current.isAdmin) {
+        if (this.root.userStore.current?.isAdmin) {
             return this.studentGroups;
         }
         return this.studentGroups.filter((group) => group.isGroupAdmin);

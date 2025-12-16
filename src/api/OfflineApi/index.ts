@@ -8,9 +8,9 @@ import { StudentGroup } from '../studentGroup';
 import { DbAdapter } from './Adapter';
 import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
-import siteConfig from '@generated/docusaurus.config';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import _ from 'es-toolkit/compat';
+import { DB_NAME } from '@tdev-api/config';
 
 const TIME_NOW = new Date().toISOString();
 const LOG_REQUESTS = false;
@@ -18,6 +18,7 @@ const LOG_REQUESTS = false;
 let OfflineUser: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
     email: 'offline.user@tdev.ch',
+    name: 'Offline User',
     firstName: 'Offline',
     lastName: 'User',
     role: process.env.NODE_ENV === 'production' ? Role.STUDENT : Role.ADMIN,
@@ -25,10 +26,10 @@ let OfflineUser: User = {
     updatedAt: TIME_NOW
 };
 
-const DB_NAME = `${siteConfig.organizationName ?? 'gbsl'}-${siteConfig.projectName ?? 'tdev'}-db`;
 const DOCUMENTS_STORE = 'documents';
 const STUDENT_GROUPS_STORE = 'studentGroups';
 const PERMISSIONS_STORE = 'permissions';
+export const getOfflineUser = () => ({ ...OfflineUser });
 
 const resolveResponse = <T>(data: T, statusCode: number = 200, statusText: string = ''): AxiosPromise<T> => {
     return Promise.resolve({
@@ -84,12 +85,13 @@ export default class OfflineApi {
     constructor(mode: boolean | 'memory' | 'indexedDB') {
         if (mode === 'indexedDB' && ExecutionEnvironment.canUseDOM) {
             try {
-                this.dbAdapter = new IndexedDbAdapter(DB_NAME);
+                this.dbAdapter = new IndexedDbAdapter(DB_NAME, true);
             } catch (error) {
                 console.error('Failed to initialize IndexedDB:', error);
                 this.dbAdapter = new MemoryDbAdapter();
             }
         } else {
+            console.log('setup memory adapter');
             this.dbAdapter = new MemoryDbAdapter();
         }
         if (LOG_REQUESTS) {
@@ -236,8 +238,6 @@ export default class OfflineApi {
                 return resolveResponse([] as unknown as T);
             case 'allowedActions':
                 return resolveResponse([] as unknown as T);
-            case 'checklogin':
-                return resolveResponse({ user: OfflineUser } as unknown as T, 200, 'ok');
             case 'documents':
                 if (id) {
                     const document = await this.dbAdapter.get<Document<any>>(DOCUMENTS_STORE, id);
@@ -259,7 +259,6 @@ export default class OfflineApi {
                 }
                 if (query.has('rids')) {
                     const rids = query.getAll('rids');
-                    console.log('rids', rids);
 
                     const allDocuments = await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE);
 

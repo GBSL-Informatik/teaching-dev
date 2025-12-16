@@ -3,15 +3,16 @@ import clsx from 'clsx';
 import styles from './login.module.scss';
 import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Link from '@docusaurus/Link';
-import { useMsal, useIsAuthenticated } from '@azure/msal-react';
 import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
-import { tokenRequest } from '@tdev/authConfig';
 import siteConfig from '@generated/docusaurus.config';
-import Translate from '@docusaurus/Translate';
-import { useStore } from '@tdev-hooks/useStore';
-const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
+import { authClient } from '@tdev/auth-client';
+import Button from '@tdev-components/shared/Button';
+import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import DefinitionList from '@tdev-components/DefinitionList';
+import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
+const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
@@ -26,9 +27,9 @@ function HomepageHeader() {
 }
 
 const LoginPage = observer(() => {
-    const { instance } = useMsal();
-    const isAuthenticated = useIsAuthenticated();
-    if (isAuthenticated || NO_AUTH) {
+    const { data: session } = authClient.useSession();
+    const signInPage = useBaseUrl('/signIn');
+    if (session?.user || NO_AUTH) {
         return <Redirect to={'/user'} />;
     }
     return (
@@ -36,28 +37,50 @@ const LoginPage = observer(() => {
             <HomepageHeader />
             <main>
                 <div className={clsx(styles.loginPage)}>
-                    <Link
-                        to="/"
-                        onClick={() => instance.acquireTokenRedirect(tokenRequest)}
-                        className="button button--warning"
-                        style={{ color: 'black' }}
-                    >
-                        <Translate
-                            id="login.button.with.school.account.text"
-                            description="the text of the button login with school account"
-                        >
-                            Login mit Schul-Account
-                        </Translate>
-                    </Link>
+                    <Button
+                        onClick={() =>
+                            authClient.signIn.social({
+                                provider: 'microsoft',
+                                callbackURL: `${APP_URL}/user`
+                            })
+                        }
+                        text="Schul-Account"
+                        icon={mdiMicrosoft}
+                        iconSide="left"
+                        color="blue"
+                        size={2}
+                        className={clsx(styles.mainLoginMethod)}
+                    />
+                    <Button
+                        onClick={() =>
+                            authClient.signIn.social({
+                                provider: 'github',
+                                callbackURL: `${APP_URL}/user`
+                            })
+                        }
+                        text="Github"
+                        icon={mdiGithub}
+                        iconSide="left"
+                        color="black"
+                    />
+                    <Button href={signInPage} color="black" text="Email" icon={mdiEmail} iconSide="left" />
                 </div>
+                <h3>Weitere Optionen</h3>
+                <DefinitionList>
+                    <dt>Code Theme</dt>
+                    <dd>
+                        <CodeThemeToggle showText />
+                    </dd>
+                </DefinitionList>
             </main>
         </Layout>
     );
 });
 
 const Login = observer(() => {
-    const sessionStore = useStore('sessionStore');
-    if (sessionStore.isLoggedIn || NO_AUTH) {
+    const { data: session } = authClient.useSession();
+
+    if (session?.user || NO_AUTH) {
         return <Redirect to={'/user'} />;
     }
     return <LoginPage />;

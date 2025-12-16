@@ -9,6 +9,8 @@ interface Props {
     className?: string;
     gridTemplateColumns?: string;
     small?: boolean;
+    compact?: boolean;
+    ignoreMediaQueries?: boolean;
 }
 
 const DefinitionList = observer((props: Props) => {
@@ -18,7 +20,9 @@ const DefinitionList = observer((props: Props) => {
                 styles.definitionList,
                 props.className,
                 props.gridTemplateColumns && styles.ignoreMediaQueries,
-                props.small && styles.small
+                props.compact && styles.compact,
+                props.small && styles.small,
+                props.ignoreMediaQueries && styles.ignoreMediaQueries
             )}
             style={{ gridTemplateColumns: props.gridTemplateColumns }}
         >

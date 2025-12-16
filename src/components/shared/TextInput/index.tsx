@@ -10,10 +10,12 @@ interface Props {
     onChange: (text: string) => void;
     onEnter?: () => void;
     onEscape?: () => void;
+    validator?: (text: string) => string | null;
     className?: string;
     labelClassName?: string;
     value?: string;
     type?: HTMLInputTypeAttribute;
+    title?: string;
     label?: React.ReactNode;
     noSpellCheck?: boolean;
     noAutoFocus?: boolean;
@@ -23,16 +25,27 @@ interface Props {
     min?: string | number | undefined;
     max?: string | number | undefined;
     readOnly?: boolean;
+    isDirty?: boolean;
 }
 
 const TextInput = observer((props: Props) => {
     const _id = React.useId();
     const id = props.id || _id;
     const [text, setText] = React.useState(props.defaultValue || '');
+    const validator = React.useCallback(props.validator ?? ((text: string) => null), [props.validator]);
     return (
         <>
             {props.label && (
-                <label className={clsx(styles.label, props.labelClassName)} htmlFor={id}>
+                <label
+                    className={clsx(
+                        styles.label,
+                        props.labelClassName,
+                        props.required && styles.required,
+                        props.isDirty && styles.dirty
+                    )}
+                    htmlFor={id}
+                    title={props.title}
+                >
                     {props.label}
                 </label>
             )}
@@ -59,10 +72,20 @@ const TextInput = observer((props: Props) => {
                         props.onEscape?.();
                     }
                 }}
+                onInput={(e) => {
+                    const error = validator(e.currentTarget.value);
+                    if (error === null) {
+                        e.currentTarget.setCustomValidity('');
+                    } else {
+                        e.currentTarget.setCustomValidity(error);
+                    }
+                    e.currentTarget.classList.add(styles.touched);
+                    e.currentTarget.reportValidity();
+                }}
                 autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
-                step={props.step}
+                step={props.step ?? 'any'}
                 min={props.min}
                 max={props.max}
             />

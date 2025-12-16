@@ -23,6 +23,15 @@ turtle.set_defaults(
 turtle.done()
 '''
 
+def is_dummy(fname):
+    return fname.startswith('code_python_dummy_')
+
+def sanitized_fname(fname):
+    if is_dummy(fname):
+        return 'snippet.py'
+    no_uuids = re.sub(r'^code_(.*)_[0-9a-f_]{36}$$', r'\1', fname)
+    with_extension = re.sub('_py$', '.py', no_uuids)
+    return with_extension
 
 def run(code, node_id, line_shift):
     global has_turtle_import, log_line_number_shift
@@ -38,7 +47,7 @@ def run(code, node_id, line_shift):
         loc = {}
         exec(py_script, ns)
     except Exception as exc:
-        fname = re.sub(r'^code_(.*)_[0-9a-f_]{36}$$', r'\1', node_id)
+        fname = sanitized_fname(node_id)
         print_exc(file=sys.stderr, line_shift=log_line_number_shift, source=code, fname=fname)
     finally:
         notify(node_id, {'type': 'done', 'time': time.time()})

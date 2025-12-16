@@ -14,10 +14,10 @@ import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import React from 'react';
-import { Document, DocumentType } from '@tdev-api/document';
+import { DocumentType } from '@tdev-api/document';
 import Icon, { Stack } from '@mdi/react';
 import { getNumericCircleIcon } from '@tdev-components/shared/numberIcons';
-import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
+import type iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 
 interface DirProps {
     item: iFileSystem<any>;

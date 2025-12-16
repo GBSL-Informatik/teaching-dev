@@ -50,6 +50,9 @@
         400 13px Arial,
         sans-serif;
     user-select: none;
+    &.href {
+        font-size: 15px;
+    }
 }
 
 [data-theme='dark'] .browserWindowAddressBar {

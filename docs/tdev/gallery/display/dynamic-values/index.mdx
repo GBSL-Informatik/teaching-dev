@@ -69,8 +69,87 @@ print(zahl)
     </TemplateCode>
 </BrowserWindow>
 
+## Abgeleitete Werte
+
+Wird als `default`-Wert eine Funktion der Form `(store: PageStore) => string` verwendet, wird der Wert als abgeleitet betrachtet. Diese Werte werden von anderen Eingabefeldern abgeleitet und werden aktualisiert, sobald sich entsprechende Werte ändern. Der abgeleitete Wert kann aber auch von der Benutzer:in überschrieben werden.
+
+````jsx showLineNumbers
+<DynamicInput name="Vorname" default="Reto" />
+// highlight-start
+<DynamicInput 
+    name="Anrede"
+    default={(store) => `Hallo ${store.dynamicValues.get('Vorname')}`}
+/>
+// highlight-end
+
+<TemplateCode>
+```bash
+{{Anrede}}
+
+Willkommen zu unserem Kurs!
+```
+</TemplateCode>
+````
+Auf Zeile 4 wird der Wert des Eingabefelds `Vorname` verwendet, um den Standardwert des Eingabefelds `Anrede` zu berechnen.
+
+<BrowserWindow>
+    <DynamicInput name="Vorname" default="Reto" />
+    <DynamicInput name="Anrede" default={(store) => `Hallo ${store.dynamicValues.get('Vorname')}`} />
+
+    <TemplateCode>
+    ```bash
+    {{Anrede}}
+
+    Willkommen zu unserem Kurs!
+    ```
+    </TemplateCode>
+</BrowserWindow>
+
+## Generierte Werte
+
+```jsx
+<DynamicInput
+    name="Lieblingszahl"
+    placeholder='42'
+    // highlight-next-line
+    onRecalculate={() => Math.round(Math.random() * 100)} 
+/>
+```
+<BrowserWindow>
+    <DynamicInput
+        name="Lieblingszahl"
+        placeholder='42'
+        onRecalculate={() => Math.round(Math.random() * 100)} 
+    />
+</BrowserWindow>
+
+## Attribute
+
+name
+: Eindeutiger Name des dynamischen Werts.
+: Typ: `string`
+default
+: (optional) Standardwert des dynamischen Werts.
+: Typ: `string | ((page: Page) => string)`;
+label
+: (optional) Beschriftung des Eingabefelds.
+: Typ: `string`
+onRecalculate
+: (optional) Funktion zur Neuberechnung des Werts. Ist diese Funktion gesetzt, so wird ein :mdi[sync]-Button angezeigt.
+: Typ: `(page: Page) => string`
+placeholder
+: (optional) Platzhaltertext für das Eingabefeld.
+: Typ: `string`
+monospace
+: (optional) Ob der Text im Eingabefeld im Monospace-Stil angezeigt werden soll.
+: Typ: `boolean`
+hidden
+: (optional) Ob das Eingabefeld verborgen ist.
+: Typ: `boolean`
+
 ## Installation
 
 :::info[Code]
+Zu kopierender Code:
 - `src/components/DynamicValues`
 :::

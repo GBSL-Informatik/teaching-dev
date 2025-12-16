@@ -6,6 +6,7 @@ import { default as StudentGroupModel } from '@tdev-models/StudentGroup';
 import Button from '@tdev-components/shared/Button';
 import {
     mdiAccountCancel,
+    mdiAccountGroup,
     mdiAccountKey,
     mdiAccountKeyOutline,
     mdiCircleEditOutline,
@@ -14,17 +15,19 @@ import {
     mdiCloseCircleOutline,
     mdiContentSave,
     mdiFileExcelOutline,
+    mdiLanguageHtml5,
     mdiTrashCanOutline
 } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import DefinitionList from '../DefinitionList';
 import Details from '@theme/Details';
-import { exportAsExcelSpreadsheet } from '@tdev-components/StudentGroup/excelExport';
+import { exportAsExcelSpreadsheet } from '@tdev-components/StudentGroup/services/excelExport';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Undo from './Undo';
 import AddUserPopup from './AddMembersPopup';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import { exportNameCards } from './services/exportNameCards';
 
 interface Props {
     studentGroup: StudentGroupModel;
@@ -73,11 +76,6 @@ const StudentGroup = observer((props: Props) => {
                 </h3>
                 {isAdmin && (
                     <div className={styles.buttons}>
-                        <Button
-                            icon={mdiFileExcelOutline}
-                            onClick={() => exportAsExcelSpreadsheet(group)}
-                            color={'green'}
-                        />
                         <div>
                             {group.isEditing ? (
                                 <>
@@ -141,6 +139,32 @@ const StudentGroup = observer((props: Props) => {
                             group.description || '-'
                         )}
                     </dd>
+                    {isAdmin && (
+                        <>
+                            <dt>Export</dt>
+                            <dd>
+                                <div className={clsx(styles.exportButtons)}>
+                                    <Button
+                                        icon={mdiFileExcelOutline}
+                                        onClick={() => exportAsExcelSpreadsheet(group)}
+                                        color="green"
+                                        text="Excel"
+                                        iconSide="left"
+                                    />
+                                    <Button
+                                        color="primary"
+                                        icon={mdiLanguageHtml5}
+                                        iconSide="left"
+                                        text="Namenskarten"
+                                        title="Namenskarten für A4 (4x gefaltet) herunterladen"
+                                        onClick={() => {
+                                            exportNameCards(group.students);
+                                        }}
+                                    />
+                                </div>
+                            </dd>
+                        </>
+                    )}
 
                     <dt>Erstellt Am</dt>
                     <dd>{group.fCreatedAt}</dd>

@@ -11,10 +11,6 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 | :------------------------- | :------------- | :---------------------------------- | :------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `APP_URL`                  | Production     | `http://localhost:3000`             |                                 | Domain of the hosted app                                                                                                                                           |
 | `BACKEND_URL`              | Production     | `http://localhost:3002`             |                                 | Url of the API Endpoint                                                                                                                                            |
-| `CLIENT_ID`                | Production     |                                     |                                 | Azure ID: Client ID                                                                                                                                                |
-| `TENANT_ID`                | Production     |                                     |                                 | Azure AD: Tenant Id                                                                                                                                                |
-| `API_URI`                  | Production     |                                     |                                 | Azure AD: API Url                                                                                                                                                  |
-| `STUDENT_USERNAME_PATTERN` | Production     |                                     | `@edu`                          | Users with usernames matching this RegExp pattern are displayed as students (regardless of admin status). If unset, all non-admin users are displayed as students. |
 | `DEFAULT_TEST_USER`        | Development    |                                     | `admin.bar@bazz.ch`             | To log in offline. Email of the user to be selected by default. Must correspond to a user email found in the API's database.\*                                     |
 | `OFFLINE_API`              | Dev/Production | `memory`                            | `true` | `memory` | `indexedDB` | In case the project shall be fully functional, but API persistent data is not needed (e.g. when run in Github Codespace), set this option to true (=`memory`).     |
 | `SENTRY_DSN`               | Production     |                                     |                                 | Sentry DSN for error tracking                                                                                                                                      |
@@ -30,7 +26,7 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 To upgrade docusaurus, run:
 
 ```bash
-yarn upgrade @docusaurus/core@latest @docusaurus/faster@latest @docusaurus/preset-classic@latest @docusaurus/theme-classic@latest @docusaurus/theme-common@latest @docusaurus/module-type-aliases@latest @docusaurus/plugin-rsdoctor@latest @docusaurus/tsconfig@latest @docusaurus/types@latest
+yarn upgrade @docusaurus/core@latest @docusaurus/faster@latest @docusaurus/preset-classic@latest @docusaurus/theme-classic@latest @docusaurus/theme-common@latest @docusaurus/module-type-aliases@latest @docusaurus/plugin-rsdoctor@latest @docusaurus/tsconfig@latest @docusaurus/types@latest @docusaurus/theme-mermaid@latest
 ```
 
 ## Upgrade tdev

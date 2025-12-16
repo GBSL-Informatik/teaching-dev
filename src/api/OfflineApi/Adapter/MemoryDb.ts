@@ -11,9 +11,9 @@ class MemoryDbAdapter implements DbAdapter {
 
     async getAll<T>(storeName: string): Promise<T[]> {
         if (!this.db[storeName]) {
-            return [];
+            return Promise.resolve([]);
         }
-        return Object.values(this.db[storeName]) as T[];
+        return Promise.resolve(Object.values(this.db[storeName]) as T[]);
     }
 
     async byDocumentRootId<T extends DocumentType>(
@@ -22,31 +22,35 @@ class MemoryDbAdapter implements DbAdapter {
         if (!documentRootId) {
             return Promise.resolve([]);
         }
-        return this.filter('documents', (doc) => doc.documentRootId === documentRootId) as Promise<
-            Document<T>[]
-        >;
+        return Promise.resolve(
+            this.filter('documents', (doc) => doc.documentRootId === documentRootId) as Promise<Document<T>[]>
+        );
     }
-
-    async put<T>(storeName: string, item: T & { id: string }): Promise<void> {
+    async put<T>(storeName: string, item: T, id: IDBKeyRange | IDBValidKey): Promise<void>;
+    async put<T>(storeName: string, item: T & { id: string }): Promise<void>;
+    async put<T>(storeName: string, item: T & { id: string }, id?: IDBKeyRange | IDBValidKey): Promise<void> {
         if (!this.db[storeName]) {
             this.db[storeName] = {};
         }
-        this.db[storeName][item.id] = item;
+        this.db[storeName][item.id ?? id] = item;
+        return Promise.resolve();
     }
 
     async delete(storeName: string, id: string): Promise<void> {
         if (this.db[storeName] && this.db[storeName][id]) {
             delete this.db[storeName][id];
         }
+        return Promise.resolve();
     }
     async filter<T>(storeName: string, filterFn: (item: T) => boolean): Promise<T[]> {
         const allItems = await this.getAll<T>(storeName);
-        return allItems.filter(filterFn);
+        return Promise.resolve(allItems.filter(filterFn));
     }
 
     async destroyDb(): Promise<void> {
         this.db = {};
         console.log('MemoryDbAdapter: Database destroyed');
+        return Promise.resolve();
     }
 }
 

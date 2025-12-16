@@ -90,7 +90,7 @@ function MdiIconMenuItem(props: MdiMenuProps) {
 
 const MAX_MDI_SUGGESTION_COUNT = 30;
 
-export default function MdiPickerPlugin() {
+const MdiPickerPlugin = () => {
     const [editor] = useLexicalComposerContext();
     const [queryString, setQueryString] = useState<string | null>(null);
     const [mdiIcons, setMdiIcons] = useState<Array<keyof typeof Mdi>>([]);
@@ -194,4 +194,6 @@ export default function MdiPickerPlugin() {
             }}
         />
     );
-}
+};
+
+export default MdiPickerPlugin;

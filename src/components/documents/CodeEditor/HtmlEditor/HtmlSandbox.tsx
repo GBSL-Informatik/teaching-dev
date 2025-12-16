@@ -42,10 +42,13 @@ function sendHeight() {
             if (scrollHeight !== clientHeight) {
                 parent.postMessage({id: '${id}', type: 'resize', height: scrollHeight}, "*");
             } else {
+                const borderTopWidth = parseFloat(getComputedStyle(document.body).borderTopWidth);
+                const borderBottomWidth = parseFloat(getComputedStyle(document.body).borderBottomWidth);
                 const mTop = parseFloat(getComputedStyle(document.body).marginTop);
                 const mBottom = parseFloat(getComputedStyle(document.body).marginBottom);
-                const total = mTop + mBottom;
-                if (scrollHeight > document.body.clientHeight + total) {
+                const total = mTop + mBottom + borderTopWidth + borderBottomWidth;
+                // change height only if it differs by at least one line
+                if (scrollHeight > document.body.clientHeight + total + 15) {
                     parent.postMessage({id: '${id}', type: 'resize', height: document.body.clientHeight + total}, "*");
                 }
             }
@@ -150,7 +153,8 @@ const HtmlSandbox = observer((props: Props) => {
                     setErrorMsg(e.data);
                     break;
                 case 'resize':
-                    setHeight(e.data.height);
+                    const height = e.data.height;
+                    setHeight(height);
                     break;
                 case 'href':
                     props.onNavigate?.(e.data.href);

@@ -1,0 +1,210 @@
+---
+page_id: bf5bdc44-6258-440c-ab5c-ed9c289774c4
+---
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeBlock from '@theme/CodeBlock';
+
+# Codeblöcke
+
+Die gängige Markdown-Syntax für Codeblöcke wird unterstützt.
+
+````md
+```py
+def hallo_welt():
+    print("Hallo Welt!")
+```
+````
+
+<BrowserWindow>
+```py
+def hallo_welt():
+    print("Hallo Welt!")
+```
+</BrowserWindow>
+
+
+## Zeilenhighlighting
+
+Zeilen innerhalb von Codeblöcken können hervorgehoben werden, wahlweise mit der (von Docusaurus empfohlenen) **Kommentarsyntax** oder mit einem **Metastring**.
+
+````md
+### `highlight-next-line`
+```js
+const fibonacci = (n) => {
+    // highlight-next-line
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+};
+```
+### `highlight-start` und `highlight-end`
+```js
+const fibonacci = (n) => {
+    // highlight-start
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+    // highlight-end
+};
+```
+### Metastring
+Ohne Leerzeichen innerhalb der geschweiften Klammern!
+
+```js {1,4-6}
+const fibonacci = (n) => {
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+};
+```
+````
+
+<BrowserWindow>
+### `highlight-next-line`
+```js
+const fibonacci = (n) => {
+    // highlight-next-line
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+};
+```
+### `highlight-start` und `highlight-end`
+```js
+const fibonacci = (n) => {
+    // highlight-start
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+    // highlight-end
+};
+```
+### Metastring
+Ohne Leerzeichen innerhalb der geschweiften Klammern!
+
+```js {1,4-6}
+const fibonacci = (n) => {
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+};
+```
+</BrowserWindow>
+
+## Titel für Codeblöcke
+
+````md
+```py title="hello-world.py"
+def hallo_welt():
+    print("Hallo Welt!")
+```
+````
+
+<BrowserWindow>
+```py title="hello-world.py"
+def hallo_welt():
+    print("Hallo Welt!")
+```
+</BrowserWindow>
+
+## Zeilennummern
+
+````md
+```py showLineNumbers
+def hallo_welt():
+    print("Hallo Welt!")
+```
+#### Starte die Zeilennummerierung bei Nummer 42
+```py showLineNumbers=42
+def hallo_welt():
+    print("Hallo Welt!")
+```
+````
+
+<BrowserWindow>
+```py showLineNumbers
+def hallo_welt():
+    print("Hallo Welt!")
+```
+#### Starte die Zeilennummerierung bei Nummer 42
+```py showLineNumbers=42
+def hallo_welt():
+    print("Hallo Welt!")
+```
+</BrowserWindow>
+
+
+## Codeblöcke in Listen
+
+
+Um Codeblöcke in Listen zu verwenden, muss die Einrückung korrekt sein.
+
+````md
+- Erstes Programm  
+  ```py
+  print("Hallo Welt!")
+  ```
+- Zweiter Punkt
+    1. Mit Unterliste
+    2. und mit Codebeispiel  
+       ```py
+       for i in range(5):
+           print(f'Hallo Welt {i}!')
+       ```
+    3. Weiter im Text
+- Dritter Punkt
+````
+
+<BrowserWindow>
+- Erstes Programm  
+  ```py
+  print("Hallo Welt!")
+  ```
+- Zweiter Punkt
+    1. Mit Unterliste
+    2. und mit Codebeispiel  
+       ```py
+       for i in range(5):
+           print(f'Hallo Welt {i}!')
+       ```
+    3. Weiter im Text
+- Dritter Punkt
+</BrowserWindow>
+
+## Codeblöcke mit externen Dateien
+
+Mithilfe des `!!raw-loader`-Plugins von Webpack können Codeblöcke auch aus externen Dateien geladen werden.
+
+````jsx
+import triangles from '!!raw-loader!./assets/triangles.py';
+import CodeBlock from '@theme/CodeBlock';
+
+<CodeBlock language="py" showLineNumbers>
+    {triangles}
+</CodeBlock>
+<CodeBlock language="py" metastring="live_py slim">
+    {triangles}
+</CodeBlock>
+````
+import triangles from '!!raw-loader!./assets/triangles.py';
+
+<BrowserWindow>
+    <CodeBlock language="py" showLineNumbers>
+        {triangles}
+    </CodeBlock>
+    <CodeBlock language="py" metastring="live_py slim">
+        {triangles}
+    </CodeBlock>
+</BrowserWindow>

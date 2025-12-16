@@ -1,0 +1,84 @@
+---
+page_id: 250b7597-b43c-4923-968b-f10fd099fc10
+---
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# Browser Window
+
+```tsx
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+<BrowserWindow>
+    Inhalte...
+</BrowserWindow>
+```
+
+<BrowserWindow>
+    Inhalte...
+</BrowserWindow>
+
+## Optionen
+
+### `url`
+
+```tsx
+<BrowserWindow url="https://example.com">
+    Auf der Seite [example.com](https://example.com) findet man...
+</BrowserWindow>
+```
+
+<BrowserWindow url="https://example.com">
+    Auf der Seite [example.com](https://example.com) findet man...
+</BrowserWindow>
+
+### `href`
+
+Die Adresse wird als Link dargestellt.
+
+```tsx
+<BrowserWindow href="https://example.com">
+    Auf der Seite example.com findet man...
+</BrowserWindow>
+<BrowserWindow href="https://example.com" url="👉 https://example.com">
+    Inhalte...
+</BrowserWindow>
+```
+
+<BrowserWindow href="https://example.com">
+    Auf der Seite example.com findet man...
+</BrowserWindow>
+<BrowserWindow href="https://example.com" url="👉 https://example.com">
+    Inhalte...
+</BrowserWindow>
+
+
+### `minHeight` und `maxHeight`
+
+```tsx
+<BrowserWindow minHeight={200} maxHeight={400}>
+    Inhalte...
+</BrowserWindow>
+<BrowserWindow maxHeight={200}>
+    <div style={{ height: '800px', width: '70%', border: '2px solid red', borderRadius: '5px', padding: '10px' }}>
+        Vieeele Inhalte...
+    </div>
+</BrowserWindow>
+```
+
+<BrowserWindow minHeight={200} maxHeight={400}>
+    Inhalte...
+</BrowserWindow>
+<BrowserWindow maxHeight={200}>
+    <div style={{ height: '800px', width: '70%', border: '2px solid red', borderRadius: '5px', padding: '10px' }}>
+        Vieeele Inhalte...
+    </div>
+</BrowserWindow>
+
+### Weitere Attribute
+
+`style`
+: CSS-Stil für das gesamte Browser-Fenster
+`bodyStyle`
+: CSS-Stil für den Inhaltsbereich
+`className`
+: Zusätzliche CSS-Klasse für das gesamte Browser-Fenster

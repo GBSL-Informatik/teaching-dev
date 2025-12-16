@@ -1,14 +1,23 @@
-import { action, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import iJs, { JsModelType } from './iJs';
 import { JsTypes, JsRoot as JsRootType, toJsSchema, EditLevel } from '../../toJsSchema';
 import iParentable from './iParentable';
 import { toModel } from './toModel';
 
+export interface EditorConfig {
+    numberStep?: number;
+}
+
 class JsRoot extends iParentable<JsRootType> {
     readonly type = 'root';
+    @observable accessor _pristineSize: number = 0;
+    readonly editorConfig: EditorConfig;
 
-    constructor(editLevel?: EditLevel) {
+    constructor(editLevel?: EditLevel, config?: Partial<EditorConfig>) {
         super({ type: 'root', value: [], editLevel: editLevel }, null as any);
+        this.editorConfig = {
+            ...(config || {})
+        };
     }
 
     @action
@@ -21,6 +30,7 @@ class JsRoot extends iParentable<JsRootType> {
         }
         const models = jsSchema.map((js) => toModel(js, this));
         this.setValues(models);
+        this._pristineSize = this._value.length;
     }
 
     @action
@@ -35,7 +45,7 @@ class JsRoot extends iParentable<JsRootType> {
 
     @computed
     get isDirty(): boolean {
-        return this._value.some((value) => value.isDirty);
+        return this._value.length < this._pristineSize || this._value.some((value) => value.isDirty);
     }
 
     @computed

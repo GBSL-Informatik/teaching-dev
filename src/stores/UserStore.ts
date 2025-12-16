@@ -109,11 +109,6 @@ export class UserStore extends iStore<`update-${string}`> {
 
     @computed
     get current(): User | undefined {
-        if (this.root.sessionStore?.authMethod === 'msal') {
-            return this.users.find(
-                (u) => u.email?.toLowerCase() === this.root?.sessionStore?.account?.username?.toLowerCase()
-            );
-        }
         return this.users.find((u) => u.id === this.root.sessionStore?.currentUserId);
     }
 
@@ -124,9 +119,9 @@ export class UserStore extends iStore<`update-${string}`> {
     @computed
     get viewedUserId() {
         if (!this.current?.hasElevatedAccess) {
-            return this.current?.id;
+            return this.current?.id || this.root.sessionStore.currentUserId;
         }
-        return this._viewedUserId || this.current?.id || this.root.sessionStore.userId;
+        return this._viewedUserId || this.current?.id || this.root.sessionStore.currentUserId;
     }
 
     @computed
@@ -181,20 +176,11 @@ export class UserStore extends iStore<`update-${string}`> {
         const res = this.withAbortController('load-user', async (signal) => {
             return currentUser(signal.signal).then((res) => {
                 const currentUser = this.addToStore(res.data);
-                if (currentUser) {
-                    Storage.set('SessionStore', {
-                        user: { ...currentUser.props, role: Role.STUDENT }
-                    });
-                }
                 return currentUser;
             });
-        }).catch(
-            action((e) => {
-                if (this.root.sessionStore.authMethod === 'apiKey') {
-                    this.root.sessionStore.setMsalStrategy();
-                }
-            })
-        );
+        }).catch(() => {
+            console.log('no current user');
+        });
         return res;
     }
 
