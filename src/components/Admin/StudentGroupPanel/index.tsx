@@ -71,15 +71,31 @@ const StudentGroupPanel = observer(() => {
                             let matchPriority = 0;
 
                             if (searchRegex) {
-                                const nameMatch = searchRegex.test(group.name);
+                                // Group name, student name or student email starts with the search filter?
+                                const startsWithMatch =
+                                    group.name.toLowerCase().startsWith(searchFilter.toLowerCase()) ||
+                                    group.students?.some(
+                                        (s) =>
+                                            s.name.toLowerCase().startsWith(searchFilter.toLowerCase()) ||
+                                            s.email.toLowerCase().startsWith(searchFilter.toLowerCase())
+                                    );
+
+                                // Group name matches (RegExp)?
+                                const groupNameMatch = searchRegex.test(group.name);
+
+                                // Student name or email matches (RegExp)?
                                 const studentMatch = group.students?.some(
                                     (s) => searchRegex.test(s.name) || searchRegex.test(s.email)
                                 );
+
+                                // Description matches (RegExp)?
                                 const descriptionMatch = searchRegex.test(group.description ?? '');
 
-                                if (nameMatch) {
-                                    matchPriority = 1;
+                                if (startsWithMatch) {
+                                    matchPriority = 0;
                                 } else if (studentMatch) {
+                                    matchPriority = 1;
+                                } else if (groupNameMatch) {
                                     matchPriority = 2;
                                 } else if (descriptionMatch) {
                                     matchPriority = 3;
