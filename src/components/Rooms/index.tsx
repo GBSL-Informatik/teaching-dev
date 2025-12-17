@@ -20,7 +20,6 @@ import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
 import TextMessages from '../../../packages/tdev/text-message/TextMessages';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
-import RoomComponents from '@tdev-components/Rooms/RoomComponents';
 
 const NoRoom = () => {
     return (
@@ -62,12 +61,13 @@ interface Props {
 }
 const RoomComponent = observer((props: Props): React.ReactNode => {
     const documentStore = useStore('documentStore');
+    const componentStore = useStore('componentStore');
     const { roomProps } = props;
     const [dynamicRoot] = React.useState(
         new DynamicDocumentRootMeta({}, roomProps.id, props.parentDocumentId, documentStore)
     );
     const RoomComp = React.useMemo(
-        () => RoomComponents[roomProps.type as RoomType]?.component,
+        () => componentStore.components.get(roomProps.type as RoomType)?.component,
         [roomProps.type]
     );
     const documentRoot = useDocumentRoot(roomProps.id, dynamicRoot, false, {}, true);
