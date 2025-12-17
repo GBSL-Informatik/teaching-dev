@@ -13,6 +13,9 @@ const getSiteConfig: SiteConfigProvider = () => {
         favicon: 'img/favicon.ico',
         url: 'https://teaching-dev.gbsl.website',
         baseUrl: '/',
+        docs: {
+            path: 'tdev-website/docs'
+        },
         onBrokenLinks: 'throw',
         tdevConfig: {
             excalidraw: {
