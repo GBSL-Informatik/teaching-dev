@@ -16,6 +16,9 @@ const getSiteConfig: SiteConfigProvider = () => {
         docs: {
             path: 'tdev-website/docs'
         },
+        blog: {
+            path: 'tdev-website/blog'
+        },
         onBrokenLinks: 'throw',
         tdevConfig: {
             excalidraw: {
