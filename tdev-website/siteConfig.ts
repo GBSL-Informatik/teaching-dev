@@ -22,7 +22,6 @@ const getSiteConfig: SiteConfigProvider = () => {
         onBrokenLinks: 'throw',
         tdevConfig: {
             excalidraw: {
-                imageMarkupEditor: true,
                 excalidoc: true
             }
         },

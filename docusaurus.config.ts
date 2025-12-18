@@ -90,13 +90,13 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
 
   const excalidrawConfig = siteConfig.tdevConfig?.excalidraw || {};
   let onBrokenImage: OnBrokenMarkdownImagesFunction | undefined = undefined;
-  if (excalidrawConfig.imageMarkupEditor && process.env.NODE_ENV !== 'production') {
+  if (!excalidrawConfig.disableImageMarkupEditor && process.env.NODE_ENV !== 'production') {
     onBrokenImage = (await import('@tdev/excalidoc/ImageMarkupEditor/onNewExcalidrawSketch')).default;
   }
   const loadedPlugins: Config['plugins'] = [];
   if (excalidrawConfig.excalidoc) {
-    const documentProvider = require.resolve('@tdev/excalidoc/register');
     const currentProviders = new Set(siteConfig.apiDocumentProviders || []);
+    const documentProvider = require.resolve('@tdev/excalidoc/register');
     currentProviders.add(documentProvider);
     const {excalidrawPluginConfig} = (await import('@tdev/excalidoc/index'));
     siteConfig.apiDocumentProviders = [...currentProviders];

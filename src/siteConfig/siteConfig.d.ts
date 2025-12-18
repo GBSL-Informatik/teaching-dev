@@ -14,7 +14,7 @@ export interface TdevConfig {
         hideTeachers?: boolean;
     };
     excalidraw: {
-        imageMarkupEditor?: boolean;
+        disableImageMarkupEditor?: boolean;
         excalidoc?: boolean;
     };
 }
