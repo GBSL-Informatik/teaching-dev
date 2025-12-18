@@ -77,7 +77,7 @@ const DirTree = observer((props: DirProps) => {
                         text={confirmMove ? 'Ja' : ''}
                         color={'primary'}
                         icon={
-                            props.fileType === DocumentType.Dir
+                            props.fileType === 'dir'
                                 ? confirmMove
                                     ? mdiFolderMove
                                     : mdiFolderMoveOutline

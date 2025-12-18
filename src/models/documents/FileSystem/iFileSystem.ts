@@ -17,11 +17,11 @@ export interface MetaInit {
     name?: string;
 }
 
-type SystemType = DocumentType.File | DocumentType.Dir;
+type SystemType = 'file' | 'dir';
 
 export const DefaultName = {
-    [DocumentType.File]: 'Dokument',
-    [DocumentType.Dir]: 'Ordner'
+    ['file']: 'Dokument',
+    ['dir']: 'Ordner'
 };
 
 export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
@@ -54,7 +54,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     @action
     setData(
-        data: Partial<TypeDataMapping[DocumentType.File] | TypeDataMapping[DocumentType.Dir]>,
+        data: Partial<TypeDataMapping['file'] | TypeDataMapping['dir']>,
         from: Source,
         updatedAt?: Date
     ): void {

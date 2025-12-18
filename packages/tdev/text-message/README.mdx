@@ -1,0 +1,79 @@
+---
+page_id: 431e99d2-e8a8-420e-84aa-d52985fbd186
+tags:
+  - '@tdev/'
+  - dynamic-documents
+---
+
+import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoots';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# text-message
+
+Textnachrichten ermöglichen einen simplen Chat - dies ist eher ein PoC und die Basis für weitere, unterrichtsrelevante Interaktionsmöglichkeiten.
+
+
+```mdx
+import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoots';
+
+<DynamicDocumentRoots id="732a4df4-26b0-4809-a71b-70d20ccd21a8" />
+```
+
+<BrowserWindow>
+    <DynamicDocumentRoots id="732a4df4-26b0-4809-a71b-70d20ccd21a8" />
+</BrowserWindow>
+
+
+## Technischer Hintergrund
+
+Die `DocumentRoot` wird verwendet, um in MDX-Dokumenten bspw. Antworten User-Basiert abzuspeichern - es ist das Elternelement für alle Antworten und jede User:in kann dann ein eigenes `Document` hinzufügen. Über die `DocumentRoot` werden auch die Berechtigungen festgelegt.
+
+Für interaktive Anwendung (wie einen (Gruppen)-Chat), die nicht ganze Klassen betreffen, braucht es dynamisch generierte `DocumentRoots`. Um diese dynamischen `DocumentRoots` wiederzufinden, wird ein Dokument `DynamicDocumentRoots` erzeugt und in diesem die `DocumentRoots` abgespeichert. Das mentale Modell dazu: Es werden Räume erzeugt, die von einer `DocumentRoot` verwaltet werden, die Raum-Logik entspricht dann jedoch direkt der `DocumentRoot`-Logik. Dadurch funktionieren sowohl "Live-Änderungen" wie auch die Berechtigungen.
+
+Jeder Raum hat einen Namen und eine Raum-Typ (bspw. für den Chat ist dies `text_messages`).
+
+Ein mögliches Beispiel für die Struktur der Daten des `DynamicDocumentRoots`:
+
+```json
+{
+    "documentRoots": [
+        {
+            "id": "dbc4e980-51d9-4036-b8f5-c26d07fa6dd9",
+            "name": "FooBar",
+            "type": "text_messages"
+        },
+        {
+            "id": "c35f8a75-a0a7-4a82-8e7f-da53e8e4f9b4",
+            "name": "🧁🍰🎂",
+            "type": "text_messages"
+        }
+    ]
+}
+```
+
+`id`
+: Die eindeutige ID des dynamischen `DocumentRoot`
+`name`
+: Der Namen des Raums. Dieser wird bspw. im Chat angezeigt.
+`type`
+: Der Typ des Raums. Dieser bestimmt, welche Komponenten und welche Logik für den Raum verwendet wird.
+
+:::warning[Aktuelle Einschränkungen]
+Bei der Erstellung eines `dynamic_document_roots` werden die Berechtigungen auf `access=RO_DocumentRoot` und `sharedAccess=RW_DocumentRoot` gesetzt - was vernünftige Standards sind. Allerdings kann dadurch nicht direkt ein Dokument erzeugt und hinzugefügt werden, da auch für ADmins die Berechtigungen nur `RO` sind.
+### Lösung
+Eine Admin-Gruppe muss in der API bspw. als ENV-Variable hinterlegt werden und diese Gruppe wird standardmässig zu jeder `DocumentRoot` mit `RW_GroupPermission` hinzugefügt.
+:::
+
+
+## Installation
+
+:::info[`siteConfig.ts`]
+
+```ts
+const config: SiteConfigProvider = {
+    apiDocumentProviders: [
+        require.resolve('@tdev/text-message/register'),
+    ]
+}
+```
+:::

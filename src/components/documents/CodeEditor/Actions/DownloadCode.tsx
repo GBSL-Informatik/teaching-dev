@@ -6,7 +6,7 @@ import { DocumentType } from '@tdev-api/document';
 import { mdiDownload } from '@mdi/js';
 
 const DownloadCode = observer((props: { title: string }) => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
 
     return (
         <Button

@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { mdiFileCodeOutline, mdiFileDocumentEditOutline, mdiFileEdit } from '@mdi/js';
 
 const ShowRaw = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
 
     return (
         <Button

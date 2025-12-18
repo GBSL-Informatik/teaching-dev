@@ -13,17 +13,17 @@ interface SelfCheckContextType {
 
 export const SelfCheckContext = React.createContext<SelfCheckContextType | undefined>(undefined);
 
-export class SelfCheckStateSideEffect extends iSideEffect<DocumentType.TaskState> {
+export class SelfCheckStateSideEffect extends iSideEffect<'task_state'> {
     constructor(
         private readonly authorId: string,
-        private readonly solutionDocRoot: DocumentRoot<DocumentType.Solution>
+        private readonly solutionDocRoot: DocumentRoot<'solution'>
     ) {
         super('SelfCheckStateSideEffect');
     }
 
     @computed
     get transformer() {
-        return (docData: TypeDataMapping[DocumentType.TaskState]) => {
+        return (docData: TypeDataMapping['task_state']) => {
             const authorsPermissionOnSolution = this.solutionDocRoot.permissionForUser(this.authorId);
 
             if (docData.state !== SelfCheckStateType.Reviewing) {

@@ -21,7 +21,7 @@ export const useMdxComment = (
         return null;
     }
     const comments = documentRoot.documents.filter(
-        (doc) => doc.type === DocumentType.MdxComment && doc.authorId === userStore.viewedUserId
+        (doc) => doc.type === 'mdx_comment' && doc.authorId === userStore.viewedUserId
     ) as MdxComment[];
     if (comments.length === 0) {
         return null;

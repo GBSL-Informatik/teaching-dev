@@ -13,7 +13,7 @@ import _ from 'es-toolkit/compat';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { DocumentType } from '@tdev-api/document';
 import '@excalidraw/excalidraw/index.css';
-import { MetaInit } from '@tdev/excalidoc/model';
+import { MetaInit } from '@tdev/excalidoc/model/ModelMeta';
 export interface Props extends MetaInit {
     Lib: typeof ExcalidrawLib;
     documentId: string;
@@ -26,7 +26,7 @@ export interface Props extends MetaInit {
 
 const Editor = observer((props: Props) => {
     const { Lib, documentId } = props;
-    const excalidoc = useDocument<DocumentType.Excalidoc>(documentId);
+    const excalidoc = useDocument<'excalidoc'>(documentId);
     const renderedSceneVersion = React.useRef(0);
     const initialized = React.useRef<boolean>(false);
     const apiSceneVersion = React.useRef(0);

@@ -14,20 +14,20 @@ import { Color } from '@tdev-components/shared/Colors';
 
 export interface MetaInit extends MdxCommentData {}
 
-export class ModelMeta extends TypeMeta<DocumentType.MdxComment> {
-    readonly type = DocumentType.MdxComment;
+export class ModelMeta extends TypeMeta<'mdx_comment'> {
+    readonly type = 'mdx_comment';
     readonly nr: number;
     readonly commentNr: number;
     readonly nodeType: string;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.MdxComment);
+        super('mdx_comment');
         this.nr = props.nr || 0;
         this.commentNr = props.commentNr || 0;
         this.nodeType = props.type || '';
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.MdxComment] {
+    get defaultData(): TypeDataMapping['mdx_comment'] {
         return {
             type: this.nodeType,
             nr: this.nr,
@@ -38,7 +38,7 @@ export class ModelMeta extends TypeMeta<DocumentType.MdxComment> {
     }
 }
 
-class MdxComment extends iDocument<DocumentType.MdxComment> {
+class MdxComment extends iDocument<'mdx_comment'> {
     @observable accessor nodeType: string;
     @observable accessor nr: number;
     @observable accessor commentNr: number;
@@ -47,7 +47,7 @@ class MdxComment extends iDocument<DocumentType.MdxComment> {
 
     @observable accessor optionsOpen: boolean = false;
 
-    constructor(props: DocumentProps<DocumentType.MdxComment>, store: DocumentStore) {
+    constructor(props: DocumentProps<'mdx_comment'>, store: DocumentStore) {
         super(props, store);
         this.nr = props.data.nr;
         this.commentNr = props.data.commentNr;
@@ -57,7 +57,7 @@ class MdxComment extends iDocument<DocumentType.MdxComment> {
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.MdxComment], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['mdx_comment'], from: Source, updatedAt?: Date): void {
         this.nr = data.nr;
         this.commentNr = data.commentNr;
         this.nodeType = data.type;
@@ -71,7 +71,7 @@ class MdxComment extends iDocument<DocumentType.MdxComment> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.MdxComment] {
+    get data(): TypeDataMapping['mdx_comment'] {
         return {
             nr: this.nr,
             commentNr: this.commentNr,
@@ -83,7 +83,7 @@ class MdxComment extends iDocument<DocumentType.MdxComment> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.MdxComment) {
+        if (this.root?.type === 'mdx_comment') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

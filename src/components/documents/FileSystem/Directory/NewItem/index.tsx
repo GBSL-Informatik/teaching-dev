@@ -30,7 +30,7 @@ const withFile = async (store: DocumentStore, rootId: string, parentId: string, 
     return store.create({
         documentRootId: rootId,
         parentId: parentId,
-        type: DocumentType.File,
+        type: 'file',
         data: {
             isOpen: true,
             name: name
@@ -96,7 +96,7 @@ const NewItem = observer((props: Props) => {
                                         return documentStore.create({
                                             documentRootId: rootId,
                                             parentId: file.id,
-                                            type: DocumentType.Script,
+                                            type: 'script',
                                             data: {
                                                 code: '\n'
                                             }
@@ -121,7 +121,7 @@ const NewItem = observer((props: Props) => {
                                         return documentStore.create({
                                             documentRootId: rootId,
                                             parentId: file.id,
-                                            type: DocumentType.QuillV2,
+                                            type: 'quill_v2',
                                             data: {
                                                 delta: { ops: [{ insert: '\n' }] } as Delta
                                             }
@@ -146,7 +146,7 @@ const NewItem = observer((props: Props) => {
                                         return documentStore.create({
                                             documentRootId: rootId,
                                             parentId: file.id,
-                                            type: DocumentType.Excalidoc,
+                                            type: 'excalidoc',
                                             data: {
                                                 elements: [],
                                                 files: {},
@@ -170,7 +170,7 @@ const NewItem = observer((props: Props) => {
                             await documentStore.create({
                                 documentRootId: rootId,
                                 parentId: directory.id,
-                                type: DocumentType.Dir,
+                                type: 'dir',
                                 data: {
                                     name: name || 'Ordner',
                                     isOpen: true

@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { type LogMessage } from '@tdev-models/documents/Script';
 
 const BrythonCommunicator = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const ref = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
         const { current } = ref;

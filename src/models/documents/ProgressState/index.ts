@@ -22,8 +22,8 @@ export interface MetaInit {
 
 export const DEFAULT_PROGRESS: number = 0;
 
-export class ModelMeta extends TypeMeta<DocumentType.ProgressState> {
-    readonly type = DocumentType.ProgressState;
+export class ModelMeta extends TypeMeta<'progress_state'> {
+    readonly type = 'progress_state';
     readonly readonly: boolean;
     readonly default: number;
     readonly preventTogglingFutureSteps: boolean;
@@ -34,7 +34,7 @@ export class ModelMeta extends TypeMeta<DocumentType.ProgressState> {
     readonly keepPreviousStepsOpen: boolean;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.ProgressState, props.readonly ? Access.RO_User : undefined, props.pagePosition);
+        super('progress_state', props.readonly ? Access.RO_User : undefined, props.pagePosition);
         this.default = props.default ?? DEFAULT_PROGRESS;
         this.readonly = !!props.readonly;
         if (props.allOpen) {
@@ -50,14 +50,14 @@ export class ModelMeta extends TypeMeta<DocumentType.ProgressState> {
         this.needsConfirm = !this.canStepBack || !!props.confirm;
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.ProgressState] {
+    get defaultData(): TypeDataMapping['progress_state'] {
         return {
             progress: this.default
         };
     }
 }
 
-class ProgressState extends iDocument<DocumentType.ProgressState> {
+class ProgressState extends iDocument<'progress_state'> {
     @observable accessor _progress: number = 0;
     @observable accessor _viewedIndex: number | undefined = undefined;
     @observable accessor scrollTo: boolean = false;
@@ -66,7 +66,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
 
     steps = observable.array<Step>();
 
-    constructor(props: DocumentProps<DocumentType.ProgressState>, store: DocumentStore) {
+    constructor(props: DocumentProps<'progress_state'>, store: DocumentStore) {
         super(props, store);
         this._progress = props.data?.progress ?? 0;
     }
@@ -91,7 +91,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.ProgressState], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['progress_state'], from: Source, updatedAt?: Date): void {
         if (!RWAccess.has(this.root?.permission)) {
             return;
         }
@@ -114,7 +114,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.ProgressState] {
+    get data(): TypeDataMapping['progress_state'] {
         return {
             progress: this._progress
         };
@@ -154,7 +154,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
             this.steps.length ||
             (
                 (this.root?.documents || []).find(
-                    (ps) => ps.type === DocumentType.ProgressState && ps?.steps.length > 0
+                    (ps) => ps.type === 'progress_state' && ps?.steps.length > 0
                 ) as ProgressState | undefined
             )?.steps?.length ||
             0
@@ -224,7 +224,7 @@ class ProgressState extends iDocument<DocumentType.ProgressState> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.ProgressState) {
+        if (this.root?.type === 'progress_state') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

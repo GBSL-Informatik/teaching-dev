@@ -17,7 +17,7 @@ const ALIAS_LANG_MAP_ACE = {
 };
 
 const EditorAce = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const eRef = React.useRef<AceEditor>(null);
     const { aceTheme } = useCodeTheme();
     React.useEffect(() => {

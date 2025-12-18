@@ -8,26 +8,26 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-// TODO: replace all DocumentType.Solution values to your new models Type
-export class ModelMeta extends TypeMeta<DocumentType.Solution> {
-    readonly type = DocumentType.Solution;
+// TODO: replace all 'solution' values to your new models Type
+export class ModelMeta extends TypeMeta<'solution'> {
+    readonly type = 'solution';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.Solution, props.readonly ? Access.RO_User : undefined);
+        super('solution', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.Solution] {
+    get defaultData(): TypeDataMapping['solution'] {
         return {};
     }
 }
 
-class Solution extends iDocument<DocumentType.Solution> {
-    constructor(props: DocumentProps<DocumentType.Solution>, store: DocumentStore) {
+class Solution extends iDocument<'solution'> {
+    constructor(props: DocumentProps<'solution'>, store: DocumentStore) {
         super(props, store);
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.Solution], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['solution'], from: Source, updatedAt?: Date): void {
         // TODO: change state according to data
         if (from === Source.LOCAL) {
             this.save();
@@ -37,13 +37,13 @@ class Solution extends iDocument<DocumentType.Solution> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.Solution] {
+    get data(): TypeDataMapping['solution'] {
         return {};
     }
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.Solution) {
+        if (this.root?.type === 'solution') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

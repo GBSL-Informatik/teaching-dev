@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { mdiAnimationPlay, mdiDownload } from '@mdi/js';
 
 const Turtle = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     return (
         <Graphics
             controls={

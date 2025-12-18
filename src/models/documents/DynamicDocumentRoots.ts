@@ -16,31 +16,31 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.DynamicDocumentRoots> {
-    readonly type = DocumentType.DynamicDocumentRoots;
+export class ModelMeta extends TypeMeta<'dynamic_document_roots'> {
+    readonly type = 'dynamic_document_roots';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.DynamicDocumentRoots, props.readonly ? Access.RO_User : undefined);
+        super('dynamic_document_roots', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.DynamicDocumentRoots] {
+    get defaultData(): TypeDataMapping['dynamic_document_roots'] {
         return {
             documentRoots: []
         };
     }
 }
 
-class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> {
-    readonly type = DocumentType.DynamicDocumentRoots;
+class DynamicDocumentRoots extends iDocument<'dynamic_document_roots'> {
+    readonly type = 'dynamic_document_roots';
     dynamicDocumentRoots = observable.array<DynamicDocumentRoot>([]);
 
-    constructor(props: DocumentProps<DocumentType.DynamicDocumentRoots>, store: DocumentStore) {
+    constructor(props: DocumentProps<'dynamic_document_roots'>, store: DocumentStore) {
         super(props, store);
         this.dynamicDocumentRoots.replace(props.data.documentRoots);
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.DynamicDocumentRoots], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['dynamic_document_roots'], from: Source, updatedAt?: Date): void {
         if (!data) {
             return;
         }
@@ -147,22 +147,22 @@ class DynamicDocumentRoots extends iDocument<DocumentType.DynamicDocumentRoots> 
         });
     }
 
-    get data(): TypeDataMapping[DocumentType.DynamicDocumentRoots] {
+    get data(): TypeDataMapping['dynamic_document_roots'] {
         return {
             documentRoots: this.dynamicDocumentRoots.slice()
         };
     }
 
     @computed
-    get linkedDynamicDocumentRoots(): DocumentRoot<DocumentType.DynamicDocumentRoot>[] {
+    get linkedDynamicDocumentRoots(): DocumentRoot<'dynamic_document_root'>[] {
         return this.dynamicDocumentRoots
-            .map((dr) => this.store.root.documentRootStore.find<DocumentType.DynamicDocumentRoot>(dr.id))
+            .map((dr) => this.store.root.documentRootStore.find<'dynamic_document_root'>(dr.id))
             .filter((d) => !!d);
     }
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.DynamicDocumentRoots) {
+        if (this.root?.type === 'dynamic_document_roots') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

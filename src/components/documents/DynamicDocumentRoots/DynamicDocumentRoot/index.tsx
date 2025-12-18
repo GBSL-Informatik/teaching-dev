@@ -17,7 +17,7 @@ import {
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { default as DynamicDocumentRootMeta } from '@tdev-models/documents/DynamicDocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import RoomTypeSelector, { RoomTypeLabel } from '../RoomTypeSelector';
+import RoomTypeSelector from '../RoomTypeSelector';
 
 interface Props extends MetaInit {
     id: string;
@@ -26,6 +26,7 @@ interface Props extends MetaInit {
 
 const DynamicDocumentRoot = observer((props: Props) => {
     const documentStore = useStore('documentStore');
+    const componentStore = useStore('componentStore');
     const [meta] = React.useState(
         new DynamicDocumentRootMeta({}, props.id, props.dynamicRootsDocumentId, documentStore)
     );
@@ -72,7 +73,7 @@ const DynamicDocumentRoot = observer((props: Props) => {
                 <RoomTypeSelector dynamicRoot={meta} />
             ) : (
                 <div className={clsx(styles.roomType, 'badge', 'badge--info')}>
-                    {meta.roomType ? RoomTypeLabel[meta.roomType] : '-'}
+                    {meta.roomType ? (componentStore.components.get(meta.roomType)?.name ?? '-') : '-'}
                 </div>
             )}
             <Button

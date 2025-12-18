@@ -6,7 +6,7 @@ import { mdiRestore } from '@mdi/js';
 import { observer } from 'mobx-react-lite';
 
 const Reset = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
 
     const onReset = () => {
         const shouldReset = window.confirm(

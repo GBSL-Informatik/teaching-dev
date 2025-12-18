@@ -28,7 +28,7 @@ const AddComment = observer((props: Props) => {
                     documentStore
                         .create({
                             documentRootId: props.pageId,
-                            type: DocumentType.MdxComment,
+                            type: 'mdx_comment',
                             data: {
                                 commentNr: props.commentNr,
                                 type: props.type,
@@ -42,7 +42,7 @@ const AddComment = observer((props: Props) => {
                                 return documentStore.create({
                                     documentRootId: props.pageId,
                                     parentId: comment.id,
-                                    type: DocumentType.QuillV2,
+                                    type: 'quill_v2',
                                     data: {
                                         delta: { ops: [{ insert: '\n' }] } as Delta
                                     }

@@ -23,9 +23,9 @@ type AnswerProps = Props &
 const Answer = observer((props: AnswerProps) => {
     switch (props.type) {
         case 'text':
-        case DocumentType.QuillV2:
+        case 'quill_v2':
             return <QuillV2 {...(props as React.ComponentProps<typeof QuillV2>)} />;
-        case DocumentType.String:
+        case 'string':
             return (
                 <String
                     {...(props as React.ComponentProps<typeof String>)}
@@ -35,10 +35,10 @@ const Answer = observer((props: AnswerProps) => {
                 />
             );
         case 'progress':
-        case DocumentType.ProgressState:
+        case 'progress_state':
             return <ProgressState {...(props as React.ComponentProps<typeof ProgressState>)} />;
         case 'state':
-        case DocumentType.TaskState:
+        case 'task_state':
             return <TaskState {...props} />;
     }
     return (
