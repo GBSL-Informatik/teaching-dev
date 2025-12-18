@@ -63,7 +63,7 @@ const getSiteConfig: SiteConfigProvider = () => {
                 ]
             }
         ],
-        onBrokenLinks: 'warn',
+        onBrokenLinks: 'throw',
         tdevConfig: {
             excalidraw: {
                 excalidoc: true
