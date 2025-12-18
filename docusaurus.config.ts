@@ -45,10 +45,12 @@ import extractPackageDocs from './src/siteConfig/extractPackageDocs';
 
 const withSiteConfig = async (): Promise<SiteConfig> => {
   if (process.env.SITE_CONFIG_PATH) {
+    console.log(`Using site config from ${process.env.SITE_CONFIG_PATH}`);
     const pathToConfig = path.resolve(process.cwd(), process.env.SITE_CONFIG_PATH);
     const getConfig = await import(pathToConfig).then((mod) => mod.default);
     return getConfig();
   } else {
+    console.log(`Using site config from default './siteConfig'`);
     const getConfig = await import('./siteConfig').then((mod) => mod.default);
     return getConfig();
   }
