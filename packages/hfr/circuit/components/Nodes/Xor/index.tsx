@@ -5,7 +5,7 @@ import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
-import FlowNode from '@tdev/circuit/models/FlowNode';
+import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
 import NodeWrapper from '../NodeWrapper';
 

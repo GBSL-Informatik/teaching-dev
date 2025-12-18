@@ -14,7 +14,7 @@ import {
     mdiToggleSwitchOff,
     mdiToggleSwitchOffOutline
 } from '@mdi/js';
-import FlowNode from '@tdev/circuit/models/FlowNode';
+import FlowNode from '@hfr/circuit/models/FlowNode';
 import { Source } from '@tdev-models/iDocument';
 import { NodeType } from '@tdev-api/document';
 import NodeWrapper from '../NodeWrapper';

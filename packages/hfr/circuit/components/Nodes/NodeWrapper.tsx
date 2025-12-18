@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import FlowNode from '@tdev/circuit/models/FlowNode';
+import FlowNode from '@hfr/circuit/models/FlowNode';
 import { observer } from 'mobx-react-lite';
 
 interface Props {

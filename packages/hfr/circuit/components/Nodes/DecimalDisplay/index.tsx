@@ -5,7 +5,7 @@ import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position, useUpdateNodeInternals } from '@xyflow/react';
-import FlowNode from '@tdev/circuit/models/FlowNode';
+import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
 import Button from '@tdev-components/shared/Button';
 import { mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
@@ -24,7 +24,11 @@ const DecimalDisplayNode = observer((props: NodeProps<DecimalDisplayNode>) => {
     }
     const pins = doc.deriver.pins;
     return (
-        <NodeWrapper node={doc} className={styles.decimal} style={{ ['--data-size' as any]: `${pins * PIN_HEIGHT}px` }}>
+        <NodeWrapper
+            node={doc}
+            className={styles.decimal}
+            style={{ ['--data-size' as any]: `${pins * PIN_HEIGHT}px` }}
+        >
             <div className={clsx(styles.pins)}>
                 {Array.from({ length: pins }).map((_, i) => {
                     const handle = i === 0 ? 'a' : i === 1 ? 'b' : `p${i}`;

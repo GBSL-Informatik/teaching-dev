@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position, useUpdateNodeInternals } from '@xyflow/react';
 import { mdiCarBattery, mdiMinusCircle, mdiPlusCircle } from '@mdi/js';
-import FlowNode from '@tdev/circuit/models/FlowNode';
+import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';

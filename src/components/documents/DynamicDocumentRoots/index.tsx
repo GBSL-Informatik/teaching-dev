@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 import { MetaInit, ModelMeta } from '@tdev-models/documents/DynamicDocumentRoots';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { Access, RoomType } from '@tdev-api/document';
+import { Access } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import AddDynamicDocumentRoot from './AddDynamicDocumentRoot';
 import DynamicDocumentRoot from './DynamicDocumentRoot';

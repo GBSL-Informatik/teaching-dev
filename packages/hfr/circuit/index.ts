@@ -1,5 +1,5 @@
-import FlowNode from '@tdev/circuit/models/FlowNode';
-import FlowEdge from '@tdev/circuit/models/FlowEdge';
+import FlowNode from '@hfr/circuit/models/FlowNode';
+import FlowEdge from '@hfr/circuit/models/FlowEdge';
 import { Edge, Node } from '@xyflow/react';
 import CircuitRoom from './models/CircuitRoom';
 

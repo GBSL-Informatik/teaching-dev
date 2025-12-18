@@ -69,6 +69,7 @@ const RoomSwitcher = observer((props: RoomSwitcherProps) => {
     const socketStore = useStore('socketStore');
     const componentStore = useStore('componentStore');
     const RoomComp = React.useMemo(() => componentStore.components.get(roomType)?.component, [roomType]);
+    console.log('RoomComp', roomType, RoomComp);
     React.useEffect(() => {
         socketStore.joinRoom(documentRoot.id);
         return () => {

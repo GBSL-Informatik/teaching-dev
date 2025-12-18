@@ -1,5 +1,5 @@
 {
-    "name": "@tdev/circuit",
+    "name": "@hfr/circuit",
     "version": "1.0.0",
     "main": "index.ts",
     "types": "index.ts",
@@ -13,6 +13,7 @@
         "vitest": "*"
     },
     "peerDependencies": {
-        "@tdev/core": "1.0.0"
+        "@tdev/core": "1.0.0",
+        "es-toolkit": "*"
     }
 }
