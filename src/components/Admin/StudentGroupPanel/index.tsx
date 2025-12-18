@@ -4,7 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
-import { mdiMagnify, mdiPlusCircleOutline, mdiRestore } from '@mdi/js';
+import { mdiCloseCircleOutline, mdiMagnify, mdiPlusCircleOutline, mdiRestore } from '@mdi/js';
 import StudentGroup from '@tdev-components/StudentGroup';
 import _ from 'es-toolkit/compat';
 import { action } from 'mobx';
@@ -55,7 +55,7 @@ const StudentGroupPanel = observer(() => {
                             onClick={() => {
                                 setSearchFilter('');
                             }}
-                            icon={mdiRestore}
+                            icon={mdiCloseCircleOutline}
                             size={0.8}
                             noBorder
                             color="secondary"

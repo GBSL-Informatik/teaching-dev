@@ -17,7 +17,7 @@ interface AddUserLineProps {
     showAsSecondary: boolean;
 }
 
-const AddUserLine = ({ idx, user, group, showAsSecondary: showAsSecondary }: AddUserLineProps) => {
+const AddUserLine = observer(({ idx, user, group, showAsSecondary: showAsSecondary }: AddUserLineProps) => {
     return (
         <div
             key={idx}
@@ -48,7 +48,7 @@ const AddUserLine = ({ idx, user, group, showAsSecondary: showAsSecondary }: Add
             </div>
         </div>
     );
-};
+});
 
 const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
     const userStore = useStore('userStore');
@@ -59,7 +59,7 @@ const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
         setSearchRegex(new RegExp(searchFilter, 'i'));
     }, [searchFilter]);
 
-    const group: StudentGroup = props.studentGroup;
+    const group = props.studentGroup;
     const users = userStore.users.filter((user) => searchRegex.test(user.searchTerm));
     const usersInParentGroup = users.filter((user) => group.parent?.userIds.has(user.id));
     const otherUsers = users.filter((user) => !group.parent?.userIds.has(user.id));
