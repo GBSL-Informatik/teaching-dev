@@ -1,0 +1,95 @@
+---
+page_id: 3139de4d-8bd6-4bed-978e-a342519d7c52
+---
+import Directory from '@tdev-components/documents/FileSystem/Directory';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# Dateien und Ordner
+
+```md
+import Directory from '@tdev-components/documents/FileSystem/Directory';
+
+<Directory name="Ordner" id="1e79cf9a-b890-4d9e-a5fe-e4b372e233c6"/>
+```
+
+<BrowserWindow>
+    <Directory name="Ordner" id="1e79cf9a-b890-4d9e-a5fe-e4b372e233c6"/>
+</BrowserWindow>
+
+## Installation
+
+::::info[Code-Ordner kopieren]
+- `src/models/documents/FileSystem`
+- `src/components/documents/FileSystem`
+
+:::warning[Abhängigkeiten]
+Standardmässig werden alle verfügbaren Dateitypen unterstützt. Ist ein Dokumententyp (bspw. `excalidoc`) nicht verfügbar, muss dieser entfernt werden.
+:::
+::::
+
+:::info[Models]
+
+```tsx title="src/api/document.ts"
+
+export enum DocumentType {
+    /* ... */
+    Dir = 'dir',
+    File = 'file',
+}
+
+export interface DirData {
+    name: string;
+    isOpen: boolean;
+}
+
+export interface FileData {
+    name: string;
+    isOpen: boolean;
+}
+export interface TypeDataMapping {
+    /* ... */
+    ['dir']: DirData;
+    ['file']: FileData;
+}
+
+export interface TypeModelMapping {
+    /* ... */
+    ['dir']: Directory;
+    ['file']: File;
+}
+
+export type DocumentTypes =
+    /* ... */
+    | Directory
+    | File
+```
+:::
+
+:::info[Stores]
+
+```tsx title="src/stores/DocumentStore.ts" {4-7}
+export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
+    switch (data.type) {
+        /* ... */
+        case 'dir':
+            return new Directory(data as DocumentProps<'dir'>, store);
+        case 'file':
+            return new File(data as DocumentProps<'file'>, store);
+    }
+}
+```
+
+```ts title="src/stores/SocketDataStore.ts" {4}
+/**
+ * Records that should be created when a IoEvent.NEW_RECORD event is received.
+ */
+const RecordsToCreate = new Set<DocumentType>(['dir', 'file'/* ... */]);
+/* ... */
+```
+:::
+
+:::warning[Ordner und Dateien verschieben]
+Ordner und Dateien können innerhalb derselben `DocumentRoot` verschoben werden. Dies bedarf jedoch folgende __Erlaubte Aktionen__ im [Admin Panel](/admin?panel=allowedActions)
+
+![--width=250px](./images/move-files-and-folders.jpg)
+:::

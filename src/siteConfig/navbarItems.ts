@@ -6,6 +6,12 @@ export const gallery: NavbarItem = {
     position: 'left'
 };
 
+export const docs: NavbarItem = {
+    to: '/docs',
+    label: 'Unterlagen',
+    position: 'left'
+};
+
 export const blog: NavbarItem = { to: '/blog', label: 'Blog', position: 'left' };
 
 export const cms: NavbarItem = {

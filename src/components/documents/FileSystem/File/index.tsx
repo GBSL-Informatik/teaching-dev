@@ -15,7 +15,6 @@ import {
 } from '@mdi/js';
 import SyncStatus from '../../../SyncStatus';
 import { DocumentType } from '@tdev-api/document';
-import CodeEditorComponent from '../../CodeEditor';
 import { QuillV2Component } from '../../QuillV2';
 import Actions from '../Actions';
 import Name from '../Name';
@@ -26,8 +25,6 @@ import {
     mdiExcalidraw,
     mdiExcalidrawOutline
 } from '@tdev/excalidoc/Component';
-import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
-import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
 import CodeEditorSelector from './CodeEditorSelector';
 
 interface Props {
@@ -36,11 +33,11 @@ interface Props {
 
 const getColor = (type?: DocumentType) => {
     switch (type) {
-        case DocumentType.QuillV2:
+        case 'quill_v2':
             return 'var(--ifm-color-blue)';
-        case DocumentType.Script:
+        case 'script':
             return 'rgb(19, 165, 0)';
-        case DocumentType.Excalidoc:
+        case 'excalidoc':
             return ExcalidrawColor;
         default:
             return undefined;
@@ -49,11 +46,11 @@ const getColor = (type?: DocumentType) => {
 
 export const getIcon = (type?: DocumentType) => {
     switch (type) {
-        case DocumentType.QuillV2:
+        case 'quill_v2':
             return mdiFileDocumentOutline;
-        case DocumentType.Script:
+        case 'script':
             return mdiFileCodeOutline;
-        case DocumentType.Excalidoc:
+        case 'excalidoc':
             return mdiExcalidrawOutline;
         default:
             return mdiFileOutline;
@@ -62,11 +59,11 @@ export const getIcon = (type?: DocumentType) => {
 
 const getOpenIcon = (type?: DocumentType) => {
     switch (type) {
-        case DocumentType.QuillV2:
+        case 'quill_v2':
             return mdiFileDocument;
-        case DocumentType.Script:
+        case 'script':
             return mdiFileCode;
-        case DocumentType.Excalidoc:
+        case 'excalidoc':
             return mdiExcalidraw;
         default:
             return mdiFile;
@@ -100,13 +97,11 @@ const File = observer((props: Props) => {
             <div className={clsx(shared.content, styles.content)}>
                 {file.document && file.isOpen && (
                     <>
-                        {file.document.type === DocumentType.Script && (
-                            <CodeEditorSelector script={file.document} />
-                        )}
-                        {file.document.type === DocumentType.QuillV2 && (
+                        {file.document.type === 'script' && <CodeEditorSelector script={file.document} />}
+                        {file.document.type === 'quill_v2' && (
                             <QuillV2Component quillDoc={file.document} className={styles.quill} />
                         )}
-                        {file.document.type === DocumentType.Excalidoc && (
+                        {file.document.type === 'excalidoc' && (
                             <ExcalidocComponent
                                 documentId={file.document.id}
                                 height="80vh"

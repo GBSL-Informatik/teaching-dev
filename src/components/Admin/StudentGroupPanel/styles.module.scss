@@ -1,3 +1,39 @@
+.controls {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    width: 100%;
+    margin-bottom: 0.5em;
+    flex-wrap: wrap;
+
+    .searchBox {
+        display: flex;
+        align-items: center;
+        justify-content: stretch;
+        flex-grow: 1;
+
+        .searchInput {
+            display: flex;
+            position: relative;
+            align-items: stretch;
+            width: 100%;
+
+            .btnResetContainer {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+            }
+        }
+    }
+}
+
+.hidden {
+    visibility: hidden;
+}
+
 .studentGroups {
     display: flex;
     flex-direction: row;

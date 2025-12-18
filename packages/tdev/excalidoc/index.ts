@@ -1,5 +1,22 @@
 import path from 'path';
 import type { PluginConfig, PluginModule } from '@docusaurus/types';
+import type { BinaryFiles } from '@excalidraw/excalidraw/types';
+import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import Excalidoc from './model';
+export interface ExcaliData {
+    files: BinaryFiles;
+    elements: readonly ExcalidrawElement[];
+    image: string;
+}
+
+declare module '@tdev-api/document' {
+    export interface TypeDataMapping {
+        excalidoc: ExcaliData;
+    }
+    export interface TypeModelMapping {
+        excalidoc: Excalidoc;
+    }
+}
 
 export const excalidrawPluginConfig: PluginConfig = (() => {
     return {

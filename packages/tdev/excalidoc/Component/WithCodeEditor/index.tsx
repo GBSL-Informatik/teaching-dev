@@ -9,7 +9,7 @@ import Loader from '@tdev-components/Loader';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import Image from '../Preview/Image';
 import { Source } from '@tdev-models/iDocument';
-import { ModelMeta } from '@tdev/excalidoc/model';
+import { ModelMeta } from '@tdev/excalidoc/model/ModelMeta';
 
 const ExcalidocWithCodeEditor = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));

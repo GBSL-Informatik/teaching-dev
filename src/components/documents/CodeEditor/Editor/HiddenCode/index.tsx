@@ -14,7 +14,7 @@ interface Props {
 }
 
 const HiddenCode = observer((props: Props) => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const [show, setShow] = React.useState(false);
     const code = props.type === 'pre' ? script.meta.preCode : script.meta.postCode;
     if (code.length === 0) {

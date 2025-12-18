@@ -32,6 +32,7 @@ interface Props extends MetaInit {
 const DynamicDocumentRoot = observer((props: Props) => {
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
+    const componentStore = useStore('componentStore');
     const socketStore = useStore('socketStore');
     const [meta] = React.useState(
         new DynamicDocumentRootMeta(
@@ -89,7 +90,7 @@ const DynamicDocumentRoot = observer((props: Props) => {
             )}
             {!edit && (
                 <div className={clsx(styles.roomType, 'badge', 'badge--info')}>
-                    {meta.roomType ? RoomTypeLabel[meta.roomType] : '-'}
+                    {meta.roomType ? (componentStore.components.get(meta.roomType)?.name ?? '-') : '-'}
                 </div>
             )}
             {!edit && (

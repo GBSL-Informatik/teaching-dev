@@ -8,25 +8,25 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.Restricted> {
-    readonly type = DocumentType.Restricted;
+export class ModelMeta extends TypeMeta<'restricted'> {
+    readonly type = 'restricted';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.Restricted, props.readonly ? Access.RO_User : undefined);
+        super('restricted', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.Restricted] {
+    get defaultData(): TypeDataMapping['restricted'] {
         return {};
     }
 }
 
-class Restricted extends iDocument<DocumentType.Restricted> {
-    constructor(props: DocumentProps<DocumentType.Restricted>, store: DocumentStore) {
+class Restricted extends iDocument<'restricted'> {
+    constructor(props: DocumentProps<'restricted'>, store: DocumentStore) {
         super(props, store);
     }
 
     @action
-    setData(_: TypeDataMapping[DocumentType.Restricted], from: Source, updatedAt?: Date): void {
+    setData(_: TypeDataMapping['restricted'], from: Source, updatedAt?: Date): void {
         if (from === Source.LOCAL) {
             this.save();
         }
@@ -35,13 +35,13 @@ class Restricted extends iDocument<DocumentType.Restricted> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.Restricted] {
+    get data(): TypeDataMapping['restricted'] {
         return {};
     }
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.Restricted) {
+        if (this.root?.type === 'restricted') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

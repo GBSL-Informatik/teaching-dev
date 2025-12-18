@@ -14,6 +14,7 @@ interface Props extends Partial<MetaInit> {
 const AddDynamicDocumentRoot = observer((props: Props) => {
     const { dynamicDocumentRoots } = props;
     const userStore = useStore('userStore');
+    const componentStore = useStore('componentStore');
     const user = userStore.current;
     const permissionStore = useStore('permissionStore');
     React.useEffect(() => {
@@ -32,7 +33,11 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
                 title='Neue "Document Root" hinzufügen'
                 icon={mdiPlusCircleOutline}
                 iconSide="left"
-                disabled={!dynamicDocumentRoots || !RWAccess.has(dynamicDocumentRoots.root?.permission)}
+                disabled={
+                    !dynamicDocumentRoots ||
+                    !RWAccess.has(dynamicDocumentRoots.root?.permission) ||
+                    !componentStore.defaultRoomType
+                }
                 onClick={() => {
                     const newId = uuidv4();
                     dynamicDocumentRoots.addDynamicDocumentRoot(

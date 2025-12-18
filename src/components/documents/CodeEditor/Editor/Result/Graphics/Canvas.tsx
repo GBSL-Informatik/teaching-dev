@@ -32,7 +32,7 @@ const downloadCanvas = (canvasId: string) => {
 };
 
 const Canvas = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
 
     return (
         <Graphics

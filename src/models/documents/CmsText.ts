@@ -8,31 +8,31 @@ export interface MetaInit {
     default?: string;
 }
 
-export class CmsTextMeta extends TypeMeta<DocumentType.CmsText> {
-    readonly type = DocumentType.CmsText;
+export class CmsTextMeta extends TypeMeta<'cms_text'> {
+    readonly type = 'cms_text';
     readonly default: string;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.CmsText, undefined);
+        super('cms_text', undefined);
         this.default = props.default ?? '';
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.CmsText] {
+    get defaultData(): TypeDataMapping['cms_text'] {
         return {
             text: this.default
         };
     }
 }
 
-class CmsText extends iDocument<DocumentType.CmsText> {
+class CmsText extends iDocument<'cms_text'> {
     @observable accessor text: string;
-    constructor(props: DocumentProps<DocumentType.CmsText>, store: DocumentStore) {
+    constructor(props: DocumentProps<'cms_text'>, store: DocumentStore) {
         super(props, store);
         this.text = props.data?.text || '';
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.CmsText], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['cms_text'], from: Source, updatedAt?: Date): void {
         this.text = data.text;
         if (from === Source.LOCAL) {
             this.save();
@@ -42,7 +42,7 @@ class CmsText extends iDocument<DocumentType.CmsText> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.CmsText] {
+    get data(): TypeDataMapping['cms_text'] {
         return {
             text: this.text
         };
@@ -50,7 +50,7 @@ class CmsText extends iDocument<DocumentType.CmsText> {
 
     @computed
     get meta(): CmsTextMeta {
-        if (this.root?.type === DocumentType.CmsText) {
+        if (this.root?.type === 'cms_text') {
             return this.root.meta as CmsTextMeta;
         }
         return new CmsTextMeta({});

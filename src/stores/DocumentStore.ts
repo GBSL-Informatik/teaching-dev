@@ -7,15 +7,13 @@ import {
     Document as DocumentProps,
     DocumentType,
     DocumentTypes,
-    find as apiFind,
     remove as apiDelete,
     TypeModelMapping,
     update as apiUpdate,
     ADMIN_EDITABLE_DOCUMENTS,
-    linkTo as apiLinkTo
+    linkTo as apiLinkTo,
+    Factory
 } from '@tdev-api/document';
-import Script from '@tdev-models/documents/Script';
-import TaskState from '@tdev-models/documents/TaskState';
 import iStore from '@tdev-stores/iStore';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,13 +29,11 @@ import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
-import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
-import Excalidoc from '@tdev/excalidoc/model';
+import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
-import FlowNode from '@tdev/circuit/models/FlowNode';
-import FlowEdge from '@tdev/circuit/models/FlowEdge';
+import Script from '@tdev-models/documents/Script';
+import TaskState from '@tdev-models/documents/TaskState';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -53,71 +49,98 @@ export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
     store: DocumentStore
 ): TypeModelMapping[T];
-export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
+export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore) {
     switch (data.type) {
-        case DocumentType.Script:
-            return new Script(data as DocumentProps<DocumentType.Script>, store);
-        case DocumentType.TaskState:
-            return new TaskState(data as DocumentProps<DocumentType.TaskState>, store);
-        case DocumentType.ScriptVersion:
-            return new ScriptVersion(data as DocumentProps<DocumentType.ScriptVersion>, store);
-        case DocumentType.String:
-            return new String(data as DocumentProps<DocumentType.String>, store);
-        case DocumentType.QuillV2:
-            return new QuillV2(data as DocumentProps<DocumentType.QuillV2>, store);
-        case DocumentType.Solution:
-            return new Solution(data as DocumentProps<DocumentType.Solution>, store);
-        case DocumentType.Dir:
-            return new Directory(data as DocumentProps<DocumentType.Dir>, store);
-        case DocumentType.File:
-            return new File(data as DocumentProps<DocumentType.File>, store);
-        case DocumentType.MdxComment:
-            return new MdxComment(data as DocumentProps<DocumentType.MdxComment>, store);
-        case DocumentType.Restricted:
-            return new Restricted(data as DocumentProps<DocumentType.Restricted>, store);
-        case DocumentType.CmsText:
-            return new CmsText(data as DocumentProps<DocumentType.CmsText>, store);
-        case DocumentType.Excalidoc:
-            return new Excalidoc(data as DocumentProps<DocumentType.Excalidoc>, store);
-        case DocumentType.TextMessage:
-            return new TextMessage(data as DocumentProps<DocumentType.TextMessage>, store);
-        case DocumentType.DynamicDocumentRoot:
-            throw new Error(`Dynamic Document Root's can't be instantiated.`);
-        case DocumentType.DynamicDocumentRoots:
-            return new DynamicDocumentRoots(data as DocumentProps<DocumentType.DynamicDocumentRoots>, store);
-        case DocumentType.NetpbmGraphic:
-            return new NetpbmGraphic(data as DocumentProps<DocumentType.NetpbmGraphic>, store);
-        case DocumentType.ProgressState:
-            return new ProgressState(data as DocumentProps<DocumentType.ProgressState>, store);
-        case DocumentType.FlowNode:
-            return new FlowNode(data as DocumentProps<DocumentType.FlowNode>, store);
-        case DocumentType.FlowEdge:
-            return new FlowEdge(data as DocumentProps<DocumentType.FlowEdge>, store);
+        case 'script':
+            return new Script(data as DocumentProps<'script'>, store);
+        case 'task_state':
+            return new TaskState(data as DocumentProps<'task_state'>, store);
+        case 'script_version':
+            return new ScriptVersion(data as DocumentProps<'script_version'>, store);
+        case 'string':
+            return new String(data as DocumentProps<'string'>, store);
+        case 'quill_v2':
+            return new QuillV2(data as DocumentProps<'quill_v2'>, store);
+        case 'solution':
+            return new Solution(data as DocumentProps<'solution'>, store);
+        case 'dir':
+            return new Directory(data as DocumentProps<'dir'>, store);
+        case 'file':
+            return new File(data as DocumentProps<'file'>, store);
+        case 'mdx_comment':
+            return new MdxComment(data as DocumentProps<'mdx_comment'>, store);
+        case 'restricted':
+            return new Restricted(data as DocumentProps<'restricted'>, store);
+        case 'cms_text':
+            return new CmsText(data as DocumentProps<'cms_text'>, store);
+        case 'dynamic_document_root':
+            return new DynamicDocumentRootModel(data as DocumentProps<'dynamic_document_root'>, store);
+        case 'dynamic_document_roots':
+            return new DynamicDocumentRoots(data as DocumentProps<'dynamic_document_roots'>, store);
+        case 'progress_state':
+            return new ProgressState(data as DocumentProps<'progress_state'>, store);
     }
 }
+
+const FactoryDefault: [DocumentType, Factory][] = [
+    ['script', CreateDocumentModel],
+    ['task_state', CreateDocumentModel],
+    ['progress_state', CreateDocumentModel],
+    ['script_version', CreateDocumentModel],
+    ['string', CreateDocumentModel],
+    ['quill_v2', CreateDocumentModel],
+    ['solution', CreateDocumentModel],
+    ['dir', CreateDocumentModel],
+    ['file', CreateDocumentModel],
+    ['mdx_comment', CreateDocumentModel],
+    ['restricted', CreateDocumentModel],
+    ['cms_text', CreateDocumentModel],
+    ['dynamic_document_root', CreateDocumentModel],
+    ['dynamic_document_roots', CreateDocumentModel]
+];
+
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentTypes>([]);
+    factories = new Map<DocumentType, Factory>(FactoryDefault);
 
     constructor(root: RootStore) {
         super();
         this.root = root;
     }
 
-    @action
-    addDocument(document: DocumentTypes) {
-        this.documents.push(document);
-    }
-
     find = computedFn(
-        function (this: DocumentStore, id?: string | null) {
+        function (this: DocumentStore, id?: string | null): DocumentTypes | undefined {
             if (!id) {
-                return;
+                return undefined;
             }
             return this.documents.find((d) => d.id === id);
         },
         { keepAlive: true }
     );
+
+    registerFactory(type: DocumentType, factory: Factory) {
+        this.factories.set(type, factory);
+    }
+
+    @computed
+    get documentTypes() {
+        return Array.from(this.factories.keys()) as DocumentType[];
+    }
+
+    createDocument<Type extends DocumentType>(data: DocumentProps<Type>): TypeModelMapping[Type] | null {
+        const factory = this.factories.get(data.type);
+        if (!factory) {
+            console.warn(`No factory registered for document type ${data.type}`);
+            return null;
+        }
+        return factory(data, this) as TypeModelMapping[Type];
+    }
+
+    @action
+    addDocument(document: DocumentTypes) {
+        this.documents.push(document);
+    }
 
     findByDocumentRoot = computedFn(
         function (this: DocumentStore, documentRootId?: string) {
@@ -149,7 +172,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
         if (!data || !data.data) {
             return;
         }
-        const model = CreateDocumentModel(data, this);
+        const factory = this.factories.get(data.type);
+        if (!factory) {
+            return;
+        }
+        const model = factory(data, this);
         // TODO: should we try to load the root in this case?
         if (!model?.root) {
             return;
@@ -214,7 +241,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
                             if (replaceStoreModel) {
                                 return this.addToStore(data);
                             }
-                            return CreateDocumentModel(data, this);
+                            const factory = this.factories.get(data.type);
+                            if (!factory) {
+                                return undefined;
+                            }
+                            return factory(data, this) as TypeModelMapping[Type];
                         }
                         return undefined;
                     })

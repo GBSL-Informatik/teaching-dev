@@ -109,7 +109,7 @@ const Comment = observer((props: Props) => {
                     )}
                     {comment.optionsOpen && <Options comment={comment} />}
                     {comment.children
-                        .filter((doc) => doc.type === DocumentType.QuillV2)
+                        .filter((doc) => doc.type === 'quill_v2')
                         .map((doc) => {
                             return (
                                 <QuillV2Component

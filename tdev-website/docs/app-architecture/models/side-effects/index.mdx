@@ -1,0 +1,118 @@
+---
+page_id: a8063ab0-49e4-46e2-a032-f075dc3eb82b
+---
+
+import React from 'react';
+import Button from '@tdev-components/shared/Button';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import { TaskStateComponent } from '@tdev-components/documents/TaskState';
+import { TaskMeta, default as TaskStateModel } from '@tdev-models/documents/TaskState';
+import RandomState from '@tdev-models/SideEffects/RandomState';
+import { useStore } from '@tdev-hooks/useStore';
+import { observer } from 'mobx-react-lite';
+
+# Side Effects
+
+__Side Effects__ sind Transformationen, die auf das `data` Feld eines Dokuments angewendet werden, wobei die Änderungen aber nicht persistiert werden. Über `Document.derivedData` können die transformierten Daten, bspw. fürs Anzeigen im UI, abgefragt werden.
+
+:::tip[Reaktivität]
+Ein Side Effect stellt das Feld `transformer` zur Verfügung, welches die Transformations-Funktion `(document: TypeDataMapping[Type]) => TypeDataMapping[Type]` enthält.
+Dank **mobx** ist es möglich, den `transformer` computed zu machen, um automatisch die Änderungen zu verfolgen.
+
+#### Beispiel
+```typescript title="RandomState.ts"
+const States: StateType[] = ['checked', 'question', 'unset', 'star', 'star-half', 'star-empty'] as const;
+
+class RandomState extends iSideEffect<'task_state'> {
+    readonly store: UserStore;
+
+    constructor(userStore: UserStore) {
+        super('RandomState');
+        this.store = userStore;
+    }
+
+    @computed
+    get transformer() {
+        return (docData: TypeDataMapping['task_state']) => {
+            if (!this.store.viewedUser) {
+                return docData;
+            }
+            const idxOf = States.indexOf(docData.state);
+            const totalClients = this.store.users.reduce((sum, u) => sum + u.connectedClients, 0);
+            return {
+                ...docData,
+                state: States[(idxOf + totalClients) % States.length]
+            };
+        };
+    }
+
+    @computed
+    get canEdit() {
+        return true;
+    }
+}
+
+export default RandomState;
+```
+Im obigen Beispiel wird der `transformer` immer dann neu berechnet, wenn sich die Anzahl verbundener clients ändert.
+:::
+
+## Beispiel
+```tsx
+const TransformedTaskState = observer(() => {
+    const doc = useFirstMainDocument('ff4e8ff4-8de8-48ea-aff8-77d198d32baf', new TaskMeta({}));
+    const userStore = useStore('userStore');
+    React.useEffect(() => {
+        if (doc) {
+            doc.registerSideEffect(
+                new RandomState(userStore)
+            );
+        }
+    }, [doc, userStore]);
+    return (
+        <>
+            <TaskStateComponent
+                taskState={doc}
+                states={['checked', 'question', 'unset', 'star', 'star-half', 'star-empty']}
+                label="Wenn sich die anzahl verbunden Clients ändert, ändert sich der State..."
+            />
+            <TaskStateComponent
+                taskState={new TaskStateModel(doc.props, doc.store)}
+                readonly
+                label="TaskState ohne Side Effect"
+            />
+        </>
+    )
+})
+```
+
+export const TransformedTaskState = observer(() => {
+    const doc = useFirstMainDocument('ff4e8ff4-8de8-48ea-aff8-77d198d32baf', new TaskMeta({}));
+    const userStore = useStore('userStore');
+    React.useEffect(() => {
+        if (doc) {
+            doc.registerSideEffect(
+                new RandomState(userStore)
+            );
+        }
+    }, [doc, userStore]);
+    return (
+        <>
+            <TaskStateComponent
+                taskState={doc}
+                states={['checked', 'question', 'unset', 'star', 'star-half', 'star-empty']}
+                label="Wenn sich die anzahl verbunden Clients ändert, ändert sich der State..."
+            />
+            <TaskStateComponent
+                taskState={new TaskStateModel(doc.props, doc.store)}
+                readonly
+                label="TaskState ohne Side Effect [Read Only]"
+            />
+        </>
+    )
+})
+
+<BrowserWindow>
+    <TransformedTaskState />
+</BrowserWindow>

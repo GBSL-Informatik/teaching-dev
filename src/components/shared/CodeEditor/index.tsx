@@ -11,6 +11,7 @@ import 'ace-builds/src-noconflict/theme-dracula';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/esm-resolver';
+import useCodeTheme from '@tdev-hooks/useCodeTheme';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
@@ -37,6 +38,7 @@ interface Props {
 
 const CodeEditor = (props: Props) => {
     const ref = React.useRef<AceEditor>(null);
+    const { aceTheme } = useCodeTheme();
     React.useEffect(() => {
         if (props.value !== undefined && ref.current) {
             if (props.value !== ref.current.editor.getValue()) {
@@ -63,7 +65,7 @@ const CodeEditor = (props: Props) => {
                     ALIAS_LANG_MAP_ACE[props.lang as keyof typeof ALIAS_LANG_MAP_ACE] ??
                     (props.lang || 'plain_text')
                 }
-                theme="dracula"
+                theme={aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     props.onChange?.(value);
                 }}

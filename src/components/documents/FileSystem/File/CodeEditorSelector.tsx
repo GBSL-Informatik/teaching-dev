@@ -4,7 +4,7 @@ import Script from '@tdev-models/documents/Script';
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
 import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
 import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
-import NetpbmEditor from '@tdev-components/documents/NetpbmEditor';
+import NetpbmEditor from '@tdev/netpbm-graphic/NetpbmEditor';
 
 interface Props {
     script: Script;

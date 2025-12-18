@@ -1,11 +1,10 @@
 import React from 'react';
 import { DocumentType } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { CreateDocumentModel } from '@tdev-stores/DocumentStore';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
-import { isDummyId, useDummyId } from './useDummyId';
+import { useDummyId } from './useDummyId';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
@@ -28,19 +27,16 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
     const [dummyDocument] = React.useState(
-        CreateDocumentModel(
-            {
-                id: defaultDocId,
-                type: meta.type,
-                data: meta.defaultData,
-                authorId: DUMMY_DOCUMENT_ID,
-                documentRootId: documentRoot.id,
-                parentId: null,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            },
-            documentStore
-        )
+        documentStore.createDocument({
+            id: defaultDocId,
+            type: meta.type,
+            data: meta.defaultData,
+            authorId: DUMMY_DOCUMENT_ID,
+            documentRootId: documentRoot.id,
+            parentId: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        })
     );
     React.useEffect(() => {
         if (!userStore.current || userStore.isUserSwitched) {

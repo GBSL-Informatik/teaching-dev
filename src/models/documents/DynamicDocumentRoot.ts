@@ -19,30 +19,8 @@ export interface MetaInit<T extends RoomType> {
     roomType: T;
 }
 
-interface RoomMapping {
-    [RoomType.Circuit]: CircuitRoom;
-    [RoomType.Messages]: DynamicRoom<RoomType.Messages>;
-}
-
-function CreateRoomModel<T extends RoomType>(
-    docRoot: DynamicDocumentRoot<T>,
-    documentStore: DocumentStore
-): RoomMapping[T];
-function CreateRoomModel(
-    docRoot: DynamicDocumentRoot<RoomType>,
-    documentStore: DocumentStore
-): RoomMapping[RoomType] {
-    switch (docRoot.roomType) {
-        case RoomType.Messages:
-            return new DynamicRoom(docRoot as DynamicDocumentRoot<RoomType.Messages>, documentStore);
-        case RoomType.Circuit:
-            return new CircuitRoom(docRoot as DynamicDocumentRoot<RoomType.Circuit>, documentStore);
-        // Add more cases as needed
-    }
-}
-
-class DynamicDocumentRoot<T extends RoomType> extends TypeMeta<DocumentType.DynamicDocumentRoot> {
-    readonly type = DocumentType.DynamicDocumentRoot;
+class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
+    readonly type = 'dynamic_document_root';
     readonly store: DocumentStore;
     readonly rootDocumentId: string;
     readonly parentDocumentId: string;
@@ -55,7 +33,7 @@ class DynamicDocumentRoot<T extends RoomType> extends TypeMeta<DocumentType.Dyna
         parentDocumentId: string,
         documentStore: DocumentStore
     ) {
-        super(DocumentType.DynamicDocumentRoot, props.readonly ? Access.RO_User : undefined);
+        super('dynamic_document_root', props.readonly ? Access.RO_User : undefined);
         this.roomType = props.roomType;
         this.store = documentStore;
         this.rootDocumentId = rootDocumentId;
@@ -74,8 +52,8 @@ class DynamicDocumentRoot<T extends RoomType> extends TypeMeta<DocumentType.Dyna
     }
 
     @computed
-    get parentRoot(): DocumentRoot<DocumentType.DynamicDocumentRoots> | undefined {
-        return this.parentDocument?.root as DocumentRoot<DocumentType.DynamicDocumentRoots>;
+    get parentRoot(): DocumentRoot<'dynamic_document_roots'> | undefined {
+        return this.parentDocument?.root as DocumentRoot<'dynamic_document_roots'>;
     }
 
     @computed
@@ -110,23 +88,23 @@ class DynamicDocumentRoot<T extends RoomType> extends TypeMeta<DocumentType.Dyna
         this.parentDocument.saveNow();
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.DynamicDocumentRoot] {
+    get defaultData(): TypeDataMapping['dynamic_document_root'] {
         return {};
     }
 }
 
-export class DynamicDocumentRootModel extends iDocument<DocumentType.DynamicDocumentRoot> {
-    constructor(props: DocumentProps<DocumentType.DynamicDocumentRoot>, store: DocumentStore) {
+export class DynamicDocumentRootModel extends iDocument<'dynamic_document_root'> {
+    constructor(props: DocumentProps<'dynamic_document_root'>, store: DocumentStore) {
         super(props, store);
         throw new Error('Model not implemented.');
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.DynamicDocumentRoot], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['dynamic_document_root'], from: Source, updatedAt?: Date): void {
         throw new Error('Method not implemented.');
     }
 
-    get data(): TypeDataMapping[DocumentType.DynamicDocumentRoot] {
+    get data(): TypeDataMapping['dynamic_document_root'] {
         return {};
     }
 

@@ -6,7 +6,7 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import { observer } from 'mobx-react-lite';
 import Loader from '@tdev-components/Loader';
 import Icon from '@mdi/react';
-import { mdiAccountAlert, mdiEmoticonSad } from '@mdi/js';
+import { mdiAccountAlert, mdiEmoticonSad, mdiRoomServiceOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import styles from './styles.module.scss';
 import React from 'react';
@@ -18,7 +18,6 @@ import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoot
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
-import TextMessages from './TextMessages';
 import Circuit from '@tdev/circuit/components/Circuit';
 import { default as DynamiDocumentRootMeta } from '@tdev-models/documents/DynamicDocumentRoot';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
@@ -51,15 +50,6 @@ export const NotCreated = () => {
             Dieser Raum wurde noch nicht erzeugt. Warten auf die Lehrperson
             <div style={{ flexGrow: 1, flexBasis: 0 }} />
             <Loader noLabel />
-        </div>
-    );
-};
-
-const NoUser = () => {
-    return (
-        <div className={clsx('alert alert--danger', styles.alert)} role="alert">
-            <Icon path={mdiAccountAlert} size={1} color="var(--ifm-color-danger)" />
-            Nicht angemeldet
         </div>
     );
 };
@@ -101,18 +91,18 @@ interface Props {
 
 const RoomComponent = observer((props: Props): React.ReactNode => {
     const documentStore = useStore('documentStore');
-    const { roomProps, roomType } = props;
-    const dynamicRoot = React.useMemo(() => {
-        return new DynamicDocumentRootMeta(
-            { roomType: roomType },
-            roomProps.id,
-            props.parentDocumentId,
-            documentStore
-        );
-    }, [roomProps.id, roomType]);
+    const componentStore = useStore('componentStore');
+    const { roomProps } = props;
+    const [dynamicRoot] = React.useState(
+        new DynamicDocumentRootMeta({}, roomProps.id, props.parentDocumentId, documentStore)
+    );
+    const RoomComp = React.useMemo(
+        () => componentStore.components.get(roomProps.type as RoomType)?.component,
+        [roomProps.type]
+    );
     const documentRoot = useDocumentRoot(roomProps.id, dynamicRoot, false, {}, true);
 
-    if (!documentRoot || documentRoot.type !== DocumentType.DynamicDocumentRoot) {
+    if (!documentRoot || documentRoot.type !== 'dynamic_document_root') {
         return <NoRoom />;
     }
     if (NoneAccess.has(documentRoot.permission)) {

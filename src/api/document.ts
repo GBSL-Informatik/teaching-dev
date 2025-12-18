@@ -13,17 +13,10 @@ import Restricted from '@tdev-models/documents/Restricted';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import { Color } from '@tdev-components/shared/Colors';
 import CmsText from '@tdev-models/documents/CmsText';
-import TextMessage from '@tdev-models/documents/TextMessage';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import type { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
-import type NetpbmGraphic from '@tdev-models/documents/NetpbmGraphic';
-import type { BinaryFiles } from '@excalidraw/excalidraw/types';
-import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import type Excalidoc from '@tdev/excalidoc/model';
-import type ProgressState from '@tdev-models/documents/ProgressState';
-import FlowNode from '@tdev/circuit/models/FlowNode';
-import { Edge, Node } from '@xyflow/react';
-import FlowEdge from '@tdev/circuit/models/FlowEdge';
+import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
+import ProgressState from '@tdev-models/documents/ProgressState';
+import type DocumentStore from '@tdev-stores/DocumentStore';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -37,34 +30,6 @@ export enum Access {
     None_User = 'None_User'
 }
 
-export enum DocumentType {
-    Script = 'script',
-    ScriptVersion = 'script_version',
-    TaskState = 'task_state',
-    ProgressState = 'progress_state',
-    String = 'string',
-    QuillV2 = 'quill_v2',
-    Solution = 'solution',
-    Dir = 'dir',
-    File = 'file',
-    MdxComment = 'mdx_comment',
-    Restricted = 'restricted',
-    CmsText = 'cms_text',
-    Excalidoc = 'excalidoc',
-    TextMessage = 'text_message',
-    DynamicDocumentRoot = 'dynamic_document_root',
-    DynamicDocumentRoots = 'dynamic_document_roots',
-    NetpbmGraphic = 'netpbm_graphic',
-    FlowNode = 'flow_node',
-    FlowEdge = 'flow_edge'
-}
-
-/**
- * Document types that can be edited by admins ON BEHALF OF other users.
- * This should not be the default case for most documents - but things like CMS texts
- * should be editeable by admins only.
- */
-export const ADMIN_EDITABLE_DOCUMENTS: DocumentType[] = [DocumentType.CmsText] as const;
 export interface ScriptData {
     code: string;
 }
@@ -105,40 +70,6 @@ export interface FileData {
     isOpen: boolean;
 }
 
-export interface ExcaliData {
-    files: BinaryFiles;
-    elements: readonly ExcalidrawElement[];
-    image: string;
-}
-
-export enum NodeType {
-    LedNode = 'LedNode',
-    NotNode = 'NotNode',
-    DecimalDisplayNode = 'DecimalDisplayNode',
-    BatteryNode = 'BatteryNode',
-    SwitchNode = 'SwitchNode',
-    OrNode = 'OrNode',
-    XorNode = 'XorNode',
-    AndNode = 'AndNode'
-}
-
-export interface NodeDataMapping {
-    [NodeType.LedNode]: {};
-    [NodeType.BatteryNode]: { pins: number };
-    [NodeType.DecimalDisplayNode]: { pins: number };
-    [NodeType.OrNode]: {};
-    [NodeType.NotNode]: {};
-    [NodeType.XorNode]: {};
-    [NodeType.AndNode]: {};
-    [NodeType.SwitchNode]: {
-        power: 0 | 1;
-    };
-}
-
-export type FlowNodeDataFull<T extends NodeType> = Node<NodeDataMapping[T], T>;
-export type FlowNodeData<T extends NodeType> = Omit<FlowNodeDataFull<T>, 'id'>;
-export type FlowEdgeData = Omit<Edge, 'id'>;
-
 export type StateType =
     | 'checked'
     | 'question'
@@ -163,19 +94,26 @@ export interface MdxCommentData {
     isOpen: boolean;
     color: Color;
 }
-
-export interface TextMessageData {
-    text: string;
-}
-
 export interface DynamicDocumentRootData {
     /** such a document is never created - it's only the document root that is needed */
 }
 
-export enum RoomType {
-    Messages = 'text_messages',
-    Circuit = 'circuit'
-}
+/**
+ * This is the extendable mapping - only the key matters,
+ * the value is in principle irrelevant.
+ * @example
+ * ```ts
+ * declare module '@tdev-api/document' {
+ *   export interface RoomTypeNames {
+ *     ['my_room_type']: 'my_room_type';
+ *   }
+ * }
+ * ```
+ */
+export interface RoomTypeNames {}
+
+export type RoomType = keyof RoomTypeNames;
+
 export interface DynamicDocumentRoot {
     id: string;
     name: string;
@@ -186,54 +124,39 @@ export interface DynamicDocumentRootsData {
     documentRoots: DynamicDocumentRoot[];
 }
 
-export interface NetpbmGraphicData {
-    imageData: string;
-}
-
 export interface TypeDataMapping {
-    [DocumentType.Script]: ScriptData;
-    [DocumentType.TaskState]: TaskStateData;
-    [DocumentType.ProgressState]: ProgressStateData;
-    [DocumentType.ScriptVersion]: ScriptVersionData;
-    [DocumentType.String]: StringData;
-    [DocumentType.QuillV2]: QuillV2Data;
-    [DocumentType.Solution]: SolutionData;
-    [DocumentType.Dir]: DirData;
-    [DocumentType.File]: FileData;
-    [DocumentType.MdxComment]: MdxCommentData;
-    [DocumentType.Restricted]: RestrictedData;
-    [DocumentType.CmsText]: CmsTextData;
-    [DocumentType.Excalidoc]: ExcaliData;
-    [DocumentType.TextMessage]: TextMessageData;
-    [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootData;
-    [DocumentType.DynamicDocumentRoots]: DynamicDocumentRootsData;
-    [DocumentType.NetpbmGraphic]: NetpbmGraphicData;
-    [DocumentType.FlowNode]: FlowNodeData<NodeType>;
-    [DocumentType.FlowEdge]: FlowEdgeData;
+    ['script']: ScriptData;
+    ['task_state']: TaskStateData;
+    ['progress_state']: ProgressStateData;
+    ['script_version']: ScriptVersionData;
+    ['string']: StringData;
+    ['quill_v2']: QuillV2Data;
+    ['solution']: SolutionData;
+    ['dir']: DirData;
+    ['file']: FileData;
+    ['mdx_comment']: MdxCommentData;
+    ['restricted']: RestrictedData;
+    ['cms_text']: CmsTextData;
+    ['dynamic_document_root']: DynamicDocumentRootData;
+    ['dynamic_document_roots']: DynamicDocumentRootsData;
     // Add more mappings as needed
 }
 
 export interface TypeModelMapping {
-    [DocumentType.Script]: Script;
-    [DocumentType.TaskState]: TaskState;
-    [DocumentType.ProgressState]: ProgressState;
-    [DocumentType.ScriptVersion]: ScriptVersion;
-    [DocumentType.String]: String;
-    [DocumentType.QuillV2]: QuillV2;
-    [DocumentType.Solution]: Solution;
-    [DocumentType.Dir]: Directory;
-    [DocumentType.File]: File;
-    [DocumentType.MdxComment]: MdxComment;
-    [DocumentType.Restricted]: Restricted;
-    [DocumentType.CmsText]: CmsText;
-    [DocumentType.Excalidoc]: Excalidoc;
-    [DocumentType.TextMessage]: TextMessage;
-    [DocumentType.DynamicDocumentRoot]: DynamicDocumentRootModel;
-    [DocumentType.DynamicDocumentRoots]: DynamicDocumentRoots;
-    [DocumentType.NetpbmGraphic]: NetpbmGraphic;
-    [DocumentType.FlowNode]: FlowNode<NodeType>;
-    [DocumentType.FlowEdge]: FlowEdge;
-
+    ['script']: Script;
+    ['task_state']: TaskState;
+    ['progress_state']: ProgressState;
+    ['script_version']: ScriptVersion;
+    ['string']: String;
+    ['quill_v2']: QuillV2;
+    ['solution']: Solution;
+    ['dir']: Directory;
+    ['file']: File;
+    ['mdx_comment']: MdxComment;
+    ['restricted']: Restricted;
+    ['cms_text']: CmsText;
+    ['dynamic_document_root']: DynamicDocumentRootModel;
+    ['dynamic_document_roots']: DynamicDocumentRoots;
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
@@ -242,27 +165,15 @@ export interface TypeModelMapping {
      */
 }
 
-export type DocumentTypes =
-    | Script
-    | TaskState
-    | ScriptVersion
-    | String
-    | QuillV2
-    | Solution
-    | Directory
-    | File
-    | MdxComment
-    | Restricted
-    | CmsText
-    | Excalidoc
-    | TextMessage
-    | DynamicDocumentRootModel
-    | DynamicDocumentRoots
-    | NetpbmGraphic
-    | ProgressState
-    | FlowNode<NodeType>
-    | FlowEdge;
+export type DocumentType = keyof TypeModelMapping;
+export type DocumentTypes = TypeModelMapping[DocumentType];
 
+/**
+ * Document types that can be edited by admins ON BEHALF OF other users.
+ * This should not be the default case for most documents - but things like CMS texts
+ * should be editeable by admins only.
+ */
+export const ADMIN_EDITABLE_DOCUMENTS: DocumentType[] = ['cms_text'] as const;
 export interface Document<Type extends DocumentType> {
     id: string;
     type: Type;
@@ -276,6 +187,11 @@ export interface Document<Type extends DocumentType> {
     createdAt: string;
     updatedAt: string;
 }
+
+export type Factory<Type extends DocumentType = DocumentType> = (
+    data: Document<Type>,
+    store: DocumentStore
+) => TypeModelMapping[Type];
 
 export function find<Type extends DocumentType>(
     id: string,

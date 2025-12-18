@@ -38,8 +38,7 @@ const HtmlEditor = observer((props: Props) => {
                 title: 'website.html',
                 ...props,
                 code: props.code || '',
-                lang: props.lang ?? 'html',
-                theme: 'xcode'
+                lang: props.lang ?? 'html'
             }),
         [props.id, props.code]
     );

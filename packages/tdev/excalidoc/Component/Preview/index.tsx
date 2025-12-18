@@ -10,7 +10,7 @@ export interface Props {
 }
 
 const Preview = observer((props: Props) => {
-    const excalidoc = useDocument<DocumentType.Excalidoc>(props.documentId);
+    const excalidoc = useDocument<'excalidoc'>(props.documentId);
     if (!excalidoc) {
         return null;
     }

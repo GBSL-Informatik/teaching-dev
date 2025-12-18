@@ -19,7 +19,7 @@ const BaseProps: GenericPropery[] = [
         name: 'type',
         type: 'select',
         required: true,
-        options: ['text', DocumentType.String, 'state'],
+        options: ['text', 'string', 'state'],
         saveOnChange: true
     },
     { name: 'readonly', type: 'checkbox' },
@@ -95,23 +95,23 @@ const QuillV2Props: GenericPropery[] = [
 ];
 
 const IconMap: { [key: string]: string } = {
-    [DocumentType.String]: mdiFormTextbox,
-    [DocumentType.QuillV2]: mdiCardTextOutline,
+    ['string']: mdiFormTextbox,
+    ['quill_v2']: mdiCardTextOutline,
     text: mdiCardTextOutline,
     state: mdiCheckboxOutline,
-    [DocumentType.TaskState]: mdiCheckboxOutline,
+    ['task_state']: mdiCheckboxOutline,
     default: mdiInvoiceTextSendOutline
 };
 
 const getAnswerAttributes = (type: string) => {
     switch (type) {
-        case DocumentType.QuillV2:
+        case 'quill_v2':
         case 'text':
             return [...BaseProps, ...QuillV2Props];
-        case DocumentType.String:
+        case 'string':
             return [...BaseProps, ...StringProps];
         case 'state':
-        case DocumentType.TaskState:
+        case 'task_state':
             return [...BaseProps, ...TaskStateProps];
         default:
             return BaseProps;
