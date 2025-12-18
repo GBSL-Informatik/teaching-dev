@@ -43,6 +43,26 @@ const getSiteConfig: SiteConfigProvider = () => {
             personalSpaceOverlay,
             loginProfileButton
         ],
+        links: [
+            {
+                title: 'Dokumentation',
+                items: [
+                    {
+                        label: 'Galerie',
+                        to: '/docs/gallery'
+                    }
+                ]
+            },
+            {
+                title: 'Mehr',
+                items: [
+                    {
+                        label: 'Blog',
+                        to: '/blog'
+                    }
+                ]
+            }
+        ],
         onBrokenLinks: 'throw',
         tdevConfig: {
             excalidraw: {

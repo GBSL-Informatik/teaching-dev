@@ -332,16 +332,16 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           style: siteConfig.footer?.style ?? 'dark',
           links: siteConfig.footer?.links ?? [
             {
-              title: 'Docs',
+              title: 'Unterricht',
               items: [
                 {
-                  label: 'Galerie',
-                  to: '/docs/gallery'
+                  label: 'Material',
+                  to: '/docs'
                 }
               ]
             },
             {
-              title: 'More',
+              title: 'Mehr',
               items: [
                 {
                   label: 'Blog',
