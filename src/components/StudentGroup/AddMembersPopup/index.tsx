@@ -41,7 +41,7 @@ const AddUserPopup = observer((props: AddMembersPopupProps) => {
             ref={popupRef}
         >
             <div className={clsx(styles.wrapper, 'card')}>
-                <div className={clsx(styles.addUserCardTitle)}>
+                <div className={clsx(styles.addMembersPopupTitle)}>
                     <Icon path={mdiAccountMultiple} size="1.4em" />
                     <h2>{props.studentGroup.name}</h2>
                 </div>

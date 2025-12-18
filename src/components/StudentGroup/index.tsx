@@ -6,7 +6,6 @@ import { default as StudentGroupModel } from '@tdev-models/StudentGroup';
 import Button from '@tdev-components/shared/Button';
 import {
     mdiAccountCancel,
-    mdiAccountGroup,
     mdiAccountKey,
     mdiAccountKeyOutline,
     mdiCircleEditOutline,
