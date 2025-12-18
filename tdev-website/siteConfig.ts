@@ -43,7 +43,7 @@ const getSiteConfig: SiteConfigProvider = () => {
             personalSpaceOverlay,
             loginProfileButton
         ],
-        onBrokenLinks: 'throw',
+        onBrokenLinks: 'warn',
         tdevConfig: {
             excalidraw: {
                 excalidoc: true
