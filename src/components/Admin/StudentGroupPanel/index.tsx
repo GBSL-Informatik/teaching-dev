@@ -9,6 +9,7 @@ import StudentGroup from '@tdev-components/StudentGroup';
 import _ from 'es-toolkit/compat';
 import { action } from 'mobx';
 import Icon from '@mdi/react';
+import TextInput from '@tdev-components/shared/TextInput';
 
 const StudentGroupPanel = observer(() => {
     const userStore = useStore('userStore');
@@ -37,24 +38,24 @@ const StudentGroupPanel = observer(() => {
                 <div className={clsx(styles.searchBox)}>
                     <Icon path={mdiMagnify} size={1} />
                     <div className={clsx(styles.searchInput)}>
-                        <input
-                            type="text"
+                        <TextInput
                             placeholder="Lerngruppen filtern..."
                             value={searchFilter}
-                            className={clsx(styles.textInput)}
-                            onChange={(e) => {
-                                setSearchFilter(e.target.value);
+                            onChange={(val) => {
+                                setSearchFilter(val);
                             }}
                         />
-                        <Button
-                            onClick={() => {
-                                setSearchFilter('');
-                            }}
-                            icon={mdiCloseCircleOutline}
-                            size={0.8}
-                            noBorder
-                            color="secondary"
-                        />
+                        <div className={clsx(styles.btnResetContainer, { [styles.hidden]: !searchFilter })}>
+                            <Button
+                                onClick={() => {
+                                    setSearchFilter('');
+                                }}
+                                icon={mdiCloseCircleOutline}
+                                size={0.8}
+                                noBorder
+                                color="secondary"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

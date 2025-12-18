@@ -9,33 +9,29 @@
     .searchBox {
         display: flex;
         align-items: center;
-        grid-area: 0.5em;
+        justify-content: stretch;
         flex-grow: 1;
-        border: 1px solid var(--ifm-color-secondary);
-        border-radius: var(--ifm-global-radius);
-        padding: 0 0.2em;
 
         .searchInput {
             display: flex;
+            position: relative;
             align-items: stretch;
             width: 100%;
 
-            input[type='text'] {
-                flex-grow: 1;
-                border: none;
-                outline: none;
-                padding: 0.5em;
-                border-radius: 4px;
-                background-color: transparent;
-                width: 100%;
-
-                &::placeholder {
-                    color: inherit;
-                    opacity: 0.5;
-                }
+            .btnResetContainer {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 100%;
+                display: flex;
+                justify-content: center;
             }
         }
     }
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 .studentGroups {
