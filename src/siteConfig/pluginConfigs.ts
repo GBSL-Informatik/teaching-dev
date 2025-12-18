@@ -77,6 +77,10 @@ export const aliasConfigurationPluginConfig: PluginConfig = () => {
                     // support's to resolve symlinks in monorepos
                     symlinks: false
                 },
+                watchOptions: {
+                    // ensure changes in symlinked packages are picked up on osx
+                    followSymlinks: true
+                },
                 optimization: {
                     concatenateModules: false
                 }
