@@ -15,11 +15,6 @@ const StudentGroupPanel = observer(() => {
     const groupStore = useStore('studentGroupStore');
     const current = userStore.current;
     const [searchFilter, setSearchFilter] = React.useState('');
-    const [searchRegex, setSearchRegex] = React.useState(new RegExp(searchFilter, 'i'));
-
-    React.useEffect(() => {
-        setSearchRegex(new RegExp(searchFilter, 'i'));
-    }, [searchFilter]);
 
     if (!current?.hasElevatedAccess) {
         return null;
@@ -65,6 +60,13 @@ const StudentGroupPanel = observer(() => {
             </div>
             <div className={clsx(styles.studentGroups)}>
                 {(() => {
+                    let searchRegex;
+                    try {
+                        searchRegex = new RegExp(searchFilter, 'i');
+                    } catch {
+                        searchRegex = null;
+                    }
+
                     const matches = groupStore.managedStudentGroups
                         .filter((g) => !g.parentId)
                         .map((group) => {
