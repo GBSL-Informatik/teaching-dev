@@ -75,347 +75,346 @@ const DEFAULT_ADMONITION_CONFIG = {
   }
 };
 
-export default async function createConfigAsync() {
-  const docusaurusConfig = await withSiteConfig().then(async (siteConfig) => {
-    const TITLE = siteConfig.title ?? 'Teaching-Dev';
-  
-    const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
-    const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
-  
-    const BEFORE_DEFAULT_REMARK_PLUGINS =
-      siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
-    const REMARK_PLUGINS = siteConfig.remarkPlugins ?? recommendedRemarkPlugins;
-    const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? recommendedRehypePlugins;
-  
-    const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
-    const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
-  
-    const excalidrawConfig = siteConfig.tdevConfig?.excalidraw || {};
-    let onBrokenImage: OnBrokenMarkdownImagesFunction | undefined = undefined;
-    if (!excalidrawConfig.disableImageMarkupEditor && process.env.NODE_ENV !== 'production') {
-      onBrokenImage = (await import('@tdev/excalidoc/ImageMarkupEditor/onNewExcalidrawSketch')).default;
+const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
+  const TITLE = siteConfig.title ?? 'Teaching-Dev';
+
+  const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
+  const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
+
+  const BEFORE_DEFAULT_REMARK_PLUGINS =
+    siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
+  const REMARK_PLUGINS = siteConfig.remarkPlugins ?? recommendedRemarkPlugins;
+  const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? recommendedRehypePlugins;
+
+  const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
+  const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
+
+  const excalidrawConfig = siteConfig.tdevConfig?.excalidraw || {};
+  let onBrokenImage: OnBrokenMarkdownImagesFunction | undefined = undefined;
+  if (!excalidrawConfig.disableImageMarkupEditor && process.env.NODE_ENV !== 'production') {
+    onBrokenImage = (await import('@tdev/excalidoc/ImageMarkupEditor/onNewExcalidrawSketch')).default;
+  }
+  const loadedPlugins: Config['plugins'] = [];
+  if (excalidrawConfig.excalidoc || !excalidrawConfig.disableImageMarkupEditor) {
+    const currentProviders = new Set(siteConfig.apiDocumentProviders || []);
+    if (excalidrawConfig.excalidoc) {
+      const documentProvider = require.resolve('@tdev/excalidoc/register');
+      currentProviders.add(documentProvider);
     }
-    const loadedPlugins: Config['plugins'] = [];
-    if (excalidrawConfig.excalidoc || !excalidrawConfig.disableImageMarkupEditor) {
-      const currentProviders = new Set(siteConfig.apiDocumentProviders || []);
-      if (excalidrawConfig.excalidoc) {
-        const documentProvider = require.resolve('@tdev/excalidoc/register');
-        currentProviders.add(documentProvider);
-      }
-      const {excalidrawPluginConfig} = (await import('@tdev/excalidoc/index'));
-      siteConfig.apiDocumentProviders = [...currentProviders];
-      loadedPlugins.push(excalidrawPluginConfig);
-    }
-  
-    const config: Config = applyTransformers(
-      {
-        title: TITLE,
-        tagline: siteConfig.tagline ?? 'Eine Plattform zur Gestaltung interaktiver Lernerlebnisse',
-        favicon: siteConfig.favicon ?? 'img/favicon.ico',
-  
-        // Set the production url of your site here
-        url: siteConfig.url ?? 'https://teaching-dev.gbsl.website',
-        // Set the /<baseUrl>/ pathname under which your site is served
-        // For GitHub pages deployment, it is often '/<projectName>/'
-        baseUrl: siteConfig.baseUrl ?? '/',
-  
-        // GitHub pages deployment config.
-        // If you aren't using GitHub pages, you don't need these.
-        organizationName: ORGANIZATION_NAME, // Usually your GitHub org/user name.
-        projectName: PROJECT_NAME, // Usually your repo name.
-  
-        onBrokenLinks: siteConfig.onBrokenLinks ?? 'throw',
-  
-        customFields: {
-          /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
-          TEST_USER: DEFAULT_TEST_USER,
-          OFFLINE_API: OFFLINE_API,
-          NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
-          /** The Domain Name where the api is running */
-          APP_URL: process.env.NETLIFY
-            ? process.env.CONTEXT === 'production'
-              ? process.env.URL
-              : process.env.DEPLOY_PRIME_URL
-            : process.env.APP_URL || 'http://localhost:3000',
-          /** The Domain Name of this app */
-          BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
-          GIT_COMMIT_SHA: GIT_COMMIT_SHA,
-          SENTRY_DSN: process.env.SENTRY_DSN,
-          GH_OAUTH_CLIENT_ID: GH_OAUTH_CLIENT_ID,
-          PERSONAL_SPACE_DOC_ROOT_ID:
-            siteConfig.personalSpaceDocRootId || '2686fc4e-10e7-4288-bf41-e6175e489b8e',
-          showEditThisPage: siteConfig.showEditThisPage ?? ('always' satisfies ShowEditThisPage),
-          showEditThisPageOptions:
-            siteConfig.showEditThisPageOptions ??
-            (['github', 'github-dev', 'cms'] satisfies EditThisPageOption[]),
-          editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
-          tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
-        },
-        future: {
-          v4: true,
-          experimental_faster: {
-            /**
-             * no config options for swcJsLoader so far.
-             * Instead configure it over the jsLoader in the next step
-             */
-            swcJsLoader: false,
-            swcJsMinimizer: true,
-            swcHtmlMinimizer: true,
-            lightningCssMinimizer: true,
-            rspackBundler: true,
-            rspackPersistentCache: process.env.NETLIFY ? false : true,
-            mdxCrossCompilerCache: true,
-            ssgWorkerThreads: true
-          }
-        },
-        webpack: {
-          jsLoader: (isServer) => {
-            const defaultOptions = require('@docusaurus/faster').getSwcLoaderOptions({ isServer });
-            return {
-              loader: 'builtin:swc-loader', // (only works with Rspack)
-              options: {
-                ...defaultOptions,
-                jsc: {
-                  parser: {
-                    ...defaultOptions.jsc.parser,
-                    decorators: true
-                  },
-                  transform: {
-                    ...defaultOptions.jsc.transform,
-                    decoratorVersion: '2022-03'
-                  }
+    const {excalidrawPluginConfig} = (await import('@tdev/excalidoc/index'));
+    siteConfig.apiDocumentProviders = [...currentProviders];
+    loadedPlugins.push(excalidrawPluginConfig);
+  }
+
+  const config: Config = applyTransformers(
+    {
+      title: TITLE,
+      tagline: siteConfig.tagline ?? 'Eine Plattform zur Gestaltung interaktiver Lernerlebnisse',
+      favicon: siteConfig.favicon ?? 'img/favicon.ico',
+
+      // Set the production url of your site here
+      url: siteConfig.url ?? 'https://teaching-dev.gbsl.website',
+      // Set the /<baseUrl>/ pathname under which your site is served
+      // For GitHub pages deployment, it is often '/<projectName>/'
+      baseUrl: siteConfig.baseUrl ?? '/',
+
+      // GitHub pages deployment config.
+      // If you aren't using GitHub pages, you don't need these.
+      organizationName: ORGANIZATION_NAME, // Usually your GitHub org/user name.
+      projectName: PROJECT_NAME, // Usually your repo name.
+
+      onBrokenLinks: siteConfig.onBrokenLinks ?? 'throw',
+
+      customFields: {
+        /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
+        TEST_USER: DEFAULT_TEST_USER,
+        OFFLINE_API: OFFLINE_API,
+        NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
+        /** The Domain Name where the api is running */
+        APP_URL: process.env.NETLIFY
+          ? process.env.CONTEXT === 'production'
+            ? process.env.URL
+            : process.env.DEPLOY_PRIME_URL
+          : process.env.APP_URL || 'http://localhost:3000',
+        /** The Domain Name of this app */
+        BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
+        GIT_COMMIT_SHA: GIT_COMMIT_SHA,
+        SENTRY_DSN: process.env.SENTRY_DSN,
+        GH_OAUTH_CLIENT_ID: GH_OAUTH_CLIENT_ID,
+        PERSONAL_SPACE_DOC_ROOT_ID:
+          siteConfig.personalSpaceDocRootId || '2686fc4e-10e7-4288-bf41-e6175e489b8e',
+        showEditThisPage: siteConfig.showEditThisPage ?? ('always' satisfies ShowEditThisPage),
+        showEditThisPageOptions:
+          siteConfig.showEditThisPageOptions ??
+          (['github', 'github-dev', 'cms'] satisfies EditThisPageOption[]),
+        editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
+        tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
+      },
+      future: {
+        v4: true,
+        experimental_faster: {
+          /**
+           * no config options for swcJsLoader so far.
+           * Instead configure it over the jsLoader in the next step
+           */
+          swcJsLoader: false,
+          swcJsMinimizer: true,
+          swcHtmlMinimizer: true,
+          lightningCssMinimizer: true,
+          rspackBundler: true,
+          rspackPersistentCache: process.env.NETLIFY ? false : true,
+          mdxCrossCompilerCache: true,
+          ssgWorkerThreads: true
+        }
+      },
+      webpack: {
+        jsLoader: (isServer) => {
+          const defaultOptions = require('@docusaurus/faster').getSwcLoaderOptions({ isServer });
+          return {
+            loader: 'builtin:swc-loader', // (only works with Rspack)
+            options: {
+              ...defaultOptions,
+              jsc: {
+                parser: {
+                  ...defaultOptions.jsc.parser,
+                  decorators: true
+                },
+                transform: {
+                  ...defaultOptions.jsc.transform,
+                  decoratorVersion: '2022-03'
                 }
               }
-            };
+            }
+          };
+        }
+      },
+
+      // Even if you don't use internationalization, you can use this field to set
+      // useful metadata like html lang. For example, if your site is Chinese, you
+      // may want to replace "en" with "zh-Hans".
+      i18n: {
+        defaultLocale: siteConfig.defaultLocale ?? 'de',
+        locales: siteConfig.locales ?? ['de']
+      },
+      markdown: {
+        parseFrontMatter: async (params) => {
+          const result = await params.defaultParseFrontMatter(params);
+          if (process.env.NODE_ENV === 'production') {
+            return result;
           }
-        },
-  
-        // Even if you don't use internationalization, you can use this field to set
-        // useful metadata like html lang. For example, if your site is Chinese, you
-        // may want to replace "en" with "zh-Hans".
-        i18n: {
-          defaultLocale: siteConfig.defaultLocale ?? 'de',
-          locales: siteConfig.locales ?? ['de']
-        },
-        markdown: {
-          parseFrontMatter: async (params) => {
-            const result = await params.defaultParseFrontMatter(params);
-            if (process.env.NODE_ENV === 'production') {
-              return result;
-            }
+          /**
+           * don't add frontmatter to partials
+           */
+          const fileName = path.basename(params.filePath);
+          if (fileName.startsWith('_')) {
+            // it is a partial, don't add frontmatter
+            return result;
+          }
+          /**
+           * don't edit blogs frontmatter
+           */
+          if (params.filePath.startsWith(`${BUILD_LOCATION}/blog/`)) {
+            return result;
+          }
+          if (process.env.NODE_ENV !== 'production') {
+            let needsRewrite = false;
             /**
-             * don't add frontmatter to partials
+             * material on ofi.gbsl.website used to have 'sidebar_custom_props.id' as the page id.
+             * Rewrite it as 'page_id' and remove it in case it's present.
              */
-            const fileName = path.basename(params.filePath);
-            if (fileName.startsWith('_')) {
-              // it is a partial, don't add frontmatter
-              return result;
-            }
-            /**
-             * don't edit blogs frontmatter
-             */
-            if (params.filePath.startsWith(`${BUILD_LOCATION}/blog/`)) {
-              return result;
-            }
-            if (process.env.NODE_ENV !== 'production') {
-              let needsRewrite = false;
-              /**
-               * material on ofi.gbsl.website used to have 'sidebar_custom_props.id' as the page id.
-               * Rewrite it as 'page_id' and remove it in case it's present.
-               */
-              if (
-                'sidebar_custom_props' in result.frontMatter &&
-                'id' in (result.frontMatter as any).sidebar_custom_props
-              ) {
-                if (!('page_id' in result.frontMatter)) {
-                  result.frontMatter.page_id = (result.frontMatter as any).sidebar_custom_props.id;
-                  needsRewrite = true;
-                }
-                delete (result.frontMatter as any).sidebar_custom_props.id;
-                if (Object.keys((result.frontMatter as any).sidebar_custom_props).length === 0) {
-                  delete result.frontMatter.sidebar_custom_props;
-                }
-              }
+            if (
+              'sidebar_custom_props' in result.frontMatter &&
+              'id' in (result.frontMatter as any).sidebar_custom_props
+            ) {
               if (!('page_id' in result.frontMatter)) {
-                result.frontMatter.page_id = uuidv4();
+                result.frontMatter.page_id = (result.frontMatter as any).sidebar_custom_props.id;
                 needsRewrite = true;
               }
-              if (needsRewrite) {
-                await fs.writeFile(params.filePath, matter.stringify(params.fileContent, result.frontMatter), {
-                  encoding: 'utf-8'
-                });
+              delete (result.frontMatter as any).sidebar_custom_props.id;
+              if (Object.keys((result.frontMatter as any).sidebar_custom_props).length === 0) {
+                delete result.frontMatter.sidebar_custom_props;
               }
             }
-            return result;
-          },
-          mermaid: true,
-          hooks: {
-            onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
-            onBrokenMarkdownImages:
-              process.env.NODE_ENV === 'production'
-                ? (siteConfig.onBrokenImages ?? 'throw')
-                : onBrokenImage
-          },
-          ...siteConfig.markdown
+            if (!('page_id' in result.frontMatter)) {
+              result.frontMatter.page_id = uuidv4();
+              needsRewrite = true;
+            }
+            if (needsRewrite) {
+              await fs.writeFile(params.filePath, matter.stringify(params.fileContent, result.frontMatter), {
+                encoding: 'utf-8'
+              });
+            }
+          }
+          return result;
         },
-        presets: [
-          [
-            'classic',
-            {
-              docs: DOCS_PATH
-                ? {
-                    sidebarPath: './sidebars.ts',
-                    // Remove this to remove the "edit this page" links.
-                    path: DOCS_PATH,
-                    editUrl: '/',
-                    remarkPlugins: REMARK_PLUGINS,
-                    rehypePlugins: REHYPE_PLUGINS,
-                    beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-                    ...DEFAULT_ADMONITION_CONFIG,
-                    exclude: [...new Set([...GlobExcludeDefault, '**/node_modules/**'])],
-                    async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
-                      const sidebarItems = await defaultSidebarItemsGenerator(args);
-                      return extractPackageDocs(sidebarItems);
-                    },
-                    ...(siteConfig.docs || {})
-                  }
-                : false,
-              blog: BLOG_PATH
-                ? {
-                    path: BLOG_PATH,
-                    showReadingTime: true,
-                    // Remove this to remove the "edit this page" links.
-                    editUrl: '/',
-                    remarkPlugins: REMARK_PLUGINS,
-                    rehypePlugins: REHYPE_PLUGINS,
-                    beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-                    ...DEFAULT_ADMONITION_CONFIG,
-                    ...(siteConfig.blog || {})
-                  }
-                : false,
-              pages: {
-                id: 'website-pages',
-                path: 'website/pages',
-                remarkPlugins: REMARK_PLUGINS,
-                rehypePlugins: REHYPE_PLUGINS,
-                beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-                editUrl: '/',
-                ...DEFAULT_ADMONITION_CONFIG,
-                ...(siteConfig.pages || {})
-              },
-              theme: {
-                customCss: siteConfig.siteStyles
-                  ? ['./src/css/custom.scss', ...siteConfig.siteStyles]
-                  : './src/css/custom.scss'
-              }
-            } satisfies Preset.Options
-          ]
-        ],
-        themeConfig: {
-          image: siteConfig.socialCard ?? 'img/social-card.jpg',
-          navbar: {
-            title: TITLE,
-            logo: {
-              alt: `${TITLE} Logo`,
-              src: siteConfig.logo ?? 'img/logo.svg'
-            },
-            items: siteConfig.navbarItems ?? [
-              docs,
-              blog,
-              gitHub,
-              taskStateOverview,
-              accountSwitcher,
-              devModeAccessLocalFS,
-              requestTarget,
-              personalSpaceOverlay,
-              loginProfileButton
-            ]
-          },
-          footer: {
-            style: siteConfig.footer?.style ?? 'dark',
-            links: siteConfig.footer?.links ?? [
-              {
-                title: 'Unterricht',
-                items: [
-                  {
-                    label: 'Material',
-                    to: '/docs'
-                  }
-                ]
-              },
-              {
-                title: 'Mehr',
-                items: [
-                  {
-                    label: 'Blog',
-                    to: '/blog'
-                  }
-                ]
-              }
-            ],
-            copyright:
-              siteConfig.footer?.copyright ??
-              `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
-          <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commits/${GIT_COMMIT_SHA}">
-                ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
-          </a>
-          `
-          },
-          prism: {
-            theme: prismThemes.github,
-            darkTheme: prismThemes.dracula,
-            additionalLanguages: ['bash', 'typescript', 'json', 'python']
-          },
-          ...(siteConfig.themeConfig || {})
-        } satisfies Preset.ThemeConfig,
-        plugins: [
-          sassPluginConfig,
-          dynamicRouterPluginConfig,
-          rsDoctorPluginConfig,
-          aliasConfigurationPluginConfig,
-          sentryPluginConfig,
-          remarkPdfPluginConfig,
-          socketIoNoDepWarningsPluginConfig,
-          ...loadedPlugins,
-          [
-            '@docusaurus/plugin-content-pages',
-            {
-              id: 'tdev-pages',
-              path: 'src/pages',
+        mermaid: true,
+        hooks: {
+          onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
+          onBrokenMarkdownImages:
+            process.env.NODE_ENV === 'production'
+              ? (siteConfig.onBrokenImages ?? 'throw')
+              : onBrokenImage
+        },
+        ...siteConfig.markdown
+      },
+      presets: [
+        [
+          'classic',
+          {
+            docs: DOCS_PATH
+              ? {
+                  sidebarPath: './sidebars.ts',
+                  // Remove this to remove the "edit this page" links.
+                  path: DOCS_PATH,
+                  editUrl: '/',
+                  remarkPlugins: REMARK_PLUGINS,
+                  rehypePlugins: REHYPE_PLUGINS,
+                  beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+                  ...DEFAULT_ADMONITION_CONFIG,
+                  exclude: [...new Set([...GlobExcludeDefault, '**/node_modules/**'])],
+                  async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
+                    const sidebarItems = await defaultSidebarItemsGenerator(args);
+                    return extractPackageDocs(sidebarItems);
+                  },
+                  ...(siteConfig.docs || {})
+                }
+              : false,
+            blog: BLOG_PATH
+              ? {
+                  path: BLOG_PATH,
+                  showReadingTime: true,
+                  // Remove this to remove the "edit this page" links.
+                  editUrl: '/',
+                  remarkPlugins: REMARK_PLUGINS,
+                  rehypePlugins: REHYPE_PLUGINS,
+                  beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+                  ...DEFAULT_ADMONITION_CONFIG,
+                  ...(siteConfig.blog || {})
+                }
+              : false,
+            pages: {
+              id: 'website-pages',
+              path: 'website/pages',
               remarkPlugins: REMARK_PLUGINS,
               rehypePlugins: REHYPE_PLUGINS,
               beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-              editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+              editUrl: '/',
+              ...DEFAULT_ADMONITION_CONFIG,
               ...(siteConfig.pages || {})
+            },
+            theme: {
+              customCss: siteConfig.siteStyles
+                ? ['./src/css/custom.scss', ...siteConfig.siteStyles]
+                : './src/css/custom.scss'
             }
+          } satisfies Preset.Options
+        ]
+      ],
+      themeConfig: {
+        image: siteConfig.socialCard ?? 'img/social-card.jpg',
+        navbar: {
+          title: TITLE,
+          logo: {
+            alt: `${TITLE} Logo`,
+            src: siteConfig.logo ?? 'img/logo.svg'
+          },
+          items: siteConfig.navbarItems ?? [
+            docs,
+            blog,
+            gitHub,
+            taskStateOverview,
+            accountSwitcher,
+            devModeAccessLocalFS,
+            requestTarget,
+            personalSpaceOverlay,
+            loginProfileButton
           ]
-        ],
-        themes: [
-          '@docusaurus/theme-mermaid',
-          [
-            themeCodeEditor,
+        },
+        footer: {
+          style: siteConfig.footer?.style ?? 'dark',
+          links: siteConfig.footer?.links ?? [
             {
-              brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
-              brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
-              libDir: '/bry-libs/'
+              title: 'Unterricht',
+              items: [
+                {
+                  label: 'Material',
+                  to: '/docs'
+                }
+              ]
+            },
+            {
+              title: 'Mehr',
+              items: [
+                {
+                  label: 'Blog',
+                  to: '/blog'
+                }
+              ]
             }
           ],
-          ...(siteConfig.themes || [])
-        ],
-        stylesheets: [
+          copyright:
+            siteConfig.footer?.copyright ??
+            `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
+        <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commits/${GIT_COMMIT_SHA}">
+              ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
+        </a>
+        `
+        },
+        prism: {
+          theme: prismThemes.github,
+          darkTheme: prismThemes.dracula,
+          additionalLanguages: ['bash', 'typescript', 'json', 'python']
+        },
+        ...(siteConfig.themeConfig || {})
+      } satisfies Preset.ThemeConfig,
+      plugins: [
+        sassPluginConfig,
+        dynamicRouterPluginConfig,
+        rsDoctorPluginConfig,
+        aliasConfigurationPluginConfig,
+        sentryPluginConfig,
+        remarkPdfPluginConfig,
+        socketIoNoDepWarningsPluginConfig,
+        ...loadedPlugins,
+        [
+          '@docusaurus/plugin-content-pages',
           {
-            href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
-            type: 'text/css',
-            integrity: 'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
-            crossorigin: 'anonymous'
+            id: 'tdev-pages',
+            path: 'src/pages',
+            remarkPlugins: REMARK_PLUGINS,
+            rehypePlugins: REHYPE_PLUGINS,
+            beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+            editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+            ...(siteConfig.pages || {})
+          }
+        ]
+      ],
+      themes: [
+        '@docusaurus/theme-mermaid',
+        [
+          themeCodeEditor,
+          {
+            brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
+            brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
+            libDir: '/bry-libs/'
           }
         ],
-        clientModules: siteConfig.apiDocumentProviders,
-        scripts: siteConfig.scripts
-      },
-      siteConfig.transformers ?? {}
-    );
-    return config;
-  });
-  return docusaurusConfig;
-}
+        ...(siteConfig.themes || [])
+      ],
+      stylesheets: [
+        {
+          href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+          type: 'text/css',
+          integrity: 'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+          crossorigin: 'anonymous'
+        }
+      ],
+      clientModules: siteConfig.apiDocumentProviders,
+      scripts: siteConfig.scripts
+    },
+    siteConfig.transformers ?? {}
+  );
+  return config;
+});
+
+export default docusaurusConfig;
