@@ -15,9 +15,8 @@ import { promises as fs } from 'fs';
 import {
   accountSwitcher,
   blog,
-  cms,
   devModeAccessLocalFS,
-  gallery,
+  docs,
   gitHub,
   loginProfileButton,
   personalSpaceOverlay,
@@ -318,9 +317,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             src: siteConfig.logo ?? 'img/logo.svg'
           },
           items: siteConfig.navbarItems ?? [
-            gallery,
+            docs,
             blog,
-            cms,
             gitHub,
             taskStateOverview,
             accountSwitcher,

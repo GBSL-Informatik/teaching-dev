@@ -1,6 +1,18 @@
 // This file is used to configure the teaching-dev page.
 
 import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
+import {
+    accountSwitcher,
+    blog,
+    cms,
+    devModeAccessLocalFS,
+    gallery,
+    gitHub,
+    loginProfileButton,
+    personalSpaceOverlay,
+    requestTarget,
+    taskStateOverview
+} from '../src/siteConfig/navbarItems';
 
 const getSiteConfig: SiteConfigProvider = () => {
     return {
@@ -19,6 +31,18 @@ const getSiteConfig: SiteConfigProvider = () => {
         blog: {
             path: 'tdev-website/blog'
         },
+        navbarItems: [
+            gallery,
+            blog,
+            cms,
+            gitHub,
+            taskStateOverview,
+            accountSwitcher,
+            devModeAccessLocalFS,
+            requestTarget,
+            personalSpaceOverlay,
+            loginProfileButton
+        ],
         onBrokenLinks: 'throw',
         tdevConfig: {
             excalidraw: {
