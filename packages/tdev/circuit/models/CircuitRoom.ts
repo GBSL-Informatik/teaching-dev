@@ -1,16 +1,11 @@
-import DynamicRoom from '@tdev-models/documents/DynamicRooms';
+import DynamicRoom from '@tdev-models/documents/DynamicRoom';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
-import { DocumentType, FlowNodeData, NodeDataMapping, NodeType, RoomType } from '@tdev-api/document';
-import { action, computed, observable } from 'mobx';
+import { action, computed } from 'mobx';
 import FlowNode from './FlowNode';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import {
-    Node,
-    NodeChange,
-    addEdge,
     applyNodeChanges,
     applyEdgeChanges,
-    EdgeChange,
     OnEdgesChange,
     Edge,
     OnNodesChange,
@@ -21,21 +16,23 @@ import {
 } from '@xyflow/react';
 import { Source } from '@tdev-models/iDocument';
 import FlowEdge from './FlowEdge';
+import { FlowNodeData, NodeDataMapping, NodeType } from '..';
+import { RoomFactory } from '@tdev-api/document';
 const MULTI_INPUTS_ALLOWED = new Set<NodeType | undefined>([NodeType.BatteryNode]);
 
-class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
-    constructor(dynamicRoot: DynamicDocumentRoot<RoomType.Circuit>, documentStore: DocumentStore) {
+class CircuitRoom extends DynamicRoom<'circuit'> {
+    constructor(dynamicRoot: DynamicDocumentRoot<'circuit'>, documentStore: DocumentStore) {
         super(dynamicRoot, documentStore);
     }
 
     @computed
     get flowNodes() {
-        return this.documents.filter((doc) => doc.type === DocumentType.FlowNode);
+        return this.documents.filter((doc) => doc.type === 'flow_node');
     }
 
     @computed
     get flowEdges() {
-        return this.documents.filter((doc) => doc.type === DocumentType.FlowEdge);
+        return this.documents.filter((doc) => doc.type === 'flow_edge');
     }
 
     @computed
@@ -95,7 +92,7 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
         this.documentStore
             .create({
                 documentRootId: this.dynamicRoot.rootDocumentId,
-                type: DocumentType.FlowEdge,
+                type: 'flow_edge',
                 data: {
                     source: connection.source,
                     target: connection.target,
@@ -130,7 +127,7 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
         console.log(this.flowNodes.find((n) => n.flowData.selected));
         this.documentStore.create({
             documentRootId: this.dynamicRoot.rootDocumentId,
-            type: DocumentType.FlowNode,
+            type: 'flow_node',
             data: {
                 data: data,
                 type: type,
@@ -142,5 +139,9 @@ class CircuitRoom extends DynamicRoom<RoomType.Circuit> {
         });
     }
 }
+
+export const createRoom: RoomFactory = (dynamicRoot, documentStore) => {
+    return new CircuitRoom(dynamicRoot, documentStore);
+};
 
 export default CircuitRoom;

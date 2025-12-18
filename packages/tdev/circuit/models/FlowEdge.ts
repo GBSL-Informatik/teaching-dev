@@ -5,25 +5,25 @@ import {
     Document as DocumentProps,
     TypeDataMapping,
     Access,
-    FlowEdgeData,
-    NodeType
+    Factory
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
-import FlowNode from './FlowNode';
+import type FlowNode from './FlowNode';
+import { FlowEdgeData, NodeType } from '..';
 
 export interface MetaInit {
     readonly?: boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.FlowEdge> {
-    readonly type = DocumentType.FlowEdge;
+export class ModelMeta extends TypeMeta<'flow_edge'> {
+    readonly type = 'flow_edge';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.FlowEdge, props.readonly ? Access.RO_User : undefined);
+        super('flow_edge', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.FlowEdge] {
+    get defaultData(): TypeDataMapping['flow_edge'] {
         return {
             source: '',
             target: ''
@@ -31,19 +31,23 @@ export class ModelMeta extends TypeMeta<DocumentType.FlowEdge> {
     }
 }
 
-class FlowEdge extends iDocument<DocumentType.FlowEdge> {
+export const createModel: Factory = (data, store) => {
+    return new FlowEdge(data as DocumentProps<'flow_edge'>, store);
+};
+
+class FlowEdge extends iDocument<'flow_edge'> {
     @observable.ref accessor flowData: FlowEdgeData;
-    constructor(props: DocumentProps<DocumentType.FlowEdge>, store: DocumentStore) {
+    constructor(props: DocumentProps<'flow_edge'>, store: DocumentStore) {
         super(props, store, 15);
         this.flowData = props.data;
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.FlowEdge], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['flow_edge'], from: Source, updatedAt?: Date): void {
         if (!data) {
             this.store.apiDelete(this);
             return;
-        };
+        }
         delete data.type;
         this.flowData = data as any;
         if (from === Source.LOCAL) {
@@ -64,7 +68,7 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.FlowEdge] {
+    get data(): TypeDataMapping['flow_edge'] {
         return { ...this.flowData };
     }
 
@@ -126,7 +130,7 @@ class FlowEdge extends iDocument<DocumentType.FlowEdge> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.FlowEdge) {
+        if (this.root?.type === 'flow_edge') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

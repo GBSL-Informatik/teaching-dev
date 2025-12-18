@@ -70,6 +70,7 @@ const getSiteConfig: SiteConfigProvider = () => {
             }
         },
         apiDocumentProviders: [
+            require.resolve('@tdev/circuit/register'),
             require.resolve('@tdev/netpbm-graphic/register'),
             require.resolve('@tdev/text-message/register')
         ]

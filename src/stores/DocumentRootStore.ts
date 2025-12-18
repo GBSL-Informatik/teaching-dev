@@ -14,10 +14,11 @@ import {
 import iStore from '@tdev-stores/iStore';
 import GroupPermission from '@tdev-models/GroupPermission';
 import UserPermission from '@tdev-models/UserPermission';
-import { DocumentType } from '@tdev-api/document';
+import { DocumentType, RoomType, RoomTypeMapping } from '@tdev-api/document';
 import _ from 'es-toolkit/compat';
 import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
 
 type LoadConfig = {
     documents?: boolean;

@@ -17,7 +17,6 @@ import {
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { default as DynamicDocumentRootMeta } from '@tdev-models/documents/DynamicDocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import { RoomTypeLabel } from '../RoomTypeSelector';
 import TextInput from '@tdev-components/shared/TextInput';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { RoomType } from '@tdev-api/document';

@@ -12,7 +12,10 @@ import {
     update as apiUpdate,
     ADMIN_EDITABLE_DOCUMENTS,
     linkTo as apiLinkTo,
-    Factory
+    Factory,
+    RoomType,
+    RoomTypeMapping,
+    RoomFactory
 } from '@tdev-api/document';
 import iStore from '@tdev-stores/iStore';
 import axios from 'axios';
@@ -30,7 +33,7 @@ import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
+import DynamicDocumentRoot, { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import Script from '@tdev-models/documents/Script';
 import TaskState from '@tdev-models/documents/TaskState';
@@ -74,7 +77,7 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
         case 'cms_text':
             return new CmsText(data as DocumentProps<'cms_text'>, store);
         case 'dynamic_document_root':
-            return new DynamicDocumentRootModel(data as DocumentProps<'dynamic_document_root'>, store);
+            throw new Error(`Dynamic Document Root's can't be instantiated.`);
         case 'dynamic_document_roots':
             return new DynamicDocumentRoots(data as DocumentProps<'dynamic_document_roots'>, store);
         case 'progress_state':
@@ -103,6 +106,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentTypes>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
+    roomFactories = new Map<RoomType, RoomFactory>();
 
     constructor(root: RootStore) {
         super();
@@ -135,6 +139,19 @@ class DocumentStore extends iStore<`delete-${string}`> {
             return null;
         }
         return factory(data, this) as TypeModelMapping[Type];
+    }
+
+    registerRoomFactory(type: RoomType, factory: RoomFactory) {
+        this.roomFactories.set(type, factory);
+    }
+
+    createRoom<Type extends RoomType>(docRoot: DynamicDocumentRoot<Type>): RoomTypeMapping[Type] | null {
+        const factory = this.roomFactories.get(docRoot.roomType);
+        if (!factory) {
+            console.warn(`No factory registered for document type ${docRoot.roomType}`);
+            return null;
+        }
+        return factory(docRoot, this.root.documentStore) as RoomTypeMapping[Type];
     }
 
     @action

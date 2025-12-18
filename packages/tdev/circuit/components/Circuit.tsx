@@ -18,12 +18,12 @@ import type {
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import { mdiBatteryChargingHigh, mdiCarBattery, mdiElectricSwitch, mdiLedOn, mdiWizardHat } from '@mdi/js';
+import { mdiCarBattery, mdiElectricSwitch, mdiLedOn } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
-import { NodeType, RoomType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import { nodeTypes } from './Nodes';
+import { NodeType } from '..';
+import { DynamicRoomProps } from '@tdev-stores/ComponentStore';
 
 type OnReconnectEnd = (
     event: MouseEvent | TouchEvent,
@@ -34,36 +34,32 @@ type OnReconnectEnd = (
 
 type OnReconnectStart = (event: React.MouseEvent, edge: Edge, handleType: HandleType) => void;
 
-interface Props {
-    dynamicRoot: DynamicDocumentRoot<RoomType.Circuit>;
-}
-
-const Circuit = observer((props: Props): React.ReactNode => {
+const Circuit = observer((props: DynamicRoomProps<'circuit'>): React.ReactNode => {
     const { dynamicRoot } = props;
     const documentStore = useStore('documentStore');
     const edgeReconnectSuccessful = React.useRef(true);
     const onChange = React.useCallback<OnNodesChange<Node>>(
         (change) => {
-            dynamicRoot.room.onNodesChange(change);
+            dynamicRoot.room!.onNodesChange(change);
         },
         [dynamicRoot.room]
     );
     const onChangeEdge = React.useCallback<OnEdgesChange<Edge>>(
         (change) => {
-            dynamicRoot.room.onEdgeChange(change);
+            dynamicRoot.room!.onEdgeChange(change);
         },
         [dynamicRoot.room]
     );
     const onConnect = React.useCallback<OnConnect>(
         (connection) => {
-            dynamicRoot.room.onConnect(connection);
+            dynamicRoot.room!.onConnect(connection);
         },
         [dynamicRoot.room]
     );
     const onNodesDelete = React.useCallback<OnNodesDelete>(
         (deleted) => {
             edgeReconnectSuccessful.current = true;
-            dynamicRoot.room.onDelete(deleted);
+            dynamicRoot.room!.onDelete(deleted);
         },
         [dynamicRoot.room]
     );
@@ -74,7 +70,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
     const onReconnect = React.useCallback<OnReconnect>(
         (oldEdge, newConnection) => {
             edgeReconnectSuccessful.current = true;
-            dynamicRoot.room.reconnectEdge(oldEdge.id, newConnection);
+            dynamicRoot.room!.reconnectEdge(oldEdge.id, newConnection);
         },
         [dynamicRoot.room]
     );
@@ -89,7 +85,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
 
         edgeReconnectSuccessful.current = true;
     }, []);
-    if (!dynamicRoot) {
+    if (!dynamicRoot || !dynamicRoot.room) {
         return null;
     }
 
@@ -102,8 +98,8 @@ const Circuit = observer((props: Props): React.ReactNode => {
                 <div style={{ width: '100%', height: '80vh' }}>
                     <ReactFlow
                         nodeTypes={nodeTypes}
-                        nodes={dynamicRoot.room.nodes}
-                        edges={dynamicRoot.room.edges}
+                        nodes={dynamicRoot.room!.nodes}
+                        edges={dynamicRoot.room!.edges}
                         onNodesDelete={onNodesDelete}
                         onNodesChange={onChange}
                         onEdgesChange={onChangeEdge}
@@ -124,7 +120,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.SwitchNode, { power: 0 });
+                                    dynamicRoot.room!.addFlowNode(NodeType.SwitchNode, { power: 0 });
                                 }}
                             />
                             <Button
@@ -132,7 +128,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.OrNode, {});
+                                    dynamicRoot.room!.addFlowNode(NodeType.OrNode, {});
                                 }}
                             />
                             <Button
@@ -140,7 +136,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.XorNode, {});
+                                    dynamicRoot.room!.addFlowNode(NodeType.XorNode, {});
                                 }}
                             />
                             <Button
@@ -148,7 +144,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.AndNode, {});
+                                    dynamicRoot.room!.addFlowNode(NodeType.AndNode, {});
                                 }}
                             />
                             <Button
@@ -156,7 +152,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.DecimalDisplayNode, { pins: 4 });
+                                    dynamicRoot.room!.addFlowNode(NodeType.DecimalDisplayNode, { pins: 4 });
                                 }}
                             />
                             <Button
@@ -164,7 +160,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.NotNode, {});
+                                    dynamicRoot.room!.addFlowNode(NodeType.NotNode, {});
                                 }}
                             />
                             <Button
@@ -172,7 +168,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.LedNode, {});
+                                    dynamicRoot.room!.addFlowNode(NodeType.LedNode, {});
                                 }}
                             />
                             <Button
@@ -180,7 +176,7 @@ const Circuit = observer((props: Props): React.ReactNode => {
                                 size={1}
                                 color="blue"
                                 onClick={() => {
-                                    dynamicRoot.room.addFlowNode(NodeType.BatteryNode, { pins: 5 });
+                                    dynamicRoot.room!.addFlowNode(NodeType.BatteryNode, { pins: 5 });
                                 }}
                             />
                         </Panel>

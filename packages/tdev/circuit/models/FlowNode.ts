@@ -1,20 +1,14 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import {
-    DocumentType,
     Document as DocumentProps,
     TypeDataMapping,
     Access,
-    FlowNodeData,
-    NodeType,
-    FlowNodeDataFull,
-    NodeDataMapping,
-    DocumentTypes
+    DocumentTypes,
+    Factory
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { Node } from '@xyflow/react';
-import { merge, toMerged } from 'es-toolkit';
 import FlowEdge from './FlowEdge';
 import iDeriver from './derivers/iDeriver';
 import Or from './derivers/Or';
@@ -25,19 +19,20 @@ import Led from './derivers/Led';
 import Xor from './derivers/Xor';
 import Not from './derivers/Not';
 import DecimalDisplay from './derivers/DecimalDisplay';
+import { FlowNodeData, FlowNodeDataFull, NodeDataMapping, NodeType } from '..';
 
 export interface MetaInit {
     readonly?: boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.FlowNode> {
-    readonly type = DocumentType.FlowNode;
+export class ModelMeta extends TypeMeta<'flow_node'> {
+    readonly type = 'flow_node';
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.FlowNode, props.readonly ? Access.RO_User : undefined);
+        super('flow_node', props.readonly ? Access.RO_User : undefined);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.FlowNode] {
+    get defaultData(): TypeDataMapping['flow_node'] {
         return {
             type: NodeType.OrNode,
             data: {},
@@ -85,22 +80,26 @@ function createDeriver<NType extends NodeType>(node: FlowNode<NType>): DeriverMa
     }
 }
 
-class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType.FlowNode> {
+export const createModel: Factory = (data, store) => {
+    return new FlowNode(data as DocumentProps<'flow_node'>, store);
+};
+
+class FlowNode<NType extends NodeType = NodeType> extends iDocument<'flow_node'> {
     @observable.ref accessor flowData: FlowNodeData<NType>;
     @observable.ref accessor deriver: DeriverMapping[NType];
 
-    constructor(props: DocumentProps<DocumentType.FlowNode>, store: DocumentStore) {
+    constructor(props: DocumentProps<'flow_node'>, store: DocumentStore) {
         super(props, store);
         this.flowData = props.data as FlowNodeData<NType>;
         this.deriver = createDeriver(this);
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.FlowNode], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['flow_node'], from: Source, updatedAt?: Date): void {
         if (!data) {
             this.store.apiDelete(this as DocumentTypes);
             return;
-        };
+        }
         this.flowData = data as FlowNodeData<NType>;
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
@@ -124,8 +123,8 @@ class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType
      * tdev data
      */
     @computed
-    get data(): TypeDataMapping[DocumentType.FlowNode] {
-        return { ...this.flowData } as TypeDataMapping[DocumentType.FlowNode];
+    get data(): TypeDataMapping['flow_node'] {
+        return { ...this.flowData } as TypeDataMapping['flow_node'];
     }
 
     @computed
@@ -150,7 +149,7 @@ class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.FlowNode) {
+        if (this.root?.type === 'flow_node') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});
@@ -160,7 +159,7 @@ class FlowNode<NType extends NodeType = NodeType> extends iDocument<DocumentType
     get edges(): FlowEdge[] {
         return this.store
             .findByDocumentRoot(this.documentRootId)
-            .filter<FlowEdge>((doc) => doc.type === DocumentType.FlowEdge)
+            .filter<FlowEdge>((doc) => doc.type === 'flow_edge')
             .filter((doc) => doc.sourceId === this.id || doc.targetId === this.id);
     }
 

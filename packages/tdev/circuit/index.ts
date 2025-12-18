@@ -1,6 +1,7 @@
 import FlowNode from '@tdev/circuit/models/FlowNode';
 import FlowEdge from '@tdev/circuit/models/FlowEdge';
 import { Edge, Node } from '@xyflow/react';
+import CircuitRoom from './models/CircuitRoom';
 
 export enum NodeType {
     LedNode = 'LedNode',
@@ -30,8 +31,8 @@ export type FlowNodeDataFull<T extends NodeType> = Node<NodeDataMapping[T], T>;
 export type FlowNodeData<T extends NodeType> = Omit<FlowNodeDataFull<T>, 'id'>;
 export type FlowEdgeData = Omit<Edge, 'id'>;
 declare module '@tdev-api/document' {
-    export interface RoomTypeNames {
-        ['circuit']: 'circuit';
+    export interface RoomTypeMapping {
+        ['circuit']: CircuitRoom;
     }
     export interface TypeDataMapping {
         ['flow_node']: FlowNodeData<NodeType>;

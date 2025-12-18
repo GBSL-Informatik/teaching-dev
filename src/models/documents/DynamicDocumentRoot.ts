@@ -6,26 +6,25 @@ import {
     DynamicDocumentRoot as DynamicDocumentRootProps,
     TypeDataMapping,
     Access,
-    RoomType
+    RoomType,
+    RoomTypeMapping
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import DynamicDocumentRoots from './DynamicDocumentRoots';
-import DynamicRoom from './DynamicRooms';
-import CircuitRoom from '@tdev/circuit/models/CircuitRoom';
 
 export interface MetaInit<T extends RoomType> {
     readonly?: boolean;
     roomType: T;
 }
 
-class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
+class DynamicDocumentRoot<T extends RoomType> extends TypeMeta<'dynamic_document_root'> {
     readonly type = 'dynamic_document_root';
     readonly store: DocumentStore;
     readonly rootDocumentId: string;
     readonly parentDocumentId: string;
     readonly roomType: T;
-    readonly room: RoomMapping[T];
+    readonly room: RoomTypeMapping[T] | null;
 
     constructor(
         props: MetaInit<T>,
@@ -38,7 +37,7 @@ class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
         this.store = documentStore;
         this.rootDocumentId = rootDocumentId;
         this.parentDocumentId = parentDocumentId;
-        this.room = CreateRoomModel(this, documentStore);
+        this.room = documentStore.createRoom<T>(this);
     }
 
     @computed

@@ -11,7 +11,6 @@ import AddDynamicDocumentRoot from './AddDynamicDocumentRoot';
 import DynamicDocumentRoot from './DynamicDocumentRoot';
 import { NotCreated } from '@tdev-components/Rooms';
 import Badge from '@tdev-components/shared/Badge';
-import { RoomTypeLabel } from './RoomTypeSelector';
 
 interface Props extends MetaInit {
     id: string;
@@ -21,6 +20,7 @@ interface Props extends MetaInit {
 const DynamicDocumentRoots = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));
     const userStore = useStore('userStore');
+    const componentStore = useStore('componentStore');
     const user = userStore.current;
     const doc = useFirstRealMainDocument(props.id, meta, user?.hasElevatedAccess, {
         access: Access.RO_DocumentRoot,
@@ -44,7 +44,8 @@ const DynamicDocumentRoots = observer((props: Props) => {
         <div className={clsx('card', styles.docRoots)}>
             <div className={clsx(styles.header, 'card__header')}>
                 <h3>
-                    {props.name || 'Gruppe'} <Badge>{RoomTypeLabel[doc.roomType] ?? doc.roomType}</Badge>
+                    {props.name || 'Gruppe'}{' '}
+                    <Badge>{componentStore.components.get(doc.roomType)?.name ?? doc.roomType}</Badge>
                 </h3>
                 <PermissionsPanel documentRootId={props.id} />
             </div>
