@@ -41,8 +41,8 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import type { ParseFrontMatterResult } from '@docusaurus/types/src/markdown';
 import extractPackageDocs from './src/siteConfig/extractPackageDocs';
+import { ParseFrontMatterResult } from '@docusaurus/types/src/markdown';
 
 const withSiteConfig = async (): Promise<SiteConfig> => {
   if (process.env.SITE_CONFIG_PATH) {
@@ -204,150 +204,168 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         }
       },
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
-  i18n: {
-    defaultLocale: siteConfig.defaultLocale ?? 'de',
-    locales: siteConfig.locales ?? ['de'],
-  },
-  markdown: {
-    parseFrontMatter: async (params) => {
-      const result = await params.defaultParseFrontMatter(params);
-      if (process.env.NODE_ENV === 'production') {
-        return exposePidToSidebar(result);
-      }
-      /**
-       * don't add frontmatter to partials
-       */
-      const fileName = path.basename(params.filePath);
-      if (fileName.startsWith('_')) {
-        // it is a partial, don't add frontmatter
-        return exposePidToSidebar(result);
-      }
-      /**
-       * don't edit blogs frontmatter
-       */
-      if (params.filePath.startsWith(`${BUILD_LOCATION}/blog/`)) {
-        return result;
-      }
-      if (process.env.NODE_ENV !== 'production') {
-        let needsRewrite = false;
-        /**
-         * material on ofi.gbsl.website used to have 'sidebar_custom_props.id' as the page id.
-         * Rewrite it as 'page_id' and remove it in case it's present.
-         */
-        if ('sidebar_custom_props' in result.frontMatter && 'id' in (result.frontMatter as any).sidebar_custom_props) {
-          if (!('page_id' in result.frontMatter)) {
-            result.frontMatter.page_id = (result.frontMatter as any).sidebar_custom_props.id;
-            needsRewrite = true;
-          }
-          delete (result.frontMatter as any).sidebar_custom_props.id;
-          if (Object.keys((result.frontMatter as any).sidebar_custom_props).length === 0) {
-            delete result.frontMatter.sidebar_custom_props;
-          }
-        }
-        if (!('page_id' in result.frontMatter)) {
-          result.frontMatter.page_id = uuidv4();
-          needsRewrite = true;
-        }
-        if (needsRewrite) {
-          await fs.writeFile(
-            params.filePath,
-            matter.stringify(params.fileContent, result.frontMatter),
-            { encoding: 'utf-8' }
-          )
-        }
-      }
-      return exposePidToSidebar(result);
-    },
-    mermaid: true,
-    hooks: {
-      onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
-    },
-    ...siteConfig.markdown
-  },
-  presets: [
-    [
-      'classic',
-      {
-        docs: DOCS_PATH ? {
-          sidebarPath: './sidebars.ts',
-          // Remove this to remove the "edit this page" links.
-          path: DOCS_PATH,
-          editUrl:
-            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
-          remarkPlugins: REMARK_PLUGINS,
-          rehypePlugins: REHYPE_PLUGINS,
-          beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-          ...(siteConfig.docs || {})
-        } : false,
-        blog: BLOG_PATH ? {
-          path: BLOG_PATH,
-          showReadingTime: true,
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
-          remarkPlugins: REMARK_PLUGINS,
-          rehypePlugins: REHYPE_PLUGINS,
-          beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-          ...(siteConfig.blog || {})
-        } : false,
-        pages: {
-          id: 'website-pages',
-          path: 'website/pages',
-          remarkPlugins: REMARK_PLUGINS,
-          rehypePlugins: REHYPE_PLUGINS,
-          beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-          editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
-          ...(siteConfig.pages || {})
-        },
-        theme: {
-          customCss: siteConfig.siteStyles ? ['./src/css/custom.scss', ...siteConfig.siteStyles] : './src/css/custom.scss',
-        },
-      } satisfies Preset.Options,
-    ],
-  ],
-  themeConfig: {
-    image: siteConfig.socialCard ?? 'img/social-card.jpg',
-    navbar: {
-      title: TITLE,
-      logo: {
-        alt: `${TITLE} Logo`,
-        src: siteConfig.logo ?? 'img/logo.svg',
+      // Even if you don't use internationalization, you can use this field to set
+      // useful metadata like html lang. For example, if your site is Chinese, you
+      // may want to replace "en" with "zh-Hans".
+      i18n: {
+        defaultLocale: siteConfig.defaultLocale ?? 'de',
+        locales: siteConfig.locales ?? ['de']
       },
-      items: siteConfig.navbarItems ?? [
-        gallery,
-        blog,
-        cms,
-        gitHub,
-        taskStateOverview,
-        accountSwitcher,
-        devModeAccessLocalFS,
-        requestTarget,
-        personalSpaceOverlay,
-        loginProfileButton,
-      ],
-    },
-    footer: {
-      style: siteConfig.footer?.style ?? 'dark',
-      links: siteConfig.footer?.links ?? [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Galerie',
-              to: '/docs/gallery',
-            },
-          ],
+      markdown: {
+        parseFrontMatter: async (params) => {
+          const result = await params.defaultParseFrontMatter(params);
+          if (process.env.NODE_ENV === 'production') {
+            return exposePidToSidebar(result);
+          }
+          /**
+           * don't add frontmatter to partials
+           */
+          const fileName = path.basename(params.filePath);
+          if (fileName.startsWith('_')) {
+            // it is a partial, don't add frontmatter
+            return exposePidToSidebar(result);
+          }
+          /**
+           * don't edit blogs frontmatter
+           */
+          if (params.filePath.startsWith(`${BUILD_LOCATION}/blog/`)) {
+            return result;
+          }
+          if (process.env.NODE_ENV !== 'production') {
+            let needsRewrite = false;
+            /**
+             * material on ofi.gbsl.website used to have 'sidebar_custom_props.id' as the page id.
+             * Rewrite it as 'page_id' and remove it in case it's present.
+             */
+            if (
+              'sidebar_custom_props' in result.frontMatter &&
+              'id' in (result.frontMatter as any).sidebar_custom_props
+            ) {
+              if (!('page_id' in result.frontMatter)) {
+                result.frontMatter.page_id = (result.frontMatter as any).sidebar_custom_props.id;
+                needsRewrite = true;
+              }
+              delete (result.frontMatter as any).sidebar_custom_props.id;
+              if (Object.keys((result.frontMatter as any).sidebar_custom_props).length === 0) {
+                delete result.frontMatter.sidebar_custom_props;
+              }
+            }
+            if (!('page_id' in result.frontMatter)) {
+              result.frontMatter.page_id = uuidv4();
+              needsRewrite = true;
+            }
+            if (needsRewrite) {
+              await fs.writeFile(params.filePath, matter.stringify(params.fileContent, result.frontMatter), {
+                encoding: 'utf-8'
+              });
+            }
+          }
+          return exposePidToSidebar(result);
         },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/blog',
+        mermaid: true,
+        hooks: {
+          onBrokenMarkdownLinks: siteConfig.onBrokenMarkdownLinks ?? 'warn',
+          onBrokenMarkdownImages:
+            process.env.NODE_ENV === 'production'
+              ? (siteConfig.onBrokenImages ?? 'throw')
+              : onBrokenImage
+        },
+        ...siteConfig.markdown
+      },
+      presets: [
+        [
+          'classic',
+          {
+            docs: DOCS_PATH
+              ? {
+                  sidebarPath: './sidebars.ts',
+                  // Remove this to remove the "edit this page" links.
+                  path: DOCS_PATH,
+                  editUrl: '/',
+                  remarkPlugins: REMARK_PLUGINS,
+                  rehypePlugins: REHYPE_PLUGINS,
+                  beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+                  ...DEFAULT_ADMONITION_CONFIG,
+                  exclude: [...new Set([...GlobExcludeDefault, '**/node_modules/**'])],
+                  async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
+                    const sidebarItems = await defaultSidebarItemsGenerator(args);
+                    return extractPackageDocs(sidebarItems);
+                  },
+                  ...(siteConfig.docs || {})
+                }
+              : false,
+            blog: BLOG_PATH
+              ? {
+                  path: BLOG_PATH,
+                  showReadingTime: true,
+                  // Remove this to remove the "edit this page" links.
+                  editUrl: '/',
+                  remarkPlugins: REMARK_PLUGINS,
+                  rehypePlugins: REHYPE_PLUGINS,
+                  beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+                  ...DEFAULT_ADMONITION_CONFIG,
+                  ...(siteConfig.blog || {})
+                }
+              : false,
+            pages: {
+              id: 'website-pages',
+              path: 'website/pages',
+              remarkPlugins: REMARK_PLUGINS,
+              rehypePlugins: REHYPE_PLUGINS,
+              beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+              editUrl: '/',
+              ...DEFAULT_ADMONITION_CONFIG,
+              ...(siteConfig.pages || {})
             },
+            theme: {
+              customCss: siteConfig.siteStyles
+                ? ['./src/css/custom.scss', ...siteConfig.siteStyles]
+                : './src/css/custom.scss'
+            }
+          } satisfies Preset.Options
+        ]
+      ],
+      themeConfig: {
+        image: siteConfig.socialCard ?? 'img/social-card.jpg',
+        navbar: {
+          title: TITLE,
+          logo: {
+            alt: `${TITLE} Logo`,
+            src: siteConfig.logo ?? 'img/logo.svg'
+          },
+          items: siteConfig.navbarItems ?? [
+            docs,
+            blog,
+            gitHub,
+            taskStateOverview,
+            accountSwitcher,
+            devModeAccessLocalFS,
+            requestTarget,
+            personalSpaceOverlay,
+            loginProfileButton
+          ]
+        },
+        footer: {
+          style: siteConfig.footer?.style ?? 'dark',
+          links: siteConfig.footer?.links ?? [
+            {
+              title: 'Unterricht',
+              items: [
+                {
+                  label: 'Material',
+                  to: '/docs'
+                }
+              ]
+            },
+            {
+              title: 'Mehr',
+              items: [
+                {
+                  label: 'Blog',
+                  to: '/blog'
+                }
+              ]
+            }
           ],
           copyright:
             siteConfig.footer?.copyright ??
