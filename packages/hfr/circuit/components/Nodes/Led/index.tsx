@@ -7,7 +7,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import { mdiLedOff, mdiLedOn } from '@mdi/js';
 import FlowNode from '@hfr/circuit/models/FlowNode';
-import { NodeType } from '@tdev-api/document';
+import { NodeType } from '@hfr/circuit';
 import Icon from '@mdi/react';
 import NodeWrapper from '../NodeWrapper';
 

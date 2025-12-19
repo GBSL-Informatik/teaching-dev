@@ -1,16 +1,10 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    DocumentType,
-    Document as DocumentProps,
-    TypeDataMapping,
-    Access,
-    Factory
-} from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import type FlowNode from './FlowNode';
-import { FlowEdgeData, NodeType } from '..';
+import { FlowEdgeData, NodeType } from '@hfr/circuit';
 
 export interface MetaInit {
     readonly?: boolean;

@@ -1,4 +1,4 @@
-import type { NodeType } from '@tdev-api/document';
+import { NodeType } from '@hfr/circuit';
 import type FlowNode from '../FlowNode';
 
 class iDeriver<NType extends NodeType> {

@@ -22,7 +22,7 @@ import { mdiCarBattery, mdiElectricSwitch, mdiLedOn } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
 import { nodeTypes } from './Nodes';
-import { NodeType } from '..';
+import { NodeType } from '@hfr/circuit';
 import { DynamicRoomProps } from '@tdev-stores/ComponentStore';
 
 type OnReconnectEnd = (

@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
-import { NodeType } from '@tdev-api/document';
+import { NodeType } from '@hfr/circuit';
 import NodeWrapper from '../NodeWrapper';
 
 export type NotNode = Node<{}, 'NotNode'>;

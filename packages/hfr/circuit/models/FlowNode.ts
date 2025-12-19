@@ -19,7 +19,7 @@ import Led from './derivers/Led';
 import Xor from './derivers/Xor';
 import Not from './derivers/Not';
 import DecimalDisplay from './derivers/DecimalDisplay';
-import { FlowNodeData, FlowNodeDataFull, NodeDataMapping, NodeType } from '..';
+import { FlowNodeData, FlowNodeDataFull, NodeDataMapping, NodeType } from '@hfr/circuit';
 
 export interface MetaInit {
     readonly?: boolean;

@@ -1,6 +1,6 @@
 import iDeriver from './iDeriver';
 import type FlowNode from '../FlowNode';
-import { NodeType } from '@tdev-api/document';
+import { NodeType } from '@hfr/circuit';
 import { Source } from '@tdev-models/iDocument';
 import { action, computed } from 'mobx';
 import { orderBy } from 'es-toolkit';

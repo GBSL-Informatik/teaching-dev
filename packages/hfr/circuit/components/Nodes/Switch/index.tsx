@@ -16,8 +16,8 @@ import {
 } from '@mdi/js';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import { Source } from '@tdev-models/iDocument';
-import { NodeType } from '@tdev-api/document';
 import NodeWrapper from '../NodeWrapper';
+import { NodeType } from '@hfr/circuit';
 
 export type SwitchNode = Node<{}, 'SwitchNode'>;
 

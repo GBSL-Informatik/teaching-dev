@@ -1,6 +1,6 @@
 import iDeriver from './iDeriver';
 import type FlowNode from '../FlowNode';
-import { NodeType } from '@tdev-api/document';
+import { NodeType } from '@hfr/circuit';
 import { computed } from 'mobx';
 
 class Xor extends iDeriver<NodeType.XorNode> {

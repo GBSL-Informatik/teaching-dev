@@ -6,8 +6,8 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
-import { NodeType } from '@tdev-api/document';
 import NodeWrapper from '../NodeWrapper';
+import { NodeType } from '@hfr/circuit';
 
 export type XorNode = Node<{}, 'XXorNode'>;
 
