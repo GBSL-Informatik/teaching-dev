@@ -203,6 +203,15 @@ export class SocketDataStore extends iStore<'ping'> {
         );
     }
 
+    /**
+     * stream updates to all connected group members (stream to the `documentRootId` id the payload)
+     */
+    @action
+    streamUpdate(roomId: string, payload: ChangedDocument) {
+        console.log('streamUpdate', roomId, payload);
+        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId });
+    }
+
     @action
     createRecord({ type, record }: NewRecord<RecordType>) {
         switch (type) {

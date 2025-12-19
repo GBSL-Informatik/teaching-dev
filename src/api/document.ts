@@ -14,9 +14,12 @@ import MdxComment from '@tdev-models/documents/MdxComment';
 import { Color } from '@tdev-components/shared/Colors';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import type DocumentStore from '@tdev-stores/DocumentStore';
+import type {
+    default as DynamicDocumentRootDocument,
+    DynamicDocumentRootModel
+} from '@tdev-models/documents/DynamicDocumentRoot';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -99,28 +102,28 @@ export interface DynamicDocumentRootData {
 }
 
 /**
- * This is the extendable mapping - only the key matters,
- * the value is in principle irrelevant.
+ * This is the extendable mapping between keys and mapped room types.
  * @example
  * ```ts
  * declare module '@tdev-api/document' {
- *   export interface RoomTypeNames {
- *     ['my_room_type']: 'my_room_type';
+ *   export interface RoomTypeMapping {
+ *     ['my_room_type']: DynamicRoom<'my_room_type'>;
  *   }
  * }
  * ```
  */
-export interface RoomTypeNames {}
+export interface RoomTypeMapping {}
 
-export type RoomType = keyof RoomTypeNames;
+export type RoomType = keyof RoomTypeMapping;
+export type RoomModels = RoomTypeMapping[RoomType];
 
 export interface DynamicDocumentRoot {
     id: string;
     name: string;
-    type: RoomType;
 }
 
 export interface DynamicDocumentRootsData {
+    roomType: RoomType;
     documentRoots: DynamicDocumentRoot[];
 }
 
@@ -192,6 +195,11 @@ export type Factory<Type extends DocumentType = DocumentType> = (
     data: Document<Type>,
     store: DocumentStore
 ) => TypeModelMapping[Type];
+
+export type RoomFactory<Type extends RoomType = RoomType> = (
+    dynamicRoot: DynamicDocumentRootDocument<Type>,
+    store: DocumentStore
+) => RoomTypeMapping[Type];
 
 export function find<Type extends DocumentType>(
     id: string,

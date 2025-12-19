@@ -3,44 +3,41 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { RoomType } from '@tdev-api/document';
-import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
+import type DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
+import SelectInput from '@tdev-components/shared/SelectInput';
 
 interface Props {
-    dynamicRoot: DynamicDocumentRoot;
+    dynamicRoot: DynamicDocumentRoot<RoomType>;
+    onChange?: (type: RoomType) => void;
 }
 
 const RoomTypeSelector = observer((props: Props) => {
     const { dynamicRoot } = props;
     const componentStore = useStore('componentStore');
-    const isInvalidRoomType = !componentStore.isValidRoomType(dynamicRoot.props?.type);
+    const options = React.useMemo(() => {
+        const values = componentStore.registeredRoomTypes;
+        if (!componentStore.isValidRoomType(dynamicRoot.roomType)) {
+            values.push(dynamicRoot.roomType);
+        }
+        return values.map((o) => {
+            return {
+                value: o,
+                label: componentStore.components.get(o)?.name ?? o,
+                disabled: !componentStore.isValidRoomType(o)
+            };
+        });
+    }, [dynamicRoot.roomType]);
     return (
-        <div className={clsx(styles.typeSelector)}>
-            <select
-                className={clsx(styles.select, isInvalidRoomType && styles.invalid)}
-                value={dynamicRoot.props?.type || ''}
-                onChange={(e) => {
-                    dynamicRoot.setRoomType(e.target.value as RoomType);
-                }}
-            >
-                {isInvalidRoomType && (
-                    <option value={dynamicRoot.props?.type || ''} disabled>
-                        {dynamicRoot.props?.type || '-'}
-                    </option>
-                )}
-                {componentStore.registeredRoomTypes.map((type) => {
-                    const component = componentStore.components.get(type);
-                    if (!component) {
-                        return null;
-                    }
-                    return (
-                        <option key={type} value={type} title={component.description}>
-                            {component.name}
-                        </option>
-                    );
-                })}
-            </select>
-        </div>
+        <SelectInput
+            options={options}
+            value={dynamicRoot.roomType}
+            disabled={!dynamicRoot.parentDocument?.canChangeType}
+            onChange={(value) => {
+                dynamicRoot.setRoomType(value as RoomType);
+                props?.onChange?.(value as RoomType);
+            }}
+        />
     );
 });
 

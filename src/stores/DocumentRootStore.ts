@@ -14,10 +14,11 @@ import {
 import iStore from '@tdev-stores/iStore';
 import GroupPermission from '@tdev-models/GroupPermission';
 import UserPermission from '@tdev-models/UserPermission';
-import { DocumentType } from '@tdev-api/document';
+import { DocumentType, RoomType, RoomTypeMapping } from '@tdev-api/document';
 import _ from 'es-toolkit/compat';
 import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
 
 type LoadConfig = {
     documents?: boolean;
@@ -163,8 +164,13 @@ export class DocumentRootStore extends iStore {
         const keys = [...current.keys()].sort();
         this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
             const ignoreMissingRoots = isUserSwitched && keys.every((id) => this.find(id)?.isLoaded);
-            const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal);
 
+            const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal).catch(
+                (e) => {
+                    console.warn('Error loading document roots', e);
+                    return { data: [] };
+                }
+            );
             // create all loaded models
             runInAction(() => {
                 models.data.forEach((data) => {

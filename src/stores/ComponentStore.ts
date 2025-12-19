@@ -1,15 +1,23 @@
 import { RootStore } from './rootStore';
 import type DocumentRoot from '@tdev-models/DocumentRoot';
-import { DynamicDocumentRoot } from '@tdev-api/document';
+import { DynamicDocumentRoot as ApiDynamicDocumentRoot } from '@tdev-api/document';
 import type { RoomType } from '@tdev-api/document';
+import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
 
-interface RoomComponent {
+export interface ApiRoomProps {
+    documentRoot: DocumentRoot<'dynamic_document_root'>;
+    apiRoomProps: ApiDynamicDocumentRoot;
+}
+
+export interface DynamicRoomProps<T extends RoomType = RoomType> {
+    documentRoot: DocumentRoot<'dynamic_document_root'>;
+    dynamicRoot: DynamicDocumentRoot<T>;
+}
+
+export interface RoomComponent<T extends RoomType = RoomType> {
     name: string;
     description: string;
-    component: React.ComponentType<{
-        documentRoot: DocumentRoot<'dynamic_document_root'>;
-        roomProps: DynamicDocumentRoot;
-    }>;
+    component: React.ComponentType<ApiRoomProps | DynamicRoomProps<T>>;
     default?: boolean;
 }
 

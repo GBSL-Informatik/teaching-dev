@@ -4,18 +4,12 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { DynamicDocumentRoot } from '@tdev-api/document';
-import DocumentRoot from '@tdev-models/DocumentRoot';
 import Conversation from './Text/Conversation';
 import NewMessage from './Text/NewMessage';
+import type { ApiRoomProps } from '@tdev-stores/ComponentStore';
 
-interface Props {
-    roomProps: DynamicDocumentRoot;
-    documentRoot: DocumentRoot<'dynamic_document_root'>;
-}
-
-const TextMessages = observer((props: Props): React.ReactNode => {
-    const { documentRoot, roomProps: dynamicDocumentRoot } = props;
+const TextMessages = observer((props: ApiRoomProps): React.ReactNode => {
+    const { documentRoot, apiRoomProps: dynamicDocumentRoot } = props;
     if (documentRoot.id !== dynamicDocumentRoot.id) {
         return <></>;
     }
