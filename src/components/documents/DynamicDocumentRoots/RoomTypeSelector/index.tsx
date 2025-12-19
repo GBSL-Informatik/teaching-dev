@@ -4,43 +4,41 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { RoomType } from '@tdev-api/document';
 import DynamicDocumentRoot from '@tdev-models/documents/DynamicDocumentRoot';
+import { useStore } from '@tdev-hooks/useStore';
 
 interface Props {
     dynamicRoot: DynamicDocumentRoot;
 }
 
-export const RoomTypeLabel: { [key in RoomType]: string } = {
-    [RoomType.Messages]: 'Textnachrichten'
-};
-
-export const RoomTypeDescription: { [key in RoomType]: string } = {
-    [RoomType.Messages]: 'Textnachrichten können in einem Chat versandt- und empfangen werden.'
-};
-
-const ValidRoomType = new Set<string>(Object.values(RoomType));
-
 const RoomTypeSelector = observer((props: Props) => {
     const { dynamicRoot } = props;
-    const invalidRoomType = !ValidRoomType.has(dynamicRoot.props?.type || '');
+    const componentStore = useStore('componentStore');
+    const isInvalidRoomType = !componentStore.isValidRoomType(dynamicRoot.props?.type);
     return (
         <div className={clsx(styles.typeSelector)}>
             <select
-                className={clsx(styles.select, invalidRoomType && styles.invalid)}
+                className={clsx(styles.select, isInvalidRoomType && styles.invalid)}
                 value={dynamicRoot.props?.type || ''}
                 onChange={(e) => {
                     dynamicRoot.setRoomType(e.target.value as RoomType);
                 }}
             >
-                {invalidRoomType && (
+                {isInvalidRoomType && (
                     <option value={dynamicRoot.props?.type || ''} disabled>
                         {dynamicRoot.props?.type || '-'}
                     </option>
                 )}
-                {Object.values(RoomType).map((type) => (
-                    <option key={type} value={type} title={RoomTypeDescription[type]}>
-                        {RoomTypeLabel[type]}
-                    </option>
-                ))}
+                {componentStore.registeredRoomTypes.map((type) => {
+                    const component = componentStore.components.get(type);
+                    if (!component) {
+                        return null;
+                    }
+                    return (
+                        <option key={type} value={type} title={component.description}>
+                            {component.name}
+                        </option>
+                    );
+                })}
             </select>
         </div>
     );

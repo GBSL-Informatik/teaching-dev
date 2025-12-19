@@ -6,8 +6,35 @@ import * as Mdi from '@mdi/js';
 import _ from 'es-toolkit/compat';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import TextInput from '@tdev-components/shared/TextInput';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 
-const MdiSelector = (): React.ReactNode => {
+interface Props {
+    // Optional top margin for the filter bar
+    filterBarTop?: string | number;
+}
+
+const DownloadBadge = ({ name, svgPath }: { name: string; svgPath: string }) => {
+    return (
+        <Button
+            icon={Mdi.mdiDownload}
+            size={SIZE_XS}
+            className={clsx(styles.downloadBadge)}
+            onClick={() => {
+                const content = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="presentation"><path d="${svgPath}" style="fill: currentcolor;"></path></svg>`;
+                const blob = new Blob([content], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${name}.svg`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }}
+        />
+    );
+};
+
+const MdiSelector = ({ filterBarTop }: Props): React.ReactNode => {
     const [showNr, setShowNr] = React.useState(300);
     const [icons, setIcons] = React.useState<string[]>([]);
     const [filter, setFilter] = React.useState('');
@@ -24,7 +51,7 @@ const MdiSelector = (): React.ReactNode => {
     }, [filter]);
     return (
         <div>
-            <div className={clsx(styles.header)}>
+            <div className={clsx(styles.header)} style={{ top: filterBarTop ?? 0 }}>
                 <TextInput
                     type="search"
                     value={filter}
@@ -42,6 +69,7 @@ const MdiSelector = (): React.ReactNode => {
                     return (
                         <div key={idx} className={clsx(styles.icon)}>
                             <Icon path={Mdi[ico as keyof typeof Mdi]} size={1.8} />
+                            <DownloadBadge name={ico} svgPath={Mdi[ico as keyof typeof Mdi]} />
                             <CopyBadge className={styles.copyBadge} value={dashed.replace('-', ' ')} />
                             <CopyBadge
                                 className={styles.copyBadge}

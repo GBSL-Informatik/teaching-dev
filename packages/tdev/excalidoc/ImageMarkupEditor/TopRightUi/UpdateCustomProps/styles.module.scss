@@ -1,0 +1,103 @@
+.card {
+    .header {
+        min-width: min(95vw, 500px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        > h3 {
+            margin: 0;
+        }
+    }
+}
+
+.dragDrop {
+    background: #fff;
+    border-radius: var(--ifm-global-radius);
+    width: 100%;
+}
+.documentUploader {
+    border: 2px dashed var(--ifm-color-primary);
+    background-color: var(--ifm-color-emphasis-300);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: var(--ifm-global-radius);
+    cursor: pointer;
+
+    &.active {
+        border-color: var(--ifm-color-success);
+    }
+    &.dragover {
+        border-style: dotted;
+        background-color: var(--ifm-color-emphasis-500);
+    }
+
+    .uploadInfo {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1em;
+        .info {
+            ul {
+                list-style-type: none;
+                padding-left: 0;
+                li {
+                    > svg {
+                        margin-right: 0.25rem;
+                        transform: translateY(15%);
+                    }
+                    .alert {
+                        margin-bottom: 0.25em;
+                        --ifm-alert-padding-vertical: 0.25rem;
+                        --ifm-alert-padding-horizontal: 0.5rem;
+                    }
+                    .alert,
+                    .clipboardButton {
+                        margin-left: 1.5rem;
+                    }
+                }
+            }
+        }
+    }
+
+    .fileList {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .fileItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: var(--ifm-global-radius);
+
+        .fileInfo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+        }
+    }
+
+    .successFile {
+        display: flex;
+        align-items: center;
+    }
+
+    input[type='file'] {
+        display: none;
+    }
+    .actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+
+        width: 100%;
+    }
+}

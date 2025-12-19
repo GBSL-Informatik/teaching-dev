@@ -5,6 +5,16 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 > [!NOTE]
 > Compatible with @docusaurus/faster (rspack and swc). 
 
+## TDEV-Website
+
+The tdev docs are located in the `tdev-website` folder. To start a local development server, run:
+
+```bash
+SITE_CONFIG_PATH="tdev-website/siteConfig.ts" yarn start
+```
+
+or add the `SITE_CONFIG_PATH` to your `.env` file.
+
 ## ENV
 
 | Variable                   | For            | Default                             | Example                         | Description                                                                                                                                                        |
@@ -18,6 +28,7 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 | `SENTRY_ORG`               | Production     |                                     |                                 | Sentry Org for error tracking                                                                                                                                      |
 | `SENTRY_PROJECT`           | Production     |                                     |                                 | Sentry Project for error tracking                                                                                                                                  |
 | `GH_OAUTH_CLIENT_ID`       | Production     |                                     |                                 | Client ID for the GitHub OAuth app used for CMS auth                                                                                                               |
+| `SITE_CONFIG_PATH`         | Dev/Production | `siteConfig.ts`                     |                                 | Path to the site config file to be used.                                                                                                                          |
 
 \* To change users, clear LocalStorage to delete the API key created upon first authentication.<br />
 

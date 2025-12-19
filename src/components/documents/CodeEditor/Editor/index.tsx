@@ -15,7 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 
 const Editor = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const pageStore = useStore('pageStore');
     return (
         <React.Fragment>

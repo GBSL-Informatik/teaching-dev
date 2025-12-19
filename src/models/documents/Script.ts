@@ -39,8 +39,8 @@ interface Version {
     pasted?: boolean;
 }
 
-export class ScriptMeta extends TypeMeta<DocumentType.Script> {
-    readonly type = DocumentType.Script;
+export class ScriptMeta extends TypeMeta<'script'> {
+    readonly type = 'script';
     readonly title: string;
     readonly lang: 'py' | string;
     readonly preCode: string;
@@ -60,7 +60,7 @@ export class ScriptMeta extends TypeMeta<DocumentType.Script> {
     readonly theme?: string;
 
     constructor(props: Partial<Omit<CodeEditorProps, 'id' | 'className'>>) {
-        super(DocumentType.Script, props.readonly ? Access.RO_User : undefined);
+        super('script', props.readonly ? Access.RO_User : undefined);
         this.title = props.title || '';
         this.lang = props.lang || 'py';
         this.preCode = props.preCode || '';
@@ -80,14 +80,14 @@ export class ScriptMeta extends TypeMeta<DocumentType.Script> {
         this.theme = props.theme;
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.Script] {
+    get defaultData(): TypeDataMapping['script'] {
         return {
             code: this.initCode
         };
     }
 }
 
-export default class Script extends iDocument<DocumentType.Script> {
+export default class Script extends iDocument<'script'> {
     @observable accessor code: string;
     @observable accessor isExecuting: boolean = false;
     @observable accessor showRaw: boolean = false;
@@ -95,14 +95,14 @@ export default class Script extends iDocument<DocumentType.Script> {
     @observable accessor isPasted: boolean = false;
     logs = observable.array<LogMessage>([], { deep: false });
 
-    constructor(props: DocumentProps<DocumentType.Script>, store: DocumentStore) {
+    constructor(props: DocumentProps<'script'>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code ?? this.meta.initCode;
     }
 
     @computed
     get meta(): ScriptMeta {
-        if (this.root?.type === DocumentType.Script) {
+        if (this.root?.type === 'script') {
             return this.root.meta as ScriptMeta;
         }
         return new ScriptMeta({});
@@ -114,7 +114,7 @@ export default class Script extends iDocument<DocumentType.Script> {
 
     @computed
     get title(): string {
-        if (this.parent && this.parent.type === DocumentType.File) {
+        if (this.parent && this.parent.type === 'file') {
             return this.parent.name;
         }
         return this.meta.title;
@@ -169,7 +169,7 @@ export default class Script extends iDocument<DocumentType.Script> {
     get versions(): ScriptVersion[] {
         return _.orderBy(
             (this.root?.documents || []).filter(
-                (doc) => doc.type === DocumentType.ScriptVersion && doc.authorId === this.authorId
+                (doc) => doc.type === 'script_version' && doc.authorId === this.authorId
             ) as ScriptVersion[],
             ['version'],
             ['asc']
@@ -189,7 +189,7 @@ export default class Script extends iDocument<DocumentType.Script> {
         this.store.create({
             documentRootId: this.documentRootId,
             data: versionData,
-            type: DocumentType.ScriptVersion
+            type: 'script_version'
         });
     }
 
@@ -209,14 +209,14 @@ export default class Script extends iDocument<DocumentType.Script> {
     }
 
     @computed
-    get data(): TypeDataMapping[DocumentType.Script] {
+    get data(): TypeDataMapping['script'] {
         return {
             code: this.code
         };
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.Script], from: Source, updatedAt?: Date) {
+    setData(data: TypeDataMapping['script'], from: Source, updatedAt?: Date) {
         if (from === Source.LOCAL) {
             this.setCode(data.code);
         } else {
@@ -339,7 +339,7 @@ export default class Script extends iDocument<DocumentType.Script> {
 
     @computed
     get derivedLang(): string {
-        if (this.parent?.type === DocumentType.File) {
+        if (this.parent?.type === 'file') {
             const ext = (this.parent as File).name.split('.').pop();
             if (!ext || ext.toLowerCase() === 'py') {
                 return 'python';

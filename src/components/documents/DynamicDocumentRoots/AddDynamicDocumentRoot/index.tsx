@@ -15,6 +15,7 @@ interface Props extends MetaInit {
 const AddDynamicDocumentRoot = observer((props: Props) => {
     const { dynamicDocumentRoots } = props;
     const userStore = useStore('userStore');
+    const componentStore = useStore('componentStore');
     const user = userStore.current;
     if (!user || !user.hasElevatedAccess) {
         return null;
@@ -27,13 +28,19 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
                 title='Neue "Document Root" hinzufügen'
                 icon={mdiPlusCircleOutline}
                 iconSide="left"
-                disabled={!RWAccess.has(dynamicDocumentRoots.root?.permission)}
+                disabled={
+                    !RWAccess.has(dynamicDocumentRoots.root?.permission) || !componentStore.defaultRoomType
+                }
                 onClick={() => {
                     const newId = uuidv4();
+                    const defaultType = componentStore.defaultRoomType;
+                    if (!defaultType) {
+                        return;
+                    }
                     dynamicDocumentRoots.addDynamicDocumentRoot(
                         newId,
                         `Neue Gruppe (${dynamicDocumentRoots.dynamicDocumentRoots.length + 1})`,
-                        RoomType.Messages
+                        defaultType
                     );
                 }}
             />

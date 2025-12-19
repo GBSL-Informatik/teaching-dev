@@ -16,8 +16,8 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-class DynamicDocumentRoot extends TypeMeta<DocumentType.DynamicDocumentRoot> {
-    readonly type = DocumentType.DynamicDocumentRoot;
+class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
+    readonly type = 'dynamic_document_root';
     readonly store: DocumentStore;
     readonly rootDocumentId: string;
     readonly parentDocumentId: string;
@@ -28,7 +28,7 @@ class DynamicDocumentRoot extends TypeMeta<DocumentType.DynamicDocumentRoot> {
         parentDocumentId: string,
         documentStore: DocumentStore
     ) {
-        super(DocumentType.DynamicDocumentRoot, props.readonly ? Access.RO_User : undefined);
+        super('dynamic_document_root', props.readonly ? Access.RO_User : undefined);
         this.store = documentStore;
         this.rootDocumentId = rootDocumentId;
         this.parentDocumentId = parentDocumentId;
@@ -45,8 +45,8 @@ class DynamicDocumentRoot extends TypeMeta<DocumentType.DynamicDocumentRoot> {
     }
 
     @computed
-    get parentRoot(): DocumentRoot<DocumentType.DynamicDocumentRoots> | undefined {
-        return this.parentDocument?.root as DocumentRoot<DocumentType.DynamicDocumentRoots>;
+    get parentRoot(): DocumentRoot<'dynamic_document_roots'> | undefined {
+        return this.parentDocument?.root as DocumentRoot<'dynamic_document_roots'>;
     }
 
     @computed
@@ -89,23 +89,23 @@ class DynamicDocumentRoot extends TypeMeta<DocumentType.DynamicDocumentRoot> {
         this.parentDocument.saveNow();
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.DynamicDocumentRoot] {
+    get defaultData(): TypeDataMapping['dynamic_document_root'] {
         return {};
     }
 }
 
-export class DynamicDocumentRootModel extends iDocument<DocumentType.DynamicDocumentRoot> {
-    constructor(props: DocumentProps<DocumentType.DynamicDocumentRoot>, store: DocumentStore) {
+export class DynamicDocumentRootModel extends iDocument<'dynamic_document_root'> {
+    constructor(props: DocumentProps<'dynamic_document_root'>, store: DocumentStore) {
         super(props, store);
         throw new Error('Model not implemented.');
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.DynamicDocumentRoot], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['dynamic_document_root'], from: Source, updatedAt?: Date): void {
         throw new Error('Method not implemented.');
     }
 
-    get data(): TypeDataMapping[DocumentType.DynamicDocumentRoot] {
+    get data(): TypeDataMapping['dynamic_document_root'] {
         return {};
     }
 

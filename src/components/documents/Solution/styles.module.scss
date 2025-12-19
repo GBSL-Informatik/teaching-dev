@@ -94,7 +94,7 @@ html[data-theme='dark'] {
     div[class^='admonitionContent'] {
         :last-child {
             &.hint-wrapper,
-            &.wrapper {
+            &.wrapper:not(.standalone) {
                 margin-bottom: -1em;
                 > .disabled,
                 > .solution {

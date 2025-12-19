@@ -28,7 +28,17 @@ const SignIn = observer((): React.ReactNode => {
             <main>
                 <h2>Einloggen</h2>
                 <div className={clsx(styles.form)}>
-                    <TextInput type="email" label="Email" value={email} onChange={(val) => setEmail(val)} />
+                    <TextInput
+                        type="email"
+                        label="Email"
+                        value={email}
+                        onChange={(val) => setEmail(val)}
+                        onEnter={() => {
+                            if (email && password) {
+                                authStore.signInWithEmail(email, password);
+                            }
+                        }}
+                    />
                     <TextInput
                         type="password"
                         label="Passwort"

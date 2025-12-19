@@ -32,3 +32,11 @@
         background: var(--ifm-color-warning-lightest);
     }
 }
+
+[data-theme='dark'] {
+    .controls {
+        &.unpersisted {
+            background: var(--ifm-color-warning-darkest);
+        }
+    }
+}

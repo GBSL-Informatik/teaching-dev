@@ -1,0 +1,53 @@
+---
+page_id: f580154f-e240-446c-bf69-491bb9e3eadb
+---
+
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# ::video
+
+Fügt ein lokales Video ein.
+
+```mdx
+::video[./assets/yogi-bear.mp4]
+```
+
+<BrowserWindow>
+::video[./assets/yogi-bear.mp4]
+</BrowserWindow>
+
+## Optionen
+`autoplay`
+: Startet das Video automatisch.
+: Standardmässig `false`.
+: z.B. `autoplay`
+`muted`
+: Schaltet den Ton des Videos stumm.
+: Standardmässig `false`.
+: z.B. `muted`
+`loop`
+: Startet das Video automatisch neu, wenn es beendet ist.
+: Standardmässig `false`.
+: z.B. `loop`
+`height`
+: Höhe des Videos.
+: z.B. `height=200px`
+`width`
+: Breite des Videos.
+: Standardmässig auf die natürliche Breite des Videos gesetzt (wobei `max-width=100%` gesetzt wird).
+: z.B. `width=200px`
+`controls`
+: Blendet die Steuerelemente des Videos ein oder aus.
+: Standardmässig `true`.
+: z.B. `controls=false`
+css Eigenschaften
+: Es können beliebige css-Eigenschaften in Form `eigenschaft=wert` angegeben werden, die auf das Video angewendet werden.
+
+
+```mdx
+::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red" controls=false}
+```
+
+<BrowserWindow>
+::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red" controls=false}
+</BrowserWindow>

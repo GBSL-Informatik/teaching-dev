@@ -12,8 +12,8 @@ export interface MetaInit {
     checker?: (val: string | undefined) => boolean;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.String> {
-    readonly type = DocumentType.String;
+export class ModelMeta extends TypeMeta<'string'> {
+    readonly type = 'string';
     readonly readonly?: boolean;
     readonly solution?: string;
     readonly sanitizedSolution?: string;
@@ -22,7 +22,7 @@ export class ModelMeta extends TypeMeta<DocumentType.String> {
     readonly checker: (val: string | undefined) => boolean;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.String, props.readonly ? Access.RO_User : undefined);
+        super('string', props.readonly ? Access.RO_User : undefined);
         this.readonly = props.readonly;
         this.default = props.default;
         this.solution = props.solution;
@@ -32,7 +32,7 @@ export class ModelMeta extends TypeMeta<DocumentType.String> {
         this.checker = props.checker || ((val: string | undefined) => val === this.sanitizedSolution);
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.String] {
+    get defaultData(): TypeDataMapping['string'] {
         return {
             text: this.default || ''
         };
@@ -45,16 +45,16 @@ export enum StringAnswer {
     Wrong = 'wrong'
 }
 
-class String extends iDocument<DocumentType.String> {
+class String extends iDocument<'string'> {
     @observable accessor text: string;
     @observable accessor answer: StringAnswer = StringAnswer.Unchecked;
-    constructor(props: DocumentProps<DocumentType.String>, store: DocumentStore) {
+    constructor(props: DocumentProps<'string'>, store: DocumentStore) {
         super(props, store);
         this.text = props.data?.text || '';
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.String], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['string'], from: Source, updatedAt?: Date): void {
         this.text = data.text;
         this.answer = StringAnswer.Unchecked;
         if (from === Source.LOCAL) {
@@ -65,7 +65,7 @@ class String extends iDocument<DocumentType.String> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.String] {
+    get data(): TypeDataMapping['string'] {
         return {
             text: this.text
         };
@@ -92,7 +92,7 @@ class String extends iDocument<DocumentType.String> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.String) {
+        if (this.root?.type === 'string') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

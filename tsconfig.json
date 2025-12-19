@@ -25,5 +25,15 @@
             "@site/*": ["./*"]
         }
     },
-    "exclude": ["src/plugins/**/*.test.ts", "node_modules", "_node_modules", "dist", "build"]
+    "exclude": [
+        "src/plugins/**/*.test.ts",
+        "docs/tdev/packages",
+        "node_modules",
+        "_node_modules",
+        "dist",
+        "build"
+    ],
+    "mdx": {
+        "plugins": [["remark-frontmatter", ["toml", "yaml"]], "remark-directive"]
+    }
 }

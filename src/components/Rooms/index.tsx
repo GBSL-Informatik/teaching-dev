@@ -6,7 +6,7 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import { observer } from 'mobx-react-lite';
 import Loader from '@tdev-components/Loader';
 import Icon from '@mdi/react';
-import { mdiAccountAlert, mdiEmoticonSad } from '@mdi/js';
+import { mdiAccountAlert, mdiEmoticonSad, mdiRoomServiceOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import styles from './styles.module.scss';
 import React from 'react';
@@ -18,7 +18,7 @@ import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoot
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
-import TextMessages from './TextMessages';
+import TextMessages from '../../../packages/tdev/text-message/TextMessages';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
 
 const NoRoom = () => {
@@ -52,15 +52,6 @@ export const NotCreated = () => {
     );
 };
 
-const NoUser = () => {
-    return (
-        <div className={clsx('alert alert--danger', styles.alert)} role="alert">
-            <Icon path={mdiAccountAlert} size={1} color="var(--ifm-color-danger)" />
-            Nicht angemeldet
-        </div>
-    );
-};
-
 type PathParams = { parentRootId: string; documentRootId: string };
 const PATHNAME_PATTERN = '/rooms/:parentRootId/:documentRootId?' as const;
 
@@ -70,14 +61,18 @@ interface Props {
 }
 const RoomComponent = observer((props: Props): React.ReactNode => {
     const documentStore = useStore('documentStore');
-    const drStore = useStore('documentRootStore');
+    const componentStore = useStore('componentStore');
     const { roomProps } = props;
     const [dynamicRoot] = React.useState(
         new DynamicDocumentRootMeta({}, roomProps.id, props.parentDocumentId, documentStore)
     );
+    const RoomComp = React.useMemo(
+        () => componentStore.components.get(roomProps.type as RoomType)?.component,
+        [roomProps.type]
+    );
     const documentRoot = useDocumentRoot(roomProps.id, dynamicRoot, false, {}, true);
 
-    if (!documentRoot || documentRoot.type !== DocumentType.DynamicDocumentRoot) {
+    if (!documentRoot || documentRoot.type !== 'dynamic_document_root') {
         return <NoRoom />;
     }
     if (NoneAccess.has(documentRoot.permission)) {
@@ -89,12 +84,12 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
             </>
         );
     }
-    switch (roomProps.type) {
-        case RoomType.Messages:
-            return <TextMessages documentRoot={documentRoot} roomProps={roomProps} />;
-        default:
-            return <NoType dynamicRoot={dynamicRoot} />;
+
+    if (!RoomComp) {
+        return <NoType dynamicRoot={dynamicRoot} />;
     }
+
+    return <RoomComp documentRoot={documentRoot} roomProps={roomProps} />;
 });
 
 interface WithParentRootProps {

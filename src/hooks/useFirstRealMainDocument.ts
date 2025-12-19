@@ -38,6 +38,10 @@ export const useFirstRealMainDocument = <Type extends DocumentType>(
         return () => clearTimeout(tId);
     }, []);
 
+    if (!mainDoc) {
+        return;
+    }
+
     const hasId = !!documentRootId;
     if (hasId) {
         if (!session?.user) {

@@ -57,6 +57,28 @@ dl.definitionList {
             display: block;
         }
     }
+    &.compact {
+        grid-template-columns: minmax(3em, auto) minmax(10em, 2fr);
+    }
+}
+
+:global(.compactDeflist) {
+    dl.definitionList {
+        grid-template-columns: minmax(3em, auto) minmax(10em, 2fr);
+    }
+}
+:global(.smallDeflist) {
+    dl.definitionList {
+        grid-template-columns: 1fr;
+        dt {
+            justify-content: left;
+        }
+        dd {
+            grid-column: 1;
+            margin-left: 1.5rem;
+            display: block;
+        }
+    }
 }
 
 @media screen and (max-width: 620px) {

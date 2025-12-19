@@ -8,9 +8,9 @@ import { StudentGroup } from '../studentGroup';
 import { DbAdapter } from './Adapter';
 import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
-import siteConfig from '@generated/docusaurus.config';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import _ from 'es-toolkit/compat';
+import { DB_NAME } from '@tdev-api/config';
 
 const TIME_NOW = new Date().toISOString();
 const LOG_REQUESTS = false;
@@ -26,7 +26,6 @@ let OfflineUser: User = {
     updatedAt: TIME_NOW
 };
 
-const DB_NAME = `${siteConfig.organizationName ?? 'gbsl'}-${siteConfig.projectName ?? 'tdev'}-db`;
 const DOCUMENTS_STORE = 'documents';
 const STUDENT_GROUPS_STORE = 'studentGroups';
 const PERMISSIONS_STORE = 'permissions';
@@ -86,7 +85,7 @@ export default class OfflineApi {
     constructor(mode: boolean | 'memory' | 'indexedDB') {
         if (mode === 'indexedDB' && ExecutionEnvironment.canUseDOM) {
             try {
-                this.dbAdapter = new IndexedDbAdapter(DB_NAME);
+                this.dbAdapter = new IndexedDbAdapter(DB_NAME, true);
             } catch (error) {
                 console.error('Failed to initialize IndexedDB:', error);
                 this.dbAdapter = new MemoryDbAdapter();

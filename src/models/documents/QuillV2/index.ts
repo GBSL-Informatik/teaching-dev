@@ -16,14 +16,14 @@ export interface MetaInit {
     default?: string;
 }
 
-export class ModelMeta extends TypeMeta<DocumentType.QuillV2> {
-    readonly type = DocumentType.QuillV2;
+export class ModelMeta extends TypeMeta<'quill_v2'> {
+    readonly type = 'quill_v2';
     readonly toolbar: ToolbarModule;
     readonly placeholder: string;
     readonly default: string;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.QuillV2, props.readonly ? Access.RO_User : undefined);
+        super('quill_v2', props.readonly ? Access.RO_User : undefined);
         this.default = `${props.default || ''}\n` || '\n';
         this.toolbar = props.toolbar
             ? getToolbar(props.toolbar)
@@ -31,23 +31,23 @@ export class ModelMeta extends TypeMeta<DocumentType.QuillV2> {
         this.placeholder = props.placeholder || '✍️ Antwort...';
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.QuillV2] {
+    get defaultData(): TypeDataMapping['quill_v2'] {
         return {
             delta: { ops: [{ insert: this.default }] } as Delta
         };
     }
 }
 
-class QuillV2 extends iDocument<DocumentType.QuillV2> {
+class QuillV2 extends iDocument<'quill_v2'> {
     @observable.ref accessor delta: Delta;
 
-    constructor(props: DocumentProps<DocumentType.QuillV2>, store: DocumentStore) {
+    constructor(props: DocumentProps<'quill_v2'>, store: DocumentStore) {
         super(props, store);
         this.delta = props.data.delta;
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.QuillV2], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['quill_v2'], from: Source, updatedAt?: Date): void {
         this.delta = data.delta;
         if (from === Source.LOCAL) {
             this.save();
@@ -59,7 +59,7 @@ class QuillV2 extends iDocument<DocumentType.QuillV2> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.QuillV2] {
+    get data(): TypeDataMapping['quill_v2'] {
         return {
             delta: this.delta
         };
@@ -72,7 +72,7 @@ class QuillV2 extends iDocument<DocumentType.QuillV2> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === DocumentType.QuillV2) {
+        if (this.root?.type === 'quill_v2') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

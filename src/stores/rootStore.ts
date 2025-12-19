@@ -12,6 +12,7 @@ import { AdminStore } from '@tdev-stores/AdminStore';
 import { CmsStore } from '@tdev-stores/CmsStore';
 import SiteStore from '@tdev-stores/SiteStore';
 import { AuthStore } from './AuthStore';
+import ComponentStore from './ComponentStore';
 
 export class RootStore {
     documentRootStore: DocumentRootStore;
@@ -26,6 +27,7 @@ export class RootStore {
     cmsStore: CmsStore;
     siteStore: SiteStore;
     authStore: AuthStore;
+    componentStore: ComponentStore;
 
     // @observable accessor initialized = false;
     constructor() {
@@ -41,6 +43,7 @@ export class RootStore {
         this.cmsStore = new CmsStore(this);
         this.siteStore = new SiteStore(this);
         this.authStore = new AuthStore(this);
+        this.componentStore = new ComponentStore(this);
     }
 
     @action

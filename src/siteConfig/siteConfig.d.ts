@@ -13,6 +13,10 @@ export interface TdevConfig {
         /** don't include teachers in the task state overview */
         hideTeachers?: boolean;
     };
+    excalidraw: {
+        disableImageMarkupEditor?: boolean;
+        excalidoc?: boolean;
+    };
 }
 
 export interface SiteConfig {
@@ -48,6 +52,7 @@ export interface SiteConfig {
 
     /** The behavior for broken links. */
     onBrokenLinks?: 'throw' | 'ignore' | 'log' | 'warn';
+    onBrokenImages?: 'throw' | 'ignore' | 'log' | 'warn';
 
     /** The behavior for markdown broken links. */
     onBrokenMarkdownLinks?: 'throw' | 'ignore' | 'log' | 'warn';
@@ -190,6 +195,33 @@ export interface SiteConfig {
         /** The name of the GitHub project. */
         projectName?: string;
     };
+
+    /**
+     * An array of custom document providers. Through this providers, the
+     * DocumentStore can initialize additional document types.
+     * @example
+     * ```ts
+     * // siteConfig.ts
+     * apiDocumentProviders: [
+     *   require.resolve('@tdev/excalidoc/register')
+     * ]
+     * ```
+     *
+     * Note: the document providers are so called [clientModules](https://docusaurus.io/docs/advanced/client#client-modules) supported by Docusaurus.
+     * The included module should register itself to the affected store(s) on import.
+     * e.g.
+     * ```ts
+     * // register.ts
+     * import { rootStore } from '@tdev-stores/rootStore';
+     * import { createModel } from './model';
+     * const register = () => {
+     *   rootStore.documentStore.registerFactory('text_message', createModel);
+     *   rootStore.socketStore.registerRecordToCreate('text_message');
+     * };
+     * register();
+     * ```
+     */
+    apiDocumentProviders?: string[];
 
     /** Transformer functions for the Docusaurus config object. */
     transformers?: ConfigTransformer;

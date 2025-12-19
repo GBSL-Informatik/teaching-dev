@@ -9,6 +9,7 @@ import 'ace-builds/esm-resolver';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { DocumentType } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
+import useCodeTheme from '@tdev-hooks/useCodeTheme';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
@@ -16,8 +17,9 @@ const ALIAS_LANG_MAP_ACE = {
 };
 
 const EditorAce = observer(() => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const eRef = React.useRef<AceEditor>(null);
+    const { aceTheme } = useCodeTheme();
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
@@ -77,7 +79,7 @@ const EditorAce = observer(() => {
                 maxLines={script.meta.maxLines}
                 ref={eRef}
                 mode={ALIAS_LANG_MAP_ACE[script.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? script.lang}
-                theme={script.meta.theme ?? 'dracula'}
+                theme={script.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     script.setCode(value, e.action);
                 }}

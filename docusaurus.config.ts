@@ -1,13 +1,28 @@
 require('dotenv').config();
-import getSiteConfig from './siteConfig';
+import type {
+  EditThisPageOption,
+  ShowEditThisPage,
+  SiteConfig,
+  TdevConfig
+} from '@tdev/siteConfig/siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
-import type { Config, } from '@docusaurus/types';
+import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import themeCodeEditor from './src/plugins/theme-code-editor'
+import themeCodeEditor from './src/plugins/theme-code-editor';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
-import { accountSwitcher, blog, cms, devModeAccessLocalFS, gallery, gitHub, loginProfileButton, personalSpaceOverlay, requestTarget, taskStateOverview } from './src/siteConfig/navbarItems';
+import {
+  accountSwitcher,
+  blog,
+  devModeAccessLocalFS,
+  docs,
+  gitHub,
+  loginProfileButton,
+  personalSpaceOverlay,
+  requestTarget,
+  taskStateOverview
+} from './src/siteConfig/navbarItems';
 import { applyTransformers } from './src/siteConfig/transformers';
 import {
   sassPluginConfig,
@@ -15,40 +30,51 @@ import {
   rsDoctorPluginConfig,
   aliasConfigurationPluginConfig,
   sentryPluginConfig,
-  socketIoNoDepWarningsPluginConfig,
+  socketIoNoDepWarningsPluginConfig
 } from './src/siteConfig/pluginConfigs';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
-import { recommendedBeforeDefaultRemarkPlugins, recommendedRehypePlugins, recommendedRemarkPlugins } from './src/siteConfig/markdownPluginConfigs';
+import {
+  recommendedBeforeDefaultRemarkPlugins,
+  recommendedRehypePlugins,
+  recommendedRemarkPlugins
+} from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
-import { excalidrawPluginConfig } from '@tdev/excalidoc';
-import type { EditThisPageOption, ShowEditThisPage, TdevConfig } from '@tdev/siteConfig/siteConfig';
+import { GlobExcludeDefault } from '@docusaurus/utils';
 import type { ParseFrontMatterResult } from '@docusaurus/types/src/markdown';
+import extractPackageDocs from './src/siteConfig/extractPackageDocs';
 
-const siteConfig = getSiteConfig();
+const withSiteConfig = async (): Promise<SiteConfig> => {
+  if (process.env.SITE_CONFIG_PATH) {
+    console.log(`Using site config from ${process.env.SITE_CONFIG_PATH}`);
+    const pathToConfig = path.resolve(process.cwd(), process.env.SITE_CONFIG_PATH);
+    const getConfig = await import(pathToConfig).then((mod) => mod.default);
+    return getConfig();
+  } else {
+    console.log(`Using site config from default './siteConfig'`);
+    const getConfig = await import('./siteConfig').then((mod) => mod.default);
+    return getConfig();
+  }
+};
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
-const OFFLINE_API = process.env.OFFLINE_API === 'false' 
-  ? false
-  : process.env.OFFLINE_API === 'indexedDB'
+const OFFLINE_API =
+  process.env.OFFLINE_API === 'false'
+    ? false
+    : process.env.OFFLINE_API === 'indexedDB'
       ? 'indexedDB'
       : !!process.env.OFFLINE_API || process.env.CODESPACES === 'true';
 
-      const TITLE = siteConfig.title ?? 'Teaching-Dev';
-
-const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
-const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
-
-const BEFORE_DEFAULT_REMARK_PLUGINS = siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
-const REMARK_PLUGINS = siteConfig.remarkPlugins ?? recommendedRemarkPlugins;
-const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? recommendedRehypePlugins;
-
-const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
-const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
 
+const DEFAULT_ADMONITION_CONFIG = {
+  admonitions: {
+    keywords: ['aufgabe', 'finding', 'insight', 'definition'],
+    extendDefaults: true
+  }
+};
 /**
  * exposes the `page_id` frontmatter as `pid` in `sidebar_custom_props`
  * this way the sidebar can access the page_id without additional plugins
@@ -64,84 +90,119 @@ const exposePidToSidebar = (fm: ParseFrontMatterResult) => {
   return fm;
 };
 
-const config: Config = applyTransformers({
-  title: TITLE,
-  tagline: siteConfig.tagline ?? 'Eine Plattform zur Gestaltung interaktiver Lernerlebnisse',
-  favicon: siteConfig.favicon ?? 'img/favicon.ico',
+const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
+  const TITLE = siteConfig.title ?? 'Teaching-Dev';
 
-  // Set the production url of your site here
-  url: siteConfig.url ?? 'https://teaching-dev.gbsl.website',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: siteConfig.baseUrl ?? '/',
+  const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
+  const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: ORGANIZATION_NAME, // Usually your GitHub org/user name.
-  projectName: PROJECT_NAME, // Usually your repo name.
+  const BEFORE_DEFAULT_REMARK_PLUGINS =
+    siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
+  const REMARK_PLUGINS = siteConfig.remarkPlugins ?? recommendedRemarkPlugins;
+  const REHYPE_PLUGINS = siteConfig.rehypePlugins ?? recommendedRehypePlugins;
 
-  onBrokenLinks: siteConfig.onBrokenLinks ?? 'throw',
+  const ORGANIZATION_NAME = siteConfig.gitHub?.orgName ?? 'gbsl-informatik';
+  const PROJECT_NAME = siteConfig.gitHub?.projectName ?? 'teaching-dev';
 
-  customFields: {
-    /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
-    TEST_USER: DEFAULT_TEST_USER,
-    OFFLINE_API: OFFLINE_API,
-    NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
-    /** The Domain Name where the api is running */
-    APP_URL: process.env.NETLIFY
-      ? process.env.CONTEXT === 'production'
-        ? process.env.URL
-        : process.env.DEPLOY_PRIME_URL
-      : process.env.APP_URL || 'http://localhost:3000',
-    /** The Domain Name of this app */
-    BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
-    GIT_COMMIT_SHA: GIT_COMMIT_SHA,
-    SENTRY_DSN: process.env.SENTRY_DSN,
-    GH_OAUTH_CLIENT_ID: GH_OAUTH_CLIENT_ID,
-    PERSONAL_SPACE_DOC_ROOT_ID: siteConfig.personalSpaceDocRootId || '2686fc4e-10e7-4288-bf41-e6175e489b8e',
-    showEditThisPage: siteConfig.showEditThisPage ?? 'always' satisfies ShowEditThisPage,
-    showEditThisPageOptions: siteConfig.showEditThisPageOptions ?? ['github', 'github-dev', 'cms'] satisfies EditThisPageOption[],
-    editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
-    tdevConfig: siteConfig.tdevConfig ?? {} satisfies Partial<TdevConfig>,
-  },
-  future: {
-    v4: true,
-    experimental_faster: {
-      /**
-       * no config options for swcJsLoader so far. 
-       * Instead configure it over the jsLoader in the next step 
-       */
-      swcJsLoader: false,
-      swcJsMinimizer: true,
-      swcHtmlMinimizer: true,
-      lightningCssMinimizer: true,
-      rspackBundler: true,
-      rspackPersistentCache: process.env.NETLIFY ? false : true,
-      mdxCrossCompilerCache: true,
-      ssgWorkerThreads: true,
-    },
-  },
-  webpack: {
-    jsLoader: (isServer) => {
-      const defaultOptions = require("@docusaurus/faster").getSwcLoaderOptions({ isServer });
-      return {
-        loader: 'builtin:swc-loader', // (only works with Rspack)
-        options: {
-          ...defaultOptions,
-          jsc: {
-            parser: {
-              ...defaultOptions.jsc.parser,
-              decorators: true
-            },
-            transform: {
-              ...defaultOptions.jsc.transform,
-              decoratorVersion: '2022-03',
+  const excalidrawConfig = siteConfig.tdevConfig?.excalidraw || {};
+  let onBrokenImage: OnBrokenMarkdownImagesFunction | undefined = undefined;
+  if (!excalidrawConfig.disableImageMarkupEditor && process.env.NODE_ENV !== 'production') {
+    onBrokenImage = (await import('@tdev/excalidoc/ImageMarkupEditor/onNewExcalidrawSketch')).default;
+  }
+  const loadedPlugins: Config['plugins'] = [];
+  if (excalidrawConfig.excalidoc || !excalidrawConfig.disableImageMarkupEditor) {
+    const currentProviders = new Set(siteConfig.apiDocumentProviders || []);
+    if (excalidrawConfig.excalidoc) {
+      const documentProvider = require.resolve('@tdev/excalidoc/register');
+      currentProviders.add(documentProvider);
+    }
+    const {excalidrawPluginConfig} = (await import('@tdev/excalidoc/index'));
+    siteConfig.apiDocumentProviders = [...currentProviders];
+    loadedPlugins.push(excalidrawPluginConfig);
+  }
+
+  const config: Config = applyTransformers(
+    {
+      title: TITLE,
+      tagline: siteConfig.tagline ?? 'Eine Plattform zur Gestaltung interaktiver Lernerlebnisse',
+      favicon: siteConfig.favicon ?? 'img/favicon.ico',
+
+      // Set the production url of your site here
+      url: siteConfig.url ?? 'https://teaching-dev.gbsl.website',
+      // Set the /<baseUrl>/ pathname under which your site is served
+      // For GitHub pages deployment, it is often '/<projectName>/'
+      baseUrl: siteConfig.baseUrl ?? '/',
+
+      // GitHub pages deployment config.
+      // If you aren't using GitHub pages, you don't need these.
+      organizationName: ORGANIZATION_NAME, // Usually your GitHub org/user name.
+      projectName: PROJECT_NAME, // Usually your repo name.
+
+      onBrokenLinks: siteConfig.onBrokenLinks ?? 'throw',
+
+      customFields: {
+        /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
+        TEST_USER: DEFAULT_TEST_USER,
+        OFFLINE_API: OFFLINE_API,
+        NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
+        /** The Domain Name where the api is running */
+        APP_URL: process.env.NETLIFY
+          ? process.env.CONTEXT === 'production'
+            ? process.env.URL
+            : process.env.DEPLOY_PRIME_URL
+          : process.env.APP_URL || 'http://localhost:3000',
+        /** The Domain Name of this app */
+        BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:3002',
+        GIT_COMMIT_SHA: GIT_COMMIT_SHA,
+        SENTRY_DSN: process.env.SENTRY_DSN,
+        GH_OAUTH_CLIENT_ID: GH_OAUTH_CLIENT_ID,
+        PERSONAL_SPACE_DOC_ROOT_ID:
+          siteConfig.personalSpaceDocRootId || '2686fc4e-10e7-4288-bf41-e6175e489b8e',
+        showEditThisPage: siteConfig.showEditThisPage ?? ('always' satisfies ShowEditThisPage),
+        showEditThisPageOptions:
+          siteConfig.showEditThisPageOptions ??
+          (['github', 'github-dev', 'cms'] satisfies EditThisPageOption[]),
+        editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
+        tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
+      },
+      future: {
+        v4: true,
+        experimental_faster: {
+          /**
+           * no config options for swcJsLoader so far.
+           * Instead configure it over the jsLoader in the next step
+           */
+          swcJsLoader: false,
+          swcJsMinimizer: true,
+          swcHtmlMinimizer: true,
+          lightningCssMinimizer: true,
+          rspackBundler: true,
+          rspackPersistentCache: process.env.NETLIFY ? false : true,
+          mdxCrossCompilerCache: true,
+          ssgWorkerThreads: true
+        }
+      },
+      webpack: {
+        jsLoader: (isServer) => {
+          const defaultOptions = require('@docusaurus/faster').getSwcLoaderOptions({ isServer });
+          return {
+            loader: 'builtin:swc-loader', // (only works with Rspack)
+            options: {
+              ...defaultOptions,
+              jsc: {
+                parser: {
+                  ...defaultOptions.jsc.parser,
+                  decorators: true
+                },
+                transform: {
+                  ...defaultOptions.jsc.transform,
+                  decoratorVersion: '2022-03'
+                }
+              }
             }
-          },
-        },
-      }
-    },
-  },
+          };
+        }
+      },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -168,7 +229,7 @@ const config: Config = applyTransformers({
        * don't edit blogs frontmatter
        */
       if (params.filePath.startsWith(`${BUILD_LOCATION}/blog/`)) {
-        return exposePidToSidebar(result);
+        return result;
       }
       if (process.env.NODE_ENV !== 'production') {
         let needsRewrite = false;
@@ -288,65 +349,69 @@ const config: Config = applyTransformers({
               to: '/blog',
             },
           ],
+          copyright:
+            siteConfig.footer?.copyright ??
+            `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
+        <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commits/${GIT_COMMIT_SHA}">
+              ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
+        </a>
+        `
         },
+        prism: {
+          theme: prismThemes.github,
+          darkTheme: prismThemes.dracula,
+          additionalLanguages: ['bash', 'typescript', 'json', 'python']
+        },
+        ...(siteConfig.themeConfig || {})
+      } satisfies Preset.ThemeConfig,
+      plugins: [
+        sassPluginConfig,
+        dynamicRouterPluginConfig,
+        rsDoctorPluginConfig,
+        aliasConfigurationPluginConfig,
+        sentryPluginConfig,
+        remarkPdfPluginConfig,
+        socketIoNoDepWarningsPluginConfig,
+        ...loadedPlugins,
+        [
+          '@docusaurus/plugin-content-pages',
+          {
+            id: 'tdev-pages',
+            path: 'src/pages',
+            remarkPlugins: REMARK_PLUGINS,
+            rehypePlugins: REHYPE_PLUGINS,
+            beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
+            editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
+            ...(siteConfig.pages || {})
+          }
+        ]
       ],
-      copyright: siteConfig.footer?.copyright ?? `Copyright © ${new Date().getFullYear()} Teaching Dev. Built with Docusaurus. <br />
-      <a class="badge badge--primary" href="https://github.com/GBSL-Informatik/teaching-dev/commits/${GIT_COMMIT_SHA}">
-            ᚶ ${GIT_COMMIT_SHA.substring(0, 7)}
-      </a>
-      `,
+      themes: [
+        '@docusaurus/theme-mermaid',
+        [
+          themeCodeEditor,
+          {
+            brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
+            brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
+            libDir: '/bry-libs/'
+          }
+        ],
+        ...(siteConfig.themes || [])
+      ],
+      stylesheets: [
+        {
+          href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+          type: 'text/css',
+          integrity: 'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+          crossorigin: 'anonymous'
+        }
+      ],
+      clientModules: siteConfig.apiDocumentProviders,
+      scripts: siteConfig.scripts
     },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
-      additionalLanguages: ['bash', 'typescript', 'json', 'python'],
-    },
-    ...(siteConfig.themeConfig || {}),
-  } satisfies Preset.ThemeConfig,
-  plugins: [
-    sassPluginConfig,
-    dynamicRouterPluginConfig,
-    rsDoctorPluginConfig,
-    aliasConfigurationPluginConfig,
-    sentryPluginConfig,
-    remarkPdfPluginConfig,
-    excalidrawPluginConfig,
-    socketIoNoDepWarningsPluginConfig,
-    [
-      '@docusaurus/plugin-content-pages',
-      {
-        id: 'tdev-pages',
-        path: 'src/pages',
-        remarkPlugins: REMARK_PLUGINS,
-        rehypePlugins: REHYPE_PLUGINS,
-        beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
-        editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
-          ...(siteConfig.pages || {})
-      },
-    ]
-  ],
-  themes: [
-    '@docusaurus/theme-mermaid',
-    [
-      themeCodeEditor,
-      {
-        brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
-        brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
-        libDir: '/bry-libs/'
-      }
-    ],
-    ...(siteConfig.themes || [])
-  ],
-  stylesheets: [
-    {
-      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
-      type: 'text/css',
-      integrity:
-        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
-      crossorigin: 'anonymous',
-    },
-  ],
-  scripts: siteConfig.scripts,
-}, siteConfig.transformers ?? {});
+    siteConfig.transformers ?? {}
+  );
+  return config;
+});
 
-export default config;
+export default docusaurusConfig;

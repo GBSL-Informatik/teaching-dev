@@ -14,7 +14,7 @@ export interface Props {
     main?: React.ReactNode;
 }
 const Graphics = observer((props: Props) => {
-    const script = useDocument<DocumentType.Script>();
+    const script = useDocument<'script'>();
     const nodeRef = React.useRef<HTMLDivElement>(null);
     return (
         <Draggable
@@ -39,7 +39,7 @@ const Graphics = observer((props: Props) => {
                 </div>
                 <div
                     id={DOM_ELEMENT_IDS.graphicsResult(script.codeId)}
-                    className="brython-graphics-result"
+                    className={clsx('brython-graphics-result', styles.brythonGraphicsResultMain)}
                     key={`exec-${script.graphicsModalExecutionNr}`}
                 >
                     {props.main}

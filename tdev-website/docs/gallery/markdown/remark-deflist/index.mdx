@@ -1,0 +1,243 @@
+---
+page_id: ebe2c231-95d4-4c9d-aab7-2d90138601c2
+tags: [remark]
+---
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import DefinitionList from "@tdev-components/DefinitionList";
+
+# Deflist
+
+Mit Definitionslisten ist es einfach, Wort-Definitionen oder ähnliche Inhalte zu erstellen.
+
+```md
+<dl>
+    <dt>Hello World</dt>
+    <dd>The simplest example</dd>
+    <dt>World</dt>
+    <dd>Our planet</dd>
+</dl>
+```
+<BrowserWindow>
+<Dl>
+    <dt>Hello World</dt>
+    <dd>The simplest example</dd>
+    <dt>World</dt>
+    <dd>Our planet</dd>
+</Dl>
+</BrowserWindow>
+
+Um dies im Markdown mit weniger Aufwand zu erstellen, kann eine an [pandoc](https://pandoc.org/MANUAL.html#definition-lists) angelehnte Syntax verwendet werden:
+
+```md
+Hello World
+: The simplest example
+World
+: Our planet
+```
+mit demselben Resultat:
+
+<BrowserWindow>
+Hello World
+: The simplest example
+World
+: Our planet
+</BrowserWindow>
+
+## Mehrzeilige Definitionen
+
+```md
+Streetfood
+: Auf der Strasse zubereitete Speisen, die oft in mobilen Verkaufsständen oder -wagen verkauft werden.
+: ![--width=350px --margin=0](../images/street-food.jpg)
+Schnee auf der Strasse
+: In der Regel ein Zeichen für Winter :mdi[snowflake]{.blue}.
+: In __Bern__ zuletzt gesehen am 10. Januar 2024.
+: ![--width=350px --margin=0](../images/snowy-street.jpg)
+```
+
+<BrowserWindow>
+Streetfood
+: Auf der Strasse zubereitete Speisen, die oft in mobilen Verkaufsständen oder -wagen verkauft werden.
+: ![--width=350px --margin=0](../images/street-food.jpg)
+Schnee auf der Strasse
+: In der Regel ein Zeichen für Winter :mdi[snowflake]{.blue}.
+: In __Bern__ zuletzt gesehen am 10. Januar 2024.
+: ![--width=350px --margin=0](../images/snowy-street.jpg)
+</BrowserWindow>
+
+## Block-Elemente
+
+Es können auch Block-Elemente eingefügt werden. Dazu muss allerdings eine Blockdirective `:::dd` verwendet werden.
+
+````md
+Hallo Welt
+: In Python
+:::dd
+
+    ```python
+    print("Hello World")
+    print('Ich bin ein Block!')
+    ```
+:::
+Hallo Welt in Live
+: In Brython
+:::dd
+
+    ```py live_py
+    print("Hello World")
+    print('Ich bin ein Block!')
+    ```
+:::
+````
+<BrowserWindow>
+Hallo Welt
+: In Python
+:::dd
+
+    ```python
+    print("Hello World")
+    print('Ich bin ein Block!')
+    ```
+:::
+Hallo Welt in Live
+: In Brython
+:::dd
+
+    ```py live_py
+    print("Hello World")
+    print('Ich bin ein Block!')
+    ```
+:::
+</BrowserWindow>
+
+## Kontext durch Eltern-Klassen
+
+Die Definitionen können auch durch Eltern-Klassen kontextualisiert werden. Dies ermöglicht eine bessere Organisation und Strukturierung der Inhalte.
+
+```md
+`default`
+: The simplest example
+World
+: Our planet
+
+---
+
+<div className="compactDeflist">
+`compactDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+
+---
+
+<div className="smallDeflist">
+`smallDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+```
+
+<BrowserWindow>
+
+`default`
+: The simplest example
+World
+: Our planet
+
+---
+
+<div className="compactDeflist">
+`compactDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+
+---
+
+<div className="smallDeflist">
+`smallDeflist`
+: The simplest example
+World
+: Our planet
+</div>
+</BrowserWindow>
+
+## Manuelle Verwendung
+
+Es kann auch direkt die entsprechende React-Komponente verwendet werden:
+
+```md
+import DefinitionList from "@tdev-components/DefinitionList";
+
+<DefinitionList>
+    <dt>Hello World</dt>
+    <dd>The simplest example</dd>
+    <dt>World</dt>
+    <dd>Our planet</dd>
+</DefinitionList>
+```
+
+<BrowserWindow>
+<DefinitionList>
+    <dt>Hello World</dt>
+    <dd>The simplest example</dd>
+    <dt>World</dt>
+    <dd>Our planet</dd>
+</DefinitionList>
+</BrowserWindow>
+
+### Attribute
+
+`small`
+: Stellt `dt` und `dd` untereinander dar - standardmässig auf kleiner Displaygrösse aktiviert.
+`compact`
+: Reduziert den links-seitigen Abstand und richtet die `dt` Elemente linksbündig aus.
+`gridTemplateColumns`
+: Ermöglicht ie Übergabe einer eigenen Definitionder Anordnung von `dt` und `dd` Elementen.
+: **default**: `minmax(8em, 1fr) minmax(10em, 2fr)`
+`ignoreMediaQueries`
+: Ignoriert die automatische Anpassung der Darstellung basierend auf der Displaygrösse.
+: **deault**: Ist das Display kleiner als `620px` Breit, so wird automatisch `small` aktiviert.
+
+## Installation
+
+:::info[Code]
+- `src/plugins/remark-deflist`
+- `src/components/DefinitionList`
+:::
+
+
+:::info[`src/theme/MDXComponents.tsx`]
+```tsx {2,6}
+import MDXComponents from '@theme-original/MDXComponents';
+import DefinitionList from '@tdev-components/DefinitionList';
+
+export default {
+  ...MDXComponents,
+  Dl: DefinitionList,
+};
+```
+:::
+
+::::info[`docusaurus.config.ts`]
+```ts {1,4-11}
+import deflistPlugin from './src/plugins/remark-deflist/plugin';
+const BEFORE_DEFAULT_REMARK_PLUGINS = [
+    /* ensure to place it before! the images plugin! ... */
+    [
+        deflistPlugin,
+        {
+            tagNames: {
+                dl: 'Dl',
+            },
+        }
+    ],
+];
+```
+:::warning[Zusammenspiel mit dem [remark-images](../remark-image/index.mdx) Plugin]
+Damit Bilder ohne weiteres in Definitionen eingebunden werden können, muss das `remark-deflist` Plugin vor dem [remark-images](../remark-image/index.mdx) Plugin platziert werden.
+:::
+::::

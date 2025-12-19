@@ -2,7 +2,6 @@
     display: flex;
     align-items: center;
     position: sticky;
-    top: 4em;
     background: var(--ifm-navbar-background-color);
     z-index: var(--ifm-z-index-dropdown);
     box-shadow: var(--ifm-global-shadow-lw);
@@ -29,6 +28,7 @@
         flex-direction: column;
         gap: 0.2em;
         align-items: center;
+        position: relative;
         .copyBadge {
             font-size: 10px;
             break-inside: avoid;
@@ -36,6 +36,11 @@
             overflow: hidden;
             white-space: nowrap;
             max-width: 100%;
+        }
+        .downloadBadge {
+            position: absolute;
+            top: 0.2em;
+            right: 0.2em;
         }
     }
 }

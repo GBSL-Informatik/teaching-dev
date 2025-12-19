@@ -25,6 +25,7 @@ const AllowedActions = observer((props: Props) => {
     const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
     const [sortColumn, _setSortColumn] = React.useState<SortColumn>('documentType');
     const adminStore = useStore('adminStore');
+    const documentStore = useStore('documentStore');
     const [newAction, setNewAction] = React.useState('');
     const [newDocType, setNewDocType] = React.useState<DocumentType | undefined>(undefined);
 
@@ -49,7 +50,7 @@ const AllowedActions = observer((props: Props) => {
                     />
                     <SelectInput
                         onChange={(docType) => setNewDocType(docType as DocumentType)}
-                        options={['', ...Object.values(DocumentType)]}
+                        options={['', ...documentStore.documentTypes]}
                         value={newDocType || ''}
                     />
                     <Button

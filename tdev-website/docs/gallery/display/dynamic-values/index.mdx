@@ -1,0 +1,155 @@
+---
+page_id: 3c0fdf0a-3a05-491c-9f13-72c021c36118
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# Dynamische Werte
+
+Dynamische Werte können als Platzhalter in Anleitungen verwendet werden. In Kombination mit Eingabefeldern lassen sich so bspw. dynamische Skript-Anleitungen erstellen. Alle Platzhalter auf der gegebenen Seite werden dann durch die Eingabewerte ersetzt, sobald die Eingabefelder geändert werden. Die eingegebenen Werte werden nur lokal im __Page__-Modell gespeichert und nicht ans Backend übertragen. So ist es auch Möglich, Eingabefelder für die Konfiguration bspw. von Passwörtern zu verwenden.
+
+````md
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+<DynamicInput name="name" default="Reto" />
+<DynamicInput name="zahl" label="Lieblingszahl" default="42" />
+
+Hallo **<Val name="name" />**, deine Lieblingszahl ist <Val name="zahl" as="boxed" />.
+
+<TemplateCode>
+```bash
+echo "Hallo {{name}}!"
+```
+</TemplateCode>
+
+In Python würde das wie folgt gemacht: <Val as="code">`print('Hallo {{name}}!')`</Val>.
+
+Verstehst du, weshalb das Ergebnis immer __3__ ergibt?
+
+<TemplateCode>
+```py live_py slim
+zahl = {{zahl}}
+zahl = zahl * 2
+zahl = zahl + 9
+zahl = zahl - 3
+zahl = zahl / 2
+zahl = zahl - {{zahl}}
+print(zahl)
+```
+</TemplateCode>
+````
+
+<BrowserWindow>
+    <DynamicInput name="name" default="Reto" />
+    <DynamicInput name="zahl" label="Lieblingszahl" default="42" />
+
+    Hallo **<Val name="name" />**, deine Lieblingszahl ist <Val name="zahl" as="boxed" />.
+
+    <TemplateCode>
+    ```bash
+    echo "Hallo {{name}}!"
+    ```
+    </TemplateCode>
+
+    In Python würde das wie folgt gemacht: <Val as="code">`print('Hallo {{name}}!')`</Val>.
+
+    Verstehst du, weshalb das Ergebnis immer __3__ ergibt?
+
+    <TemplateCode>
+    ```py live_py slim
+    zahl = {{zahl}}
+    zahl = zahl * 2
+    zahl = zahl + 9
+    zahl = zahl - 3
+    zahl = zahl / 2
+    zahl = zahl - {{zahl}}
+    print(zahl)
+    ```
+    </TemplateCode>
+</BrowserWindow>
+
+## Abgeleitete Werte
+
+Wird als `default`-Wert eine Funktion der Form `(store: PageStore) => string` verwendet, wird der Wert als abgeleitet betrachtet. Diese Werte werden von anderen Eingabefeldern abgeleitet und werden aktualisiert, sobald sich entsprechende Werte ändern. Der abgeleitete Wert kann aber auch von der Benutzer:in überschrieben werden.
+
+````jsx showLineNumbers
+<DynamicInput name="Vorname" default="Reto" />
+// highlight-start
+<DynamicInput 
+    name="Anrede"
+    default={(store) => `Hallo ${store.dynamicValues.get('Vorname')}`}
+/>
+// highlight-end
+
+<TemplateCode>
+```bash
+{{Anrede}}
+
+Willkommen zu unserem Kurs!
+```
+</TemplateCode>
+````
+Auf Zeile 4 wird der Wert des Eingabefelds `Vorname` verwendet, um den Standardwert des Eingabefelds `Anrede` zu berechnen.
+
+<BrowserWindow>
+    <DynamicInput name="Vorname" default="Reto" />
+    <DynamicInput name="Anrede" default={(store) => `Hallo ${store.dynamicValues.get('Vorname')}`} />
+
+    <TemplateCode>
+    ```bash
+    {{Anrede}}
+
+    Willkommen zu unserem Kurs!
+    ```
+    </TemplateCode>
+</BrowserWindow>
+
+## Generierte Werte
+
+```jsx
+<DynamicInput
+    name="Lieblingszahl"
+    placeholder='42'
+    // highlight-next-line
+    onRecalculate={() => Math.round(Math.random() * 100)} 
+/>
+```
+<BrowserWindow>
+    <DynamicInput
+        name="Lieblingszahl"
+        placeholder='42'
+        onRecalculate={() => Math.round(Math.random() * 100)} 
+    />
+</BrowserWindow>
+
+## Attribute
+
+name
+: Eindeutiger Name des dynamischen Werts.
+: Typ: `string`
+default
+: (optional) Standardwert des dynamischen Werts.
+: Typ: `string | ((page: Page) => string)`;
+label
+: (optional) Beschriftung des Eingabefelds.
+: Typ: `string`
+onRecalculate
+: (optional) Funktion zur Neuberechnung des Werts. Ist diese Funktion gesetzt, so wird ein :mdi[sync]-Button angezeigt.
+: Typ: `(page: Page) => string`
+placeholder
+: (optional) Platzhaltertext für das Eingabefeld.
+: Typ: `string`
+monospace
+: (optional) Ob der Text im Eingabefeld im Monospace-Stil angezeigt werden soll.
+: Typ: `boolean`
+hidden
+: (optional) Ob das Eingabefeld verborgen ist.
+: Typ: `boolean`
+
+## Installation
+
+:::info[Code]
+Zu kopierender Code:
+- `src/components/DynamicValues`
+:::

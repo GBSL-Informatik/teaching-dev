@@ -1,3 +1,5 @@
+import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
+
 interface ImageDimensions {
     width: number;
     height: number;
@@ -8,13 +10,17 @@ const getImageDimensions = (file: File, maxWidth: number = -1): Promise<ImageDim
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
-            const dimensions = { width: img.width, height: img.height, scale: 1 };
+            const dimensions = {
+                width: img.width,
+                height: img.height,
+                scale: getScale(img.width, img.height)
+            };
             URL.revokeObjectURL(img.src);
             if (maxWidth > 0 && dimensions.width > maxWidth) {
                 const scaleFactor = maxWidth / dimensions.width;
                 dimensions.width = maxWidth;
                 dimensions.height = dimensions.height * scaleFactor;
-                dimensions.scale = scaleFactor;
+                dimensions.scale = getScale(dimensions.width, dimensions.height);
             }
             resolve(dimensions);
         };

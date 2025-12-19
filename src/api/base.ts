@@ -1,11 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
-import siteConfig from '@generated/docusaurus.config';
 import OfflineApi from './OfflineApi';
-const { BACKEND_URL, OFFLINE_API } = siteConfig.customFields as {
-    BACKEND_URL: string;
-    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
-};
-
+import IndexedDbAdapter from './OfflineApi/Adapter/IndexedDb';
+import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import MemoryDbAdapter from './OfflineApi/Adapter/MemoryDb';
 export namespace Api {
     export const BASE_API_URL = eventsApiUrl();
 
@@ -22,4 +20,12 @@ const api: AxiosInstance & { mode?: 'indexedDB' | 'memory'; destroyDb?: () => Pr
           headers: {}
       });
 
+const indexedDb =
+    OFFLINE_API === 'indexedDB'
+        ? ((api as unknown as OfflineApi).dbAdapter as IndexedDbAdapter)
+        : ExecutionEnvironment.canUseDOM
+          ? new IndexedDbAdapter(DB_NAME, false)
+          : new MemoryDbAdapter();
+
+export { indexedDb };
 export default api;

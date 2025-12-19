@@ -7,6 +7,7 @@ import Loader from '@tdev-components/Loader';
 import { useClientLib } from '@tdev-hooks/useClientLib';
 import type { default as DirectoryComponentType } from '@tdev-components/documents/FileSystem/Directory/Directory';
 
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 interface Props extends MetaInit {
     id: string;
 }
@@ -18,8 +19,11 @@ const Directory = observer((props: Props) => {
         () => import('@tdev-components/documents/FileSystem/Directory/Directory').then((d) => d.default),
         '@tdev-components/documents/FileSystem/Directory/Directory'
     );
-    if (!doc || !DirectoryComponent) {
+    if (!DirectoryComponent) {
         return <Loader />;
+    }
+    if (!doc) {
+        return <UnknownDocumentType type={meta.type} />;
     }
     return <DirectoryComponent dir={doc} />;
 });

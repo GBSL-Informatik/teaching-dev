@@ -5,9 +5,32 @@
         }
     }
 }
-
 :global(.alert) {
+    p:has(+ ol),
+    p:has(+ ul),
+    p:has(+ div[class^='wrapper'] + ol),
+    p:has(+ div[class^='wrapper'] + ul) {
+        --ifm-paragraph-margin-bottom: calc(0.25 * 1rem);
+    }
     &:last-child {
         margin-bottom: 0;
     }
+}
+.aufgabe {
+    --ifm-alert-background-color: var(--tdev-admonition-aufgabe-background-color); // Light Teal
+    --ifm-alert-background-color-highlight: var(
+        --tdev-admonition-aufgabe-background-color-highlight
+    ); // Slightly Darker Teal
+    --ifm-alert-foreground-color: var(--tdev-admonition-aufgabe-foreground-color); // Darker Teal for Text
+    --ifm-alert-border-color: var(--tdev-admonition-aufgabe-border-color); // Medium Teal Border
+}
+.definition {
+    --ifm-alert-background-color: var(--tdev-admonition-definition-background-color); // Light Brownish
+    --ifm-alert-background-color-highlight: var(
+        --tdev-admonition-definition-background-color-highlight
+    ); // Slightly Darker Brownish
+    --ifm-alert-foreground-color: var(
+        --tdev-admonition-definition-foreground-color
+    ); // Dark Brownish for Text
+    --ifm-alert-border-color: var(--tdev-admonition-definition-border-color); // Medium Brown
 }

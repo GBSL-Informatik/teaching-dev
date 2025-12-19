@@ -21,34 +21,34 @@ export interface MetaInit {
 
 export const DEFAULT_TASK_STATES: StateType[] = ['unset', 'checked', 'question'] as const;
 
-export class TaskMeta extends TypeMeta<DocumentType.TaskState> {
-    readonly type = DocumentType.TaskState;
+export class TaskMeta extends TypeMeta<'task_state'> {
+    readonly type = 'task_state';
     readonly readonly: boolean;
     readonly default: StateType;
 
     constructor(props: Partial<MetaInit>) {
-        super(DocumentType.TaskState, props.readonly ? Access.RO_User : undefined, props.pagePosition);
+        super('task_state', props.readonly ? Access.RO_User : undefined, props.pagePosition);
         this.default = props.states && props.states.length > 0 ? props.states[0] : DEFAULT_TASK_STATES[0];
         this.readonly = !!props.readonly;
     }
 
-    get defaultData(): TypeDataMapping[DocumentType.TaskState] {
+    get defaultData(): TypeDataMapping['task_state'] {
         return {
             state: this.default
         };
     }
 }
 
-class TaskState extends iDocument<DocumentType.TaskState> {
+class TaskState extends iDocument<'task_state'> {
     @observable accessor _taskState: StateType;
     @observable accessor scrollTo: boolean = false;
-    constructor(props: DocumentProps<DocumentType.TaskState>, store: DocumentStore) {
+    constructor(props: DocumentProps<'task_state'>, store: DocumentStore) {
         super(props, store);
         this._taskState = props.data?.state;
     }
 
     @action
-    setData(data: TypeDataMapping[DocumentType.TaskState], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['task_state'], from: Source, updatedAt?: Date): void {
         if (!RWAccess.has(this.root?.permission)) {
             return;
         }
@@ -62,7 +62,7 @@ class TaskState extends iDocument<DocumentType.TaskState> {
         }
     }
 
-    get data(): TypeDataMapping[DocumentType.TaskState] {
+    get data(): TypeDataMapping['task_state'] {
         return {
             state: this._taskState
         };
@@ -88,7 +88,7 @@ class TaskState extends iDocument<DocumentType.TaskState> {
 
     @computed
     get meta(): TaskMeta {
-        if (this.root?.type === DocumentType.TaskState) {
+        if (this.root?.type === 'task_state') {
             return this.root.meta as TaskMeta;
         }
         return new TaskMeta({});
