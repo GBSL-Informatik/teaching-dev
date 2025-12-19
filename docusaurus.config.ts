@@ -42,6 +42,7 @@ import {
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
 import extractPackageDocs from './src/siteConfig/extractPackageDocs';
+import { ParseFrontMatterResult } from '@docusaurus/types/src/markdown';
 
 const withSiteConfig = async (): Promise<SiteConfig> => {
   if (process.env.SITE_CONFIG_PATH) {
@@ -73,6 +74,20 @@ const DEFAULT_ADMONITION_CONFIG = {
     keywords: ['aufgabe', 'finding', 'insight', 'definition'],
     extendDefaults: true
   }
+};
+/**
+ * exposes the `page_id` frontmatter as `pid` in `sidebar_custom_props`
+ * this way the sidebar can access the page_id without additional plugins
+ * and we can use it to access the page model for the current page in the sidebar
+ */
+const exposePidToSidebar = (fm: ParseFrontMatterResult) => {
+  if (!('sidebar_custom_props' in fm.frontMatter)) {
+    fm.frontMatter.sidebar_custom_props = {};
+  }
+  if (!('pid' in (fm.frontMatter as any).sidebar_custom_props) && ('page_id' in fm.frontMatter)) {
+    (fm.frontMatter.sidebar_custom_props as any).pid = fm.frontMatter.page_id;
+  }
+  return fm;
 };
 
 const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
@@ -200,7 +215,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         parseFrontMatter: async (params) => {
           const result = await params.defaultParseFrontMatter(params);
           if (process.env.NODE_ENV === 'production') {
-            return result;
+            return exposePidToSidebar(result);
           }
           /**
            * don't add frontmatter to partials
@@ -208,7 +223,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           const fileName = path.basename(params.filePath);
           if (fileName.startsWith('_')) {
             // it is a partial, don't add frontmatter
-            return result;
+            return exposePidToSidebar(result);
           }
           /**
            * don't edit blogs frontmatter
@@ -245,7 +260,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
               });
             }
           }
-          return result;
+          return exposePidToSidebar(result);
         },
         mermaid: true,
         hooks: {

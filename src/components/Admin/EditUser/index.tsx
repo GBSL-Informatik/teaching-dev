@@ -219,7 +219,7 @@ const EditUser = observer((props: Props) => {
                                 authClient.admin
                                     .setUserPassword({ userId: user.id, newPassword: password })
                                     .then((res) => {
-                                        if (res.data) {
+                                        if (res?.data) {
                                             setPwState('success');
                                         } else {
                                             setPwState('error');
@@ -284,7 +284,7 @@ const EditUser = observer((props: Props) => {
                     setSpinState('deleting');
                     authClient.admin.removeUser({ userId: user.id }).then(
                         action((res) => {
-                            if (res.data?.success) {
+                            if (res?.data?.success) {
                                 userStore.removeFromStore(user.id);
                                 props.close();
                             }

@@ -1,0 +1,15 @@
+{
+    "name": "@tdev/page-progress-state",
+    "version": "1.0.0",
+    "main": "remark-plugin/index.ts",
+    "types": "remark-plugin/index.ts",
+    "dependencies": {},
+    "devDependencies": {
+        "vitest": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@docusaurus/core": "*"
+    },
+    "peerDependencies": {
+        "@tdev/core": "1.0.0"
+    }
+}
