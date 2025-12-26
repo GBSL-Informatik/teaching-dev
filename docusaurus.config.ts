@@ -42,6 +42,7 @@ import {
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
 import extractPackageDocs from './src/siteConfig/extractPackageDocs';
+import packageDocsSync from './updateSync/packageDocsSync';
 
 const withSiteConfig = async (): Promise<SiteConfig> => {
   if (process.env.SITE_CONFIG_PATH) {
@@ -368,6 +369,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         ...(siteConfig.themeConfig || {})
       } satisfies Preset.ThemeConfig,
       plugins: [
+        packageDocsSync,
         sassPluginConfig,
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,

@@ -1,7 +1,7 @@
 import chokidar from 'chokidar';
 import minimist from 'minimist';
 import path from 'path';
-import { getDebouncedSyncer, META_FILES_TEST } from '.';
+import { getDebouncedSyncer, META_FILES_TEST } from './actions';
 
 const argv = minimist(process.argv.slice(2), {
     string: ['src', 'dest'],
@@ -14,7 +14,7 @@ const argv = minimist(process.argv.slice(2), {
 const PACKAGES_DIR = path.resolve(process.cwd(), argv.src);
 const DEST_ROOT = path.resolve(process.cwd(), argv.dest);
 
-const watcher = chokidar.watch(PACKAGES_DIR, { ignoreInitial: false, persistent: true });
+const watcher = chokidar.watch(PACKAGES_DIR, { ignoreInitial: true, persistent: true });
 
 const { syncQueue, syncDebounced } = getDebouncedSyncer(PACKAGES_DIR, DEST_ROOT);
 
