@@ -41,7 +41,6 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import extractPackageDocs from './src/siteConfig/extractPackageDocs';
 import packageDocsSync from './updateSync/packageDocsSync';
 
 const withSiteConfig = async (): Promise<SiteConfig> => {
@@ -273,10 +272,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
                   beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
                   ...DEFAULT_ADMONITION_CONFIG,
                   exclude: [...new Set([...GlobExcludeDefault, '**/node_modules/**'])],
-                  async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
-                    const sidebarItems = await defaultSidebarItemsGenerator(args);
-                    return extractPackageDocs(sidebarItems);
-                  },
                   ...(siteConfig.docs || {})
                 }
               : false,
@@ -369,7 +364,13 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         ...(siteConfig.themeConfig || {})
       } satisfies Preset.ThemeConfig,
       plugins: [
-        packageDocsSync,
+        [
+          packageDocsSync,
+          {
+            packageDir: 'packages',
+            destDir: 'tdev-website/docs/packages'
+          }
+        ],
         sassPluginConfig,
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,
