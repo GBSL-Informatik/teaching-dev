@@ -80,6 +80,9 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
 
   const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
   const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
+  console.log('RUNNING BUILD WITH DOCS PATH:', DOCS_PATH);
+  //await packageDocsSync('packages', `${DOCS_PATH}/packages`);
+  
 
   const BEFORE_DEFAULT_REMARK_PLUGINS =
     siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
@@ -364,13 +367,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         ...(siteConfig.themeConfig || {})
       } satisfies Preset.ThemeConfig,
       plugins: [
-        [
-          packageDocsSync,
-          {
-            packageDir: 'packages',
-            destDir: 'tdev-website/docs/packages'
-          }
-        ],
         sassPluginConfig,
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,

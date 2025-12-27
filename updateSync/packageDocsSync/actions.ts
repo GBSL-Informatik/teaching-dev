@@ -53,6 +53,9 @@ export const packageInfo = (filePath: string, packageDir: string): PackageInfo |
     }
     const relPath = path.relative(packageDir, filePath);
     const parts = relPath.split(path.sep);
+    if (parts.length === 0) {
+        return null;
+    }
     if (parts.length >= 2) {
         const pkgInfo: PackageInfo = {
             packageDir,
@@ -70,7 +73,7 @@ export const packageInfo = (filePath: string, packageDir: string): PackageInfo |
 
 export const syncDocsFolder = async (pkgConfig: TdevPackageConfig, packageDocsDir: string) => {
     const { org, package: packageName, path: docsPath } = pkgConfig.docs;
-    const srcPath = path.resolve(pkgConfig.path, docsPath);
+    const srcPath = resolveDir(pkgConfig.path, docsPath);
     const destPackagePath = resolveDir(packageDocsDir, org, packageName);
     await fs.mkdir(destPackagePath, { recursive: true });
     const rsyncArgs = ['-avq', '--delete', '--chmod=Fa-w'];
