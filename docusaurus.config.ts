@@ -23,6 +23,7 @@ import {
   taskStateOverview
 } from './src/siteConfig/navbarItems';
 import { applyTransformers } from './src/siteConfig/transformers';
+import { withSiteConfig } from './src/siteConfig/withSiteConfig';
 import {
   sassPluginConfig,
   dynamicRouterPluginConfig,
@@ -40,7 +41,6 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import { withSiteConfig } from '@tdev/siteConfig/withSiteConfig';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);

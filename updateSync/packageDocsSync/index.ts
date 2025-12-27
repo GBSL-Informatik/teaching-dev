@@ -30,7 +30,7 @@ const packageDocsSync = async (packageDir: string, destDir: string) => {
                         const categoryFileDest = path.join(destPath, org, `_category_${ext}`);
                         await fs.mkdir(path.dirname(categoryFileDest), { recursive: true });
                         await fs.copyFile(categoryFileSrc, categoryFileDest);
-                        return `Copied ${org} _category_ file`;
+                        return `✅ Copied ${org} _category_ file`;
                     }
                 } catch {}
             }
@@ -44,12 +44,12 @@ const packageDocsSync = async (packageDir: string, destDir: string) => {
                     const categoryFileDest = path.join(destPath, `_category_${ext}`);
                     await fs.mkdir(path.dirname(categoryFileDest), { recursive: true });
                     await fs.copyFile(categoryFileSrc, categoryFileDest);
-                    return 'Copied root _category_ file';
+                    return '✅ Copied root _category_ file';
                 }
             } catch {}
         })
     ]);
-    console.log(result.join('\n'));
+    console.log(result.filter(Boolean).join('\n'));
     return result;
 };
 
