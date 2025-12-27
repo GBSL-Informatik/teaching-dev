@@ -2,6 +2,7 @@ import chokidar from 'chokidar';
 import minimist from 'minimist';
 import path from 'path';
 import { getDebouncedSyncer, packageInfo } from './actions';
+import packageDocsSync from '.';
 
 const argv = minimist(process.argv.slice(2), {
     string: ['src', 'dest'],
@@ -18,8 +19,8 @@ const watcher = chokidar.watch(PACKAGES_DIR, { ignoreInitial: true, persistent: 
 
 const main = async () => {
     const { syncQueue, syncDebounced } = await getDebouncedSyncer(PACKAGES_DIR, DEST_ROOT);
-
     const NODE_MODULES_TEST = /node_modules/;
+    await packageDocsSync(PACKAGES_DIR, DEST_ROOT);
 
     watcher
         .on('all', async (_event, filePath) => {

@@ -2,7 +2,6 @@ require('dotenv').config();
 import type {
   EditThisPageOption,
   ShowEditThisPage,
-  SiteConfig,
   TdevConfig
 } from '@tdev/siteConfig/siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
@@ -37,24 +36,11 @@ import path from 'path';
 import {
   recommendedBeforeDefaultRemarkPlugins,
   recommendedRehypePlugins,
-  recommendedRemarkPlugins
+  recommendedRemarkPlugins,
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import packageDocsSync from './updateSync/packageDocsSync';
-
-const withSiteConfig = async (): Promise<SiteConfig> => {
-  if (process.env.SITE_CONFIG_PATH) {
-    console.log(`Using site config from ${process.env.SITE_CONFIG_PATH}`);
-    const pathToConfig = path.resolve(process.cwd(), process.env.SITE_CONFIG_PATH);
-    const getConfig = await import(pathToConfig).then((mod) => mod.default);
-    return getConfig();
-  } else {
-    console.log(`Using site config from default './siteConfig'`);
-    const getConfig = await import('./siteConfig').then((mod) => mod.default);
-    return getConfig();
-  }
-};
+import { withSiteConfig } from '@tdev/siteConfig/withSiteConfig';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
@@ -80,7 +66,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
 
   const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
   const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
-  console.log('RUNNING BUILD WITH DOCS PATH:', DOCS_PATH);
   //await packageDocsSync('packages', `${DOCS_PATH}/packages`);
   
 
