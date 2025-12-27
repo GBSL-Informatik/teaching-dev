@@ -1,4 +1,3 @@
-require('dotenv').config();
 import path from 'path';
 import minimist from 'minimist';
 import packageDocsSync from '.';

@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { getPackageDocsConfigs, syncDocsFolder } from './actions';
+import { getPackageDocsConfigs, syncCategoryFile, syncDocsFolder } from './actions';
 import path from 'path';
 
 const packageDocsSync = async (packageDir: string, destDir: string) => {
@@ -22,32 +22,9 @@ const packageDocsSync = async (packageDir: string, destDir: string) => {
         }),
         ...orgs.map(async (org) => {
             const orgSrc = path.join(srcPath, org);
-            for (const ext of ['.json', '.yaml', '.yml']) {
-                const categoryFileSrc = path.join(orgSrc, `_category_${ext}`);
-                try {
-                    const stat = await fs.stat(categoryFileSrc);
-                    if (stat.isFile()) {
-                        const categoryFileDest = path.join(destPath, org, `_category_${ext}`);
-                        await fs.mkdir(path.dirname(categoryFileDest), { recursive: true });
-                        await fs.copyFile(categoryFileSrc, categoryFileDest);
-                        return `✅ Copied ${org} _category_ file`;
-                    }
-                } catch {}
-            }
+            return syncCategoryFile(orgSrc, path.join(destPath, org));
         }),
-        ...['.json', '.yaml', '.yml'].map(async (ext) => {
-            const orgSrc = path.join(srcPath);
-            const categoryFileSrc = path.join(orgSrc, `_category_${ext}`);
-            try {
-                const stat = await fs.stat(categoryFileSrc);
-                if (stat.isFile()) {
-                    const categoryFileDest = path.join(destPath, `_category_${ext}`);
-                    await fs.mkdir(path.dirname(categoryFileDest), { recursive: true });
-                    await fs.copyFile(categoryFileSrc, categoryFileDest);
-                    return '✅ Copied root _category_ file';
-                }
-            } catch {}
-        })
+        syncCategoryFile(srcPath, destPath)
     ]);
     console.log(result.filter(Boolean).join('\n'));
     return result;

@@ -47,26 +47,55 @@ const resolveDir = (pkgPath: string, ...parts: string[]): string => {
     return path.resolve(CWD, pkgPath, ...parts);
 };
 
+const CATEGORY_MATCHER = /^_category_\.(json|ya?ml)$/;
+export const categoryFileLocation = (filePath: string, packageDir: string): string | null => {
+    if (!filePath.startsWith(packageDir)) {
+        return null;
+    }
+    const relPath = path.relative(packageDir, filePath);
+    const parts = relPath.split(path.sep);
+    if (parts.length === 1 && CATEGORY_MATCHER.test(parts[0])) {
+        return '';
+    }
+    if (parts.length === 2 && CATEGORY_MATCHER.test(parts[1])) {
+        return parts[0];
+    }
+    return null;
+};
+
 export const packageInfo = (filePath: string, packageDir: string): PackageInfo | null => {
     if (!filePath.startsWith(packageDir)) {
         return null;
     }
     const relPath = path.relative(packageDir, filePath);
     const parts = relPath.split(path.sep);
-    if (parts.length === 0) {
+    if (parts.length < 3) {
         return null;
     }
-    if (parts.length >= 2) {
-        const pkgInfo: PackageInfo = {
-            packageDir,
-            org: parts[0],
-            package: parts[1]
-        };
-        const relativeSubPath = parts.slice(2).join(path.sep);
-        if (relativeSubPath.length > 0) {
-            pkgInfo.relativeSubPath = relativeSubPath;
-        }
-        return pkgInfo;
+    const pkgInfo: PackageInfo = {
+        packageDir,
+        org: parts[0],
+        package: parts[1]
+    };
+    const relativeSubPath = parts.slice(2).join(path.sep);
+    if (relativeSubPath.length > 0) {
+        pkgInfo.relativeSubPath = relativeSubPath;
+    }
+    return pkgInfo;
+};
+
+export const syncCategoryFile = async (srcFolder: string, destFolder: string) => {
+    for (const ext of ['.json', '.yaml', '.yml']) {
+        const categoryFileSrc = path.join(srcFolder, `_category_${ext}`);
+        try {
+            const stat = await fs.stat(categoryFileSrc);
+            if (stat.isFile()) {
+                const categoryFileDest = path.join(destFolder, `_category_${ext}`);
+                await fs.mkdir(path.dirname(categoryFileDest), { recursive: true });
+                await fs.copyFile(categoryFileSrc, categoryFileDest);
+                return `✅ Copied ${destFolder}/_category_${ext}.`;
+            }
+        } catch {}
     }
     return null;
 };

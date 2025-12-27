@@ -1,7 +1,7 @@
 import chokidar from 'chokidar';
 import minimist from 'minimist';
 import path from 'path';
-import { getDebouncedSyncer, packageInfo } from './actions';
+import { getDebouncedSyncer, categoryFileLocation, packageInfo, syncCategoryFile } from './actions';
 import packageDocsSync from '.';
 
 const argv = minimist(process.argv.slice(2), {
@@ -28,12 +28,15 @@ const main = async () => {
                 return null;
             }
             const pkgInfo = packageInfo(filePath, PACKAGES_DIR);
-            if (pkgInfo === null) {
-                return null;
+            if (pkgInfo) {
+                syncQueue.add(pkgInfo);
+                syncDebounced();
+            } else {
+                const location = categoryFileLocation(filePath, PACKAGES_DIR);
+                if (location !== null) {
+                    return syncCategoryFile(PACKAGES_DIR, path.join(DEST_ROOT, location));
+                }
             }
-
-            syncQueue.add(pkgInfo);
-            await syncDebounced();
         })
         .on('ready', () => {
             console.log('Watching for docs changes in packages...');
