@@ -1,4 +1,5 @@
 require('dotenv').config();
+import logger from '@docusaurus/logger';
 import type {
   EditThisPageOption,
   ShowEditThisPage,
@@ -230,6 +231,12 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             if (needsRewrite) {
               await fs.writeFile(params.filePath, matter.stringify(params.fileContent, result.frontMatter), {
                 encoding: 'utf-8'
+              }).catch((e) => {
+                if (e.code === 'EACCES') {
+                  const parts = params.filePath.split(path.sep).slice(-3);
+                  logger.warn(`Could not rewrite frontmatter due to insufficient file permissions. Did you create a new file in a subfolder of ./packages/${parts.slice(0, 2).join('/')} ?`);
+                  logger.info(`Make sure to add the following frontmatter manually to the head of "${parts.join(path.sep)}":\n\n${matter.stringify('', result.frontMatter)}`);
+                }
               });
             }
           }
