@@ -172,7 +172,7 @@ class DynamicDocumentRoots extends iDocument<'dynamic_document_roots'> {
     get data(): TypeDataMapping['dynamic_document_roots'] {
         return {
             roomType: this.roomType,
-            documentRoots: this.dynamicDocumentRoots.slice()
+            documentRoots: this.dynamicDocumentRoots.map((dr) => ({ ...dr }))
         };
     }
 

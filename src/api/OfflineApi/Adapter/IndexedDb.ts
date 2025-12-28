@@ -59,7 +59,9 @@ class IndexedDbAdapter implements DbAdapter {
         return withFallback(async () => {
             const db = await this.dbPromise;
             const index = db.transaction('documents', 'readonly').store.index('documentRootId');
-            return index.getAll(documentRootId) as Promise<Document<T>[]>;
+            const docs = (await index.getAll(documentRootId)) as Document<T>[];
+            console.log('byDocumentRootId', documentRootId, docs);
+            return docs;
         }, []);
     }
 

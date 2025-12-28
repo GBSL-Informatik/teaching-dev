@@ -13,7 +13,7 @@ import _ from 'es-toolkit/compat';
 import { DB_NAME } from '@tdev-api/config';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = false;
+const LOG_REQUESTS = true;
 
 let OfflineUser: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -217,21 +217,24 @@ export default class OfflineApi {
             case 'users':
                 if (parts.length === 1 && parts[0] === 'documentRoots') {
                     const ids = query.getAll('ids');
-                    console.log('ids', ids);
                     if (ids.length === 0) {
                         resolveResponse([] as unknown as T);
                     }
                     const documentRootDocs = await Promise.all(ids.map((id) => this.documentsBy(id)));
-                    const documenRoots = documentRootDocs
-                        .filter((docs) => docs.length > 0)
-                        .map((docs) => ({
-                            id: docs[0].documentRootId,
+                    console.log('ids', ids, documentRootDocs);
+                    const documenRoots = ids.map((rid) => {
+                        return {
+                            id: rid,
                             access: Access.RW_DocumentRoot,
                             sharedAccess: Access.RW_DocumentRoot,
                             userPermissions: [],
                             groupPermissions: [],
-                            documents: docs
-                        })) as unknown as T;
+                            documents:
+                                documentRootDocs.find(
+                                    (docs) => docs.length > 0 && docs[0].documentRootId === rid
+                                ) || []
+                        };
+                    }) as unknown as T;
                     return resolveResponse(documenRoots);
                 }
                 return resolveResponse([OfflineUser] as unknown as T);
