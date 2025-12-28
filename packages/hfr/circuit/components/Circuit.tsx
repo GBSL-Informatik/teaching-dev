@@ -108,6 +108,8 @@ const Circuit = observer((props: DynamicRoomProps<'circuit'>): React.ReactNode =
                         onReconnectStart={onReconnectStart}
                         onReconnectEnd={onReconnectEnd}
                         fitView
+                        minZoom={0.1}
+                        maxZoom={4}
                         snapToGrid={true}
                         snapGrid={[10, 10]}
                         proOptions={{ hideAttribution: true }}

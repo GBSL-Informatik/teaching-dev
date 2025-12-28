@@ -8,6 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@hfr/circuit';
 import NodeWrapper from '../NodeWrapper';
+import NotGate from './assets/Gate-NOT.svg';
 
 export type NotNode = Node<{}, 'NotNode'>;
 
@@ -18,30 +19,21 @@ const NotNode = observer((props: NodeProps<NotNode>) => {
         return null;
     }
     return (
-        <NodeWrapper node={doc} className={styles.not}>
-            <svg viewBox="0 0 140 100" className={clsx(styles.background)} xmlns="http://www.w3.org/2000/svg">
-                <path
-                    fill="var(--ifm-font-color-base)"
-                    d={`M0,0 L0,0 L120,50 L0,100 Z
-                        M4,7 L4,93 L110,50 Z
-                        M120,50 a10,10,0,0,0,20,0 a10,10,0,0,0,-20,0 Z
-                        M123,50 a6,6,0,0,1,14,0 a6,6,0,0,1,-14,0 Z
-                        M139,48 l10,0 l0,4 l-10,0 Z`}
-                />
-            </svg>
+        <NodeWrapper node={doc} className={clsx(styles.not, shared.gate)}>
+            <NotGate className={shared.image} />
             NOT
             <Handle
                 type="target"
                 className={clsx(doc.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
                 position={Position.Left}
-                style={{ left: '-5px' }}
+                style={{ left: '0px' }}
                 id="a"
             />
             <Handle
                 type="source"
                 className={clsx(doc.deriver.power > 0 && shared.on, shared.handle)}
                 position={Position.Right}
-                style={{ right: '2px' }}
+                style={{ right: '0px' }}
             />
         </NodeWrapper>
     );

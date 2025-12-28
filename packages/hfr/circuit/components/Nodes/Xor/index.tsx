@@ -8,6 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import NodeWrapper from '../NodeWrapper';
 import { NodeType } from '@hfr/circuit';
+import XorGate from './assets/Gate-XOR.svg';
 
 export type XorNode = Node<{}, 'XXorNode'>;
 
@@ -18,30 +19,28 @@ const XorNode = observer((props: NodeProps<XorNode>) => {
         return null;
     }
     return (
-        <NodeWrapper node={doc} className={styles.xor}>
+        <NodeWrapper node={doc} className={clsx(styles.xor, shared.gate)}>
+            <XorGate className={shared.image} />
             XOR
-            <div className={clsx(styles.inputs)}></div>
-            <div className={clsx(styles.leftWall)}></div>
             <Handle
                 type="target"
                 className={clsx(doc.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
                 position={Position.Left}
-                style={{ top: '2.25px', left: '-12px' }}
+                style={{ top: '10px' }}
                 id="a"
             />
             <Handle
                 type="target"
                 className={clsx(doc.inputEdgeB?.isPowerOn && shared.on, shared.handle)}
                 position={Position.Left}
-                style={{ top: '16.5px', left: '-12px' }}
+                style={{ top: '50px' }}
                 id="b"
             />
-            <div className={clsx(styles.output)}></div>
             <Handle
                 type="source"
                 className={clsx(doc.deriver.output && shared.on, shared.handle)}
                 position={Position.Right}
-                style={{ left: '28px' }}
+                style={{ right: '0px' }}
             />
         </NodeWrapper>
     );

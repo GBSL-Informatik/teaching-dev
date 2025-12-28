@@ -8,6 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@hfr/circuit';
 import NodeWrapper from '../NodeWrapper';
+import AndGate from './assets/Gate-AND.svg';
 
 export type AndNode = Node<{}, 'AndNode'>;
 
@@ -18,29 +19,28 @@ const AndNode = observer((props: NodeProps<AndNode>) => {
         return null;
     }
     return (
-        <NodeWrapper node={doc} className={styles.and}>
+        <NodeWrapper node={doc} className={clsx(styles.and, shared.gate)}>
+            <AndGate className={shared.image} />
             AND
-            <div className={clsx(styles.inputs)}></div>
             <Handle
                 type="target"
                 position={Position.Left}
-                style={{ top: '2.5px', left: '-10px' }}
+                style={{ top: '10px' }}
                 className={clsx(doc.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
                 id="a"
             />
             <Handle
                 type="target"
                 position={Position.Left}
-                style={{ top: '16.5px', left: '-10px' }}
+                style={{ top: '50px' }}
                 className={clsx(doc.inputEdgeB?.isPowerOn && shared.on, shared.handle)}
                 id="b"
             />
-            <div className={clsx(styles.output)}></div>
             <Handle
                 type="source"
                 position={Position.Right}
                 style={{
-                    left: '31px'
+                    right: '0px'
                 }}
                 className={clsx(doc.deriver.output && shared.on, shared.handle)}
             />

@@ -8,6 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@hfr/circuit';
 import NodeWrapper from '../NodeWrapper';
+import OrGate from './assets/Gate-OR.svg';
 
 export type OrNode = Node<{}, 'OrNode'>;
 
@@ -18,29 +19,28 @@ const OrNode = observer((props: NodeProps<OrNode>) => {
         return null;
     }
     return (
-        <NodeWrapper node={doc} className={styles.or}>
+        <NodeWrapper node={doc} className={clsx(styles.or, shared.gate)}>
+            <OrGate className={shared.image} />
             OR
-            <div className={clsx(styles.inputs)}></div>
             <Handle
                 type="target"
                 className={clsx(doc.inputEdgeA?.isPowerOn && shared.on, shared.handle)}
                 position={Position.Left}
-                style={{ top: '2.25px', left: '-12px' }}
+                style={{ top: '10px' }}
                 id="a"
             />
             <Handle
                 type="target"
                 className={clsx(doc.inputEdgeB?.isPowerOn && shared.on, shared.handle)}
                 position={Position.Left}
-                style={{ top: '16.5px', left: '-12px' }}
+                style={{ top: '50px' }}
                 id="b"
             />
-            <div className={clsx(styles.output)}></div>
             <Handle
                 type="source"
                 className={clsx(doc.deriver.output && shared.on, shared.handle)}
                 position={Position.Right}
-                style={{ left: '28px' }}
+                style={{ right: '0px' }}
             />
         </NodeWrapper>
     );

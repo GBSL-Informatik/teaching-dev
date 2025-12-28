@@ -4,18 +4,10 @@ import styles from './styles.module.scss';
 import shared from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import { Handle, Node, NodeProps, NodeToolbar, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import Button from '@tdev-components/shared/Button';
-import {
-    mdiButtonPointer,
-    mdiElectricSwitch,
-    mdiElectricSwitchClosed,
-    mdiToggleSwitch,
-    mdiToggleSwitchOff,
-    mdiToggleSwitchOffOutline
-} from '@mdi/js';
+import { mdiElectricSwitch, mdiElectricSwitchClosed } from '@mdi/js';
 import FlowNode from '@hfr/circuit/models/FlowNode';
-import { Source } from '@tdev-models/iDocument';
 import NodeWrapper from '../NodeWrapper';
 import { NodeType } from '@hfr/circuit';
 
@@ -37,9 +29,10 @@ const SwitchNode = observer((props: NodeProps<SwitchNode>) => {
         return null;
     }
     return (
-        <NodeWrapper node={doc} className={styles.buttonNode}>
+        <NodeWrapper node={doc} className={clsx(styles.switch, shared.gate)}>
             <Button
                 color={isPowered ? 'green' : undefined}
+                className={clsx(styles.buttonNode)}
                 icon={doc?.deriver.power ? mdiElectricSwitchClosed : mdiElectricSwitch}
                 size={0.6}
                 onClick={onClick}
