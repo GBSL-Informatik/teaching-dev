@@ -8,7 +8,7 @@
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
-        "start": "concurrently --raw --kill-others 'docusaurus start' 'ts-node updateSync/packageDocsSync/watch.ts --src packages --dest tdev-website/docs/packages'",
+        "start": "concurrently --raw --kill-others 'docusaurus start' 'sleep 5s && ts-node updateSync/packageDocsSync/watch.ts --src packages --dest tdev-website/docs/packages'",
         "prebuild": "ts-node updateSync/packageDocsSync/preBuild.ts --src packages --dest tdev-website/docs/packages",
         "build": "docusaurus build",
         "swizzle": "docusaurus swizzle",
