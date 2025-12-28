@@ -12,6 +12,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "editor.formatOnSave": true,
+    "json.format.keepLines": true,
     "materialdesigniconsIntellisense.matchers": [
         {
             "match": ":?\\bmdi-{param}\\b",
