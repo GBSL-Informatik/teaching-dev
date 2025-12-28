@@ -19,6 +19,7 @@ export interface MetaInit {
 
 export class ModelMeta extends TypeMeta<'dynamic_document_roots'> {
     readonly type = 'dynamic_document_roots';
+    readonly roomType: RoomType;
 
     constructor(props: MetaInit) {
         super('dynamic_document_roots', props.readonly ? Access.RO_User : undefined);
