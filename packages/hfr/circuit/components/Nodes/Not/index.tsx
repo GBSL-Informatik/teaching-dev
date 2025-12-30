@@ -8,7 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@hfr/circuit';
 import NodeWrapper from '../NodeWrapper';
-import NotGate from './assets/Gate-NOT.svg';
+import NotGate from '../assets/Gate-NOT.svg';
 
 export type NotNode = Node<{}, 'NotNode'>;
 

@@ -3,7 +3,7 @@ import type FlowNode from '../FlowNode';
 import { NodeType } from '@hfr/circuit';
 import { Source } from '@tdev-models/iDocument';
 import { action, computed } from 'mobx';
-import { orderBy } from 'es-toolkit/compat';
+import _ from 'es-toolkit/compat';
 
 class DecimalDisplay extends iDeriver<NodeType.DecimalDisplayNode> {
     constructor(node: FlowNode<NodeType.DecimalDisplayNode>) {
@@ -34,7 +34,7 @@ class DecimalDisplay extends iDeriver<NodeType.DecimalDisplayNode> {
 
     @computed
     get decNumber(): number {
-        const pins = orderBy(
+        const pins = _.orderBy(
             this.flowNode.edgesIn.map((e) => ({
                 pin: e.flowData.targetHandle,
                 value: e.source?.deriver?.power > 0 ? 1 : 0 || 0

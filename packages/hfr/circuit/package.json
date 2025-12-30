@@ -4,7 +4,7 @@
     "main": "index.ts",
     "types": "index.ts",
     "dependencies": {
-        "@xyflow/react": "^12.8.4"
+        "@xyflow/react": "^12.10.0"
     },
     "devDependencies": {
         "@docusaurus/core": "*",
@@ -13,7 +13,7 @@
         "vitest": "*"
     },
     "peerDependencies": {
-        "@tdev/core": "1.0.0",
+        "@tdev/core": ">=1.0.0",
         "es-toolkit": "*"
     }
 }

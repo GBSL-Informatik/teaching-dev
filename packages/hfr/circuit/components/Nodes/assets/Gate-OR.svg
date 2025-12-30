@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 80 60">
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 60 40">
   <!-- Generator: Adobe Illustrator 30.1.0, SVG Export Plug-In . SVG Version: 2.1.1 Build 136)  -->
   <defs>
     <style>
@@ -18,8 +18,8 @@
       }
     </style>
   </defs>
-  <path class="st0" d="M35.54,2.5H0c9.82,0,17.77,12.31,17.77,27.5S9.82,57.5,0,57.5h35.54c18.58,0,35.54-24.83,35.54-27.5,0-3.32-16.96-27.5-35.54-27.5Z"/>
+  <path class="st0" d="M26.42,1.06H1.33c6.93,0,12.54,8.51,12.54,19s-5.61,19-12.54,19h25.08c13.11,0,25.08-17.16,25.08-19,0-2.29-11.97-19-25.08-19Z"/>
   <line class="st1" y1="10" x2="12.2" y2="10"/>
-  <line class="st1" y1="50" x2="12.2" y2="50"/>
-  <line class="st1" x1="80" y1="30" x2="71.5" y2="30"/>
+  <line class="st1" y1="30" x2="12.2" y2="30"/>
+  <line class="st1" x1="60" y1="20.06" x2="51.5" y2="20.06"/>
 </svg>

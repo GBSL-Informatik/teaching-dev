@@ -8,7 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import NodeWrapper from '../NodeWrapper';
 import { NodeType } from '@hfr/circuit';
-import XorGate from './assets/Gate-XOR.svg';
+import XorGate from '../assets/Gate-XOR.svg';
 
 export type XorNode = Node<{}, 'XXorNode'>;
 
@@ -33,7 +33,7 @@ const XorNode = observer((props: NodeProps<XorNode>) => {
                 type="target"
                 className={clsx(doc.inputEdgeB?.isPowerOn && shared.on, shared.handle)}
                 position={Position.Left}
-                style={{ top: '50px' }}
+                style={{ top: '30px' }}
                 id="b"
             />
             <Handle

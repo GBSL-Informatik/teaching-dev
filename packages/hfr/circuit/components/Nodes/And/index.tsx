@@ -8,7 +8,7 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import FlowNode from '@hfr/circuit/models/FlowNode';
 import { NodeType } from '@hfr/circuit';
 import NodeWrapper from '../NodeWrapper';
-import AndGate from './assets/Gate-AND.svg';
+import AndGate from '../assets/Gate-AND.svg';
 
 export type AndNode = Node<{}, 'AndNode'>;
 
@@ -32,7 +32,7 @@ const AndNode = observer((props: NodeProps<AndNode>) => {
             <Handle
                 type="target"
                 position={Position.Left}
-                style={{ top: '50px' }}
+                style={{ top: '30px' }}
                 className={clsx(doc.inputEdgeB?.isPowerOn && shared.on, shared.handle)}
                 id="b"
             />
