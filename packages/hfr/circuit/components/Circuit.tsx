@@ -14,8 +14,7 @@ import type {
     OnReconnect,
     FinalConnectionState,
     HandleType,
-    OnNodesDelete,
-    ReactFlowInstance
+    OnNodesDelete
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
