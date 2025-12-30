@@ -45,6 +45,11 @@ class CircuitRoom extends DynamicRoom<'circuit'> {
         return this.flowEdges.map((fn) => fn.edgeData);
     }
 
+    @computed
+    get selectedNodes() {
+        return this.flowNodes.filter((n) => n.node.selected);
+    }
+
     @action
     reconnectEdge(id: string, connection: Connection) {
         const edge = this.documentStore.find(id) as FlowEdge;
@@ -122,20 +127,34 @@ class CircuitRoom extends DynamicRoom<'circuit'> {
         });
     }
 
+    /**
+     * normally used to create a flow node with minimal data
+     */
     @action
-    addFlowNode<N extends NodeType>(type: N, data: NodeDataMapping[N]) {
-        console.log(this.flowNodes.find((n) => n.flowData.selected));
-        this.documentStore.create({
+    addFlowNode<N extends NodeType>(type: N, data: NodeDataMapping[N], position?: { x: number; y: number }) {
+        return this.documentStore.create({
             documentRootId: this.dynamicRoot.rootDocumentId,
             type: 'flow_node',
             data: {
                 data: data,
                 type: type,
-                position: {
+                position: position ?? {
                     x: 100,
                     y: 100
                 }
             }
+        });
+    }
+
+    /**
+     * Used to create a flow node with full data
+     */
+    @action
+    createFlowNode(data: Omit<FlowNodeData<NodeType>, 'id'>) {
+        return this.documentStore.create({
+            documentRootId: this.dynamicRoot.rootDocumentId,
+            type: 'flow_node',
+            data: data
         });
     }
 }

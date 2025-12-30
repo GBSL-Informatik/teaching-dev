@@ -9,6 +9,9 @@
 
 .node {
     border-radius: var(--ifm-global-radius);
+    &.cycle {
+        border: 1px dashed var(--ifm-color-warning);
+    }
     &.gate {
         position: relative;
         display: flex;

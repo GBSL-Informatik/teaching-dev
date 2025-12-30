@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { Background, ReactFlow, MiniMap, Controls, Panel } from '@xyflow/react';
+import { Background, ReactFlow, MiniMap, Controls, Panel, useReactFlow } from '@xyflow/react';
 import type {
     OnConnect,
     Edge,
@@ -14,7 +14,8 @@ import type {
     OnReconnect,
     FinalConnectionState,
     HandleType,
-    OnNodesDelete
+    OnNodesDelete,
+    ReactFlowInstance
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -24,6 +25,8 @@ import { useStore } from '@tdev-hooks/useStore';
 import { nodeTypes } from './Nodes';
 import { NodeType } from '@hfr/circuit';
 import { DynamicRoomProps } from '@tdev-stores/ComponentStore';
+import { useCopyPaste } from './hooks/useCopyPaste';
+import CircuitRoom from '../models/CircuitRoom';
 
 type OnReconnectEnd = (
     event: MouseEvent | TouchEvent,
@@ -33,6 +36,13 @@ type OnReconnectEnd = (
 ) => void;
 
 type OnReconnectStart = (event: React.MouseEvent, edge: Edge, handleType: HandleType) => void;
+
+const CopyItem = observer((props: { room: CircuitRoom | null }) => {
+    const rfInstance = useReactFlow();
+    console.log('rfInstanceRef', rfInstance);
+    useCopyPaste(props.room);
+    return <></>;
+});
 
 const Circuit = observer((props: DynamicRoomProps<'circuit'>): React.ReactNode => {
     const { dynamicRoot } = props;
@@ -183,6 +193,7 @@ const Circuit = observer((props: DynamicRoomProps<'circuit'>): React.ReactNode =
                             />
                         </Panel>
                         <Background />
+                        <CopyItem room={dynamicRoot.room!} />
                     </ReactFlow>
                 </div>
             </div>

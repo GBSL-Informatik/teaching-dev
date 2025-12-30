@@ -119,6 +119,17 @@ class FlowNode<NType extends NodeType = NodeType> extends iDocument<'flow_node'>
         }
     }
 
+    @action
+    setSelected(selected: boolean) {
+        this.setData(
+            {
+                ...this.data,
+                selected: selected
+            },
+            Source.LOCAL
+        );
+    }
+
     /**
      * tdev data
      */
