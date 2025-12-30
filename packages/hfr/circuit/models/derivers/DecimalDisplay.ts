@@ -3,7 +3,7 @@ import type FlowNode from '../FlowNode';
 import { NodeType } from '@hfr/circuit';
 import { Source } from '@tdev-models/iDocument';
 import { action, computed } from 'mobx';
-import { orderBy } from 'es-toolkit';
+import { orderBy } from 'es-toolkit/compat';
 
 class DecimalDisplay extends iDeriver<NodeType.DecimalDisplayNode> {
     constructor(node: FlowNode<NodeType.DecimalDisplayNode>) {
