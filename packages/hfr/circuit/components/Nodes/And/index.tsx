@@ -19,7 +19,7 @@ const AndNode = observer((props: NodeProps<AndNode>) => {
         return null;
     }
     return (
-        <NodeWrapper node={doc} className={clsx(styles.and, shared.gate, doc.hasCycle && shared.cycle)}>
+        <NodeWrapper node={doc} className={clsx(styles.and, shared.gate)}>
             <AndGate className={shared.image} />
             AND
             <Handle

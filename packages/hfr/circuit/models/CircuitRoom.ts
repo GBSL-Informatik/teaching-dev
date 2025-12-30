@@ -16,7 +16,7 @@ import {
 } from '@xyflow/react';
 import { Source } from '@tdev-models/iDocument';
 import FlowEdge from './FlowEdge';
-import { FlowNodeData, NodeDataMapping, NodeType } from '..';
+import { FlowEdgeData, FlowNodeData, NodeDataMapping, NodeType } from '..';
 import { RoomFactory } from '@tdev-api/document';
 const MULTI_INPUTS_ALLOWED = new Set<NodeType | undefined>([NodeType.BatteryNode]);
 
@@ -48,6 +48,10 @@ class CircuitRoom extends DynamicRoom<'circuit'> {
     @computed
     get selectedNodes() {
         return this.flowNodes.filter((n) => n.node.selected);
+    }
+    @computed
+    get selectedEdges() {
+        return this.flowEdges.filter((n) => n.edgeData.selected);
     }
 
     @action
@@ -154,6 +158,17 @@ class CircuitRoom extends DynamicRoom<'circuit'> {
         return this.documentStore.create({
             documentRootId: this.dynamicRoot.rootDocumentId,
             type: 'flow_node',
+            data: data
+        });
+    }
+    /**
+     * Used to create a flow node with full data
+     */
+    @action
+    createFlowEdge(data: Omit<FlowEdgeData, 'id'>) {
+        return this.documentStore.create({
+            documentRootId: this.dynamicRoot.rootDocumentId,
+            type: 'flow_edge',
             data: data
         });
     }
