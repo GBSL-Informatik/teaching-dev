@@ -1133,14 +1133,6 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@better-auth/core@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@better-auth/core/-/core-1.4.2.tgz#0621cc457b6a88efb16307e02395c0405be772e9"
-  integrity sha512-bVXGpbWD8osNXYXVRMkWzv9BxfmOwqhKZp7QEHhyG1TZPTFpLLXBO7jPBplI2ve5rbmpl+0q5lDaYxG5msZtLg==
-  dependencies:
-    "@standard-schema/spec" "^1.0.0"
-    zod "^4.1.12"
-
 "@better-auth/core@1.4.9":
   version "1.4.9"
   resolved "https://registry.yarnpkg.com/@better-auth/core/-/core-1.4.9.tgz#f29e7794f190ce124cbfff82a0d194c5df1e672a"
@@ -1148,14 +1140,6 @@
   dependencies:
     "@standard-schema/spec" "^1.0.0"
     zod "^4.1.12"
-
-"@better-auth/telemetry@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@better-auth/telemetry/-/telemetry-1.4.2.tgz#d58aa943019d8d324d55be60609b733b1c98d807"
-  integrity sha512-z9JiY1SNNSBcMXhE9ZY60DvXbdt6whfqZ5vSPQlvSXyyqCC/TeGM8suhHWA8/2qqm7i6FyrxO4UHkAWta2dPkw==
-  dependencies:
-    "@better-auth/utils" "0.3.0"
-    "@better-fetch/fetch" "1.1.18"
 
 "@better-auth/telemetry@1.4.9":
   version "1.4.9"
@@ -1170,15 +1154,15 @@
   resolved "https://registry.yarnpkg.com/@better-auth/utils/-/utils-0.3.0.tgz#066c5ce82bf393421547dd887b14a6899310003d"
   integrity sha512-W+Adw6ZA6mgvnSnhOki270rwJ42t4XzSK6YWGF//BbVXL6SwCLWfyzBc1lN2m/4RM28KubdBKQ4X5VMoLRNPQw==
 
-"@better-fetch/fetch@1.1.18", "@better-fetch/fetch@^1.1.4":
-  version "1.1.18"
-  resolved "https://registry.yarnpkg.com/@better-fetch/fetch/-/fetch-1.1.18.tgz#4ddc65a703c65e6036947ff335e635a5a38e6225"
-  integrity sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==
-
 "@better-fetch/fetch@1.1.21":
   version "1.1.21"
   resolved "https://registry.yarnpkg.com/@better-fetch/fetch/-/fetch-1.1.21.tgz#2b4990e73c46b0ae5e66b247083610ff8c37bddc"
   integrity sha512-/ImESw0sskqlVR94jB+5+Pxjf+xBwDZF/N5+y2/q4EqD7IARUTSpPfIo8uf39SYpCxyOCtbyYpUrZ3F/k0zT4A==
+
+"@better-fetch/fetch@^1.1.4":
+  version "1.1.18"
+  resolved "https://registry.yarnpkg.com/@better-fetch/fetch/-/fetch-1.1.18.tgz#4ddc65a703c65e6036947ff335e635a5a38e6225"
+  integrity sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==
 
 "@braintree/sanitize-url@6.0.2":
   version "6.0.2"
@@ -6809,25 +6793,6 @@ before-after-hook@^3.0.2:
   resolved "https://registry.yarnpkg.com/before-after-hook/-/before-after-hook-3.0.2.tgz#d5665a5fa8b62294a5aa0a499f933f4a1016195d"
   integrity sha512-Nik3Sc0ncrMK4UUdXQmAnRtzmNQTAAXmXIopizwZ1W1t8QmfJj+zL4OA2I7XPTPW5z5TDqv4hRo/JzouDJnX3A==
 
-better-auth@^1.3.26:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.4.2.tgz#027e3a522b6660f34e0c1c55c73fb1774a63a4e0"
-  integrity sha512-0NlJL+wNdHWGcGs9+kLTbYLoN0Vhft+pwhadn2QRWY7gqNdkLgH+UqX4x+yvCRyACRFStOJULQyZXWmQ3u7wTQ==
-  dependencies:
-    "@better-auth/core" "1.4.2"
-    "@better-auth/telemetry" "1.4.2"
-    "@better-auth/utils" "0.3.0"
-    "@better-fetch/fetch" "1.1.18"
-    "@noble/ciphers" "^2.0.0"
-    "@noble/hashes" "^2.0.0"
-    "@standard-schema/spec" "^1.0.0"
-    better-call "1.1.0"
-    defu "^6.1.4"
-    jose "^6.1.0"
-    kysely "^0.28.5"
-    nanostores "^1.0.1"
-    zod "^4.1.12"
-
 better-auth@^1.4.9:
   version "1.4.9"
   resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.4.9.tgz#8b5ffebd55a20d90cae9a4efbf0b4fab878eb7c4"
@@ -6845,16 +6810,6 @@ better-auth@^1.4.9:
     kysely "^0.28.5"
     nanostores "^1.0.1"
     zod "^4.1.12"
-
-better-call@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/better-call/-/better-call-1.1.0.tgz#0d64216248decbadf6eb8dcf07852e2117b19c96"
-  integrity sha512-7CecYG+yN8J1uBJni/Mpjryp8bW/YySYsrGEWgFe048ORASjq17keGjbKI2kHEOSc6u8pi11UxzkJ7jIovQw6w==
-  dependencies:
-    "@better-auth/utils" "^0.3.0"
-    "@better-fetch/fetch" "^1.1.4"
-    rou3 "^0.5.1"
-    set-cookie-parser "^2.7.1"
 
 better-call@1.1.7:
   version "1.1.7"
@@ -14305,11 +14260,6 @@ rollup@^4.20.0, rollup@^4.43.0:
     "@rollup/rollup-win32-x64-gnu" "4.53.3"
     "@rollup/rollup-win32-x64-msvc" "4.53.3"
     fsevents "~2.3.2"
-
-rou3@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/rou3/-/rou3-0.5.1.tgz#414d1123631f45474df743c9fc904d757bb2e43c"
-  integrity sha512-OXMmJ3zRk2xeXFGfA3K+EOPHC5u7RDFG7lIOx0X1pdnhUkI8MdVrbV+sNsD80ElpUZ+MRHdyxPnFthq9VHs8uQ==
 
 rou3@^0.7.10:
   version "0.7.12"
