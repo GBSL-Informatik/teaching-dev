@@ -13,7 +13,7 @@ import _ from 'es-toolkit/compat';
 import { DB_NAME } from '@tdev-api/config';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = false;
+const LOG_REQUESTS = true;
 
 let OfflineUser: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -369,6 +369,19 @@ export default class OfflineApi {
         switch (model) {
             case 'documents':
                 await this.dbAdapter.delete(DOCUMENTS_STORE, id);
+                return resolveResponse(null);
+            case 'documentRoots':
+                // Deleting a document root could involve deleting associated documents
+                const documents = await this.dbAdapter.byDocumentRootId(id);
+                for (const doc of documents) {
+                    await this.dbAdapter.delete(DOCUMENTS_STORE, doc.id);
+                }
+                return resolveResponse(null);
+            case 'permissions':
+                await this.dbAdapter.delete(PERMISSIONS_STORE, id);
+                return resolveResponse(null);
+            case 'studentGroups':
+                await this.dbAdapter.delete(STUDENT_GROUPS_STORE, id);
                 return resolveResponse(null);
         }
         return rejectResponse({} as T, 400, 'Not implemented');
