@@ -1,9 +1,9 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, transaction } from 'mobx';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import Page from '@tdev-models/Page';
 import { computedFn } from 'mobx-utils';
-import { allDocuments as apiAllDocuments } from '@tdev-api/document';
+import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
 
 export class PageStore extends iStore {
     readonly root: RootStore;
@@ -62,11 +62,11 @@ export class PageStore extends iStore {
     loadAllDocuments(page: Page) {
         return this.withAbortController(`load-all-${page.id}`, (sig) => {
             return apiAllDocuments([...page.documentRootIds], sig.signal).then(({ data }) => {
-                return Promise.all(
-                    data.map((doc) => {
-                        this.root.documentStore.addToStore(doc);
-                    })
-                );
+                return transaction(() => {
+                    return data.map((doc) => {
+                        return this.root.documentStore.addToStore<DocumentType>(doc);
+                    });
+                });
             });
         });
     }
