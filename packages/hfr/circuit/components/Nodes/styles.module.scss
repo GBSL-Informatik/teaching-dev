@@ -1,0 +1,37 @@
+.handle {
+    border-color: var(--ifm-color-danger);
+    background: var(--ifm-color-danger);
+    &.on {
+        border-color: var(--ifm-color-success);
+        background: var(--ifm-color-success);
+    }
+}
+
+.node {
+    border-radius: var(--ifm-global-radius);
+    &.cycle {
+        border: 1px dashed var(--ifm-color-warning);
+    }
+    &.gate {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    }
+    &:hover {
+        box-shadow: var(--ifm-global-shadow-lw);
+    }
+    &.selected {
+        box-shadow: var(--ifm-global-shadow-tl);
+        color: var(--ifm-color-blue);
+        font-weight: 900;
+    }
+}

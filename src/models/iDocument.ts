@@ -6,7 +6,7 @@ import { ApiState } from '@tdev-stores/iStore';
 import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
 import { DUMMY_DOCUMENT_ID } from '@tdev-hooks/useFirstMainDocument';
-import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
+import { isTempId } from '@tdev-hooks/useDummyId';
 
 /**
  * normally, save only once all 1000ms

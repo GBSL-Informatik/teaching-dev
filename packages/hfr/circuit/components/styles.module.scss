@@ -1,0 +1,39 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 1em;
+    --tdev-circuit-power-color: #f8bf03;
+
+    .rooms {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        gap: 1em;
+        margin: 1em 0;
+        max-width: 98vw;
+
+        .name {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel {
+            display: flex;
+            gap: 0.2em;
+        }
+    }
+}
+
+.alert {
+    display: flex;
+    justify-content: start;
+    gap: 1em;
+    align-items: center;
+    margin: 1em;
+}
+[data-theme='dark'] {
+    .wrapper {
+        --tdev-circuit-power-color: #ddff00;
+    }
+}
