@@ -303,7 +303,12 @@ class DocumentStore extends iStore<`delete-${string}`> {
     handleUpdate(change: ChangedDocument) {
         const model = this.find(change.id);
         if (model) {
-            model.setData(change.data as any, Source.API, new Date(change.updatedAt));
+            const updatedAt = new Date(change.updatedAt);
+            if (model.updatedAt.getTime() >= updatedAt.getTime()) {
+                // ignore stalled updates
+                return;
+            }
+            model.setData(change.data as any, Source.API, updatedAt);
         }
     }
 

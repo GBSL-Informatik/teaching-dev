@@ -10,6 +10,7 @@ interface Props {
     onChange: (text: string) => void;
     onEnter?: () => void;
     onEscape?: () => void;
+    onSave?: () => void;
     validator?: (text: string) => string | null;
     className?: string;
     labelClassName?: string;
@@ -70,6 +71,9 @@ const TextInput = observer((props: Props) => {
                     }
                     if (e.key === 'Escape') {
                         props.onEscape?.();
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        props.onSave?.();
                     }
                 }}
                 onInput={(e) => {

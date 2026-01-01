@@ -17,6 +17,13 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
     const userStore = useStore('userStore');
     const componentStore = useStore('componentStore');
     const user = userStore.current;
+    const permissionStore = useStore('permissionStore');
+    React.useEffect(() => {
+        if (!dynamicDocumentRoots.root || !user?.hasElevatedAccess) {
+            return;
+        }
+        permissionStore.loadPermissions(dynamicDocumentRoots.root);
+    }, [dynamicDocumentRoots?.root, user?.hasElevatedAccess]);
     if (!user || !user.hasElevatedAccess) {
         return null;
     }
@@ -29,7 +36,9 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
                 icon={mdiPlusCircleOutline}
                 iconSide="left"
                 disabled={
-                    !RWAccess.has(dynamicDocumentRoots.root?.permission) || !componentStore.defaultRoomType
+                    !dynamicDocumentRoots ||
+                    !RWAccess.has(dynamicDocumentRoots.root?.permission) ||
+                    !componentStore.defaultRoomType
                 }
                 onClick={() => {
                     const newId = uuidv4();

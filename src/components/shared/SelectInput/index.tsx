@@ -3,23 +3,47 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 
-interface Props {
+interface Option {
+    value: string;
+    label?: string;
+    disabled?: boolean;
+}
+
+interface BaseProps {
     defaultValue?: string;
     placeholder?: string;
-    /**
-     * provide the labels in the same order as the options
-     * to display them in the dropdown
-     */
-    labels?: string[];
     onChange: (text: string) => void;
-    options: string[];
     value: string;
     disabled?: boolean;
     className?: string;
 }
 
+interface SimpleProps extends BaseProps {
+    labels?: string[];
+    options: string[];
+}
+
+interface CustomizableProps extends BaseProps {
+    labels?: never[];
+    options: Option[];
+}
+
+type Props = SimpleProps | CustomizableProps;
+
 const SelectInput = observer((props: Props) => {
-    const { options, onChange, value } = props;
+    const { onChange, value } = props;
+    const options = React.useMemo<Option[]>(() => {
+        if (props.options.length === 0) {
+            return [];
+        }
+        if (typeof props.options[0] === 'string') {
+            return (props.options as string[]).map((o, idx) => ({
+                value: o as string,
+                label: props.labels?.[idx] ?? o
+            }));
+        }
+        return props.options as Option[];
+    }, [props.options, props.labels]);
     return (
         <select
             className={clsx(styles.dropdown, props.className)}
@@ -32,10 +56,11 @@ const SelectInput = observer((props: Props) => {
             {options.map((option, index) => (
                 <option
                     key={index}
-                    value={option}
-                    className={clsx(styles.option, value === option && styles.selected)}
+                    value={option.value}
+                    disabled={option.disabled}
+                    className={clsx(styles.option, value === option.value && styles.selected)}
                 >
-                    {props.labels ? (value === option ? option : props.labels[index]) : option}
+                    {option.label ?? option.value}
                 </option>
             ))}
         </select>
