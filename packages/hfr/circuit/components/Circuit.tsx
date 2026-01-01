@@ -36,16 +36,10 @@ type OnReconnectEnd = (
 
 type OnReconnectStart = (event: React.MouseEvent, edge: Edge, handleType: HandleType) => void;
 
-const CopyItem = observer((props: { room: CircuitRoom | null }) => {
-    const rfInstance = useReactFlow();
-    console.log('rfInstanceRef', rfInstance);
-    useCopyPaste(props.room);
-    return <></>;
-});
-
 const Circuit = observer((props: DynamicRoomProps<'circuit'>): React.ReactNode => {
     const { dynamicRoot } = props;
     const documentStore = useStore('documentStore');
+    useCopyPaste(dynamicRoot.room);
     const edgeReconnectSuccessful = React.useRef(true);
     const onChange = React.useCallback<OnNodesChange<Node>>(
         (change) => {
@@ -192,7 +186,6 @@ const Circuit = observer((props: DynamicRoomProps<'circuit'>): React.ReactNode =
                             />
                         </Panel>
                         <Background />
-                        <CopyItem room={dynamicRoot.room!} />
                     </ReactFlow>
                 </div>
             </div>
