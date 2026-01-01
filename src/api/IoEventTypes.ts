@@ -51,7 +51,7 @@ export interface ChangedDocument {
     updatedAt: string;
 }
 
-export interface StreamedDynamicDocument extends ChangedDocument {
+export interface StreamedDocument extends ChangedDocument {
     roomId: string;
 }
 
@@ -137,7 +137,7 @@ export interface ClientToServerEvents {
     [IoClientEvent.JOIN_ROOM]: (roomId: string, callback: (joined: boolean) => void) => void;
     [IoClientEvent.LEAVE_ROOM]: (roomId: string, callback: (left: boolean) => void) => void;
     [IoClientEvent.ACTION]: (action: Action, callback: (ok: boolean) => void) => void;
-    [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDynamicDocument) => void;
+    [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDocument) => void;
 }
 
 export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore } = {

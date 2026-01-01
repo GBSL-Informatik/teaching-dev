@@ -7,6 +7,8 @@
     cursor: pointer;
     width: auto;
     max-width: 90vw;
+    min-width: 0;
+    max-width: 300px;
     transition: all 0.3s ease;
     z-index: var(--ifm-z-index-dropdown);
 

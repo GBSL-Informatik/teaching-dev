@@ -326,7 +326,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 // ignore stalled updates
                 return;
             }
-            model.setData(change.data as any, Source.API, new Date(change.updatedAt));
+            model.setData(change.data as any, Source.API, updatedAt);
         }
     }
 

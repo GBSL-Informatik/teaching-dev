@@ -221,6 +221,7 @@ export default class OfflineApi {
                         resolveResponse([] as unknown as T);
                     }
                     const documentRootDocs = await Promise.all(ids.map((id) => this.documentsBy(id)));
+
                     const documenRoots = ids.map((rid) => {
                         return {
                             id: rid,

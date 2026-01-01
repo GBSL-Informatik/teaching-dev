@@ -204,7 +204,8 @@ export class SocketDataStore extends iStore<'ping'> {
     }
 
     /**
-     * stream updates to all connected group members (stream to the `documentRootId` id the payload)
+     * stream updates to all connected group members (stream to the `roomId`
+     * in the payload, which usually is a documentRootId)
      */
     @action
     streamUpdate(roomId: string, payload: ChangedDocument) {

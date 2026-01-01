@@ -164,7 +164,6 @@ export class DocumentRootStore extends iStore {
         const keys = [...current.keys()].sort();
         this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
             const ignoreMissingRoots = isUserSwitched && keys.every((id) => this.find(id)?.isLoaded);
-
             const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal).catch(
                 (e) => {
                     console.warn('Error loading document roots', e);
