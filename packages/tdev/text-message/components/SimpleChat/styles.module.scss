@@ -1,0 +1,10 @@
+.simpleChatContainer {
+    border: 1px solid var(--ifm-color-content-secondary);
+    border-radius: var(--ifm-global-radius);
+    padding: 4px;
+    margin-bottom: 1em;
+}
+.name {
+    display: flex;
+    justify-content: space-between;
+}

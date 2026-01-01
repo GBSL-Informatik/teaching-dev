@@ -5,7 +5,6 @@ import _, { type DebouncedFunc } from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
 import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
-import { DUMMY_DOCUMENT_ID } from '@tdev-hooks/useFirstMainDocument';
 import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 
 /**
@@ -80,6 +79,10 @@ abstract class iDocument<Type extends DocumentType> {
                 }
             }
         );
+    }
+
+    get isDummy() {
+        return isDummyId(this.id);
     }
 
     get isLoadable() {
