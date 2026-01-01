@@ -4,6 +4,7 @@ import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
 import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
+import { orderBy } from 'es-toolkit';
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
@@ -187,16 +188,10 @@ class DocumentRoot<T extends DocumentType> {
             return byUser;
         }
 
-        if (
-            NoneAccess.has(this.sharedAccess) ||
-            RWAccess.has(highestAccess(new Set([this.sharedAccess]), this.access))
-        ) {
+        if (NoneAccess.has(this.sharedAccess)) {
             return byUser;
         }
-        if (byUser.length > 0) {
-            return byUser;
-        }
-        return docs;
+        return [...byUser, ...docs.filter((d) => d.authorId !== this.viewedUserId)];
     }
 
     @computed
