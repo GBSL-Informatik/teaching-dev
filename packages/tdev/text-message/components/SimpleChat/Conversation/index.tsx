@@ -18,6 +18,9 @@ const Conversation = observer((props: Props) => {
             ref.current.scrollTo({ behavior: 'smooth', top: ref.current.scrollHeight });
         }
     }, [ref, simpleChat.messages.length]);
+    if (!simpleChat.canReadMessages) {
+        return null;
+    }
     return (
         <div className={clsx(styles.conversation)} style={{ maxHeight: props.maxHeight }} ref={ref}>
             {simpleChat.messages.map((message, index) => {

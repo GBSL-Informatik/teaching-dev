@@ -4,7 +4,6 @@ import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
 import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
-import { orderBy } from 'es-toolkit';
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;

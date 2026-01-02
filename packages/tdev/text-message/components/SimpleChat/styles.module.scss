@@ -7,4 +7,11 @@
 .name {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    .actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 }

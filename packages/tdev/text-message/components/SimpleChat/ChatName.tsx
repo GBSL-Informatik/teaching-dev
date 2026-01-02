@@ -2,20 +2,25 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import SimpleChat from '@tdev/text-message/models/SimpleChat';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import ClearHistory from './ClearHistory';
 
 interface Props {
     name: string;
     documentRootId: string;
+    simpleChat?: SimpleChat;
 }
 
 const ChatName = observer((props: Props) => {
-    const { name, documentRootId } = props;
+    const { name, documentRootId, simpleChat } = props;
     return (
         <h1 className={clsx(styles.name)}>
-            {name} <PermissionsPanel documentRootId={documentRootId} />
+            {name}
+            <div className={clsx(styles.actions)}>
+                {simpleChat && <ClearHistory simpleChat={simpleChat} />}
+                <PermissionsPanel documentRootId={documentRootId} />
+            </div>
         </h1>
     );
 });

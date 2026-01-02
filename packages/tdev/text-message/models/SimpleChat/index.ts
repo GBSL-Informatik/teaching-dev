@@ -1,9 +1,10 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
+import { Access, Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { orderBy } from 'es-toolkit/compat';
+import { orderBy } from 'es-toolkit/array';
 import TextMessage from '../TextMessage';
+import { NoneAccess, RWAccess, sharedAccess } from '@tdev-models/helpers/accessPolicy';
 
 export const createModel: Factory = (data, store) => {
     return new SimpleChat(data as DocumentProps<'simple_chat'>, store);
@@ -42,6 +43,7 @@ class SimpleChat extends iDocument<'simple_chat'> {
 
         return this.store
             .create({
+                parentId: this.id,
                 documentRootId: this.documentRootId,
                 type: 'text_message',
                 data: {
@@ -58,6 +60,35 @@ class SimpleChat extends iDocument<'simple_chat'> {
             });
     }
 
+    @computed
+    get access() {
+        const userId = this.store.root.userStore.current?.id;
+        if (!userId || !this.root) {
+            return Access.None_DocumentRoot;
+        }
+        if (this.store.root.userStore.isUserSwitched) {
+            return Access.RO_DocumentRoot;
+        }
+        return sharedAccess(this.root.permission, this.root.sharedAccess, this.authorId === userId);
+    }
+
+    @computed
+    get canWriteMessages() {
+        return RWAccess.has(this.access);
+    }
+    @computed
+    get canReadMessages() {
+        return !NoneAccess.has(this.access);
+    }
+
+    @action
+    clearHistory() {
+        if (!this.store.root.userStore.current?.hasElevatedAccess) {
+            return;
+        }
+        return this.store.apiDelete(this);
+    }
+
     /**
      * Returns all text messages of this chat ordered by creation date ascending.
      */
@@ -67,7 +98,9 @@ class SimpleChat extends iDocument<'simple_chat'> {
             return [];
         }
         return orderBy(
-            this.root?.allDocuments.filter((doc) => doc.type === 'text_message'),
+            this.root?.allDocuments.filter(
+                (doc) => doc.parentId === this.id && doc.type === 'text_message'
+            ) as TextMessage[],
             ['createdAt'],
             ['asc']
         ) as TextMessage[];

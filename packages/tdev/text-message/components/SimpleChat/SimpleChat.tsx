@@ -19,7 +19,11 @@ const SimpleChat = observer((props: Props): React.ReactNode => {
     return (
         <div className={clsx(styles.simpleChat)}>
             <div className={clsx(styles.chat)}>
-                <ChatName name={simpleChat.name} documentRootId={simpleChat.documentRootId} />
+                <ChatName
+                    name={simpleChat.name}
+                    documentRootId={simpleChat.documentRootId}
+                    simpleChat={simpleChat}
+                />
                 <Conversation simpleChat={simpleChat} maxHeight={props.maxHeight} />
                 <NewMessage simpleChat={simpleChat} />
             </div>
