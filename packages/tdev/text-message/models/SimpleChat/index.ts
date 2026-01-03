@@ -73,9 +73,15 @@ class SimpleChat extends iDocument<'simple_chat'> {
     }
 
     @computed
+    get hasAdminAccess() {
+        return this.store.root.userStore.current?.hasElevatedAccess || false;
+    }
+
+    @computed
     get canWriteMessages() {
         return RWAccess.has(this.access);
     }
+
     @computed
     get canReadMessages() {
         return !NoneAccess.has(this.access);

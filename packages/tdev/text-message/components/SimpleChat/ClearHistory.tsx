@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { useStore } from '@tdev-hooks/useStore';
 import { Delete } from '@tdev-components/shared/Button/Delete';
 import { mdiChatRemove } from '@mdi/js';
 import SimpleChat from '@tdev/text-message/models/SimpleChat';
@@ -11,8 +10,7 @@ interface Props {
 }
 
 const ClearHistory = observer((props: Props) => {
-    const userStore = useStore('userStore');
-    if (!userStore.current?.hasElevatedAccess) {
+    if (!props.simpleChat.hasAdminAccess) {
         return null;
     }
     return (
@@ -20,7 +18,9 @@ const ClearHistory = observer((props: Props) => {
             onDelete={action(() => {
                 props.simpleChat.clearHistory();
             })}
-            text="Verlauf löschen"
+            title="Chat löschen"
+            text={''}
+            confirmMessage="Chat wirklich löschen?"
             icon={mdiChatRemove}
         />
     );
