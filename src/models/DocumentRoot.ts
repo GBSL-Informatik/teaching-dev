@@ -2,7 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
-import { highestAccess, NoneAccess, RWAccess } from './helpers/accessPolicy';
+import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
 
 export abstract class TypeMeta<T extends DocumentType> {
@@ -187,16 +187,10 @@ class DocumentRoot<T extends DocumentType> {
             return byUser;
         }
 
-        if (
-            NoneAccess.has(this.sharedAccess) ||
-            RWAccess.has(highestAccess(new Set([this.sharedAccess]), this.access))
-        ) {
+        if (NoneAccess.has(this.sharedAccess)) {
             return byUser;
         }
-        if (byUser.length > 0) {
-            return byUser;
-        }
-        return docs;
+        return [...byUser, ...docs.filter((d) => d.authorId !== this.viewedUserId)];
     }
 
     @computed
@@ -210,6 +204,11 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
+    get hasReadAccess() {
+        return RWAccess.has(this.permission) || ROAccess.has(this.permission);
+    }
+
+    @computed
     get hasRWAccess() {
         if (this.store.root.userStore.isUserSwitched) {
             return false;
@@ -218,7 +217,7 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
-    get hasAdminRWAccess() {
+    get hasAdminOrRWAccess() {
         return this.hasRWAccess || !!this.store.root.userStore.current?.hasElevatedAccess;
     }
 }

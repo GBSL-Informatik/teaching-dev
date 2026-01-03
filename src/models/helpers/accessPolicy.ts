@@ -44,6 +44,21 @@ const AccessLevelsInverse = new Map<number, Access>([
     [8, Access.None_User]
 ]);
 
+const DocumentRootAccessLevels = new Map<
+    Access,
+    Access.None_DocumentRoot | Access.RW_DocumentRoot | Access.RO_DocumentRoot
+>([
+    [Access.None_DocumentRoot, Access.None_DocumentRoot],
+    [Access.RW_DocumentRoot, Access.RW_DocumentRoot],
+    [Access.RO_DocumentRoot, Access.RO_DocumentRoot],
+    [Access.None_StudentGroup, Access.None_DocumentRoot],
+    [Access.RW_StudentGroup, Access.RW_DocumentRoot],
+    [Access.RO_StudentGroup, Access.RO_DocumentRoot],
+    [Access.None_User, Access.None_DocumentRoot],
+    [Access.RW_User, Access.RW_DocumentRoot],
+    [Access.RO_User, Access.RO_DocumentRoot]
+]);
+
 export const asDocumentRootAccess = (access?: Access) => {
     if (!access) {
         return Access.RW_DocumentRoot;
@@ -75,4 +90,14 @@ export const highestAccess = (permissions: Set<Access>, maxAccess?: Access): Acc
         return userAccess;
     }
     return maxAccess;
+};
+
+export const sharedAccess = (userPermission: Access, sharedAccess: Access, isAuthor: boolean): Access => {
+    if (isAuthor) {
+        return userPermission;
+    }
+    return highestAccess(
+        new Set([DocumentRootAccessLevels.get(sharedAccess)!]),
+        DocumentRootAccessLevels.get(userPermission)
+    );
 };

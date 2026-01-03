@@ -18,7 +18,7 @@ import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoot
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
-import TextMessages from '../../../packages/tdev/text-message/TextMessages';
+import TextMessages from '../../../packages/tdev/text-message/components/TextMessage';
 import RoomTypeSelector from '@tdev-components/documents/DynamicDocumentRoots/RoomTypeSelector';
 
 const NoRoom = () => {
