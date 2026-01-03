@@ -1,5 +1,6 @@
 import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
+import { Source } from '@tdev-models/iDocument';
+import iShareableDocument from '@tdev-models/iShareableDocument';
 import { Access, Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
@@ -10,13 +11,11 @@ export const createModel: Factory = (data, store) => {
     return new SimpleChat(data as DocumentProps<'simple_chat'>, store);
 };
 
-class SimpleChat extends iDocument<'simple_chat'> {
-    @observable accessor name: string;
+class SimpleChat extends iShareableDocument<'simple_chat'> {
     @observable accessor messageText: string = '';
 
     constructor(props: DocumentProps<'simple_chat'>, store: DocumentStore) {
         super(props, store);
-        this.name = props.data.name;
     }
 
     @action
@@ -58,33 +57,6 @@ class SimpleChat extends iDocument<'simple_chat'> {
             .catch((err) => {
                 console.error('Error sending message:', err);
             });
-    }
-
-    @computed
-    get access() {
-        const userId = this.store.root.userStore.current?.id;
-        if (!userId || !this.root) {
-            return Access.None_DocumentRoot;
-        }
-        if (this.store.root.userStore.isUserSwitched) {
-            return Access.RO_DocumentRoot;
-        }
-        return sharedAccess(this.root.permission, this.root.sharedAccess, this.authorId === userId);
-    }
-
-    @computed
-    get hasAdminAccess() {
-        return this.store.root.userStore.current?.hasElevatedAccess || false;
-    }
-
-    @computed
-    get canWriteMessages() {
-        return RWAccess.has(this.access);
-    }
-
-    @computed
-    get canReadMessages() {
-        return !NoneAccess.has(this.access);
     }
 
     @action

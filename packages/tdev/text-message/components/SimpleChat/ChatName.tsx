@@ -26,7 +26,7 @@ const ChatName = observer((props: Props) => {
                     value={simpleChat?.name || ''}
                     onChange={(name) => {
                         if (simpleChat) {
-                            simpleChat.setData({ ...simpleChat.data, name: name }, Source.LOCAL);
+                            simpleChat.setName(name);
                         }
                     }}
                     onEnter={() => {

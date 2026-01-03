@@ -18,7 +18,7 @@ const Conversation = observer((props: Props) => {
             ref.current.scrollTo({ behavior: 'smooth', top: ref.current.scrollHeight });
         }
     }, [ref, simpleChat.messages.length]);
-    if (!simpleChat.canReadMessages) {
+    if (!simpleChat.canRead) {
         return null;
     }
     return (

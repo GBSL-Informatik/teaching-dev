@@ -18,8 +18,8 @@ const NewMessage = observer((props: Props) => {
             <TextInput
                 onChange={(text) => simpleChat.setMessageText(text)}
                 value={simpleChat.messageText}
-                placeholder={simpleChat.canWriteMessages ? 'Neue Nachricht' : 'Keine Schreibrechte'}
-                readOnly={!simpleChat.canWriteMessages}
+                placeholder={simpleChat.canWrite ? 'Neue Nachricht' : 'Keine Schreibrechte'}
+                readOnly={!simpleChat.canWrite}
                 onEnter={() => simpleChat.sendMessage()}
                 className={clsx(styles.input)}
             />
@@ -28,7 +28,7 @@ const NewMessage = observer((props: Props) => {
                 onClick={() => simpleChat.sendMessage()}
                 className={clsx(styles.button)}
                 size={1.1}
-                disabled={!simpleChat.canWriteMessages || simpleChat.messageText.trim() === ''}
+                disabled={!simpleChat.canWrite || simpleChat.messageText.trim() === ''}
             />
         </div>
     );
