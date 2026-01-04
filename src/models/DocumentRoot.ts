@@ -17,15 +17,6 @@ export abstract class TypeMeta<T extends DocumentType> {
     abstract get defaultData(): TypeDataMapping[T];
 }
 
-export class DummyMeta extends TypeMeta<DocumentType> {
-    constructor() {
-        super('dummy' as DocumentType);
-    }
-    get defaultData() {
-        return {};
-    }
-}
-
 class DocumentRoot<T extends DocumentType> {
     readonly store: DocumentRootStore;
     readonly id: string;
@@ -128,17 +119,19 @@ class DocumentRoot<T extends DocumentType> {
         return highestAccess(new Set([...this.permissionsForUser(userId).map((p) => p.access), this.access]));
     }
 
+    @computed
     get documents() {
         if (!this.viewedUserId && !this.isDummy) {
             return [];
         }
-        return this.store.root.documentStore.findByDocumentRoot(this.id).filter((d) => {
+        const docs = this.store.root.documentStore.findByDocumentRoot(this.id).filter((d) => {
             return (
                 this.isDummy ||
                 d.authorId === this.viewedUserId ||
                 !NoneAccess.has(highestAccess(new Set([this.permission]), this.sharedAccess))
             );
         });
+        return docs;
     }
 
     /**

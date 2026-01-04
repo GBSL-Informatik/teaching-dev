@@ -1,17 +1,19 @@
 import { TypeDataMapping, Access } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 
 export interface MetaInit {
     readonly?: boolean;
     name?: string;
 }
 
-export class ModelMeta extends TypeMeta<'simple_chat'> {
-    readonly type = 'simple_chat';
+export class ModelMeta extends ContainerMeta<'simple_chat'> {
     readonly defaultName: string;
 
     constructor(props: Partial<MetaInit>) {
-        super('simple_chat', props.readonly ? Access.RO_User : undefined);
+        super('simple_chat', {
+            access: props.readonly ? Access.RO_User : undefined,
+            description: 'Ein simpler Chat zum Senden und Empfangen von Textnachrichten.'
+        });
         this.defaultName = props.name || 'Simple Chat';
     }
 

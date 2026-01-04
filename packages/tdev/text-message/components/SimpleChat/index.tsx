@@ -23,7 +23,7 @@ const SimpleChat = observer((props: Props): React.ReactNode => {
 
     return (
         <div className={clsx(styles.simpleChatContainer)}>
-            <SimpleChatComponent simpleChat={simpleChat} maxHeight={props.maxHeight} />
+            <SimpleChatComponent documentContainer={simpleChat} />
         </div>
     );
 });

@@ -75,5 +75,6 @@ export const useDocumentRoot = <Type extends DocumentType>(
         });
     }, [userStore.viewedUser]);
 
-    return documentRootStore.find<Type>(dummyDocumentRoot.id) || dummyDocumentRoot;
+    const rootDoc = documentRootStore.find<Type>(dummyDocumentRoot.id);
+    return rootDoc || dummyDocumentRoot;
 };

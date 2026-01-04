@@ -1,14 +1,21 @@
 import { action, computed, observable } from 'mobx';
-import { Document as DocumentProps, DocumentType, Access } from '@tdev-api/document';
+import { Document as DocumentProps, DocumentType, Access, ContainerType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _ from 'es-toolkit/compat';
 import { NoneAccess, RWAccess, sharedAccess } from './helpers/accessPolicy';
 import iDocument from './iDocument';
+import { ContainerMeta } from './documents/DynamicDocumentRoots/ContainerMeta';
+import DynamicDocumentRoots from './documents/DynamicDocumentRoots';
 
-abstract class iShareableDocument<Type extends DocumentType> extends iDocument<Type> {
+interface DocumentContainerData {
+    name: string;
+}
+
+abstract class iDocumentContainer<Type extends ContainerType> extends iDocument<Type> {
     @observable accessor name: string;
+
     constructor(
-        props: DocumentProps<Type> & { data: DocumentProps<Type>['data'] & { name: string } },
+        props: DocumentProps<Type> & { data: DocumentProps<Type>['data'] & DocumentContainerData },
         store: DocumentStore,
         saveDebounceTime?: number
     ) {
@@ -19,6 +26,20 @@ abstract class iShareableDocument<Type extends DocumentType> extends iDocument<T
     @action
     setName(name: string) {
         this.name = name;
+    }
+
+    get description(): string | undefined {
+        return (this.root?.meta as ContainerMeta<Type>)?.description;
+    }
+
+    @computed
+    get dynamicDocumentRoot(): DynamicDocumentRoots<Type> | undefined {
+        const dynamicRoots = this.store.byDocumentType(
+            'dynamic_document_roots'
+        ) as DynamicDocumentRoots<Type>[];
+        return dynamicRoots
+            .filter((dr) => dr.containerType === this.type)
+            .find((dr) => dr.documentRootIds.has(this.documentRootId));
     }
 
     @computed
@@ -49,4 +70,4 @@ abstract class iShareableDocument<Type extends DocumentType> extends iDocument<T
     }
 }
 
-export default iShareableDocument;
+export default iDocumentContainer;

@@ -1,17 +1,16 @@
 import { action, computed, observable } from 'mobx';
 import { Source } from '@tdev-models/iDocument';
-import iShareableDocument from '@tdev-models/iShareableDocument';
-import { Access, Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
+import iDocumentContainer from '@tdev-models/iDocumentContainer';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import TextMessage from '../TextMessage';
-import { NoneAccess, RWAccess, sharedAccess } from '@tdev-models/helpers/accessPolicy';
 
 export const createModel: Factory = (data, store) => {
     return new SimpleChat(data as DocumentProps<'simple_chat'>, store);
 };
 
-class SimpleChat extends iShareableDocument<'simple_chat'> {
+class SimpleChat extends iDocumentContainer<'simple_chat'> {
     @observable accessor messageText: string = '';
 
     constructor(props: DocumentProps<'simple_chat'>, store: DocumentStore) {

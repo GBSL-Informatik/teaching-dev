@@ -6,7 +6,7 @@ import {
     create as apiCreate,
     Document as DocumentProps,
     DocumentType,
-    DocumentTypes,
+    DocumentModelType,
     remove as apiDelete,
     TypeModelMapping,
     update as apiUpdate,
@@ -30,7 +30,6 @@ import MdxComment from '@tdev-models/documents/MdxComment';
 import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import Script from '@tdev-models/documents/Script';
 import TaskState from '@tdev-models/documents/TaskState';
@@ -73,10 +72,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new Restricted(data as DocumentProps<'restricted'>, store);
         case 'cms_text':
             return new CmsText(data as DocumentProps<'cms_text'>, store);
-        case 'dynamic_document_root':
-            return new DynamicDocumentRootModel(data as DocumentProps<'dynamic_document_root'>, store);
         case 'dynamic_document_roots':
-            return new DynamicDocumentRoots(data as DocumentProps<'dynamic_document_roots'>, store);
+            return new DynamicDocumentRoots(data as DocumentProps<any>, store);
         case 'progress_state':
             return new ProgressState(data as DocumentProps<'progress_state'>, store);
     }
@@ -95,13 +92,12 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['mdx_comment', CreateDocumentModel],
     ['restricted', CreateDocumentModel],
     ['cms_text', CreateDocumentModel],
-    ['dynamic_document_root', CreateDocumentModel],
     ['dynamic_document_roots', CreateDocumentModel]
 ];
 
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
-    documents = observable.array<DocumentTypes>([]);
+    documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
 
     constructor(root: RootStore) {
@@ -110,7 +106,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     find = computedFn(
-        function (this: DocumentStore, id?: string | null): DocumentTypes | undefined {
+        function (this: DocumentStore, id?: string | null): DocumentModelType | undefined {
             if (!id) {
                 return undefined;
             }
@@ -138,7 +134,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    addDocument(document: DocumentTypes) {
+    addDocument(document: DocumentModelType) {
         this.documents.push(document);
     }
 
@@ -152,10 +148,20 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
+    byDocumentType = computedFn(
+        function (this: DocumentStore, documentType: DocumentType): TypeModelMapping[typeof documentType][] {
+            if (!documentType) {
+                return [];
+            }
+            return this.documents.filter((d) => d.type === documentType);
+        },
+        { keepAlive: true }
+    );
+
     byParentId = computedFn(
         function (this: DocumentStore, parentId?: string) {
             if (!parentId) {
-                return [] as DocumentTypes[];
+                return [] as DocumentModelType[];
             }
             return this.documents.filter((d) => d.parentId === parentId);
         },
@@ -195,7 +201,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    removeFromStore(document?: DocumentTypes, cleanupDeep?: boolean): DocumentTypes | undefined {
+    removeFromStore(document?: DocumentModelType, cleanupDeep?: boolean): DocumentModelType | undefined {
         /**
          * Removes the model to the store
          */
@@ -330,7 +336,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    apiDelete(document: DocumentTypes) {
+    apiDelete(document: DocumentModelType) {
         if (document.authorId !== this.root.userStore.current?.id) {
             return;
         }
@@ -347,7 +353,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    relinkParent(document: DocumentTypes, newParent: DocumentTypes) {
+    relinkParent(document: DocumentModelType, newParent: DocumentModelType) {
         return this.withAbortController(`save-${document.id}`, (sig) => {
             return apiLinkTo(document.id, newParent.id, sig.signal);
         })

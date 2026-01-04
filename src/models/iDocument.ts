@@ -35,7 +35,7 @@ abstract class iDocument<Type extends DocumentType> {
      * Time [s] :    0        1        2        3        4        5        6        7
      * Edits    :    |||  |            |||   ||  |  |     ||  ||||  |||    ||  ||| |||||
      */
-    save: DebouncedFunc<() => Promise<void>>;
+    save: DebouncedFunc<() => Promise<boolean>>;
 
     @observable accessor state: ApiState = ApiState.IDLE;
 
@@ -239,17 +239,20 @@ abstract class iDocument<Type extends DocumentType> {
                     action((res) => {
                         if (res === 'error') {
                             this.state = ApiState.ERROR;
+                            return false;
                         } else {
                             this.state = ApiState.SUCCESS;
                             if (this.isDirty) {
                                 this._pristine = { ...this.data };
                             }
+                            return true;
                         }
                     })
                 );
             })
             .catch((e) => {
                 console.warn('OnBeforeSave failed for', this.id, e);
+                return false;
             });
     }
 }

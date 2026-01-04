@@ -14,9 +14,9 @@ import MdxComment from '@tdev-models/documents/MdxComment';
 import { Color } from '@tdev-components/shared/Colors';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { DynamicDocumentRootModel } from '@tdev-models/documents/DynamicDocumentRoot';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import type DocumentStore from '@tdev-stores/DocumentStore';
+import iDocumentContainer from '@tdev-models/iDocumentContainer';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -94,37 +94,17 @@ export interface MdxCommentData {
     isOpen: boolean;
     color: Color;
 }
-export interface DynamicDocumentRootData {
-    /** such a document is never created - it's only the document root that is needed */
+
+export interface DynamicDocumentRootsData<T extends ContainerType> {
+    // document type of the container document
+    containerType: T;
+    documentRootIds: string[];
+}
+export interface ContainerTypeDataMapping {
+    ['_container_placeholder_']: { name: string }; // placeholder to avoid empty interface error
 }
 
-/**
- * This is the extendable mapping - only the key matters,
- * the value is in principle irrelevant.
- * @example
- * ```ts
- * declare module '@tdev-api/document' {
- *   export interface RoomTypeNames {
- *     ['my_room_type']: 'my_room_type';
- *   }
- * }
- * ```
- */
-export interface RoomTypeNames {}
-
-export type RoomType = keyof RoomTypeNames;
-
-export interface DynamicDocumentRoot {
-    id: string;
-    name: string;
-    type: RoomType;
-}
-
-export interface DynamicDocumentRootsData {
-    documentRoots: DynamicDocumentRoot[];
-}
-
-export interface TypeDataMapping {
+export interface TypeDataMapping extends ContainerTypeDataMapping {
     ['script']: ScriptData;
     ['task_state']: TaskStateData;
     ['progress_state']: ProgressStateData;
@@ -137,12 +117,16 @@ export interface TypeDataMapping {
     ['mdx_comment']: MdxCommentData;
     ['restricted']: RestrictedData;
     ['cms_text']: CmsTextData;
-    ['dynamic_document_root']: DynamicDocumentRootData;
-    ['dynamic_document_roots']: DynamicDocumentRootsData;
+    ['dynamic_document_roots']: DynamicDocumentRootsData<any>;
     // Add more mappings as needed
 }
+export type ContainerType = keyof ContainerTypeDataMapping;
 
-export interface TypeModelMapping {
+export interface ContainerTypeModelMapping {
+    ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
+}
+
+export interface TypeModelMapping extends ContainerTypeModelMapping {
     ['script']: Script;
     ['task_state']: TaskState;
     ['progress_state']: ProgressState;
@@ -155,8 +139,7 @@ export interface TypeModelMapping {
     ['mdx_comment']: MdxComment;
     ['restricted']: Restricted;
     ['cms_text']: CmsText;
-    ['dynamic_document_root']: DynamicDocumentRootModel;
-    ['dynamic_document_roots']: DynamicDocumentRoots;
+    ['dynamic_document_roots']: DynamicDocumentRoots<any>;
     /**
      * Add more mappings as needed
      * TODO: implement the mapping in DocumentRoot.ts
@@ -165,8 +148,10 @@ export interface TypeModelMapping {
      */
 }
 
+export type ContainerModelType = ContainerTypeModelMapping[ContainerType];
+
 export type DocumentType = keyof TypeModelMapping;
-export type DocumentTypes = TypeModelMapping[DocumentType];
+export type DocumentModelType = TypeModelMapping[DocumentType];
 
 /**
  * Document types that can be edited by admins ON BEHALF OF other users.

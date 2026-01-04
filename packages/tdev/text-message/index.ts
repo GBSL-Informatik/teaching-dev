@@ -15,10 +15,14 @@ declare module '@tdev-api/document' {
     }
     export interface TypeDataMapping {
         ['text_message']: TextMessageData;
-        ['simple_chat']: SimpleChatData;
     }
     export interface TypeModelMapping {
         ['text_message']: TextMessage;
+    }
+    export interface ContainerTypeDataMapping {
+        ['simple_chat']: SimpleChatData;
+    }
+    export interface ContainerTypeModelMapping {
         ['simple_chat']: SimpleChat;
     }
 }

@@ -6,7 +6,6 @@ import { Config } from '@tdev-api/documentRoot';
 import React from 'react';
 import { authClient } from '@tdev/auth-client';
 
-export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 const WAIT_FOR_LOGIN = 300;
 
 /**
@@ -25,9 +24,9 @@ export const useFirstRealMainDocument = <Type extends DocumentType>(
     access: Partial<Config> = {}
 ) => {
     const [t0] = React.useState(Date.now());
-    const { data: session } = authClient.useSession();
+    const sessionStore = useStore('sessionStore');
     const mainDoc = useFirstMainDocument(documentRootId, meta, createDocument, access);
-    const [loginDelayElapsed, setLoginDelayElapsed] = React.useState(false);
+    const [loginDelayElapsed, setLoginDelayElapsed] = React.useState(sessionStore.isLoggedIn);
     React.useEffect(() => {
         if (loginDelayElapsed) {
             return;
@@ -44,8 +43,8 @@ export const useFirstRealMainDocument = <Type extends DocumentType>(
 
     const hasId = !!documentRootId;
     if (hasId) {
-        if (!session?.user) {
-            if (mainDoc.authorId === DUMMY_DOCUMENT_ID || !mainDoc.root || mainDoc.root.isDummy) {
+        if (sessionStore.isLoggedIn) {
+            if (mainDoc.isDummy) {
                 return;
             }
         } else if (!loginDelayElapsed) {

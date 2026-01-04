@@ -9,23 +9,22 @@ import { default as SimpleChatModel } from '@tdev/text-message/models/SimpleChat
 import ChatName from './ChatName';
 
 interface Props {
-    simpleChat: SimpleChatModel;
-    maxHeight?: string;
+    documentContainer: SimpleChatModel;
 }
 
 const SimpleChat = observer((props: Props): React.ReactNode => {
-    const { simpleChat } = props;
+    const { documentContainer } = props;
 
     return (
         <div className={clsx(styles.simpleChat)}>
             <div className={clsx(styles.chat)}>
                 <ChatName
-                    name={simpleChat.name}
-                    documentRootId={simpleChat.documentRootId}
-                    simpleChat={simpleChat}
+                    name={documentContainer.name}
+                    documentRootId={documentContainer.documentRootId}
+                    simpleChat={documentContainer}
                 />
-                <Conversation simpleChat={simpleChat} maxHeight={props.maxHeight} />
-                <NewMessage simpleChat={simpleChat} />
+                <Conversation simpleChat={documentContainer} maxHeight={'300px' /*props.maxHeight*/} />
+                <NewMessage simpleChat={documentContainer} />
             </div>
         </div>
     );
