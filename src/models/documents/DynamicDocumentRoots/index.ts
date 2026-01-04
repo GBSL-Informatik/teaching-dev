@@ -76,6 +76,11 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
     addDynamicDocumentRoot() {
         const id = uuidv4();
         const meta = this.defaultContainerMeta;
+        const user = this.store.root.userStore.current;
+        if (!user || !user.hasElevatedAccess) {
+            console.warn('No elevated access to add dynamic document root');
+            return;
+        }
         this.store.root.documentRootStore
             .create(id, new ContainerMeta(this.containerType), {
                 access: Access.None_DocumentRoot,
@@ -101,23 +106,35 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
                             });
                         }
                     };
-                    return this.saveNow().then((isSaved) => {
-                        if (isSaved) {
-                            this.store
-                                .create({
-                                    documentRootId: id,
-                                    type: this.containerType,
-                                    data: meta.defaultData
-                                })
-                                .then((createdDoc) => {
-                                    if (!createdDoc) {
-                                        onFailure();
-                                    }
-                                });
-                        } else {
+                    return this.saveNow()
+                        .then((isSaved) => {
+                            if (!isSaved) {
+                                throw new Error('Failed to save dynamic document roots');
+                            }
+                            return this.store.root.permissionStore.createUserPermission(
+                                id,
+                                user,
+                                Access.RW_User
+                            );
+                        })
+                        .then((isSaved) => {
+                            if (!isSaved) {
+                                throw new Error('Failed to save dynamic document roots');
+                            }
+                            return this.store.create({
+                                documentRootId: id,
+                                type: this.containerType,
+                                data: meta.defaultData
+                            });
+                        })
+                        .then((success) => {
+                            if (!success) {
+                                throw new Error('Failed to save dynamic document roots');
+                            }
+                        })
+                        .catch(() => {
                             onFailure();
-                        }
-                    });
+                        });
                 })
             );
     }
