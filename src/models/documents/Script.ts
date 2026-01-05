@@ -228,6 +228,15 @@ export default class Script extends iDocument<'script'> {
     }
 
     @action
+    toggleScriptExecution() {
+        if (this.isExecuting) {
+            this.stopScript();
+        } else {
+            this.execScript();
+        }
+    }
+
+    @action
     execScript() {
         if (this.hasGraphicsOutput) {
             if (this.hasTurtleOutput) {
