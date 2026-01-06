@@ -1,5 +1,3 @@
-import type Script from '@tdev-models/documents/Script';
-import type ScriptVersion from '@tdev-models/documents/ScriptVersion';
 import type TaskState from '@tdev-models/documents/TaskState';
 import type String from '@tdev-models/documents/String';
 import api from './base';
@@ -28,16 +26,6 @@ export enum Access {
     RO_User = 'RO_User',
     RW_User = 'RW_User',
     None_User = 'None_User'
-}
-
-export interface ScriptData {
-    code: string;
-}
-
-export interface ScriptVersionData {
-    code: string;
-    version: number;
-    pasted?: boolean;
 }
 
 export interface StringData {
@@ -125,10 +113,8 @@ export interface DynamicDocumentRootsData {
 }
 
 export interface TypeDataMapping {
-    ['script']: ScriptData;
     ['task_state']: TaskStateData;
     ['progress_state']: ProgressStateData;
-    ['script_version']: ScriptVersionData;
     ['string']: StringData;
     ['quill_v2']: QuillV2Data;
     ['solution']: SolutionData;
@@ -143,10 +129,8 @@ export interface TypeDataMapping {
 }
 
 export interface TypeModelMapping {
-    ['script']: Script;
     ['task_state']: TaskState;
     ['progress_state']: ProgressState;
-    ['script_version']: ScriptVersion;
     ['string']: String;
     ['quill_v2']: QuillV2;
     ['solution']: Solution;

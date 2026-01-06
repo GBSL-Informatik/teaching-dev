@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Script from '@tdev-models/documents/Script';
-import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
-import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
-import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
+import CodeEditorComponent from '@tdev/script/components/CodeEditor';
+import HtmlEditor from '@tdev/script/components/HtmlEditor';
+import SvgEditor from '@tdev/script/components/SvgEditor';
 import NetpbmEditor from '@tdev/netpbm-graphic/NetpbmEditor';
 
 interface Props {

@@ -1,0 +1,94 @@
+import React from 'react';
+import clsx from 'clsx';
+import styles from './styles.module.scss';
+import { observer } from 'mobx-react-lite';
+import { ScriptMeta } from '@tdev-models/documents/Script';
+import { MetaProps } from '@tdev/theme/CodeBlock';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import CodeEditorComponent from '../CodeEditor';
+import ErrorBoundary from '@docusaurus/ErrorBoundary';
+import CodeBlock from '@theme/CodeBlock';
+import Button from '@tdev-components/shared/Button';
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import HtmlSandbox from './HtmlSandbox';
+import { useStore } from '@tdev-hooks/useStore';
+
+export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' | 'title'> {
+    title?: string;
+    code?: string;
+    lang?: 'html' | 'css' | 'scss';
+    maxHeight?: string | number;
+    minHeight?: string | number;
+    showLineNumbers?: boolean;
+    className?: string;
+    children?: React.ReactNode;
+    htmlTransformer?: (raw: string) => string;
+    onNavigate?: (href: string) => void;
+    allowSameOrigin?: boolean;
+}
+
+const HtmlEditor = observer((props: Props) => {
+    const id = props.slim ? undefined : props.id;
+    const userStore = useStore('userStore');
+    const meta = React.useMemo(
+        () =>
+            new ScriptMeta({
+                title: 'website.html',
+                ...props,
+                code: props.code || '',
+                lang: props.lang ?? 'html'
+            }),
+        [props.id, props.code]
+    );
+    const doc = useFirstMainDocument(id, meta);
+    const isBrowser = useIsBrowser();
+    if (!isBrowser || !doc) {
+        return <CodeBlock language="html">{props.code}</CodeBlock>;
+    }
+    if (!doc.canDisplay && props.id && !userStore.isUserSwitched) {
+        return (
+            <div>
+                <PermissionsPanel documentRootId={props.id} />
+            </div>
+        );
+    }
+
+    return (
+        <div className={clsx(styles.htmlEditor)}>
+            <div className={clsx(styles.editor)}>
+                <CodeEditorComponent script={doc} className={clsx(styles.code)} />
+            </div>
+            <BrowserWindow
+                className={clsx(styles.htmlWindow)}
+                bodyStyle={{ padding: 0 }}
+                maxHeight={props.maxHeight ?? '400px'}
+                minHeight={props.minHeight ?? '6em'}
+                url={`file:///${doc.meta.title}`}
+            >
+                <ErrorBoundary
+                    fallback={({ error, tryAgain }) => (
+                        <div>
+                            <div className={clsx('alert', 'alert--danger')} role="alert">
+                                <div>Invalides HTML 😵‍💫: {error.message}</div>
+                                Ändere den Code und versuche es erneut 😎.
+                                <Button onClick={tryAgain}>Nochmal versuchen</Button>
+                            </div>
+                        </div>
+                    )}
+                >
+                    <HtmlSandbox
+                        src={doc.code}
+                        id={doc.id}
+                        htmlTransformer={props.htmlTransformer}
+                        allowSameOrigin={props.allowSameOrigin}
+                        onNavigate={props.onNavigate}
+                    />
+                </ErrorBoundary>
+            </BrowserWindow>
+        </div>
+    );
+});
+
+export default HtmlEditor;

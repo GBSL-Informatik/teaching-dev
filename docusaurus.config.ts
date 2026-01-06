@@ -8,7 +8,7 @@ import type {
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import themeCodeEditor from './src/plugins/theme-code-editor';
+import themeCodeEditor from './packages/tdev/script/theme-code-editor';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';

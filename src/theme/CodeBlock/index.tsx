@@ -3,7 +3,7 @@ import CodeBlock from '@theme-original/CodeBlock';
 import type CodeBlockType from '@theme/CodeBlock';
 import type { WrapperProps } from '@docusaurus/types';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { CodeEditor } from '@tdev-components/documents/CodeEditor';
+import { CodeEditor } from '@tdev/script/components/CodeEditor';
 
 export interface MetaProps {
     id?: string;
