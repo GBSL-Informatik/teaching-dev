@@ -164,6 +164,26 @@ print('Line 6 - scrolled')
   ```
 </BrowserWindow>
 
+
+### Minimale Anzahl Zeilen (`minLines`)
+
+Es kann die minimale Anzahl von Zeilen angegeben werden, die der Editor mindestens anzeigen soll.
+Dies ist nützlich falls Code-Blöcke miteinander verglichen werden sollen.
+
+````md
+```py live_py minLines=5
+print('Line 1')
+print('Line 2')
+```
+````
+
+<BrowserWindow>
+  ```py live_py minLines=5 hideWarning
+  print('Line 1')
+  print('Line 2')
+  ```
+</BrowserWindow>
+
 ### Imports
 
 Standardmässig können alle Python-Skripte, die sich im Verzeichnis `static/bry-libs/` befinden, direkt aus den Code-Blöcken importiert werden. Dies ermöglicht es Ihnen, wiederverwendbare Module zu erstellen, die in Ihre Code-Blöcke importiert werden können.
