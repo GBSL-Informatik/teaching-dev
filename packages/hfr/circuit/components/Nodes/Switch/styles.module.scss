@@ -1,0 +1,17 @@
+.switch {
+    width: 20px;
+    height: 20px;
+    padding: 2px 0;
+    .buttonNode {
+        border-radius: var(--ifm-global-radius);
+        border: 1px solid var(--ifm-color-secondary-darkest);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+            background-color: var(--ifm-color-secondary-lighter);
+        }
+    }
+}

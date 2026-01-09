@@ -6,32 +6,38 @@ import {
     DynamicDocumentRoot as DynamicDocumentRootProps,
     TypeDataMapping,
     Access,
-    RoomType
+    RoomType,
+    RoomTypeMapping
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import DynamicDocumentRoots from './DynamicDocumentRoots';
 
-export interface MetaInit {
+export interface MetaInit<T extends RoomType> {
     readonly?: boolean;
+    roomType: T;
 }
 
-class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
+class DynamicDocumentRoot<T extends RoomType> extends TypeMeta<'dynamic_document_root'> {
     readonly type = 'dynamic_document_root';
     readonly store: DocumentStore;
     readonly rootDocumentId: string;
     readonly parentDocumentId: string;
+    readonly roomType: T;
+    readonly room: RoomTypeMapping[T] | null;
 
     constructor(
-        props: Partial<MetaInit>,
+        props: MetaInit<T>,
         rootDocumentId: string,
         parentDocumentId: string,
         documentStore: DocumentStore
     ) {
         super('dynamic_document_root', props.readonly ? Access.RO_User : undefined);
+        this.roomType = props.roomType;
         this.store = documentStore;
         this.rootDocumentId = rootDocumentId;
         this.parentDocumentId = parentDocumentId;
+        this.room = documentStore.createRoom<T>(this);
     }
 
     @computed
@@ -58,14 +64,6 @@ class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
         return title === undefined ? 'Dynamische Document Root' : title;
     }
 
-    @computed
-    get roomType(): RoomType | undefined {
-        if (!this.parentDocument) {
-            return undefined;
-        }
-        return this.props?.type;
-    }
-
     @action
     destroy(): void {
         this.parentDocument?.removeDynamicDocumentRoot(this.rootDocumentId);
@@ -85,7 +83,7 @@ class DynamicDocumentRoot extends TypeMeta<'dynamic_document_root'> {
         if (!this.parentDocument) {
             return;
         }
-        this.parentDocument.setRoomType(this.rootDocumentId, type);
+        this.parentDocument.setRoomType(type);
         this.parentDocument.saveNow();
     }
 
@@ -110,7 +108,7 @@ export class DynamicDocumentRootModel extends iDocument<'dynamic_document_root'>
     }
 
     @computed
-    get meta(): DynamicDocumentRoot {
+    get meta(): DynamicDocumentRoot<RoomType> {
         throw new Error('Method not implemented.');
     }
 }

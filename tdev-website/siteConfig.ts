@@ -73,7 +73,8 @@ const getSiteConfig: SiteConfigProvider = () => {
         },
         apiDocumentProviders: [
             require.resolve('@tdev/netpbm-graphic/register'),
-            require.resolve('@tdev/text-message/register')
+            require.resolve('@tdev/text-message/register'),
+            require.resolve('@hfr/circuit/register')
         ]
     };
 };

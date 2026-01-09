@@ -1,6 +1,6 @@
 import api from './base';
 import { AxiosPromise } from 'axios';
-import { Access, Document, DocumentType } from './document';
+import { Access, Document, DocumentType, RoomType, RoomTypeMapping } from './document';
 import { GroupPermissionBase, UserPermissionBase } from './permission';
 
 export interface RootGroupPermission {
