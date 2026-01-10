@@ -146,10 +146,10 @@ export class DocumentRootStore extends iStore {
      * - or when more then 42 records are queued (@see loadInNextBatch)
      *    (otherwise the URL maxlength would be reached)
      */
-    loadQueued = _.debounce(action(this._loadQueued), 20, {
+    loadQueued = _.debounce(action(this._loadQueued), 25, {
         leading: false,
         trailing: true,
-        maxWait: 25
+        maxWait: 50
     });
 
     /**

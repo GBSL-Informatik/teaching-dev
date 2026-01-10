@@ -12,7 +12,8 @@ import {
     update as apiUpdate,
     ADMIN_EDITABLE_DOCUMENTS,
     linkTo as apiLinkTo,
-    Factory
+    Factory,
+    Access
 } from '@tdev-api/document';
 import iStore from '@tdev-stores/iStore';
 import axios from 'axios';
@@ -275,16 +276,32 @@ class DocumentStore extends iStore<`delete-${string}`> {
         if (!rootDoc || rootDoc.isDummy) {
             return Promise.resolve(undefined);
         }
-        const hasAccess = RWAccess.has(rootDoc.permission) || this.root.userStore.current?.hasElevatedAccess;
-        if (!hasAccess) {
+        if (!rootDoc.hasAdminOrRWAccess) {
             return Promise.resolve(undefined);
+        }
+        const preTasks: Promise<any>[] = [];
+        if (!rootDoc.hasRWAccess && rootDoc.hasAdminOrRWAccess) {
+            /**
+             * obviously, the current user is an admin, but no permission was given so far.
+             * -> add RW access for the current user, so that the document creation can proceed.
+             */
+            preTasks.push(
+                this.root.permissionStore.createUserPermission(
+                    rootDoc.id,
+                    this.root.userStore.current!,
+                    Access.RW_User
+                )
+            );
         }
         const onBehalfOf =
             model.authorId !== this.root.userStore.current?.id &&
             ADMIN_EDITABLE_DOCUMENTS.includes(model.type);
-        return this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
-            return apiCreate<Type>(model, onBehalfOf, isMain, sig.signal);
-        })
+        return Promise.all(preTasks)
+            .then(() =>
+                this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
+                    return apiCreate<Type>(model, onBehalfOf, isMain, sig.signal);
+                })
+            )
             .then(
                 action(({ data }) => {
                     return this.addToStore(data);
