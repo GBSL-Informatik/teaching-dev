@@ -1,51 +1,41 @@
 import { RootStore } from './rootStore';
-import type DocumentRoot from '@tdev-models/DocumentRoot';
-import { DynamicDocumentRoot } from '@tdev-api/document';
-import type { RoomType } from '@tdev-api/document';
+import type { ContainerType, ContainerTypeModelMapping } from '@tdev-api/document';
+import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 
-interface RoomComponent {
-    name: string;
-    description: string;
-    component: React.ComponentType<{
-        documentRoot: DocumentRoot<'dynamic_document_root'>;
-        roomProps: DynamicDocumentRoot;
-    }>;
-    default?: boolean;
+export interface ContainerProps<T extends ContainerType = ContainerType> {
+    documentContainer: ContainerTypeModelMapping[T];
+}
+
+export interface ContainerComponent<T extends ContainerType = ContainerType> {
+    defaultMeta: ContainerMeta<T>;
+    component: React.ComponentType<ContainerProps<T>>;
 }
 
 class ComponentStore {
     readonly root: RootStore;
-    components = new Map<RoomType, RoomComponent>();
+    components = new Map<ContainerType, ContainerComponent>();
 
     constructor(root: RootStore) {
         this.root = root;
     }
 
-    registerRoomComponent(type: RoomType, component: RoomComponent) {
-        this.components.set(type, component);
+    getComponent<T extends ContainerType>(type: T): ContainerComponent<T> | undefined {
+        return this.components.get(type) as ContainerComponent<T> | undefined;
     }
 
-    get registeredRoomTypes(): RoomType[] {
+    registerContainerComponent<T extends ContainerType>(type: T, component: ContainerComponent<T>) {
+        this.components.set(type, component as ContainerComponent<any>);
+    }
+
+    get registeredContainerTypes(): ContainerType[] {
         return [...this.components.keys()];
     }
 
-    get defaultRoomType(): RoomType | undefined {
-        if (this.components.size === 0) {
-            return undefined;
-        }
-        for (const [type, component] of this.components.entries()) {
-            if (component.default) {
-                return type;
-            }
-        }
-        return this.components.keys().next().value;
-    }
-
-    isValidRoomType(type?: string): type is RoomType {
+    isValidContainerType(type?: string): type is ContainerType {
         if (!type) {
             return false;
         }
-        return this.components.has(type as RoomType);
+        return this.components.has(type as ContainerType);
     }
 }
 

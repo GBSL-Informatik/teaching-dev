@@ -1,7 +1,13 @@
-import TextMessage from './model';
+import SimpleChat from './models/SimpleChat';
+import TextMessage from './models/TextMessage';
 
 export interface TextMessageData {
     text: string;
+}
+
+export interface SimpleChatData {
+    name: string;
+    maxHeight?: string;
 }
 
 declare module '@tdev-api/document' {
@@ -13,5 +19,11 @@ declare module '@tdev-api/document' {
     }
     export interface TypeModelMapping {
         ['text_message']: TextMessage;
+    }
+    export interface ContainerTypeDataMapping {
+        ['simple_chat']: SimpleChatData;
+    }
+    export interface ContainerTypeModelMapping {
+        ['simple_chat']: SimpleChat;
     }
 }

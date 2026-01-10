@@ -94,7 +94,7 @@ export interface TypeModelMapping {
     ['mdx_comment']: MdxComment;
 }
 
-export type DocumentTypes =
+export type DocumentModelType =
     /* ... */
     | MdxComment;
 ```
@@ -103,7 +103,7 @@ export type DocumentTypes =
 :::info[Stores]
 
 ```tsx title="src/stores/DocumentStore.ts" {4-5}
-export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
+export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentModelType {
     switch (data.type) {
         /* ... */
         case 'mdx_comment':

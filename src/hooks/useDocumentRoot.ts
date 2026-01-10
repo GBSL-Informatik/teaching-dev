@@ -20,7 +20,8 @@ export const useDocumentRoot = <Type extends DocumentType>(
     meta: TypeMeta<Type>,
     addDummyToStore: boolean = true,
     access: Partial<Config> = {},
-    skipCreate?: boolean
+    skipCreate?: boolean,
+    loadOnlyType?: DocumentType
 ) => {
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
@@ -55,7 +56,12 @@ export const useDocumentRoot = <Type extends DocumentType>(
         /**
          * load the documentRoot and it's documents from the api.
          */
-        documentRootStore.loadInNextBatch(id, meta, { skipCreate: !!skipCreate }, access);
+        documentRootStore.loadInNextBatch(
+            id,
+            meta,
+            { skipCreate: !!skipCreate, documentType: loadOnlyType },
+            access
+        );
         return () => {
             documentRootStore.removeFromStore(defaultRootDocId, false);
         };
@@ -75,5 +81,6 @@ export const useDocumentRoot = <Type extends DocumentType>(
         });
     }, [userStore.viewedUser]);
 
-    return documentRootStore.find<Type>(dummyDocumentRoot.id) || dummyDocumentRoot;
+    const rootDoc = documentRootStore.find<Type>(dummyDocumentRoot.id);
+    return rootDoc || dummyDocumentRoot;
 };

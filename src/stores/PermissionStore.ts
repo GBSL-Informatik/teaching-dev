@@ -145,7 +145,7 @@ class PermissionStore extends iStore<`update-${string}`> {
 
     @action
     createUserPermission(documentRootId: string, user: User, access: Access) {
-        this.withAbortController(`create-${documentRootId}-${user.id}`, async (signal) => {
+        return this.withAbortController(`create-${documentRootId}-${user.id}`, async (signal) => {
             return createUserPermissionApi(
                 {
                     userId: user.id,
@@ -155,6 +155,7 @@ class PermissionStore extends iStore<`update-${string}`> {
                 signal.signal
             ).then(({ data }) => {
                 this.addUserPermission(new UserPermission(data, this));
+                return true;
             });
         });
     }

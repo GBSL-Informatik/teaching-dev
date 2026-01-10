@@ -149,7 +149,6 @@ const LivenessChecker = observer(() => {
 
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
-
     return (
         <>
             <Head>

@@ -16,7 +16,8 @@ import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
  */
 
 export const QuillV2 = observer((props: Props) => {
-    const doc = useFirstRealMainDocument(props.id, new ModelMeta(props));
+    const [meta] = React.useState(new ModelMeta(props));
+    const doc = useFirstRealMainDocument(props.id, meta);
     /**
      * if the user is logged in but the document is not loaded yet, show a loader.
      * This prevents quill from rendering before the document is loaded

@@ -5,7 +5,7 @@ import {
     Document as DocumentProps,
     TypeDataMapping,
     Access,
-    DocumentTypes
+    DocumentModelType
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
@@ -83,7 +83,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     @computed
     get path() {
-        const path: DocumentTypes[] = [];
+        const path: DocumentModelType[] = [];
         let parent = this.parent;
         while (parent) {
             path.unshift(parent);
@@ -113,7 +113,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     @action
     delete() {
-        return this.store.apiDelete(this as any as DocumentTypes);
+        return this.store.apiDelete(this as any as DocumentModelType);
     }
 }
 

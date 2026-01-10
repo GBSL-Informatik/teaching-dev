@@ -9,13 +9,7 @@ import {
 } from '@tdev-components/documents/CodeEditor/constants';
 import { runCode } from '@tdev-components/documents/CodeEditor/utils/bryRunner';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    DocumentType,
-    Document as DocumentProps,
-    ScriptVersionData,
-    Access,
-    TypeDataMapping
-} from '@tdev-api/document';
+import { Document as DocumentProps, ScriptVersionData, Access, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import siteConfig from '@generated/docusaurus.config';
 import globalData from '@generated/globalData';
@@ -93,6 +87,7 @@ export default class Script extends iDocument<'script'> {
     @observable accessor showRaw: boolean = false;
     @observable accessor graphicsModalExecutionNr: number = 0;
     @observable accessor isPasted: boolean = false;
+    @observable accessor _initialVersionsLoaded: boolean = false;
     logs = observable.array<LogMessage>([], { deep: false });
 
     constructor(props: DocumentProps<'script'>, store: DocumentStore) {
@@ -161,8 +156,21 @@ export default class Script extends iDocument<'script'> {
     }
 
     @action
-    loadVersions() {
-        // nop
+    loadVersions(force: boolean = false) {
+        if (this._initialVersionsLoaded && !force) {
+            return;
+        }
+        if (!this.meta.hasHistory) {
+            return;
+        }
+        this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
+            documentType: 'script_version',
+            skipCreate: true,
+            documentRoot: false,
+            groupPermissions: false,
+            userPermissions: false
+        });
+        this._initialVersionsLoaded = true;
     }
 
     @computed
@@ -171,7 +179,7 @@ export default class Script extends iDocument<'script'> {
             (this.root?.documents || []).filter(
                 (doc) => doc.type === 'script_version' && doc.authorId === this.authorId
             ) as ScriptVersion[],
-            ['version'],
+            ['createdAt'],
             ['asc']
         );
     }
@@ -181,9 +189,11 @@ export default class Script extends iDocument<'script'> {
         if (!this.isVersioned || this.store.root.userStore.isUserSwitched) {
             return;
         }
+        if (!this.versionsLoaded) {
+            this.loadVersions();
+        }
         const versionData: ScriptVersionData = {
             code: version.code,
-            version: version.version,
             pasted: version.pasted
         };
         this.store.create({
@@ -295,7 +305,7 @@ export default class Script extends iDocument<'script'> {
 
     @computed
     get versionsLoaded() {
-        return true;
+        return this._initialVersionsLoaded;
     }
 
     @action

@@ -58,7 +58,7 @@ export interface TypeModelMapping {
     ['file']: File;
 }
 
-export type DocumentTypes =
+export type DocumentModelType =
     /* ... */
     | Directory
     | File
@@ -68,7 +68,7 @@ export type DocumentTypes =
 :::info[Stores]
 
 ```tsx title="src/stores/DocumentStore.ts" {4-7}
-export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentTypes {
+export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore): DocumentModelType {
     switch (data.type) {
         /* ... */
         case 'dir':
