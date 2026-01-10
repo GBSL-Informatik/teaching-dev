@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { mdiCloseCircleOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import iJs from '../../models/iJs';
+import type iJs from '../../models/iJs';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 
 interface Props {

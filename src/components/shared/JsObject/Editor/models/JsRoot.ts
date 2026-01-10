@@ -1,6 +1,6 @@
 import { action, computed, observable } from 'mobx';
-import iJs, { JsModelType } from './iJs';
-import { JsTypes, JsRoot as JsRootType, toJsSchema, EditLevel } from '../../toJsSchema';
+import iJs, { type JsModelType } from './iJs';
+import { type JsTypes, type JsRoot as JsRootType, toJsSchema, type EditLevel } from '../../toJsSchema';
 import iParentable from './iParentable';
 import { toModel } from './toModel';
 

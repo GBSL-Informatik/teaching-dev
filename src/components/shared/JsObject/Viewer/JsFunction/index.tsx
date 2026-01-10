@@ -5,6 +5,7 @@ import JsType from '@tdev-components/shared/JsObject/Viewer/JsType';
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 export interface Props {
     js: JsFunction;
@@ -13,11 +14,12 @@ export interface Props {
 
 const JsFunction = observer((props: Props) => {
     const { js } = props;
+    const isBrowser = useIsBrowser();
 
     return (
         <JsType js={js}>
             <CodeBlock language="javascript" className={clsx(styles.code, props.className)}>
-                {js.value.toString()}
+                {isBrowser ? js.value.toString() : `${js.name ?? ''} = () => [native code]`}
             </CodeBlock>
         </JsType>
     );

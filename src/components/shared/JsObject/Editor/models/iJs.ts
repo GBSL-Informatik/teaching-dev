@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { EditLevel, JsParents, JsTypes, JsValue, type JsTypeName } from '../../toJsSchema';
+import type { EditLevel, JsTypes, JsValue, JsTypeName } from '../../toJsSchema';
 import JsNumber from './JsNumber';
 import JsBoolean from './JsBoolean';
 import JsString from './JsString';

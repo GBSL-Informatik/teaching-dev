@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import JsTypeSwitcher from '../JsType/Switcher';
-import iParentable from '../models/iParentable';
-import { CustomAction } from '..';
+import type iParentable from '../models/iParentable';
+import type { CustomAction } from '..';
 
 export interface Props {
     schema: iParentable;

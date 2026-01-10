@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { JsModelType } from '../models/iJs';
+import type { JsModelType } from '../models/iJs';
 import JsArray from '../JsArray';
 import JsObject from '../JsObject';
 import JsString from '../JsString';
@@ -8,7 +8,7 @@ import JsNumber from '../JsNumber';
 import JsBoolean from '../JsBoolean';
 import JsNullish from '../JsNullish';
 import JsFunction from '../../Viewer/JsFunction';
-import { CustomAction } from '..';
+import type { CustomAction } from '..';
 
 export interface Props {
     js: JsModelType;

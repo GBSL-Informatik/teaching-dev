@@ -3,14 +3,13 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
-import { default as JsArrayModel } from '../models/JsArray';
+import type { default as JsArrayModel } from '../models/JsArray';
 import JsTypeSwitcher from '../JsType/Switcher';
 import AddValue from '../Actions/AddValue';
-import JsSchemaEditor from '../SchemaEditor';
 import Button from '@tdev-components/shared/Button';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { CustomAction } from '..';
+import type { CustomAction } from '..';
 
 interface Props {
     js: JsArrayModel;

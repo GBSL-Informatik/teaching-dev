@@ -1,8 +1,8 @@
+import _ from 'es-toolkit/compat';
+import type { JsModelType } from './iJs';
+import type { JsValue } from '../../toJsSchema';
 import JsArray from './JsArray';
 import JsNumber from './JsNumber';
-import _ from 'es-toolkit/compat';
-import { JsModelType } from './iJs';
-import { JsValue } from '../../toJsSchema';
 import JsString from './JsString';
 import JsBoolean from './JsBoolean';
 import JsObject from './JsObject';

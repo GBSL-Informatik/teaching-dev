@@ -4,15 +4,26 @@ import Popup from 'reactjs-popup';
 import { mdiCog } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { PopupActions } from 'reactjs-popup/dist/types';
-import JsObjectEditor, { type Props as EditorProps } from '../Editor';
+import type { Props as EditorProps } from '../Editor';
 import Card from '@tdev-components/shared/Card';
+import { useClientLib } from '@tdev-hooks/useClientLib';
+import type * as JsObjectEditor from '../Editor';
 
 interface Props extends EditorProps {
     title?: string;
 }
 
 const JsEditorPopup = (props: Props) => {
+    const Lib = useClientLib<typeof JsObjectEditor>(() => import('../Editor'), '../Editor');
+    if (!Lib) {
+        return null;
+    }
+    return <JsPoupup props={props} Lib={Lib} />;
+};
+
+const JsPoupup = (jsProps: { props: Props; Lib: typeof JsObjectEditor }) => {
     const ref = React.useRef<PopupActions>(null);
+    const { props, Lib } = jsProps;
 
     return (
         <Popup
@@ -30,7 +41,7 @@ const JsEditorPopup = (props: Props) => {
             nested
         >
             <Card>
-                <JsObjectEditor
+                <Lib.default
                     {...props}
                     onSave={(js) => {
                         props.onSave?.(js);

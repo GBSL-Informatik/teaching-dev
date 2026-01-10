@@ -1,6 +1,6 @@
 import { computed } from 'mobx';
 import _ from 'es-toolkit/compat';
-import { JsObject as JsObjectType, JsParents, JsTypes } from '../../toJsSchema';
+import type { JsObject as JsObjectType, JsParents, JsTypes } from '../../toJsSchema';
 import iParentable from './iParentable';
 
 class JsObject extends iParentable<JsObjectType> {
