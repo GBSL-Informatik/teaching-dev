@@ -3,28 +3,17 @@ import _ from 'es-toolkit/compat';
 import Popup from 'reactjs-popup';
 import { mdiCog } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import { PopupActions } from 'reactjs-popup/dist/types';
+import type { PopupActions } from 'reactjs-popup/dist/types';
 import type { Props as EditorProps } from '../Editor';
 import Card from '@tdev-components/shared/Card';
-import { useClientLib } from '@tdev-hooks/useClientLib';
-import type * as JsObjectEditor from '../Editor';
+import JsObjectEditor from '../Editor';
 
 interface Props extends EditorProps {
     title?: string;
 }
 
 const JsEditorPopup = (props: Props) => {
-    const Lib = useClientLib<typeof JsObjectEditor>(() => import('../Editor'), '../Editor');
-    if (!Lib) {
-        return null;
-    }
-    return <JsPoupup props={props} Lib={Lib} />;
-};
-
-const JsPoupup = (jsProps: { props: Props; Lib: typeof JsObjectEditor }) => {
     const ref = React.useRef<PopupActions>(null);
-    const { props, Lib } = jsProps;
-
     return (
         <Popup
             trigger={
@@ -41,7 +30,7 @@ const JsPoupup = (jsProps: { props: Props; Lib: typeof JsObjectEditor }) => {
             nested
         >
             <Card>
-                <Lib.default
+                <JsObjectEditor
                     {...props}
                     onSave={(js) => {
                         props.onSave?.(js);
@@ -52,5 +41,4 @@ const JsPoupup = (jsProps: { props: Props; Lib: typeof JsObjectEditor }) => {
         </Popup>
     );
 };
-
 export default JsEditorPopup;
