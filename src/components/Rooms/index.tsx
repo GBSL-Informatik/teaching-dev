@@ -56,15 +56,17 @@ interface RoomSwitcherProps {
 
 const RoomSwitcher = observer((props: RoomSwitcherProps) => {
     const { dynamicRoot, docContainerId } = props;
-    const socketStore = useStore('socketStore');
     const componentStore = useStore('componentStore');
+    const RoomComp = componentStore.getComponent(dynamicRoot.containerType)?.component;
+    const socketStore = useStore('socketStore');
     React.useEffect(() => {
-        socketStore.joinRoom(dynamicRoot.id);
+        socketStore.joinRoom(docContainerId);
+        console.log(dynamicRoot.data, !!dynamicRoot.linkedDocumentContainersMap.get(docContainerId));
+        dynamicRoot.linkedDocumentContainersMap.get(docContainerId)?.loadDocuments();
         return () => {
-            socketStore.leaveRoom(dynamicRoot.id);
+            socketStore.leaveRoom(docContainerId);
         };
     }, [dynamicRoot, socketStore.socket?.id]);
-    const RoomComp = componentStore.getComponent(dynamicRoot.containerType)?.component;
     if (!RoomComp || !dynamicRoot.linkedDocumentContainersMap.get(docContainerId)) {
         return <NoType dynamicRoot={dynamicRoot} />;
     }
@@ -77,7 +79,6 @@ interface Props {
 }
 
 const RoomComponent = observer((props: Props): React.ReactNode => {
-    const documentStore = useStore('documentStore');
     const componentStore = useStore('componentStore');
     const { dynamicRoot, docContainerId } = props;
     React.useEffect(() => {

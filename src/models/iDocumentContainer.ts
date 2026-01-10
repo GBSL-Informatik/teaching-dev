@@ -68,6 +68,26 @@ abstract class iDocumentContainer<Type extends ContainerType> extends iDocument<
     get canRead() {
         return !NoneAccess.has(this.access);
     }
+
+    @computed
+    get documents() {
+        return this.root?.allDocuments.filter((doc) => doc.parentId === this.id) || [];
+    }
+
+    @action
+    loadDocuments() {
+        this.store.root.documentRootStore.loadInNextBatch(
+            this.documentRootId,
+            undefined /* meta is only needed when you want to create a "default" document */,
+            {
+                userPermissions: false /* already present from this container */,
+                groupPermissions: false /* already present from this container */,
+                documentRoot: false /* already present from this container */,
+                skipCreate: true,
+                documents: true
+            }
+        );
+    }
 }
 
 export default iDocumentContainer;

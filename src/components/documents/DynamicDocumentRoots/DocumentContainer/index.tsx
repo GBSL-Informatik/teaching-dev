@@ -11,7 +11,6 @@ import {
     mdiLocationEnter,
     mdiTrashCan
 } from '@mdi/js';
-import iDocumentContainer from '@tdev-models/iDocumentContainer';
 import { ContainerType, ContainerTypeModelMapping } from '@tdev-api/document';
 import TextInput from '@tdev-components/shared/TextInput';
 import { Delete } from '@tdev-components/shared/Button/Delete';

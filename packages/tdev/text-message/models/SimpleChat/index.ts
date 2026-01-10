@@ -75,9 +75,7 @@ class SimpleChat extends iDocumentContainer<'simple_chat'> {
             return [];
         }
         return orderBy(
-            this.root?.allDocuments.filter(
-                (doc) => doc.parentId === this.id && doc.type === 'text_message'
-            ) as TextMessage[],
+            this.documents.filter((doc) => doc.type === 'text_message') as TextMessage[],
             ['createdAt'],
             ['asc']
         ) as TextMessage[];

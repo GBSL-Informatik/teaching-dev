@@ -20,22 +20,37 @@ import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 
 type LoadConfig = {
+    /** if true, user permissions will be loaded
+     * @default true
+     */
     userPermissions?: boolean;
+    /**
+     * if true, group permissions will be loaded
+     * @default true
+     */
     groupPermissions?: boolean;
     /**
      * if true, the document root will be created and when already exists,
      * it will replace the existing one
+     * @default true
      */
     documentRoot?: boolean;
     /**
      * if a document root should not be created when it is not found,
      * set `skipCreate` to true
+     * @default false
      */
     skipCreate?: boolean;
     /**
      * if only document's of a specific type should be loaded
+     * @default undefined
      */
     documentType?: DocumentType;
+    /**
+     * wheter documents linked to the document root should be added to the store
+     * @default true
+     */
+    documents?: boolean;
 };
 
 type BatchedMeta = {
@@ -89,6 +104,12 @@ export class DocumentRootStore extends iStore {
         { keepAlive: true }
     );
 
+    /**
+     *
+     * @param id documentRootId
+     * @param meta meta is only needed when you want to create a "default" document for this document root
+     * @returns
+     */
     @action
     loadInNextBatch<Type extends DocumentType>(
         id: string,
@@ -106,6 +127,7 @@ export class DocumentRootStore extends iStore {
                 groupPermissions: true,
                 userPermissions: true,
                 skipCreate: false,
+                documents: true,
                 ...(loadConfig || {})
             },
             access: accessConfig || {}
@@ -253,11 +275,11 @@ export class DocumentRootStore extends iStore {
 
     @action
     addApiResultToStore(data: ApiDocumentRoot, config: Omit<BatchedMeta, 'access'>) {
-        if (!config.meta) {
+        if (config.load.documentRoot && !config.meta) {
             return;
         }
         const documentRoot = config.load.documentRoot
-            ? new DocumentRoot(data, config.meta, this)
+            ? new DocumentRoot(data, config.meta!, this)
             : this.find(data.id);
         if (!documentRoot) {
             return;
@@ -279,9 +301,11 @@ export class DocumentRootStore extends iStore {
                 );
             });
         }
-        data.documents.forEach((doc) => {
-            this.root.documentStore.addToStore(doc);
-        });
+        if (config.load.documents) {
+            data.documents.forEach((doc) => {
+                this.root.documentStore.addToStore(doc);
+            });
+        }
         return documentRoot;
     }
 
