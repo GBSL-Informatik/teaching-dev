@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { ContainerType, ContainerTypeModelMapping, TypeDataMapping } from '@tdev-api/document';
+import type { ContainerType, TypeDataMapping } from '@tdev-api/document';
 import { Source } from '@tdev-models/iDocument';
 import JsEditorPopup from '@tdev-components/shared/JsObject/JsEditorPopup';
-import { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
+import type { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
 import iDocumentContainer from '@tdev-models/iDocumentContainer';
 
 interface Props {

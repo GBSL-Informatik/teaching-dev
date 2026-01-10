@@ -72,10 +72,10 @@ const DocumentContainer = observer((props: Props) => {
                     />
                 </>
             )}
-            {!edit && <EditDataProps docContainer={docContainer} />}
             <div className={clsx(styles.actions)}>
                 {docContainer.hasAdminAccess && (
                     <>
+                        {!edit && <EditDataProps docContainer={docContainer} />}
                         <Button
                             color={edit ? 'black' : 'orange'}
                             icon={edit ? mdiCloseCircle : mdiCircleEditOutline}

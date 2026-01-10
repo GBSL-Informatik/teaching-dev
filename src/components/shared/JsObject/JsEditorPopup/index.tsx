@@ -4,7 +4,7 @@ import Popup from 'reactjs-popup';
 import { mdiCog } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { PopupActions } from 'reactjs-popup/dist/types';
-import JsObjectEditor, { Props as EditorProps } from '../Editor';
+import JsObjectEditor, { type Props as EditorProps } from '../Editor';
 import Card from '@tdev-components/shared/Card';
 
 interface Props extends EditorProps {
