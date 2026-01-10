@@ -1,6 +1,6 @@
 import React from 'react';
 import { StoresProvider, rootStore } from '@tdev-stores/rootStore';
-import { observer } from 'mobx-react-lite';
+import { enableStaticRendering, observer } from 'mobx-react-lite';
 import Head from '@docusaurus/Head';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
@@ -10,6 +10,7 @@ import { useHistory } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
 import { getOfflineUser } from '@tdev-api/OfflineApi';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
@@ -50,6 +51,10 @@ const ExposeRootStoreToWindow = observer(() => {
          * Expose the store to the window object
          */
         (window as any).store = rootStore;
+        if (!ExecutionEnvironment.canUseDOM) {
+            console.log('Enabling static rendering for MobX');
+            enableStaticRendering(true);
+        }
     }, [rootStore]);
     return null;
 });
