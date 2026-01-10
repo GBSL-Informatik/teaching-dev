@@ -10,6 +10,7 @@ import ChatName from './ChatName';
 
 interface Props {
     documentContainer: SimpleChatModel;
+    maxHeight?: string;
 }
 
 const SimpleChat = observer((props: Props): React.ReactNode => {
@@ -23,7 +24,7 @@ const SimpleChat = observer((props: Props): React.ReactNode => {
                     documentRootId={documentContainer.documentRootId}
                     simpleChat={documentContainer}
                 />
-                <Conversation simpleChat={documentContainer} maxHeight={'300px' /*props.maxHeight*/} />
+                <Conversation simpleChat={documentContainer} maxHeight={props.maxHeight} />
                 <NewMessage simpleChat={documentContainer} />
             </div>
         </div>

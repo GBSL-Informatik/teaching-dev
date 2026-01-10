@@ -13,7 +13,15 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 
 Textnachrichten ermöglichen einen simplen Chat - dies ist eher ein PoC und die Basis für weitere, unterrichtsrelevante Interaktionsmöglichkeiten.
 
-<SimpleChat id="1c762ae7-b3f2-4379-a779-3ac4b7858eb4" name="Allgemeiner Chat" maxHeight='30em' />
+```mdx
+import SimpleChat from '@tdev/text-message/components/SimpleChat';
+
+<SimpleChat id="1c762ae7-b3f2-4379-a779-3ac4b7858eb4" name="Allgemeiner Chat" maxHeight='300px' />
+```
+
+<BrowserWindow>
+    <SimpleChat id="1c762ae7-b3f2-4379-a779-3ac4b7858eb4" name="Allgemeiner Chat" maxHeight='300px' />
+</BrowserWindow>
 
 ```mdx
 import DynamicDocumentRoots from '@tdev-components/documents/DynamicDocumentRoots';
