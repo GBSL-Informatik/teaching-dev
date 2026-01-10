@@ -7,6 +7,7 @@ export interface TextMessageData {
 
 export interface SimpleChatData {
     name: string;
+    maxHeight?: string;
 }
 
 declare module '@tdev-api/document' {

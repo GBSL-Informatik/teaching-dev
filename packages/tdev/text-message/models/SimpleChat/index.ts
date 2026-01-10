@@ -12,14 +12,17 @@ export const createModel: Factory = (data, store) => {
 
 class SimpleChat extends iDocumentContainer<'simple_chat'> {
     @observable accessor messageText: string = '';
+    @observable accessor maxHeight: string | undefined;
 
     constructor(props: DocumentProps<'simple_chat'>, store: DocumentStore) {
         super(props, store);
+        this.maxHeight = props.data.maxHeight;
     }
 
     @action
     setData(data: TypeDataMapping['simple_chat'], from: Source, updatedAt?: Date): void {
         this.name = data.name;
+        this.maxHeight = data.maxHeight;
         if (from === Source.LOCAL) {
             this.save();
         }
@@ -83,7 +86,8 @@ class SimpleChat extends iDocumentContainer<'simple_chat'> {
 
     get data(): TypeDataMapping['simple_chat'] {
         return {
-            name: this.name
+            name: this.name,
+            maxHeight: this.maxHeight
         };
     }
 }

@@ -5,10 +5,7 @@ import { observer } from 'mobx-react-lite';
 import SimpleChat from '@tdev/text-message/models/SimpleChat';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import ClearHistory from './ClearHistory';
-import Button from '@tdev-components/shared/Button';
-import { mdiCircleEditOutline } from '@mdi/js';
-import TextInput from '@tdev-components/shared/TextInput';
-import { Source } from '@tdev-models/iDocument';
+import EditDataProps from '@tdev-components/documents/DynamicDocumentRoots/EditDataProps';
 
 interface Props {
     name: string;
@@ -18,42 +15,12 @@ interface Props {
 
 const ChatName = observer((props: Props) => {
     const { name, documentRootId, simpleChat } = props;
-    const [edit, setEdit] = React.useState(false);
     return (
         <h1 className={clsx(styles.name)}>
-            {edit ? (
-                <TextInput
-                    value={simpleChat?.name || ''}
-                    onChange={(name) => {
-                        if (simpleChat) {
-                            simpleChat.setName(name);
-                        }
-                    }}
-                    onEnter={() => {
-                        simpleChat?.saveNow();
-                        setEdit(false);
-                    }}
-                    onSave={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        simpleChat?.saveNow();
-                        setEdit(false);
-                    }}
-                />
-            ) : (
-                name
-            )}
+            {name}
             <div className={clsx(styles.actions)}>
                 {simpleChat && <ClearHistory simpleChat={simpleChat} />}
-                {simpleChat?.hasAdminAccess && (
-                    <Button
-                        icon={mdiCircleEditOutline}
-                        color="orange"
-                        onClick={() => {
-                            setEdit(true);
-                        }}
-                    />
-                )}
+                {simpleChat?.hasAdminAccess && <EditDataProps docContainer={simpleChat} />}
                 <PermissionsPanel documentRootId={documentRootId} />
             </div>
         </h1>

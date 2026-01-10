@@ -14,6 +14,7 @@ import {
 import { ContainerType, ContainerTypeModelMapping } from '@tdev-api/document';
 import TextInput from '@tdev-components/shared/TextInput';
 import { Delete } from '@tdev-components/shared/Button/Delete';
+import EditDataProps from '../EditDataProps';
 
 interface Props {
     docContainer: ContainerTypeModelMapping[ContainerType];
@@ -54,16 +55,24 @@ const DocumentContainer = observer((props: Props) => {
             ) : (
                 <div className={clsx(styles.documentName)}>{docContainer.name}</div>
             )}
-            <div className={clsx(styles.roomType, 'badge', 'badge--info')}>{docContainer.type ?? '-'}</div>
-            <Button
-                text="Beitreten"
-                color="blue"
-                href={`/rooms/${docContainer.dynamicDocumentRoot?.root?.id}/${docContainer.root?.id}`}
-                disabled={!docContainer.dynamicDocumentRoot?.root?.id || !docContainer.canRead}
-                icon={mdiLocationEnter}
-                iconSide="left"
-                textClassName={clsx(styles.docButton)}
-            />
+
+            {!edit && (
+                <>
+                    <div className={clsx(styles.roomType, 'badge', 'badge--info')}>
+                        {docContainer.type ?? '-'}
+                    </div>
+                    <Button
+                        text="Beitreten"
+                        color="blue"
+                        href={`/rooms/${docContainer.dynamicDocumentRoot?.root?.id}/${docContainer.root?.id}`}
+                        disabled={!docContainer.dynamicDocumentRoot?.root?.id || !docContainer.canRead}
+                        icon={mdiLocationEnter}
+                        iconSide="left"
+                        textClassName={clsx(styles.docButton)}
+                    />
+                </>
+            )}
+            {!edit && <EditDataProps docContainer={docContainer} />}
             <div className={clsx(styles.actions)}>
                 {docContainer.hasAdminAccess && (
                     <>
@@ -93,16 +102,19 @@ const DocumentContainer = observer((props: Props) => {
                                 }}
                             />
                         )}
-                        <Delete
-                            color="red"
-                            icon={mdiTrashCan}
-                            text={''}
-                            onDelete={() => {
-                                docContainer.dynamicDocumentRoot?.removeDynamicDocumentRoot(
-                                    docContainer.documentRootId
-                                );
-                            }}
-                        />
+
+                        {!edit && (
+                            <Delete
+                                color="red"
+                                icon={mdiTrashCan}
+                                text={''}
+                                onDelete={() => {
+                                    docContainer.dynamicDocumentRoot?.removeDynamicDocumentRoot(
+                                        docContainer.documentRootId
+                                    );
+                                }}
+                            />
+                        )}
                     </>
                 )}
                 <PermissionsPanel documentRootId={docContainer.documentRootId} />

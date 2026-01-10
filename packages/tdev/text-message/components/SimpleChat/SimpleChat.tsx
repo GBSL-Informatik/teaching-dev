@@ -24,7 +24,10 @@ const SimpleChat = observer((props: Props): React.ReactNode => {
                     documentRootId={documentContainer.documentRootId}
                     simpleChat={documentContainer}
                 />
-                <Conversation simpleChat={documentContainer} maxHeight={props.maxHeight} />
+                <Conversation
+                    simpleChat={documentContainer}
+                    maxHeight={documentContainer.maxHeight || props.maxHeight}
+                />
                 <NewMessage simpleChat={documentContainer} />
             </div>
         </div>

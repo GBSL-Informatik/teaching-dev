@@ -1,10 +1,9 @@
 import React from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { EditLevel, JsTypes, toJsSchema } from '../toJsSchema';
+import { EditLevel, JsTypes } from '../toJsSchema';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import JsSchemaEditor from './SchemaEditor';
-import { toModel } from './models/toModel';
 import JsRoot, { EditorConfig } from './models/JsRoot';
 import { reaction } from 'mobx';
 import AddValue from './Actions/AddValue';
@@ -16,7 +15,7 @@ import iParentable from './models/iParentable';
 
 export type CustomAction = (js: iParentable, className: string, key: string | number) => React.ReactNode;
 
-interface Props {
+export interface Props {
     className?: string;
     js: Record<string, JsTypes> | JsTypes[];
     onSave?: (js: Record<string, JsTypes> | JsTypes[]) => void;
