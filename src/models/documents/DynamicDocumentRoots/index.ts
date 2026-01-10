@@ -174,7 +174,10 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
     @action
     loadDocumentRoots() {
         return [...this.documentRootIds].map((id) => {
-            this.store.root.documentRootStore.loadInNextBatch(id, this.defaultContainerMeta);
+            this.store.root.documentRootStore.loadInNextBatch(id, this.defaultContainerMeta, {
+                documentType: this.containerType,
+                documentRoot: true
+            });
         });
     }
 

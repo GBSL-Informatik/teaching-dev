@@ -22,6 +22,10 @@ import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 type LoadConfig = {
     userPermissions?: boolean;
     groupPermissions?: boolean;
+    /**
+     * if true, the document root will be created and when already exists,
+     * it will replace the existing one
+     */
     documentRoot?: boolean;
     /**
      * if a document root should not be created when it is not found,
@@ -115,15 +119,15 @@ export class DocumentRootStore extends iStore {
 
     /**
      * load the documentRoots only
-     * - after 10 ms of "silence" (=no further load-requests during this period)
-     * - or after 15ms have elapsed
+     * - after 20 ms of "silence" (=no further load-requests during this period)
+     * - or after 25ms have elapsed
      * - or when more then 42 records are queued (@see loadInNextBatch)
      *    (otherwise the URL maxlength would be reached)
      */
-    loadQueued = _.debounce(action(this._loadQueued), 10, {
+    loadQueued = _.debounce(action(this._loadQueued), 20, {
         leading: false,
         trailing: true,
-        maxWait: 15
+        maxWait: 25
     });
 
     /**
