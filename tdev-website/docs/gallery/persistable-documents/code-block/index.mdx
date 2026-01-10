@@ -19,7 +19,7 @@ print('hello world')
 Mit dem `title`-Parameter kann ein Titel für den Code-Block hinzugefügt werden.
 
 :::warning[Spaces]
-Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String eines Code-Blocks verwendet wird. Verwenden Sie stattdessen einen Unterstrich `_` oder einen Bindestrich `-`.
+Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String eines Code-Blocks verwendet wird. Stattdessen können Unterstriche `_` oder Bindestriche `-` verwendet werden.
 :::
 
 ````md
@@ -28,7 +28,7 @@ Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String ei
 ````
 
 :::tip[Use `_` in the title]
-Um einen Unterstrich zu verwenden, können Sie die folgende Syntax verwenden:
+Um einen Unterstrich zu verwenden, kann folgende Syntax verwendet werden:
 
 ````md
 ```py live_py title=example__file.py
@@ -82,7 +82,7 @@ print('Hello Read-Only Mode')
 Auch wenn der Code von der API geladen wird, wird der Read-Only-Modus beibehalten.
 
 :::details[Use Case: Schulunterricht]
-Dies ist besonders nützlich im Schulunterricht, wenn einige Übungen/Prüfungen nur während einer bestimmten Zeit durchgeführt werden sollen, aber Sie den Schülern gerne Feedback zu den eingereichten Lösungen geben möchten. Dann wird das `readonly`-Attribut hinzugefügt und die Schüler sehen ihre Änderungen, können sie aber nicht bearbeiten.
+Dies ist besonders nützlich im Schulunterricht, wenn einige Übungen/Prüfungen nur während einer bestimmten Zeit durchgeführt werden sollen, die Schüler:innen aber später die eingereichte Lösungen anzeigen können sollen. Dann wird das `readonly`-Attribut hinzugefügt und die Schüler:innen sehen ihre Änderungen, können diese aber nicht bearbeiten.
 :::
 ::::
 
@@ -104,7 +104,7 @@ print('Hello No Download Button')
 
 ### Vergleich-Button ausblenden (`noCompare`)
 
-Wenn Änderungen am Code vorgenommen wurden, können Sie mit dem Originalcode vergleichen. Sie können den Vergleichsbutton ausblenden, indem Sie den `noCompare`-Meta-String hinzufügen.
+Wenn Änderungen am Code vorgenommen wurden, können diese mit dem Originalcode verglichen werden. Der Vergleichsbutton kann über den `noCompare`-Meta-String ausgeblendet werden.
 
 ````md
 ```py live_py noCompare hideWarning
@@ -122,7 +122,7 @@ print('Hello No Compare Button')
 
 ### Reset-Button ausblenden (`noReset`)
 
-Der Reset-Button ermöglicht es, den Code auf den ursprünglichen Code zurückzusetzen. Sie können den Reset-Button ausblenden, indem Sie den `noReset`-Meta-String hinzufügen.
+Der Reset-Button ermöglicht es, den Code auf den ursprünglichen Code zurückzusetzen. Der Reset-Button kann über den `noReset`-Meta-String ausgeblendet werden.
 
 ````md
 ```py live_py noReset
@@ -168,7 +168,7 @@ print('Line 6 - scrolled')
 
 Standardmässig können alle Python-Skripte, die sich im Verzeichnis `static/bry-libs/` befinden, direkt aus den Code-Blöcken importiert werden. Dies ermöglicht es Ihnen, wiederverwendbare Module zu erstellen, die in Ihre Code-Blöcke importiert werden können.
 
-Das folgende Beispiel zeigt, wie Sie ein Modul importieren und verwenden können. Das Skript `grid.py` ist standardmässig in `static/bry-libs/grid.py` enthalten und kann somit importiert werden.
+Das folgende Beispiel zeigt, wie ein Modul importiert und verwendet werden kann. Das Skript `grid.py` ist standardmässig in `static/bry-libs/grid.py` enthalten und kann somit importiert werden.
 The script `grid.py` is added by default to `static/bry-libs/grid.py` when you run the dev-server.
 
 :::details[Sourcecode von `grid.py`]
@@ -504,7 +504,7 @@ Der `versioned`-Modus funktioniert nur in Kombination mit dem `id`-Attribut. Das
 
 ### Version History verstecken (`noHistory`)
 
-Die Versionen des Codes werden standardmässig angezeigt. Mit dem `noHistory`-Meta-String können Sie die Versionshistorie ausblenden.
+Die Versionen des Codes werden standardmässig angezeigt. Mit dem `noHistory`-Meta-String kann die Versionshistorie ausgeblendet werden.
 
 ````md
 ```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
@@ -561,7 +561,7 @@ print(f'Die Berechnung dauerte {time.time() - t0} Sekunden')
 ### Nicht abgespeicherte Code Blocks
 
 Wenn keine `id` angegeben ist, wird der Code nicht gespeichert, was mit einem :mdi[flash-triangle-outline]{.orange} und einem orangen Header signalisiert wird.
-Dies ist nützlich, wenn Sie Code-Beispiele haben, die nicht gespeichert werden sollen.
+Dies ist nützlich, wenn Code-Beispiele nicht gespeichert werden sollen.
 
 ````md
 ```py live_py
