@@ -10,7 +10,9 @@ import { mdiEmoticonSad } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import styles from './styles.module.scss';
 import React from 'react';
-import DynamicDocumentRoots, { ModelMeta } from '@tdev-models/documents/DynamicDocumentRoots';
+import type DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
+import { default as DynamicDocumentRootsComponent } from '@tdev-components/documents/DynamicDocumentRoots';
+import { ModelMeta } from '@tdev-models/documents/DynamicDocumentRoots';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import NoAccess from '@tdev-components/shared/NoAccess';
@@ -39,7 +41,7 @@ export const NotCreated = () => {
     return (
         <div className={clsx('alert alert--warning', styles.alert)} role="alert">
             <Icon path={mdiEmoticonSad} size={1} color="var(--ifm-color-warning)" />
-            Dieser Raum wurde noch nicht erzeugt. Warten auf die Lehrperson.
+            Dieser Dokument-Container wurde noch nicht erzeugt. Warten auf die Lehrperson.
             <div style={{ flexGrow: 1, flexBasis: 0 }} />
             <Loader noLabel />
         </div>
@@ -110,8 +112,8 @@ interface WithModelProps {
 
 const WithDocumentRoot = observer((props: WithModelProps): React.ReactNode => {
     const { rootId, docContainerId } = props;
-    const [meta] = React.useState(new ModelMeta({ containerType: 'dummy' as ContainerType }));
-    const dynDoc = useFirstMainDocument(rootId, meta, false);
+    const [meta] = React.useState(new ModelMeta({ type: 'dummy' as ContainerType }));
+    const dynDoc = useFirstMainDocument(rootId, meta, false) as DynamicDocumentRoots<ContainerType> | null;
 
     if (!rootId || !dynDoc) {
         return <NoRoom />;
@@ -121,8 +123,7 @@ const WithDocumentRoot = observer((props: WithModelProps): React.ReactNode => {
         return <NotCreated />;
     }
     if (!docContainerId) {
-        return '<NoRoom />';
-        // return <DynamicDocumentRoots id={parentRootId} roomType={documentRoot.meta.defaultData.roomType} />;
+        return <DynamicDocumentRootsComponent id={rootId} type={dynDoc.containerType} />;
     }
     return <RoomComponent dynamicRoot={dynDoc} docContainerId={docContainerId} />;
 });

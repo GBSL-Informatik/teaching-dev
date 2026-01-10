@@ -5,6 +5,7 @@ import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
 import { useDummyId } from './useDummyId';
+import { reaction } from 'mobx';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
@@ -27,6 +28,7 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, undefined, loadOnlyType);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
+    const documentRootStore = useStore('documentRootStore');
     const [dummyDocument] = React.useState(
         documentStore.createDocument({
             id: defaultDocId,
@@ -40,32 +42,32 @@ export const useFirstMainDocument = <Type extends DocumentType>(
         })
     );
     React.useEffect(() => {
-        if (!userStore.current || userStore.isUserSwitched) {
-            /**
-             * If the user is viewing another user, we should not create a document
-             * and instead try to load the first main document of the viewed user.
-             */
+        if (!documentRootId) {
             return;
         }
-        if (documentRoot.isLoaded && !documentRoot.isDummy && !documentRoot.firstMainDocument) {
-            console.log('Creating first main document for rootDocument', documentRoot.id);
-            if (
-                createDocument &&
-                (!loadOnlyType || loadOnlyType === meta.type) &&
-                documentRoot.hasAdminOrRWAccess
-            ) {
-                documentStore.create(
-                    {
-                        documentRootId: documentRoot.id,
-                        authorId: userStore.current.id,
-                        type: meta.type,
-                        data: meta.defaultData
-                    },
-                    true
-                );
-            }
-        }
-    }, [documentRoot, userStore.current, createDocument]);
+        return reaction(
+            () => documentRootStore.find(documentRootId)?._needsInitialDocumentCreation,
+            (needsCreation) => {
+                if (!needsCreation) {
+                    return;
+                }
+                if (needsCreation) {
+                    if (createDocument && (!loadOnlyType || loadOnlyType === meta.type)) {
+                        documentStore.create(
+                            {
+                                documentRootId: documentRootId,
+                                authorId: userStore.current!.id,
+                                type: meta.type,
+                                data: meta.defaultData
+                            },
+                            true
+                        );
+                    }
+                }
+            },
+            { fireImmediately: true }
+        );
+    }, [userStore, createDocument, documentRootId]);
 
     return documentRoot?.firstMainDocument || dummyDocument;
 };

@@ -13,7 +13,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { ContainerMeta } from './ContainerMeta';
 
 export interface MetaInit<Type extends ContainerType> {
-    containerType: Type;
+    /**
+     * The containerType of the dynamic document root
+     */
+    type: Type;
     readonly?: boolean;
 }
 
@@ -23,7 +26,7 @@ export class ModelMeta<Type extends ContainerType> extends TypeMeta<'dynamic_doc
 
     constructor(props: MetaInit<Type>) {
         super('dynamic_document_roots', props.readonly ? Access.RO_User : undefined);
-        this.containerType = props.containerType;
+        this.containerType = props.type;
     }
 
     get defaultData(): TypeDataMapping['dynamic_document_roots'] {
@@ -229,7 +232,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
         if (this.root?.type === 'dynamic_document_roots') {
             return this.root.meta as ModelMeta<ContainerType>;
         }
-        return new ModelMeta({ containerType: this.containerType });
+        return new ModelMeta({ type: this.containerType });
     }
 }
 

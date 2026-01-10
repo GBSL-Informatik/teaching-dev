@@ -17,11 +17,10 @@ import DocumentContainer from './DocumentContainer';
 
 interface Props<T extends ContainerType> extends MetaInit<T> {
     id: string;
-    type: T;
 }
 
 const DynamicDocumentRoots = observer((props: Props<ContainerType>) => {
-    const [meta] = React.useState(new ModelMeta({ containerType: props.type }));
+    const [meta] = React.useState(new ModelMeta({ type: props.type }));
     const userStore = useStore('userStore');
     const user = userStore.current;
     const doc = useFirstRealMainDocument(props.id, meta, user?.hasElevatedAccess, {

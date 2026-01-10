@@ -4,6 +4,7 @@ import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
 import { useDummyId } from './useDummyId';
+import { reaction } from 'mobx';
 
 /**
  * 1. create a dummy documentRoot with default (meta) data
@@ -41,46 +42,69 @@ export const useDocumentRoot = <Type extends DocumentType>(
 
     /** initial load */
     React.useEffect(() => {
-        const rootDoc = documentRootStore.find(dummyDocumentRoot.id);
-        if (rootDoc) {
-            return;
-        }
-        if (addDummyToStore) {
-            documentRootStore.addDocumentRoot(dummyDocumentRoot);
-        }
         if (!id) {
-            dummyDocumentRoot.setLoaded();
             return;
         }
+        const disposer = reaction(
+            () => documentRootStore.find(id),
+            (docRoot) => {
+                if (docRoot) {
+                    return;
+                }
+                if (addDummyToStore) {
+                    documentRootStore.addDocumentRoot(dummyDocumentRoot);
+                }
+                if (!id) {
+                    dummyDocumentRoot.setLoaded();
+                    return;
+                }
 
-        /**
-         * load the documentRoot and it's documents from the api.
-         */
-        documentRootStore.loadInNextBatch(
-            id,
-            meta,
-            { skipCreate: !!skipCreate, documentType: loadOnlyType },
-            access
+                /**
+                 * load the documentRoot and it's documents from the api.
+                 */
+                documentRootStore.loadInNextBatch(
+                    id,
+                    meta,
+                    { skipCreate: !!skipCreate, documentType: loadOnlyType },
+                    access
+                );
+            },
+            { fireImmediately: true }
         );
         return () => {
-            documentRootStore.removeFromStore(defaultRootDocId, false);
+            disposer();
+            documentRootStore.removeFromStore(defaultRootDocId, true);
         };
-    }, [documentRootStore]);
+    }, [documentRootStore, id, meta, loadOnlyType]);
 
     React.useEffect(() => {
-        if (!id || !userStore.isUserSwitched) {
+        if (!id || !userStore.current?.hasElevatedAccess) {
             return;
         }
-        const requestNeeded = !documentRootStore.find(id)?.firstMainDocument;
-        if (!requestNeeded) {
-            return;
-        }
-        documentRootStore.loadInNextBatch(id, meta, {
-            documentRoot: false,
-            skipCreate: true
-        });
-    }, [userStore.viewedUser]);
+        return reaction(
+            () => documentRootStore.find(dummyDocumentRoot.id)?._triggerDocumentReload,
+            () => {
+                const firstMainDoc = documentRootStore.find(dummyDocumentRoot.id)?.firstMainDocument;
+                if (firstMainDoc) {
+                    return;
+                }
+                if (userStore.isUserSwitched) {
+                    documentRootStore.loadInNextBatch(id, meta, {
+                        documentRoot: false,
+                        skipCreate: true
+                    });
+                } else {
+                    documentRootStore.loadInNextBatch(
+                        id,
+                        meta,
+                        { skipCreate: !!skipCreate, documentType: loadOnlyType },
+                        access
+                    );
+                }
+            }
+        );
+    }, [userStore, id, userStore.current?.hasElevatedAccess]);
 
-    const rootDoc = documentRootStore.find<Type>(dummyDocumentRoot.id);
+    const rootDoc = documentRootStore.find<Type>(id);
     return rootDoc || dummyDocumentRoot;
 };

@@ -213,6 +213,19 @@ class DocumentRoot<T extends DocumentType> {
     get hasAdminOrRWAccess() {
         return this.hasRWAccess || !!this.store.root.userStore.current?.hasElevatedAccess;
     }
+
+    @computed
+    get _needsInitialDocumentCreation() {
+        if (!this.store.root.userStore.current || this.store.root.userStore.isUserSwitched) {
+            return false;
+        }
+        return this.isLoaded && !this.isDummy && !this.firstMainDocument && this.hasAdminOrRWAccess;
+    }
+
+    @computed
+    get _triggerDocumentReload() {
+        return `${this.firstMainDocument?.id}-${this.store.root.userStore.viewedUserId}`;
+    }
 }
 
 export default DocumentRoot;

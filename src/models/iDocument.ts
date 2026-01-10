@@ -194,14 +194,7 @@ abstract class iDocument<Type extends DocumentType> {
         if (!this.store.root.userStore.current) {
             return !NoneAccess.has(this.root.permission);
         }
-        const userId = this.store.root.userStore.current?.id;
-        if (NoneAccess.has(this.root.permission)) {
-            return false;
-        }
-        if (this.authorId === userId) {
-            return true;
-        }
-        return !NoneAccess.has(this.root.sharedAccess);
+        return this.root.hasAdminOrRWAccess;
     }
 
     get author() {
