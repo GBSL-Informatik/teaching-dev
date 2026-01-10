@@ -56,7 +56,7 @@ export function findManyFor(
     }
     ids.forEach((id) => params.append('ids', id));
     if (documentType) {
-        params.append('documentType', documentType);
+        params.append('type', documentType);
     }
     return api.get(`/users/${userId}/documentRoots?${params.toString()}`, { signal });
 }
