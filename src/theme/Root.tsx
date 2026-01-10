@@ -16,6 +16,11 @@ const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
 };
 
+if (!ExecutionEnvironment.canUseDOM) {
+    enableStaticRendering(true);
+    console.log('ℹ️ SSG Mode for MobX Stores enabled.');
+}
+
 const RemoteNavigationHandler = observer(() => {
     const socketStore = useStore('socketStore');
     const history = useHistory();
@@ -51,10 +56,6 @@ const ExposeRootStoreToWindow = observer(() => {
          * Expose the store to the window object
          */
         (window as any).store = rootStore;
-        if (!ExecutionEnvironment.canUseDOM) {
-            console.log('Enabling static rendering for MobX');
-            enableStaticRendering(true);
-        }
     }, [rootStore]);
     return null;
 });
