@@ -20,10 +20,11 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     documentRootId: string | undefined,
     meta: TypeMeta<Type>,
     createDocument: boolean = true,
-    access: Partial<Config> = {}
+    access: Partial<Config> = {},
+    loadOnlyType?: DocumentType
 ) => {
     const defaultDocId = useDummyId(documentRootId);
-    const documentRoot = useDocumentRoot(documentRootId, meta, true, access);
+    const documentRoot = useDocumentRoot(documentRootId, meta, true, access, undefined, loadOnlyType);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
     const [dummyDocument] = React.useState(
@@ -47,7 +48,12 @@ export const useFirstMainDocument = <Type extends DocumentType>(
             return;
         }
         if (documentRoot.isLoaded && !documentRoot.isDummy && !documentRoot.firstMainDocument) {
-            if (createDocument && documentRoot.hasAdminOrRWAccess) {
+            console.log('Creating first main document for rootDocument', documentRoot.id);
+            if (
+                createDocument &&
+                (!loadOnlyType || loadOnlyType === meta.type) &&
+                documentRoot.hasAdminOrRWAccess
+            ) {
                 documentStore.create(
                     {
                         documentRootId: documentRoot.id,

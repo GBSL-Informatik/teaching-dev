@@ -47,12 +47,18 @@ export function findManyFor(
     userId: string,
     ids: string[],
     ignoreMissingRoots: boolean,
+    documentType: DocumentType | undefined,
     signal: AbortSignal
 ): AxiosPromise<DocumentRoot[]> {
-    return api.get(
-        `/users/${userId}/documentRoots?${ignoreMissingRoots ? 'ignoreMissingRoots=1&' : ''}${ids.map((id) => `ids=${id}`).join('&')}`,
-        { signal }
-    );
+    const params = new URLSearchParams();
+    if (ignoreMissingRoots) {
+        params.append('ignoreMissingRoots', '1');
+    }
+    ids.forEach((id) => params.append('ids', id));
+    if (documentType) {
+        params.append('documentType', documentType);
+    }
+    return api.get(`/users/${userId}/documentRoots?${params.toString()}`, { signal });
 }
 
 export function create(

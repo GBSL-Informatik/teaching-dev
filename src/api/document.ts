@@ -36,7 +36,6 @@ export interface ScriptData {
 
 export interface ScriptVersionData {
     code: string;
-    version: number;
     pasted?: boolean;
 }
 

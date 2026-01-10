@@ -20,7 +20,6 @@ import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 
 type LoadConfig = {
-    documents?: boolean;
     userPermissions?: boolean;
     groupPermissions?: boolean;
     documentRoot?: boolean;
@@ -29,6 +28,10 @@ type LoadConfig = {
      * set `skipCreate` to true
      */
     skipCreate?: boolean;
+    /**
+     * if only document's of a specific type should be loaded
+     */
+    documentType?: DocumentType;
 };
 
 type BatchedMeta = {
@@ -96,7 +99,6 @@ export class DocumentRootStore extends iStore {
             meta: meta,
             load: {
                 documentRoot: true,
-                documents: true,
                 groupPermissions: true,
                 userPermissions: true,
                 skipCreate: false,
@@ -160,18 +162,38 @@ export class DocumentRootStore extends iStore {
         /**
          * load all queued documents
          */
-        const keys = [...current.keys()].sort();
-        this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
-            const ignoreMissingRoots = isUserSwitched && keys.every((id) => this.find(id)?.isLoaded);
-            const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal).catch(
-                (e) => {
-                    console.warn('Error loading document roots', e);
-                    return { data: [] };
+        const rootIds = [...current.keys()].sort();
+        const idConfigs: [DocumentType | undefined, string[]][] = [];
+        const rootIdsWithDocs = rootIds.filter((id) => !current.get(id)!.load.documentType);
+        if (rootIdsWithDocs.length > 0) {
+            idConfigs.push([undefined, rootIdsWithDocs]);
+        }
+        rootIds
+            .filter((id) => current.get(id)!.load.documentType)
+            .reduce((acc, id) => {
+                const type = current.get(id)!.load.documentType;
+                const idx = acc.findIndex((item) => item[0] === type);
+                if (idx < 0) {
+                    acc.push([type, [id]]);
+                } else {
+                    acc[idx][1].push(id);
                 }
-            );
-            // create all loaded models
+                return acc;
+            }, idConfigs);
+        this.withAbortController(`load-queued-${rootIds.join('--')}`, async (signal) => {
+            const ignoreMissingRoots = isUserSwitched && rootIds.every((id) => this.find(id)?.isLoaded);
+            const models = await Promise.all(
+                idConfigs.map(([docType, ids]) => {
+                    return apiFindManyFor(userId, ids, ignoreMissingRoots, docType, signal.signal).catch(
+                        (e) => {
+                            console.warn('Error loading document roots', e);
+                            return { data: [] };
+                        }
+                    );
+                })
+            ).then((results) => results.flatMap((r) => r.data));
             runInAction(() => {
-                models.data.forEach((data) => {
+                models.forEach((data) => {
                     const config = current.get(data.id);
                     if (!config) {
                         return;
@@ -253,11 +275,9 @@ export class DocumentRootStore extends iStore {
                 );
             });
         }
-        if (config.load.documents) {
-            data.documents.forEach((doc) => {
-                this.root.documentStore.addToStore(doc);
-            });
-        }
+        data.documents.forEach((doc) => {
+            this.root.documentStore.addToStore(doc);
+        });
         return documentRoot;
     }
 
@@ -344,7 +364,6 @@ export class DocumentRootStore extends iStore {
     reload(documentRoot: DocumentRoot<any>) {
         this.loadInNextBatch(documentRoot.id, documentRoot.meta, {
             documentRoot: true,
-            documents: true,
             groupPermissions: true,
             userPermissions: true
         });

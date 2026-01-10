@@ -21,11 +21,11 @@ export const useFirstRealMainDocument = <Type extends DocumentType>(
     documentRootId: string | undefined,
     meta: TypeMeta<Type>,
     createDocument: boolean = true,
-    access: Partial<Config> = {}
+    access: Partial<Config> = {},
+    loadOnlyType?: DocumentType
 ) => {
-    const [t0] = React.useState(Date.now());
     const sessionStore = useStore('sessionStore');
-    const mainDoc = useFirstMainDocument(documentRootId, meta, createDocument, access);
+    const mainDoc = useFirstMainDocument(documentRootId, meta, createDocument, access, loadOnlyType);
     const [loginDelayElapsed, setLoginDelayElapsed] = React.useState(sessionStore.isLoggedIn);
     React.useEffect(() => {
         if (loginDelayElapsed) {
