@@ -55,9 +55,21 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
         if (!data) {
             return;
         }
-        this.documentRootIds.replace(data.documentRootIds.filter((id) => id !== this.id));
+        const ids = data.documentRootIds.filter((id) => id !== this.id);
+        const addedIds = ids.filter((id) => !this.documentRootIds.has(id));
+        this.documentRootIds.replace(ids);
         if (from === Source.LOCAL) {
             this.save();
+        } else {
+            /**
+             * a new document root has been added from the API, make sure it is loaded
+             */
+            addedIds.forEach((id) => {
+                this.store.root.documentRootStore.loadInNextBatch(id, this.defaultContainerMeta, {
+                    documentType: this.containerType,
+                    documentRoot: true
+                });
+            });
         }
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
