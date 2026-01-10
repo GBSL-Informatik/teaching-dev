@@ -160,6 +160,9 @@ export default class Script extends iDocument<'script'> {
         if (this._initialVersionsLoaded && !force) {
             return;
         }
+        if (!this.meta.hasHistory) {
+            return;
+        }
         this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
             documentType: 'script_version',
             skipCreate: true,
