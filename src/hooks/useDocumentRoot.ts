@@ -42,9 +42,6 @@ export const useDocumentRoot = <Type extends DocumentType>(
 
     /** initial load */
     React.useEffect(() => {
-        if (!id) {
-            return;
-        }
         const disposer = reaction(
             () => documentRootStore.find(id),
             (docRoot) => {
