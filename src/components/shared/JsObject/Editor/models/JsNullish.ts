@@ -1,6 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import iJs from './iJs';
-import { JsNullish as JsNullishType } from '../../toJsSchema';
+import type { JsNullish as JsNullishType } from '../../toJsSchema';
 import type iParentable from './iParentable';
 
 class JsNullish extends iJs {

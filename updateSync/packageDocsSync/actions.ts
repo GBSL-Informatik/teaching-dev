@@ -242,7 +242,7 @@ export const getDebouncedSyncer = async (packageDir: string, destDir: string) =>
         return true;
     };
 
-    const syncDebounced = debounce(async () => {
+    const syncDebounced = debounce(() => {
         const syncTasks: Promise<string>[] = [];
         for (const pkgInfo of syncQueue) {
             if (!pkgInfo) {
@@ -252,10 +252,12 @@ export const getDebouncedSyncer = async (packageDir: string, destDir: string) =>
             if (pkgInfo.relativeSubPath === TDEV_PACKAGE_CONFIG_YML) {
                 const res = getPackageDocsConfig(packageDir, pkgInfo.org, pkgInfo.package).then(
                     (newConfig) => {
-                        if (setPackageConfig(pkgKey, newConfig)) {
-                            return syncDocsFolder(newConfig, destDir);
-                        }
-                        return Promise.resolve(`ℹ️ ${pkgKey} docs config unchanged.`);
+                        return setPackageConfig(pkgKey, newConfig).then((changed) => {
+                            if (changed) {
+                                return syncDocsFolder(newConfig, destDir);
+                            }
+                            return Promise.resolve(`ℹ️ ${pkgKey} docs config unchanged.`);
+                        });
                     }
                 );
                 syncTasks.push(res);
@@ -267,7 +269,10 @@ export const getDebouncedSyncer = async (packageDir: string, destDir: string) =>
             }
         }
         syncQueue.clear();
-        return Promise.all(syncTasks);
+        return Promise.all(syncTasks).then((res) => {
+            console.log(res.join('\n'));
+            return res;
+        });
     }, 300);
     return { syncQueue, syncDebounced };
 };

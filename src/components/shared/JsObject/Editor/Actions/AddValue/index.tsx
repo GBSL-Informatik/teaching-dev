@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import iParentable from '../../models/iParentable';
+import type iParentable from '../../models/iParentable';
 import {
     mdiCodeBrackets,
     mdiCodeJson,
@@ -13,7 +13,7 @@ import {
     mdiPlusCircleOutline,
     mdiToggleSwitchOffOutline
 } from '@mdi/js';
-import { JsTypeName, JsValue } from '../../../toJsSchema';
+import type { JsTypeName, JsValue } from '../../../toJsSchema';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { ColorMap } from '../../JsType';

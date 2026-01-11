@@ -1,12 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    DocumentType,
-    Document as DocumentProps,
-    TypeDataMapping,
-    Access,
-    DocumentTypes
-} from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping, Access, DocumentModelType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { formatDateTime } from '@tdev-models/helpers/date';
@@ -83,7 +77,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     @computed
     get path() {
-        const path: DocumentTypes[] = [];
+        const path: DocumentModelType[] = [];
         let parent = this.parent;
         while (parent) {
             path.unshift(parent);
@@ -113,7 +107,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     @action
     delete() {
-        return this.store.apiDelete(this as any as DocumentTypes);
+        return this.store.apiDelete(this as unknown as DocumentModelType);
     }
 }
 

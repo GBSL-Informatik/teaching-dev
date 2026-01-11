@@ -20,15 +20,37 @@ import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 
 type LoadConfig = {
-    documents?: boolean;
+    /** if true, user permissions will be loaded
+     * @default true
+     */
     userPermissions?: boolean;
+    /**
+     * if true, group permissions will be loaded
+     * @default true
+     */
     groupPermissions?: boolean;
+    /**
+     * if true, the document root will be created and when already exists,
+     * it will replace the existing one
+     * @default true
+     */
     documentRoot?: boolean;
     /**
      * if a document root should not be created when it is not found,
      * set `skipCreate` to true
+     * @default false
      */
     skipCreate?: boolean;
+    /**
+     * if only document's of a specific type should be loaded
+     * @default undefined
+     */
+    documentType?: DocumentType;
+    /**
+     * wheter documents linked to the document root should be added to the store
+     * @default true
+     */
+    documents?: boolean;
 };
 
 type BatchedMeta = {
@@ -82,6 +104,12 @@ export class DocumentRootStore extends iStore {
         { keepAlive: true }
     );
 
+    /**
+     *
+     * @param id documentRootId
+     * @param meta meta is only needed when you want to create a "default" document for this document root
+     * @returns
+     */
     @action
     loadInNextBatch<Type extends DocumentType>(
         id: string,
@@ -96,10 +124,10 @@ export class DocumentRootStore extends iStore {
             meta: meta,
             load: {
                 documentRoot: true,
-                documents: true,
                 groupPermissions: true,
                 userPermissions: true,
                 skipCreate: false,
+                documents: true,
                 ...(loadConfig || {})
             },
             access: accessConfig || {}
@@ -113,15 +141,15 @@ export class DocumentRootStore extends iStore {
 
     /**
      * load the documentRoots only
-     * - after 10 ms of "silence" (=no further load-requests during this period)
-     * - or after 15ms have elapsed
+     * - after 20 ms of "silence" (=no further load-requests during this period)
+     * - or after 25ms have elapsed
      * - or when more then 42 records are queued (@see loadInNextBatch)
      *    (otherwise the URL maxlength would be reached)
      */
-    loadQueued = _.debounce(action(this._loadQueued), 10, {
+    loadQueued = _.debounce(action(this._loadQueued), 25, {
         leading: false,
         trailing: true,
-        maxWait: 15
+        maxWait: 50
     });
 
     /**
@@ -160,18 +188,38 @@ export class DocumentRootStore extends iStore {
         /**
          * load all queued documents
          */
-        const keys = [...current.keys()].sort();
-        this.withAbortController(`load-queued-${keys.join('--')}`, async (signal) => {
-            const ignoreMissingRoots = isUserSwitched && keys.every((id) => this.find(id)?.isLoaded);
-            const models = await apiFindManyFor(userId, keys, ignoreMissingRoots, signal.signal).catch(
-                (e) => {
-                    console.warn('Error loading document roots', e);
-                    return { data: [] };
+        const rootIds = [...current.keys()].sort();
+        const idConfigs: [DocumentType | undefined, string[]][] = [];
+        const rootIdsWithDocs = rootIds.filter((id) => !current.get(id)!.load.documentType);
+        if (rootIdsWithDocs.length > 0) {
+            idConfigs.push([undefined, rootIdsWithDocs]);
+        }
+        rootIds
+            .filter((id) => current.get(id)!.load.documentType)
+            .reduce((acc, id) => {
+                const type = current.get(id)!.load.documentType;
+                const idx = acc.findIndex((item) => item[0] === type);
+                if (idx < 0) {
+                    acc.push([type, [id]]);
+                } else {
+                    acc[idx][1].push(id);
                 }
-            );
-            // create all loaded models
+                return acc;
+            }, idConfigs);
+        this.withAbortController(`load-queued-${rootIds.join('--')}`, async (signal) => {
+            const ignoreMissingRoots = isUserSwitched && rootIds.every((id) => this.find(id)?.isLoaded);
+            const models = await Promise.all(
+                idConfigs.map(([docType, ids]) => {
+                    return apiFindManyFor(userId, ids, ignoreMissingRoots, docType, signal.signal).catch(
+                        (e) => {
+                            console.warn('Error loading document roots', e);
+                            return { data: [] };
+                        }
+                    );
+                })
+            ).then((results) => results.flatMap((r) => r.data));
             runInAction(() => {
-                models.data.forEach((data) => {
+                models.forEach((data) => {
                     const config = current.get(data.id);
                     if (!config) {
                         return;
@@ -227,11 +275,11 @@ export class DocumentRootStore extends iStore {
 
     @action
     addApiResultToStore(data: ApiDocumentRoot, config: Omit<BatchedMeta, 'access'>) {
-        if (!config.meta) {
+        if (config.load.documentRoot && !config.meta) {
             return;
         }
         const documentRoot = config.load.documentRoot
-            ? new DocumentRoot(data, config.meta, this)
+            ? new DocumentRoot(data, config.meta!, this)
             : this.find(data.id);
         if (!documentRoot) {
             return;

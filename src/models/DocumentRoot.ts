@@ -2,7 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
-import { highestAccess, NoneAccess, RWAccess } from './helpers/accessPolicy';
+import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
 
 export abstract class TypeMeta<T extends DocumentType> {
@@ -15,15 +15,6 @@ export abstract class TypeMeta<T extends DocumentType> {
         this.pagePosition = pagePosition || 0;
     }
     abstract get defaultData(): TypeDataMapping[T];
-}
-
-export class DummyMeta extends TypeMeta<DocumentType> {
-    constructor() {
-        super('dummy' as DocumentType);
-    }
-    get defaultData() {
-        return {};
-    }
 }
 
 class DocumentRoot<T extends DocumentType> {
@@ -128,17 +119,19 @@ class DocumentRoot<T extends DocumentType> {
         return highestAccess(new Set([...this.permissionsForUser(userId).map((p) => p.access), this.access]));
     }
 
+    @computed
     get documents() {
         if (!this.viewedUserId && !this.isDummy) {
             return [];
         }
-        return this.store.root.documentStore.findByDocumentRoot(this.id).filter((d) => {
+        const docs = this.store.root.documentStore.findByDocumentRoot(this.id).filter((d) => {
             return (
                 this.isDummy ||
                 d.authorId === this.viewedUserId ||
                 !NoneAccess.has(highestAccess(new Set([this.permission]), this.sharedAccess))
             );
         });
+        return docs;
     }
 
     /**
@@ -187,16 +180,10 @@ class DocumentRoot<T extends DocumentType> {
             return byUser;
         }
 
-        if (
-            NoneAccess.has(this.sharedAccess) ||
-            RWAccess.has(highestAccess(new Set([this.sharedAccess]), this.access))
-        ) {
+        if (NoneAccess.has(this.sharedAccess)) {
             return byUser;
         }
-        if (byUser.length > 0) {
-            return byUser;
-        }
-        return docs;
+        return [...byUser, ...docs.filter((d) => d.authorId !== this.viewedUserId)];
     }
 
     @computed
@@ -210,6 +197,11 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
+    get hasReadAccess() {
+        return RWAccess.has(this.permission) || ROAccess.has(this.permission);
+    }
+
+    @computed
     get hasRWAccess() {
         if (this.store.root.userStore.isUserSwitched) {
             return false;
@@ -218,8 +210,21 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
-    get hasAdminRWAccess() {
+    get hasAdminOrRWAccess() {
         return this.hasRWAccess || !!this.store.root.userStore.current?.hasElevatedAccess;
+    }
+
+    @computed
+    get _needsInitialDocumentCreation() {
+        if (!this.store.root.userStore.current || this.store.root.userStore.isUserSwitched) {
+            return false;
+        }
+        return this.isLoaded && !this.isDummy && !this.firstMainDocument && this.hasAdminOrRWAccess;
+    }
+
+    @computed
+    get _triggerDocumentReload() {
+        return `${this.firstMainDocument?.id}-${this.store.root.userStore.viewedUserId}`;
     }
 }
 

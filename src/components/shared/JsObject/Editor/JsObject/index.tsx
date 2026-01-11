@@ -6,10 +6,10 @@ import JsType from '../JsType';
 import Button from '@tdev-components/shared/Button';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { default as JsObjectModel } from '../models/JsObject';
+import type { default as JsObjectModel } from '../models/JsObject';
 import JsSchemaEditor from '../SchemaEditor';
 import AddValue from '../Actions/AddValue';
-import { CustomAction } from '..';
+import type { CustomAction } from '..';
 
 interface Props {
     js: JsObjectModel;

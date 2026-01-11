@@ -1,4 +1,4 @@
-import { JsArray as JsArrayType, JsParents, JsTypes } from '../../toJsSchema';
+import type { JsArray as JsArrayType, JsParents, JsTypes } from '../../toJsSchema';
 import _ from 'es-toolkit/compat';
 import iParentable from './iParentable';
 import { computed } from 'mobx';

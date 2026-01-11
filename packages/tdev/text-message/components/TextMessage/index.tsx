@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { default as TextMessageModel } from '@tdev-models/documents/TextMessage';
+import type { default as TextMessageModel } from '@tdev/text-message/models/TextMessage';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 

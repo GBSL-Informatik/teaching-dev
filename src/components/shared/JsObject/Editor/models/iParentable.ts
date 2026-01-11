@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import iJs, { JsModelType } from './iJs';
+import iJs, { type JsModelType } from './iJs';
 import { toModel } from './toModel';
 import { JsParents, JsValue, sortValues } from '../../toJsSchema';
 import _ from 'es-toolkit/compat';

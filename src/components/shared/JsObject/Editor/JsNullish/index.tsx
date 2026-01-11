@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
-import { default as JsNullishModel } from '../models/JsNullish';
+import type { default as JsNullishModel } from '../models/JsNullish';
 import { action } from 'mobx';
 import Button from '@tdev-components/shared/Button';
 

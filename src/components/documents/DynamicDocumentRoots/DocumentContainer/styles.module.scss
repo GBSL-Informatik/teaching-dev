@@ -1,9 +1,9 @@
-.dynamicDocRoot {
+.documentContainer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     overflow: auto;
-    .roomName {
+    .documentName {
         font-weight: bold;
         flex-basis: 50%;
         text-overflow: clip;
@@ -17,8 +17,8 @@
 }
 
 @media screen and (max-width: 520px) {
-    .dynamicDocRoot {
-        .roomButton {
+    .documentContainer {
+        .docButton {
             display: none;
         }
     }

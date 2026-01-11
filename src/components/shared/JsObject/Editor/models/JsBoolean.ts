@@ -1,6 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import iJs from './iJs';
-import { JsBoolean as JsBooleanType } from '../../toJsSchema';
+import type { JsBoolean as JsBooleanType } from '../../toJsSchema';
 import type iParentable from './iParentable';
 
 class JsBoolean extends iJs {

@@ -226,6 +226,13 @@ export class SocketDataStore extends iStore<'ping'> {
                 if (this.recordsToCreate.has(doc.type) || doc.parentId) {
                     this.root.documentStore.addToStore(doc);
                 }
+                if (
+                    this.root.userStore.isUserSwitched &&
+                    doc.authorId === this.root.userStore.viewedUserId &&
+                    this.root.documentRootStore.find(doc.documentRootId)
+                ) {
+                    this.root.documentStore.addToStore(doc);
+                }
                 break;
             case RecordType.CmsSettings:
                 const settings = record as CmsSettings;

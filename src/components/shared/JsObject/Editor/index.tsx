@@ -1,22 +1,21 @@
 import React from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { EditLevel, JsTypes, toJsSchema } from '../toJsSchema';
+import type { EditLevel, JsTypes } from '../toJsSchema';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import JsSchemaEditor from './SchemaEditor';
-import { toModel } from './models/toModel';
-import JsRoot, { EditorConfig } from './models/JsRoot';
+import JsRoot, { type EditorConfig } from './models/JsRoot';
 import { reaction } from 'mobx';
 import AddValue from './Actions/AddValue';
 import Button from '@tdev-components/shared/Button';
 import { mdiContentSave } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import _ from 'es-toolkit/compat';
-import iParentable from './models/iParentable';
+import type iParentable from './models/iParentable';
 
 export type CustomAction = (js: iParentable, className: string, key: string | number) => React.ReactNode;
 
-interface Props {
+export interface Props {
     className?: string;
     js: Record<string, JsTypes> | JsTypes[];
     onSave?: (js: Record<string, JsTypes> | JsTypes[]) => void;
