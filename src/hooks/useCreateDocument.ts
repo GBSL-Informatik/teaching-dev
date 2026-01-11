@@ -5,7 +5,7 @@ import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
 import { v4 as uuidv4 } from 'uuid';
-import { action, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
@@ -30,7 +30,6 @@ export const useCreateDocument = <Type extends DocumentType>(
     const documentStore = useStore('documentStore');
 
     const create = React.useCallback(() => {
-        console.log('useCreateDocument.create called', userId, documentRoot.id, meta.type);
         if (!userId) {
             return Promise.resolve(null);
         }

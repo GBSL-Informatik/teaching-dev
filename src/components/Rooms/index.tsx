@@ -143,7 +143,7 @@ const WithRouteParams = observer((props: WithParentRootProps) => {
 const Rooms = observer(() => {
     const location = useLocation();
     return (
-        <Layout title={`Räume`} description="Nachrichtenräume">
+        <Layout title={`Räume`}>
             <BrowserOnly fallback={<Loader />}>
                 {() => <WithRouteParams path={location.pathname} />}
             </BrowserOnly>

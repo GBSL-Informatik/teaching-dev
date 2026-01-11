@@ -7,6 +7,7 @@ import type { PopupActions } from 'reactjs-popup/dist/types';
 import type { Props as EditorProps } from '../Editor';
 import Card from '@tdev-components/shared/Card';
 import JsObjectEditor from '../Editor';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props extends EditorProps {
     title?: string;
@@ -18,7 +19,7 @@ const JsEditorPopup = (props: Props) => {
         <Popup
             trigger={
                 <span>
-                    <Button icon={mdiCog} size={0.8} title={props.title} />
+                    <Button icon={mdiCog} size={SIZE_S} title={props.title} />
                 </span>
             }
             keepTooltipInside="#__docusaurus"

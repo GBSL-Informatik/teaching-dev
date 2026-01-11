@@ -1,4 +1,4 @@
-import { action, computed, IReactionDisposer, observable, reaction, set } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction } from 'mobx';
 import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _, { type DebouncedFunc } from 'es-toolkit/compat';

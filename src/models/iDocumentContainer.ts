@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { Document as DocumentProps, DocumentType, Access, ContainerType } from '@tdev-api/document';
+import { Document as DocumentProps, Access, ContainerType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _ from 'es-toolkit/compat';
 import { NoneAccess, RWAccess, sharedAccess } from './helpers/accessPolicy';

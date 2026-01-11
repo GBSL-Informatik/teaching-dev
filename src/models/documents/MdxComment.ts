@@ -106,7 +106,7 @@ class MdxComment extends iDocument<'mdx_comment'> {
 
     @action
     delete() {
-        return this.store.apiDelete(this as any as DocumentModelType);
+        return this.store.apiDelete(this as unknown as DocumentModelType);
     }
 }
 

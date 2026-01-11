@@ -392,6 +392,7 @@ export class DocumentRootStore extends iStore {
     reload(documentRoot: DocumentRoot<any>) {
         this.loadInNextBatch(documentRoot.id, documentRoot.meta, {
             documentRoot: true,
+            documents: true,
             groupPermissions: true,
             userPermissions: true
         });

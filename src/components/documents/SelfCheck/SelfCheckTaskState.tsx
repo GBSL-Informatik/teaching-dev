@@ -11,6 +11,7 @@ import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models'
 import { SelfCheckContext, SelfCheckStateSideEffect } from '@tdev-components/documents/SelfCheck/shared';
 import { DocumentModelType } from '@tdev-api/document';
 import TaskState from '@tdev-models/documents/TaskState';
+import { reaction } from 'mobx';
 
 interface Props extends MetaInit {
     includeQuestion: boolean;

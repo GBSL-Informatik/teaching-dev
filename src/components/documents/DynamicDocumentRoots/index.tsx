@@ -37,7 +37,7 @@ const DynamicDocumentRoots = observer((props: Props<ContainerType>) => {
         if (doc && doc.linkedDocumentContainersMap.size === 0) {
             doc.loadDocumentRoots();
         }
-    }, [doc, props.id]);
+    }, [doc]);
     if (!doc) {
         return (
             <div>
