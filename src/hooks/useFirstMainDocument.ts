@@ -28,7 +28,6 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, undefined, loadOnlyType);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
-    const documentRootStore = useStore('documentRootStore');
     const [dummyDocument] = React.useState(
         documentStore.createDocument({
             id: defaultDocId,
@@ -42,32 +41,30 @@ export const useFirstMainDocument = <Type extends DocumentType>(
         })
     );
     React.useEffect(() => {
-        if (!documentRootId) {
+        if (!documentRoot) {
             return;
         }
         return reaction(
-            () => documentRootStore.find(documentRootId)?._needsInitialDocumentCreation,
+            () => documentRoot?._needsInitialDocumentCreation,
             (needsCreation) => {
-                if (!needsCreation) {
+                if (!needsCreation || !createDocument) {
                     return;
                 }
-                if (needsCreation) {
-                    if (createDocument && (!loadOnlyType || loadOnlyType === meta.type)) {
-                        documentStore.create(
-                            {
-                                documentRootId: documentRootId,
-                                authorId: userStore.current!.id,
-                                type: meta.type,
-                                data: meta.defaultData
-                            },
-                            true
-                        );
-                    }
+                if (!loadOnlyType || loadOnlyType === meta.type) {
+                    documentStore.create(
+                        {
+                            documentRootId: documentRoot.id,
+                            authorId: userStore.current!.id,
+                            type: meta.type,
+                            data: meta.defaultData
+                        },
+                        true
+                    );
                 }
             },
             { fireImmediately: true }
         );
-    }, [userStore, createDocument, documentRootId]);
+    }, [userStore, createDocument, documentRoot]);
 
     return documentRoot?.firstMainDocument || dummyDocument;
 };
