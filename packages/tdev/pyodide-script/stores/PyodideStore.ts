@@ -18,7 +18,8 @@ const ComPyWorker = ExecutionEnvironment.canUseDOM
     : null;
 const TimingServiceWorker =
     ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator
-        ? navigator.serviceWorker.register(new URL('../workers/service.worker.ts', import.meta.url), {
+        ? navigator.serviceWorker.register('/pyodide.sw.js', {
+              scope: '/',
               type: 'module'
           })
         : null;
@@ -164,6 +165,9 @@ export default class PyodideStore {
                 }
             });
             console.log('Service worker registered with scope:', registration.scope);
+            navigator.serviceWorker.ready.then((reg) => {
+                console.log('Service worker ready with scope:', reg.scope);
+            });
 
             navigator.serviceWorker.onmessage = (event) => {
                 switch (event.data.type) {

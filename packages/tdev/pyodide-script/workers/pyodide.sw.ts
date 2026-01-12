@@ -1,4 +1,4 @@
-import { DOCUSAURUS_SW_SCOPE, PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT, PY_STDIN_ROUTE } from '../config';
+import { PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT, PY_STDIN_ROUTE } from '../config';
 
 addEventListener('install', () => {
     // @ts-ignore
