@@ -1,6 +1,7 @@
 import * as Comlink from 'comlink';
 import type { loadPyodide } from 'pyodide';
-import { DOCUSAURUS_SW_SCOPE } from '../config';
+import { DOCUSAURUS_SW_SCOPE, PY_STDIN_ROUTE } from '../config';
+import { url } from 'inspector/promises';
 // @ts-ignore
 importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js');
 // @ts-ignore
@@ -31,12 +32,12 @@ interface PyodideError {
     error: string;
     id: string;
 }
-const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/` as const;
 
 type Result = PyodideResult | PyodideError;
 
 const pyModule = {
     getInput: (id: string, prompt: string) => {
+        console.log('py input for', id, prompt);
         const request = new XMLHttpRequest();
         // Synchronous request to be intercepted by service worker
         request.open('GET', `${PY_STDIN_ROUTE}?id=${id}&prompt=${encodeURIComponent(prompt)}`, false);

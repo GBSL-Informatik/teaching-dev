@@ -1,4 +1,4 @@
-import { DOCUSAURUS_SW_SCOPE } from '../config';
+import { DOCUSAURUS_SW_SCOPE, PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT, PY_STDIN_ROUTE } from '../config';
 
 addEventListener('install', () => {
     // @ts-ignore
@@ -11,11 +11,6 @@ addEventListener('activate', () => {
 });
 
 const resolvers = new Map<string, ((value: Response) => void)[]>();
-
-const PY_INPUT = 'PY_INPUT' as const;
-const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT' as const;
-const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/` as const;
-const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT' as const;
 
 addEventListener('message', (event) => {
     switch (event.data.type) {
@@ -52,18 +47,22 @@ addEventListener('fetch', (_event) => {
     }
 
     const id = url.searchParams.get('id');
+    console.log('Fetch event for', url.pathname, event.request.url, id);
     if (!id) {
         console.error('Error handling input: No id');
         return;
     }
     const prompt = url.searchParams.get('prompt');
 
+    console.log('EVENT', event.clientId, event.type, event);
     event.waitUntil(
         (async () => {
             // Send PY_AWAIT_INPUT message to all window clients
-            (self as unknown as ServiceWorkerGlobalScope).clients.matchAll().then((clients) => {
+            (self as any as ServiceWorkerGlobalScope).clients.matchAll().then((clients) => {
                 clients.forEach((client) => {
+                    console.log('Client found', client.id, client.type);
                     if (client.type === 'window') {
+                        console.log('Sending await input message to client', client.id, PY_AWAIT_INPUT);
                         client.postMessage({
                             type: PY_AWAIT_INPUT,
                             id,

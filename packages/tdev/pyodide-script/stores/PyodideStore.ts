@@ -4,25 +4,21 @@ import type { SquareWorker, WorkerApi } from '../workers/square.worker';
 import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import { DOCUSAURUS_SW_SCOPE } from '../config';
+import { PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
 
-const PY_INPUT = 'PY_INPUT' as const;
-const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT' as const;
-const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT' as const;
 const ComSquareWorker = ExecutionEnvironment.canUseDOM
     ? Comlink.wrap<WorkerApi>(
-          new Worker(new URL('../workers/square.worker.ts', import.meta.url), { type: 'module' })
+          new Worker(new URL('../workers/square.worker', import.meta.url), { type: 'module' })
       )
     : null;
 const ComPyWorker = ExecutionEnvironment.canUseDOM
     ? Comlink.wrap<PyWorkerApi>(
-          new Worker(new URL('../workers/pyodide.worker.ts', import.meta.url), { type: 'module' })
+          new Worker(new URL('../workers/pyodide.worker', import.meta.url), { type: 'module' })
       )
     : null;
 const TimingServiceWorker =
     ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator
         ? navigator.serviceWorker.register(new URL('../workers/service.worker.ts', import.meta.url), {
-              scope: DOCUSAURUS_SW_SCOPE,
               type: 'module'
           })
         : null;
