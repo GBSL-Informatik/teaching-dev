@@ -1,9 +1,8 @@
-export const DOCUSAURUS_SW_SCOPE = '/';
-
-export const PY_INPUT = 'PY_INPUT';
-export const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT';
-export const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/`;
-export const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT';
+const DOCUSAURUS_SW_SCOPE = '/';
+const PY_INPUT = 'PY_INPUT';
+const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT';
+const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/`;
+const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT';
 
 self.addEventListener('install', () => {
     self.skipWaiting();
