@@ -22,6 +22,7 @@ const ComPyWorker = ExecutionEnvironment.canUseDOM
 const TimingServiceWorker =
     ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator
         ? navigator.serviceWorker.register(new URL('../workers/service.worker.ts', import.meta.url), {
+              scope: '/',
               type: 'module'
           })
         : null;

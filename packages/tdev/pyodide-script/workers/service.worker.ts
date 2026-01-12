@@ -78,8 +78,5 @@ addEventListener('fetch', (_event) => {
         resolverArray.push(resolve);
         return resolvers.set(id, resolverArray);
     });
-    // resolvers.set(id, [...(resolvers.get(id) ?? [])]);
-
-    // const promise = new Promise((r: (resolve: (value: string) => void) => void) => resolvers.set(id, [...(resolvers.get(id) ?? []), r]));
     event.respondWith(promise as unknown as Response);
 });
