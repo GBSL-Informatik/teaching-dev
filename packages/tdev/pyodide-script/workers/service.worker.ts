@@ -59,6 +59,7 @@ addEventListener('fetch', (_event) => {
         (async () => {
             // Send PY_AWAIT_INPUT message to all window clients
             (self as any as ServiceWorkerGlobalScope).clients.matchAll().then((clients) => {
+                console.log('Clients:', clients);
                 clients.forEach((client) => {
                     console.log('Client found', client.id, client.type);
                     if (client.type === 'window') {
@@ -71,7 +72,7 @@ addEventListener('fetch', (_event) => {
                     }
                 });
             });
-        })()
+        })().catch((err) => console.error('Error matching clients', err))
     );
 
     const promise = new Promise<Response>((resolve, reject) => {
