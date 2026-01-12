@@ -1,39 +1,12 @@
 import * as Comlink from 'comlink';
 import type { loadPyodide } from 'pyodide';
-import { DOCUSAURUS_SW_SCOPE, PY_STDIN_ROUTE } from '../config';
-import { url } from 'inspector/promises';
+import { Message, PY_STDIN_ROUTE } from '../config';
 // @ts-ignore
 importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js');
 // @ts-ignore
 let pyodideReadyPromise = (loadPyodide as typeof loadPyodide)({
     indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.29.1/full/'
 });
-
-interface LogMessage {
-    type: 'log';
-    message: string;
-    id: string;
-}
-interface ErrorMessage {
-    type: 'error';
-    message: string;
-    id: string;
-}
-
-type Message = LogMessage | ErrorMessage;
-
-interface PyodideResult {
-    type: 'success';
-    result: number | string;
-    id: string;
-}
-interface PyodideError {
-    type: 'error';
-    error: string;
-    id: string;
-}
-
-type Result = PyodideResult | PyodideError;
 
 const pyModule = {
     getInput: (id: string, prompt: string) => {
@@ -62,14 +35,9 @@ sys.stdin.readline = lambda: react_py.getInput("${id}", __prompt_str__)
 `;
 
 export class PyWorker {
-    async run(
-        code: string,
-        onMessage: (message: Message) => void,
-        onInput: (question?: string) => string
-    ): Promise<Result> {
+    async run(id: string, code: string, onMessage: (message: Message) => void): Promise<Message> {
         const pyodide = await pyodideReadyPromise;
         const context = {};
-        const id = Math.random().toString(36).substring(7);
         // Now load any packages we need, run the code, and send the result back.
         pyodide.registerComlink(Comlink);
         await pyodide.loadPackage('pyodide-http');
@@ -90,16 +58,16 @@ pyodide_http.patch_all()
         const globals = dict(Object.entries(context));
         pyodide.setStdout({
             batched: (s: string) => {
-                onMessage({ type: 'log', message: s, id });
+                onMessage({ type: 'log', message: s, id: id, timeStamp: Date.now() });
             }
         });
         await pyodide.runPythonAsync(patchInputCode(id));
         try {
             // Execute the python code in this context
             const result = await pyodide.runPythonAsync(code);
-            return { type: 'success', result: JSON.stringify(result, null, 2), id };
+            return { type: 'log', message: JSON.stringify(result, null, 2), id: id, timeStamp: Date.now() };
         } catch (error: any) {
-            return { type: 'error', error: error.message, id };
+            return { type: 'error', message: error.message, id: id, timeStamp: Date.now() };
         } finally {
             pyodide.setStdout(undefined);
             pyodide.setInterruptBuffer(undefined as any);
