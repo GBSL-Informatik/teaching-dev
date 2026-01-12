@@ -1,5 +1,4 @@
 import * as Comlink from 'comlink';
-
 export class SquareWorker {
     async square(n: number): Promise<number> {
         // wait 1 second to simulate a long computation
