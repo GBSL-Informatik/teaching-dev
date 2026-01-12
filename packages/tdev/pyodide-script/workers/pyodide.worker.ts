@@ -1,6 +1,6 @@
-import { init } from 'ace-builds/src-noconflict/ext-keybinding_menu';
 import * as Comlink from 'comlink';
 import type { loadPyodide } from 'pyodide';
+import { DOCUSAURUS_SW_SCOPE } from '../config';
 // @ts-ignore
 importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js');
 // @ts-ignore
@@ -31,7 +31,7 @@ interface PyodideError {
     error: string;
     id: string;
 }
-const PY_STDIN_ROUTE = '/py-get-input/' as const;
+const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/` as const;
 
 type Result = PyodideResult | PyodideError;
 

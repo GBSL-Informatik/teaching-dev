@@ -4,6 +4,7 @@ import type { SquareWorker, WorkerApi } from '../workers/square.worker';
 import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import { DOCUSAURUS_SW_SCOPE } from '../config';
 
 const PY_INPUT = 'PY_INPUT' as const;
 const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT' as const;
@@ -18,11 +19,10 @@ const ComPyWorker = ExecutionEnvironment.canUseDOM
           new Worker(new URL('../workers/pyodide.worker.ts', import.meta.url), { type: 'module' })
       )
     : null;
-
 const TimingServiceWorker =
     ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator
         ? navigator.serviceWorker.register(new URL('../workers/service.worker.ts', import.meta.url), {
-              scope: '/',
+              scope: DOCUSAURUS_SW_SCOPE,
               type: 'module'
           })
         : null;

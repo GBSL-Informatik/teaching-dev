@@ -1,3 +1,5 @@
+import { DOCUSAURUS_SW_SCOPE } from '../config';
+
 addEventListener('install', () => {
     // @ts-ignore
     self.skipWaiting();
@@ -12,7 +14,7 @@ const resolvers = new Map<string, ((value: Response) => void)[]>();
 
 const PY_INPUT = 'PY_INPUT' as const;
 const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT' as const;
-const PY_STDIN_ROUTE = '/py-get-input/' as const;
+const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/` as const;
 const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT' as const;
 
 addEventListener('message', (event) => {
