@@ -6,12 +6,88 @@ tags:
 ---
 
 import Pyodide from '@tdev/pyodide-script/components/Pyodide';
+import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # pyodide-script
 
+````jsx
+import Pyodide from '@tdev/pyodide-script/components/Pyodide';
 
-<Pyodide id="fe0306c4-638d-48aa-9e12-98d7c32c77de">
+<Pyodide id="fe0306c4-638d-48aa-9e12-98d7c32c77de" title="Hello World">
 ```py
 print('Hello from Pyodide!')
+```
+</Pyodide>
+````
+
+<BrowserWindow>
+<Pyodide id="fe0306c4-638d-48aa-9e12-98d7c32c77de" title="Hello World">
+```py
+print('Hello from Pyodide!')
+```
+</Pyodide>
+</BrowserWindow>
+
+## Sleep
+<Pyodide id="8d374d31-ca54-4bf5-b604-93f71b1c1a21" title="Sleep und Ausgabe">
+```py
+from time import sleep
+for i in range(10):
+    print(i, i*i, i**3)
+    sleep(1)
+```
+</Pyodide>
+
+## Fibonacci
+<Pyodide id="6b20e45d-93e0-4578-bcc2-886875626f6b" title="Fibonacci ohne Rekursion">
+```py
+def fibonacci(n):
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    else:
+        seq = [0, 1]
+        for i in range(2, n):
+            seq.append(seq[-1] + seq[-2])
+        return seq
+n = int(input("fib von? "))
+print(fibonacci(n))
+```
+</Pyodide>
+
+### Mit Memoization
+
+<Pyodide id="eacc2744-5768-474a-9d51-844afc241af0" title="Fibonacci mit Memoization">
+```py
+from functools import lru_cache
+
+@lru_cache
+def fibonacci(n):
+    if n in {0, 1}:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+for n in range(1, 200)
+    print(f"Fibonacci({n}) = {fibonacci(n)}")
+```
+</Pyodide>
+
+## Minimierung mit SciPy
+
+<Pyodide id="401b88a4-c37c-4b78-8890-9a9acda8f3fb" title="Minimierung mit SciPy">
+```py
+import numpy as np
+from scipy import optimize
+# Function to minimize: f(x) = (x - 3)^2
+def func(x):
+    return (x - 3) ** 2
+
+# Minimize using scipy.optimize
+result = optimize.minimize(func, x0=0)
+print("Minimum at x =", result.x[0])
+print("Function value at minimum =", result.fun)
 ```
 </Pyodide>

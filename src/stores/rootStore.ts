@@ -33,7 +33,7 @@ export class RootStore {
 
     // @observable accessor initialized = false;
     constructor() {
-        this.viewStore = new ViewStore();
+        this.viewStore = new ViewStore(this);
         this.documentRootStore = new DocumentRootStore(this);
         this.sessionStore = new SessionStore(this);
         this.userStore = new UserStore(this);

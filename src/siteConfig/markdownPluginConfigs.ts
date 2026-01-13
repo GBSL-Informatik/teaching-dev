@@ -55,6 +55,10 @@ export const codeAsAttributePluginConfig = [
                 processMultiple: true
             },
             {
+                name: 'Pyodide',
+                attributeName: 'code'
+            },
+            {
                 name: 'NetpbmEditor',
                 attributeName: 'default'
             },

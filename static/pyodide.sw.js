@@ -23,7 +23,6 @@ self.addEventListener('message', (event) => {
                 console.error('Error handling input: No resolver');
                 return;
             }
-            console.log('Resolving input for id', event.data.id, 'with value', event.data.value);
             resolver(new Response(event.data.value, { status: 200 }));
             break;
         }

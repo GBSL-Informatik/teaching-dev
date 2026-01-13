@@ -9,14 +9,20 @@ export const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT' as const;
 interface LogBase {
     id: string;
     timeStamp: number;
-    message: string;
 }
 
 interface LogMessage extends LogBase {
     type: 'log';
+    message: string;
 }
 interface ErrorMessage extends LogBase {
     type: 'error';
+    message: string;
+}
+interface ClockMessage extends LogBase {
+    type: 'clock';
+    clockType: 'hours' | 'minutes' | 'seconds';
+    value: number;
 }
 
-export type Message = LogMessage | ErrorMessage;
+export type Message = LogMessage | ErrorMessage | ClockMessage;
