@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import CodeBlock from '@theme-original/CodeBlock';
 import useIsBrowser from '@docusaurus/useIsBrowser';
@@ -12,10 +11,10 @@ import CodeEditor from '@tdev-components/shared/CodeEditor';
 import { Source } from '@tdev-models/iDocument';
 import Card from '@tdev-components/shared/Card';
 import Button from '@tdev-components/shared/Button';
-import { mdiClose, mdiLoading, mdiPlay, mdiSend } from '@mdi/js';
+import { mdiClose, mdiSend } from '@mdi/js';
 import TextInput from '@tdev-components/shared/TextInput';
-import PyodideScript from '../models';
 import { action } from 'mobx';
+import Head from './Head';
 
 export interface Props {
     code?: string;
@@ -23,36 +22,6 @@ export interface Props {
     readonly?: boolean;
     title?: string;
 }
-
-const Head = observer((props: { title?: string; code: PyodideScript }) => {
-    const { code } = props;
-    const viewStore = useStore('viewStore');
-    const pyodideStore = viewStore.useStore('pyodideStore');
-    return (
-        <div className={clsx(styles.header)}>
-            <h3 className={clsx(styles.title)}>{props.title ?? 'Python'}</h3>
-            <div className={clsx(styles.actions)}>
-                <Button
-                    icon={code.isExecuting ? mdiLoading : mdiPlay}
-                    spin={code.isExecuting}
-                    color="green"
-                    onClick={(e) => {
-                        pyodideStore.run(code);
-                    }}
-                />
-                {code.isExecuting && (
-                    <Button
-                        icon={mdiClose}
-                        onClick={() => {
-                            code.pyodideStore.recreatePyWorker();
-                        }}
-                    />
-                )}
-            </div>
-        </div>
-    );
-});
-
 const Pyodide = observer((props: Props) => {
     const id = props.id;
     const userStore = useStore('userStore');
