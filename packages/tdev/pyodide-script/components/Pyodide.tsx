@@ -58,7 +58,6 @@ const Pyodide = observer((props: Props) => {
     const userStore = useStore('userStore');
     const viewStore = useStore('viewStore');
     const pyodideStore = viewStore.useStore('pyodideStore');
-    console.log(props);
     const meta = React.useMemo(
         () =>
             new ModelMeta({
@@ -71,13 +70,6 @@ const Pyodide = observer((props: Props) => {
     const isBrowser = useIsBrowser();
     if (!isBrowser || !doc) {
         return <CodeBlock language="py">{props.code}</CodeBlock>;
-    }
-    if (!doc.canDisplay && props.id && !userStore.isUserSwitched) {
-        return (
-            <div>
-                <PermissionsPanel documentRootId={props.id} />
-            </div>
-        );
     }
 
     return (
