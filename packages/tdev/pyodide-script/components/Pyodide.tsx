@@ -24,9 +24,9 @@ export interface Props {
 }
 const Pyodide = observer((props: Props) => {
     const id = props.id;
-    const userStore = useStore('userStore');
     const viewStore = useStore('viewStore');
     const pyodideStore = viewStore.useStore('pyodideStore');
+    const userStore = useStore('userStore');
     const meta = React.useMemo(
         () =>
             new ModelMeta({
@@ -40,12 +40,13 @@ const Pyodide = observer((props: Props) => {
     if (!isBrowser || !doc) {
         return <CodeBlock language="py">{props.code}</CodeBlock>;
     }
+    const isInitialized = !userStore.current || doc.isInitialized;
 
     return (
         <div className={clsx(styles.pyodide)}>
             <Card header={<Head title={props.title} code={doc} />}>
                 <div className={clsx(styles.editor)}>
-                    {doc.isInitialized && (
+                    {isInitialized && (
                         <CodeEditor
                             value={doc.code}
                             lang="python"
