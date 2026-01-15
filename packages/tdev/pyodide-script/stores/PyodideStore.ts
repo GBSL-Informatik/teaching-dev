@@ -4,7 +4,7 @@ import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { Message, PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
-import PyodideScript from '../models';
+import PyodideScript from '../models/PyodideScript';
 import siteConfig from '@generated/docusaurus.config';
 const BASE_URL = siteConfig.baseUrl || '/';
 
@@ -19,6 +19,7 @@ const TimingServiceWorker =
 export default class PyodideStore {
     viewStore: ViewStore;
     _worker: Worker | null = null;
+    @observable accessor runtimeId = Date.now();
     @observable.ref accessor pyWorker: Comlink.Remote<PyWorker> | null = null;
     @observable.ref accessor _serviceWorkerRegistration: ServiceWorker | null = null;
     awaitingInputPrompt = observable.map<string, string | null>();
@@ -26,10 +27,11 @@ export default class PyodideStore {
         this.viewStore = viewStore;
         this.initialize();
     }
+
     @action
     run(code: PyodideScript) {
         code.clearLogMessages();
-        code.setExecuting(true);
+        code.setRuntimeId(this.runtimeId);
         if (!this.pyWorker) {
             code.addLogMessage({
                 type: 'error',
@@ -53,7 +55,7 @@ export default class PyodideStore {
             })
             .finally(() => {
                 runInAction(() => {
-                    code.setExecuting(false);
+                    code.setRuntimeId(null);
                 });
             });
     }
@@ -67,21 +69,21 @@ export default class PyodideStore {
             case 'error':
                 code.addLogMessage(message);
                 break;
-            case 'clock':
-                const clock = this.viewStore.root.siteStore.toolsStore.clocks.useClock(message.id);
-                switch (message.clockType) {
-                    case 'hours':
-                        clock.setHours(message.value);
-                        break;
-                    case 'minutes':
-                        console.log('Clock message received', message, clock);
-                        clock.setMinutes(message.value);
-                        break;
-                    case 'seconds':
-                        clock.setSeconds(message.value);
-                        break;
-                }
-                break;
+            // case 'clock':
+            //     const clock = this.viewStore.root.siteStore.toolsStore.clocks.useClock(message.id);
+            //     switch (message.clockType) {
+            //         case 'hours':
+            //             clock.setHours(message.value);
+            //             break;
+            //         case 'minutes':
+            //             console.log('Clock message received', message, clock);
+            //             clock.setMinutes(message.value);
+            //             break;
+            //         case 'seconds':
+            //             clock.setSeconds(message.value);
+            //             break;
+            //     }
+            //     break;
             default:
                 break;
         }
@@ -143,11 +145,7 @@ export default class PyodideStore {
     @action
     recreatePyWorker() {
         this.pyWorker = null;
-        this.viewStore.root.documentStore.documents
-            .filter((doc) => doc instanceof PyodideScript)
-            .forEach((doc) => {
-                doc.setExecuting(false);
-            });
+        this.runtimeId = Date.now(); // this will automatically stop all running scripts
         return this.initialize(true);
     }
 

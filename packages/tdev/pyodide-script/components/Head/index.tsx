@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { mdiClose, mdiLoading, mdiPlay } from '@mdi/js';
-import PyodideScript from '../../models';
+import PyodideScript from '../../models/PyodideScript';
 interface Props {
     title?: string;
     code: PyodideScript;

@@ -11,7 +11,7 @@ export const createModel: Factory = (data, store) => {
 
 class PyodideScript extends iDocument<'pyodide_script'> {
     @observable accessor code: string;
-    @observable accessor isExecuting: boolean = false;
+    @observable accessor runtimeId: number | null = null;
     @observable accessor promptResponse: string | null = null;
     logs = observable.array<Message>([], { deep: false });
     constructor(props: DocumentProps<'pyodide_script'>, store: DocumentStore) {
@@ -24,8 +24,13 @@ class PyodideScript extends iDocument<'pyodide_script'> {
     }
 
     @action
-    setExecuting(isExecuting: boolean) {
-        this.isExecuting = isExecuting;
+    setRuntimeId(rid: number | null) {
+        this.runtimeId = rid;
+    }
+
+    @computed
+    get isExecuting(): boolean {
+        return this.runtimeId === this.pyodideStore.runtimeId;
     }
 
     get pyodideStore() {

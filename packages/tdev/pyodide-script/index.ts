@@ -2,7 +2,7 @@ import type { CurrentBundler, PluginConfig, PluginModule } from '@docusaurus/typ
 import type PyodideStore from './stores/PyodideStore';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import PyodideScript from './models';
+import PyodideScript from './models/PyodideScript';
 export interface PyodideData {
     code: string;
 }
