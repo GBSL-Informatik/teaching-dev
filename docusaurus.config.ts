@@ -42,7 +42,6 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import {pyodidePluginConfig} from './packages/tdev/pyodide-script/index';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
@@ -365,7 +364,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         rsDoctorPluginConfig,
         aliasConfigurationPluginConfig,
         sentryPluginConfig,
-        pyodidePluginConfig,
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,
         ...loadedPlugins,
