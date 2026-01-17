@@ -17,6 +17,7 @@ import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import type DocumentStore from '@tdev-stores/DocumentStore';
 import iDocumentContainer from '@tdev-models/iDocumentContainer';
+import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -99,6 +100,14 @@ export interface DynamicDocumentRootsData<T extends ContainerType> {
     containerType: T;
     documentRootIds: string[];
 }
+
+export interface ViewStoreTypeMapping {
+    ['_view_store>']: typeof iViewStore; // placeholder to avoid empty interface error
+}
+
+export type ViewStoreType = keyof ViewStoreTypeMapping;
+export type ViewStore = ViewStoreTypeMapping[ViewStoreType];
+
 export interface ContainerTypeDataMapping {
     ['_container_placeholder_']: { name: string }; // placeholder to avoid empty interface error
 }
