@@ -130,6 +130,12 @@ export interface TypeDataMapping extends ContainerTypeDataMapping {
 }
 export type ContainerType = keyof ContainerTypeDataMapping;
 
+type KeysWithCode<T> = {
+    [K in keyof T]: 'code' extends keyof T[K] ? K : never;
+}[keyof Omit<T, 'script_version'>];
+
+export type ScriptTypes = KeysWithCode<TypeDataMapping>;
+
 export interface ContainerTypeModelMapping {
     ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
 }
