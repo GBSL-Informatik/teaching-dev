@@ -10,8 +10,8 @@ import Details from '@theme/Details';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
 import { mdiSync } from '@mdi/js';
-import iScript from '@tdev-models/documents/iScript';
-import { ScriptTypes } from '@tdev-api/document';
+import iCode from '@tdev-models/documents/iCode';
+import { CodeType } from '@tdev-api/document';
 
 const highlightSyntax = (str: string) => {
     if (!str) {
@@ -28,11 +28,11 @@ const highlightSyntax = (str: string) => {
     );
 };
 
-interface Props<T extends ScriptTypes> {
-    script: iScript<T>;
+interface Props<T extends CodeType> {
+    script: iCode<T>;
 }
 
-const CodeHistory = observer(<T extends ScriptTypes>(props: Props<T>) => {
+const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
     const { script } = props;
     const [version, setVersion] = React.useState(1);
     const old = script.versions[version - 1];

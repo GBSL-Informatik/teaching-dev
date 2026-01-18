@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
 import styles from './styles.module.scss';
 import Button from '@tdev-components/documents/CodeEditor/Button';
 import { observer } from 'mobx-react-lite';
 import { mdiDownload } from '@mdi/js';
-import Script from '@tdev-models/documents/Script';
+import Script from '@tdev/brython/models/Script';
 import Graphics from '.';
+import { DOM_ELEMENT_IDS } from '@tdev/brython';
 
 const downloadCanvas = (canvasId: string) => {
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;

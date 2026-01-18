@@ -1,8 +1,13 @@
+import Script from './models/Script';
+
+export interface ScriptData {
+    code: string;
+}
+
 const DOM_ELEMENT_IDS = {
     communicator: (codeId: string) => `py_${codeId}`,
     graphicsResult: (codeId: string) => `${codeId}_graphics`,
     outputDiv: (codeId: string) => `${codeId}_brython_result`,
-    aceEditor: (codeId: string) => `${codeId}_editor`,
     turtleSvgContainer: (codeId: string) => `${codeId}_svg`,
     canvasContainer: (codeId: string) => `${codeId}_canvas`
 };
@@ -25,3 +30,12 @@ export {
     GRID_IMPORTS_TESTER,
     TURTLE3D_IMPORTS_TESTER
 };
+
+declare module '@tdev-api/document' {
+    export interface TypeDataMapping {
+        ['script']: ScriptData;
+    }
+    export interface TypeModelMapping {
+        ['script']: Script;
+    }
+}

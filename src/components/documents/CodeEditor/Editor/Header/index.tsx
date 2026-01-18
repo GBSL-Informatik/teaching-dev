@@ -1,53 +1,20 @@
 import * as React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Reset from '@tdev-components/documents/CodeEditor/Actions/Reset';
 import { observer } from 'mobx-react-lite';
-import SyncStatus from '@tdev-components/SyncStatus';
-import Icon from '@mdi/react';
-import { mdiFlashTriangle } from '@mdi/js';
+import type { CodeType } from '@tdev-api/document';
+import type iCode from '@tdev-models/documents/iCode';
+import Container from './Container';
+import Content from './Content';
 
-import type { ScriptTypes } from '@tdev-api/document';
-import type iScript from '@tdev-models/documents/iScript';
-import DownloadCode from '../../Actions/DownloadCode';
-import ShowRaw from '../../Actions/ShowRaw';
-
-interface Props<T extends ScriptTypes> {
-    script: iScript<T>;
+interface Props<T extends CodeType> {
+    script: iCode<T>;
 }
 
-const Header = observer(<T extends ScriptTypes>(props: Props<T>) => {
+const Header = observer(<T extends CodeType>(props: Props<T>) => {
     const { script } = props;
-    const notifyUnpersisted = script.root?.isDummy && !script.meta.slim && !script.meta.hideWarning;
     return (
-        <div
-            className={clsx(
-                styles.controls,
-                script.meta.slim && styles.slim,
-                notifyUnpersisted && styles.unpersisted
-            )}
-        >
-            {!script.meta.slim && (
-                <React.Fragment>
-                    <div className={styles.title}>{script.title}</div>
-                    <div className={styles.spacer} />
-                    {notifyUnpersisted && (
-                        <Icon
-                            path={mdiFlashTriangle}
-                            size={0.7}
-                            color="orange"
-                            title="Wird nicht gespeichert."
-                            className={styles.dummyIndicatorIcon}
-                        />
-                    )}
-                    <div className={styles.spacer} />
-                    <SyncStatus model={script} />
-                    {script.hasEdits && script.meta.isResettable && <Reset script={script} />}
-                    {script.meta.canDownload && <DownloadCode script={script} />}
-                    {script.hasEdits && script.meta.canCompare && <ShowRaw script={script} />}
-                </React.Fragment>
-            )}
-        </div>
+        <Container script={script}>
+            <Content script={script} />
+        </Container>
     );
 });
 

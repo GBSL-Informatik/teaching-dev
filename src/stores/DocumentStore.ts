@@ -32,8 +32,9 @@ import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
-import Script from '@tdev-models/documents/Script';
+import Script from '@tdev-models/documents/Code';
 import TaskState from '@tdev-models/documents/TaskState';
+import Code from '@tdev-models/documents/Code';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -51,8 +52,8 @@ export function CreateDocumentModel<T extends DocumentType>(
 ): TypeModelMapping[T];
 export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore) {
     switch (data.type) {
-        case 'script':
-            return new Script(data as DocumentProps<'script'>, store);
+        case 'code':
+            return new Code(data as DocumentProps<'code'>, store);
         case 'task_state':
             return new TaskState(data as DocumentProps<'task_state'>, store);
         case 'script_version':
@@ -81,7 +82,7 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
 }
 
 const FactoryDefault: [DocumentType, Factory][] = [
-    ['script', CreateDocumentModel],
+    ['code', CreateDocumentModel],
     ['task_state', CreateDocumentModel],
     ['progress_state', CreateDocumentModel],
     ['script_version', CreateDocumentModel],

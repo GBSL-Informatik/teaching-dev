@@ -6,15 +6,15 @@ import { observer } from 'mobx-react-lite';
 import Icon from '@mdi/react';
 import { mdiArrowExpandDown, mdiArrowExpandUp } from '@mdi/js';
 import _ from 'es-toolkit/compat';
-import type { ScriptTypes } from '@tdev-api/document';
-import type iScript from '@tdev-models/documents/iScript';
+import type { CodeType } from '@tdev-api/document';
+import type iCode from '@tdev-models/documents/iCode';
 
-interface Props<T extends ScriptTypes> {
+interface Props<T extends CodeType> {
     type: 'pre' | 'post';
-    script: iScript<T>;
+    script: iCode<T>;
 }
 
-const HiddenCode = observer(<T extends ScriptTypes>(props: Props<T>) => {
+const HiddenCode = observer(<T extends CodeType>(props: Props<T>) => {
     const { script } = props;
     const [show, setShow] = React.useState(false);
     const code = props.type === 'pre' ? script.meta.preCode : script.meta.postCode;

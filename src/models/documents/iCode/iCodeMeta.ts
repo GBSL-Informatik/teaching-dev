@@ -1,4 +1,4 @@
-import { TypeDataMapping, Access, DocumentType, ScriptTypes } from '@tdev-api/document';
+import { TypeDataMapping, Access, DocumentType, CodeType } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 export interface MetaInit extends Omit<MetaProps, 'live_jsx' | 'live_py' | 'readonly' | 'title'> {
@@ -13,7 +13,7 @@ export interface MetaInit extends Omit<MetaProps, 'live_jsx' | 'live_py' | 'read
     theme?: string;
 }
 
-class ScriptMeta<T extends ScriptTypes> extends TypeMeta<T> {
+class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
     readonly initCode: string;
     readonly title: string;
     readonly lang: string;
@@ -60,4 +60,4 @@ class ScriptMeta<T extends ScriptTypes> extends TypeMeta<T> {
     }
 }
 
-export default ScriptMeta;
+export default iCodeMeta;

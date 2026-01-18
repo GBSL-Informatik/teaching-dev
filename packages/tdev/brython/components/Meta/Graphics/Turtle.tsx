@@ -1,13 +1,13 @@
 import * as React from 'react';
 import styles from './styles.module.scss';
-import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
 import { saveSvg } from '@tdev/brython/components/utils/saveSvg';
 import Button from '@tdev-components/documents/CodeEditor/Button';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { mdiAnimationPlay, mdiDownload } from '@mdi/js';
-import Script from '@tdev-models/documents/Script';
+import Script from '@tdev/brython/models/Script';
 import Graphics from '.';
+import { DOM_ELEMENT_IDS } from '@tdev/brython';
 
 interface Props {
     script: Script;

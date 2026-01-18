@@ -1,8 +1,8 @@
 import * as React from 'react';
-import styles from './styles.module.scss';
 import CodeBlock from '@theme-original/CodeBlock';
 import { observer } from 'mobx-react-lite';
-import type Script from '@tdev-models/documents/Script';
+import type Script from '@tdev/brython/models/Script';
+import Container from '@tdev-components/documents/CodeEditor/Editor/Footer/Container';
 
 interface Props {
     script: Script;
@@ -25,9 +25,9 @@ const Logs = observer((props: Props) => {
         return msg.output;
     });
     return (
-        <div className={styles.result}>
+        <Container>
             <CodeBlock metastring={`{${errors.join(',')}}`}>{code.join('')}</CodeBlock>
-        </div>
+        </Container>
     );
 });
 

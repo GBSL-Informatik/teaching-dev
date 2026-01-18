@@ -4,11 +4,10 @@ import type CodeBlockType from '@theme/CodeBlock';
 import type { WrapperProps } from '@docusaurus/types';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import { CodeEditor } from '@tdev-components/documents/CodeEditor';
+import { LiveCode } from '@tdev-stores/ComponentStore';
 
 export interface MetaProps {
     id?: string;
-    live_jsx: boolean;
-    live_py: boolean;
     slim: boolean;
     readonly: boolean;
     noReset: boolean;
@@ -20,6 +19,8 @@ export interface MetaProps {
     minLines?: number;
     hideWarning: boolean;
     title: string;
+    live?: boolean;
+    [key: LiveCode]: boolean;
 }
 
 type Props = WrapperProps<typeof CodeBlockType>;
@@ -54,10 +55,20 @@ export const extractMetaProps = (props: { metastring?: string }): Partial<MetaPr
                         ? Number(value)
                         : value || true;
             acc[key] = val;
+            /**
+             * special handling for live_jsx to be compatible with existing codeblocks
+             * from docusaurus
+             */
+            if (key === 'live') {
+                acc['live_jsx'] = val;
+            }
+            if (key.startsWith('live_')) {
+                acc['live'] = true;
+            }
             return acc;
         },
         {} as { [key: string]: number | string | boolean }
-    );
+    ) as Partial<MetaProps>;
 };
 
 const SPLIT_CODE_REGEX = /^(?:(?<pre>.*?)\n###\s*PRE\s*)?(?<code>.*?)(?:\n###\s*POST\s*(?<post>.*))?$/s;
@@ -81,8 +92,11 @@ const CodeBlockWrapper = (props: Props & MetaProps): React.ReactNode => {
     // if (metaProps.live_jsx) {
     //     return <Playground scope={ReactLiveScope} {...props} />;
     // }
-    if (metaProps.live_py) {
+    if (metaProps.live) {
         const title = props.title || metaProps.title;
+        const liveCodeType = Object.keys(metaProps).find((key) => key.startsWith('live_')) as
+            | LiveCode
+            | undefined;
         const { code, pre, post } = splitCode((props.children as string) || '');
         return (
             <BrowserOnly fallback={<CodeBlock language={lang}>{code}</CodeBlock>}>
@@ -92,6 +106,7 @@ const CodeBlockWrapper = (props: Props & MetaProps): React.ReactNode => {
                             id={metaProps.id}
                             code={code}
                             lang={lang}
+                            liveCodeType={liveCodeType}
                             preCode={pre}
                             postCode={post}
                             maxLines={metaProps.maxLines && Number.parseInt(`${metaProps.maxLines}`, 10)}

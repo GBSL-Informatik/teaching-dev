@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { ScriptMeta } from '@tdev-models/documents/Script';
+import { CodeMeta } from '@tdev-models/documents/Code';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
@@ -34,7 +34,7 @@ const HtmlEditor = observer((props: Props) => {
     const userStore = useStore('userStore');
     const meta = React.useMemo(
         () =>
-            new ScriptMeta({
+            new CodeMeta({
                 title: 'website.html',
                 ...props,
                 code: props.code || '',

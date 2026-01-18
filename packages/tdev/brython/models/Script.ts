@@ -1,20 +1,20 @@
 import { action, computed, observable } from 'mobx';
+import { runCode } from '@tdev/brython/components/utils/bryRunner';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import siteConfig from '@generated/docusaurus.config';
+import globalData from '@generated/globalData';
+import { Props as CodeEditorProps } from '@tdev-components/documents/CodeEditor';
+import _ from 'es-toolkit/compat';
+import iCode from '@tdev-models/documents/iCode';
+import { default as iScriptMeta } from '@tdev-models/documents/iCode/iCodeMeta';
 import {
     CANVAS_OUTPUT_TESTER,
     DOM_ELEMENT_IDS,
     GRAPHICS_OUTPUT_TESTER,
     GRID_IMPORTS_TESTER,
     TURTLE_IMPORTS_TESTER
-} from '@tdev-components/documents/CodeEditor/constants';
-import { runCode } from '@tdev-components/documents/CodeEditor/utils/bryRunner';
-import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
-import siteConfig from '@generated/docusaurus.config';
-import globalData from '@generated/globalData';
-import { default as iScriptMeta } from './iScript/ScriptMeta';
-import { Props as CodeEditorProps } from '@tdev-components/documents/CodeEditor';
-import _ from 'es-toolkit/compat';
-import iScript from './iScript';
+} from '..';
 const libDir = (globalData['live-editor-theme'] as { default: { libDir: string } }).default.libDir;
 
 export interface LogMessage {
@@ -22,6 +22,9 @@ export interface LogMessage {
     output: string;
     timeStamp: number;
 }
+export const createModel: Factory = (data, store) => {
+    return new Script(data as DocumentProps<'script'>, store);
+};
 
 export class ScriptMeta extends iScriptMeta<'script'> {
     constructor(props: Partial<Omit<CodeEditorProps, 'id' | 'className'>>) {
@@ -29,7 +32,7 @@ export class ScriptMeta extends iScriptMeta<'script'> {
     }
 }
 
-export default class Script extends iScript<'script'> {
+export default class Script extends iCode<'script'> {
     @observable accessor isExecuting: boolean = false;
     @observable accessor graphicsModalExecutionNr: number = 0;
     logs = observable.array<LogMessage>([], { deep: false });

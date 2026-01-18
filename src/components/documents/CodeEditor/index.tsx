@@ -3,18 +3,20 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import CodeBlock from '@theme/CodeBlock';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { ScriptMeta } from '@tdev-models/documents/Script';
 import Editor from './Editor';
 import CodeHistory from './CodeHistory';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import { observer } from 'mobx-react-lite';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
-import iScript from '@tdev-models/documents/iScript';
-import { ScriptTypes } from '@tdev-api/document';
+import iCode from '@tdev-models/documents/iCode';
+import { CodeType } from '@tdev-api/document';
+import { useStore } from '@tdev-hooks/useStore';
+import { LiveCode } from '@tdev-stores/ComponentStore';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
+    liveCodeType?: LiveCode;
     lang: string;
     preCode: string;
     postCode: string;
@@ -26,25 +28,27 @@ export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
 
 export const CodeEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
-    const [meta] = React.useState(new ScriptMeta(props));
-    const script = useFirstMainDocument(id, meta, true, {}, meta.versioned ? 'script' : undefined);
+    const componentStore = useStore('componentStore');
+    const [type] = React.useState(componentStore.matchCodeBlockType(props.liveCodeType));
+    const [meta] = React.useState(componentStore.createEditorMeta(type, props));
+    const code = useFirstMainDocument(id, meta, true, {}, meta.versioned ? meta.type : undefined);
     React.useEffect(() => {
-        if (script && script.meta?.slim) {
-            script.setCode(props.code);
+        if (code && code.meta?.slim) {
+            code.setCode(props.code);
         }
-    }, [script, props.code]);
-    if (!ExecutionEnvironment.canUseDOM || !script) {
+    }, [code, props.code]);
+    if (!ExecutionEnvironment.canUseDOM || !code) {
         return <CodeBlock language={props.lang}>{props.code}</CodeBlock>;
     }
-    return <CodeEditorComponent script={script} className={props.className} />;
+    return <CodeEditorComponent script={code as iCode<typeof type>} className={props.className} />;
 });
 
-export interface ScriptProps<T extends ScriptTypes> {
-    script: iScript<T>;
+export interface ScriptProps<T extends CodeType> {
+    script: iCode<T>;
     className?: string;
 }
 
-const CodeEditorComponent = observer(<T extends ScriptTypes>(props: ScriptProps<T>) => {
+const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
     const { script } = props;
     const { colorMode } = useCodeTheme();
     return (

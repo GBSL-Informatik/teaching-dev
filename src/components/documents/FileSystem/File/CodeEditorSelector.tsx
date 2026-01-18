@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import Script from '@tdev-models/documents/Script';
+import Script from '@tdev-models/documents/Code';
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
 import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
 import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';

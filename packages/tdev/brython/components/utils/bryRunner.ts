@@ -1,6 +1,6 @@
 import { RouterType } from '@docusaurus/types';
-import { DOM_ELEMENT_IDS } from '../constants';
 import { sanitizePyScript } from './helpers';
+import { DOM_ELEMENT_IDS } from '@tdev/brython';
 
 export const runCode = (
     code: string,

@@ -1,19 +1,14 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    Document as DocumentProps,
-    TypeDataMapping,
-    ScriptVersionData,
-    ScriptTypes
-} from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping, ScriptVersionData, CodeType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { throttle } from 'es-toolkit/function';
-import ScriptMeta from './ScriptMeta';
+import iCodeMeta from './iCodeMeta';
 import File from '../FileSystem/File';
 import ScriptVersion from '../ScriptVersion';
 
-type Props<T extends ScriptTypes> = DocumentProps<T>;
+type Props<T extends CodeType> = DocumentProps<T>;
 
 interface Version {
     code: string;
@@ -22,7 +17,7 @@ interface Version {
     pasted?: boolean;
 }
 
-class iScript<T extends ScriptTypes = ScriptTypes> extends iDocument<T> {
+class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor code: string;
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
@@ -197,6 +192,10 @@ class iScript<T extends ScriptTypes = ScriptTypes> extends iDocument<T> {
         return false;
     }
 
+    get isExecuting(): boolean {
+        return false;
+    }
+
     @action
     execScript() {
         // NOOP
@@ -222,12 +221,12 @@ class iScript<T extends ScriptTypes = ScriptTypes> extends iDocument<T> {
     }
 
     @computed
-    get meta(): ScriptMeta<T> {
+    get meta(): iCodeMeta<T> {
         if (this.root?.type === this.type) {
-            return this.root.meta as ScriptMeta<T>;
+            return this.root.meta as iCodeMeta<T>;
         }
-        return new ScriptMeta({ code: '' }, this.type);
+        return new iCodeMeta({ code: '' }, this.type);
     }
 }
 
-export default iScript;
+export default iCode;

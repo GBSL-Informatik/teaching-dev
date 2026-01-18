@@ -1,4 +1,4 @@
-.result {
+.footer {
     grid-area: result;
     max-width: 100%;
     overflow-x: auto;
@@ -7,18 +7,18 @@
     flex-basis: 80ch;
 }
 
-.result > pre {
+.footer > pre {
     margin-bottom: 0px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 
-.result :global(.theme-code-block-highlighted-line) {
+.footer :global(.theme-code-block-highlighted-line) {
     color: var(--ifm-color-danger-darker) !important;
     background: transparent;
 }
 
-.result pre {
+.footer pre {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }

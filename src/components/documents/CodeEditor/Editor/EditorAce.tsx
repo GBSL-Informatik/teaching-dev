@@ -1,26 +1,25 @@
 import * as React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/esm-resolver';
 import { observer } from 'mobx-react-lite';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
-import type { ScriptTypes } from '@tdev-api/document';
-import type iScript from '@tdev-models/documents/iScript';
+import type { CodeType } from '@tdev-api/document';
+import type iCode from '@tdev-models/documents/iCode';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
     py: 'python'
 };
 
-interface Props<T extends ScriptTypes> {
-    script: iScript<T>;
+interface Props<T extends CodeType> {
+    script: iCode<T>;
 }
 
-const EditorAce = observer(<T extends ScriptTypes>(props: Props<T>) => {
+const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const { script } = props;
     const eRef = React.useRef<AceEditor>(null);
     const { aceTheme } = useCodeTheme();
@@ -90,7 +89,7 @@ const EditorAce = observer(<T extends ScriptTypes>(props: Props<T>) => {
                 readOnly={script.meta.readonly || script.showRaw}
                 value={script.showRaw ? script.pristineCode : script.code}
                 defaultValue={script?.code || '\n'}
-                name={DOM_ELEMENT_IDS.aceEditor(script.codeId)}
+                name={script.codeId}
                 editorProps={{ $blockScrolling: true }}
                 setOptions={{
                     displayIndentGuides: true,
