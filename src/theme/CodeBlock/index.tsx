@@ -74,7 +74,7 @@ export const splitCode = (rawCode: string) => {
 const CodeBlockWrapper = (props: Props & MetaProps): React.ReactNode => {
     const metaProps = extractMetaProps(props);
     const langMatch = ((props.className || '') as string).match(/language-(?<lang>\w*)/);
-    let lang = langMatch?.groups?.lang?.toLocaleLowerCase() ?? '';
+    let lang = props.language ?? langMatch?.groups?.lang?.toLocaleLowerCase() ?? '';
     if (lang === 'py') {
         lang = 'python';
     }
