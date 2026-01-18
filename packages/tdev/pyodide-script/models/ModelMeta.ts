@@ -1,22 +1,11 @@
-import { TypeDataMapping, Access } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
+import ScriptMeta from '@tdev-models/documents/iScript/ScriptMeta';
 export interface MetaInit {
     code: string;
     readonly: boolean;
 }
 
-export class ModelMeta extends TypeMeta<'pyodide_script'> {
-    readonly type = 'pyodide_script';
-    readonly initCode: string;
-
+export class ModelMeta extends ScriptMeta<'pyodide_script'> {
     constructor(props: Partial<MetaInit>) {
-        super('pyodide_script', props.readonly ? Access.RO_User : undefined);
-        this.initCode = props.code || '';
-    }
-
-    get defaultData(): TypeDataMapping['pyodide_script'] {
-        return {
-            code: this.initCode || ''
-        };
+        super(props, 'pyodide_script');
     }
 }

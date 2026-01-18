@@ -1,12 +1,15 @@
 import * as React from 'react';
 import styles from './styles.module.scss';
-import CodeBlock from '@theme/CodeBlock';
-import { DocumentType } from '@tdev-api/document';
-import { useDocument } from '@tdev-hooks/useContextDocument';
+import CodeBlock from '@theme-original/CodeBlock';
 import { observer } from 'mobx-react-lite';
+import type Script from '@tdev-models/documents/Script';
 
-const Result = observer(() => {
-    const script = useDocument<'script'>();
+interface Props {
+    script: Script;
+}
+
+const Logs = observer((props: Props) => {
+    const { script } = props;
     const logs = script.logs;
     if (logs.length === 0) {
         return null;
@@ -28,4 +31,4 @@ const Result = observer(() => {
     );
 });
 
-export default Result;
+export default Logs;

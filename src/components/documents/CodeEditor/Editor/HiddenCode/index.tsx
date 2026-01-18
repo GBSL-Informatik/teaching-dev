@@ -3,18 +3,19 @@ import styles from './styles.module.scss';
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import { mdiArrowExpandDown, mdiArrowExpandUp } from '@mdi/js';
 import _ from 'es-toolkit/compat';
+import type { ScriptTypes } from '@tdev-api/document';
+import type iScript from '@tdev-models/documents/iScript';
 
-interface Props {
+interface Props<T extends ScriptTypes> {
     type: 'pre' | 'post';
+    script: iScript<T>;
 }
 
-const HiddenCode = observer((props: Props) => {
-    const script = useDocument<'script'>();
+const HiddenCode = observer(<T extends ScriptTypes>(props: Props<T>) => {
+    const { script } = props;
     const [show, setShow] = React.useState(false);
     const code = props.type === 'pre' ? script.meta.preCode : script.meta.postCode;
     if (code.length === 0) {

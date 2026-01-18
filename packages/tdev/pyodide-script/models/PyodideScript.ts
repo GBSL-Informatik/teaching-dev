@@ -1,15 +1,16 @@
 import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
+import { Source } from '@tdev-models/iDocument';
 import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
 import { Message } from '../config';
+import iScript from '@tdev-models/documents/iScript';
 
 export const createModel: Factory = (data, store) => {
     return new PyodideScript(data as DocumentProps<'pyodide_script'>, store);
 };
 
-class PyodideScript extends iDocument<'pyodide_script'> {
+class PyodideScript extends iScript<'pyodide_script'> {
     @observable accessor code: string;
     @observable accessor runtimeId: number | null = null;
     @observable accessor promptResponse: string | null = null;
@@ -26,6 +27,10 @@ class PyodideScript extends iDocument<'pyodide_script'> {
     @action
     setRuntimeId(rid: number | null) {
         this.runtimeId = rid;
+    }
+
+    get canExecute(): boolean {
+        return true;
     }
 
     @computed

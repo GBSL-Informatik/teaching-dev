@@ -1,13 +1,16 @@
 import * as React from 'react';
 import Button from '@tdev-components/documents/CodeEditor/Button';
 import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { mdiDownload } from '@mdi/js';
+import type iScript from '@tdev-models/documents/iScript';
+import type { ScriptTypes } from '@tdev-api/document';
 
-const DownloadCode = observer((props: { title: string }) => {
-    const script = useDocument<'script'>();
+interface Props<T extends ScriptTypes> {
+    script: iScript<T>;
+}
 
+const DownloadCode = observer(<T extends ScriptTypes>(props: Props<T>) => {
+    const { script } = props;
     return (
         <Button
             icon={mdiDownload}
@@ -17,7 +20,9 @@ const DownloadCode = observer((props: { title: string }) => {
                 downloadLink.href = URL.createObjectURL(file);
                 const fExt = script.lang === 'python' ? '.py' : `.${script.lang}`;
                 const fTitle =
-                    props.title === script.lang ? script.id : (props.title.split('/').pop() ?? script.id);
+                    props.script.title === script.lang
+                        ? script.id
+                        : (script.title.split('/').pop() ?? script.id);
                 const fName = fTitle.endsWith(fExt) ? fTitle : `${fTitle}${fExt}`;
                 downloadLink.download = fName;
                 document.body.appendChild(downloadLink);

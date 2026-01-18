@@ -2,23 +2,25 @@ import * as React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import Reset from '@tdev-components/documents/CodeEditor/Actions/Reset';
+import DownloadCode from '@tdev-components/documents/CodeEditor/Actions/DownloadCode';
+import ShowRaw from '@tdev-components/documents/CodeEditor/Actions/ShowRaw';
+import RunCode from '@tdev-components/documents/CodeEditor/Actions/RunCode';
 import { observer } from 'mobx-react-lite';
 import SyncStatus from '@tdev-components/SyncStatus';
 import Icon from '@mdi/react';
 import { mdiFlashTriangle } from '@mdi/js';
+import Script from '@tdev-models/documents/Script';
 
-import type { ScriptTypes } from '@tdev-api/document';
-import type iScript from '@tdev-models/documents/iScript';
-import DownloadCode from '../../Actions/DownloadCode';
-import ShowRaw from '../../Actions/ShowRaw';
-
-interface Props<T extends ScriptTypes> {
-    script: iScript<T>;
+interface Props {
+    script: Script;
 }
 
-const Header = observer(<T extends ScriptTypes>(props: Props<T>) => {
+const Header = observer((props: Props) => {
     const { script } = props;
     const notifyUnpersisted = script.root?.isDummy && !script.meta.slim && !script.meta.hideWarning;
+    if (!script) {
+        return null;
+    }
     return (
         <div
             className={clsx(
@@ -47,6 +49,7 @@ const Header = observer(<T extends ScriptTypes>(props: Props<T>) => {
                     {script.hasEdits && script.meta.canCompare && <ShowRaw script={script} />}
                 </React.Fragment>
             )}
+            {script.canExecute && <RunCode script={script} />}
         </div>
     );
 });

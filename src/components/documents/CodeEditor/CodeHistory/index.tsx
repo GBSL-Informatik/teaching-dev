@@ -8,9 +8,10 @@ import Translate, { translate } from '@docusaurus/Translate';
 import DiffViewer from 'react-diff-viewer-continued';
 import Details from '@theme/Details';
 import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
 import Button from '../Button';
 import { mdiSync } from '@mdi/js';
+import iScript from '@tdev-models/documents/iScript';
+import { ScriptTypes } from '@tdev-api/document';
 
 const highlightSyntax = (str: string) => {
     if (!str) {
@@ -27,8 +28,12 @@ const highlightSyntax = (str: string) => {
     );
 };
 
-const CodeHistory = observer(() => {
-    const script = useDocument<'script'>();
+interface Props<T extends ScriptTypes> {
+    script: iScript<T>;
+}
+
+const CodeHistory = observer(<T extends ScriptTypes>(props: Props<T>) => {
+    const { script } = props;
     const [version, setVersion] = React.useState(1);
     const old = script.versions[version - 1];
     const current = script.versions[version];

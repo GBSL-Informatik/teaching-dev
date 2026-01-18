@@ -1,20 +1,21 @@
 import * as React from 'react';
 import styles from './styles.module.scss';
-import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
 import Draggable from 'react-draggable';
-import { checkForButtonClick } from '@tdev-components/documents/CodeEditor/Editor/utils/checkForButtonClick';
+import { checkForButtonClick } from '../../utils/checkForButtonClick';
 import Button from '@tdev-components/documents/CodeEditor/Button';
 import clsx from 'clsx';
-import { DocumentType } from '@tdev-api/document';
-import { useDocument } from '@tdev-hooks/useContextDocument';
 import { observer } from 'mobx-react-lite';
 import { mdiClose } from '@mdi/js';
+import type Script from '@tdev-models/documents/Script';
+import { DOM_ELEMENT_IDS } from '../../..';
+
 export interface Props {
+    script: Script;
     controls?: React.ReactNode;
     main?: React.ReactNode;
 }
 const Graphics = observer((props: Props) => {
-    const script = useDocument<'script'>();
+    const { script } = props;
     const nodeRef = React.useRef<HTMLDivElement>(null);
     return (
         <Draggable

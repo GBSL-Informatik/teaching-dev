@@ -3,15 +3,15 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import CodeBlock from '@theme/CodeBlock';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import Script, { ScriptMeta } from '@tdev-models/documents/Script';
+import { ScriptMeta } from '@tdev-models/documents/Script';
 import Editor from './Editor';
 import CodeHistory from './CodeHistory';
-import BrythonCommunicator from './BrythonCommunicator';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import { observer } from 'mobx-react-lite';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import { DocContext } from '@tdev-components/documents/DocumentContext';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import iScript from '@tdev-models/documents/iScript';
+import { ScriptTypes } from '@tdev-api/document';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -39,30 +39,27 @@ export const CodeEditor = observer((props: Props) => {
     return <CodeEditorComponent script={script} className={props.className} />;
 });
 
-export interface ScriptProps {
-    script: Script;
+export interface ScriptProps<T extends ScriptTypes> {
+    script: iScript<T>;
     className?: string;
 }
 
-const CodeEditorComponent = observer((props: ScriptProps) => {
+const CodeEditorComponent = observer(<T extends ScriptTypes>(props: ScriptProps<T>) => {
     const { script } = props;
     const { colorMode } = useCodeTheme();
     return (
         <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
-            <DocContext.Provider value={script}>
-                <div
-                    className={clsx(
-                        styles.playgroundContainer,
-                        colorMode === 'light' && styles.lightTheme,
-                        script.meta.slim ? styles.containerSlim : styles.containerBig,
-                        'live_py'
-                    )}
-                >
-                    <Editor />
-                    {script.meta.hasHistory && <CodeHistory />}
-                </div>
-                {script.lang === 'python' && <BrythonCommunicator />}
-            </DocContext.Provider>
+            <div
+                className={clsx(
+                    styles.playgroundContainer,
+                    colorMode === 'light' && styles.lightTheme,
+                    script.meta.slim ? styles.containerSlim : styles.containerBig,
+                    'live_py'
+                )}
+            >
+                <Editor script={script} />
+                {script.meta.hasHistory && <CodeHistory script={script} />}
+            </div>
         </div>
     );
 });

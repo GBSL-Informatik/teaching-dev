@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
-import Graphics from '@tdev-components/documents/CodeEditor/Editor/Result/Graphics';
 import styles from './styles.module.scss';
 import Button from '@tdev-components/documents/CodeEditor/Button';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
 import { mdiDownload } from '@mdi/js';
+import Script from '@tdev-models/documents/Script';
+import Graphics from '.';
 
 const downloadCanvas = (canvasId: string) => {
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -31,11 +30,16 @@ const downloadCanvas = (canvasId: string) => {
     document.body.removeChild(downloadLink);
 };
 
-const Canvas = observer(() => {
-    const script = useDocument<'script'>();
+interface Props {
+    script: Script;
+}
+
+const Canvas = observer((props: Props) => {
+    const { script } = props;
 
     return (
         <Graphics
+            script={script}
             controls={
                 <Button
                     icon={mdiDownload}

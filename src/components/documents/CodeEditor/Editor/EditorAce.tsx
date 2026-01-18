@@ -6,18 +6,22 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/esm-resolver';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import type { ScriptTypes } from '@tdev-api/document';
+import type iScript from '@tdev-models/documents/iScript';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
     py: 'python'
 };
 
-const EditorAce = observer(() => {
-    const script = useDocument<'script'>();
+interface Props<T extends ScriptTypes> {
+    script: iScript<T>;
+}
+
+const EditorAce = observer(<T extends ScriptTypes>(props: Props<T>) => {
+    const { script } = props;
     const eRef = React.useRef<AceEditor>(null);
     const { aceTheme } = useCodeTheme();
     React.useEffect(() => {

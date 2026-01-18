@@ -3,8 +3,8 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import {
     Document as DocumentProps,
     TypeDataMapping,
-    DocumentType,
-    ScriptVersionData
+    ScriptVersionData,
+    ScriptTypes
 } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
@@ -13,7 +13,7 @@ import ScriptMeta from './ScriptMeta';
 import File from '../FileSystem/File';
 import ScriptVersion from '../ScriptVersion';
 
-type Props<T extends DocumentType> = DocumentProps<T> & { data: TypeDataMapping[T] & { code: string } };
+type Props<T extends ScriptTypes> = DocumentProps<T>;
 
 interface Version {
     code: string;
@@ -22,7 +22,7 @@ interface Version {
     pasted?: boolean;
 }
 
-class iScript<T extends DocumentType> extends iDocument<T> {
+class iScript<T extends ScriptTypes = ScriptTypes> extends iDocument<T> {
     @observable accessor code: string;
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
@@ -38,6 +38,11 @@ class iScript<T extends DocumentType> extends iDocument<T> {
             return this.parent.name;
         }
         return this.meta.title || '';
+    }
+
+    @computed
+    get codeId() {
+        return `code.${this.meta.title || this.meta.lang}.${this.id}`.replace(/(-|\.)/g, '_');
     }
 
     @action
@@ -186,6 +191,16 @@ class iScript<T extends DocumentType> extends iDocument<T> {
             return 'python';
         }
         return this.meta.lang.toLowerCase();
+    }
+
+    get canExecute(): boolean {
+        return false;
+    }
+
+    @action
+    execScript() {
+        // NOOP
+        // to be implemented by subclasses
     }
 
     @computed

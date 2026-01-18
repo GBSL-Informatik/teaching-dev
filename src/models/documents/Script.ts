@@ -139,14 +139,13 @@ export default class Script extends iScript<'script'> {
         );
     }
 
+    get canExecute(): boolean {
+        return true;
+    }
+
     @action
     closeGraphicsModal() {
         this.graphicsModalExecutionNr = 0;
-    }
-
-    @computed
-    get codeId() {
-        return `code.${this.meta.title || this.meta.lang}.${this.id}`.replace(/(-|\.)/g, '_');
     }
 
     get source() {

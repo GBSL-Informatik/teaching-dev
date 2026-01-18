@@ -1,0 +1,23 @@
+{
+    "name": "@tdev/brython",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": {
+        "svg-parser": "^2.0.4"
+    },
+    "devDependencies": {
+        "@docusaurus/core": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@types/node": "*",
+        "vitest": "*",
+        "@types/svg-parser": "^2.0.6"
+    },
+    "peerDependencies": {
+        "@mdi/js": "*",
+        "@mdi/react": "*",
+        "@tdev/core": "1.0.0",
+        "mobx": "*",
+        "mobx-react-lite": "*"
+    }
+}

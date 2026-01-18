@@ -1,19 +1,23 @@
 import * as React from 'react';
 import styles from './styles.module.scss';
 import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
-import Graphics from '@tdev-components/documents/CodeEditor/Editor/Result/Graphics';
-import { saveSvg } from '@tdev-components/documents/CodeEditor/Editor/utils/saveSvg';
+import { saveSvg } from '@tdev/brython/components/utils/saveSvg';
 import Button from '@tdev-components/documents/CodeEditor/Button';
 import clsx from 'clsx';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
 import { mdiAnimationPlay, mdiDownload } from '@mdi/js';
+import Script from '@tdev-models/documents/Script';
+import Graphics from '.';
 
-const Turtle = observer(() => {
-    const script = useDocument<'script'>();
+interface Props {
+    script: Script;
+}
+
+const Turtle = observer((props: Props) => {
+    const { script } = props;
     return (
         <Graphics
+            script={script}
             controls={
                 <React.Fragment>
                     <Button
