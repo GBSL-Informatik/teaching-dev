@@ -25,6 +25,7 @@ const getSiteConfig: SiteConfigProvider = () => {
         favicon: 'img/favicon.ico',
         url: 'https://teaching-dev.gbsl.website',
         baseUrl: '/',
+        websiteDir: 'tdev-website/website',
         docs: {
             path: 'tdev-website/docs'
         },

@@ -362,7 +362,12 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         sassPluginConfig,
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,
-        aliasConfigurationPluginConfig,
+        [
+          aliasConfigurationPluginConfig,
+          {
+            websiteDir: siteConfig.websiteDir ?? './website'
+          }
+        ],
         sentryPluginConfig,
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,

@@ -32,6 +32,13 @@ export interface SiteConfig {
     /** The `/<baseUrl>/` pathname under which your site is served. For GitHub pages deployment, it is often `/<projectName>/.` */
     baseUrl?: string;
 
+    /**
+     * The directory which contains site specific code.
+     * Aliases are resolved relative to this directory - ensure to modify tsconfig.json accordingly.
+     * @default './website'
+     */
+    websiteDir?: string;
+
     /** Paths to CSS files to be included in the site. Loaded in order, after custom.scss. */
     siteStyles?: string[];
 

@@ -13,9 +13,8 @@ interface Props {
 
 const Clock = observer((props: Props) => {
     const { clockId } = props;
-    const siteStore = useStore('viewStore');
-    const pyodideStore = siteStore.useStore('pyodideStore');
-    const clock = pyodideStore.clockStore.useClock(clockId);
+    const siteStore = useStore('siteStore');
+    const clock = siteStore.clockStore.useClock(clockId);
     return (
         <Card
             classNames={{ body: clsx(styles.clockCard), card: clsx(styles.card) }}

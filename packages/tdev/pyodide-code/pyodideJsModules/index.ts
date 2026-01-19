@@ -1,14 +1,6 @@
-import { siteModules } from './siteModules';
+import { siteModules } from '@tdev/pyodide-code/pyodideJsModules/siteModules';
 
-export interface MessageTypeMap {
-    clock: {
-        type: 'clock';
-        id: string;
-        clockType: 'hours' | 'minutes' | 'seconds';
-        value: number;
-        timeStamp: number;
-    };
-}
+export interface MessageTypeMap {}
 
 export type MessageType = keyof MessageTypeMap;
 
@@ -20,7 +12,6 @@ export interface Context {
 }
 
 export type ModuleType = { [key in MessageType]: (ctx: Context) => object };
-export const pyodideJsModules: ModuleType = {
-    clock: (ctx: Context) => ({}),
+export const pyodideJsModules: Partial<ModuleType> = {
     ...siteModules
 };

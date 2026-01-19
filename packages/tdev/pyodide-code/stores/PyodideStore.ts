@@ -6,7 +6,6 @@ import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { Message, PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
 import PyodideCode from '../models/PyodideCode';
 import siteConfig from '@generated/docusaurus.config';
-import ClockStore from './ClockStore';
 const BASE_URL = siteConfig.baseUrl || '/';
 
 const TimingServiceWorker =
@@ -19,7 +18,6 @@ const TimingServiceWorker =
 
 export default class PyodideStore {
     viewStore: ViewStore;
-    @observable.ref accessor clockStore = new ClockStore();
     _worker: Worker | null = null;
     @observable accessor runtimeId = Date.now();
     @observable.ref accessor pyWorker: Comlink.Remote<PyWorker> | null = null;
@@ -74,20 +72,6 @@ export default class PyodideStore {
                 break;
             case 'error':
                 code.addLogMessage(message);
-                break;
-            case 'clock':
-                const clock = this.clockStore.useClock(message.id);
-                switch (message.clockType) {
-                    case 'hours':
-                        clock.setHours(message.value);
-                        break;
-                    case 'minutes':
-                        clock.setMinutes(message.value);
-                        break;
-                    case 'seconds':
-                        clock.setSeconds(message.value);
-                        break;
-                }
                 break;
             default:
                 if ('handleMessage' in this.viewStore.root.siteStore) {

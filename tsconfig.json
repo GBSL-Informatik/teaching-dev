@@ -1,38 +1,24 @@
 {
     // This file is not used in compilation. It is here just for a nice editor experience.
-    "extends": "@docusaurus/tsconfig",
+    "extends": "./tsconfig.tdev.json",
     "compilerOptions": {
-        "baseUrl": ".",
-        "experimentalDecorators": false,
-        "types": [
-            "docusaurus-plugin-sass",
-            "@docusaurus/module-type-aliases",
-            "@types/node",
-            "@types/wicg-file-system-access"
-        ],
-        "module": "esnext",
-        "target": "esnext",
-        "strict": true,
         "paths": {
-            "@tdev-components/*": ["website/components/*", "src/components/*"],
-            "@tdev-hooks/*": ["website/hooks/*", "src/hooks/*"],
-            "@tdev-models/*": ["website/models/*", "src/models/*"],
-            "@tdev-stores/*": ["website/stores/*", "src/stores/*"],
-            "@tdev-plugins/*": ["website/plugins/*", "src/plugins/*"],
-            "@tdev-api/*": ["website/api/*", "src/api/*"],
-            "@tdev/*": ["website/*", "src/*", "packages/tdev/*"],
+            "@tdev-components/*": ["tdev-website/website/components/*", "src/components/*"],
+            "@tdev-hooks/*": ["tdev-website/website/hooks/*", "src/hooks/*"],
+            "@tdev-models/*": ["tdev-website/website/models/*", "src/models/*"],
+            "@tdev-stores/*": ["tdev-website/website/stores/*", "src/stores/*"],
+            "@tdev-plugins/*": ["tdev-website/website/plugins/*", "src/plugins/*"],
+            "@tdev-api/*": ["tdev-website/website/api/*", "src/api/*"],
+            "@tdev/*": [
+                "tdev-website/website/*",
+                "tdev-website/website/packages/*",
+                "src/*",
+                "packages/tdev/*"
+            ],
             "@tdev-original/*": ["src/*", "packages/tdev/*"],
             "@site/*": ["./*"]
         }
     },
-    "exclude": [
-        "src/plugins/**/*.test.ts",
-        "docs/tdev/packages",
-        "node_modules",
-        "_node_modules",
-        "dist",
-        "build"
-    ],
     "mdx": {
         "plugins": [["remark-frontmatter", ["toml", "yaml"]], "remark-directive"]
     }
