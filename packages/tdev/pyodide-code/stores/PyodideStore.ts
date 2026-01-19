@@ -29,7 +29,11 @@ export default class PyodideStore {
     }
 
     @action
-    run(code: PyodideCode) {
+    async run(code: PyodideCode) {
+        if (code.isExecuting) {
+            await this.recreatePyWorker();
+        }
+
         code.clearMessages();
         code.setRuntimeId(this.runtimeId);
         if (!this.pyWorker) {
