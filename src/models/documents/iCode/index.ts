@@ -177,7 +177,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
 
     @computed
     get combinedCode() {
-        return `${this.preCode}\n${this.code}\n${this.postCode}`;
+        return `${this.preCode}\n${this.code}\n${this.postCode}`.trim();
     }
 
     @computed

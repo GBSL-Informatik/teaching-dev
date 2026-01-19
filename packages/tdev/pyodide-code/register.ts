@@ -5,7 +5,7 @@ import { createModel } from './models/PyodideCode';
 import { ModelMeta } from './models/ModelMeta';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import Header from './components/Header';
-import Logs from './components/Footer';
+import Footer from './components/Footer';
 
 const createStore = (viewStore: ViewStore) => {
     return new PyodideStore(viewStore);
@@ -16,7 +16,7 @@ const register = () => {
     rootStore.documentStore.registerFactory('pyodide_code', createModel);
     rootStore.componentStore.registerEditorComponent('pyodide_code', {
         Header: Header,
-        Footer: Logs,
+        Footer: Footer,
         createModelMeta: (props) => new ModelMeta(props),
         codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => {
             if (metaLiveCode === 'live_pyo') {

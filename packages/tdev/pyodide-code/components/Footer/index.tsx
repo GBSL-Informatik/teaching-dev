@@ -1,7 +1,7 @@
 import * as React from 'react';
-import CodeBlock from '@theme-original/CodeBlock';
 import { observer } from 'mobx-react-lite';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Footer/Container';
+import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
 import PyodideCode from '@tdev/pyodide-code/models/PyodideCode';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
@@ -13,18 +13,17 @@ interface Props {
     code: PyodideCode;
 }
 
-const Logs = observer((props: Props) => {
+const Footer = observer((props: Props) => {
     const { code } = props;
     return (
         <Container>
             {code.logs.length > 0 && (
-                <CodeBlock
-                    language="plaintext"
-                    className={clsx(styles.logContainer)}
-                    metastring={`{${code.logErrorIndices.map((range) => range.join('-')).join(',')}}`}
-                >
-                    {code.logs.map((log, idx) => log.message).join('\n')}
-                </CodeBlock>
+                <Logs
+                    messages={code.logs}
+                    onClear={() => {
+                        code.clearMessages();
+                    }}
+                />
             )}
             {code.hasPrompt && (
                 <div className={clsx(styles.prompt)}>
@@ -62,4 +61,4 @@ const Logs = observer((props: Props) => {
     );
 });
 
-export default Logs;
+export default Footer;

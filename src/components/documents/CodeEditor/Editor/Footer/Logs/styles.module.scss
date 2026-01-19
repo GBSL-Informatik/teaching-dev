@@ -1,0 +1,36 @@
+.logs {
+    position: relative;
+    padding: var(--ifm-pre-padding);
+    background-color: var(--prism-background-color);
+
+    .actions {
+        position: sticky;
+        top: 8px;
+        width: 100%;
+        .hoverActions {
+            gap: 4px;
+            display: none;
+            top: 0;
+            right: 8px;
+            position: absolute;
+        }
+    }
+    &:hover {
+        .actions {
+            .hoverActions {
+                display: flex;
+            }
+        }
+    }
+    .messages {
+        overflow: auto;
+        .message {
+            font: var(--ifm-code-font-size) / var(--ifm-pre-line-height) var(--ifm-font-family-monospace);
+            text-wrap: nowrap;
+            &.error {
+                color: var(--ifm-color-danger-dark);
+                text-wrap: wrap;
+            }
+        }
+    }
+}
