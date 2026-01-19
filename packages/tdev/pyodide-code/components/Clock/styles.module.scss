@@ -1,0 +1,96 @@
+.card {
+    margin-bottom: 0.5em;
+}
+.clockCard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .id {
+        margin-left: 1em;
+    }
+}
+.dial {
+    width: 200px;
+    height: 200px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    .tick {
+        width: 0px;
+        height: 98px;
+        top: 0px;
+        left: 50%;
+        transform-origin: 50% 100%;
+        position: absolute;
+        transform: rotate(0deg);
+        &::before {
+            content: '';
+            width: 2px;
+            height: 10px;
+            background: black;
+            position: absolute;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        &.hourTick {
+            &::before {
+                height: 20px;
+                width: 4px;
+                transform: translateX(-50%);
+            }
+        }
+    }
+
+    .pointer {
+        width: 0px;
+        height: 90px;
+        top: 10px;
+        left: 50%;
+        border-radius: 50%;
+        position: absolute;
+        transform-origin: 50% 100%;
+        transform: rotate(0deg);
+        transition-property: transform;
+        --hfr-clock-color: black;
+        --hfr-clock-width: 15px;
+        --hfr-clock-height: 60px;
+        &.minutes {
+            --hfr-clock-width: 10px;
+            --hfr-clock-height: 75px;
+        }
+        &.seconds {
+            --hfr-clock-color: red;
+            --hfr-clock-width: 6px;
+            --hfr-clock-height: 90px;
+        }
+
+        &::before {
+            content: '';
+            width: var(--hfr-clock-width);
+            height: calc(var(--hfr-clock-height) + var(--hfr-clock-width) / 2);
+            background: var(--hfr-clock-color);
+            border-radius: calc(var(--hfr-clock-width) / 2);
+            position: absolute;
+            top: calc(100% - var(--hfr-clock-height));
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        &.seconds {
+            &::after {
+                content: '';
+                width: 20px;
+                height: 20px;
+                background: red;
+                border-radius: 50%;
+                position: absolute;
+                top: 0px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    }
+}
