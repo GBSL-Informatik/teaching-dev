@@ -197,7 +197,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     }
 
     @action
-    execScript() {
+    runCode() {
         // NOOP
         // to be implemented by subclasses
     }

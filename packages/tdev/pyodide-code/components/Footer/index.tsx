@@ -23,7 +23,7 @@ const Logs = observer((props: Props) => {
                     className={clsx(styles.logContainer)}
                     metastring={`{${code.logErrorIndices.map((range) => range.join('-')).join(',')}}`}
                 >
-                    {code.logs.map((log, idx) => `${log.timeStamp}: ${log.message}`).join('\n')}
+                    {code.logs.map((log, idx) => log.message).join('\n')}
                 </CodeBlock>
             )}
             {code.hasPrompt && (

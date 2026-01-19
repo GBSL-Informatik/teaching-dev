@@ -47,7 +47,7 @@ export default class PyodideStore {
             })
         );
         return this.pyWorker
-            .run(code.id, code.code, sendMessage, '', {})
+            .run(code.id, code.combinedCode, sendMessage, '', {})
             .then((message) => {
                 if (message && !(message.type === 'log' && message.message === undefined)) {
                     this.handleMessage(code, message);

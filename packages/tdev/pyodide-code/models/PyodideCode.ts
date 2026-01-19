@@ -109,7 +109,7 @@ class PyodideCode extends iCode<'pyodide_code'> {
     }
 
     @action
-    execScript() {
+    runCode() {
         this.pyodideStore.run(this);
     }
 

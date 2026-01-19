@@ -19,7 +19,7 @@ const Header = observer((props: Props) => {
     return (
         <Container code={code} ignoreSlim>
             {!code.meta.slim && <Content code={code} />}
-            {code.canExecute && <RunCode code={code} onExecute={() => code.execScript()} />}
+            {code.canExecute && <RunCode code={code} onExecute={() => code.runCode()} />}
             {code.isExecuting && (
                 <Button
                     icon={mdiClose}

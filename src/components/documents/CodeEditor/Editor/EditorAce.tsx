@@ -31,7 +31,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                     // commands is array of key bindings.
                     name: 'execute',
                     bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
-                    exec: () => code.execScript()
+                    exec: () => code.runCode()
                 });
             }
             node.editor.commands.addCommand({

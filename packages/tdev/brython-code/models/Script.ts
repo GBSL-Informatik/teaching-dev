@@ -86,12 +86,12 @@ export default class Script extends iCode<'script'> {
         if (this.isExecuting) {
             this.stopScript();
         } else {
-            this.execScript();
+            this.runCode();
         }
     }
 
     @action
-    execScript() {
+    runCode() {
         if (this.hasGraphicsOutput) {
             if (this.hasTurtleOutput) {
                 this.store.root.pageStore.setRunningTurtleScriptId(this.id);
