@@ -6,9 +6,9 @@ const getPackageImports = (code: string): string[] => {
         const match = line.match(/^import (?<names>.+)|^from (?<name>\S+) /);
         if (match) {
             if (match.groups?.names) {
-                return match.groups.names.split(',').map((n) => n.trim().split(' ')[0]);
+                return match.groups.names.split(',').map((n) => n.trim().split(' ')[0].split('.')[0]);
             } else if (match.groups?.name && !match.groups.name.startsWith('.')) {
-                return [match.groups.name];
+                return [match.groups.name.split('.')[0]];
             }
         }
         return [];
