@@ -43,6 +43,22 @@ export class PyWorker {
         modules: Record<string, object> = {}
     ): Promise<Message> {
         const pyodide = await pyodideReadyPromise;
+        // Ensure unique timestamps for messages
+        let last_ts = Date.now();
+        let ts_fraction = 2;
+        const getTime = () => {
+            const now = Date.now();
+            let t = now;
+            if (last_ts === t) {
+                t = t + (1 - 1 / ts_fraction);
+                ts_fraction += 1;
+            } else {
+                last_ts = now;
+                ts_fraction = 2;
+            }
+            return t;
+        };
+
         const context = {};
         pyodide.registerComlink(Comlink);
 
@@ -77,7 +93,7 @@ export class PyWorker {
                                 clockType: clockType as 'hours' | 'minutes' | 'seconds',
                                 value: 0,
                                 id: id,
-                                timeStamp: Date.now()
+                                timeStamp: getTime()
                             });
                         });
                     },
@@ -95,7 +111,7 @@ export class PyWorker {
                                 clockType: clockType as 'hours' | 'minutes' | 'seconds',
                                 value: value as number,
                                 id: id,
-                                timeStamp: Date.now()
+                                timeStamp: getTime()
                             });
                         });
                     },
@@ -106,7 +122,7 @@ export class PyWorker {
                             clockType: 'hours',
                             value: deg,
                             id: id,
-                            timeStamp: Date.now()
+                            timeStamp: getTime()
                         });
                     },
                     setMinutes: (deg: number) => {
@@ -116,7 +132,7 @@ export class PyWorker {
                             clockType: 'minutes',
                             value: deg,
                             id: id,
-                            timeStamp: Date.now()
+                            timeStamp: getTime()
                         });
                     },
                     setSeconds: (deg: number) => {
@@ -126,7 +142,7 @@ export class PyWorker {
                             clockType: 'seconds',
                             value: deg,
                             id: id,
-                            timeStamp: Date.now()
+                            timeStamp: getTime()
                         });
                     }
                 };
@@ -149,16 +165,16 @@ export class PyWorker {
         const globals = dict(Object.entries(context));
         pyodide.setStdout({
             batched: (s: string) => {
-                sendMessage({ type: 'log', message: s, id: id, timeStamp: Date.now() });
+                sendMessage({ type: 'log', message: s, id: id, timeStamp: getTime() });
             }
         });
         await pyodide.runPythonAsync(patchInputCode(id));
         try {
             // Execute the python code in this context
             const result = await pyodide.runPythonAsync(code);
-            return { type: 'log', message: result, id: id, timeStamp: Date.now() };
+            return { type: 'log', message: result, id: id, timeStamp: getTime() };
         } catch (error: any) {
-            return { type: 'error', message: error.message, id: id, timeStamp: Date.now() };
+            return { type: 'error', message: error.message, id: id, timeStamp: getTime() };
         } finally {
             pyodide.setStdout(undefined);
         }

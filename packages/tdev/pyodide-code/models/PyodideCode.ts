@@ -3,25 +3,52 @@ import { Source } from '@tdev-models/iDocument';
 import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
-import { Message } from '../config';
+import { Message, LogMessage, ErrorMessage } from '../config';
 import iCode from '@tdev-models/documents/iCode';
+import { orderBy } from 'es-toolkit/array';
 
 export const createModel: Factory = (data, store) => {
-    return new PyodideScript(data as DocumentProps<'pyodide_code'>, store);
+    return new PyodideCode(data as DocumentProps<'pyodide_code'>, store);
 };
 
-class PyodideScript extends iCode<'pyodide_code'> {
+class PyodideCode extends iCode<'pyodide_code'> {
     @observable accessor code: string;
     @observable accessor runtimeId: number | null = null;
     @observable accessor promptResponse: string | null = null;
-    logs = observable.array<Message>([], { deep: false });
+    messages = observable.array<Message>([], { deep: false });
     constructor(props: DocumentProps<'pyodide_code'>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code || this.meta.initCode || '';
     }
+
     @action
-    clearLogMessages() {
-        this.logs.clear();
+    clearMessages() {
+        this.messages.clear();
+    }
+
+    @computed
+    get logs(): (LogMessage | ErrorMessage)[] {
+        return orderBy(
+            this.messages.filter((msg) => msg.type === 'log' || msg.type === 'error'),
+            ['timeStamp'],
+            ['asc']
+        );
+    }
+
+    @computed
+    get logErrorIndices(): [number, number][] {
+        const indices: [number, number][] = [];
+        let currentIndex = 1;
+        this.logs.forEach((msg, idx) => {
+            const lineCount = msg.message.split('\n').length;
+            if (msg.type === 'log') {
+                currentIndex += lineCount;
+                return;
+            }
+            indices.push([currentIndex, currentIndex + lineCount - 1]);
+            currentIndex += lineCount;
+        });
+        return indices;
     }
 
     @action
@@ -67,7 +94,7 @@ class PyodideScript extends iCode<'pyodide_code'> {
 
     @action
     addLogMessage(message: Message) {
-        this.logs.push({ ...message });
+        this.messages.push({ ...message });
     }
 
     @action
@@ -79,6 +106,11 @@ class PyodideScript extends iCode<'pyodide_code'> {
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @action
+    execScript() {
+        this.pyodideStore.run(this);
     }
 
     get data(): TypeDataMapping['pyodide_code'] {
@@ -96,4 +128,4 @@ class PyodideScript extends iCode<'pyodide_code'> {
     }
 }
 
-export default PyodideScript;
+export default PyodideCode;

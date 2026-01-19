@@ -11,11 +11,11 @@ interface LogBase {
     timeStamp: number;
 }
 
-interface LogMessage extends LogBase {
+export interface LogMessage extends LogBase {
     type: 'log';
     message: string;
 }
-interface ErrorMessage extends LogBase {
+export interface ErrorMessage extends LogBase {
     type: 'error';
     message: string;
 }

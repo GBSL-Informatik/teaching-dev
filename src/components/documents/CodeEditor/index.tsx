@@ -58,7 +58,7 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
                     styles.playgroundContainer,
                     colorMode === 'light' && styles.lightTheme,
                     script.meta.slim ? styles.containerSlim : styles.containerBig,
-                    'live_py'
+                    'live-code-editor'
                 )}
             >
                 <Editor script={script} />

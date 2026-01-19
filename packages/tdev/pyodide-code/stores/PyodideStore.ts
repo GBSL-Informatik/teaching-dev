@@ -4,7 +4,7 @@ import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { Message, PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
-import PyodideScript from '../models/PyodideScript';
+import PyodideCode from '../models/PyodideCode';
 import siteConfig from '@generated/docusaurus.config';
 const BASE_URL = siteConfig.baseUrl || '/';
 
@@ -29,8 +29,8 @@ export default class PyodideStore {
     }
 
     @action
-    run(code: PyodideScript) {
-        code.clearLogMessages();
+    run(code: PyodideCode) {
+        code.clearMessages();
         code.setRuntimeId(this.runtimeId);
         if (!this.pyWorker) {
             code.addLogMessage({
@@ -61,7 +61,7 @@ export default class PyodideStore {
     }
 
     @action
-    handleMessage(code: PyodideScript, message: Message) {
+    handleMessage(code: PyodideCode, message: Message) {
         switch (message.type) {
             case 'log':
                 code.addLogMessage(message);

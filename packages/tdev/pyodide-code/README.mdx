@@ -6,42 +6,35 @@ tags:
   - code
 ---
 
-import Pyodide from '@tdev/pyodide-code/components/Pyodide';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # pyodide-code
 
-````jsx
-import Pyodide from '@tdev/pyodide-code/components/Pyodide';
 
-<Pyodide id="c6853b80-6cb5-4e3f-996f-320c72a374c5" title="Hello World">
-```py
-print('Hello from Pyodide!')
+````md
+```py live_pyo id=b26cde2c-5b0b-4acb-814e-9f2b3bdd29a9
+print("Hello from Pyodide!")
 ```
-</Pyodide>
 ````
 
 <BrowserWindow>
-<Pyodide id="a4164712-ad52-45e1-97b5-e578b41a22c1" title="Hello World">
-```py
-print('Hello from Pyodide!')
+```py live_pyo id=b26cde2c-5b0b-4acb-814e-9f2b3bdd29a9
+print("Hello from Pyodide!")
 ```
-</Pyodide>
 </BrowserWindow>
 
 ## Sleep
-<Pyodide id="82e559e8-db77-4efb-adcc-f6cd18085c9e" title="Sleep und Ausgabe">
-```py
+
+
+```py live_pyo id=82e559e8-db77-4efb-adcc-f6cd18085c9e title=Sleep_und_Ausgabe
 from time import sleep
 for i in range(10):
     print(i, i*i, i**3)
     sleep(1)
 ```
-</Pyodide>
 
 ## Fibonacci
-<Pyodide id="d5d60431-5589-4d38-9c8c-9b563194f5cc" title="Fibonacci ohne Rekursion">
-```py
+```py live_pyo id=d5d60431-5589-4d38-9c8c-9b563194f5cc title=Fibonacci_ohne_Rekursion
 def fibonacci(n):
     if n <= 0:
         return []
@@ -57,12 +50,10 @@ def fibonacci(n):
 n = int(input("fib von? "))
 print(fibonacci(n))
 ```
-</Pyodide>
 
 ### Mit Memoization
 
-<Pyodide id="22b0f649-9b77-4e97-9ccb-cfeb159bbde9" title="Fibonacci mit Memoization">
-```py
+```py live_pyo id=22b0f649-9b77-4e97-9ccb-cfeb159bbde9 title=Fibonacci_mit_Memoization
 from functools import lru_cache
 
 @lru_cache
@@ -74,12 +65,10 @@ def fibonacci(n):
 for n in range(1, 200):
     print(f"Fibonacci({n}) = {fibonacci(n)}")
 ```
-</Pyodide>
 
 ## Minimierung mit SciPy
 
-<Pyodide id="8e484282-faac-4955-b0a2-b0a2e270f765" title="Minimierung mit SciPy">
-```py
+```py live_pyo id=8e484282-faac-4955-b0a2-b0a2e270f765 title=Minimierung_mit_SciPy
 import numpy as np
 from scipy import optimize
 # Function to minimize: f(x) = (x - 3)^2
@@ -91,4 +80,3 @@ result = optimize.minimize(func, x0=0)
 print("Minimum at x =", result.x[0])
 print("Function value at minimum =", result.fun)
 ```
-</Pyodide>
