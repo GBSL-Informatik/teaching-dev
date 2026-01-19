@@ -194,7 +194,7 @@ abstract class iDocument<Type extends DocumentType> {
         if (!this.store.root.userStore.current) {
             return !NoneAccess.has(this.root.permission);
         }
-        return this.root.hasAdminOrRWAccess;
+        return this.root.hasReadAccess || this.root.hasAdminOrRWAccess;
     }
 
     get author() {
