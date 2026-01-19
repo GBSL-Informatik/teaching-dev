@@ -31,21 +31,21 @@ const downloadCanvas = (canvasId: string) => {
 };
 
 interface Props {
-    script: Script;
+    code: Script;
 }
 
 const Canvas = observer((props: Props) => {
-    const { script } = props;
+    const { code } = props;
 
     return (
         <Graphics
-            script={script}
+            code={code}
             controls={
                 <Button
                     icon={mdiDownload}
                     iconSize="12px"
                     onClick={() => {
-                        downloadCanvas(DOM_ELEMENT_IDS.canvasContainer(script.codeId));
+                        downloadCanvas(DOM_ELEMENT_IDS.canvasContainer(code.codeId));
                     }}
                     title="Download SVG"
                     className={styles.slimStrippedButton}
@@ -53,7 +53,7 @@ const Canvas = observer((props: Props) => {
             }
             main={
                 <canvas
-                    id={DOM_ELEMENT_IDS.canvasContainer(script.codeId)}
+                    id={DOM_ELEMENT_IDS.canvasContainer(code.codeId)}
                     width="500"
                     height="500"
                     style={{

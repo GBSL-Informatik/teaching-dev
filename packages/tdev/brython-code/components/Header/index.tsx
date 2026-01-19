@@ -6,18 +6,18 @@ import Script from '@tdev/brython-code/models/Script';
 import Content from '@tdev-components/documents/CodeEditor/Editor/Header/Content';
 
 interface Props {
-    script: Script;
+    code: Script;
 }
 
 const Header = observer((props: Props) => {
-    const { script } = props;
-    if (!script) {
+    const { code: code } = props;
+    if (!code) {
         return null;
     }
     return (
-        <Container script={script} ignoreSlim>
-            {!script.meta.slim && <Content script={script} />}
-            {script.canExecute && <RunCode script={script} onExecute={() => script.execScript()} />}
+        <Container code={code} ignoreSlim>
+            {!code.meta.slim && <Content code={code} />}
+            {code.canExecute && <RunCode code={code} onExecute={() => code.execScript()} />}
         </Container>
     );
 });

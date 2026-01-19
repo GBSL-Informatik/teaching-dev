@@ -6,14 +6,14 @@ import Container from './Container';
 import Content from './Content';
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const Header = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     return (
-        <Container script={script}>
-            <Content script={script} />
+        <Container code={code}>
+            <Content code={code} />
         </Container>
     );
 });

@@ -9,28 +9,28 @@ import BrythonCommunicator from './BrythonCommunicator';
 import Script from '@tdev/brython-code/models/Script';
 
 interface Props {
-    script: Script;
+    code: Script;
 }
 
 const Meta = observer((props: Props) => {
-    const { script } = props;
+    const { code } = props;
     const pageStore = useStore('pageStore');
-    if (script.lang !== 'python') {
+    if (code.lang !== 'python') {
         return null;
     }
     return (
         <>
-            <div id={DOM_ELEMENT_IDS.outputDiv(script.codeId)}></div>
-            {script.graphicsModalExecutionNr > 0 && (
+            <div id={DOM_ELEMENT_IDS.outputDiv(code.codeId)}></div>
+            {code.graphicsModalExecutionNr > 0 && (
                 <>
-                    {script.hasTurtleOutput && pageStore.runningTurtleScriptId === script.id && (
-                        <Turtle script={script} />
+                    {code.hasTurtleOutput && pageStore.runningTurtleScriptId === code.id && (
+                        <Turtle code={code} />
                     )}
-                    {script.hasCanvasOutput && <Canvas script={script} />}
-                    {!script.hasCanvasOutput && !script.hasTurtleOutput && <Graphics script={script} />}
+                    {code.hasCanvasOutput && <Canvas code={code} />}
+                    {!code.hasCanvasOutput && !code.hasTurtleOutput && <Graphics code={code} />}
                 </>
             )}
-            {script.lang === 'python' && <BrythonCommunicator script={script} />}
+            {code.lang === 'python' && <BrythonCommunicator code={code} />}
         </>
     );
 });

@@ -4,11 +4,11 @@ import { BRYTHON_NOTIFICATION_EVENT, DOM_ELEMENT_IDS } from '@tdev/brython-code'
 import Script, { LogMessage } from '@tdev/brython-code/models/Script';
 
 interface Props {
-    script: Script;
+    code: Script;
 }
 
 const BrythonCommunicator = observer((props: Props) => {
-    const { script } = props;
+    const { code } = props;
     const ref = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
         const { current } = ref;
@@ -20,18 +20,18 @@ const BrythonCommunicator = observer((props: Props) => {
                 const data = event.detail as LogMessage;
                 switch (data.type) {
                     case 'start':
-                        script.clearLogMessages();
-                        script.setExecuting(true);
+                        code.clearLogMessages();
+                        code.setExecuting(true);
                         break;
                     case 'done':
                         const isRunning = current.getAttribute('data--is-running');
                         if (isRunning) {
                             return;
                         }
-                        script.setExecuting(false);
+                        code.setExecuting(false);
                         break;
                     default:
-                        script.addLogMessage({
+                        code.addLogMessage({
                             type: data.type,
                             output: data.output,
                             timeStamp: data.timeStamp
@@ -44,13 +44,13 @@ const BrythonCommunicator = observer((props: Props) => {
         return () => {
             current.removeEventListener(BRYTHON_NOTIFICATION_EVENT, onBryNotify as EventListener);
         };
-    }, [ref, script]);
+    }, [ref, code]);
 
-    if (!script || script.lang !== 'python') {
+    if (!code || code.lang !== 'python') {
         return null;
     }
 
-    return <div id={DOM_ELEMENT_IDS.communicator(script.codeId)} ref={ref}></div>;
+    return <div id={DOM_ELEMENT_IDS.communicator(code.codeId)} ref={ref}></div>;
 });
 
 export default BrythonCommunicator;

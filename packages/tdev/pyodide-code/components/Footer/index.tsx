@@ -10,33 +10,33 @@ import Button from '@tdev-components/shared/Button';
 import { mdiClose, mdiSend } from '@mdi/js';
 
 interface Props {
-    script: PyodideCode;
+    code: PyodideCode;
 }
 
 const Logs = observer((props: Props) => {
-    const { script } = props;
+    const { code } = props;
     return (
         <Container>
-            {script.logs.length > 0 && (
+            {code.logs.length > 0 && (
                 <CodeBlock
                     language="plaintext"
                     className={clsx(styles.logContainer)}
-                    metastring={`{${script.logErrorIndices.map((range) => range.join('-')).join(',')}}`}
+                    metastring={`{${code.logErrorIndices.map((range) => range.join('-')).join(',')}}`}
                 >
-                    {script.logs.map((log, idx) => `${log.timeStamp}: ${log.message}`).join('\n')}
+                    {code.logs.map((log, idx) => `${log.timeStamp}: ${log.message}`).join('\n')}
                 </CodeBlock>
             )}
-            {script.hasPrompt && (
+            {code.hasPrompt && (
                 <div className={clsx(styles.prompt)}>
                     <div className={clsx(styles.inputContainer)}>
                         <TextInput
-                            label={script.promptText || 'Eingabe'}
+                            label={code.promptText || 'Eingabe'}
                             onChange={(text) => {
-                                script.setPromptResponse(text);
+                                code.setPromptResponse(text);
                             }}
-                            value={script.promptResponse || ''}
+                            value={code.promptResponse || ''}
                             onEnter={() => {
-                                script.sendPromptResponse();
+                                code.sendPromptResponse();
                             }}
                             className={clsx(styles.input)}
                             labelClassName={clsx(styles.label)}
@@ -45,14 +45,14 @@ const Logs = observer((props: Props) => {
                     <div className={clsx(styles.actions)}>
                         <Button
                             onClick={() => {
-                                script.sendPromptResponse();
+                                code.sendPromptResponse();
                             }}
                             icon={mdiSend}
                         />
                         <Button
                             icon={mdiClose}
                             onClick={() => {
-                                script.pyodideStore.cancelCodeExecution(script.id);
+                                code.pyodideStore.cancelCodeExecution(code.id);
                             }}
                         />
                     </div>

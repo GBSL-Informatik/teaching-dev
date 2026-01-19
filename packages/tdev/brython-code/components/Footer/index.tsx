@@ -5,18 +5,18 @@ import type Script from '@tdev/brython-code/models/Script';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Footer/Container';
 
 interface Props {
-    script: Script;
+    code: Script;
 }
 
 const Logs = observer((props: Props) => {
-    const { script } = props;
-    const logs = script.logs;
+    const { code } = props;
+    const logs = code.logs;
     if (logs.length === 0) {
         return null;
     }
     const errors: string[] = [];
     let lineNr = 1;
-    const code = logs.slice().map((msg) => {
+    const logMessages = logs.slice().map((msg) => {
         const msgLen = (msg.output || '').split('\n').length - 1;
         if (msg.type === 'stderr') {
             errors.push(`${lineNr}-${lineNr + msgLen}`);
@@ -26,7 +26,7 @@ const Logs = observer((props: Props) => {
     });
     return (
         <Container>
-            <CodeBlock metastring={`{${errors.join(',')}}`}>{code.join('')}</CodeBlock>
+            <CodeBlock metastring={`{${errors.join(',')}}`}>{logMessages.join('')}</CodeBlock>
         </Container>
     );
 });

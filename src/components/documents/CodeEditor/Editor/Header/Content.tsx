@@ -12,15 +12,15 @@ import DownloadCode from '../../Actions/DownloadCode';
 import ShowRaw from '../../Actions/ShowRaw';
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const Content = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
-    const notifyUnpersisted = script.root?.isDummy && !script.meta.slim && !script.meta.hideWarning;
+    const { code } = props;
+    const notifyUnpersisted = code.root?.isDummy && !code.meta.slim && !code.meta.hideWarning;
     return (
         <>
-            <div className={clsx(styles.title)}>{script.title}</div>
+            <div className={clsx(styles.title)}>{code.title}</div>
             <div className={clsx(styles.spacer)} />
             {notifyUnpersisted && (
                 <Icon
@@ -32,10 +32,10 @@ const Content = observer(<T extends CodeType>(props: Props<T>) => {
                 />
             )}
             <div className={clsx(styles.spacer)} />
-            <SyncStatus model={script} />
-            {script.hasEdits && script.meta.isResettable && <Reset script={script} />}
-            {script.meta.canDownload && <DownloadCode script={script} />}
-            {script.hasEdits && script.meta.canCompare && <ShowRaw script={script} />}
+            <SyncStatus model={code} />
+            {code.hasEdits && code.meta.isResettable && <Reset code={code} />}
+            {code.meta.canDownload && <DownloadCode code={code} />}
+            {code.hasEdits && code.meta.canCompare && <ShowRaw code={code} />}
         </>
     );
 });

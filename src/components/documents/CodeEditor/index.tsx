@@ -40,16 +40,16 @@ export const CodeEditor = observer((props: Props) => {
     if (!ExecutionEnvironment.canUseDOM || !code) {
         return <CodeBlock language={props.lang}>{props.code}</CodeBlock>;
     }
-    return <CodeEditorComponent script={code as iCode<typeof type>} className={props.className} />;
+    return <CodeEditorComponent code={code as iCode<typeof type>} className={props.className} />;
 });
 
 export interface ScriptProps<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
     className?: string;
 }
 
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
-    const { script } = props;
+    const { code } = props;
     const { colorMode } = useCodeTheme();
     return (
         <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
@@ -57,12 +57,12 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
                 className={clsx(
                     styles.playgroundContainer,
                     colorMode === 'light' && styles.lightTheme,
-                    script.meta.slim ? styles.containerSlim : styles.containerBig,
+                    code.meta.slim ? styles.containerSlim : styles.containerBig,
                     'live-code-editor'
                 )}
             >
-                <Editor script={script} />
-                {script.meta.hasHistory && <CodeHistory script={script} />}
+                <Editor code={code} />
+                {code.meta.hasHistory && <CodeHistory code={code} />}
             </div>
         </div>
     );

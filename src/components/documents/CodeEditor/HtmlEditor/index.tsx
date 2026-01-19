@@ -58,7 +58,7 @@ const HtmlEditor = observer((props: Props) => {
     return (
         <div className={clsx(styles.htmlEditor)}>
             <div className={clsx(styles.editor)}>
-                <CodeEditorComponent script={doc} className={clsx(styles.code)} />
+                <CodeEditorComponent code={doc} className={clsx(styles.code)} />
             </div>
             <BrowserWindow
                 className={clsx(styles.htmlWindow)}

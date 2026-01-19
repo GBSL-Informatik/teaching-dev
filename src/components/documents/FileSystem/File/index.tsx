@@ -97,7 +97,7 @@ const File = observer((props: Props) => {
             <div className={clsx(shared.content, styles.content)}>
                 {file.document && file.isOpen && (
                     <>
-                        {file.document.type === 'script' && <CodeEditorSelector script={file.document} />}
+                        {file.document.type === 'script' && <CodeEditorSelector code={file.document} />}
                         {file.document.type === 'quill_v2' && (
                             <QuillV2Component quillDoc={file.document} className={styles.quill} />
                         )}

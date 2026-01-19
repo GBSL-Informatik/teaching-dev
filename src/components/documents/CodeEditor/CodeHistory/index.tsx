@@ -29,14 +29,14 @@ const highlightSyntax = (str: string) => {
 };
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     const [version, setVersion] = React.useState(1);
-    const old = script.versions[version - 1];
-    const current = script.versions[version];
+    const old = code.versions[version - 1];
+    const current = code.versions[version];
 
     return (
         <div className={clsx(styles.codeHistory)}>
@@ -45,18 +45,18 @@ const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
                 summary={
                     <summary
                         onClick={(e) => {
-                            script.loadVersions();
+                            code.loadVersions();
                         }}
                     >
                         <div className={clsx(styles.summary)}>
                             <span className="badge badge--secondary">
-                                {script.versionsLoaded
+                                {code.versionsLoaded
                                     ? translate(
                                           {
                                               message: '{n} Versions',
                                               id: 'CodeHistory.nVersions.text'
                                           },
-                                          { n: script.versions.length }
+                                          { n: code.versions.length }
                                       )
                                     : translate({
                                           message: 'Versionen laden',
@@ -64,13 +64,13 @@ const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
                                       })}
                             </span>
                             <span className={clsx(styles.spacer)}></span>
-                            {script.versionsLoaded && (
+                            {code.versionsLoaded && (
                                 <Button
                                     icon={mdiSync}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        script.loadVersions(true);
+                                        code.loadVersions(true);
                                     }}
                                     title="Versionen erneut synchronisieren"
                                 />
@@ -79,7 +79,7 @@ const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
                     </summary>
                 }
             >
-                {script.versionsLoaded && current && (
+                {code.versionsLoaded && current && (
                     <div
                         className={clsx(styles.content)}
                         onClick={(e) => {
@@ -97,13 +97,13 @@ const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
                                     setVersion(c);
                                 }}
                                 min={1}
-                                max={script.versions.length - 1}
-                                dots={script.versions.length < 50}
+                                max={code.versions.length - 1}
+                                dots={code.versions.length < 50}
                             />
                             <span className="badge badge--primary">V{version}</span>
                         </div>
                         <div className={clsx(styles.diffViewer)}>
-                            {script.versions.length > 0 && (
+                            {code.versions.length > 0 && (
                                 <DiffViewer
                                     splitView
                                     oldValue={old.code}

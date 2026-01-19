@@ -10,12 +10,12 @@ import type Script from '@tdev/brython-code/models/Script';
 import { DOM_ELEMENT_IDS } from '../../..';
 
 export interface Props {
-    script: Script;
+    code: Script;
     controls?: React.ReactNode;
     main?: React.ReactNode;
 }
 const Graphics = observer((props: Props) => {
-    const { script } = props;
+    const { code } = props;
     const nodeRef = React.useRef<HTMLDivElement>(null);
     return (
         <Draggable
@@ -32,16 +32,16 @@ const Graphics = observer((props: Props) => {
                         icon={mdiClose}
                         className={clsx(styles.closeButton)}
                         onClick={() => {
-                            script.stopScript();
-                            script.closeGraphicsModal();
+                            code.stopScript();
+                            code.closeGraphicsModal();
                         }}
                         iconSize="12px"
                     />
                 </div>
                 <div
-                    id={DOM_ELEMENT_IDS.graphicsResult(script.codeId)}
+                    id={DOM_ELEMENT_IDS.graphicsResult(code.codeId)}
                     className={clsx('brython-graphics-result', styles.brythonGraphicsResultMain)}
-                    key={`exec-${script.graphicsModalExecutionNr}`}
+                    key={`exec-${code.graphicsModalExecutionNr}`}
                 >
                     {props.main}
                 </div>

@@ -11,27 +11,27 @@ import type iCode from '@tdev-models/documents/iCode';
 import Header from './Header';
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const Editor = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     const componentStore = useStore('componentStore');
-    const EC = componentStore.editorComponent(script.type);
+    const EC = componentStore.editorComponent(code.type);
     return (
         <>
             {EC?.Header ? (
-                <EC.Header script={script as unknown as TypeModelMapping[T]} />
+                <EC.Header code={code as unknown as TypeModelMapping[T]} />
             ) : (
-                <Header script={script} />
+                <Header code={code} />
             )}
             <div className={clsx(styles.editorContainer)}>
-                <HiddenCode type="pre" script={script} />
-                <EditorAce script={script} />
-                <HiddenCode type="post" script={script} />
+                <HiddenCode type="pre" code={code} />
+                <EditorAce code={code} />
+                <HiddenCode type="post" code={code} />
             </div>
-            {EC?.Footer && <EC.Footer script={script as unknown as TypeModelMapping[T]} />}
-            {EC?.Meta && <EC.Meta script={script as unknown as TypeModelMapping[T]} />}
+            {EC?.Footer && <EC.Footer code={code as unknown as TypeModelMapping[T]} />}
+            {EC?.Meta && <EC.Meta code={code as unknown as TypeModelMapping[T]} />}
         </>
     );
 });

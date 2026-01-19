@@ -6,17 +6,17 @@ import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const Reset = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     const onReset = React.useEffectEvent(() => {
         const shouldReset = window.confirm(
             'Änderungen wirklich verwerfen? Dies kann nicht rückgängig gemacht werden.'
         );
         if (shouldReset) {
-            script.setCode(script.meta.initCode);
+            code.setCode(code.meta.initCode);
         }
     });
     return (

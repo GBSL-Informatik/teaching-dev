@@ -8,23 +8,23 @@ import Button from '@tdev-components/shared/Button';
 import { mdiClose } from '@mdi/js';
 
 interface Props {
-    script: PyodideCode;
+    code: PyodideCode;
 }
 
 const Header = observer((props: Props) => {
-    const { script } = props;
-    if (!script) {
+    const { code } = props;
+    if (!code) {
         return null;
     }
     return (
-        <Container script={script} ignoreSlim>
-            {!script.meta.slim && <Content script={script} />}
-            {script.canExecute && <RunCode script={script} onExecute={() => script.execScript()} />}
-            {script.isExecuting && (
+        <Container code={code} ignoreSlim>
+            {!code.meta.slim && <Content code={code} />}
+            {code.canExecute && <RunCode code={code} onExecute={() => code.execScript()} />}
+            {code.isExecuting && (
                 <Button
                     icon={mdiClose}
                     onClick={() => {
-                        script.pyodideStore.recreatePyWorker();
+                        code.pyodideStore.recreatePyWorker();
                     }}
                 />
             )}

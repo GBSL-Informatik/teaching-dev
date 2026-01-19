@@ -11,14 +11,14 @@ import type iCode from '@tdev-models/documents/iCode';
 
 interface Props<T extends CodeType> {
     type: 'pre' | 'post';
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const HiddenCode = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     const [show, setShow] = React.useState(false);
-    const code = props.type === 'pre' ? script.meta.preCode : script.meta.postCode;
-    if (code.length === 0) {
+    const codeContent = props.type === 'pre' ? code.meta.preCode : code.meta.postCode;
+    if (codeContent.length === 0) {
         return null;
     }
     return (
@@ -32,10 +32,10 @@ const HiddenCode = observer(<T extends CodeType>(props: Props<T>) => {
                             styles.hiddenCode,
                             styles.pre,
                             show && styles.open,
-                            script.meta.slim && styles.slim
+                            code.meta.slim && styles.slim
                         )}
                     >
-                        {code}
+                        {codeContent}
                     </CodeBlock>
                 </div>
             )}
@@ -44,7 +44,7 @@ const HiddenCode = observer(<T extends CodeType>(props: Props<T>) => {
                     styles.toggleButton,
                     show && styles.open,
                     styles[props.type],
-                    script.codeLines <= 1 && styles.singleLine
+                    code.codeLines <= 1 && styles.singleLine
                 )}
                 onClick={() => setShow(!show)}
                 title={

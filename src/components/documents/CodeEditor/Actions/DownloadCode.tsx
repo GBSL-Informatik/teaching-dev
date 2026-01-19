@@ -6,30 +6,28 @@ import type iCode from '@tdev-models/documents/iCode';
 import type { CodeType } from '@tdev-api/document';
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const DownloadCode = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     return (
         <Button
             icon={mdiDownload}
             onClick={() => {
                 const downloadLink = document.createElement('a');
-                const file = new Blob([script.code], { type: 'text/plain;charset=utf-8' });
+                const file = new Blob([code.code], { type: 'text/plain;charset=utf-8' });
                 downloadLink.href = URL.createObjectURL(file);
-                const fExt = script.lang === 'python' ? '.py' : `.${script.lang}`;
+                const fExt = code.lang === 'python' ? '.py' : `.${code.lang}`;
                 const fTitle =
-                    props.script.title === script.lang
-                        ? script.id
-                        : (script.title.split('/').pop() ?? script.id);
+                    props.code.title === code.lang ? code.id : (code.title.split('/').pop() ?? code.id);
                 const fName = fTitle.endsWith(fExt) ? fTitle : `${fTitle}${fExt}`;
                 downloadLink.download = fName;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
             }}
-            title={`Programm "${script.title}" herunterladen`}
+            title={`Programm "${code.title}" herunterladen`}
         />
     );
 });

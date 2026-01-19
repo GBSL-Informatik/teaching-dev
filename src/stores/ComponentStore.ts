@@ -23,7 +23,7 @@ export interface ContainerComponent<T extends ContainerType = ContainerType> {
 }
 
 export interface EditorComponentProps<T extends CodeType = CodeType> {
-    script: TypeModelMapping[T];
+    code: TypeModelMapping[T];
 }
 
 export interface EditorComponent<T extends CodeType = CodeType> {

@@ -44,7 +44,7 @@ const SvgEditor = observer((props: Props) => {
     return (
         <div className={clsx(styles.svgEditor)}>
             <div className={clsx(styles.editor)}>
-                <CodeEditorComponent script={doc} className={clsx(styles.code)} />
+                <CodeEditorComponent code={doc} className={clsx(styles.code)} />
             </div>
             <Card classNames={{ card: styles.svgCard, body: styles.svgCardBody }}>
                 <ErrorBoundary

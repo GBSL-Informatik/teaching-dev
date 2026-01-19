@@ -16,22 +16,22 @@ const ALIAS_LANG_MAP_ACE = {
 };
 
 interface Props<T extends CodeType> {
-    script: iCode<T>;
+    code: iCode<T>;
 }
 
 const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
-    const { script } = props;
+    const { code } = props;
     const eRef = React.useRef<AceEditor>(null);
     const { aceTheme } = useCodeTheme();
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
-            if (script.lang === 'python') {
+            if (code.lang === 'python') {
                 node.editor.commands.addCommand({
                     // commands is array of key bindings.
                     name: 'execute',
                     bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
-                    exec: () => script.execScript()
+                    exec: () => code.execScript()
                 });
             }
             node.editor.commands.addCommand({
@@ -39,7 +39,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 name: 'save',
                 bindKey: { win: 'Ctrl-s', mac: 'Command-s' },
                 exec: () => {
-                    script.saveNow();
+                    code.saveNow();
                 }
             });
             return () => {
@@ -55,12 +55,12 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 }
             };
         }
-    }, [eRef, script]);
+    }, [eRef, code]);
 
     return (
         <div className={clsx(styles.editor)}>
             <AceEditor
-                className={clsx(styles.brythonEditor, !script.meta.showLineNumbers && styles.noGutter)}
+                className={clsx(styles.brythonEditor, !code.meta.showLineNumbers && styles.noGutter)}
                 style={{
                     width: '100%',
                     lineHeight: 'var(--ifm-pre-line-height)',
@@ -69,27 +69,27 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 }}
                 fontSize={'var(--ifm-code-font-size)'}
                 onPaste={() => {
-                    if (script.meta.versioned) {
+                    if (code.meta.versioned) {
                         /**
                          * Save immediately as pasted content
                          */
-                        script.setIsPasted(true);
+                        code.setIsPasted(true);
                     }
                 }}
                 focus={false}
                 navigateToFileEnd={false}
-                minLines={script.meta.minLines}
-                maxLines={script.meta.maxLines}
+                minLines={code.meta.minLines}
+                maxLines={code.meta.maxLines}
                 ref={eRef}
-                mode={ALIAS_LANG_MAP_ACE[script.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? script.lang}
-                theme={script.meta.theme ?? aceTheme}
+                mode={ALIAS_LANG_MAP_ACE[code.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.lang}
+                theme={code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
-                    script.setCode(value, e.action);
+                    code.setCode(value, e.action);
                 }}
-                readOnly={script.meta.readonly || script.showRaw}
-                value={script.showRaw ? script.pristineCode : script.code}
-                defaultValue={script?.code || '\n'}
-                name={script.codeId}
+                readOnly={code.meta.readonly || code.showRaw}
+                value={code.showRaw ? code.pristineCode : code.code}
+                defaultValue={code?.code || '\n'}
+                name={code.codeId}
                 editorProps={{ $blockScrolling: true }}
                 setOptions={{
                     displayIndentGuides: true,
@@ -101,7 +101,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 enableBasicAutocompletion
                 enableLiveAutocompletion={false}
                 enableSnippets={false}
-                showGutter={script.meta.showLineNumbers}
+                showGutter={code.meta.showLineNumbers}
             />
         </div>
     );

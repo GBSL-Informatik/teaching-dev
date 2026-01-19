@@ -10,24 +10,24 @@ import Graphics from '.';
 import { DOM_ELEMENT_IDS } from '@tdev/brython-code';
 
 interface Props {
-    script: Script;
+    code: Script;
 }
 
 const Turtle = observer((props: Props) => {
-    const { script } = props;
+    const { code } = props;
     return (
         <Graphics
-            script={script}
+            code={code}
             controls={
                 <React.Fragment>
                     <Button
                         icon={mdiAnimationPlay}
                         onClick={() => {
                             const turtleResult = document.getElementById(
-                                DOM_ELEMENT_IDS.turtleSvgContainer(script.codeId)
+                                DOM_ELEMENT_IDS.turtleSvgContainer(code.codeId)
                             ) as any as SVGSVGElement;
                             if (turtleResult) {
-                                saveSvg(turtleResult, `${script.codeId}`, script.code, true);
+                                saveSvg(turtleResult, `${code.codeId}`, code.code, true);
                             }
                         }}
                         className={clsx(styles.slimStrippedButton)}
@@ -39,10 +39,10 @@ const Turtle = observer((props: Props) => {
                         iconSize="12px"
                         onClick={() => {
                             const turtleResult = document.getElementById(
-                                DOM_ELEMENT_IDS.turtleSvgContainer(script.codeId)
+                                DOM_ELEMENT_IDS.turtleSvgContainer(code.codeId)
                             ) as any as SVGSVGElement;
                             if (turtleResult) {
-                                saveSvg(turtleResult, `${script.codeId}`, script.code);
+                                saveSvg(turtleResult, `${code.codeId}`, code.code);
                             }
                         }}
                         title="Download SVG"
