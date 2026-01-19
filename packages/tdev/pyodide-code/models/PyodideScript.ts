@@ -7,15 +7,15 @@ import { Message } from '../config';
 import iCode from '@tdev-models/documents/iCode';
 
 export const createModel: Factory = (data, store) => {
-    return new PyodideScript(data as DocumentProps<'pyodide_script'>, store);
+    return new PyodideScript(data as DocumentProps<'pyodide_code'>, store);
 };
 
-class PyodideScript extends iCode<'pyodide_script'> {
+class PyodideScript extends iCode<'pyodide_code'> {
     @observable accessor code: string;
     @observable accessor runtimeId: number | null = null;
     @observable accessor promptResponse: string | null = null;
     logs = observable.array<Message>([], { deep: false });
-    constructor(props: DocumentProps<'pyodide_script'>, store: DocumentStore) {
+    constructor(props: DocumentProps<'pyodide_code'>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code || this.meta.initCode || '';
     }
@@ -71,7 +71,7 @@ class PyodideScript extends iCode<'pyodide_script'> {
     }
 
     @action
-    setData(data: TypeDataMapping['pyodide_script'], from: Source, updatedAt?: Date): void {
+    setData(data: TypeDataMapping['pyodide_code'], from: Source, updatedAt?: Date): void {
         this.code = data.code;
         if (from === Source.LOCAL) {
             this.save();
@@ -81,7 +81,7 @@ class PyodideScript extends iCode<'pyodide_script'> {
         }
     }
 
-    get data(): TypeDataMapping['pyodide_script'] {
+    get data(): TypeDataMapping['pyodide_code'] {
         return {
             code: this.code
         };
@@ -89,7 +89,7 @@ class PyodideScript extends iCode<'pyodide_script'> {
 
     @computed
     get meta(): ModelMeta {
-        if (this.root?.type === 'pyodide_script') {
+        if (this.root?.type === 'pyodide_code') {
             return this.root.meta as ModelMeta;
         }
         return new ModelMeta({});

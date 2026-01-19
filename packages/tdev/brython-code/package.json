@@ -1,5 +1,5 @@
 {
-    "name": "@tdev/brython",
+    "name": "@tdev/brython-code",
     "version": "1.0.0",
     "main": "index.ts",
     "types": "index.ts",

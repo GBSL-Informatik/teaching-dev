@@ -7,10 +7,10 @@ export interface PyodideData {
 
 declare module '@tdev-api/document' {
     export interface TypeDataMapping {
-        ['pyodide_script']: PyodideData;
+        ['pyodide_code']: PyodideData;
     }
     export interface TypeModelMapping {
-        ['pyodide_script']: PyodideScript;
+        ['pyodide_code']: PyodideScript;
     }
     export interface ViewStoreTypeMapping {
         ['pyodideStore']: PyodideStore; // placeholder to avoid empty interface error

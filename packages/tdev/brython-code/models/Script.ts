@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { runCode } from '@tdev/brython/components/utils/bryRunner';
+import { runCode } from '@tdev/brython-code/components/utils/bryRunner';
 import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import siteConfig from '@generated/docusaurus.config';

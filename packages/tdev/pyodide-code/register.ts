@@ -9,7 +9,7 @@ const createStore = (viewStore: ViewStore) => {
 
 const register = () => {
     rootStore.viewStore.registerStore('pyodideStore', createStore);
-    rootStore.documentStore.registerFactory('pyodide_script', createModel);
+    rootStore.documentStore.registerFactory('pyodide_code', createModel);
 };
 
 register();

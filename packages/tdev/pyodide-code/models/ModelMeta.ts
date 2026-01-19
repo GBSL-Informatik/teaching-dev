@@ -4,8 +4,8 @@ export interface MetaInit {
     readonly: boolean;
 }
 
-export class ModelMeta extends iCodeMeta<'pyodide_script'> {
+export class ModelMeta extends iCodeMeta<'pyodide_code'> {
     constructor(props: Partial<MetaInit>) {
-        super(props, 'pyodide_script');
+        super(props, 'pyodide_code');
     }
 }

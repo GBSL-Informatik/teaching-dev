@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CodeBlock from '@theme-original/CodeBlock';
 import { observer } from 'mobx-react-lite';
-import type Script from '@tdev/brython/models/Script';
+import type Script from '@tdev/brython-code/models/Script';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Footer/Container';
 
 interface Props {

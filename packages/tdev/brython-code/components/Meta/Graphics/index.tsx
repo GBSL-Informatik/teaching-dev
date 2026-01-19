@@ -6,7 +6,7 @@ import Button from '@tdev-components/documents/CodeEditor/Button';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { mdiClose } from '@mdi/js';
-import type Script from '@tdev/brython/models/Script';
+import type Script from '@tdev/brython-code/models/Script';
 import { DOM_ELEMENT_IDS } from '../../..';
 
 export interface Props {

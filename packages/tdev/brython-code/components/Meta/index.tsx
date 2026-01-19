@@ -6,7 +6,7 @@ import Turtle from './Graphics/Turtle';
 import Canvas from './Graphics/Canvas';
 import Graphics from './Graphics';
 import BrythonCommunicator from './BrythonCommunicator';
-import Script from '@tdev/brython/models/Script';
+import Script from '@tdev/brython-code/models/Script';
 
 interface Props {
     script: Script;
