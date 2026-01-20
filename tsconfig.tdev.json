@@ -34,6 +34,6 @@
         "build"
     ],
     "mdx": {
-        "plugins": [["remark-frontmatter", ["toml", "yaml"]], "remark-directive"]
+        "plugins": [["remark-frontmatter", ["toml", "yaml"]], "remark-directive", "remark-math"]
     }
 }
