@@ -37,7 +37,7 @@ export const CodeEditor = observer((props: Props) => {
             code.setCode(props.code);
         }
     }, [code, props.code]);
-    if (!ExecutionEnvironment.canUseDOM || !code) {
+    if (!ExecutionEnvironment.canUseDOM || !code || !code.isInitialized) {
         return <CodeBlock language={props.lang}>{props.code}</CodeBlock>;
     }
     return <CodeEditorComponent code={code as iCode<typeof type>} className={props.className} />;
