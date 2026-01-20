@@ -3,10 +3,18 @@ import * as Comlink from 'comlink';
 import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import { Message, PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
+import { PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
 import PyodideCode from '../models/PyodideCode';
 import siteConfig from '@generated/docusaurus.config';
+import { Message } from '@tdev/pyodide-code/pyodideJsModules';
+import SessionStorage from '@tdev-stores/utils/SessionStorage';
 const BASE_URL = siteConfig.baseUrl || '/';
+
+declare module '@tdev-stores/utils/SessionStorage' {
+    export interface StorageKey {
+        PyodideSwReloadCount: 'pyodideSwReloadCount';
+    }
+}
 
 const TimingServiceWorker =
     ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator
@@ -130,7 +138,9 @@ export default class PyodideStore {
         if (this._worker) {
             this._worker.terminate();
         }
-        this._worker = new Worker(new URL('../workers/pyodide.worker', import.meta.url), { type: 'module' });
+        this._worker = new Worker(new URL('@tdev/pyodide-code/workers/pyodide.worker', import.meta.url), {
+            type: 'module'
+        });
         return Comlink.wrap<PyWorkerApi>(this._worker);
     }
 
@@ -167,6 +177,11 @@ export default class PyodideStore {
             const registration = await TimingServiceWorker;
             if (!registration.active) {
                 console.warn('Service worker registration not active yet.');
+                const reloadCount = SessionStorage.get('PyodideSwReloadCount', 0) ?? 0;
+                if (reloadCount < 1) {
+                    SessionStorage.set('PyodideSwReloadCount', reloadCount + 1);
+                    window.location.reload();
+                }
                 return;
             }
             runInAction(() => {

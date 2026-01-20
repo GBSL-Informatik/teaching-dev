@@ -19,6 +19,8 @@ trackedElements:
       dst: vitest.config.ts
     - src: static/bry-libs/
       dst: static/bry-libs
+    - src: static/pyodide.sw.js
+      dst: static/pyodide.sw.js
 watchedElements:
     - .babel.config.js
     - package.json

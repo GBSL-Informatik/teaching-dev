@@ -8,6 +8,7 @@ sidebar_position: 50
 ---
 
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeBlock from '@theme/CodeBlock';
 import Clock from '@tdev/packages/pyodide-code/components/Clock';
 
 # pyodide-code
@@ -97,7 +98,7 @@ from time import sleep
 uhr = use_clock("sbb-uhr")
 
 while True:
-    uhr.setSeconds(uhr.seconds + 1)
+    uhr.set_seconds(uhr.seconds + 1)
     sleep(0.01)
 ```
 ````
@@ -237,3 +238,36 @@ Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/
 - In `./website/packages/pyodide-code/models/Clock.ts` wird ein MobX-Modell für die Uhr definiert. Es kann über `@tdev/pyodide-code/models/Clock` importiert und in React-Komponenten verwendet werden.
 - In `./website/packages/pyodide-code/components/Clock` wird die eigentliche Uhr-Komponente implementiert, die das `Clock`-Modell verwendet, um die Zeiger zu positionieren.
 - In `./website/stores/ClockStore.ts` wird ein MobX-Store definiert, der die verschiedenen Uhren verwaltet und die Nachrichten von Pyodide verarbeitet. Dieser Store wird im `./website/stores/SiteStore.ts` registriert und initialisiert.
+
+
+## Installation
+
+:::info[`packages/tdev/pyodide-code`]
+Kopiere das `packages/tdev/pyodide-code`-Verzeichnis in dein `tdev-website/website/packages`-Verzeichnis oder füge es dem `updateTdev.config.yaml` hinzu, damit es bei Updates nicht überschrieben wird.
+:::
+
+
+import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
+
+1. Füge das `pyodide-code`-Package zu den `apiDocumentProviders` in deiner `siteConfig.ts` hinzu:
+    ```ts title="siteConfig.ts"
+    const getSiteConfig: SiteConfigProvider = () => {
+        return {
+            apiDocumentProviders: [
+                require.resolve('@tdev/pyodide-code/register'),
+            ]
+        };
+    };
+    ```
+2. ServiceWorker hinzufügen:  
+    Damit Eingaben von Benutzer:innen abgewartet werden können, braucht es einen Servie-Worker. Dieser muss direkt in den statischen Ordner [`static/pyodide.sw.js`](https://github.com/GBSL-Informatik/teaching-dev/blob/main/static/pyodide.sw.js) kopiert werden.
+    :::details[`static/pyodide.sw.js`]
+    <CodeBlock language="js" title="pyodide.sw.js">
+        {pyodideSW}
+    </CodeBlock>
+    :::
+
+
+```bash
+yarn install
+```
