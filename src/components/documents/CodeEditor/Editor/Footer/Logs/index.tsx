@@ -18,9 +18,11 @@ interface Props {
 const Logs = observer((props: Props) => {
     const { messages, onClear, maxLines = 40 } = props;
     const ref = React.useRef<HTMLDivElement>(null);
+    const [hasHorizontalOverflow, setHasHorizontalOverflow] = React.useState(false);
     React.useEffect(() => {
         if (ref.current) {
             ref.current.scrollTop = ref.current.scrollHeight;
+            setHasHorizontalOverflow(ref.current.scrollWidth > ref.current.clientWidth);
         }
     }, [messages]);
     return (
@@ -31,6 +33,7 @@ const Logs = observer((props: Props) => {
                         size={SIZE_S}
                         value={messages.map((msg) => msg.message).join('\n')}
                         title="Kopieren"
+                        className={clsx(styles.button)}
                     />
                     <Button
                         title="Logs leeren"
@@ -47,9 +50,11 @@ const Logs = observer((props: Props) => {
                         {msg.message}
                     </div>
                 ))}
-                <div className={clsx(styles.message)}>
-                    <br />
-                </div>
+                {hasHorizontalOverflow && (
+                    <div className={clsx(styles.message, styles.scrollMargin)}>
+                        <br />
+                    </div>
+                )}
             </div>
         </div>
     );

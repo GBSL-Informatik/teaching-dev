@@ -11,7 +11,7 @@
             gap: 4px;
             display: none;
             top: 0;
-            right: 8px;
+            right: 0px;
             position: absolute;
         }
     }
@@ -19,6 +19,12 @@
         .actions {
             .hoverActions {
                 display: flex;
+                .button {
+                    &:hover {
+                        background-color: var(--ifm-color-gray-200);
+                        opacity: 1;
+                    }
+                }
             }
         }
     }
@@ -30,6 +36,9 @@
             &.error {
                 color: var(--ifm-color-danger-dark);
                 text-wrap: wrap;
+            }
+            &.scrollMargin {
+                line-height: 1;
             }
         }
     }
