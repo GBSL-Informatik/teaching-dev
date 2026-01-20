@@ -1,7 +1,8 @@
 import * as Comlink from 'comlink';
 import type { loadPyodide } from 'pyodide';
-import { Message, PY_STDIN_ROUTE } from '../config';
+import { PY_STDIN_ROUTE } from '../config';
 import { loadPackages } from './helper.loadPackages';
+import { Message } from '@tdev/pyodide-code/pyodideJsModules';
 // @ts-ignore
 importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js');
 // @ts-ignore

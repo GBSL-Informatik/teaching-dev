@@ -3,9 +3,9 @@ import { Source } from '@tdev-models/iDocument';
 import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
-import { Message, LogMessage, ErrorMessage } from '../config';
 import iCode from '@tdev-models/documents/iCode';
 import { orderBy } from 'es-toolkit/array';
+import { ErrorMessage, LogMessage, Message } from '@tdev/pyodide-code/pyodideJsModules';
 
 export const createModel: Factory = (data, store) => {
     return new PyodideCode(data as DocumentProps<'pyodide_code'>, store);

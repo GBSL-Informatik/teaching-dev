@@ -1,6 +1,22 @@
 import { siteModules } from '@tdev/pyodide-code/pyodideJsModules/siteModules';
 
-export interface MessageTypeMap {}
+export interface LogMessage {
+    id: string;
+    timeStamp: number;
+    type: 'log';
+    message: string;
+}
+export interface ErrorMessage {
+    id: string;
+    timeStamp: number;
+    type: 'error';
+    message: string;
+}
+
+export interface MessageTypeMap {
+    log: LogMessage;
+    error: ErrorMessage;
+}
 
 export type MessageType = keyof MessageTypeMap;
 
