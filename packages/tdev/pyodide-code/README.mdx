@@ -243,13 +243,13 @@ Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/
 ## Installation
 
 :::info[`packages/tdev/pyodide-code`]
-Kopiere das `packages/tdev/pyodide-code`-Verzeichnis in dein `tdev-website/website/packages`-Verzeichnis oder füge es dem `updateTdev.config.yaml` hinzu, damit es bei Updates nicht überschrieben wird.
+Kopiere des `packages/tdev/pyodide-code`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
 :::
 
 
 import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
 
-1. Füge das `pyodide-code`-Package zu den `apiDocumentProviders` in deiner `siteConfig.ts` hinzu:
+1. Hinzufügen des `pyodide-code`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
     ```ts title="siteConfig.ts"
     const getSiteConfig: SiteConfigProvider = () => {
         return {
@@ -267,6 +267,7 @@ import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
     </CodeBlock>
     :::
 
+Danach muss erneut installiert werden:
 
 ```bash
 yarn install

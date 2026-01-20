@@ -29,9 +29,9 @@ import {
   sassPluginConfig,
   dynamicRouterPluginConfig,
   rsDoctorPluginConfig,
-  aliasConfigurationPluginConfig,
   sentryPluginConfig,
-  socketIoNoDepWarningsPluginConfig
+  socketIoNoDepWarningsPluginConfig,
+  aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
@@ -363,7 +363,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,
         [
-          aliasConfigurationPluginConfig,
+          aliasConfigurationPlugin,
           {
             websiteDir: siteConfig.websiteDir ?? './website'
           }

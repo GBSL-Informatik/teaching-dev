@@ -613,3 +613,29 @@ print('Hello Unpersisted Code Block')
   print('Hello Unpersisted Code Block')
   ```
 </BrowserWindow>
+
+
+
+## Installation
+
+:::info[`packages/tdev/brython-code`]
+Kopiere des `packages/tdev/brython-code`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
+:::
+
+Hinzufügen des `brython-code`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
+
+```ts title="siteConfig.ts"
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        apiDocumentProviders: [
+            require.resolve('@tdev/brython-code/register'),
+        ]
+    };
+};
+```
+
+Danach muss erneut installiert werden:
+
+```bash
+yarn install
+```
