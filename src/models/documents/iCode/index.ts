@@ -182,10 +182,28 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
 
     @computed
     get lang(): string {
+        if (this.parent?.type === 'file') {
+            const ext = this.parent.fileExtension;
+            if (ext === 'py') {
+                return 'python';
+            }
+        }
         if (this.meta.lang === 'py') {
             return 'python';
         }
         return this.meta.lang.toLowerCase();
+    }
+
+    @computed
+    get derivedLang(): string {
+        if (this.parent?.type === 'file') {
+            const ext = this.parent.fileExtension;
+            if (!ext || ext === 'py') {
+                return 'python';
+            }
+            return ext.toLowerCase();
+        }
+        return this.lang;
     }
 
     get canExecute(): boolean {
@@ -200,18 +218,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     runCode() {
         // NOOP
         // to be implemented by subclasses
-    }
-
-    @computed
-    get derivedLang(): string {
-        if (this.parent?.type === 'file') {
-            const ext = (this.parent as File).name.split('.').pop();
-            if (!ext || ext.toLowerCase() === 'py') {
-                return 'python';
-            }
-            return ext.toLowerCase();
-        }
-        return this.meta.lang;
     }
 
     get data(): TypeDataMapping[T] {
