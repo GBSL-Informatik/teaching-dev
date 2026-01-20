@@ -104,18 +104,18 @@ while True:
 
 <BrowserWindow>
 <Clock clockId="sbb-uhr" />
-```py live_pyo id=d5240fb9-2aab-4e02-8e88-770a117b2068 title=Interaktive_Uhr
+```py live_pyo id=e63340b1-3821-4b70-99af-602272a48d8d title=Interaktive_Uhr
 from clock import use_clock
 from time import sleep
 uhr = use_clock("sbb-uhr")
 
 while True:
-    uhr.setSeconds(uhr.seconds + 1)
+    uhr.set_seconds(uhr.seconds + 1)
     if uhr.seconds % 360 == 0:
         sleep(0.99)
-        uhr.setMinutes(uhr.minutes + 6)
+        uhr.set_minutes(uhr.minutes + 6)
         if uhr.minutes % 360 == 0:
-            uhr.setHours(uhr.hours + 30)
+            uhr.set_hours(uhr.hours + 30)
     sleep(0.01)
 ```
 </BrowserWindow>
@@ -178,7 +178,7 @@ Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/
                                 });
                             });
                         },
-                        setTime: (h: number, m: number, s: number) => {
+                        set_time: (h: number, m: number, s: number) => {
                             hours = h;
                             minutes = m;
                             seconds = s;
@@ -196,7 +196,7 @@ Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/
                                 });
                             });
                         },
-                        setHours: (deg: number) => {
+                        set_hours: (deg: number) => {
                             hours = deg;
                             sendMessage({
                                 type: 'clock',
@@ -206,7 +206,7 @@ Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/
                                 timeStamp: getTime()
                             });
                         },
-                        setMinutes: (deg: number) => {
+                        set_minutes: (deg: number) => {
                             minutes = deg;
                             sendMessage({
                                 type: 'clock',
@@ -216,7 +216,7 @@ Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/
                                 timeStamp: getTime()
                             });
                         },
-                        setSeconds: (deg: number) => {
+                        set_seconds: (deg: number) => {
                             seconds = deg;
                             sendMessage({
                                 type: 'clock',

@@ -49,7 +49,7 @@ export const siteModules: Partial<ModuleType> = {
                             });
                         });
                     },
-                    setTime: (h: number, m: number, s: number) => {
+                    set_time: (h: number, m: number, s: number) => {
                         hours = h;
                         minutes = m;
                         seconds = s;
@@ -67,7 +67,7 @@ export const siteModules: Partial<ModuleType> = {
                             });
                         });
                     },
-                    setHours: (deg: number) => {
+                    set_hours: (deg: number) => {
                         hours = deg;
                         sendMessage({
                             type: 'clock',
@@ -77,7 +77,7 @@ export const siteModules: Partial<ModuleType> = {
                             timeStamp: getTime()
                         });
                     },
-                    setMinutes: (deg: number) => {
+                    set_minutes: (deg: number) => {
                         minutes = deg;
                         sendMessage({
                             type: 'clock',
@@ -87,7 +87,7 @@ export const siteModules: Partial<ModuleType> = {
                             timeStamp: getTime()
                         });
                     },
-                    setSeconds: (deg: number) => {
+                    set_seconds: (deg: number) => {
                         seconds = deg;
                         sendMessage({
                             type: 'clock',
