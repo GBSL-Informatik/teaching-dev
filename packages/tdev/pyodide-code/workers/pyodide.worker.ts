@@ -96,7 +96,7 @@ export class PyWorker {
                 sendMessage({ type: 'log', message: s, id: id, timeStamp: getTime() });
             }
         });
-        await pyodide.runPythonAsync(patchInputCode(id));
+        await pyodide.runPythonAsync(patchInputCode(id), { globals });
         try {
             // Execute the python code in this context
             const result = await pyodide.runPythonAsync(code);
