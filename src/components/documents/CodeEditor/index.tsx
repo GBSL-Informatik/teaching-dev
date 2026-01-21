@@ -29,7 +29,6 @@ export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
 export const CodeEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
     const componentStore = useStore('componentStore');
-    const userStore = useStore('userStore');
     const [type] = React.useState(componentStore.matchCodeBlockType(props.liveCodeType));
     const [meta] = React.useState(componentStore.createEditorMeta(type, props));
     const code = useFirstMainDocument(id, meta, true, {}, meta.versioned ? meta.type : undefined);
@@ -38,10 +37,18 @@ export const CodeEditor = observer((props: Props) => {
             code.setCode(props.code);
         }
     }, [code, props.code]);
-    if (!ExecutionEnvironment.canUseDOM || !code || (userStore.current && !code.isInitialized)) {
+    if (!ExecutionEnvironment.canUseDOM || !code) {
         return <CodeBlock language={props.lang}>{props.code}</CodeBlock>;
     }
-    return <CodeEditorComponent code={code as iCode<typeof type>} className={props.className} />;
+    return (
+        <CodeEditorComponent
+            code={code as iCode<typeof type>}
+            className={props.className}
+            // We force remount the editor on hydration,
+            // otherwise the correct language mode might not be applied
+            key={String(code.lang)}
+        />
+    );
 });
 
 export interface ScriptProps<T extends CodeType> {
