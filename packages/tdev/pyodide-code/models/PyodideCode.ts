@@ -65,6 +65,7 @@ class PyodideCode extends iCode<'pyodide_code'> {
         return this.runtimeId === this.pyodideStore.runtimeId;
     }
 
+    @computed
     get pyodideStore() {
         return this.store.root.viewStore.useStore('pyodideStore');
     }

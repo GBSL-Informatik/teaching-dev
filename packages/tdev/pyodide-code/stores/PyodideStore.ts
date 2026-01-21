@@ -3,7 +3,7 @@ import * as Comlink from 'comlink';
 import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import { PY_AWAIT_INPUT, PY_CANCEL_INPUT, PY_INPUT } from '../config';
+import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
 import PyodideCode from '../models/PyodideCode';
 import siteConfig from '@generated/docusaurus.config';
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
@@ -59,7 +59,7 @@ export default class PyodideStore {
             })
         );
         return this.pyWorker
-            .run(code.id, code.combinedCode, sendMessage, '', {})
+            .run(code.id, code.combinedCode, sendMessage, code.title)
             .then((message) => {
                 if (message && !(message.type === 'log' && message.message === undefined)) {
                     this.handleMessage(code, message);
@@ -113,6 +113,19 @@ export default class PyodideStore {
     }
 
     @action
+    cancelAllCodeExecutions() {
+        if (!this._serviceWorkerRegistration) {
+            console.error('No service worker registration');
+            return;
+        }
+        this.awaitingInputPrompt.clear();
+        this._serviceWorkerRegistration.postMessage({
+            type: PY_CANCEL_ALL,
+            value: ''
+        });
+    }
+
+    @action
     sendInputResponse(id: string, value: string) {
         if (!this.awaitingInputPrompt.has(id)) {
             console.error('Worker not awaiting input');
@@ -145,10 +158,13 @@ export default class PyodideStore {
     }
 
     @action
-    recreatePyWorker() {
+    async recreatePyWorker() {
+        if (this.awaitingInputPrompt.size > 0) {
+            this.cancelAllCodeExecutions();
+        }
         this.pyWorker = null;
         this.runtimeId = Date.now(); // this will automatically stop all running scripts
-        return this.initialize(true);
+        return await this.initialize(true);
     }
 
     async initialize(skipSWRegistration = false) {
@@ -200,6 +216,12 @@ export default class PyodideStore {
                             });
                         }
                     });
+                }
+            });
+
+            window.addEventListener('beforeunload', () => {
+                if (this._serviceWorkerRegistration) {
+                    this.cancelAllCodeExecutions();
                 }
             });
 

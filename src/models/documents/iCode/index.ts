@@ -210,6 +210,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         return false;
     }
 
+    @computed
     get isExecuting(): boolean {
         return false;
     }

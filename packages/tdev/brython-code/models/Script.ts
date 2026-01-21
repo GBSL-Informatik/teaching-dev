@@ -29,7 +29,7 @@ export const createModel: Factory = (data, store) => {
 };
 
 export default class Script extends iCode<'script'> {
-    @observable accessor isExecuting: boolean = false;
+    @observable accessor _isExecuting: boolean = false;
     @observable accessor graphicsModalExecutionNr: number = 0;
     messages = observable.array<LogMessage>([], { deep: false });
 
@@ -50,9 +50,14 @@ export default class Script extends iCode<'script'> {
         this.messages.clear();
     }
 
+    @computed
+    get isExecuting(): boolean {
+        return this._isExecuting;
+    }
+
     @action
     setExecuting(isExecuting: boolean) {
-        this.isExecuting = isExecuting;
+        this._isExecuting = isExecuting;
     }
 
     @action
@@ -124,7 +129,7 @@ export default class Script extends iCode<'script'> {
             }
             this.graphicsModalExecutionNr = this.graphicsModalExecutionNr + 1;
         }
-        this.isExecuting = true;
+        this._isExecuting = true;
         runCode(
             this.code,
             this.preCode,

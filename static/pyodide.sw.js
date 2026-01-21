@@ -3,6 +3,7 @@ const PY_INPUT = 'PY_INPUT';
 const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT';
 const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/`;
 const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT';
+const PY_CANCEL_ALL = 'PY_CANCEL_ALL';
 
 self.addEventListener('install', () => {
     self.skipWaiting();
@@ -16,7 +17,7 @@ const resolvers = new Map();
 
 self.addEventListener('message', (event) => {
     switch (event.data.type) {
-        case PY_INPUT: {
+        case PY_INPUT:
             const resolverArray = resolvers.get(event.data.id);
             const resolver = resolverArray && resolverArray.shift();
             if (!resolver) {
@@ -25,8 +26,7 @@ self.addEventListener('message', (event) => {
             }
             resolver(new Response(event.data.value, { status: 200 }));
             break;
-        }
-        case PY_CANCEL_INPUT: {
+        case PY_CANCEL_INPUT:
             const rejecterArray = resolvers.get(event.data.id);
             const rejecter = rejecterArray && rejecterArray.shift();
             if (!rejecter) {
@@ -35,7 +35,20 @@ self.addEventListener('message', (event) => {
             }
             rejecter(new Response('Run cancelled', { status: 410 }));
             break;
-        }
+        case PY_CANCEL_ALL:
+            const allResolvers = resolvers.keys();
+            for (const id of allResolvers) {
+                const rejecterArray = resolvers.get(id);
+                if (rejecterArray) {
+                    while (rejecterArray.length > 0) {
+                        const rejecter = rejecterArray.shift();
+                        if (rejecter) {
+                            rejecter(new Response('Run cancelled', { status: 410 }));
+                        }
+                    }
+                }
+            }
+            break;
         default:
             return;
     }
