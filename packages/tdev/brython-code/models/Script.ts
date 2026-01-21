@@ -143,7 +143,7 @@ export default class Script extends iCode<'script'> {
     }
 
     get canExecute(): boolean {
-        return true;
+        return this.lang === 'python';
     }
 
     @action
