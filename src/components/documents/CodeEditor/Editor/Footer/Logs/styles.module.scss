@@ -33,6 +33,8 @@
         .message {
             font: var(--ifm-code-font-size) / var(--ifm-pre-line-height) var(--ifm-font-family-monospace);
             text-wrap: nowrap;
+            margin: 0;
+            padding: 0;
             &.error {
                 color: var(--ifm-color-danger-dark);
                 text-wrap: wrap;

@@ -4,10 +4,9 @@ import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/d
 import DocumentStore from '@tdev-stores/DocumentStore';
 import siteConfig from '@generated/docusaurus.config';
 import globalData from '@generated/globalData';
-import { Props as CodeEditorProps } from '@tdev-components/documents/CodeEditor';
 import _ from 'es-toolkit/compat';
 import iCode from '@tdev-models/documents/iCode';
-import { default as iScriptMeta } from '@tdev-models/documents/iCode/iCodeMeta';
+import { orderBy } from 'es-toolkit/array';
 import {
     CANVAS_OUTPUT_TESTER,
     DOM_ELEMENT_IDS,
@@ -15,7 +14,10 @@ import {
     GRID_IMPORTS_TESTER,
     TURTLE_IMPORTS_TESTER
 } from '..';
+import { ScriptMeta } from './ScriptMeta';
+import { LogMessage as _LogMessageType } from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
 const libDir = (globalData['live-editor-theme'] as { default: { libDir: string } }).default.libDir;
+type LogMessageType = _LogMessageType & { timeStamp: number };
 
 export interface LogMessage {
     type: 'done' | 'stdout' | 'stderr' | 'start';
@@ -26,16 +28,10 @@ export const createModel: Factory = (data, store) => {
     return new Script(data as DocumentProps<'script'>, store);
 };
 
-export class ScriptMeta extends iScriptMeta<'script'> {
-    constructor(props: Partial<Omit<CodeEditorProps, 'id' | 'className'>>) {
-        super(props, 'script');
-    }
-}
-
 export default class Script extends iCode<'script'> {
     @observable accessor isExecuting: boolean = false;
     @observable accessor graphicsModalExecutionNr: number = 0;
-    logs = observable.array<LogMessage>([], { deep: false });
+    messages = observable.array<LogMessage>([], { deep: false });
 
     constructor(props: DocumentProps<'script'>, store: DocumentStore) {
         super(props, store);
@@ -51,7 +47,7 @@ export default class Script extends iCode<'script'> {
 
     @action
     clearLogMessages() {
-        this.logs.clear();
+        this.messages.clear();
     }
 
     @action
@@ -61,7 +57,7 @@ export default class Script extends iCode<'script'> {
 
     @action
     addLogMessage(message: LogMessage) {
-        this.logs.push({ output: message.output, timeStamp: Date.now(), type: message.type });
+        this.messages.push({ output: message.output, timeStamp: Date.now(), type: message.type });
     }
 
     @computed
@@ -88,6 +84,36 @@ export default class Script extends iCode<'script'> {
         } else {
             this.runCode();
         }
+    }
+
+    @computed
+    get logs(): LogMessageType[] {
+        const logMessages = this.messages.filter((msg) => msg.type === 'stderr' || msg.type === 'stdout');
+        const compactLogs = logMessages.reduce<LogMessageType[]>((acc, curr) => {
+            const lastMsg = acc[acc.length - 1];
+            const current = {
+                type: curr.type === 'stderr' ? 'error' : 'log',
+                message: curr.output,
+                timeStamp: curr.timeStamp
+            } satisfies LogMessageType;
+            if (lastMsg && lastMsg.type === current.type) {
+                if (lastMsg.message.endsWith('\n')) {
+                    lastMsg.message = lastMsg.message.trimEnd();
+                    acc.push(current);
+                } else {
+                    lastMsg.message += curr.output;
+                }
+            } else {
+                acc.push(current);
+            }
+            return acc;
+        }, [] satisfies LogMessageType[]);
+        return orderBy(compactLogs, ['timeStamp'], ['asc']);
+    }
+
+    @action
+    clearMessages() {
+        this.messages.clear();
     }
 
     @action

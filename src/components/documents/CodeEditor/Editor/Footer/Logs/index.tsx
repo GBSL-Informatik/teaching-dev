@@ -9,8 +9,10 @@ import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import CopyButton from '@tdev-components/shared/Button/CopyButton';
 
+export type LogMessage = { type: 'log' | 'error'; message: string };
+
 interface Props {
-    messages: { type: 'log' | 'error'; message: string }[];
+    messages: LogMessage[];
     onClear: () => void;
     maxLines?: number;
 }
@@ -46,9 +48,9 @@ const Logs = observer((props: Props) => {
             </div>
             <div className={clsx(styles.messages)} style={{ maxHeight: maxLines * 1.2 + 2 + 'em' }} ref={ref}>
                 {messages.map((msg, idx) => (
-                    <div key={idx} className={clsx(styles.message, styles[msg.type])}>
+                    <pre key={idx} className={clsx(styles.message, styles[msg.type])}>
                         {msg.message}
-                    </div>
+                    </pre>
                 ))}
                 {hasHorizontalOverflow && (
                     <div className={clsx(styles.message, styles.scrollMargin)}>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import CodeBlock from '@theme-original/CodeBlock';
+import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
 import { observer } from 'mobx-react-lite';
 import type Script from '@tdev/brython-code/models/Script';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Footer/Container';
@@ -8,27 +8,20 @@ interface Props {
     code: Script;
 }
 
-const Logs = observer((props: Props) => {
+const Footer = observer((props: Props) => {
     const { code } = props;
-    const logs = code.logs;
-    if (logs.length === 0) {
-        return null;
-    }
-    const errors: string[] = [];
-    let lineNr = 1;
-    const logMessages = logs.slice().map((msg) => {
-        const msgLen = (msg.output || '').split('\n').length - 1;
-        if (msg.type === 'stderr') {
-            errors.push(`${lineNr}-${lineNr + msgLen}`);
-        }
-        lineNr += msgLen;
-        return msg.output;
-    });
     return (
         <Container>
-            <CodeBlock metastring={`{${errors.join(',')}}`}>{logMessages.join('')}</CodeBlock>
+            {code.messages.length > 0 && (
+                <Logs
+                    messages={code.logs}
+                    onClear={() => {
+                        code.clearMessages();
+                    }}
+                />
+            )}
         </Container>
     );
 });
 
-export default Logs;
+export default Footer;
