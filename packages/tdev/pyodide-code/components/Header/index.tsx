@@ -9,15 +9,16 @@ import { mdiClose } from '@mdi/js';
 
 interface Props {
     code: PyodideCode;
+    onRequestFullscreen?: () => void;
 }
 
 const Header = observer((props: Props) => {
-    const { code } = props;
+    const { code, onRequestFullscreen } = props;
     if (!code) {
         return null;
     }
     return (
-        <Container code={code} ignoreSlim>
+        <Container code={code} ignoreSlim onRequestFullscreen={onRequestFullscreen}>
             {!code.meta.slim && <Content code={code} />}
             {code.canExecute && <RunCode code={code} onExecute={() => !code.isExecuting && code.runCode()} />}
             {code.isExecuting && (

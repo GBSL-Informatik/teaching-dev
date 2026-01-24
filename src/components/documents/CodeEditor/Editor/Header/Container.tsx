@@ -9,6 +9,7 @@ interface Props<T extends CodeType> {
     code: iCode<T>;
     children: React.ReactNode;
     ignoreSlim?: boolean;
+    onRequestFullscreen?: () => void;
 }
 
 const Container = observer(<T extends CodeType>(props: Props<T>) => {
@@ -21,6 +22,11 @@ const Container = observer(<T extends CodeType>(props: Props<T>) => {
                 code.meta.slim && styles.slim,
                 notifyUnpersisted && styles.unpersisted
             )}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                props.onRequestFullscreen?.();
+            }}
         >
             {(!code.meta.slim || props.ignoreSlim) && props.children}
         </div>

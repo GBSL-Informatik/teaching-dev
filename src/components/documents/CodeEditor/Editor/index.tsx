@@ -12,6 +12,7 @@ import Header from './Header';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
+    onRequestFullscreen?: () => void;
 }
 
 const Editor = observer(<T extends CodeType>(props: Props<T>) => {
@@ -21,7 +22,10 @@ const Editor = observer(<T extends CodeType>(props: Props<T>) => {
     return (
         <>
             {EC?.Header ? (
-                <EC.Header code={code as unknown as TypeModelMapping[T]} />
+                <EC.Header
+                    code={code as unknown as TypeModelMapping[T]}
+                    onRequestFullscreen={props.onRequestFullscreen}
+                />
             ) : (
                 <Header code={code} />
             )}

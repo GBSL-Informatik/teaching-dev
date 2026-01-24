@@ -13,6 +13,7 @@ import iCode from '@tdev-models/documents/iCode';
 import { CodeType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import { LiveCode } from '@tdev-stores/ComponentStore';
+import useFullscreenChange from '@tdev-hooks/useFullscreenChange';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -59,8 +60,34 @@ export interface ScriptProps<T extends CodeType> {
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
     const { code } = props;
     const { colorMode } = useCodeTheme();
+    const ref = React.useRef<HTMLDivElement>(null);
+    const [isFullscreen, setIsFullscreen] = React.useState(false);
+    const onFullscreenChange = React.useCallback((isFullscreen: boolean) => {
+        setIsFullscreen(isFullscreen);
+    }, []);
+    useFullscreenChange(ref.current, onFullscreenChange);
+    const onRequestFullscreen = React.useCallback(() => {
+        if (ref.current) {
+            if (ref.current.requestFullscreen) {
+                ref.current.requestFullscreen();
+            } else if ((ref.current as any).webkitRequestFullscreen) {
+                (ref.current as any).webkitRequestFullscreen();
+            } else if ((ref.current as any).mozRequestFullScreen) {
+                (ref.current as any).mozRequestFullScreen();
+            } else if ((ref.current as any).msRequestFullscreen) {
+                (ref.current as any).msRequestFullscreen();
+            } else {
+                return;
+            }
+            setIsFullscreen(true);
+        }
+    }, [ref.current]);
     return (
-        <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
+        <div
+            className={clsx(styles.wrapper, 'notranslate', props.className)}
+            ref={ref}
+            style={{ background: isFullscreen ? 'red' : undefined }}
+        >
             <div
                 className={clsx(
                     styles.playgroundContainer,
@@ -69,7 +96,7 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
                     'live-code-editor'
                 )}
             >
-                <Editor code={code} />
+                <Editor code={code} onRequestFullscreen={onRequestFullscreen} />
                 {code.meta.hasHistory && <CodeHistory code={code} />}
             </div>
         </div>
