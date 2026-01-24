@@ -7,7 +7,8 @@ import _ from 'es-toolkit/compat';
 import Preview from './Preview';
 import Editor from './Editor';
 import SyncStatus from '@tdev-components/SyncStatus';
-import { mdiCircleEditOutline, mdiClose, mdiLoading } from '@mdi/js';
+import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
+import { mdiCircleEditOutline, mdiClose, mdiFullscreen, mdiFullscreenExit, mdiLoading } from '@mdi/js';
 import clsx from 'clsx';
 import Button from '@tdev-components/shared/Button';
 import type { LibraryItems } from '@excalidraw/excalidraw/types';
@@ -17,6 +18,7 @@ import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { useClientLib } from '@tdev-hooks/useClientLib';
 import { MetaInit, ModelMeta } from '@tdev/excalidoc/model/ModelMeta';
+import { exitFullscreen } from '@tdev-hooks/useFullscreen';
 
 export const DEFAULT_HEIGHT = '600px' as const;
 export const mdiExcalidraw =
@@ -62,11 +64,13 @@ export const ExcalidocComponent = observer(
         }
     ) => {
         const [edit, setEdit] = React.useState(false);
+        const [isFullscreen, setIsFullscreen] = React.useState(false);
         const Lib = useClientLib<typeof ExcalidrawLib>(
             () => import('@excalidraw/excalidraw'),
             '@excalidraw/excalidraw'
         );
         const doc = useDocument<'excalidoc'>(props.documentId);
+        const id = React.useId();
         const onEdit = React.useCallback(
             (edit: boolean) => {
                 setEdit(edit);
@@ -100,7 +104,8 @@ export const ExcalidocComponent = observer(
         return (
             <div
                 style={{ height: props.height || DEFAULT_HEIGHT, width: '100%' }}
-                className={clsx(styles.excalidraw)}
+                className={clsx(styles.excalidraw, isFullscreen && styles.fullscreen)}
+                id={id}
             >
                 <div className={styles.actions}>
                     <SyncStatus model={doc} />
@@ -116,14 +121,19 @@ export const ExcalidocComponent = observer(
                         />
                     )}
                     {edit && (
-                        <Button
-                            onClick={() => {
-                                onEdit(false);
-                            }}
-                            icon={mdiClose}
-                            color="red"
-                            title="Bearbeitung beenden"
-                        />
+                        <>
+                            <RequestFullscreen targetId={id} onFullscreenChange={setIsFullscreen} />
+                            <Button
+                                onClick={() => {
+                                    onEdit(false);
+                                    exitFullscreen();
+                                    setIsFullscreen(false);
+                                }}
+                                icon={mdiClose}
+                                color="red"
+                                title="Bearbeitung beenden"
+                            />
+                        </>
                     )}
                 </div>
                 <Editor

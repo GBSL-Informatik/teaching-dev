@@ -1,5 +1,11 @@
 .excalidraw {
     position: relative;
+    &.fullscreen {
+        .actions {
+            top: 1.5em;
+            right: 1.5em;
+        }
+    }
     &.preview {
         display: flex;
         align-items: center;
@@ -13,6 +19,11 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        button {
+            &:not(:hover) {
+                background: var(--ifm-color-secondary-contrast-background);
+            }
+        }
     }
     max-height: 70vh;
     :global(.excalidraw) {

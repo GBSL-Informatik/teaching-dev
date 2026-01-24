@@ -2,21 +2,31 @@ import React from 'react';
 
 export const FullscreenContext = React.createContext<boolean>(false);
 
-export default function useFullscreenChange(elementId: string, onChange: (isFullscreen: boolean) => void) {
-    React.useEffect(() => {
-        const element = document.getElementById(elementId);
-        if (!element) {
-            return;
-        }
-        function checkFullscreen() {
-            const fullscreenEl =
-                document.fullscreenElement ||
-                (document as any).webkitFullscreenElement ||
-                (document as any).mozFullScreenElement ||
-                (document as any).msFullscreenElement;
-            onChange(fullscreenEl === element);
-        }
+export const currentFullscreenElement = () => {
+    return (
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement
+    );
+};
 
+export const exitFullscreen = () => {
+    if (!document.fullscreenElement) {
+        return;
+    }
+    document.exitFullscreen?.();
+};
+
+export default function useFullscreenChange(elementId: string, onChange: (isFullscreen: boolean) => void) {
+    const checkFullscreen = React.useEffectEvent(() => {
+        const fullscreenEl = currentFullscreenElement();
+        if (fullscreenEl) {
+            onChange(fullscreenEl.id === elementId);
+        } else {
+            onChange(false);
+        }
+    });
+    React.useEffect(() => {
         document.addEventListener('fullscreenchange', checkFullscreen);
         document.addEventListener('webkitfullscreenchange', checkFullscreen);
         document.addEventListener('mozfullscreenchange', checkFullscreen);
@@ -26,7 +36,8 @@ export default function useFullscreenChange(elementId: string, onChange: (isFull
             document.removeEventListener('webkitfullscreenchange', checkFullscreen);
             document.removeEventListener('mozfullscreenchange', checkFullscreen);
         };
-    }, [elementId, onChange]);
+    }, []);
+
     const requestFullscreen = React.useCallback(() => {
         const element = document.getElementById(elementId);
         if (!element) {
@@ -40,6 +51,7 @@ export default function useFullscreenChange(elementId: string, onChange: (isFull
             (element as any).mozRequestFullScreen();
         }
     }, [elementId]);
+
     return { requestFullscreen };
 }
 
