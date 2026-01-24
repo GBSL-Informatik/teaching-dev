@@ -14,6 +14,14 @@ const StandardPythonNamespaces = new Set([
     'unittest',
     'asyncio'
 ]);
+
+const PluginAliases: Record<string, string> = {
+    PIL: 'Pillow',
+    cv2: 'opencv-python',
+    sklearn: 'scikit-learn',
+    bs4: 'beautifulsoup4'
+};
+
 const StandardPythonPackages = new Set([
     'ast',
     'math',
@@ -57,6 +65,10 @@ const StandardPythonPackages = new Set([
     'pkgutil'
 ]);
 
+const resolvePackageName = (pkg: string): string => {
+    return PluginAliases[pkg] || pkg;
+};
+
 const getPackageImports = (code: string): string[] => {
     const importStatements = code.split('\n').filter((line) => /^import |^from /.test(line));
     const importPackages = importStatements.flatMap((line) => {
@@ -70,9 +82,9 @@ const getPackageImports = (code: string): string[] => {
         }
         return [];
     });
-    return importPackages.filter(
-        (pkg) => !StandardPythonPackages.has(pkg) && !StandardPythonNamespaces.has(pkg)
-    );
+    return importPackages
+        .filter((pkg) => !StandardPythonPackages.has(pkg) && !StandardPythonNamespaces.has(pkg))
+        .map(resolvePackageName);
 };
 
 export const loadPackages = async (pyodide: PyodideAPI, context: Context, code: string) => {

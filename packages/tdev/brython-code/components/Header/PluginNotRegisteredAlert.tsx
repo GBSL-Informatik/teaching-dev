@@ -1,3 +1,5 @@
+import Admonition from '@theme-original/Admonition';
+import CodeBlock from '@theme-original/Admonition';
 import styles from './styles.module.scss';
 
 const SiteConfig = `
