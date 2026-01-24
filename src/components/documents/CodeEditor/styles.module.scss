@@ -38,6 +38,18 @@
     flex-shrink: 1;
 }
 
-.wrapper:last-child .playgroundContainer {
-    margin-bottom: inherit;
+.wrapper {
+    &:last-child .playgroundContainer {
+        margin-bottom: inherit;
+    }
+    &.fullscreen {
+        --ifm-code-font-size: 2rem;
+        background: var(--ifm-color-white);
+        padding: 3em;
+        overflow-y: auto;
+        max-height: 95vh;
+        .playgroundContainer {
+            box-shadow: var(--ifm-global-shadow-md);
+        }
+    }
 }

@@ -2,11 +2,10 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { mdiCardRemoveOutline } from '@mdi/js';
-import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { useIsFullscreen } from '@tdev-hooks/useFullscreen';
 import CopyButton from '@tdev-components/shared/Button/CopyButton';
 
 export type LogMessage = { type: 'log' | 'error'; message: string };
@@ -20,6 +19,7 @@ interface Props {
 const Logs = observer((props: Props) => {
     const { messages, onClear, maxLines = 40 } = props;
     const ref = React.useRef<HTMLDivElement>(null);
+    const isFullscreen = useIsFullscreen();
     const [hasHorizontalOverflow, setHasHorizontalOverflow] = React.useState(false);
     React.useEffect(() => {
         if (ref.current) {
@@ -46,7 +46,11 @@ const Logs = observer((props: Props) => {
                     />
                 </div>
             </div>
-            <div className={clsx(styles.messages)} style={{ maxHeight: maxLines * 1.2 + 2 + 'em' }} ref={ref}>
+            <div
+                className={clsx(styles.messages)}
+                style={{ maxHeight: maxLines * (isFullscreen ? 1.5 : 1) * 1.2 + 2 + 'em' }}
+                ref={ref}
+            >
                 {messages.map((msg, idx) => (
                     <pre key={idx} className={clsx(styles.message, styles[msg.type])}>
                         {msg.message}

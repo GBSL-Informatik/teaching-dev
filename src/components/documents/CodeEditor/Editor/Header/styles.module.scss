@@ -11,7 +11,7 @@
     font-weight: bold;
     background: var(--ifm-color-emphasis-200);
     color: var(--ifm-color-content);
-    font-size: calc(var(--ifm-code-font-size) * 1.2);
+    font-size: var(--ifm-h3-font-size);
     .title {
         flex-shrink: 1;
         overflow-x: hidden;

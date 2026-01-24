@@ -13,7 +13,7 @@ interface Props<T extends CodeType> {
 }
 
 const Container = observer(<T extends CodeType>(props: Props<T>) => {
-    const { code } = props;
+    const { code, onRequestFullscreen } = props;
     const notifyUnpersisted = code.root?.isDummy && !code.meta.slim && !code.meta.hideWarning;
     return (
         <div
@@ -25,7 +25,7 @@ const Container = observer(<T extends CodeType>(props: Props<T>) => {
             onContextMenu={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                props.onRequestFullscreen?.();
+                onRequestFullscreen?.();
             }}
         >
             {(!code.meta.slim || props.ignoreSlim) && props.children}

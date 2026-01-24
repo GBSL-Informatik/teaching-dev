@@ -13,7 +13,7 @@ import iCode from '@tdev-models/documents/iCode';
 import { CodeType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import { LiveCode } from '@tdev-stores/ComponentStore';
-import useFullscreenChange from '@tdev-hooks/useFullscreenChange';
+import useFullscreenChange, { FullscreenContext } from '@tdev-hooks/useFullscreen';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -60,46 +60,36 @@ export interface ScriptProps<T extends CodeType> {
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
     const { code } = props;
     const { colorMode } = useCodeTheme();
-    const ref = React.useRef<HTMLDivElement>(null);
+    const id = React.useId();
     const [isFullscreen, setIsFullscreen] = React.useState(false);
     const onFullscreenChange = React.useCallback((isFullscreen: boolean) => {
         setIsFullscreen(isFullscreen);
     }, []);
-    useFullscreenChange(ref.current, onFullscreenChange);
-    const onRequestFullscreen = React.useCallback(() => {
-        if (ref.current) {
-            if (ref.current.requestFullscreen) {
-                ref.current.requestFullscreen();
-            } else if ((ref.current as any).webkitRequestFullscreen) {
-                (ref.current as any).webkitRequestFullscreen();
-            } else if ((ref.current as any).mozRequestFullScreen) {
-                (ref.current as any).mozRequestFullScreen();
-            } else if ((ref.current as any).msRequestFullscreen) {
-                (ref.current as any).msRequestFullscreen();
-            } else {
-                return;
-            }
-            setIsFullscreen(true);
-        }
-    }, [ref.current]);
+    const { requestFullscreen } = useFullscreenChange(id, onFullscreenChange);
     return (
-        <div
-            className={clsx(styles.wrapper, 'notranslate', props.className)}
-            ref={ref}
-            style={{ background: isFullscreen ? 'red' : undefined }}
-        >
+        <FullscreenContext.Provider value={isFullscreen}>
             <div
+                id={id}
                 className={clsx(
-                    styles.playgroundContainer,
-                    colorMode === 'light' && styles.lightTheme,
-                    code.meta.slim ? styles.containerSlim : styles.containerBig,
-                    'live-code-editor'
+                    styles.wrapper,
+                    'notranslate',
+                    props.className,
+                    isFullscreen && styles.fullscreen
                 )}
             >
-                <Editor code={code} onRequestFullscreen={onRequestFullscreen} />
-                {code.meta.hasHistory && <CodeHistory code={code} />}
+                <div
+                    className={clsx(
+                        styles.playgroundContainer,
+                        colorMode === 'light' && styles.lightTheme,
+                        code.meta.slim ? styles.containerSlim : styles.containerBig,
+                        'live-code-editor'
+                    )}
+                >
+                    <Editor code={code} onRequestFullscreen={requestFullscreen} />
+                    {code.meta.hasHistory && <CodeHistory code={code} />}
+                </div>
             </div>
-        </div>
+        </FullscreenContext.Provider>
     );
 });
 
