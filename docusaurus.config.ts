@@ -140,7 +140,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
       },
       future: {
-        v4: true,
+        v4: true,    
         experimental_faster: {
           /**
            * no config options for swcJsLoader so far.

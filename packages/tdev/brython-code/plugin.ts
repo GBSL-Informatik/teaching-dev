@@ -35,8 +35,8 @@ export type ThemeOptions = {
 export type Options = Partial<ThemeOptions>;
 
 export const DEFAULT_OPTIONS: ThemeOptions = {
-    brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.12.4/brython.min.js',
-    brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.12.4/brython_stdlib.js',
+    brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
+    brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
     libDir: '/bry-libs/'
 };
 
