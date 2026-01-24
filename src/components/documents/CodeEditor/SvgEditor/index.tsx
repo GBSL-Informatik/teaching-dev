@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { ScriptMeta } from '@tdev-models/documents/Script';
+import { CodeMeta } from '@tdev-models/documents/Code';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
@@ -26,7 +26,7 @@ const SvgEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
     const userStore = useStore('userStore');
     const [meta] = React.useState(
-        new ScriptMeta({ title: 'SVG', ...props, code: props.code || '', lang: 'svg' })
+        new CodeMeta({ title: 'SVG', ...props, code: props.code || '', lang: 'svg' })
     );
     const doc = useFirstMainDocument(id, meta);
     const isBrowser = useIsBrowser();
@@ -44,7 +44,7 @@ const SvgEditor = observer((props: Props) => {
     return (
         <div className={clsx(styles.svgEditor)}>
             <div className={clsx(styles.editor)}>
-                <CodeEditorComponent script={doc} className={clsx(styles.code)} />
+                <CodeEditorComponent code={doc} className={clsx(styles.code)} />
             </div>
             <Card classNames={{ card: styles.svgCard, body: styles.svgCardBody }}>
                 <ErrorBoundary

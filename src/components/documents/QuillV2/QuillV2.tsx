@@ -19,7 +19,6 @@ import { action } from 'mobx';
 import Icon from '@mdi/react';
 import { mdiFlashTriangle } from '@mdi/js';
 import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { Delta } from 'quill/core';
 
 const FORMATS = [

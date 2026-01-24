@@ -8,9 +8,10 @@ import Translate, { translate } from '@docusaurus/Translate';
 import DiffViewer from 'react-diff-viewer-continued';
 import Details from '@theme/Details';
 import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
 import Button from '../Button';
 import { mdiSync } from '@mdi/js';
+import iCode from '@tdev-models/documents/iCode';
+import { CodeType } from '@tdev-api/document';
 
 const highlightSyntax = (str: string) => {
     if (!str) {
@@ -27,11 +28,15 @@ const highlightSyntax = (str: string) => {
     );
 };
 
-const CodeHistory = observer(() => {
-    const script = useDocument<'script'>();
+interface Props<T extends CodeType> {
+    code: iCode<T>;
+}
+
+const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
+    const { code } = props;
     const [version, setVersion] = React.useState(1);
-    const old = script.versions[version - 1];
-    const current = script.versions[version];
+    const old = code.versions[version - 1];
+    const current = code.versions[version];
 
     return (
         <div className={clsx(styles.codeHistory)}>
@@ -40,18 +45,18 @@ const CodeHistory = observer(() => {
                 summary={
                     <summary
                         onClick={(e) => {
-                            script.loadVersions();
+                            code.loadVersions();
                         }}
                     >
                         <div className={clsx(styles.summary)}>
                             <span className="badge badge--secondary">
-                                {script.versionsLoaded
+                                {code.versionsLoaded
                                     ? translate(
                                           {
                                               message: '{n} Versions',
                                               id: 'CodeHistory.nVersions.text'
                                           },
-                                          { n: script.versions.length }
+                                          { n: code.versions.length }
                                       )
                                     : translate({
                                           message: 'Versionen laden',
@@ -59,13 +64,13 @@ const CodeHistory = observer(() => {
                                       })}
                             </span>
                             <span className={clsx(styles.spacer)}></span>
-                            {script.versionsLoaded && (
+                            {code.versionsLoaded && (
                                 <Button
                                     icon={mdiSync}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        script.loadVersions(true);
+                                        code.loadVersions(true);
                                     }}
                                     title="Versionen erneut synchronisieren"
                                 />
@@ -74,7 +79,7 @@ const CodeHistory = observer(() => {
                     </summary>
                 }
             >
-                {script.versionsLoaded && current && (
+                {code.versionsLoaded && current && (
                     <div
                         className={clsx(styles.content)}
                         onClick={(e) => {
@@ -92,13 +97,13 @@ const CodeHistory = observer(() => {
                                     setVersion(c);
                                 }}
                                 min={1}
-                                max={script.versions.length - 1}
-                                dots={script.versions.length < 50}
+                                max={code.versions.length - 1}
+                                dots={code.versions.length < 50}
                             />
                             <span className="badge badge--primary">V{version}</span>
                         </div>
                         <div className={clsx(styles.diffViewer)}>
-                            {script.versions.length > 0 && (
+                            {code.versions.length > 0 && (
                                 <DiffViewer
                                     splitView
                                     oldValue={old.code}

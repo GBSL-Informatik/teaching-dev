@@ -1,21 +1,24 @@
 import * as React from 'react';
 import Button from '@tdev-components/documents/CodeEditor/Button';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { mdiRestore } from '@mdi/js';
 import { observer } from 'mobx-react-lite';
+import type { CodeType } from '@tdev-api/document';
+import type iCode from '@tdev-models/documents/iCode';
 
-const Reset = observer(() => {
-    const script = useDocument<'script'>();
+interface Props<T extends CodeType> {
+    code: iCode<T>;
+}
 
-    const onReset = () => {
+const Reset = observer(<T extends CodeType>(props: Props<T>) => {
+    const { code } = props;
+    const onReset = React.useEffectEvent(() => {
         const shouldReset = window.confirm(
             'Änderungen wirklich verwerfen? Dies kann nicht rückgängig gemacht werden.'
         );
         if (shouldReset) {
-            script.setCode(script.meta.initCode);
+            code.setCode(code.meta.initCode);
         }
-    };
+    });
     return (
         <Button onClick={onReset} title={'Code auf ursprünglichen Zustand zurücksetzen'} icon={mdiRestore} />
     );

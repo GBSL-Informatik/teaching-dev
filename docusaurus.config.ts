@@ -8,7 +8,6 @@ import type {
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import themeCodeEditor from './src/plugins/theme-code-editor';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
@@ -29,9 +28,9 @@ import {
   sassPluginConfig,
   dynamicRouterPluginConfig,
   rsDoctorPluginConfig,
-  aliasConfigurationPluginConfig,
   sentryPluginConfig,
-  socketIoNoDepWarningsPluginConfig
+  socketIoNoDepWarningsPluginConfig,
+  aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
@@ -140,7 +139,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
       },
       future: {
-        v4: true,
+        v4: true,    
         experimental_faster: {
           /**
            * no config options for swcJsLoader so far.
@@ -362,7 +361,12 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         sassPluginConfig,
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,
-        aliasConfigurationPluginConfig,
+        [
+          aliasConfigurationPlugin,
+          {
+            websiteDir: siteConfig.websiteDir ?? './website'
+          }
+        ],
         sentryPluginConfig,
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,
@@ -378,18 +382,11 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
             ...(siteConfig.pages || {})
           }
-        ]
+        ],
+        ...((siteConfig.plugins as Config['plugins']) || [])
       ],
       themes: [
         '@docusaurus/theme-mermaid',
-        [
-          themeCodeEditor,
-          {
-            brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
-            brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
-            libDir: '/bry-libs/'
-          }
-        ],
         ...(siteConfig.themes || [])
       ],
       stylesheets: [

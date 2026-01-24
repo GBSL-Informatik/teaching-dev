@@ -9,7 +9,7 @@ trackedElements:
       dst: packages
     - src: updateSync/
       dst: updateSync
-    - src: tsconfig.json
+    - src: tsconfig.tdev.json
       dst: tsconfig.json
     - src: .prettierrc
       dst: .prettierrc
@@ -19,6 +19,8 @@ trackedElements:
       dst: vitest.config.ts
     - src: static/bry-libs/
       dst: static/bry-libs
+    - src: static/pyodide.sw.js
+      dst: static/pyodide.sw.js
 watchedElements:
     - .babel.config.js
     - package.json

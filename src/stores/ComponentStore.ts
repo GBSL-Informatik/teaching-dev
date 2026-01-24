@@ -1,6 +1,17 @@
+import { CodeMeta } from '@tdev-models/documents/Code';
 import { RootStore } from './rootStore';
-import type { ContainerType, ContainerTypeModelMapping } from '@tdev-api/document';
+import {
+    type CodeType,
+    TypeModelMapping,
+    type ContainerType,
+    type ContainerTypeModelMapping
+} from '@tdev-api/document';
 import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
+import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
+import { computed } from 'mobx';
+import React from 'react';
+
+export type LiveCode = `live_${string}`;
 
 export interface ContainerProps<T extends ContainerType = ContainerType> {
     documentContainer: ContainerTypeModelMapping[T];
@@ -11,9 +22,33 @@ export interface ContainerComponent<T extends ContainerType = ContainerType> {
     component: React.ComponentType<ContainerProps<T>>;
 }
 
+export interface EditorComponentProps<T extends CodeType = CodeType> {
+    code: TypeModelMapping[T];
+}
+
+export interface EditorComponent<T extends CodeType = CodeType> {
+    /**
+     * e.g. to run code or to show the title
+     */
+    Header?: React.ComponentType<EditorComponentProps<T>>;
+    /**
+     * e.g. to show the outputs/logs
+     */
+    Footer?: React.ComponentType<EditorComponentProps<T>>;
+
+    /**
+     * components used for additional things, e.g. turtle outputs.
+     */
+    Meta?: React.ComponentType<EditorComponentProps<T>>;
+
+    createModelMeta: (props: Partial<MetaInit>) => iCodeMeta<T>;
+    codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => T | undefined;
+}
+
 class ComponentStore {
     readonly root: RootStore;
     components = new Map<ContainerType, ContainerComponent>();
+    editorComponents = new Map<CodeType, EditorComponent>();
 
     constructor(root: RootStore) {
         this.root = root;
@@ -27,6 +62,7 @@ class ComponentStore {
         this.components.set(type, component as ContainerComponent<any>);
     }
 
+    @computed
     get registeredContainerTypes(): ContainerType[] {
         return [...this.components.keys()];
     }
@@ -36,6 +72,40 @@ class ComponentStore {
             return false;
         }
         return this.components.has(type as ContainerType);
+    }
+
+    editorComponent<T extends CodeType>(type: T): EditorComponent<T> | undefined {
+        return this.editorComponents.get(type) as EditorComponent<T> | undefined;
+    }
+
+    registerEditorComponent<T extends CodeType>(type: T, component: EditorComponent<T>) {
+        this.editorComponents.set(type, component as EditorComponent<any>);
+    }
+
+    createEditorMeta<T extends CodeType>(type: T, props: Partial<MetaInit>): iCodeMeta<T> {
+        const editorComp = this.editorComponent(type);
+        if (!editorComp) {
+            return new CodeMeta(props) as iCodeMeta<T>;
+        }
+        return editorComp.createModelMeta(props) as iCodeMeta<T>;
+    }
+
+    matchCodeBlockType(metaLiveCode?: LiveCode): CodeType {
+        if (!metaLiveCode) {
+            return 'code';
+        }
+        for (const [, editorComp] of this.editorComponents) {
+            const matchedType = editorComp.codeBlockMetastringMatcher(metaLiveCode);
+            if (matchedType) {
+                return matchedType;
+            }
+        }
+        return 'code';
+    }
+
+    @computed
+    get registeredCodeTypes(): CodeType[] {
+        return [...this.editorComponents.keys()];
     }
 }
 

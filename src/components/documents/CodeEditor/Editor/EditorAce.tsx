@@ -1,34 +1,37 @@
 import * as React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import { DOM_ELEMENT_IDS } from '@tdev-components/documents/CodeEditor/constants';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/esm-resolver';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import type { CodeType } from '@tdev-api/document';
+import type iCode from '@tdev-models/documents/iCode';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
     py: 'python'
 };
 
-const EditorAce = observer(() => {
-    const script = useDocument<'script'>();
+interface Props<T extends CodeType> {
+    code: iCode<T>;
+}
+
+const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
+    const { code } = props;
     const eRef = React.useRef<AceEditor>(null);
     const { aceTheme } = useCodeTheme();
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
-            if (script.lang === 'python') {
+            if (code.lang === 'python') {
                 node.editor.commands.addCommand({
                     // commands is array of key bindings.
                     name: 'execute',
                     bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
-                    exec: () => script.execScript()
+                    exec: () => code.runCode()
                 });
             }
             node.editor.commands.addCommand({
@@ -36,7 +39,7 @@ const EditorAce = observer(() => {
                 name: 'save',
                 bindKey: { win: 'Ctrl-s', mac: 'Command-s' },
                 exec: () => {
-                    script.saveNow();
+                    code.saveNow();
                 }
             });
             return () => {
@@ -52,12 +55,12 @@ const EditorAce = observer(() => {
                 }
             };
         }
-    }, [eRef, script]);
+    }, [eRef, code]);
 
     return (
         <div className={clsx(styles.editor)}>
             <AceEditor
-                className={clsx(styles.brythonEditor, !script.meta.showLineNumbers && styles.noGutter)}
+                className={clsx(styles.brythonEditor, !code.meta.showLineNumbers && styles.noGutter)}
                 style={{
                     width: '100%',
                     lineHeight: 'var(--ifm-pre-line-height)',
@@ -66,27 +69,27 @@ const EditorAce = observer(() => {
                 }}
                 fontSize={'var(--ifm-code-font-size)'}
                 onPaste={() => {
-                    if (script.meta.versioned) {
+                    if (code.meta.versioned) {
                         /**
                          * Save immediately as pasted content
                          */
-                        script.setIsPasted(true);
+                        code.setIsPasted(true);
                     }
                 }}
                 focus={false}
                 navigateToFileEnd={false}
-                minLines={script.meta.minLines}
-                maxLines={script.meta.maxLines}
+                minLines={code.meta.minLines}
+                maxLines={code.meta.maxLines}
                 ref={eRef}
-                mode={ALIAS_LANG_MAP_ACE[script.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? script.lang}
-                theme={script.meta.theme ?? aceTheme}
+                mode={ALIAS_LANG_MAP_ACE[code.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.lang}
+                theme={code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
-                    script.setCode(value, e.action);
+                    code.setCode(value, e.action);
                 }}
-                readOnly={script.meta.readonly || script.showRaw}
-                value={script.showRaw ? script.pristineCode : script.code}
-                defaultValue={script?.code || '\n'}
-                name={DOM_ELEMENT_IDS.aceEditor(script.codeId)}
+                readOnly={code.meta.readonly || code.showRaw}
+                value={code.showRaw ? code.pristineCode : code.code}
+                defaultValue={code?.code || '\n'}
+                name={code.codeId}
                 editorProps={{ $blockScrolling: true }}
                 setOptions={{
                     displayIndentGuides: true,
@@ -98,7 +101,7 @@ const EditorAce = observer(() => {
                 enableBasicAutocompletion
                 enableLiveAutocompletion={false}
                 enableSnippets={false}
-                showGutter={script.meta.showLineNumbers}
+                showGutter={code.meta.showLineNumbers}
             />
         </div>
     );

@@ -1,4 +1,3 @@
-import type Script from '@tdev-models/documents/Script';
 import type ScriptVersion from '@tdev-models/documents/ScriptVersion';
 import type TaskState from '@tdev-models/documents/TaskState';
 import type String from '@tdev-models/documents/String';
@@ -17,6 +16,8 @@ import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import type DocumentStore from '@tdev-stores/DocumentStore';
 import iDocumentContainer from '@tdev-models/iDocumentContainer';
+import iViewStore from '@tdev-stores/ViewStores/iViewStore';
+import Code from '@tdev-models/documents/Code';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -30,10 +31,6 @@ export enum Access {
     None_User = 'None_User'
 }
 
-export interface ScriptData {
-    code: string;
-}
-
 export interface ScriptVersionData {
     code: string;
     pasted?: boolean;
@@ -45,6 +42,10 @@ export interface StringData {
 
 export interface QuillV2Data {
     delta: Delta;
+}
+
+export interface CodeData {
+    code: string;
 }
 
 export interface SolutionData {
@@ -99,14 +100,23 @@ export interface DynamicDocumentRootsData<T extends ContainerType> {
     containerType: T;
     documentRootIds: string[];
 }
+
+export interface ViewStoreTypeMapping {
+    ['_view_store>']: typeof iViewStore; // placeholder to avoid empty interface error
+}
+
+export type ViewStoreType = keyof ViewStoreTypeMapping;
+export type ViewStore = ViewStoreTypeMapping[ViewStoreType];
+
 export interface ContainerTypeDataMapping {
     ['_container_placeholder_']: { name: string }; // placeholder to avoid empty interface error
 }
 
 export interface TypeDataMapping extends ContainerTypeDataMapping {
-    ['script']: ScriptData;
     ['task_state']: TaskStateData;
     ['progress_state']: ProgressStateData;
+    ['code']: CodeData;
+    // TODO: rename to `code_version`?
     ['script_version']: ScriptVersionData;
     ['string']: StringData;
     ['quill_v2']: QuillV2Data;
@@ -121,14 +131,21 @@ export interface TypeDataMapping extends ContainerTypeDataMapping {
 }
 export type ContainerType = keyof ContainerTypeDataMapping;
 
+type KeysWithCode<T> = {
+    [K in keyof T]: 'code' extends keyof T[K] ? K : never;
+}[keyof Omit<T, 'script_version'>];
+
+export type CodeType = KeysWithCode<TypeDataMapping>;
+
 export interface ContainerTypeModelMapping {
     ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
 }
 
 export interface TypeModelMapping extends ContainerTypeModelMapping {
-    ['script']: Script;
     ['task_state']: TaskState;
     ['progress_state']: ProgressState;
+    ['code']: Code;
+    // TODO: rename to `code_version`?
     ['script_version']: ScriptVersion;
     ['string']: String;
     ['quill_v2']: QuillV2;

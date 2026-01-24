@@ -1,9 +1,10 @@
 import iDocument from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, ScriptVersionData } from '@tdev-api/document';
+import type { Document as DocumentProps, ScriptVersionData } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { computed } from 'mobx';
-import Script from './Script';
+import type Script from './Code';
 
+// TODO: Rename to CodeVersion
 class ScriptVersion extends iDocument<'script_version'> {
     constructor(props: DocumentProps<'script_version'>, store: DocumentStore) {
         super(props, store);

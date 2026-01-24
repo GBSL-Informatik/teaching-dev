@@ -217,10 +217,14 @@ export default class OfflineApi {
             case 'users':
                 if (parts.length === 1 && parts[0] === 'documentRoots') {
                     const ids = query.getAll('ids');
+                    const docType = query.get('type') as DocumentType | null;
                     if (ids.length === 0) {
                         resolveResponse([] as unknown as T);
                     }
                     const documentRootDocs = await Promise.all(ids.map((id) => this.documentsBy(id)));
+                    const filteredDocs = docType
+                        ? documentRootDocs.map((docs) => docs.filter((doc) => doc.type === docType))
+                        : documentRootDocs;
 
                     const documenRoots = ids.map((rid) => {
                         return {
@@ -230,7 +234,7 @@ export default class OfflineApi {
                             userPermissions: [],
                             groupPermissions: [],
                             documents:
-                                documentRootDocs.find(
+                                filteredDocs.find(
                                     (docs) => docs.length > 0 && docs[0].documentRootId === rid
                                 ) || []
                         };

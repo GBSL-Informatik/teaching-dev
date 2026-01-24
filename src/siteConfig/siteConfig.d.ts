@@ -1,5 +1,5 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
-import { PluginOptions } from '@docusaurus/types';
+import { PluginConfig, PluginOptions } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
 import type { DeepPartial } from 'utility-types';
 import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
@@ -31,6 +31,13 @@ export interface SiteConfig {
 
     /** The `/<baseUrl>/` pathname under which your site is served. For GitHub pages deployment, it is often `/<projectName>/.` */
     baseUrl?: string;
+
+    /**
+     * The directory which contains site specific code.
+     * Aliases are resolved relative to this directory - ensure to modify tsconfig.json accordingly.
+     * @default './website'
+     */
+    websiteDir?: string;
 
     /** Paths to CSS files to be included in the site. Loaded in order, after custom.scss. */
     siteStyles?: string[];
@@ -173,7 +180,7 @@ export interface SiteConfig {
     markdown?: DeepPartial<MarkdownConfig>;
 
     /** List of Docusaurus plugins to be loaded. */
-    plugins?: PluginOptions[];
+    plugins?: PluginConfig[];
 
     /**
      * An array of scripts to load. The values can be either strings or plain objects of attribute-value maps.
