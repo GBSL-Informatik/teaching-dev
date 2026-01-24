@@ -1,7 +1,3 @@
-// @ts-expect-error
-import Admonition from '@theme/Admonition';
-// @ts-expect-error
-import CodeBlock from '@theme/CodeBlock';
 import styles from './styles.module.scss';
 
 const SiteConfig = `
