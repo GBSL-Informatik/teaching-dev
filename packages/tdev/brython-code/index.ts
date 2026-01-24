@@ -1,5 +1,11 @@
 import Script from './models/Script';
-
+/**
+ * Notes
+ * - how to add static files: https://github.com/facebook/docusaurus/discussions/6907
+ *  ---> sitemap plugin: https://github.com/facebook/docusaurus/blob/main/packages/docusaurus-plugin-sitemap/src/index.ts
+ * - call brython with arguments: https://github.com/brython-dev/brython/issues/2421
+ *
+ */
 export interface ScriptData {
     code: string;
 }

@@ -8,7 +8,6 @@ import type {
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import themeCodeEditor from './src/plugins/theme-code-editor';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
@@ -30,6 +29,7 @@ import {
   dynamicRouterPluginConfig,
   rsDoctorPluginConfig,
   sentryPluginConfig,
+  brythonCodePluginConfig,
   socketIoNoDepWarningsPluginConfig,
   aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
@@ -369,6 +369,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           }
         ],
         sentryPluginConfig,
+        brythonCodePluginConfig,
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,
         ...loadedPlugins,
@@ -387,14 +388,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
       ],
       themes: [
         '@docusaurus/theme-mermaid',
-        [
-          themeCodeEditor,
-          {
-            brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
-            brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
-            libDir: '/bry-libs/'
-          }
-        ],
         ...(siteConfig.themes || [])
       ],
       stylesheets: [
