@@ -625,8 +625,10 @@ Kopiere des `packages/tdev/brython-code`-Verzeichnis in das `tdev-website/websit
 Hinzufügen des `brython-code`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
 
 ```ts title="siteConfig.ts"
+import { brythonCodePluginConfig } from './src/siteConfig/pluginConfigs';
 const getSiteConfig: SiteConfigProvider = () => {
     return {
+        plugins: [brythonCodePluginConfig],
         apiDocumentProviders: [
             require.resolve('@tdev/brython-code/register'),
         ]
