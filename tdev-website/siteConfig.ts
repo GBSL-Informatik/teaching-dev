@@ -13,6 +13,7 @@ import {
     requestTarget,
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
+import { brythonCodePluginConfig } from '../src/siteConfig/pluginConfigs';
 
 const getSiteConfig: SiteConfigProvider = () => {
     return {
@@ -72,6 +73,7 @@ const getSiteConfig: SiteConfigProvider = () => {
                 excalidoc: true
             }
         },
+        plugins: [brythonCodePluginConfig],
         apiDocumentProviders: [
             require.resolve('@tdev/netpbm-graphic/register'),
             require.resolve('@tdev/text-message/register'),

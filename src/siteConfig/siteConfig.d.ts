@@ -1,5 +1,5 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
-import { PluginOptions } from '@docusaurus/types';
+import { PluginConfig, PluginOptions } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
 import type { DeepPartial } from 'utility-types';
 import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
@@ -180,7 +180,7 @@ export interface SiteConfig {
     markdown?: DeepPartial<MarkdownConfig>;
 
     /** List of Docusaurus plugins to be loaded. */
-    plugins?: PluginOptions[];
+    plugins?: PluginConfig[];
 
     /**
      * An array of scripts to load. The values can be either strings or plain objects of attribute-value maps.

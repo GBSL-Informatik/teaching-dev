@@ -29,7 +29,6 @@ import {
   dynamicRouterPluginConfig,
   rsDoctorPluginConfig,
   sentryPluginConfig,
-  brythonCodePluginConfig,
   socketIoNoDepWarningsPluginConfig,
   aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
@@ -369,7 +368,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           }
         ],
         sentryPluginConfig,
-        brythonCodePluginConfig,
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,
         ...loadedPlugins,
@@ -384,7 +382,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
             ...(siteConfig.pages || {})
           }
-        ]
+        ],
+        ...((siteConfig.plugins as Config['plugins']) || [])
       ],
       themes: [
         '@docusaurus/theme-mermaid',

@@ -16,7 +16,10 @@ import {
 } from '..';
 import { ScriptMeta } from './ScriptMeta';
 import { LogMessage as _LogMessageType } from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
-const libDir = (globalData['tdev-brython-code'] as { default: { libDir: string } }).default.libDir;
+export const IsBrythonPluginRegistered = 'tdev-brython-code' in globalData;
+const libDir = IsBrythonPluginRegistered
+    ? (globalData['tdev-brython-code'] as { default: { libDir: string } }).default.libDir
+    : '/bry-libs/';
 type LogMessageType = _LogMessageType & { timeStamp: number };
 
 export interface LogMessage {

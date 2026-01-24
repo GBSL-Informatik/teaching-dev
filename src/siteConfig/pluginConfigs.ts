@@ -1,4 +1,3 @@
-import path from 'path';
 import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/plugin-dynamic-routes';
 import aliasConfigurationPlugin from '../plugins/plugin-alias-configuration';
 import type { PluginConfig } from '@docusaurus/types';
