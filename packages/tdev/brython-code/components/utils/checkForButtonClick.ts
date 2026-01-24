@@ -27,7 +27,7 @@ const checkForButtonClick = (event: DraggableEvent) => {
     }
     if (elem) {
         // add the click to the end of the event queue
-        scheduleMicrotask(() => elem?.click());
+        scheduleMicrotask(() => elem?.click?.());
     }
 };
 
