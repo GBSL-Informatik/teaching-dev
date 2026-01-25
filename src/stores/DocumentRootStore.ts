@@ -346,7 +346,7 @@ export class DocumentRootStore extends iStore {
      * returns userPermissions and! groupPermissions
      */
     usersPermissions(documentRootId: string, userId: string) {
-        const user = this.root.userStore.findById(userId);
+        const user = this.root.userStore.find(userId);
         return this._permissionsByUser(documentRootId, user);
     }
 
