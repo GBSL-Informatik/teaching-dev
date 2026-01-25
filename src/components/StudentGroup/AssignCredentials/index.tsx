@@ -51,13 +51,13 @@ const AssignCredentials = observer((props: Props) => {
                 <div>
                     <AssignColumns
                         table={tableData}
-                        toAssign={{ userId: 'ID', password: 'Passwort' }}
+                        toAssign={{ userId: ['User ID', 'ID'], password: ['Passwort', 'password', 'PW'] }}
                         onChange={(assigned) => {
                             if (Object.keys(assigned).length !== 2) {
                                 return;
                             }
-                            const userIdCol = assigned.find((a) => a.id === 'ID')?.idx ?? -1;
-                            const passwordCol = assigned.find((a) => a.id === 'Passwort')?.idx ?? -1;
+                            const userIdCol = assigned.find((a) => a.id === 'userId')?.idx ?? -1;
+                            const passwordCol = assigned.find((a) => a.id === 'password')?.idx ?? -1;
                             if (passwordCol === -1 || userIdCol === -1) {
                                 return;
                             }

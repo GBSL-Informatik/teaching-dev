@@ -180,7 +180,8 @@ const StudentGroup = observer((props: Props) => {
                                     onClick={() =>
                                         exportNewPasswordList(group, { pwLength: 8, prefixLength: 4 })
                                     }
-                                    text="Neue Passwortliste erstellen"
+                                    text="Passwortliste generieren"
+                                    title="Generiert eine Liste mit neuen Passwörtern für alle Schüler:innen und lädt diese als Excel-Datei herunter."
                                     size={SIZE_S}
                                     iconSide="left"
                                 />
