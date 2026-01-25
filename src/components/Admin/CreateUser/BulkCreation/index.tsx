@@ -27,6 +27,7 @@ const BulkCreation = observer((props: Props) => {
             {state === 'paste' && (
                 <FromXlsxClipboard
                     importLabel="Weiter zur Benutzererstellung"
+                    toAssign={['E-Mail', 'Passwort']}
                     matchUsers
                     withoutKnownUsers
                     includeHeader

@@ -1,5 +1,10 @@
 .xlsxImport {
     margin-bottom: var(--ifm-paragraph-margin-bottom);
+    .rowsToAssign {
+        display: flex;
+        gap: 0.5em;
+        margin-bottom: 1em;
+    }
     .main {
         display: flex;
         flex-wrap: wrap;

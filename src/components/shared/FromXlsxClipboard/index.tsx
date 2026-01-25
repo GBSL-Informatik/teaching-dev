@@ -6,11 +6,13 @@ import { useStore } from '@tdev-hooks/useStore';
 import Button from '../Button';
 import Table from '../Table';
 import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
+import Badge from '../Badge';
 
 interface Props {
     matchUsers?: boolean;
     withoutKnownUsers?: boolean;
     onDone?: (table?: string[][], hasHeader?: boolean) => void;
+    toAssign?: string[];
     importLabel?: string;
     cancelLabel?: string;
     cancelIcon?: string;
@@ -64,9 +66,18 @@ const FromXlsxClipboard = (props: Props) => {
                 <h3>Excel-Zellen einfügen</h3>
             </div>
             <div className="card__body">
-                <p>
+                <div>
                     Kopierte Excel-Zellen hier per <kbd>Strg</kbd> + <kbd>V</kbd> einfügen.
-                </p>
+                </div>
+                {props.toAssign && (
+                    <div className={clsx(styles.rowsToAssign)}>
+                        {props.toAssign.map((col, idx) => (
+                            <Badge key={idx} type="info">
+                                {col}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
                 <div className={clsx(styles.main)}>
                     <div className={clsx(styles.input)}>
                         <TextAreaInput
