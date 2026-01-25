@@ -23,14 +23,10 @@ export function allowedActions(signal: AbortSignal): AxiosPromise<AllowedAction[
     return api.get(`/admin/allowedActions`, { signal });
 }
 
-export function linkUserPassword(
-    userId: string,
-    userPW: string,
-    signal: AbortSignal
-): AxiosPromise<AllowedAction[]> {
+export function linkUserPassword(userId: string, userPW: string, signal: AbortSignal): AxiosPromise<void> {
     return api.post(`/admin/users/${userId}/linkUserPassword`, { pw: userPW }, { signal });
 }
 
-export function revokeUserPassword(userId: string, signal: AbortSignal): AxiosPromise<AllowedAction[]> {
+export function revokeUserPassword(userId: string, signal: AbortSignal): AxiosPromise<void> {
     return api.post(`/admin/users/${userId}/revokeUserPassword`, { signal });
 }

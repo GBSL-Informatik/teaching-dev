@@ -91,52 +91,7 @@ const AssignCredentials = observer((props: Props) => {
                             onClick={() => {
                                 Promise.all(
                                     accounts.map((acc) => {
-                                        const user = userStore.find(acc.id);
-                                        if (user?.hasEmailPasswordAuth) {
-                                            return authClient.admin
-                                                .setUserPassword({
-                                                    userId: user.id,
-                                                    newPassword: acc.password
-                                                })
-                                                .then((res) => {
-                                                    if (res.data) {
-                                                        return { success: true, id: acc.id };
-                                                    } else {
-                                                        return {
-                                                            success: false,
-                                                            id: acc.id,
-                                                            reason: res.error?.message || 'Unbekannter Fehler'
-                                                        };
-                                                    }
-                                                })
-                                                .catch((err) => {
-                                                    return {
-                                                        success: false,
-                                                        id: acc.id,
-                                                        reason: err.message || 'Unbekannter Fehler'
-                                                    };
-                                                });
-                                        }
-                                        return adminStore
-                                            .setUserPassword(acc.id, acc.password)
-                                            .then((res) => {
-                                                if (res.data) {
-                                                    return { success: true, id: acc.id };
-                                                } else {
-                                                    return {
-                                                        success: false,
-                                                        id: acc.id,
-                                                        reason: 'Unbekannter Fehler'
-                                                    };
-                                                }
-                                            })
-                                            .catch((err) => {
-                                                return {
-                                                    success: false,
-                                                    id: acc.id,
-                                                    reason: err.message || 'Unbekannter Fehler'
-                                                };
-                                            });
+                                        return adminStore.setUserPassword(acc.id, acc.password);
                                     })
                                 ).then((res) => {
                                     userStore.load();
