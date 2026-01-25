@@ -21,6 +21,8 @@ interface Props {
 
 const AssignCredentials = observer((props: Props) => {
     const userStore = useStore('userStore');
+    const adminStore = useStore('adminStore');
+
     const [state, setState] = React.useState<'paste' | 'create' | 'creating' | 'done'>('paste');
     const [tableData, setTableData] = React.useState<string[][]>([]);
     const [accounts, setAccounts] = React.useState<{ id: string; password: string }[]>([]);
@@ -51,7 +53,6 @@ const AssignCredentials = observer((props: Props) => {
                         table={tableData}
                         toAssign={{ userId: 'ID', password: 'Passwort' }}
                         onChange={(assigned) => {
-                            console.log('Assigned columns: ', assigned);
                             if (Object.keys(assigned).length !== 2) {
                                 return;
                             }
@@ -90,8 +91,34 @@ const AssignCredentials = observer((props: Props) => {
                             onClick={() => {
                                 Promise.all(
                                     accounts.map((acc) => {
-                                        return authClient.admin
-                                            .setUserPassword({ userId: acc.id, newPassword: acc.password })
+                                        const user = userStore.find(acc.id);
+                                        if (user?.hasEmailPasswordAuth) {
+                                            return authClient.admin
+                                                .setUserPassword({
+                                                    userId: user.id,
+                                                    newPassword: acc.password
+                                                })
+                                                .then((res) => {
+                                                    if (res.data) {
+                                                        return { success: true, id: acc.id };
+                                                    } else {
+                                                        return {
+                                                            success: false,
+                                                            id: acc.id,
+                                                            reason: res.error?.message || 'Unbekannter Fehler'
+                                                        };
+                                                    }
+                                                })
+                                                .catch((err) => {
+                                                    return {
+                                                        success: false,
+                                                        id: acc.id,
+                                                        reason: err.message || 'Unbekannter Fehler'
+                                                    };
+                                                });
+                                        }
+                                        return adminStore
+                                            .setUserPassword(acc.id, acc.password)
                                             .then((res) => {
                                                 if (res.data) {
                                                     return { success: true, id: acc.id };
@@ -99,9 +126,16 @@ const AssignCredentials = observer((props: Props) => {
                                                     return {
                                                         success: false,
                                                         id: acc.id,
-                                                        reason: res.error?.message || 'Unbekannter Fehler'
+                                                        reason: 'Unbekannter Fehler'
                                                     };
                                                 }
+                                            })
+                                            .catch((err) => {
+                                                return {
+                                                    success: false,
+                                                    id: acc.id,
+                                                    reason: err.message || 'Unbekannter Fehler'
+                                                };
                                             });
                                     })
                                 ).then((res) => {
@@ -114,7 +148,6 @@ const AssignCredentials = observer((props: Props) => {
                                     setState('done');
                                 });
                                 setState('creating');
-                                console.log('Creating accounts', accounts);
                             }}
                             disabled={accounts.length < 1}
                             color="primary"

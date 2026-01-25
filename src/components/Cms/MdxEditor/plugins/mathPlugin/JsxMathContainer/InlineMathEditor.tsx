@@ -61,7 +61,6 @@ const InlineMathEditor = (props: Props) => {
                         value={value}
                         onChange={(value) => {
                             // mdastNode.value = e.target.value;
-                            console.log(value);
                             setValue(value);
                         }}
                         noAutoFocus

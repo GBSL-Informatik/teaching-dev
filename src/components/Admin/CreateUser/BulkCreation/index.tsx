@@ -105,7 +105,6 @@ const BulkCreation = observer((props: Props) => {
                                     setState('done');
                                 });
                                 setState('creating');
-                                console.log('Creating accounts', accounts);
                             }}
                             disabled={accounts.length < 1}
                             color="primary"
