@@ -31,6 +31,17 @@
     &.unpersisted {
         background: var(--ifm-color-warning-lightest);
     }
+    .fullscreenButton {
+        opacity: var(--tdev-code-editor-fullscreen-opacity);
+    }
+    &:hover {
+        .fullscreenButton {
+            --tdev-code-editor-fullscreen-opacity: 1;
+            &:hover {
+                --tdev-code-editor-fullscreen-opacity: 0.6;
+            }
+        }
+    }
 }
 
 [data-theme='dark'] {

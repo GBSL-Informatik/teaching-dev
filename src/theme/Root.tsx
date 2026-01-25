@@ -198,9 +198,9 @@ function Root({ children }: { children: React.ReactNode }) {
                         <RemoteNavigationHandler />
                         <LoggedOutOverlay delayMs={5_000} stalledCheckIntervalMs={15_000} />
                         <LivenessChecker />
-                        <FullscreenHandler />
                     </>
                 )}
+                <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
                 {children}
             </StoresProvider>

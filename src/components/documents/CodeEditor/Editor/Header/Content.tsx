@@ -10,18 +10,27 @@ import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 import DownloadCode from '../../Actions/DownloadCode';
 import ShowRaw from '../../Actions/ShowRaw';
+import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
+import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
+    showFullscreenButton?: boolean;
 }
 
 const Content = observer(<T extends CodeType>(props: Props<T>) => {
-    const { code } = props;
+    const { code, showFullscreenButton } = props;
     const notifyUnpersisted = code.root?.isDummy && !code.meta.slim && !code.meta.hideWarning;
+    const targetId = useFullscreenTargetId();
     return (
         <>
             <div className={clsx(styles.title)}>{code.title}</div>
             <div className={clsx(styles.spacer)} />
+            <RequestFullscreen
+                targetId={targetId}
+                adminOnly={!showFullscreenButton}
+                className={clsx(styles.fullscreenButton)}
+            />
             {notifyUnpersisted && (
                 <Icon
                     path={mdiFlashTriangle}

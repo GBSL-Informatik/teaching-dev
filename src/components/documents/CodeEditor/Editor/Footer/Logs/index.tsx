@@ -7,6 +7,7 @@ import { mdiCardRemoveOutline } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import CopyButton from '@tdev-components/shared/Button/CopyButton';
 import { useStore } from '@tdev-hooks/useStore';
+import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
 
 export type LogMessage = { type: 'log' | 'error'; message: string };
 
@@ -21,6 +22,7 @@ const Logs = observer((props: Props) => {
     const ref = React.useRef<HTMLDivElement>(null);
     const viewStore = useStore('viewStore');
     const [hasHorizontalOverflow, setHasHorizontalOverflow] = React.useState(false);
+    const targetId = useFullscreenTargetId();
     React.useEffect(() => {
         if (ref.current) {
             ref.current.scrollTop = ref.current.scrollHeight;
@@ -48,7 +50,9 @@ const Logs = observer((props: Props) => {
             </div>
             <div
                 className={clsx(styles.messages)}
-                style={{ maxHeight: maxLines * (viewStore.isFullscreen ? 1.5 : 1) * 1.2 + 2 + 'em' }}
+                style={{
+                    maxHeight: maxLines * (viewStore.isFullscreenTarget(targetId) ? 1.5 : 1) * 1.2 + 2 + 'em'
+                }}
                 ref={ref}
             >
                 {messages.map((msg, idx) => (

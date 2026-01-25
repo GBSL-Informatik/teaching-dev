@@ -8,11 +8,10 @@ import PluginNotRegistered from './PluginNotRegisteredAlert';
 
 interface Props {
     code: Script;
-    onRequestFullscreen?: () => void;
 }
 
 const Header = observer((props: Props) => {
-    const { code, onRequestFullscreen } = props;
+    const { code } = props;
     if (!code) {
         return null;
     }
@@ -20,7 +19,7 @@ const Header = observer((props: Props) => {
         return <PluginNotRegistered />;
     }
     return (
-        <Container code={code} ignoreSlim onRequestFullscreen={onRequestFullscreen}>
+        <Container code={code} ignoreSlim>
             {!code.meta.slim && <Content code={code} />}
             {code.canExecute && <RunCode code={code} onExecute={() => code.runCode()} />}
         </Container>

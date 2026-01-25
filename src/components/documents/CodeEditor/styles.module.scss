@@ -1,45 +1,11 @@
-.containerBig {
-    display: grid;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 250px;
-    grid-template-columns: 100%;
-    grid-template-rows: min-content 1fr min-content;
-    gap: 0px 0px;
-    grid-auto-flow: row;
-    grid-template-areas: 'controls' 'editor' 'result';
-}
-
-.containerSlim {
-    display: grid;
-    grid-template-columns: 1fr min-content;
-    grid-template-rows: 1fr min-content;
-    gap: 0px 0px;
-    grid-auto-flow: row;
-    grid-template-areas: 'editor controls' 'result result';
-    .headerButton {
-        z-index: calc(var(--ifm-z-index-fixed) - 2);
-        height: 100%;
-        border-radius: 0px;
-        padding: 2px 6px;
-        margin: 0px;
-    }
-    &.lightTheme {
-        border: 1px solid var(--ifm-color-gray-400);
-    }
-}
-
-.playgroundContainer {
-    margin-bottom: var(--ifm-leading);
-    border-radius: var(--ifm-global-radius);
-    box-shadow: var(--ifm-global-shadow-lw);
-    overflow: hidden;
-    flex-grow: 1;
-    flex-shrink: 1;
-}
-
 .wrapper {
-    &:last-child .playgroundContainer {
+    --tdev-code-editor-fullscreen-opacity: 0;
+
+    &:hover {
+        --tdev-code-editor-fullscreen-opacity: 0.2;
+    }
+
+    &:last-child .editorContainer {
         margin-bottom: inherit;
     }
     &.fullscreen {
@@ -48,8 +14,48 @@
         padding: 3em;
         overflow-y: auto;
         max-height: 95vh;
-        .playgroundContainer {
+        .editorContainer {
             box-shadow: var(--ifm-global-shadow-md);
         }
+    }
+
+    .containerBig {
+        display: grid;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 250px;
+        grid-template-columns: 100%;
+        grid-template-rows: min-content 1fr min-content;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas: 'controls' 'editor' 'result';
+    }
+
+    .containerSlim {
+        display: grid;
+        grid-template-columns: 1fr min-content;
+        grid-template-rows: 1fr min-content;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas: 'editor controls' 'result result';
+        .headerButton {
+            z-index: calc(var(--ifm-z-index-fixed) - 2);
+            height: 100%;
+            border-radius: 0px;
+            padding: 2px 6px;
+            margin: 0px;
+        }
+        &.lightTheme {
+            border: 1px solid var(--ifm-color-gray-400);
+        }
+    }
+
+    .editorContainer {
+        margin-bottom: var(--ifm-leading);
+        border-radius: var(--ifm-global-radius);
+        box-shadow: var(--ifm-global-shadow-lw);
+        overflow: hidden;
+        flex-grow: 1;
+        flex-shrink: 1;
     }
 }
