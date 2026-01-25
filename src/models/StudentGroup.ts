@@ -151,6 +151,11 @@ class StudentGroup {
     get parentIds(): string[] {
         return this.parent ? [this.parent.id, ...this.parent.parentIds] : [];
     }
+
+    @computed
+    get studentsWithOptionalPWAuth() {
+        return this.students.filter((s) => s.hasEmailPasswordAuth && s.authProviders.length > 1);
+    }
 }
 
 export default StudentGroup;
