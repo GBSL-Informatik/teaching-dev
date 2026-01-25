@@ -11,7 +11,7 @@ interface Props {
 }
 
 const Header = observer((props: Props) => {
-    const { code: code } = props;
+    const { code } = props;
     if (!code) {
         return null;
     }

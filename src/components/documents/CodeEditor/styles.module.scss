@@ -1,43 +1,61 @@
-.containerBig {
-    display: grid;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 250px;
-    grid-template-columns: 100%;
-    grid-template-rows: min-content 1fr min-content;
-    gap: 0px 0px;
-    grid-auto-flow: row;
-    grid-template-areas: 'controls' 'editor' 'result';
-}
+.wrapper {
+    --tdev-code-editor-fullscreen-opacity: 0;
 
-.containerSlim {
-    display: grid;
-    grid-template-columns: 1fr min-content;
-    grid-template-rows: 1fr min-content;
-    gap: 0px 0px;
-    grid-auto-flow: row;
-    grid-template-areas: 'editor controls' 'result result';
-    .headerButton {
-        z-index: calc(var(--ifm-z-index-fixed) - 2);
-        height: 100%;
-        border-radius: 0px;
-        padding: 2px 6px;
-        margin: 0px;
+    &:hover {
+        --tdev-code-editor-fullscreen-opacity: 0.2;
     }
-    &.lightTheme {
-        border: 1px solid var(--ifm-color-gray-400);
+
+    &:last-child .editorContainer {
+        margin-bottom: inherit;
     }
-}
+    &.fullscreen {
+        --ifm-code-font-size: 2rem;
+        background: var(--ifm-color-white);
+        padding: 3em;
+        overflow-y: auto;
+        max-height: 95vh;
+        .editorContainer {
+            box-shadow: var(--ifm-global-shadow-md);
+        }
+    }
 
-.playgroundContainer {
-    margin-bottom: var(--ifm-leading);
-    border-radius: var(--ifm-global-radius);
-    box-shadow: var(--ifm-global-shadow-lw);
-    overflow: hidden;
-    flex-grow: 1;
-    flex-shrink: 1;
-}
+    .containerBig {
+        display: grid;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 250px;
+        grid-template-columns: 100%;
+        grid-template-rows: min-content 1fr min-content;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas: 'controls' 'editor' 'result';
+    }
 
-.wrapper:last-child .playgroundContainer {
-    margin-bottom: inherit;
+    .containerSlim {
+        display: grid;
+        grid-template-columns: 1fr min-content;
+        grid-template-rows: 1fr min-content;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas: 'editor controls' 'result result';
+        .headerButton {
+            z-index: calc(var(--ifm-z-index-fixed) - 2);
+            height: 100%;
+            border-radius: 0px;
+            padding: 2px 6px;
+            margin: 0px;
+        }
+        &.lightTheme {
+            border: 1px solid var(--ifm-color-gray-400);
+        }
+    }
+
+    .editorContainer {
+        margin-bottom: var(--ifm-leading);
+        border-radius: var(--ifm-global-radius);
+        box-shadow: var(--ifm-global-shadow-lw);
+        overflow: hidden;
+        flex-grow: 1;
+        flex-shrink: 1;
+    }
 }

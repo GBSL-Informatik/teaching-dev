@@ -13,6 +13,7 @@ import iCode from '@tdev-models/documents/iCode';
 import { CodeType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import { LiveCode } from '@tdev-stores/ComponentStore';
+import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -59,20 +60,32 @@ export interface ScriptProps<T extends CodeType> {
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
     const { code } = props;
     const { colorMode } = useCodeTheme();
+    const viewStore = useStore('viewStore');
+    const id = React.useId();
     return (
-        <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
+        <FullscreenContext.Provider value={id}>
             <div
+                id={id}
                 className={clsx(
-                    styles.playgroundContainer,
-                    colorMode === 'light' && styles.lightTheme,
-                    code.meta.slim ? styles.containerSlim : styles.containerBig,
-                    'live-code-editor'
+                    styles.wrapper,
+                    'notranslate',
+                    props.className,
+                    viewStore.isFullscreenTarget(id) && styles.fullscreen
                 )}
             >
-                <Editor code={code} />
-                {code.meta.hasHistory && <CodeHistory code={code} />}
+                <div
+                    className={clsx(
+                        styles.editorContainer,
+                        colorMode === 'light' && styles.lightTheme,
+                        code.meta.slim ? styles.containerSlim : styles.containerBig,
+                        'live-code-editor'
+                    )}
+                >
+                    <Editor code={code} />
+                    {code.meta.hasHistory && <CodeHistory code={code} />}
+                </div>
             </div>
-        </div>
+        </FullscreenContext.Provider>
     );
 });
 
