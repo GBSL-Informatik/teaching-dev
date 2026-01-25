@@ -134,9 +134,6 @@ const CmsImporter = observer((props: Props) => {
             <div className={clsx(styles.wrapper, 'card')}>
                 <div className={clsx('card__header', styles.header)}>
                     <h3>CMS Texte erstellen</h3>
-                    <pre>
-                        <code>{JSON.stringify(assigned, null, 2)}</code>
-                    </pre>
                     <div className={clsx(styles.importLabels)}>
                         {Object.keys(cmsAssignments).map((id, idx) => (
                             <Badge key={idx} type="primary" title={id}>
