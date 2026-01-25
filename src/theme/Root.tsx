@@ -153,6 +153,29 @@ const LivenessChecker = observer(() => {
     return null;
 });
 
+const FullscreenHandler = observer(() => {
+    const viewStore = useStore('viewStore');
+    const checkFullscreen = React.useCallback(() => {
+        if (document.fullscreenElement) {
+            viewStore.setFullscreenTargetId(document.fullscreenElement.id);
+        } else {
+            viewStore.setFullscreenTargetId(null);
+        }
+    }, []);
+    React.useEffect(() => {
+        document.addEventListener('fullscreenchange', checkFullscreen);
+        document.addEventListener('webkitfullscreenchange', checkFullscreen);
+        document.addEventListener('mozfullscreenchange', checkFullscreen);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', checkFullscreen);
+            document.removeEventListener('webkitfullscreenchange', checkFullscreen);
+            document.removeEventListener('mozfullscreenchange', checkFullscreen);
+        };
+    }, []);
+    return null;
+});
+
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
 
@@ -175,6 +198,7 @@ function Root({ children }: { children: React.ReactNode }) {
                         <RemoteNavigationHandler />
                         <LoggedOutOverlay delayMs={5_000} stalledCheckIntervalMs={15_000} />
                         <LivenessChecker />
+                        <FullscreenHandler />
                     </>
                 )}
                 {SENTRY_DSN && <Sentry />}

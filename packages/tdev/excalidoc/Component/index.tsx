@@ -18,7 +18,7 @@ import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { useDocument } from '@tdev-hooks/useDocument';
 import { useClientLib } from '@tdev-hooks/useClientLib';
 import { MetaInit, ModelMeta } from '@tdev/excalidoc/model/ModelMeta';
-import { exitFullscreen } from '@tdev-hooks/useFullscreen';
+import { useStore } from '@tdev-hooks/useStore';
 
 export const DEFAULT_HEIGHT = '600px' as const;
 export const mdiExcalidraw =
@@ -64,7 +64,7 @@ export const ExcalidocComponent = observer(
         }
     ) => {
         const [edit, setEdit] = React.useState(false);
-        const [isFullscreen, setIsFullscreen] = React.useState(false);
+        const viewStore = useStore('viewStore');
         const Lib = useClientLib<typeof ExcalidrawLib>(
             () => import('@excalidraw/excalidraw'),
             '@excalidraw/excalidraw'
@@ -104,7 +104,7 @@ export const ExcalidocComponent = observer(
         return (
             <div
                 style={{ height: props.height || DEFAULT_HEIGHT, width: '100%' }}
-                className={clsx(styles.excalidraw, isFullscreen && styles.fullscreen)}
+                className={clsx(styles.excalidraw, viewStore.isFullscreenTarget(id) && styles.fullscreen)}
                 id={id}
             >
                 <div className={styles.actions}>
@@ -122,12 +122,11 @@ export const ExcalidocComponent = observer(
                     )}
                     {edit && (
                         <>
-                            <RequestFullscreen targetId={id} onFullscreenChange={setIsFullscreen} />
+                            <RequestFullscreen targetId={id} />
                             <Button
                                 onClick={() => {
                                     onEdit(false);
-                                    exitFullscreen();
-                                    setIsFullscreen(false);
+                                    viewStore.exitFullscreen();
                                 }}
                                 icon={mdiClose}
                                 color="red"

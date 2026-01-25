@@ -5,8 +5,8 @@ import { observer } from 'mobx-react-lite';
 import Button from '@tdev-components/shared/Button';
 import { mdiCardRemoveOutline } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import { useIsFullscreen } from '@tdev-hooks/useFullscreen';
 import CopyButton from '@tdev-components/shared/Button/CopyButton';
+import { useStore } from '@tdev-hooks/useStore';
 
 export type LogMessage = { type: 'log' | 'error'; message: string };
 
@@ -19,7 +19,7 @@ interface Props {
 const Logs = observer((props: Props) => {
     const { messages, onClear, maxLines = 40 } = props;
     const ref = React.useRef<HTMLDivElement>(null);
-    const isFullscreen = useIsFullscreen();
+    const viewStore = useStore('viewStore');
     const [hasHorizontalOverflow, setHasHorizontalOverflow] = React.useState(false);
     React.useEffect(() => {
         if (ref.current) {
@@ -48,7 +48,7 @@ const Logs = observer((props: Props) => {
             </div>
             <div
                 className={clsx(styles.messages)}
-                style={{ maxHeight: maxLines * (isFullscreen ? 1.5 : 1) * 1.2 + 2 + 'em' }}
+                style={{ maxHeight: maxLines * (viewStore.isFullscreen ? 1.5 : 1) * 1.2 + 2 + 'em' }}
                 ref={ref}
             >
                 {messages.map((msg, idx) => (

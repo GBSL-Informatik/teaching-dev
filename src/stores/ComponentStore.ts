@@ -30,7 +30,7 @@ export interface EditorComponent<T extends CodeType = CodeType> {
     /**
      * e.g. to run code or to show the title
      */
-    Header?: React.ComponentType<EditorComponentProps<T> & { onRequestFullscreen?: () => void }>;
+    Header?: React.ComponentType<EditorComponentProps<T>>;
     /**
      * e.g. to show the outputs/logs
      */

@@ -13,7 +13,6 @@ import iCode from '@tdev-models/documents/iCode';
 import { CodeType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import { LiveCode } from '@tdev-stores/ComponentStore';
-import useFullscreenChange, { FullscreenContext } from '@tdev-hooks/useFullscreen';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -60,36 +59,30 @@ export interface ScriptProps<T extends CodeType> {
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
     const { code } = props;
     const { colorMode } = useCodeTheme();
+    const viewStore = useStore('viewStore');
     const id = React.useId();
-    const [isFullscreen, setIsFullscreen] = React.useState(false);
-    const onFullscreenChange = React.useCallback((isFullscreen: boolean) => {
-        setIsFullscreen(isFullscreen);
-    }, []);
-    const { requestFullscreen } = useFullscreenChange(id, onFullscreenChange);
     return (
-        <FullscreenContext.Provider value={isFullscreen}>
+        <div
+            id={id}
+            className={clsx(
+                styles.wrapper,
+                'notranslate',
+                props.className,
+                viewStore.isFullscreenTarget(id) && styles.fullscreen
+            )}
+        >
             <div
-                id={id}
                 className={clsx(
-                    styles.wrapper,
-                    'notranslate',
-                    props.className,
-                    isFullscreen && styles.fullscreen
+                    styles.playgroundContainer,
+                    colorMode === 'light' && styles.lightTheme,
+                    code.meta.slim ? styles.containerSlim : styles.containerBig,
+                    'live-code-editor'
                 )}
             >
-                <div
-                    className={clsx(
-                        styles.playgroundContainer,
-                        colorMode === 'light' && styles.lightTheme,
-                        code.meta.slim ? styles.containerSlim : styles.containerBig,
-                        'live-code-editor'
-                    )}
-                >
-                    <Editor code={code} onRequestFullscreen={requestFullscreen} />
-                    {code.meta.hasHistory && <CodeHistory code={code} />}
-                </div>
+                <Editor code={code} />
+                {code.meta.hasHistory && <CodeHistory code={code} />}
             </div>
-        </FullscreenContext.Provider>
+        </div>
     );
 });
 
