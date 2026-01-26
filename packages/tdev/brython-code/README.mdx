@@ -628,7 +628,7 @@ Hinzufügen des `brython-code`-Package zu den `apiDocumentProviders` im `siteCon
 import { brythonCodePluginConfig } from './src/siteConfig/pluginConfigs';
 const getSiteConfig: SiteConfigProvider = () => {
     return {
-        plugins: [brythonCodePluginConfig],
+        plugins: [brythonCodePluginConfig()],
         apiDocumentProviders: [
             require.resolve('@tdev/brython-code/register'),
         ]

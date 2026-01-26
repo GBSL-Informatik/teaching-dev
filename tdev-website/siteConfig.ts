@@ -73,7 +73,7 @@ const getSiteConfig: SiteConfigProvider = () => {
                 excalidoc: true
             }
         },
-        plugins: [brythonCodePluginConfig],
+        plugins: [brythonCodePluginConfig()],
         apiDocumentProviders: [
             require.resolve('@tdev/netpbm-graphic/register'),
             require.resolve('@tdev/text-message/register'),

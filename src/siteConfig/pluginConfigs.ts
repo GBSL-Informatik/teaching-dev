@@ -32,7 +32,7 @@ export const rsDoctorPluginConfig: PluginConfig = process.env.RSDOCTOR === 'true
     }
 ];
 
-export const brythonCodePluginConfig: PluginConfig = [
+export const brythonCodePluginConfig: () => PluginConfig = () => [
     require.resolve('@tdev/brython-code/plugin'),
     {
         brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',

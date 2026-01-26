@@ -9,7 +9,7 @@ const getSiteConfig: SiteConfigProvider = () => {
     return {
         // ...
         // highlight-next-line
-        plugins: [brythonCodePluginConfig],
+        plugins: [brythonCodePluginConfig()],
     }
 }`.trim();
 
