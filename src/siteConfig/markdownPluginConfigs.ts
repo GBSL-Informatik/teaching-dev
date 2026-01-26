@@ -13,11 +13,14 @@ import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
+import gatherDocRootPlugin from '../plugins/remark-gather-document-roots/plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
+import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
+import { getAnswerDocumentType } from '../components/Answer/helper.answer';
 
 export const flexCardsPluginConfig = [
     flexCardsPlugin,
@@ -153,6 +156,66 @@ export const linkAnnotationPluginConfig = [
     }
 ];
 
+export const gatherDocRootPluginConfig = [
+    gatherDocRootPlugin,
+    {
+        components: [
+            {
+                name: 'Answer',
+                docTypeExtractor: (node: MdxJsxFlowElement) =>
+                    getAnswerDocumentType(
+                        node.attributes.find((a) => a.type === 'mdxJsxAttribute' && a.name === 'type')
+                            ?.value as string
+                    ) || 'unknown'
+            },
+            {
+                name: 'ProgressState',
+                docTypeExtractor: () => 'progress_state'
+            },
+            {
+                name: 'TaskState',
+                docTypeExtractor: () => 'task_state'
+            },
+            {
+                name: 'QuillV2',
+                docTypeExtractor: () => 'quill_v2'
+            },
+            {
+                name: 'String',
+                docTypeExtractor: () => 'string'
+            },
+            {
+                name: 'CmsText',
+                docTypeExtractor: () => 'cms_text'
+            },
+            {
+                name: 'CmsCode',
+                docTypeExtractor: () => 'cms_text'
+            },
+            {
+                name: 'Restricted',
+                docTypeExtractor: () => 'restricted'
+            },
+            {
+                name: 'DynamicDocumentRoots',
+                docTypeExtractor: () => 'dynamic_document_roots'
+            }
+        ],
+        liveCodeDocTypeTransformer: (liveCode: `live_${string}`) => {
+            switch (liveCode) {
+                case 'live_py':
+                case 'live_bry':
+                    // legacy name, TODO. should be 'brython_code'?
+                    return 'script';
+                case 'live_pyo':
+                    return 'pyodide_code';
+                default:
+                    return 'code';
+            }
+        }
+    }
+];
+
 export const rehypeKatexPluginConfig = rehypeKatex;
 
 export const recommendedBeforeDefaultRemarkPlugins = [
@@ -165,6 +228,7 @@ export const recommendedBeforeDefaultRemarkPlugins = [
 ];
 
 export const recommendedRemarkPlugins = [
+    gatherDocRootPluginConfig,
     strongPluginConfig,
     mdiPluginConfig,
     mediaPluginConfig,
