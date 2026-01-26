@@ -1,6 +1,6 @@
 import React from 'react';
 import { StoresProvider, rootStore } from '@tdev-stores/rootStore';
-import { observer } from 'mobx-react-lite';
+import { enableStaticRendering, observer } from 'mobx-react-lite';
 import Head from '@docusaurus/Head';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
@@ -10,10 +10,16 @@ import { useHistory } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
 import { getOfflineUser } from '@tdev-api/OfflineApi';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
 };
+
+if (!ExecutionEnvironment.canUseDOM) {
+    enableStaticRendering(true);
+    console.log('ℹ️ SSG Mode for MobX Stores enabled.');
+}
 
 const RemoteNavigationHandler = observer(() => {
     const socketStore = useStore('socketStore');
@@ -147,6 +153,29 @@ const LivenessChecker = observer(() => {
     return null;
 });
 
+const FullscreenHandler = observer(() => {
+    const viewStore = useStore('viewStore');
+    const checkFullscreen = React.useCallback(() => {
+        if (document.fullscreenElement) {
+            viewStore.setFullscreenTargetId(document.fullscreenElement.id);
+        } else {
+            viewStore.setFullscreenTargetId(null);
+        }
+    }, []);
+    React.useEffect(() => {
+        document.addEventListener('fullscreenchange', checkFullscreen);
+        document.addEventListener('webkitfullscreenchange', checkFullscreen);
+        document.addEventListener('mozfullscreenchange', checkFullscreen);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', checkFullscreen);
+            document.removeEventListener('webkitfullscreenchange', checkFullscreen);
+            document.removeEventListener('mozfullscreenchange', checkFullscreen);
+        };
+    }, []);
+    return null;
+});
+
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
 
@@ -171,6 +200,7 @@ function Root({ children }: { children: React.ReactNode }) {
                         <LivenessChecker />
                     </>
                 )}
+                <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
                 {children}
             </StoresProvider>

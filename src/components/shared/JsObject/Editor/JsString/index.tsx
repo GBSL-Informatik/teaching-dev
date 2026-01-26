@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
-import { default as JsStringModel } from '../models/JsString';
+import type { default as JsStringModel } from '../models/JsString';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 
 interface Props {

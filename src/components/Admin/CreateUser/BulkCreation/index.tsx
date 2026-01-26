@@ -27,6 +27,7 @@ const BulkCreation = observer((props: Props) => {
             {state === 'paste' && (
                 <FromXlsxClipboard
                     importLabel="Weiter zur Benutzererstellung"
+                    toAssign={['E-Mail', 'Passwort']}
                     matchUsers
                     withoutKnownUsers
                     includeHeader
@@ -49,13 +50,16 @@ const BulkCreation = observer((props: Props) => {
                 <div>
                     <AssignColumns
                         table={tableData}
-                        toAssign={{ email: 'E-Mail', password: 'Passwort' }}
+                        toAssign={{
+                            email: ['E-Mail', 'email', 'Mail'],
+                            password: ['Passwort', 'password', 'PW']
+                        }}
                         onChange={(assigned) => {
                             if (Object.keys(assigned).length !== 2) {
                                 return;
                             }
-                            const emailCol = assigned.find((a) => a.id === 'E-Mail')?.idx ?? -1;
-                            const passwordCol = assigned.find((a) => a.id === 'Passwort')?.idx ?? -1;
+                            const emailCol = assigned.find((a) => a.id === 'email')?.idx ?? -1;
+                            const passwordCol = assigned.find((a) => a.id === 'password')?.idx ?? -1;
                             if (emailCol === -1 || passwordCol === -1) {
                                 return;
                             }
@@ -104,7 +108,6 @@ const BulkCreation = observer((props: Props) => {
                                     setState('done');
                                 });
                                 setState('creating');
-                                console.log('Creating accounts', accounts);
                             }}
                             disabled={accounts.length < 1}
                             color="primary"

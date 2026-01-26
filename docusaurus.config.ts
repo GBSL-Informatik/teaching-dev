@@ -1,14 +1,13 @@
 require('dotenv').config();
+import logger from '@docusaurus/logger';
 import type {
   EditThisPageOption,
   ShowEditThisPage,
-  SiteConfig,
   TdevConfig
 } from '@tdev/siteConfig/siteConfig';
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import themeCodeEditor from './src/plugins/theme-code-editor';
 import { v4 as uuidv4 } from 'uuid';
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
@@ -24,20 +23,21 @@ import {
   taskStateOverview
 } from './src/siteConfig/navbarItems';
 import { applyTransformers } from './src/siteConfig/transformers';
+import { withSiteConfig } from './src/siteConfig/withSiteConfig';
 import {
   sassPluginConfig,
   dynamicRouterPluginConfig,
   rsDoctorPluginConfig,
-  aliasConfigurationPluginConfig,
   sentryPluginConfig,
-  socketIoNoDepWarningsPluginConfig
+  socketIoNoDepWarningsPluginConfig,
+  aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
 import {
   recommendedBeforeDefaultRemarkPlugins,
   recommendedRehypePlugins,
-  recommendedRemarkPlugins
+  recommendedRemarkPlugins,
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
@@ -95,6 +95,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
 
   const DOCS_PATH = useTdevContentPath(siteConfig, 'docs');
   const BLOG_PATH = useTdevContentPath(siteConfig, 'blog');
+  //await packageDocsSync('packages', `${DOCS_PATH}/packages`);
+  
 
   const BEFORE_DEFAULT_REMARK_PLUGINS =
     siteConfig.beforeDefaultRemarkPlugins ?? recommendedBeforeDefaultRemarkPlugins;
@@ -166,7 +168,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
       },
       future: {
-        v4: true,
+        v4: true,    
         experimental_faster: {
           /**
            * no config options for swcJsLoader so far.
@@ -257,6 +259,12 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             if (needsRewrite) {
               await fs.writeFile(params.filePath, matter.stringify(params.fileContent, result.frontMatter), {
                 encoding: 'utf-8'
+              }).catch((e) => {
+                if (e.code === 'EACCES') {
+                  const parts = params.filePath.split(path.sep).slice(-3);
+                  logger.warn(`Could not rewrite frontmatter due to insufficient file permissions. Did you create a new file in a subfolder of ./packages/${parts.slice(0, 2).join('/')} ?`);
+                  logger.info(`Make sure to add the following frontmatter manually to the head of "${parts.join(path.sep)}":\n\n${matter.stringify('', result.frontMatter)}`);
+                }
               });
             }
           }
@@ -287,10 +295,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
                   beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
                   ...DEFAULT_ADMONITION_CONFIG,
                   exclude: [...new Set([...GlobExcludeDefault, '**/node_modules/**'])],
-                  async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
-                    const sidebarItems = await defaultSidebarItemsGenerator(args);
-                    return extractPackageDocs(sidebarItems);
-                  },
                   ...(siteConfig.docs || {})
                 }
               : false,
@@ -386,7 +390,12 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         sassPluginConfig,
         dynamicRouterPluginConfig,
         rsDoctorPluginConfig,
-        aliasConfigurationPluginConfig,
+        [
+          aliasConfigurationPlugin,
+          {
+            websiteDir: siteConfig.websiteDir ?? './website'
+          }
+        ],
         sentryPluginConfig,
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,
@@ -402,18 +411,11 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             editUrl: `/cms/${ORGANIZATION_NAME}/${PROJECT_NAME}/`,
             ...(siteConfig.pages || {})
           }
-        ]
+        ],
+        ...((siteConfig.plugins as Config['plugins']) || [])
       ],
       themes: [
         '@docusaurus/theme-mermaid',
-        [
-          themeCodeEditor,
-          {
-            brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
-            brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
-            libDir: '/bry-libs/'
-          }
-        ],
         ...(siteConfig.themes || [])
       ],
       stylesheets: [

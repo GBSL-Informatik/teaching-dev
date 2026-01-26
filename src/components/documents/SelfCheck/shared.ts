@@ -1,6 +1,6 @@
 import React from 'react';
 import iSideEffect from '@tdev-models/SideEffects/iSideEffect';
-import { DocumentType, TypeDataMapping } from '@tdev-api/document';
+import { TypeDataMapping } from '@tdev-api/document';
 import DocumentRoot from '@tdev-models/DocumentRoot';
 import { computed } from 'mobx';
 import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';

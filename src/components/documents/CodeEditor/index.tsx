@@ -3,18 +3,21 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import CodeBlock from '@theme/CodeBlock';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import Script, { ScriptMeta } from '@tdev-models/documents/Script';
 import Editor from './Editor';
 import CodeHistory from './CodeHistory';
-import BrythonCommunicator from './BrythonCommunicator';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import { observer } from 'mobx-react-lite';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import { DocContext } from '@tdev-components/documents/DocumentContext';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import iCode from '@tdev-models/documents/iCode';
+import { CodeType } from '@tdev-api/document';
+import { useStore } from '@tdev-hooks/useStore';
+import { LiveCode } from '@tdev-stores/ComponentStore';
+import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
+    liveCodeType?: LiveCode;
     lang: string;
     preCode: string;
     postCode: string;
@@ -26,43 +29,63 @@ export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
 
 export const CodeEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
-    const script = useFirstMainDocument(id, new ScriptMeta(props));
+    const componentStore = useStore('componentStore');
+    const [type] = React.useState(componentStore.matchCodeBlockType(props.liveCodeType));
+    const [meta] = React.useState(componentStore.createEditorMeta(type, props));
+    const code = useFirstMainDocument(id, meta, true, {}, meta.versioned ? meta.type : undefined);
     React.useEffect(() => {
-        if (script && script.meta?.slim) {
-            script.setCode(props.code);
+        if (code && code.meta?.slim) {
+            code.setCode(props.code);
         }
-    }, [script, props.code]);
-    if (!ExecutionEnvironment.canUseDOM || !script) {
+    }, [code, props.code]);
+    if (!ExecutionEnvironment.canUseDOM || !code) {
         return <CodeBlock language={props.lang}>{props.code}</CodeBlock>;
     }
-    return <CodeEditorComponent script={script} className={props.className} />;
+    return (
+        <CodeEditorComponent
+            code={code as iCode<typeof type>}
+            className={props.className}
+            // We force remount the editor on hydration,
+            // otherwise the correct language mode might not be applied
+            key={String(code.lang)}
+        />
+    );
 });
 
-export interface ScriptProps {
-    script: Script;
+export interface ScriptProps<T extends CodeType> {
+    code: iCode<T>;
     className?: string;
 }
 
-const CodeEditorComponent = observer((props: ScriptProps) => {
-    const { script } = props;
+const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
+    const { code } = props;
     const { colorMode } = useCodeTheme();
+    const viewStore = useStore('viewStore');
+    const id = React.useId();
     return (
-        <div className={clsx(styles.wrapper, 'notranslate', props.className)}>
-            <DocContext.Provider value={script}>
+        <FullscreenContext.Provider value={id}>
+            <div
+                id={id}
+                className={clsx(
+                    styles.wrapper,
+                    'notranslate',
+                    props.className,
+                    viewStore.isFullscreenTarget(id) && styles.fullscreen
+                )}
+            >
                 <div
                     className={clsx(
-                        styles.playgroundContainer,
+                        styles.editorContainer,
                         colorMode === 'light' && styles.lightTheme,
-                        script.meta.slim ? styles.containerSlim : styles.containerBig,
-                        'live_py'
+                        code.meta.slim ? styles.containerSlim : styles.containerBig,
+                        'live-code-editor'
                     )}
                 >
-                    <Editor />
-                    {script.meta.hasHistory && <CodeHistory />}
+                    <Editor code={code} />
+                    {code.meta.hasHistory && <CodeHistory code={code} />}
                 </div>
-                {script.lang === 'python' && <BrythonCommunicator />}
-            </DocContext.Provider>
-        </div>
+            </div>
+        </FullscreenContext.Provider>
     );
 });
 

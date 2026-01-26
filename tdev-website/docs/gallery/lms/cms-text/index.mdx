@@ -211,7 +211,7 @@ In vielen Fällen kann es nützlich sein, auch umliegende Elemente nur dann anzu
 
 Ist einer der in `entries` aufgeführten CMS-Texte nicht verfügbar, wird der gesamte Inhalt dieser Klammer ausgeblendet:
 ```md
-<WithCmsText entries={{demo: "2c0c085d-388a-48cd-9871-975bab0ffda3"}}>
+<WithCmsText entries={{text: "2c0c085d-388a-48cd-9871-975bab0ffda3"}}>
     Der Text "<CmsText name="demo" />" wurde aus der Datenbank geladen.
 </WithCmsText>
 ```
@@ -221,6 +221,9 @@ Ist einer der in `entries` aufgeführten CMS-Texte nicht verfügbar, wird der ge
         Der Text "<CmsText name="demo" />" wurde aus der Datenbank geladen.
     </WithCmsText>
 </BrowserWindow>
+:::tip[Beachte]
+Die Einträge `text` und `demo` stimmen nicht überein, deshalb wird der Inhalt **nie angezeigt**.
+:::
 
 ### Anwendungsbeispiele
 Im folgenden Beispiel wird die gesamte `<DefinitionList>` nur dann angezeigt, wenn der Eintrag für die DocumentRoot-ID `30918f4b-8400-42d9-8e1f-f19d27357494` vorhanden ist. In dem Fall steht der entsprechende CMS-Text innerhalb der `<WithCmsText>`-Klammer unter dem Namen `demo` zur Verfügung.

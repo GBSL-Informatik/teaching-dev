@@ -115,7 +115,7 @@ const NewItem = observer((props: Props) => {
                         icon={mdiFileDocument}
                         iconSide="left"
                         onClick={async () => {
-                            withFile(documentStore, rootId, directory.id, name || 'Noitz')
+                            withFile(documentStore, rootId, directory.id, name || 'Notiz')
                                 .then((file) => {
                                     if (file) {
                                         return documentStore.create({

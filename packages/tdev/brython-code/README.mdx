@@ -1,0 +1,643 @@
+---
+page_id: e7bde0ab-c0fe-4225-8325-e4ebc22d414b
+tags:
+  - '@tdev/'
+  - python
+  - code
+sidebar_position: 50
+---
+
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# brython-code
+
+
+```py live_py id=7cf4fb1c-8495-4600-bf67-23fb7bd29deb
+print('hello world')
+```
+
+### Title (`title`)
+
+Mit dem `title`-Parameter kann ein Titel für den Code-Block hinzugefügt werden.
+
+:::warning[Spaces]
+Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String eines Code-Blocks verwendet wird. Stattdessen können Unterstriche `_` oder Bindestriche `-` verwendet werden.
+:::
+
+````md
+```py live_py title=example.py
+```
+````
+
+:::tip[Use `_` in the title]
+Um einen Unterstrich zu verwenden, kann folgende Syntax verwendet werden:
+
+````md
+```py live_py title=example__file.py
+```
+````
+
+<BrowserWindow>
+  ```py live_py title=example__file.py id=8ba96031-71e6-47dd-be6e-9164761653ee
+  print('Hello Title')
+  ```
+</BrowserWindow>
+:::
+
+### Slim Mode (`slim`)
+
+Manchmal ist ein Editor mit einem Header visuell zu gross. Für kleine Code-Schnipsel kann der `slim`-Modus verwendet werden, um die Grösse des Editors zu reduzieren. Dies entfernt den Header und blendet die Zeilennummern aus.
+
+````md
+```py live_py slim
+print('Hello Slim Mode')
+```
+````
+
+<BrowserWindow>
+  ```py live_py slim
+  print('Hello Slim Mode')
+  ```
+</BrowserWindow>
+
+:::warning[API-Speicherung]
+Bei der Verwendung des `slim`-Modus wird der `id`-Parameter ignoriert.
+:::
+
+### Read-Only Mode (`readonly`)
+
+Ein Editor kann auch im Read-Only-Modus angezeigt werden, indem der `readonly`-Parameter hinzugefügt wird.
+
+````md
+```py live_py readonly
+print('Hello Read-Only Mode')
+```
+````
+
+<BrowserWindow>
+  ```py live_py readonly hideWarning
+  print('Hello Read-Only Mode')
+  ```
+</BrowserWindow>
+
+::::tip[Works with Persisted Code]
+Auch wenn der Code von der API geladen wird, wird der Read-Only-Modus beibehalten.
+
+:::details[Use Case: Schulunterricht]
+Dies ist besonders nützlich im Schulunterricht, wenn einige Übungen/Prüfungen nur während einer bestimmten Zeit durchgeführt werden sollen, die Schüler:innen aber später die eingereichte Lösungen anzeigen können sollen. Dann wird das `readonly`-Attribut hinzugefügt und die Schüler:innen sehen ihre Änderungen, können diese aber nicht bearbeiten.
+:::
+::::
+
+### Download Button verstecken (`noDownload`)
+
+Der Download-Button ermöglicht es, den Code als Datei herunterzuladen. Mit dem `noDownload`-Meta-String kann der Download-Button ausgeblendet werden.
+
+````md
+```py live_py noDownload
+print('Hello No Download Button')
+```
+````
+
+<BrowserWindow>
+  ```py live_py noDownload hideWarning
+  print('Hello No Download Button')
+  ```
+</BrowserWindow>
+
+### Vergleich-Button ausblenden (`noCompare`)
+
+Wenn Änderungen am Code vorgenommen wurden, können diese mit dem Originalcode verglichen werden. Der Vergleichsbutton kann über den `noCompare`-Meta-String ausgeblendet werden.
+
+````md
+```py live_py noCompare hideWarning
+print('Hello No Compare Button')
+```
+````
+
+<BrowserWindow>
+  Ändere den Code und beachte, dass kein Vergleichsbutton angezeigt wird.
+
+  ```py live_py noCompare hideWarning
+  print('Hello No Compare Button')
+  ```
+</BrowserWindow>
+
+### Reset-Button ausblenden (`noReset`)
+
+Der Reset-Button ermöglicht es, den Code auf den ursprünglichen Code zurückzusetzen. Der Reset-Button kann über den `noReset`-Meta-String ausgeblendet werden.
+
+````md
+```py live_py noReset
+print('Hello No Reset Button')
+```
+````
+
+<BrowserWindow>
+  Ändere den Code und beachte, dass der Reset-Button ausgeblendet ist.
+
+  ```py live_py noReset hideWarning
+  print('Hello No Reset Button')
+  ```
+</BrowserWindow>
+
+### Max Line Number bevor gescrollt wird (`maxLines`)
+
+Es kann die maximale Anzahl von Zeilen angegeben werden, bevor der Editor scrollt. Dies ist nützlich für lange Code-Schnipsel. Der Standardwert ist `25`.
+
+````md
+```py live_py maxLines=5
+print('Line 1')
+print('Line 2')
+print('Line 3')
+print('Line 4')
+print('Line 5')
+print('Line 6 - scrolled')
+```
+````
+
+<BrowserWindow>
+  ```py live_py maxLines=5 hideWarning
+  print('Line 1')
+  print('Line 2')
+  print('Line 3')
+  print('Line 4')
+  print('Line 5')
+  print('Line 6 - scrolled')
+  ```
+</BrowserWindow>
+
+
+### Minimale Anzahl Zeilen (`minLines`)
+
+Es kann die minimale Anzahl von Zeilen angegeben werden, die der Editor mindestens anzeigen soll.
+Dies ist nützlich falls Code-Blöcke miteinander verglichen werden sollen.
+
+````md
+```py live_py minLines=5
+print('Line 1')
+print('Line 2')
+```
+````
+
+<BrowserWindow>
+  ```py live_py minLines=5 hideWarning
+  print('Line 1')
+  print('Line 2')
+  ```
+</BrowserWindow>
+
+
+### Imports
+
+Standardmässig können alle Python-Skripte, die sich im Verzeichnis `static/bry-libs/` befinden, direkt aus den Code-Blöcken importiert werden. Dies ermöglicht es Ihnen, wiederverwendbare Module zu erstellen, die in Ihre Code-Blöcke importiert werden können.
+
+Das folgende Beispiel zeigt, wie ein Modul importiert und verwendet werden kann. Das Skript `grid.py` ist standardmässig in `static/bry-libs/grid.py` enthalten und kann somit importiert werden.
+The script `grid.py` is added by default to `static/bry-libs/grid.py` when you run the dev-server.
+
+:::details[Sourcecode von `grid.py`]
+```py
+from browser import document # type: ignore
+from config import Config # type: ignore
+
+class Rectangle():
+    col: int
+    row: int
+    ctx = None
+    grid = None
+    init_draw = False
+    def __init__(self, grid, col: int, row: int, color: str = ''):
+        self.col = col
+        self.row = row
+        self.grid = grid
+        self.init_draw = False
+        try:
+            canvas = document[Config.CANVAS_ID]
+            self.ctx = canvas.getContext('2d')
+        except:
+            pass
+        self._color = color
+        
+    def get(self, offset_x: int, offset_y: int):
+        y = (self.row + offset_y) % len(self.grid) # type: ignore
+        x = (self.col + offset_x) % len(self.grid[y]) # type: ignore
+        return self.grid[y][x] # type: ignore
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color: str):
+        if color == '':
+            color = 'rgba(0,0,0,0)'
+
+        if self._color == color and self.init_draw:
+            return
+        self._color = color
+        self.init_draw = True
+        self.draw()
+
+    def draw(self):
+        scale = self.grid.scale # type: ignore
+        x = self.col * scale
+        y = self.row * scale
+        try:
+            self.ctx.clearRect(x, y, scale, scale) # type: ignore
+            self.ctx.lineWidth = 0 # type: ignore
+            self.ctx.fillStyle = self.color # type: ignore
+            self.ctx.fillRect(x, y, scale, scale) # type: ignore
+        except:
+            pass
+
+    def copy(self, grid):
+        return Rectangle(grid, self.col, self.row, self.color)
+
+    def __repr__(self):
+        return self.color
+
+class RectLine():
+    line: list = []
+    n = 0
+    max = 0
+    def __init__(self, grid, row, cols: int | list, color: str = ''):
+        self.grid = grid
+        if type(cols) == list:
+            self.line = cols # type: ignore
+        else:
+            self.line = [Rectangle(grid, col, row, color) for col in range(cols)] # type: ignore
+        self.max = len(self.line) # type: ignore
+    
+    def __getitem__(self, key):
+        return self.line[key]
+
+    def __setitem__(self, key, value):
+        self.line[key].color = value
+
+    def __repr__(self):
+        return ', '.join([f'{r.color}' for r in self.line])
+
+    def __iter__(self):
+        self.n = 0
+        return self
+
+    def __next__(self):
+        if self.n < self.max:
+            result = self[self.n]
+            self.n += 1
+            return result
+        else:
+            raise StopIteration
+    
+    def __len__(self):
+        return self.max
+
+    def draw(self):
+        for rect in self.line:
+            rect.draw()
+    
+    def copy(self, grid):
+        return RectLine(grid, self.line[0].row, [l.copy(grid) for l in self.line]) # type: ignore
+
+class Grid():
+    lines = []
+    n = 0
+    max = 0
+    CANVAS_ID = ''
+    WIDTH = 500
+    HEIGHT = 500
+    scale = 10
+    record_gif = False
+    frames = {}
+
+    def __init__(self, rows: int, cols: int, color: str = '', scale: int = -1):
+        if scale < 0:
+            if rows > 0 and cols > 0:
+                scale = min(Grid.WIDTH // cols, Grid.HEIGHT // rows)
+            else:
+                scale = 10
+        self.scale = scale
+        self.lines = [RectLine(self, row, cols, color) for row in range(rows)]
+        self.max = rows
+    
+    @staticmethod
+    def setup(width: int, height: int, record_gif: bool = False):
+        Grid.HEIGHT = height
+        Grid.WIDTH = width
+        Grid.record_gif = record_gif
+        Grid.frames = {}
+        canvas = document[Config.CANVAS_ID]
+        parent = canvas.parent
+        parent.replaceChildren()
+    
+        canv = document.createElement('canvas')
+        canv.style.display = 'block'
+        canv.id = Config.CANVAS_ID;
+        canv.attrs['height'] = height
+        canv.attrs['width'] = width
+        canv.style.width = f'{width}px'
+        canv.style.height = f'{height}px'
+        parent.appendChild(canv)
+
+    @staticmethod
+    def from_bin_text(bin_text: str, colors={'s': 'black', '1': 'black', 'x': 'black', 'bg': ''}):
+        lines = bin_text.lower().splitlines()
+        if 'bg' not in colors:
+            colors['bg'] = ''
+        while len(lines) > 0 and len(lines[0]) == 0:
+            lines.pop(0)
+        size_y = len(lines)
+        if size_y < 1:
+            raise Exception('Grid must have at least one non empty line')
+        size_x = max(map(lambda x: len(x), lines))
+
+        scale = min(Grid.WIDTH // size_x, Grid.HEIGHT // size_y)
+        grid = Grid(0, 0, colors['bg'], scale)
+        raw_grid = []
+        for line in lines:
+            raw_line = []
+            for x in range(size_x):
+                if x < len(line):
+                    raw_line.append(Rectangle(grid, x, len(raw_grid), colors.get(line[x], colors['bg'])))
+                else:
+                    raw_line.append(Rectangle(grid, x, len(raw_grid), colors['bg']))
+            raw_grid.append(RectLine(grid, len(raw_grid), raw_line))
+        grid.set_lines(raw_grid)
+        grid.draw()
+        return grid
+        
+
+    def set_lines(self, lines):
+        self.lines = lines
+        self.max = len(lines)
+
+        
+    def tolist(self):
+        return [[c.color for c in l.line] for l in self.lines]
+
+    @property
+    def color_grid(self):
+        return self.tolist()
+
+    @property
+    def grid(self):
+        return self.tolist()
+
+    @property
+    def size(self):
+        return (self.dim_y, self.dim_x)
+
+    @property
+    def dim_x(self):
+        if self.max < 1:
+            return 0
+        return len(self[0])
+
+    @property
+    def dim_y(self):
+        return len(self.lines)
+
+    @staticmethod
+    def clear_canvas():
+        try:
+            canvas = document[Config.CANVAS_ID]
+            ctx = canvas.getContext('2d')
+            ctx.clearRect(0, 0, Grid.WIDTH, Grid.HEIGHT) # type: ignore
+        except:
+            pass
+
+
+    def draw(self):
+        for line in self.lines:
+            line.draw()
+
+    @staticmethod
+    def gif_add():
+        if Grid.record_gif:
+            canvas = document[Config.CANVAS_ID]
+            frameName = 'frame_' + str(len(Grid.frames)).rjust(3, '0')
+            Grid.frames[frameName] = canvas.toDataURL('image/png');
+
+
+
+    def fill(self, color: str = ''):
+        for line in self.lines:
+            for cell in line:
+                cell.color = color
+
+    def copy(self):
+        cp = Grid(0, 0)
+        lines = [l.copy(cp) for l in self.lines]
+        cp.set_lines(lines)
+        return cp
+
+
+    def __getitem__(self, key):
+        return self.lines[key]
+
+    def __setitem__(self, key, value):
+        self.lines[key] = value
+        
+    def __repr__(self):
+        rep = ''
+        for line in self.lines:
+            rep += f'{line}'
+            rep += '\n'
+        return rep
+    
+    def __iter__(self):
+        self.n = 0
+        return self
+
+    def __next__(self):
+        if self.n < self.max:
+            result = self[self.n]
+            self.n += 1
+            return result
+        else:
+            raise StopIteration
+
+    def __len__(self):
+        return self.max
+```
+:::
+
+<BrowserWindow>
+  ```py live_py title=grid__example.py hideWarning
+  from grid import Grid
+  Grid.clear_canvas()
+  smile = Grid.from_text('''
+         
+   x    x
+   
+   
+   
+   x    x 
+   xxxxxx
+   
+  ''')
+  smile.draw()
+  ```
+</BrowserWindow>
+
+### Änderungen abspeichern (`id`=uuid)
+
+Änderungen im Code-Editor können durch Hinzufügen einer `id` zum Code-Block persistiert werden. Die Änderungen werden über die `teaching-api` gespeicher und der Inhalt wird beim Neuladen der Seite wiederhergestellt.
+
+````md
+```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
+# Änderungen in diesem Code-Block werden für angemeldete User im Backend persistiert.
+```
+````
+
+<BrowserWindow>
+  ```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
+  # Änderungen in diesem Code-Block werden für angemeldete User im Backend persistiert.
+  ```
+</BrowserWindow>
+
+:::warning[Eindeutige IDs]
+Stelle sicher dass die IDs auf der gesamten Website (nicht nur auf dieser Seite) eindeutig sind, ansonsten kann das Verhalten für deine Benutzer unerwartet sein. (Der Code wird durch den zuletzt geänderten Code-Block mit derselben ID überschrieben).
+:::
+
+:::tip[UUID]
+Ein guter Weg, um eindeutige IDs zu gewährleisten, ist die Verwendung einer UUID. Für VS Code-Benutzer ist die Erweiterung [UUID Generator von Motivesoft](https://marketplace.visualstudio.com/items?itemName=motivesoft.vscode-uuid-generator) praktisch, um neue UUIDs mit `Alt+Shift+U` einzufügen.
+:::
+
+### Versionen speichern (`versioned`)
+
+Es können Versionen des Codes gespeichert werden, indem der `versioned`-Meta-String hinzugefügt wird. Dies fügt eine Versionshistorie zum Editor hinzu. Jede Änderung wird als neue Version gespeichert, aber nicht öfter als einmal alle 1 Sekunde.
+
+````md
+```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
+print('Hello Versioned Mode')
+```
+````
+
+<BrowserWindow>
+  Probiere es aus, indem du den Code mehrmals (min. 2x) änderst und speicherst und dann auf die Versionshistorie-Details klickst.
+
+  ```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
+  print('Hello Versioned Mode')
+  ```
+</BrowserWindow>
+
+:::warning[Only in Persisted Mode]
+Der `versioned`-Modus funktioniert nur in Kombination mit dem `id`-Attribut. Das `id`-Attribut wird verwendet, um die Versionen im backend zu persistieren.
+:::
+
+### Version History verstecken (`noHistory`)
+
+Die Versionen des Codes werden standardmässig angezeigt. Mit dem `noHistory`-Meta-String kann die Versionshistorie ausgeblendet werden.
+
+````md
+```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
+print('Hello No History')
+```
+````
+
+<BrowserWindow>
+  ```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
+  print('Hello Versioned Mode')
+  ```
+</BrowserWindow>
+
+### Pre- und Post-Code
+
+Mit Kommentaren lassen sich Code-Teile zu Beginn oder am Ende verstecken und auf Wunsch aufklappen. Dies ist nützlich, um den Fokus auf den Hauptteil des Codes zu legen.
+
+`### PRE`
+: Die Code-Sequenz **vor** dem `### POST`-Kommentar ist standardmässig eingeklappt und wird nicht angezeigt.
+`### POST`
+: Die Code-Sequenz **nach** dem `### POST`-Kommentar ist standardmässig eingeklappt und wird nicht angezeigt.
+
+````md
+```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
+# This is a pre code block
+from time import time
+t0 = time.time()
+PI = 3.14159265359
+### PRE
+radius = 10
+print(f'Der Umfang eines Kreises mit Radius {radius} beträgt {2 * PI * radius}')
+### POST
+print('--------------------------')
+print(f'Die Berechnung dauerte {time.time() - t0} Sekunden')
+```
+````
+
+<BrowserWindow>
+  Codeblock mit eingeklapptem Pre- und Post-Code. Die Ausklapp-Knöpfe werden angezeigt, wenn mit der Maus über den Code gefahren wird.
+
+  ```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
+  from time import time
+  t0 = time()
+  PI = 3.14159265359
+  ### PRE
+  radius = 10
+  print(f'Der Umfang eines Kreises mit Radius {radius} beträgt {2 * PI * radius}')
+  ### POST
+  print('----------------------------------------------------------')
+  print(f'Die Berechnung dauerte {(time() - t0) * 1000} Millisekunden')
+  ```
+</BrowserWindow>
+
+### Nicht abgespeicherte Code Blocks
+
+Wenn keine `id` angegeben ist, wird der Code nicht gespeichert, was mit einem :mdi[flash-triangle-outline]{.orange} und einem orangen Header signalisiert wird.
+Dies ist nützlich, wenn Code-Beispiele nicht gespeichert werden sollen.
+
+````md
+```py live_py
+print('Hello Unpersisted Code Block')
+```
+````
+
+<BrowserWindow>
+  ```py live_py
+  print('Hello Unpersisted Code Block')
+  ```
+</BrowserWindow>
+
+#### Hide the Warning (`hideWarning`)
+
+Soll die Warnung ausgeblendet werden, kann der `hideWarning`-Parameter hinzugefügt werden.
+
+````md
+```py live_py hideWarning
+print('Hello Unpersisted Code Block')
+```
+````
+
+<BrowserWindow>
+  ```py live_py hideWarning
+  print('Hello Unpersisted Code Block')
+  ```
+</BrowserWindow>
+
+
+
+## Installation
+
+:::info[`packages/tdev/brython-code`]
+Kopiere des `packages/tdev/brython-code`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
+:::
+
+Hinzufügen des `brython-code`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
+
+```ts title="siteConfig.ts"
+import { brythonCodePluginConfig } from './src/siteConfig/pluginConfigs';
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        plugins: [brythonCodePluginConfig()],
+        apiDocumentProviders: [
+            require.resolve('@tdev/brython-code/register'),
+        ]
+    };
+};
+```
+
+Danach muss erneut installiert werden:
+
+```bash
+yarn install
+```

@@ -27,6 +27,16 @@ class File extends iFileSystem<'file'> {
     }
 
     @computed
+    get fileExtension() {
+        const parts = this.name.split('.');
+        if (parts.length < 2) {
+            return '';
+        }
+        const ext = parts[parts.length - 1].toLowerCase();
+        return ext;
+    }
+
+    @computed
     get document() {
         return this.children[0];
     }

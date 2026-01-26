@@ -112,10 +112,6 @@ export class UserStore extends iStore<`update-${string}`> {
         return this.users.find((u) => u.id === this.root.sessionStore?.currentUserId);
     }
 
-    findById(id: string) {
-        return this.users.find((user) => user.id === id);
-    }
-
     @computed
     get viewedUserId() {
         if (!this.current?.hasElevatedAccess) {

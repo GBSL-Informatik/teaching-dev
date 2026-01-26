@@ -11,6 +11,8 @@ import {
     revokeUserPassword
 } from '@tdev-api/admin';
 import { DocumentType } from '@tdev-api/document';
+import { authClient } from '@tdev/auth-client';
+import { HttpStatusCode } from 'axios';
 
 export class AdminStore extends iStore<`set-user-pw-${string}` | `revoke-user-pw-${string}`> {
     readonly root: RootStore;
@@ -62,9 +64,35 @@ export class AdminStore extends iStore<`set-user-pw-${string}` | `revoke-user-pw
         if (!this.root.userStore.current?.isAdmin) {
             return Promise.reject(new Error('Not authorized'));
         }
+        const user = this.root.userStore.find(userId);
+        if (user && user.hasEmailPasswordAuth) {
+            return authClient.admin
+                .setUserPassword({
+                    userId: userId,
+                    newPassword: newPassword
+                })
+                .then((res) => {
+                    if (res.data) {
+                        return { success: true, id: userId };
+                    }
+                    return { success: false, id: userId, reason: res.error?.message || 'Unbekannter Fehler' };
+                })
+                .catch((err) => {
+                    return { success: false, id: userId, reason: err.message || 'Unbekannter Fehler' };
+                });
+        }
         return this.withAbortController(`set-user-pw-${userId}`, async (ct) => {
             return linkUserPassword(userId, newPassword, ct.signal);
-        });
+        })
+            .then((res) => {
+                if (res.status === HttpStatusCode.Created) {
+                    return { success: true, id: userId };
+                }
+                return { success: false, id: userId, reason: 'Unbekannter Fehler' };
+            })
+            .catch((err) => {
+                return { success: false, id: userId, reason: err.message || 'Unbekannter Fehler' };
+            });
     }
 
     @action

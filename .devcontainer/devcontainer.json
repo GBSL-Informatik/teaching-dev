@@ -1,6 +1,6 @@
 {
     "name": "TeachingDev",
-    "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -31,7 +31,7 @@
     "forwardPorts": [3000],
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "22.15"
+            "version": "24.13"
         }
     },
     "runArgs": ["--network=host"]

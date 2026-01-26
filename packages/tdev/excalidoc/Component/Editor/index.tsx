@@ -11,7 +11,6 @@ import { useColorMode } from '@docusaurus/theme-common';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
 import _ from 'es-toolkit/compat';
 import { useDocument } from '@tdev-hooks/useDocument';
-import { DocumentType } from '@tdev-api/document';
 import '@excalidraw/excalidraw/index.css';
 import { MetaInit } from '@tdev/excalidoc/model/ModelMeta';
 export interface Props extends MetaInit {

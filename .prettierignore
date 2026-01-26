@@ -21,6 +21,7 @@ i18n
 versions.json
 docusaurus.config.ts
 versioned_sidebars/*.json
+package.json
 
 static/katex/katex.min.css
 .vscode/*.code-snippets

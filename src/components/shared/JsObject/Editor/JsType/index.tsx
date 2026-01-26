@@ -5,9 +5,9 @@ import { observer } from 'mobx-react-lite';
 import TextInput from '@tdev-components/shared/TextInput';
 import { action } from 'mobx';
 import _ from 'es-toolkit/compat';
-import { IfmColors } from '@tdev-components/shared/Colors';
-import iJs from '../models/iJs';
-import { JsTypeName } from '../../toJsSchema';
+import type { IfmColors } from '@tdev-components/shared/Colors';
+import type iJs from '../models/iJs';
+import type { JsTypeName } from '../../toJsSchema';
 import ChangeType from '../Actions/ChangeType';
 import RemoveProp from '../Actions/RemoveProp';
 

@@ -3,9 +3,13 @@ import _ from 'es-toolkit/compat';
 import MemoryStorage from './MemoryStorage';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 
-export const StorageKey = Object.freeze({
-    GithubToken: _.upperFirst(_.camelCase(`GithubToken${siteConfig.projectName || ''}`))
-});
+const getStorageKey = (key: string) => {
+    return _.upperFirst(_.camelCase(`${key}${siteConfig.projectName || ''}`));
+};
+
+export interface StorageKey {
+    GithubToken: 'githubToken';
+}
 
 /**
  * @see https://github.com/outline/outline/blob/main/shared/utils/Storage.ts
@@ -35,12 +39,13 @@ class SessionStorage {
      * @param key The key to set under.
      * @param value The value to set
      */
-    public set<T>(key: keyof typeof StorageKey, value: T) {
+    public set<T>(key: keyof StorageKey, value: T) {
         try {
             if (value === undefined) {
                 this.remove(key);
             } else {
-                this.interface.setItem(StorageKey[key], JSON.stringify(value));
+                const storageKey = getStorageKey(key);
+                this.interface.setItem(storageKey, JSON.stringify(value));
             }
         } catch (_err) {
             // Ignore errors
@@ -54,9 +59,10 @@ class SessionStorage {
      * @param fallback The fallback value if the key doesn't exist.
      * @returns The value or undefined if it doesn't exist.
      */
-    public get<T>(key: keyof typeof StorageKey, fallback?: T): T | undefined {
+    public get<T>(key: keyof StorageKey, fallback?: T): T | undefined {
         try {
-            const value = this.interface.getItem(StorageKey[key]);
+            const storageKey = getStorageKey(key);
+            const value = this.interface.getItem(storageKey);
             if (typeof value === 'string') {
                 return JSON.parse(value);
             }
@@ -72,9 +78,10 @@ class SessionStorage {
      *
      * @param key The key to remove.
      */
-    public remove(key: keyof typeof StorageKey) {
+    public remove(key: keyof StorageKey) {
         try {
-            this.interface.removeItem(StorageKey[key]);
+            const storageKey = getStorageKey(key);
+            this.interface.removeItem(storageKey);
         } catch (_err) {
             // Ignore errors
         }

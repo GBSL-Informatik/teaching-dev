@@ -49,11 +49,7 @@ const ImportPreview = (props: Props) => {
                                 title="Vorschau"
                                 className={clsx(styles.previewCode)}
                             >
-                                {getPreview(
-                                    tableWithHeader.slice(1),
-                                    assignment.idx,
-                                    assignment.name || assignment.id
-                                )}
+                                {getPreview(tableWithHeader.slice(1), assignment.idx, assignment.id)}
                             </CodeBlock>
                         </TabItem>
                     ))}
@@ -65,11 +61,7 @@ const ImportPreview = (props: Props) => {
                     title="Vorschau"
                     className={clsx(styles.previewCode)}
                 >
-                    {getPreview(
-                        tableWithHeader.slice(1),
-                        assignments[0].idx,
-                        assignments[0].name || assignments[0].id
-                    )}
+                    {getPreview(tableWithHeader.slice(1), assignments[0].idx, assignments[0].id)}
                 </CodeBlock>
             )}
         </>

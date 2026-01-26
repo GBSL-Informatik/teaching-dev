@@ -8,7 +8,7 @@ const COLORS = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'] 
 const IFM_COLORS = [...COLORS.map((c) => `var(--ifm-color-${c}-lightest)`)] as const;
 
 type AssignableColumns = {
-    [name: string]: string;
+    [name: string]: string[];
 };
 
 export interface AssignedColumn {
@@ -27,23 +27,42 @@ interface Props {
 
 const AssignColumns = (props: Props) => {
     const { table, toAssign, onChange } = props;
+    const initialAssignment = React.useMemo(() => {
+        const firstRow = table[0] || [];
+        if (firstRow.length === 2 && Object.keys(toAssign).length === 1) {
+            // if there are only two columns and only one assignment, assign the second column
+            return [
+                {
+                    id: Object.keys(toAssign)[0],
+                    idx: 1,
+                    name: toAssign[Object.keys(toAssign)[0]]?.[0]
+                }
+            ];
+        }
+        const assignments: AssignedColumn[] = [];
+        firstRow.forEach((cell, idx) => {
+            const match = Object.entries(toAssign).find(([_, possibleValues]) =>
+                possibleValues.map((v) => v.toLowerCase()).includes(cell.trim().toLowerCase())
+            );
+            if (match) {
+                assignments.push({ id: match[0], idx: idx, name: match[1][0] });
+            }
+        });
+        return assignments;
+    }, []);
 
     const count = Object.values(toAssign).length;
     const isSingleAssignment = count === 1;
-    const [assigned, setAssigned] = React.useState<AssignedColumn[]>(
-        isSingleAssignment && table[0].length === 2
-            ? [{ id: Object.values(toAssign)[0], idx: 1, name: Object.keys(toAssign)[0] }]
-            : []
-    );
+    const [assigned, setAssigned] = React.useState<AssignedColumn[]>(initialAssignment);
     const [currentAssignment, setCurrentAssignment] = React.useState<AssignedColumn | null>({
-        id: Object.values(toAssign)[0],
+        id: Object.keys(toAssign)[0],
         idx: -1,
-        name: Object.keys(toAssign)[0]
+        name: Object.values(toAssign)[0]?.[0]
     });
     React.useEffect(() => {
         onChange(assigned);
     }, [onChange, assigned]);
-    const colorIdxMap = new Map(Object.values(toAssign).map((id, idx) => [id, idx % COLORS.length]));
+    const colorIdxMap = new Map(Object.keys(toAssign).map((id, idx) => [id, idx % COLORS.length]));
 
     return (
         <>
@@ -61,17 +80,17 @@ const AssignColumns = (props: Props) => {
             {count > 1 && (
                 <>
                     <div className={clsx(styles.names, 'button-group', 'button--block')}>
-                        {Object.entries(toAssign).map(([name, id], idx) => {
+                        {Object.entries(toAssign).map(([id, names], idx) => {
                             return (
                                 <Button
                                     onClick={() => {
                                         setCurrentAssignment({
                                             id: id,
                                             idx: -1,
-                                            name: name
+                                            name: names[0]
                                         });
                                     }}
-                                    text={name || id}
+                                    text={names[0] || id}
                                     noOutline={currentAssignment?.id === id}
                                     color={COLORS[colorIdxMap.get(id)!]}
                                     key={idx}
@@ -99,7 +118,11 @@ const AssignColumns = (props: Props) => {
                             setAssigned([]);
                         } else {
                             setAssigned([
-                                { id: Object.values(toAssign)[0], idx: idx, name: Object.keys(toAssign)[0] }
+                                {
+                                    id: Object.keys(toAssign)[0],
+                                    idx: idx,
+                                    name: Object.values(toAssign)[0]?.[0]
+                                }
                             ]);
                         }
                     } else {
@@ -123,11 +146,13 @@ const AssignColumns = (props: Props) => {
                             }
                         }
                         const assignedIds = new Set([...assigned.map((a) => a.id), currentAssignment?.id]);
-                        const assignNext = Object.entries(toAssign).find(
-                            ([_name, id]) => !assignedIds.has(id)
-                        );
+                        const assignNext = Object.keys(toAssign).find((id) => !assignedIds.has(id));
                         if (assignNext) {
-                            setCurrentAssignment({ id: assignNext[1], idx: -1, name: assignNext[0] });
+                            setCurrentAssignment({
+                                id: assignNext,
+                                idx: -1,
+                                name: toAssign[assignNext]?.[0]
+                            });
                         }
                     }
                 }}

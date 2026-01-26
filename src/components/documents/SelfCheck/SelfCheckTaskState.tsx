@@ -9,8 +9,9 @@ import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
 import { SelfCheckContext, SelfCheckStateSideEffect } from '@tdev-components/documents/SelfCheck/shared';
-import { DocumentTypes } from '@tdev-api/document';
+import { DocumentModelType } from '@tdev-api/document';
 import TaskState from '@tdev-models/documents/TaskState';
+import { reaction } from 'mobx';
 
 interface Props extends MetaInit {
     includeQuestion: boolean;
@@ -30,7 +31,7 @@ const SelfCheckTaskState = observer(({ includeQuestion = true, pagePosition }: P
     const solutionDocRoot = useDocumentRoot(context.solutionId, solutionMeta, false);
 
     React.useEffect(() => {
-        taskDocRoot.allDocuments.forEach((doc: DocumentTypes) => {
+        taskDocRoot.allDocuments.forEach((doc: DocumentModelType) => {
             (doc as TaskState).registerSideEffect(
                 new SelfCheckStateSideEffect(doc.authorId, solutionDocRoot)
             );

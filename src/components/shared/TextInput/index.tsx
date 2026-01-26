@@ -8,8 +8,9 @@ interface Props {
     defaultValue?: string;
     placeholder?: string;
     onChange: (text: string) => void;
-    onEnter?: () => void;
-    onEscape?: () => void;
+    onEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onEscape?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onSave?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     validator?: (text: string) => string | null;
     className?: string;
     labelClassName?: string;
@@ -66,10 +67,13 @@ const TextInput = observer((props: Props) => {
                 }}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                        props.onEnter?.();
+                        props.onEnter?.(e);
                     }
                     if (e.key === 'Escape') {
-                        props.onEscape?.();
+                        props.onEscape?.(e);
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        props.onSave?.(e);
                     }
                 }}
                 onInput={(e) => {

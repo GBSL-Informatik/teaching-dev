@@ -1,11 +1,10 @@
-import { action, computed, IReactionDisposer, observable, reaction, set } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction } from 'mobx';
 import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import _ from 'es-toolkit/compat';
+import _, { type DebouncedFunc } from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
 import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
-import { DUMMY_DOCUMENT_ID } from '@tdev-hooks/useFirstMainDocument';
 import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 
 /**
@@ -36,11 +35,7 @@ abstract class iDocument<Type extends DocumentType> {
      * Time [s] :    0        1        2        3        4        5        6        7
      * Edits    :    |||  |            |||   ||  |  |     ||  ||||  |||    ||  ||| |||||
      */
-    save = _.debounce(action(this._save), SAVE_DEBOUNCE_TIME, {
-        leading: false,
-        trailing: true,
-        maxWait: 5 * SAVE_DEBOUNCE_TIME
-    });
+    save: DebouncedFunc<() => Promise<boolean>>;
 
     @observable accessor state: ApiState = ApiState.IDLE;
 
@@ -48,7 +43,11 @@ abstract class iDocument<Type extends DocumentType> {
 
     @observable.ref accessor updatedAt: Date;
     readonly stateDisposer: IReactionDisposer;
-    constructor(props: DocumentProps<Type>, store: DocumentStore) {
+    constructor(
+        props: DocumentProps<Type>,
+        store: DocumentStore,
+        saveDebounceTime: number = SAVE_DEBOUNCE_TIME
+    ) {
         this.store = store;
         this.id = props.id;
         this.authorId = props.authorId;
@@ -59,6 +58,11 @@ abstract class iDocument<Type extends DocumentType> {
 
         this.createdAt = new Date(props.createdAt);
         this.updatedAt = new Date(props.updatedAt);
+        this.save = _.debounce(action(this._save), saveDebounceTime, {
+            leading: false,
+            trailing: true,
+            maxWait: 5 * saveDebounceTime
+        });
         this.stateDisposer = reaction(
             () => this.state,
             (state) => {
@@ -75,6 +79,10 @@ abstract class iDocument<Type extends DocumentType> {
                 }
             }
         );
+    }
+
+    get isDummy() {
+        return isDummyId(this.id);
     }
 
     get isLoadable() {
@@ -186,14 +194,7 @@ abstract class iDocument<Type extends DocumentType> {
         if (!this.store.root.userStore.current) {
             return !NoneAccess.has(this.root.permission);
         }
-        const userId = this.store.root.userStore.current?.id;
-        if (NoneAccess.has(this.root.permission)) {
-            return false;
-        }
-        if (this.authorId === userId) {
-            return true;
-        }
-        return !NoneAccess.has(this.root.sharedAccess);
+        return this.root.hasReadAccess || this.root.hasAdminOrRWAccess;
     }
 
     get author() {
@@ -216,7 +217,7 @@ abstract class iDocument<Type extends DocumentType> {
     @action
     saveNow() {
         this.save();
-        return this.save.flush();
+        return this.save.flush() ?? Promise.resolve();
     }
 
     @action
@@ -231,17 +232,20 @@ abstract class iDocument<Type extends DocumentType> {
                     action((res) => {
                         if (res === 'error') {
                             this.state = ApiState.ERROR;
+                            return false;
                         } else {
                             this.state = ApiState.SUCCESS;
                             if (this.isDirty) {
                                 this._pristine = { ...this.data };
                             }
+                            return true;
                         }
                     })
                 );
             })
             .catch((e) => {
                 console.warn('OnBeforeSave failed for', this.id, e);
+                return false;
             });
     }
 }

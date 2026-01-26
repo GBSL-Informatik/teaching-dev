@@ -1,30 +1,33 @@
 import * as React from 'react';
 import Button from '@tdev-components/documents/CodeEditor/Button';
 import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import { DocumentType } from '@tdev-api/document';
 import { mdiDownload } from '@mdi/js';
+import type iCode from '@tdev-models/documents/iCode';
+import type { CodeType } from '@tdev-api/document';
 
-const DownloadCode = observer((props: { title: string }) => {
-    const script = useDocument<'script'>();
+interface Props<T extends CodeType> {
+    code: iCode<T>;
+}
 
+const DownloadCode = observer(<T extends CodeType>(props: Props<T>) => {
+    const { code } = props;
     return (
         <Button
             icon={mdiDownload}
             onClick={() => {
                 const downloadLink = document.createElement('a');
-                const file = new Blob([script.code], { type: 'text/plain;charset=utf-8' });
+                const file = new Blob([code.code], { type: 'text/plain;charset=utf-8' });
                 downloadLink.href = URL.createObjectURL(file);
-                const fExt = script.lang === 'python' ? '.py' : `.${script.lang}`;
+                const fExt = code.lang === 'python' ? '.py' : `.${code.lang}`;
                 const fTitle =
-                    props.title === script.lang ? script.id : (props.title.split('/').pop() ?? script.id);
+                    props.code.title === code.lang ? code.id : (code.title.split('/').pop() ?? code.id);
                 const fName = fTitle.endsWith(fExt) ? fTitle : `${fTitle}${fExt}`;
                 downloadLink.download = fName;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
             }}
-            title={`Programm "${script.title}" herunterladen`}
+            title={`Programm "${code.title}" herunterladen`}
         />
     );
 });

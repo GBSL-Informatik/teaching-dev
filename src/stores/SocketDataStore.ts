@@ -203,6 +203,15 @@ export class SocketDataStore extends iStore<'ping'> {
         );
     }
 
+    /**
+     * stream updates to all connected group members (stream to the `roomId`
+     * in the payload, which usually is a documentRootId)
+     */
+    @action
+    streamUpdate(roomId: string, payload: ChangedDocument) {
+        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId });
+    }
+
     @action
     createRecord({ type, record }: NewRecord<RecordType>) {
         switch (type) {
@@ -215,6 +224,13 @@ export class SocketDataStore extends iStore<'ping'> {
             case RecordType.Document:
                 const doc = record as Document<any>;
                 if (this.recordsToCreate.has(doc.type) || doc.parentId) {
+                    this.root.documentStore.addToStore(doc);
+                }
+                if (
+                    this.root.userStore.isUserSwitched &&
+                    doc.authorId === this.root.userStore.viewedUserId &&
+                    this.root.documentRootStore.find(doc.documentRootId)
+                ) {
                     this.root.documentStore.addToStore(doc);
                 }
                 break;

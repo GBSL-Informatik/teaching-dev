@@ -6,7 +6,6 @@ import Popup from 'reactjs-popup';
 import Button from '@tdev-components/shared/Button';
 import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiFileExcelOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
-import { DocumentType } from '@tdev-api/document';
 import { CmsTextEntries } from '../WithCmsText';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import CmsText from '@tdev-models/documents/CmsText';
@@ -63,6 +62,15 @@ const createCmsTexts = async (
 
 const CmsImporter = observer((props: Props) => {
     const { toAssign } = props;
+    const cmsAssignments = React.useMemo(() => {
+        return Object.entries(toAssign).reduce(
+            (acc, val) => {
+                acc[val[1]] = [val[0]];
+                return acc;
+            },
+            {} as Record<string, string[]>
+        );
+    }, [toAssign]);
     const ref = React.useRef<PopupActions>(null);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
@@ -99,11 +107,12 @@ const CmsImporter = observer((props: Props) => {
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
             onOpen={() => {
                 setIsOpen(true);
+                const docRootIds = Object.keys(cmsAssignments);
                 documentStore
-                    .apiLoadDocumentsFrom(Object.values(toAssign))
+                    .apiLoadDocumentsFrom(docRootIds)
                     .then((models) => {
                         if (
-                            documentStore.apiStateFor(`load-docs-${Object.values(toAssign).join('::')}`) ===
+                            documentStore.apiStateFor(`load-docs-${docRootIds.join('::')}`) ===
                             ApiState.SUCCESS
                         ) {
                             setReady(true);
@@ -126,9 +135,9 @@ const CmsImporter = observer((props: Props) => {
                 <div className={clsx('card__header', styles.header)}>
                     <h3>CMS Texte erstellen</h3>
                     <div className={clsx(styles.importLabels)}>
-                        {Object.keys(toAssign).map((item, idx) => (
-                            <Badge key={idx} type="primary" title={toAssign[item as keyof CmsTextEntries]}>
-                                {item}
+                        {Object.keys(cmsAssignments).map((id, idx) => (
+                            <Badge key={idx} type="primary" title={id}>
+                                {cmsAssignments[id][0] ?? id}
                             </Badge>
                         ))}
                     </div>
@@ -179,7 +188,7 @@ const CmsImporter = observer((props: Props) => {
                                     setAssigned(assigned);
                                 }}
                                 table={table}
-                                toAssign={toAssign}
+                                toAssign={cmsAssignments}
                                 trimmedCells={{ [0]: 7 }}
                                 tableClassName={clsx(styles.assignTable)}
                             />

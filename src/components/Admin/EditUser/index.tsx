@@ -216,10 +216,10 @@ const EditUser = observer((props: Props) => {
                             disabled={!password || !!pwValidator(password) || !!spinState}
                             onClick={() => {
                                 setSpinState('change-pw');
-                                authClient.admin
-                                    .setUserPassword({ userId: user.id, newPassword: password })
+                                adminStore
+                                    .setUserPassword(user.id, password)
                                     .then((res) => {
-                                        if (res?.data) {
+                                        if (res.success) {
                                             setPwState('success');
                                         } else {
                                             setPwState('error');
@@ -240,11 +240,12 @@ const EditUser = observer((props: Props) => {
                                 adminStore
                                     .setUserPassword(user.id, password)
                                     .then((res) => {
-                                        setPwState('success');
+                                        if (res.success) {
+                                            setPwState('success');
+                                        } else {
+                                            setPwState('error');
+                                        }
                                         setPassword('');
-                                    })
-                                    .catch(() => {
-                                        setPwState('error');
                                     })
                                     .finally(() => {
                                         setSpinState(null);

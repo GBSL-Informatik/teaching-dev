@@ -2,10 +2,20 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
-import { DummyMeta } from '@tdev-models/DocumentRoot';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+import type { DocumentType } from '@tdev-api/document';
 
 interface Props {
     pageId: string;
+}
+
+export class PageMeta extends TypeMeta<DocumentType> {
+    constructor() {
+        super('_page_' as DocumentType);
+    }
+    get defaultData() {
+        return {};
+    }
 }
 
 /**
@@ -15,7 +25,8 @@ const MdxPage = observer((props: Props) => {
     const pageStore = useStore('pageStore');
     const userStore = useStore('userStore');
     const { pageId } = props;
-    useDocumentRoot(pageId, new DummyMeta(), false);
+    const [meta] = React.useState(new PageMeta());
+    useDocumentRoot(pageId, meta, false);
     React.useEffect(() => {
         if (pageId) {
             pageStore.addIfNotPresent(pageId, true);
@@ -26,7 +37,10 @@ const MdxPage = observer((props: Props) => {
     }, [pageId]);
     React.useEffect(() => {
         const { current } = pageStore;
-        if (current && userStore.viewedUserId && userStore.viewedUserId !== userStore.current?.id) {
+        if (!current || !userStore.current?.hasElevatedAccess) {
+            return;
+        }
+        if (userStore.viewedUserId && userStore.viewedUserId !== userStore.current?.id) {
             current.loadLinkedDocumentRoots();
         }
     }, [pageStore.current, userStore.viewedUserId]);

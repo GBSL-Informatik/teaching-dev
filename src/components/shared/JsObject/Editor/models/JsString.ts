@@ -1,6 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import iJs from './iJs';
-import { JsString as JsStringType } from '../../toJsSchema';
+import type { JsString as JsStringType } from '../../toJsSchema';
 import type iParentable from './iParentable';
 
 class JsString extends iJs {

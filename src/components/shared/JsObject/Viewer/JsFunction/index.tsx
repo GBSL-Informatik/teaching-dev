@@ -2,9 +2,10 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { JsFunction } from '@tdev-components/shared/JsObject/toJsSchema';
 import JsType from '@tdev-components/shared/JsObject/Viewer/JsType';
-import CodeBlock from '@theme/CodeBlock';
+import CodeBlock from '@theme-original/CodeBlock';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 export interface Props {
     js: JsFunction;
@@ -13,11 +14,12 @@ export interface Props {
 
 const JsFunction = observer((props: Props) => {
     const { js } = props;
+    const isBrowser = useIsBrowser();
 
     return (
         <JsType js={js}>
             <CodeBlock language="javascript" className={clsx(styles.code, props.className)}>
-                {js.value.toString()}
+                {isBrowser ? js.value.toString() : `() => [native code]`}
             </CodeBlock>
         </JsType>
     );

@@ -20,6 +20,7 @@ export const POPUP_BUTTON_STYLE = clsx(
 export interface Base {
     onClick?: MouseEventHandler<HTMLButtonElement>;
     onMouseDown?: MouseEventHandler<HTMLButtonElement>;
+    onMouseUp?: MouseEventHandler<HTMLButtonElement>;
     title?: string;
     href?: string;
     target?: '_blank' | `_self`;
@@ -163,6 +164,7 @@ const Button = (props: Props) => {
             disabled={props.disabled}
             title={props.title}
             onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}
         >
             <ButtonInner {...props} />
             {props.floatingIcon && <span className={styles.floatingIcon}>{props.floatingIcon}</span>}

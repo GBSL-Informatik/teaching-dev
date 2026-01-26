@@ -58,6 +58,10 @@ export const codeAsAttributePluginConfig = [
                 processMultiple: true
             },
             {
+                name: 'Pyodide',
+                attributeName: 'code'
+            },
+            {
                 name: 'NetpbmEditor',
                 attributeName: 'default'
             },
@@ -172,7 +176,7 @@ export const graphvizPluginConfig = graphvizPlugin;
 export const commentPluginConfig = [
     commentPlugin,
     {
-        commentableJsxFlowElements: ['dd', 'DefHeading', 'figcaption', 'String'],
+        commentableJsxFlowElements: ['DefHeading', 'figcaption', 'String'],
         ignoreJsxFlowElements: ['summary', 'dt'],
         ignoreCodeBlocksWithMeta: /live_py/
     }

@@ -1,0 +1,23 @@
+{
+    "name": "@tdev/pyodide-code",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": {
+        "comlink": "^4.4.2",
+        "pyodide": "^0.29.1"
+    },
+    "devDependencies": {
+        "@docusaurus/core": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@types/node": "*",
+        "vitest": "*"
+    },
+    "peerDependencies": {
+        "@mdi/js": "*",
+        "@mdi/react": "*",
+        "@tdev/core": "1.0.0",
+        "mobx": "*",
+        "mobx-react-lite": "*"
+    }
+}

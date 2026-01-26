@@ -174,8 +174,8 @@ export default class OfflineApi {
                 return resolveResponse(document as unknown as T);
             case 'documentRoots':
                 return resolveResponse({
-                    access: Access.RW_DocumentRoot,
-                    sharedAccess: Access.RW_DocumentRoot,
+                    access: (data as DocumentRoot).access ?? Access.RW_DocumentRoot,
+                    sharedAccess: (data as DocumentRoot).sharedAccess ?? Access.RW_DocumentRoot,
                     userPermissions: [],
                     groupPermissions: [],
                     documents: [], //documentsBy(id), // Fetching is only on GET/PUT, avoid circular dependency
@@ -217,20 +217,28 @@ export default class OfflineApi {
             case 'users':
                 if (parts.length === 1 && parts[0] === 'documentRoots') {
                     const ids = query.getAll('ids');
+                    const docType = query.get('type') as DocumentType | null;
                     if (ids.length === 0) {
                         resolveResponse([] as unknown as T);
                     }
                     const documentRootDocs = await Promise.all(ids.map((id) => this.documentsBy(id)));
-                    const documenRoots = documentRootDocs
-                        .filter((docs) => docs.length > 0)
-                        .map((docs) => ({
-                            id: docs[0].documentRootId,
+                    const filteredDocs = docType
+                        ? documentRootDocs.map((docs) => docs.filter((doc) => doc.type === docType))
+                        : documentRootDocs;
+
+                    const documenRoots = ids.map((rid) => {
+                        return {
+                            id: rid,
                             access: Access.RW_DocumentRoot,
                             sharedAccess: Access.RW_DocumentRoot,
                             userPermissions: [],
                             groupPermissions: [],
-                            documents: docs
-                        })) as unknown as T;
+                            documents:
+                                filteredDocs.find(
+                                    (docs) => docs.length > 0 && docs[0].documentRootId === rid
+                                ) || []
+                        };
+                    }) as unknown as T;
                     return resolveResponse(documenRoots);
                 }
                 return resolveResponse([OfflineUser] as unknown as T);
@@ -366,6 +374,19 @@ export default class OfflineApi {
         switch (model) {
             case 'documents':
                 await this.dbAdapter.delete(DOCUMENTS_STORE, id);
+                return resolveResponse(null);
+            case 'documentRoots':
+                // Deleting a document root could involve deleting associated documents
+                const documents = await this.dbAdapter.byDocumentRootId(id);
+                for (const doc of documents) {
+                    await this.dbAdapter.delete(DOCUMENTS_STORE, doc.id);
+                }
+                return resolveResponse(null);
+            case 'permissions':
+                await this.dbAdapter.delete(PERMISSIONS_STORE, id);
+                return resolveResponse(null);
+            case 'studentGroups':
+                await this.dbAdapter.delete(STUDENT_GROUPS_STORE, id);
                 return resolveResponse(null);
         }
         return rejectResponse({} as T, 400, 'Not implemented');
