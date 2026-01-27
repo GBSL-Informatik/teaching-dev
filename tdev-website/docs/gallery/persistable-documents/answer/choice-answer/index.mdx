@@ -1,0 +1,110 @@
+---
+page_id: 08ac6803-b890-4608-9d4e-28f334addfb0
+tags:
+  - persistable
+---
+import String from '@tdev-components/documents/String';
+import PermissionsPanel from "@tdev-components/PermissionsPanel"
+import BrowserWindow from '@tdev-components/BrowserWindow';
+
+# Choice Answer
+Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
+
+## Standalone-Fragen
+Einfache Single- und Multiple-Choice-Fragen:
+
+```html
+<ChoiceAnswer id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+    Wir gilt als Erfinder des World Wide Web (WWW)?
+    
+    <ChoiceAnswer.Option id="1">Steve Jobs</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="2" correct>Tim Berners-Lee</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="3">Ada Lovelace</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="4">Alain Berset</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="5">Charles Bartowski</ChoiceAnswer.Option>
+</ChoiceAnswer>
+```
+
+Mithilfe der IDs können die Antwortmöglichkeiten eindeutig identifiziert werden. Dies erlaubt es, die Reihenfolge der Optionen zu ändern und z.B. Tippfehler zu korrigieren, ohne dass die Korrektheit der Antworten verloren geht. Die IDs sind **frei wählbar**: Es können z.B. UUIDs, laufende Nummern oder semantische Schlüssel verwendet werden.
+
+```html
+<ChoiceAnswer id="7b97dd5d-d304-46db-823f-68237814fee5" multiple>
+    Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+    
+    <ChoiceAnswer.Option id="1" correct>2 ist die einzige gerade Primzahl.</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="2">Jede Primzahl ist ungerade.</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="3">1 ist eine Primzahl.</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="4" correct>5 ist eine Primzahl.</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="5" correct>Primzahlen sind nur durch 1 und sich selbst teilbar.</ChoiceAnswer.Option>
+</ChoiceAnswer>
+```
+
+Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
+
+```html
+<TrueFalseAnswer id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
+    Die Erde ist flach.
+</TrueFalseAnswer>
+```
+
+Mit der `randomize`-Property werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt. Zudem dürfen bei SC-Aufgaben auch mehrere Optionen korrekt sein. Wird eine davon ausgewählt, gilt die Antwort als richtig:
+
+```html
+<ChoiceAnswer id="5f3a2c5a-0d39-4572-8245-5232a9066b9d" randomize>
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    <ChoiceAnswer.Option id="ts" correct>TypeScript</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="python">Python</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="js">JavaScript</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="java" correct>Java</ChoiceAnswer.Option>
+    <ChoiceAnswer.Option id="ruby">Ruby</ChoiceAnswer.Option>
+</ChoiceAnswer>
+```
+
+## Fragegruppen
+Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Fragen zusammengefasst. Dies kann mit der `ChoiceAnswer.Group`-Komponente erreicht werden:
+
+```html
+<ChoiceAnswer.Group>
+    <ChoiceAnswer id="c655526e-6cf4-46e6-990e-b4c63a4e96b7">
+        In welchem Jahr war 2024?
+        
+        <ChoiceAnswer.Option id="1965">1965</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="1983">1983</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="1991">1991</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="2000">2000</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="2024" correct>2024</ChoiceAnswer.Option>
+    </ChoiceAnswer>
+    
+    <TrueFalseAnswer id="c4b45b05-c883-4fcb-97ff-f0b4b9e942b7">
+        HTML ist eine Programmiersprache.
+    </TrueFalseAnswer>
+    
+    <ChoiceAnswer id="ed234dee-60e6-457a-a3b2-7d7f8a642e6b" multiple>
+        Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+        
+        <ChoiceAnswer.Option id="smtp" correct>SMTP</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="ftp">FTP</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="imap" correct>IMAP</ChoiceAnswer.Option>
+        <ChoiceAnswer.Option id="http">HTTP</ChoiceAnswer.Option>
+    </ChoiceAnswer>
+</ChoiceAnswer.Group>
+```
+
+## TODO
+- Bei MC-Aufgaben sind Teilpunktzahlen möglich.
+  - TODO TODO: Standalone MC-Fragen müssten demnach auch nicht nur mit richtig und falsch, sondern mit "teilweise richtig" bewertet werden?
+- Mehrere ChoiceAnswers können in einer ChoiceAnswerGroup zusammengefasst werden.
+- Eine ChoiceAnswerGroup kann auf ein Karussell reduziert werden, um Platz zu sparen.
+- Bei einer ChoiceAnswerGroup kann eine Gesamtpunktzahl definiert werden, die auf die einzelnen ChoiceAnswers aufgeteilt wird.
+- Die Wertung der Antworten kann angepasst werden – es sind z.B. auch Negativpunkte möglich. Es kann zudem eingestellt werden, ob die Gruppe insgesamt weniger als 0 Punkte ergeben darf.
+- Der Korrekturknopf einer ChoiceAnswerGroup kann versteckt oder mit einer Permission geschützt werden.
+- Bei einer ChoiceAnswerGroup kann eingestellt werden, ob die Fragen in der vorgegebenen Reihenfolge oder zufällig angezeigt werden sollen.
+- TODO TODO:
+  - Korrektur: Einzeln oder nur Punkte?
+  - Konzept eines "Durchgangs" (Versuch)? Versuch verwerfen und neu starten nach Korrektur?
+  - Soll eine CA / CA.Group automatische eine Aufgabe sein? Soll sie automatisch eine Checkbox erhalten? Soll diese automatisch aktiviert sein, wenn das Quiz fertig gelöst ist? Soll sie nur aktiviert sein, wenn alles korrekt gelöst wurde? Soll das alles eine Option sein?
+
+## Future Work
+- Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einer ChoiceAnswerGroup auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
+- Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll die `ChoiceAnswer.Group` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
