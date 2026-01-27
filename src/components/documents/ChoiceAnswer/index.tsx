@@ -4,22 +4,27 @@ import React from 'react';
 
 interface Props {
     children: React.ReactElement[];
+    multiple?: boolean;
     id: string;
 }
 
-const createInputOptions = (optionsList: React.ReactNode[], id: string): React.ReactNode[] => {
+const createInputOptions = (
+    optionsList: React.ReactNode[],
+    multiple: boolean | undefined,
+    id: string
+): React.ReactNode[] => {
     return optionsList.map((option, index) => {
         const optionId = `${id}-option-${index}`;
         return (
             <div key={optionId}>
-                <input type="radio" id={optionId} name={id} value={optionId} />
+                <input type={multiple ? 'checkbox' : 'radio'} id={optionId} name={id} value={optionId} />
                 <label htmlFor={optionId}>{option}</label>
             </div>
         );
     });
 };
 
-const ChoiceAnswer = observer(({ children, id }: Props) => {
+const ChoiceAnswer = observer(({ children, id, multiple }: Props) => {
     const optionsLists = children.filter((child) => !!child && (child.type === 'ol' || child.type === 'ul'));
     if (optionsLists.length !== 1) {
         throw new Error(
@@ -34,7 +39,7 @@ const ChoiceAnswer = observer(({ children, id }: Props) => {
     return (
         <div>
             {beforeOptionsList}
-            {createInputOptions(optionsList, id)}
+            {createInputOptions(optionsList, multiple, id)}
             {afterOptionsList}
         </div>
     );
