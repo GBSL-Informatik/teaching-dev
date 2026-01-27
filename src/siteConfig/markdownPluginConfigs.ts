@@ -1,4 +1,4 @@
-import type { Node } from 'mdast';
+import type { Code, Node } from 'mdast';
 import type { LeafDirective } from 'mdast-util-directive';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
@@ -201,7 +201,13 @@ export const gatherDocRootPluginConfig = [
                 docTypeExtractor: () => 'dynamic_document_roots'
             }
         ],
-        liveCodeDocTypeTransformer: (liveCode: `live_${string}`) => {
+        persistedCodeType: (node: Code) => {
+            if (node.lang === 'html') {
+                return 'script';
+            }
+            const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
+            const liveCode = liveLangMatch ? liveLangMatch[1] : null;
+
             switch (liveCode) {
                 case 'live_py':
                 case 'live_bry':

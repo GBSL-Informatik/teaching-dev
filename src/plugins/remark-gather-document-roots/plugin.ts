@@ -1,5 +1,5 @@
 import type { Plugin, Transformer } from 'unified';
-import type { Root } from 'mdast';
+import type { Code, Root } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import path from 'path';
 import Database from 'better-sqlite3';
@@ -46,7 +46,7 @@ interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlow
 
 export interface PluginOptions {
     components: JsxConfig[];
-    liveCodeDocTypeTransformer?: (lang: `live_${string}`) => string;
+    persistedCodeType?: (code: Code) => string;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface PluginOptions {
  * custom MDX components by converting the code content into attributes.
  */
 const plugin: Plugin<PluginOptions[], Root> = function plugin(
-    options = { components: [], liveCodeDocTypeTransformer: () => 'code' }
+    options = { components: [], persistedCodeType: () => 'code' }
 ): Transformer<Root> {
     const { components } = options;
     const mdxJsxComponents = new Map<string, JsxConfig>(components.map((c) => [c.name, c]));
@@ -77,11 +77,8 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(
                 if (!idMatch) {
                     return CONTINUE;
                 }
-                const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
                 const docId = idMatch[1];
-                const docType = liveLangMatch
-                    ? options.liveCodeDocTypeTransformer!(liveLangMatch[1] as `live_${string}`)
-                    : 'code';
+                const docType = options.persistedCodeType?.(node) ?? 'code';
                 insertDocRoot.run({
                     id: docId,
                     type: docType,
