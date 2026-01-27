@@ -6,6 +6,7 @@ tags:
 
 import PermissionsPanel from "@tdev-components/PermissionsPanel"
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
 
 # Choice Answer
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
@@ -17,13 +18,25 @@ Einfache Single- und Multiple-Choice-Fragen:
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
     Wir gilt als Erfinder des World Wide Web (WWW)?
 
-    1. Steve Jobs
+    1. Steve **Jobs**
     2. Tim Berners-Lee
     3. Ada Lovelace
     4. Alain Berset
     5. Charles Bartowski
 </ChoiceAnswer>
 ```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+        Wir gilt als Erfinder des World Wide Web (WWW)?
+
+        1. Steve **Jobs**
+        2. Tim Berners-Lee
+        3. Ada Lovelace
+        4. Alain Berset
+        5. Charles Bartowski
+    </ChoiceAnswer>
+</BrowserWindow>
 
 Mithilfe der IDs können die Antwortmöglichkeiten eindeutig identifiziert werden. Dies erlaubt es, die Reihenfolge der Optionen zu ändern und z.B. Tippfehler zu korrigieren, ohne dass die Korrektheit der Antworten verloren geht. Die IDs sind **frei wählbar**: Es können z.B. UUIDs, laufende Nummern oder semantische Schlüssel verwendet werden.
 
