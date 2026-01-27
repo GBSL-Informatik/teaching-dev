@@ -40,9 +40,10 @@ export class PageStore extends iStore {
 
     @action
     load() {
-        return import('@tdev/page-progress-state/assets/index.json').then((mod) => {
-            this.updatePageIndex(mod.default as PageIndex);
-        });
+        // return import('@tdev/page-progress-state/assets/index.json').then((mod) => {
+        //     this.updatePageIndex(mod.default as PageIndex);
+        // });
+        return Promise.resolve();
     }
 
     @action

@@ -15,14 +15,12 @@ import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
-import gatherDocRootPlugin from '../plugins/remark-gather-document-roots/plugin';
 import pageProgressStatePlugin from '@tdev/page-progress-state/remark-plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
-import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import { getAnswerDocumentType } from '../components/Answer/helper.answer';
 
 export const flexCardsPluginConfig = [
@@ -148,54 +146,6 @@ export const pagePluginConfig = [pagePlugin, {}];
 export const pageProgressStatePluginConfig = [
     pageProgressStatePlugin,
     {
-        extractors: [
-            {
-                test: (_node: Node) => {
-                    if (_node.type !== 'mdxJsxFlowElement') {
-                        return false;
-                    }
-                    const node = _node as MdxJsxFlowElement;
-                    const name = node.name as string;
-                    return (
-                        ComponentsWithId.has(name) ||
-                        node.attributes.some(
-                            (a) =>
-                                (a as { name?: string }).name === 'type' && AnswerTypes.has(a.value as string)
-                        )
-                    );
-                },
-                getDocumentRootIds: (node: Node) => {
-                    const jsxNode = node as MdxJsxFlowElement;
-                    const idAttr = jsxNode.attributes.find((attr) => (attr as any).name === 'id');
-                    return idAttr ? [idAttr.value] : [];
-                }
-            }
-        ]
-    }
-];
-
-export const graphvizPluginConfig = graphvizPlugin;
-
-export const commentPluginConfig = [
-    commentPlugin,
-    {
-        commentableJsxFlowElements: ['DefHeading', 'figcaption', 'String'],
-        ignoreJsxFlowElements: ['summary', 'dt'],
-        ignoreCodeBlocksWithMeta: /live_py/
-    }
-];
-
-export const linkAnnotationPluginConfig = [
-    linkAnnotationPlugin,
-    {
-        prefix: '👉',
-        postfix: null
-    }
-];
-
-export const gatherDocRootPluginConfig = [
-    gatherDocRootPlugin,
-    {
         components: [
             {
                 name: 'Answer',
@@ -259,6 +209,25 @@ export const gatherDocRootPluginConfig = [
     }
 ];
 
+export const graphvizPluginConfig = graphvizPlugin;
+
+export const commentPluginConfig = [
+    commentPlugin,
+    {
+        commentableJsxFlowElements: ['DefHeading', 'figcaption', 'String'],
+        ignoreJsxFlowElements: ['summary', 'dt'],
+        ignoreCodeBlocksWithMeta: /live_py/
+    }
+];
+
+export const linkAnnotationPluginConfig = [
+    linkAnnotationPlugin,
+    {
+        prefix: '👉',
+        postfix: null
+    }
+];
+
 export const rehypeKatexPluginConfig = rehypeKatex;
 
 export const recommendedBeforeDefaultRemarkPlugins = [
@@ -271,7 +240,6 @@ export const recommendedBeforeDefaultRemarkPlugins = [
 ];
 
 export const recommendedRemarkPlugins = [
-    gatherDocRootPluginConfig,
     strongPluginConfig,
     mdiPluginConfig,
     mediaPluginConfig,

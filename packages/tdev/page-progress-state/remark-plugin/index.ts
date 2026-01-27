@@ -1,93 +1,113 @@
 import type { Plugin, Transformer } from 'unified';
-import type { Node, Root } from 'mdast';
+import type { Code, Root } from 'mdast';
+import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import path from 'path';
-import { promises as fs, accessSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
-
-export interface PluginOptions {
-    extractors: { test: (node: Node) => boolean; getDocumentRootIds: (node: Node) => string[] }[];
-}
+import Database from 'better-sqlite3';
+import { accessSync, mkdirSync } from 'fs';
 
 const projectRoot = process.cwd();
+const dbPath = path.join(projectRoot, '.docusaurus', 'tdev-gather-document-roots', 'docs-pages.db');
+
+try {
+    accessSync(path.dirname(dbPath));
+} catch {
+    mkdirSync(path.dirname(dbPath), { recursive: true });
+}
+const db = new Database(dbPath, { fileMustExist: false });
+db.pragma('journal_mode = WAL');
+
+const createPages = db.prepare(
+    'CREATE TABLE IF NOT EXISTS pages (id TEXT NOT NULL, path TEXT NOT NULL, UNIQUE(id, path))'
+);
+const createDocRoots = db.prepare(
+    'CREATE TABLE IF NOT EXISTS document_roots (id TEXT PRIMARY KEY, type TEXT NOT NULL, page_id TEXT NOT NULL, position INTEGER NOT NULL)'
+);
+createPages.run();
+createDocRoots.run();
+
+const insertPage = db.prepare(
+    'INSERT INTO pages (id, path) VALUES (@id, @path) ON CONFLICT(id, path) DO NOTHING'
+);
+const insertDocRoot = db.prepare(
+    'INSERT INTO document_roots (id, type, page_id, position) VALUES (@id, @type, @page_id, @position) ON CONFLICT(id) DO UPDATE SET type=excluded.type, page_id=excluded.page_id, position=excluded.position'
+);
+
+interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlowElement | MdxJsxTextElement> {
+    /**
+     * Component Name
+     */
+    name: string;
+    /**
+     * @default id
+     */
+    attributeName?: string;
+    docTypeExtractor: (node: T) => string;
+}
+
+export interface PluginOptions {
+    components: JsxConfig[];
+    persistedCodeType?: (code: Code) => string;
+}
 
 /**
- *
- * sidebar:
- * {
- *    "1f6db0ee-aa48-44c7-af43-4b66843f665e": [ ... document root ids ]
- * }
- *
- * structure:
- * {
- *    "path" : {
- *      "to": {
- *         "doc":
- *       },
- *    }
- * }
- */
-
-const ensureFile = async (indexPath: string) => {
-    const assetsDir = path.dirname(indexPath);
-    try {
-        accessSync(assetsDir);
-    } catch {
-        mkdirSync(assetsDir, { recursive: true });
-    }
-    try {
-        accessSync(indexPath);
-    } catch {
-        writeFileSync(indexPath, JSON.stringify({}, null, 2), {
-            encoding: 'utf-8'
-        });
-    }
-};
-
-/**
- * A remark plugin that adds a `<MdxPage /> elements at the top of the current page.
- * This is useful to initialize a page model on page load and to trigger side-effects on page display,
- * as to load models attached to the `page_id`'s root document.
+ * This plugin transforms inline code and code blocks in MDX files to use
+ * custom MDX components by converting the code content into attributes.
  */
 const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
-    options = { extractors: [] }
+    options = { components: [], persistedCodeType: () => 'code' }
 ): Transformer<Root> {
-    const index = new Map<string, string[]>();
-    const structurePath = path.resolve(__dirname, '../assets/', 'structure.json');
-    const indexPath = path.resolve(__dirname, '../assets/', 'index.json');
-    ensureFile(indexPath);
-    ensureFile(structurePath);
-    try {
-        const content = readFileSync(indexPath, { encoding: 'utf-8' });
-        const parsed = JSON.parse(content) as { [key: string]: string[] };
-        for (const [key, values] of Object.entries(parsed)) {
-            index.set(key, values);
-        }
-    } catch {
-        console.log('Error parsing existing index file, starting fresh.');
-    }
-
+    const { components } = options;
+    const mdxJsxComponents = new Map<string, JsxConfig>(components.map((c) => [c.name, c]));
     return async (root, file) => {
-        const { visit, EXIT } = await import('unist-util-visit');
         const { page_id } = (file.data?.frontMatter || {}) as { page_id?: string };
-        if (!page_id) {
+        if (components.length < 1 || !page_id) {
             return;
         }
+        const { visit, SKIP, CONTINUE } = await import('unist-util-visit');
+        console.log(
+            `                                                    Processing persistable documents for page_id=${page_id}`
+        );
         const filePath = path
             .relative(projectRoot, file.path)
             .replace(/\/(index|README)\.mdx?$/i, '')
             .replace(/\.mdx?$/i, '');
-        console.log('file', filePath);
-        const pageIndex = new Set<string>([]);
-        visit(root, (node, idx, parent) => {
-            const extractor = options.extractors.find((ext) => ext.test(node));
-            if (!extractor) {
-                return;
+        insertPage.run({ id: page_id, path: filePath });
+        let pagePosition = 0;
+        visit(root, (node, index, parent) => {
+            if (node.type === 'code') {
+                const idMatch = /id=([a-zA-Z0-9-_]+)/.exec(node.meta || '');
+                if (!idMatch) {
+                    return CONTINUE;
+                }
+                const docId = idMatch[1];
+                const docType = options.persistedCodeType?.(node) ?? 'code';
+                insertDocRoot.run({
+                    id: docId,
+                    type: docType,
+                    page_id: page_id,
+                    position: pagePosition
+                });
+                pagePosition = pagePosition + 1;
+                return CONTINUE;
             }
-            const docRootIds = extractor.getDocumentRootIds(node);
-            docRootIds.forEach((id) => pageIndex.add(id));
-        });
-        index.set(page_id, [...pageIndex]);
-        await fs.writeFile(indexPath, JSON.stringify(Object.fromEntries(index), null, 2), {
-            encoding: 'utf-8'
+            if (
+                (node.type !== 'mdxJsxFlowElement' && node.type !== 'mdxJsxTextElement') ||
+                !mdxJsxComponents.has(node.name as string)
+            ) {
+                return CONTINUE;
+            }
+            const config = mdxJsxComponents.get(node.name!)!;
+            const attr = node.attributes.find(
+                (a) => a.type === 'mdxJsxAttribute' && a.name === (config.attributeName || 'id')
+            );
+            if (!attr || attr.type !== 'mdxJsxAttribute' || typeof attr.value !== 'string') {
+                return CONTINUE;
+            }
+            const docId = attr.value;
+            const docType = config.docTypeExtractor(node);
+            insertDocRoot.run({ id: docId, type: docType, page_id: page_id, position: pagePosition });
+            pagePosition = pagePosition + 1;
+            return CONTINUE;
         });
     };
 };
