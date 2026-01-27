@@ -1,9 +1,9 @@
 {
     "name": "@tdev/page-progress-state",
     "version": "1.0.0",
-    "main": "remark-plugin/index.ts",
-    "types": "remark-plugin/index.ts",
-    "dependencies": {},
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": { },
     "devDependencies": {
         "vitest": "*",
         "@docusaurus/module-type-aliases": "*",

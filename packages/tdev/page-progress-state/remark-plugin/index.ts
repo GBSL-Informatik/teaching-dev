@@ -2,34 +2,26 @@ import type { Plugin, Transformer } from 'unified';
 import type { Code, Root } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import path from 'path';
-import Database from 'better-sqlite3';
-import { accessSync, mkdirSync } from 'fs';
+import db from '../utils/db';
+import { exportDB } from '../exportDb';
 
 const projectRoot = process.cwd();
-const dbPath = path.join(projectRoot, '.docusaurus', 'tdev-gather-document-roots', 'docs-pages.db');
+const isDev = process.env.NODE_ENV !== 'production';
 
-try {
-    accessSync(path.dirname(dbPath));
-} catch {
-    mkdirSync(path.dirname(dbPath), { recursive: true });
-}
-const db = new Database(dbPath, { fileMustExist: false });
-db.pragma('journal_mode = WAL');
-
-const createPages = db.prepare(
-    'CREATE TABLE IF NOT EXISTS pages (id TEXT NOT NULL, path TEXT NOT NULL, UNIQUE(id, path))'
-);
-const createDocRoots = db.prepare(
-    'CREATE TABLE IF NOT EXISTS document_roots (id TEXT PRIMARY KEY, type TEXT NOT NULL, page_id TEXT NOT NULL, position INTEGER NOT NULL)'
-);
-createPages.run();
-createDocRoots.run();
-
-const insertPage = db.prepare(
-    'INSERT INTO pages (id, path) VALUES (@id, @path) ON CONFLICT(id, path) DO NOTHING'
-);
 const insertDocRoot = db.prepare(
-    'INSERT INTO document_roots (id, type, page_id, position) VALUES (@id, @type, @page_id, @position) ON CONFLICT(id) DO UPDATE SET type=excluded.type, page_id=excluded.page_id, position=excluded.position'
+    `INSERT INTO document_roots (
+        id, 
+        type, 
+        page_id,
+        path,
+        position
+    ) VALUES (
+        @id,
+        @type,
+        @page_id,
+        @path,
+        @position
+    ) ON CONFLICT(id, path) DO NOTHING`
 );
 
 interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlowElement | MdxJsxTextElement> {
@@ -47,32 +39,36 @@ interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlow
 export interface PluginOptions {
     components: JsxConfig[];
     persistedCodeType?: (code: Code) => string;
+    docsParentDir?: string;
 }
+
+const slugCountMap = new Map<string, number>();
 
 /**
  * This plugin transforms inline code and code blocks in MDX files to use
  * custom MDX components by converting the code content into attributes.
  */
 const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
-    options = { components: [], persistedCodeType: () => 'code' }
+    options = { components: [], persistedCodeType: () => 'code', docsParentDir: '' }
 ): Transformer<Root> {
     const { components } = options;
     const mdxJsxComponents = new Map<string, JsxConfig>(components.map((c) => [c.name, c]));
+    const replaceStart = new RegExp(`^${options.docsParentDir}`);
     return async (root, file) => {
         const { page_id } = (file.data?.frontMatter || {}) as { page_id?: string };
         if (components.length < 1 || !page_id) {
             return;
         }
         const { visit, SKIP, CONTINUE } = await import('unist-util-visit');
-        console.log(
-            `                                                    Processing persistable documents for page_id=${page_id}`
-        );
-        const filePath = path
-            .relative(projectRoot, file.path)
-            .replace(/\/(index|README)\.mdx?$/i, '')
-            .replace(/\.mdx?$/i, '');
-        insertPage.run({ id: page_id, path: filePath });
-        let pagePosition = 0;
+        const filePath = `/${path.relative(projectRoot, file.path)}`
+            .replace(/\/(index|README)\.mdx?$/i, '/')
+            .replace(/\.mdx?$/i, '/')
+            .replace(replaceStart, '')
+            .replace(/^\/versioned_docs\/version-/, '/');
+
+        if (!slugCountMap.has(filePath)) {
+            slugCountMap.set(filePath, 1);
+        }
         visit(root, (node, index, parent) => {
             if (node.type === 'code') {
                 const idMatch = /id=([a-zA-Z0-9-_]+)/.exec(node.meta || '');
@@ -81,13 +77,16 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
                 }
                 const docId = idMatch[1];
                 const docType = options.persistedCodeType?.(node) ?? 'code';
-                insertDocRoot.run({
+                const res = insertDocRoot.run({
                     id: docId,
                     type: docType,
                     page_id: page_id,
-                    position: pagePosition
+                    path: filePath,
+                    position: slugCountMap.get(filePath)!
                 });
-                pagePosition = pagePosition + 1;
+                if (res.changes > 0) {
+                    slugCountMap.set(filePath, slugCountMap.get(filePath)! + 1);
+                }
                 return CONTINUE;
             }
             if (
@@ -105,10 +104,21 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
             }
             const docId = attr.value;
             const docType = config.docTypeExtractor(node);
-            insertDocRoot.run({ id: docId, type: docType, page_id: page_id, position: pagePosition });
-            pagePosition = pagePosition + 1;
+            const res = insertDocRoot.run({
+                id: docId,
+                type: docType,
+                page_id: page_id,
+                path: filePath,
+                position: slugCountMap.get(filePath)!
+            });
+            if (res.changes > 0) {
+                slugCountMap.set(filePath, slugCountMap.get(filePath)! + 1);
+            }
             return CONTINUE;
         });
+        if (isDev) {
+            await exportDB();
+        }
     };
 };
 

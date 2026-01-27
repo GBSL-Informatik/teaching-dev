@@ -5,8 +5,9 @@ import Page from '@tdev-models/Page';
 import { computedFn } from 'mobx-utils';
 import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
 import type { useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
-import { PropSidebarItem } from '@docusaurus/plugin-content-docs';
-type PageIndex = { [key: string]: string[] };
+import siteConfig from '@generated/docusaurus.config';
+
+type PageIndex = Record<string, any>;
 
 export class PageStore extends iStore {
     readonly root: RootStore;
@@ -40,10 +41,13 @@ export class PageStore extends iStore {
 
     @action
     load() {
-        // return import('@tdev/page-progress-state/assets/index.json').then((mod) => {
-        //     this.updatePageIndex(mod.default as PageIndex);
-        // });
-        return Promise.resolve();
+        return fetch(`${siteConfig.baseUrl}tdev-artifacts/page-progress-state/pageIndex.json`)
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                this.updatePageIndex(data as PageIndex);
+            });
     }
 
     @action

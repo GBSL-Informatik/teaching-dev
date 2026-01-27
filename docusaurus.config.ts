@@ -372,7 +372,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         remarkPdfPluginConfig,
         socketIoNoDepWarningsPluginConfig,
         ...loadedPlugins,
-        persistableDocuments,
         [
           '@docusaurus/plugin-content-pages',
           {
@@ -385,7 +384,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             ...(siteConfig.pages || {})
           }
         ],
-        ...((siteConfig.plugins as Config['plugins']) || [])
+        ...((siteConfig.plugins as Config['plugins']) || []),
+        persistableDocuments
       ],
       themes: [
         '@docusaurus/theme-mermaid',

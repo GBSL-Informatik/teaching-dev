@@ -1,27 +1,35 @@
 import { LoadContext, Plugin, PluginModule } from '@docusaurus/types';
-import { Joi } from '@docusaurus/utils-validation';
-import fs from 'fs-extra';
+import { exportDB, getContent } from './exportDb';
 import path from 'path';
+import { promises as fs } from 'fs';
+import { PluginName } from '.';
+import { pageIndexPath } from './options';
+
+const isDev = process.env.NODE_ENV !== 'production';
 
 const persistableDocuments: PluginModule = (context: LoadContext) => {
-    const isHashRouter = context.siteConfig.future?.experimental_router === 'hash';
-    return {
-        name: 'tdev-persistable-documents',
-        async loadContent() {
-            console.log('Calling persistable-documents plugin loadContent');
-            return {};
+    const config: Plugin<{}> = {
+        name: PluginName,
+        async allContentLoaded() {
+            if (isDev) {
+                try {
+                    await fs.access(path.dirname(pageIndexPath));
+                } catch {
+                    await fs.mkdir(path.dirname(pageIndexPath), { recursive: true });
+                }
+            }
         },
-        async contentLoaded({ actions: { setGlobalData } }) {
-            console.log('Calling persistable-documents plugin contentLoaded');
-        },
+        async postBuild() {
+            try {
+                await fs.access(path.dirname(pageIndexPath));
+            } catch {
+                await fs.mkdir(path.dirname(pageIndexPath), { recursive: true });
+            }
 
-        async postBuild({ siteConfig = {}, routesPaths = [], outDir }) {
-            // Print out to console all the rendered routes.
-            routesPaths.map((route) => {
-                console.log(route);
-            });
+            await exportDB();
         }
     };
+    return config as Plugin;
 };
 
 export default persistableDocuments;

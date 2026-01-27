@@ -205,7 +205,8 @@ export const pageProgressStatePluginConfig = [
                 default:
                     return 'code';
             }
-        }
+        },
+        docsParentDir: '/tdev-website'
     }
 ];
 
