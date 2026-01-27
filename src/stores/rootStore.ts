@@ -60,8 +60,9 @@ export class RootStore {
                 /**
                  * load stores
                  */
+
                 this.userStore.load();
-                // this.pageStore.load();
+                this.pageStore.load();
                 this.studentGroupStore.load();
                 this.cmsStore.initialize();
                 if (user.hasElevatedAccess) {
