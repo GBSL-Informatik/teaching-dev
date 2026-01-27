@@ -16,7 +16,7 @@ Einfache Single- und Multiple-Choice-Fragen:
 
 ```md
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
-    Wir gilt als Erfinder des World Wide Web (WWW)?
+    > Wir gilt als Erfinder des World Wide Web (WWW)?
 
     1. Steve **Jobs**
     2. Tim Berners-Lee
@@ -28,7 +28,7 @@ Einfache Single- und Multiple-Choice-Fragen:
 
 <BrowserWindow>
     <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
-        Wir gilt als Erfinder des World Wide Web (WWW)?
+        > Wir gilt als Erfinder des World Wide Web (WWW)?
 
         1. Steve **Jobs**
         2. Tim Berners-Lee
@@ -38,29 +38,43 @@ Einfache Single- und Multiple-Choice-Fragen:
     </ChoiceAnswer>
 </BrowserWindow>
 
-Mithilfe der IDs können die Antwortmöglichkeiten eindeutig identifiziert werden. Dies erlaubt es, die Reihenfolge der Optionen zu ändern und z.B. Tippfehler zu korrigieren, ohne dass die Korrektheit der Antworten verloren geht. Die IDs sind **frei wählbar**: Es können z.B. UUIDs, laufende Nummern oder semantische Schlüssel verwendet werden.
+Kontextueller Text (z.B. die Fragestellung, Hinweise oder sonstige Informationen) können vor oder nach der Liste der Antwortmöglichkeiten angegeben werden. **Wichtig:** Freitext (ohne Admonition) muss in einem Zitat-Block (`>`) stehen.
 
 ```md
 <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5">
-    Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+    > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+
+    :::info[Bewertung]
+    Die Frage wird nur als richtig bewertet, wenn alle korrekten Antworten (und keine falschen) ausgewählt wurden.
+    :::
     
     1. 2 ist die einzige gerade Primzahl.
     2. Jede Primzahl ist ungerade.
     3. 1 ist eine Primzahl.
     4. 5 ist eine Primzahl.
     5. Primzahlen sind nur durch 1 und sich selbst teilbar.
+
+    > Gewusst? **Prim**zahlen haben nichts mit **Prim**aten zu tun!
+
 </ChoiceAnswer>
 ```
 
 <BrowserWindow>
     <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5">
-        Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+        > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+
+        :::info[Bewertung]
+        Die Frage wird nur als richtig bewertet, wenn alle korrekten Antworten (und keine falschen) ausgewählt wurden.
+        :::
         
         1. 2 ist die einzige gerade Primzahl.
         2. Jede Primzahl ist ungerade.
         3. 1 ist eine Primzahl.
         4. 5 ist eine Primzahl.
         5. Primzahlen sind nur durch 1 und sich selbst teilbar.
+
+        > Gewusst? **Prim**zahlen haben nichts mit **Prim**aten zu tun!
+
     </ChoiceAnswer>
 </BrowserWindow>
 
@@ -87,12 +101,12 @@ Mit der `randomize`-Property werden die Antwortmöglichkeiten in zufälliger Rei
 ```
 
 ## Fragegruppen
-Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Fragen zusammengefasst. Dies kann mit der `ChoiceAnswer.Group`-Komponente erreicht werden:
+Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```html
-<ChoiceAnswer.Group>
-    <ChoiceAnswer correct={[5]} id="c655526e-6cf4-46e6-990e-b4c63a4e96b7">
-        In welchem Jahr war 2024?
+<Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
+    <ChoiceAnswer correct={[5]}>
+        > In welchem Jahr war 2024?
         
         1. 1965
         2. 1983
@@ -101,12 +115,12 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Frag
         5. 2024
     </ChoiceAnswer>
     
-    <TrueFalseAnswer correct={false} id="c4b45b05-c883-4fcb-97ff-f0b4b9e942b7">
-        HTML ist eine Programmiersprache.
+    <TrueFalseAnswer correct={false}>
+        > HTML ist eine Programmiersprache.
     </TrueFalseAnswer>
     
-    <ChoiceAnswer correct={[1, 3]} multiple id="ed234dee-60e6-457a-a3b2-7d7f8a642e6b">
-        Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+    <ChoiceAnswer correct={[1, 3]} multiple>
+        > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
         
         1. SMTP
         2. FTP
@@ -124,7 +138,7 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Frag
 | `multiple`       | Flag         | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
 | `randomize`     | Flag         | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt.  |
 
-### ChoiceAnswer.Group
+### Quiz
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
 | `randomize`     | Flag         | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge dargestellt. |
@@ -135,17 +149,16 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Frag
 ## TODO
 - Bei MC-Aufgaben sind Teilpunktzahlen möglich.
   - TODO TODO: Standalone MC-Fragen müssten demnach auch nicht nur mit richtig und falsch, sondern mit "teilweise richtig" bewertet werden?
-- Mehrere ChoiceAnswers können in einer ChoiceAnswerGroup zusammengefasst werden.
-- Eine ChoiceAnswerGroup kann auf ein Karussell reduziert werden, um Platz zu sparen.
-- Bei einer ChoiceAnswerGroup kann eine Gesamtpunktzahl definiert werden, die auf die einzelnen ChoiceAnswers aufgeteilt wird.
+- Ein Quiz kann auf ein Karussell reduziert werden, um Platz zu sparen.
+- Bei einem Quiz kann eine Gesamtpunktzahl definiert werden, die auf die einzelnen ChoiceAnswers aufgeteilt wird.
 - Die Wertung der Antworten kann angepasst werden – es sind z.B. auch Negativpunkte möglich. Es kann zudem eingestellt werden, ob die Gruppe insgesamt weniger als 0 Punkte ergeben darf.
-- Der Korrekturknopf einer ChoiceAnswerGroup kann versteckt oder mit einer Permission geschützt werden.
-- Bei einer ChoiceAnswerGroup kann eingestellt werden, ob die Fragen in der vorgegebenen Reihenfolge oder zufällig angezeigt werden sollen.
+- Der Korrekturknopf eines Quiz kann versteckt oder mit einer Permission geschützt werden.
+- Bei einem Quiz kann eingestellt werden, ob die Fragen in der vorgegebenen Reihenfolge oder zufällig angezeigt werden sollen.
 - TODO TODO:
   - Korrektur: Einzeln oder nur Punkte?
   - Konzept eines "Durchgangs" (Versuch)? Versuch verwerfen und neu starten nach Korrektur?
   - Soll eine CA / CA.Group automatische eine Aufgabe sein? Soll sie automatisch eine Checkbox erhalten? Soll diese automatisch aktiviert sein, wenn das Quiz fertig gelöst ist? Soll sie nur aktiviert sein, wenn alles korrekt gelöst wurde? Soll das alles eine Option sein?
 
 ## Future Work
-- Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einer ChoiceAnswerGroup auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
-- Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll die `ChoiceAnswer.Group` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
+- Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
+- Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
