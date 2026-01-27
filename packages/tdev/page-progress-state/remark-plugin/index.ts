@@ -3,7 +3,8 @@ import type { Code, Root } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import path from 'path';
 import db from '../utils/db';
-import { exportDB } from '../exportDb';
+import { exportDB } from '../utils/exportDb';
+import { debounce } from 'es-toolkit/function';
 
 const projectRoot = process.cwd();
 const isDev = process.env.NODE_ENV !== 'production';
@@ -43,6 +44,14 @@ export interface PluginOptions {
 }
 
 const slugCountMap = new Map<string, number>();
+
+const scheduleExportDb = debounce(
+    async () => {
+        await exportDB();
+    },
+    250,
+    { edges: ['trailing'] }
+);
 
 /**
  * This plugin transforms inline code and code blocks in MDX files to use
@@ -117,7 +126,7 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
             return CONTINUE;
         });
         if (isDev) {
-            await exportDB();
+            scheduleExportDb();
         }
     };
 };

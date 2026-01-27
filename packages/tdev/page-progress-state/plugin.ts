@@ -1,9 +1,9 @@
 import { LoadContext, Plugin, PluginModule } from '@docusaurus/types';
-import { exportDB, getContent } from './exportDb';
+import { exportDB, getContent } from './utils/exportDb';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { PluginName } from '.';
-import { pageIndexPath } from './options';
+import { pageIndexPath } from './utils/options';
 
 const isDev = process.env.NODE_ENV !== 'production';
 

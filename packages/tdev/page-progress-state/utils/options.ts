@@ -1,5 +1,5 @@
 import path from 'path';
-import { PluginName } from '.';
+import { PluginName } from '..';
 
 // current file's directory:
 export const pluginRootDir = path.dirname(new URL(import.meta.url).pathname);
