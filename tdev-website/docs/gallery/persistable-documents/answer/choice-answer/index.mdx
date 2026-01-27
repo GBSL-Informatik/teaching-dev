@@ -13,51 +13,51 @@ Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeig
 ## Standalone-Fragen
 Einfache Single- und Multiple-Choice-Fragen:
 
-```html
-<ChoiceAnswer id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+```md
+<ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
     Wir gilt als Erfinder des World Wide Web (WWW)?
-    
-    <ChoiceAnswer.Option id="1">Steve Jobs</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="2" correct>Tim Berners-Lee</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="3">Ada Lovelace</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="4">Alain Berset</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="5">Charles Bartowski</ChoiceAnswer.Option>
+
+    1. Steve Jobs
+    2. Tim Berners-Lee
+    3. Ada Lovelace
+    4. Alain Berset
+    5. Charles Bartowski
 </ChoiceAnswer>
 ```
 
 Mithilfe der IDs können die Antwortmöglichkeiten eindeutig identifiziert werden. Dies erlaubt es, die Reihenfolge der Optionen zu ändern und z.B. Tippfehler zu korrigieren, ohne dass die Korrektheit der Antworten verloren geht. Die IDs sind **frei wählbar**: Es können z.B. UUIDs, laufende Nummern oder semantische Schlüssel verwendet werden.
 
-```html
-<ChoiceAnswer id="7b97dd5d-d304-46db-823f-68237814fee5" multiple>
+```md
+<ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5">
     Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
     
-    <ChoiceAnswer.Option id="1" correct>2 ist die einzige gerade Primzahl.</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="2">Jede Primzahl ist ungerade.</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="3">1 ist eine Primzahl.</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="4" correct>5 ist eine Primzahl.</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="5" correct>Primzahlen sind nur durch 1 und sich selbst teilbar.</ChoiceAnswer.Option>
+    1. 2 ist die einzige gerade Primzahl.
+    2. Jede Primzahl ist ungerade.
+    3. 1 ist eine Primzahl.
+    4. 5 ist eine Primzahl.
+    5. Primzahlen sind nur durch 1 und sich selbst teilbar.
 </ChoiceAnswer>
 ```
 
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
-```html
-<TrueFalseAnswer id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
+```md
+<TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
     Die Erde ist flach.
 </TrueFalseAnswer>
 ```
 
 Mit der `randomize`-Property werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt. Zudem dürfen bei SC-Aufgaben auch mehrere Optionen korrekt sein. Wird eine davon ausgewählt, gilt die Antwort als richtig:
 
-```html
-<ChoiceAnswer id="5f3a2c5a-0d39-4572-8245-5232a9066b9d" randomize>
+```md
+<ChoiceAnswer correct={[1, 4]} randomize id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
     Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
     
-    <ChoiceAnswer.Option id="ts" correct>TypeScript</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="python">Python</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="js">JavaScript</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="java" correct>Java</ChoiceAnswer.Option>
-    <ChoiceAnswer.Option id="ruby">Ruby</ChoiceAnswer.Option>
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
 </ChoiceAnswer>
 ```
 
@@ -66,30 +66,46 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Frag
 
 ```html
 <ChoiceAnswer.Group>
-    <ChoiceAnswer id="c655526e-6cf4-46e6-990e-b4c63a4e96b7">
+    <ChoiceAnswer correct={[5]} id="c655526e-6cf4-46e6-990e-b4c63a4e96b7">
         In welchem Jahr war 2024?
         
-        <ChoiceAnswer.Option id="1965">1965</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="1983">1983</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="1991">1991</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="2000">2000</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="2024" correct>2024</ChoiceAnswer.Option>
+        1. 1965
+        2. 1983
+        3. 1991
+        4. 2000
+        5. 2024
     </ChoiceAnswer>
     
-    <TrueFalseAnswer id="c4b45b05-c883-4fcb-97ff-f0b4b9e942b7">
+    <TrueFalseAnswer correct={false} id="c4b45b05-c883-4fcb-97ff-f0b4b9e942b7">
         HTML ist eine Programmiersprache.
     </TrueFalseAnswer>
     
-    <ChoiceAnswer id="ed234dee-60e6-457a-a3b2-7d7f8a642e6b" multiple>
+    <ChoiceAnswer correct={[1, 3]} multiple id="ed234dee-60e6-457a-a3b2-7d7f8a642e6b">
         Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
         
-        <ChoiceAnswer.Option id="smtp" correct>SMTP</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="ftp">FTP</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="imap" correct>IMAP</ChoiceAnswer.Option>
-        <ChoiceAnswer.Option id="http">HTTP</ChoiceAnswer.Option>
+        1. SMTP
+        2. FTP
+        3. IMAP
+        4. HTTP
     </ChoiceAnswer>
 </ChoiceAnswer.Group>
 ```
+
+## Eigenschaften
+### ChoiceAnswer
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `correct`        | `number[]`        | Array mit den IDs der Indizes der korrekten Antwortmöglichkeiten. |
+| `multiple`       | Flag         | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
+| `randomize`     | Flag         | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt.  |
+
+### ChoiceAnswer.Group
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `randomize`     | Flag         | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge dargestellt. |
+| `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge dargestellt (analog zu `ChoiceAnswer.randomize` für einzelne Fragen). |
+| `carrousel` | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
+| `grading` | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
 
 ## TODO
 - Bei MC-Aufgaben sind Teilpunktzahlen möglich.
