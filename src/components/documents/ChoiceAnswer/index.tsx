@@ -1,19 +1,22 @@
-import { extractListItems } from '@tdev-components/util/domHelpers';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-interface Props {
-    children: React.ReactElement[];
-    multiple?: boolean;
+interface ChoiceAnswerProps {
     id: string;
+    index?: number;
+    multiple?: boolean;
+    readonly?: boolean;
+    children: React.ReactNode;
 }
 
 const createInputOptions = (
-    optionsList: React.ReactNode[],
+    optionsList: React.ReactNode[] | undefined,
     multiple: boolean | undefined,
     id: string
 ): React.ReactNode[] => {
-    return optionsList.map((option, index) => {
+    return (optionsList || []).map((option, index) => {
         const optionId = `${id}-option-${index}`;
         return (
             <div key={optionId}>
@@ -24,25 +27,38 @@ const createInputOptions = (
     });
 };
 
-const ChoiceAnswer = observer(({ children, id, multiple }: Props) => {
-    const optionsLists = children.filter((child) => !!child && (child.type === 'ol' || child.type === 'ul'));
-    if (optionsLists.length !== 1) {
-        throw new Error(
-            'ChoiceAnswer component requires exactly one ordered or unordered list (options) as a child.'
-        );
-    }
+type ChoiceAnswerSubComponents = {
+    Before: React.FC<{ children: React.ReactNode }>;
+    Options: React.FC<{ children: React.ReactNode }>;
+    After: React.FC<{ children: React.ReactNode }>;
+};
 
-    const beforeOptionsList = children.slice(0, children.indexOf(optionsLists[0]));
-    const afterOptionsList = children.slice(children.indexOf(optionsLists[0]) + 1);
-    const optionsList: React.ReactNode[] = extractListItems(optionsLists[0]) || [];
+const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
+    const [meta] = React.useState(new ModelMeta(props));
+    const doc = useFirstMainDocument(props.id, meta);
 
-    return (
-        <div>
-            {beforeOptionsList}
-            {createInputOptions(optionsList, multiple, id)}
-            {afterOptionsList}
-        </div>
+    const childrenArray = React.Children.toArray(props.children);
+    const beforeBlock = childrenArray.find(
+        (child) => React.isValidElement(child) && child.type === ChoiceAnswer.Before
     );
-});
+    const optionsBlock = childrenArray.find(
+        (child) => React.isValidElement(child) && child.type === ChoiceAnswer.Options
+    );
+    const afterBlock = childrenArray.find(
+        (child) => React.isValidElement(child) && child.type === ChoiceAnswer.After
+    );
+
+    return <div>{props.children}</div>;
+}) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
+
+ChoiceAnswer.Before = ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+};
+ChoiceAnswer.Options = ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+};
+ChoiceAnswer.After = ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+};
 
 export default ChoiceAnswer;
