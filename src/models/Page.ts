@@ -3,12 +3,18 @@
  */
 
 import { action, computed, observable, ObservableSet } from 'mobx';
-import { PageStore } from '@tdev-stores/PageStore';
+import { PageStore, SidebarVersions } from '@tdev-stores/PageStore';
 import TaskState from '@tdev-models/documents/TaskState';
 import _ from 'es-toolkit/compat';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import ProgressState from './documents/ProgressState';
+
+interface PageTree {
+    id: string;
+    path: string;
+    pages: PageTree[];
+}
 
 export default class Page {
     readonly store: PageStore;
@@ -27,6 +33,42 @@ export default class Page {
         this.path = path;
         this.store = store;
         this.documentRootIds = observable.set<string>([id]);
+    }
+
+    @computed
+    get isLandingpage() {
+        return SidebarVersions.some((version) => version.entryPath === this.path);
+    }
+
+    @computed
+    get tree(): PageTree {
+        return {
+            id: this.id,
+            path: this.path,
+            pages: this.subPages.map((page) => page.tree)
+        };
+    }
+
+    @computed
+    get parentPath() {
+        const parts = this.path.split('/').slice(0, -2);
+        while (parts.length > 1) {
+            const parentPath = `${parts.join('/')}/`;
+            const parentPage = this.store.pages.find((p) => p.path === parentPath);
+            if (parentPage) {
+                return parentPage.path;
+            }
+            if (SidebarVersions.some((v) => v.versionPath === parentPath)) {
+                return parentPath;
+            }
+            parts.splice(-1, 1);
+        }
+        return '/';
+    }
+
+    @computed
+    get subPages() {
+        return this.store.pages.filter((page) => page.parentPath === this.path);
     }
 
     @action
@@ -115,6 +157,9 @@ export default class Page {
     @action
     loadLinkedDocumentRoots() {
         this.refetchTimestamps.push(Date.now());
+        if (!this.store.root.userStore.isUserSwitched && this.documents.length > 0) {
+            return;
+        }
         return this.store.loadAllDocuments(this).catch((err) => {
             const now = Date.now();
             const ts = this.refetchTimestamps.filter((ts) => now - ts < 10_000);

@@ -40,9 +40,7 @@ const MdxPage = observer((props: Props) => {
         if (!current || !userStore.current?.hasElevatedAccess) {
             return;
         }
-        if (userStore.viewedUserId && userStore.viewedUserId !== userStore.current?.id) {
-            current.loadLinkedDocumentRoots();
-        }
+        current.loadLinkedDocumentRoots();
     }, [pageStore.current, userStore.viewedUserId]);
     return null;
 });

@@ -68,16 +68,22 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
         if (components.length < 1 || !page_id) {
             return;
         }
-        const { visit, SKIP, CONTINUE } = await import('unist-util-visit');
+        const { visit, CONTINUE } = await import('unist-util-visit');
         const filePath = `/${path.relative(projectRoot, file.path)}`
             .replace(/\/(index|README)\.mdx?$/i, '/')
             .replace(/\.mdx?$/i, '/')
             .replace(replaceStart, '')
             .replace(/^\/versioned_docs\/version-/, '/');
+        slugCountMap.set(filePath, 1);
 
-        if (!slugCountMap.has(filePath)) {
-            slugCountMap.set(filePath, 1);
-        }
+        insertDocRoot.run({
+            id: page_id,
+            type: '<page>',
+            page_id: page_id,
+            path: filePath,
+            position: 0
+        });
+
         visit(root, (node, index, parent) => {
             if (node.type === 'code') {
                 const idMatch = /id=([a-zA-Z0-9-_]+)/.exec(node.meta || '');

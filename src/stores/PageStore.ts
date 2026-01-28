@@ -4,10 +4,25 @@ import { RootStore } from '@tdev-stores/rootStore';
 import Page from '@tdev-models/Page';
 import { computedFn } from 'mobx-utils';
 import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
-import type { useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
+import type { GlobalPluginData, GlobalVersion, useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
 import siteConfig from '@generated/docusaurus.config';
 import { PageIndex } from '@tdev/page-progress-state';
 import { groupBy } from 'es-toolkit/array';
+import globalData from '@generated/globalData';
+const ensureTrailingSlash = (str: string) => {
+    return str.endsWith('/') ? str : `${str}/`;
+};
+export const SidebarVersions = (
+    globalData['docusaurus-plugin-content-docs'].default as GlobalPluginData
+).versions.map((version) => {
+    const { mainDocId } = version;
+    const mainDoc = version.docs.find((doc) => doc.id === mainDocId);
+    return {
+        name: version.name,
+        entryPath: ensureTrailingSlash(mainDoc!.path),
+        versionPath: ensureTrailingSlash(version.path)
+    };
+});
 
 interface PagesIndex {
     documentRoots: PageIndex[];
@@ -29,6 +44,10 @@ export class PageStore extends iStore {
         this.root = store;
     }
 
+    get sidebarVersions() {
+        return SidebarVersions;
+    }
+
     @action
     configureSidebar(id: string, sidebar: ReturnType<typeof useDocsSidebar>) {
         if (this.sidebars.has(id) || !sidebar) {
@@ -40,6 +59,31 @@ export class PageStore extends iStore {
                 return;
             }
             item.items;
+        });
+    }
+
+    @computed
+    get landingPages() {
+        return this.pages.filter((page) => page.isLandingpage);
+    }
+
+    @computed
+    get tree() {
+        return SidebarVersions.map((version) => {
+            if (version.entryPath === version.versionPath) {
+                const rootLandingPage = this.pages.find((page) => page.path === version.entryPath);
+                return {
+                    version: version.name,
+                    path: version.versionPath,
+                    pages: [rootLandingPage!.tree]
+                };
+            }
+            const pages = this.pages.filter((page) => page.parentPath === version.versionPath);
+            return {
+                version: version.name,
+                path: version.versionPath,
+                pages: pages.map((page) => page.tree)
+            };
         });
     }
 
@@ -58,23 +102,17 @@ export class PageStore extends iStore {
                     const pages = Object.values(grouped).map((docs) => {
                         const doc = docs[0]!;
                         const page = new Page(doc.page_id, doc.path, this);
-                        docs.forEach((d) => page.addDocumentRootId(d.id));
+                        docs.filter((doc) => doc.position > 0).forEach((d) => page.addDocumentRootId(d.id));
                         return page;
                     });
                     this.pages.replace(pages);
-                    this.setPageIndex(data.documentRoots);
+                    this._pageIndex = data.documentRoots;
                 })
             )
             .catch((err) => {
                 console.error('Failed to load page index', err);
             });
     }
-
-    @action
-    setPageIndex(newIndex: PageIndex[]) {
-        this._pageIndex = newIndex;
-    }
-
     find = computedFn(
         function (this: PageStore, id?: string): Page | undefined {
             if (!id) {
@@ -89,15 +127,6 @@ export class PageStore extends iStore {
     get current(): Page | undefined {
         return this.find(this.currentPageId);
     }
-
-    // @action
-    // addToStore(page: Page) {
-    //     const old = this.find(page.id);
-    //     if (old) {
-    //         this.pages.remove(old);
-    //     }
-    //     this.pages.push(page);
-    // }
 
     @action
     addIfNotPresent(id: string, makeCurrent?: boolean) {
