@@ -102,7 +102,9 @@ export class PageStore extends iStore {
                     const pages = Object.values(grouped).map((docs) => {
                         const doc = docs[0]!;
                         const page = new Page(doc.page_id, doc.path, this);
-                        docs.filter((doc) => doc.position > 0).forEach((d) => page.addDocumentRootId(d.id));
+                        docs.filter((doc) => doc.position > 0).forEach((d) =>
+                            page.addDocumentRootConfig(d.id, d.type)
+                        );
                         return page;
                     });
                     this.pages.replace(pages);
@@ -149,15 +151,22 @@ export class PageStore extends iStore {
 
     @action
     loadAllDocuments(page: Page) {
-        return this.withAbortController(`load-all-${page.id}`, (sig) => {
-            return apiAllDocuments([...page.documentRootIds], sig.signal).then(({ data }) => {
-                return transaction(() => {
-                    return data.map((doc) => {
-                        return this.root.documentStore.addToStore<DocumentType>(doc);
-                    });
-                });
+        page.documentRootConfigs.forEach((type, docId) => {
+            this.root.documentRootStore.loadInNextBatch(docId, undefined, {
+                skipCreate: true,
+                documentType: type,
+                documentRoot: false
             });
         });
+        // return this.withAbortController(`load-all-${page.id}`, (sig) => {
+        //     return apiAllDocuments([...page.documentRootConfigs.keys()], sig.signal).then(({ data }) => {
+        //         return transaction(() => {
+        //             return data.map((doc) => {
+        //                 return this.root.documentStore.addToStore<DocumentType>(doc);
+        //             });
+        //         });
+        //     });
+        // });
     }
 
     @action

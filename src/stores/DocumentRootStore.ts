@@ -170,13 +170,13 @@ export class DocumentRootStore extends iStore {
             this.loadQueued();
             console.log('Postponing', postponed.length, 'document roots for next batch');
         }
-        const current = new Map(batch);
+        const currentBatch = new Map(batch);
         /**
          * if the user is not logged in, we can't load the documents
          * so we just mark all queued documents as loaded
          */
         if (!this.root.sessionStore.isLoggedIn) {
-            [...current.keys()].forEach((id) => {
+            [...currentBatch.keys()].forEach((id) => {
                 const dummyModel = this.find(id);
                 if (dummyModel && dummyModel.isDummy) {
                     dummyModel.setLoaded();
@@ -188,16 +188,16 @@ export class DocumentRootStore extends iStore {
         /**
          * load all queued documents
          */
-        const rootIds = [...current.keys()].sort();
+        const rootIds = [...currentBatch.keys()].sort();
         const idConfigs: [DocumentType | undefined, string[]][] = [];
-        const rootIdsWithDocs = rootIds.filter((id) => !current.get(id)!.load.documentType);
+        const rootIdsWithDocs = rootIds.filter((id) => !currentBatch.get(id)!.load.documentType);
         if (rootIdsWithDocs.length > 0) {
             idConfigs.push([undefined, rootIdsWithDocs]);
         }
         rootIds
-            .filter((id) => current.get(id)!.load.documentType)
+            .filter((id) => currentBatch.get(id)!.load.documentType)
             .reduce((acc, id) => {
-                const type = current.get(id)!.load.documentType;
+                const type = currentBatch.get(id)!.load.documentType;
                 const idx = acc.findIndex((item) => item[0] === type);
                 if (idx < 0) {
                     acc.push([type, [id]]);
@@ -220,21 +220,21 @@ export class DocumentRootStore extends iStore {
             ).then((results) => results.flatMap((r) => r.data));
             runInAction(() => {
                 models.forEach((data) => {
-                    const config = current.get(data.id);
+                    const config = currentBatch.get(data.id);
                     if (!config) {
                         return;
                     }
                     this.addApiResultToStore(data, config);
-                    current.delete(data.id);
+                    currentBatch.delete(data.id);
                 });
             });
             if (!isUserSwitched) {
                 // create all missing root documents
                 const created = await Promise.all(
-                    [...current.keys()]
-                        .filter((id) => !this.find(id)?.isLoaded && !current.get(id)!.load.skipCreate)
+                    [...currentBatch.keys()]
+                        .filter((id) => !this.find(id)?.isLoaded && !currentBatch.get(id)!.load.skipCreate)
                         .map((id) => {
-                            const config = current.get(id);
+                            const config = currentBatch.get(id);
                             if (config && config.meta) {
                                 return this.create(id, config.meta, config.access).catch(() => {
                                     // queue it up for loading later - the model was probably generated in the mean time?
@@ -258,12 +258,12 @@ export class DocumentRootStore extends iStore {
                 created
                     .filter((docRoot) => !!docRoot)
                     .forEach((docRoot) => {
-                        current.delete(docRoot.id);
+                        currentBatch.delete(docRoot.id);
                     });
             }
             // mark all remaining roots as loaded
             runInAction(() => {
-                [...current.keys()].forEach((id) => {
+                [...currentBatch.keys()].forEach((id) => {
                     const dummyModel = this.find(id);
                     if (dummyModel && dummyModel.isDummy) {
                         dummyModel.setLoaded();

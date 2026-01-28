@@ -2,13 +2,14 @@
  * A Markdown or MDX Page
  */
 
-import { action, computed, observable, ObservableSet } from 'mobx';
+import { action, computed, observable, ObservableMap } from 'mobx';
 import { PageStore, SidebarVersions } from '@tdev-stores/PageStore';
 import TaskState from '@tdev-models/documents/TaskState';
 import _ from 'es-toolkit/compat';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import ProgressState from './documents/ProgressState';
+import { DocumentType } from '@tdev-api/document';
 
 interface PageTree {
     id: string;
@@ -20,11 +21,10 @@ export default class Page {
     readonly store: PageStore;
     readonly id: string;
     readonly path: string;
-    refetchTimestamps: number[] = [];
 
     @observable.ref accessor _primaryStudentGroupName: string | undefined = undefined;
     @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
-    documentRootIds: ObservableSet<string>;
+    documentRootConfigs: ObservableMap<string, DocumentType>;
 
     dynamicValues = observable.map<string, string>();
 
@@ -32,7 +32,7 @@ export default class Page {
         this.id = id;
         this.path = path;
         this.store = store;
-        this.documentRootIds = observable.set<string>([id]);
+        this.documentRootConfigs = observable.map<string, DocumentType>([[id, 'mdx_comment']]);
     }
 
     @computed
@@ -86,20 +86,20 @@ export default class Page {
         if (process.env.NODE_ENV === 'production') {
             return;
         }
-        if (!this.documentRootIds.has(doc.documentRootId)) {
+        if (!this.documentRootConfigs.has(doc.documentRootId)) {
             this.store.loadPageIndex(true);
         }
     }
 
     @action
-    addDocumentRootId(id: string) {
-        this.documentRootIds.add(id);
+    addDocumentRootConfig(id: string, type: DocumentType) {
+        this.documentRootConfigs.set(id, type);
     }
 
     @computed
     get documentRoots() {
         return this.store.root.documentRootStore.documentRoots.filter(
-            (doc) => this.documentRootIds.has(doc.id) && !doc.isDummy
+            (doc) => this.documentRootConfigs.has(doc.id) && !doc.isDummy
         );
     }
 
@@ -156,18 +156,10 @@ export default class Page {
      */
     @action
     loadLinkedDocumentRoots() {
-        this.refetchTimestamps.push(Date.now());
         if (!this.store.root.userStore.isUserSwitched && this.documents.length > 0) {
             return;
         }
-        return this.store.loadAllDocuments(this).catch((err) => {
-            const now = Date.now();
-            const ts = this.refetchTimestamps.filter((ts) => now - ts < 10_000);
-            if (ts.length < 5) {
-                setTimeout(() => this.loadLinkedDocumentRoots(), 500);
-            }
-            console.warn('Failed to load linked document roots for page', this, err);
-        });
+        return this.store.loadAllDocuments(this);
     }
 
     @action
