@@ -1,0 +1,13 @@
+.choiceAnswerOptionContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    p {
+        margin: 0;
+    }
+
+    label {
+        margin-left: 0.2em;
+    }
+}

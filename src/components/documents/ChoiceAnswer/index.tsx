@@ -2,6 +2,9 @@ import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
+import clsx from 'clsx';
+import styles from './styles.module.scss';
 
 interface ChoiceAnswerProps {
     id: string;
@@ -11,27 +14,33 @@ interface ChoiceAnswerProps {
     children: React.ReactNode;
 }
 
-const createInputOptions = (
-    optionsList: React.ReactNode[] | undefined,
-    multiple: boolean | undefined,
-    id: string
-): React.ReactNode[] => {
-    return (optionsList || []).map((option, index) => {
-        const optionId = `${id}-option-${index}`;
-        return (
-            <div key={optionId}>
-                <input type={multiple ? 'checkbox' : 'radio'} id={optionId} name={id} value={optionId} />
-                <label htmlFor={optionId}>{option}</label>
-            </div>
-        );
-    });
-};
+interface ThinWrapperProps {
+    children: React.ReactNode;
+}
+
+interface OptionProps {
+    children: React.ReactNode;
+    index: number;
+}
 
 type ChoiceAnswerSubComponents = {
-    Before: React.FC<{ children: React.ReactNode }>;
-    Options: React.FC<{ children: React.ReactNode }>;
-    After: React.FC<{ children: React.ReactNode }>;
+    Before: React.FC<ThinWrapperProps>;
+    Options: React.FC<ThinWrapperProps>;
+    Option: React.FC<OptionProps>;
+    After: React.FC<ThinWrapperProps>;
 };
+
+const ChoiceAnswerContext = React.createContext({
+    id: '',
+    multiple: false,
+    readonly: false,
+    doc: null
+} as {
+    id: string;
+    multiple?: boolean;
+    readonly?: boolean;
+    doc: ChoiceAnswerDocument | null;
+});
 
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const [meta] = React.useState(new ModelMeta(props));
@@ -48,8 +57,35 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         (child) => React.isValidElement(child) && child.type === ChoiceAnswer.After
     );
 
-    return <div>{props.children}</div>;
+    return (
+        <div>
+            {beforeBlock}
+            <ChoiceAnswerContext.Provider
+                value={{ id: props.id, multiple: props.multiple, readonly: props.readonly, doc }}
+            >
+                {optionsBlock}
+            </ChoiceAnswerContext.Provider>
+            {afterBlock}
+        </div>
+    );
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
+
+ChoiceAnswer.Option = ({ index, children }: OptionProps) => {
+    const parentProps = React.useContext(ChoiceAnswerContext);
+    const optionId = `${parentProps.id}-option-${index}`;
+
+    return (
+        <div key={optionId} className={clsx(styles.choiceAnswerOptionContainer)}>
+            <input
+                type={parentProps.multiple ? 'checkbox' : 'radio'}
+                id={optionId}
+                name={parentProps.id}
+                value={optionId}
+            />
+            <label htmlFor={optionId}>{children}</label>
+        </div>
+    );
+};
 
 ChoiceAnswer.Before = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;

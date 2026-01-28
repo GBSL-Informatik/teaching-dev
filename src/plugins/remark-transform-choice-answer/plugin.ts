@@ -19,6 +19,17 @@ function createWrapper(name: string, children: FlowChildren): MdxJsxFlowElement 
     };
 }
 
+const transformOptions = (listChildren: {type: string, children: FlowChildren}[]): MdxJsxFlowElement => {
+  // TODO: Enumerate
+  const options = listChildren
+    .filter((child) => child.type === 'listItem')
+    .map((child) => {
+      return createWrapper('ChoiceAnswer.Option', child.children);
+    });
+
+  return createWrapper('ChoiceAnswer.Options', options);
+}
+
 const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {
     return (tree) => {
         visit(tree, 'mdxJsxFlowElement', (node) => {
@@ -44,7 +55,7 @@ const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {
 
             const beforeChildren = node.children.slice(0, listIndex) as FlowChildren;
 
-            const listChild = node.children[listIndex] as BlockContent | DefinitionContent;
+            const listChild = node.children[listIndex] as {children: FlowChildren};
 
             const afterChildren = node.children.slice(listIndex + 1) as FlowChildren;
 
@@ -54,7 +65,13 @@ const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {
                 wrappedChildren.push(createWrapper(`${node.name}.Before`, beforeChildren));
             }
 
-            wrappedChildren.push(createWrapper(`${node.name}.Options`, [listChild]));
+            /*
+            TODO:
+              - Wrap each <li> individually in ChoiceAnswer.Option
+              - Enumerate the <li> elements during transformation, pass as index prop to ChoiceAnswer.Option
+              - Get rid of the <ul>, put (transformed) children directly into ChoiceAnswer.Options
+            */
+            wrappedChildren.push(transformOptions(listChild.children));
 
             if (afterChildren.length > 0) {
                 wrappedChildren.push(createWrapper(`${node.name}.After`, afterChildren));

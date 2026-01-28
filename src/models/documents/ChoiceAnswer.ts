@@ -1,0 +1,65 @@
+import { TypeDataMapping, Document as DocumentProps, Access } from '@tdev-api/document';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observable } from 'mobx';
+
+export interface ChoiceAnswerChoices {
+    [type: number]: number | number[];
+}
+
+export interface MetaInit {
+    readonly?: boolean;
+}
+
+export class ModelMeta extends TypeMeta<'choice_answer'> {
+    readonly type = 'choice_answer';
+    readonly readonly?: boolean;
+
+    constructor(props: Partial<MetaInit>) {
+        super('choice_answer', props.readonly ? Access.RO_User : undefined);
+        this.readonly = props.readonly;
+    }
+
+    get defaultData(): TypeDataMapping['choice_answer'] {
+        return {
+            choices: {}
+        };
+    }
+}
+
+class ChoiceAnswer extends iDocument<'choice_answer'> {
+    @observable accessor choices: ChoiceAnswerChoices;
+
+    constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
+        super(props, store);
+        this.choices = props.data?.choices || {};
+    }
+
+    @action
+    setData(data: TypeDataMapping['choice_answer'], from: Source, updatedAt?: Date): void {
+        this.choices = data.choices;
+        if (from === Source.LOCAL) {
+            this.save();
+        }
+        if (updatedAt) {
+            this.updatedAt = new Date(updatedAt);
+        }
+    }
+
+    get data(): TypeDataMapping['choice_answer'] {
+        return {
+            choices: this.choices
+        };
+    }
+
+    @computed
+    get meta(): ModelMeta {
+        if (this.root?.type === 'choice_answer') {
+            return this.root.meta as ModelMeta;
+        }
+        return new ModelMeta({});
+    }
+}
+
+export default ChoiceAnswer;
