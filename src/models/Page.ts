@@ -21,6 +21,7 @@ export default class Page {
     readonly store: PageStore;
     readonly id: string;
     readonly path: string;
+    initialLoadComplete = false;
 
     @observable.ref accessor _primaryStudentGroupName: string | undefined = undefined;
     @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
@@ -155,11 +156,17 @@ export default class Page {
      * loads all linked document roots (added by #addDocumentRoot)
      */
     @action
-    loadLinkedDocumentRoots() {
-        if (!this.store.root.userStore.isUserSwitched && this.documents.length > 0) {
+    loadLinkedDocumentRoots(force = false) {
+        if (this.initialLoadComplete && !force && !this.store.root.userStore.isUserSwitched) {
             return;
         }
+        this.initialLoadComplete = true;
         return this.store.loadAllDocuments(this);
+    }
+
+    @action
+    stateableDocumentRootIds() {
+        this.documentRootConfigs;
     }
 
     @action
