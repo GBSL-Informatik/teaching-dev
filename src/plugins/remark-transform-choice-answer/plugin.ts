@@ -10,21 +10,24 @@ enum ChoiceComponentTypes {
 
 type FlowChildren = (BlockContent | DefinitionContent)[];
 
-function createWrapper(name: string, children: FlowChildren): MdxJsxFlowElement {
+function createWrapper(name: string, children: FlowChildren, attributes: any[] = []): MdxJsxFlowElement {
     return {
         type: 'mdxJsxFlowElement',
         name,
-        attributes: [],
+        attributes: attributes.map((attr) => ({
+            type: 'mdxJsxAttribute',
+            name: attr.name,
+            value: attr.value
+        })),
         children
     };
 }
 
 const transformOptions = (listChildren: {type: string, children: FlowChildren}[]): MdxJsxFlowElement => {
-  // TODO: Enumerate
   const options = listChildren
     .filter((child) => child.type === 'listItem')
-    .map((child) => {
-      return createWrapper('ChoiceAnswer.Option', child.children);
+    .map((child, index) => {
+      return createWrapper('ChoiceAnswer.Option', child.children, [{ name: 'index', value: index }]);
     });
 
   return createWrapper('ChoiceAnswer.Options', options);
