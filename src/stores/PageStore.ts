@@ -6,8 +6,12 @@ import { computedFn } from 'mobx-utils';
 import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
 import type { useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
 import siteConfig from '@generated/docusaurus.config';
+import { PageIndex } from '@tdev/page-progress-state';
+import { groupBy } from 'es-toolkit/array';
 
-type PageIndex = Record<string, any>;
+interface PagesIndex {
+    documentRoots: PageIndex[];
+}
 
 export class PageStore extends iStore {
     readonly root: RootStore;
@@ -17,7 +21,7 @@ export class PageStore extends iStore {
     @observable accessor currentPageId: string | undefined = undefined;
     @observable accessor runningTurtleScriptId: string | undefined = undefined;
 
-    @observable.ref accessor pageIndex: PageIndex = {};
+    @observable.ref accessor _pageIndex: PageIndex[] = [];
     sidebars = observable.map<string, ReturnType<typeof useDocsSidebar>>([], { deep: false });
 
     constructor(store: RootStore) {
@@ -40,19 +44,35 @@ export class PageStore extends iStore {
     }
 
     @action
-    load() {
+    loadPageIndex(force: boolean = false) {
+        if (!force && this._pageIndex.length > 0) {
+            return Promise.resolve();
+        }
         return fetch(`${siteConfig.baseUrl}tdev-artifacts/page-progress-state/pageIndex.json`)
             .then((res) => {
-                return res.json();
+                return res.json() as Promise<PagesIndex>;
             })
-            .then((data) => {
-                this.updatePageIndex(data as PageIndex);
+            .then(
+                action((data) => {
+                    const grouped = groupBy(data.documentRoots, (dr) => `${dr.path}::${dr.page_id}`);
+                    const pages = Object.values(grouped).map((docs) => {
+                        const doc = docs[0]!;
+                        const page = new Page(doc.page_id, doc.path, this);
+                        docs.forEach((d) => page.addDocumentRootId(d.id));
+                        return page;
+                    });
+                    this.pages.replace(pages);
+                    this.setPageIndex(data.documentRoots);
+                })
+            )
+            .catch((err) => {
+                console.error('Failed to load page index', err);
             });
     }
 
     @action
-    updatePageIndex(newIndex: PageIndex) {
-        this.pageIndex = newIndex;
+    setPageIndex(newIndex: PageIndex[]) {
+        this._pageIndex = newIndex;
     }
 
     find = computedFn(
@@ -70,19 +90,22 @@ export class PageStore extends iStore {
         return this.find(this.currentPageId);
     }
 
-    @action
-    addToStore(page: Page) {
-        const old = this.find(page.id);
-        if (old) {
-            this.pages.remove(old);
-        }
-        this.pages.push(page);
-    }
+    // @action
+    // addToStore(page: Page) {
+    //     const old = this.find(page.id);
+    //     if (old) {
+    //         this.pages.remove(old);
+    //     }
+    //     this.pages.push(page);
+    // }
 
     @action
     addIfNotPresent(id: string, makeCurrent?: boolean) {
         if (!this.find(id)) {
-            const page = new Page(id, this);
+            if (process.env.NODE_ENV !== 'production') {
+                this.loadPageIndex(true);
+            }
+            const page = new Page(id, window.location.pathname, this);
             this.pages.push(page);
         }
         if (makeCurrent) {

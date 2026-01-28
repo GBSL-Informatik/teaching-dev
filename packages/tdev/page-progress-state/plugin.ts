@@ -1,5 +1,5 @@
 import { LoadContext, Plugin, PluginModule } from '@docusaurus/types';
-import { exportDB, getContent } from './utils/exportDb';
+import { exportDB } from './utils/exportDb';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { PluginName } from '.';

@@ -13,6 +13,7 @@ import ProgressState from './documents/ProgressState';
 export default class Page {
     readonly store: PageStore;
     readonly id: string;
+    readonly path: string;
     refetchTimestamps: number[] = [];
 
     @observable.ref accessor _primaryStudentGroupName: string | undefined = undefined;
@@ -21,8 +22,9 @@ export default class Page {
 
     dynamicValues = observable.map<string, string>();
 
-    constructor(id: string, store: PageStore) {
+    constructor(id: string, path: string, store: PageStore) {
         this.id = id;
+        this.path = path;
         this.store = store;
         this.documentRootIds = observable.set<string>([id]);
     }
@@ -37,8 +39,19 @@ export default class Page {
     }
 
     @action
-    addDocumentRoot(doc: iDocument<any>) {
-        this.documentRootIds.add(doc.documentRootId);
+    assertDocumentRoot(doc: iDocument<any>) {
+        // this.documentRootIds.add(doc.documentRootId);
+        if (process.env.NODE_ENV === 'production') {
+            return;
+        }
+        if (!this.documentRootIds.has(doc.documentRootId)) {
+            this.store.loadPageIndex(true);
+        }
+    }
+
+    @action
+    addDocumentRootId(id: string) {
+        this.documentRootIds.add(id);
     }
 
     @computed
