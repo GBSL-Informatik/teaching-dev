@@ -37,7 +37,6 @@ export class PageStore extends iStore {
     @observable accessor runningTurtleScriptId: string | undefined = undefined;
 
     @observable.ref accessor _pageIndex: PageIndex[] = [];
-    sidebars = observable.map<string, ReturnType<typeof useDocsSidebar>>([], { deep: false });
 
     constructor(store: RootStore) {
         super();
@@ -46,20 +45,6 @@ export class PageStore extends iStore {
 
     get sidebarVersions() {
         return SidebarVersions;
-    }
-
-    @action
-    configureSidebar(id: string, sidebar: ReturnType<typeof useDocsSidebar>) {
-        if (this.sidebars.has(id) || !sidebar) {
-            return;
-        }
-        this.sidebars.set(id, sidebar);
-        sidebar.items.forEach((item) => {
-            if (item.type !== 'category') {
-                return;
-            }
-            item.items;
-        });
     }
 
     @computed
@@ -111,10 +96,26 @@ export class PageStore extends iStore {
                     this._pageIndex = data.documentRoots;
                 })
             )
+            .then(() => {
+                this.loadTaskableDocuments();
+            })
             .catch((err) => {
                 console.error('Failed to load page index', err);
             });
     }
+
+    @action
+    loadTaskableDocuments() {
+        this.pages.forEach((page) => {
+            page.taskableDocumentRootIds.forEach((id) => {
+                this.root.documentRootStore.loadInNextBatch(id, undefined, {
+                    documentRoot: false,
+                    skipCreate: true
+                });
+            });
+        });
+    }
+
     find = computedFn(
         function (this: PageStore, id?: string): Page | undefined {
             if (!id) {
@@ -151,22 +152,15 @@ export class PageStore extends iStore {
 
     @action
     loadAllDocuments(page: Page) {
-        page.documentRootConfigs.forEach((type, docId) => {
-            this.root.documentRootStore.loadInNextBatch(docId, undefined, {
-                skipCreate: true,
-                documentType: type,
-                documentRoot: false
+        return this.withAbortController(`load-all-${page.id}`, (sig) => {
+            return apiAllDocuments([...page.documentRootConfigs.keys()], sig.signal).then(({ data }) => {
+                return transaction(() => {
+                    return data.map((doc) => {
+                        return this.root.documentStore.addToStore<DocumentType>(doc);
+                    });
+                });
             });
         });
-        // return this.withAbortController(`load-all-${page.id}`, (sig) => {
-        //     return apiAllDocuments([...page.documentRootConfigs.keys()], sig.signal).then(({ data }) => {
-        //         return transaction(() => {
-        //             return data.map((doc) => {
-        //                 return this.root.documentStore.addToStore<DocumentType>(doc);
-        //             });
-        //         });
-        //     });
-        // });
     }
 
     @action

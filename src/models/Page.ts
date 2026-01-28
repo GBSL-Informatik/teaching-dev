@@ -157,16 +157,22 @@ export default class Page {
      */
     @action
     loadLinkedDocumentRoots(force = false) {
-        if (this.initialLoadComplete && !force && !this.store.root.userStore.isUserSwitched) {
+        if (!force && !this.store.root.userStore.isUserSwitched) {
+            return;
+        }
+        if (!force && this.initialLoadComplete) {
             return;
         }
         this.initialLoadComplete = true;
         return this.store.loadAllDocuments(this);
     }
 
-    @action
-    stateableDocumentRootIds() {
-        this.documentRootConfigs;
+    @computed
+    get taskableDocumentRootIds() {
+        return [...this.documentRootConfigs.keys()].filter((id) => {
+            const config = this.documentRootConfigs.get(id)!;
+            return config === 'task_state' || config === 'progress_state';
+        });
     }
 
     @action

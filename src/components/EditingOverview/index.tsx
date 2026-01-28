@@ -78,7 +78,7 @@ const EditingOverview = observer(() => {
                         </div>
                     }
                     onOpen={() => {
-                        currentPage.loadLinkedDocumentRoots();
+                        currentPage.loadLinkedDocumentRoots(true);
                     }}
                     contentStyle={{
                         position: 'fixed'

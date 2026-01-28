@@ -8,13 +8,22 @@ import Icon from '@mdi/react';
 import { mdiCheck, mdiCheckCircle, mdiProgressQuestion } from '@mdi/js';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import { useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
+const ensureTrailingSlash = (path?: string) => {
+    if (!path) {
+        return '';
+    }
+    return path.endsWith('/') ? path : path + '/';
+};
 
 type Props = WrapperProps<typeof DocSidebarItemType>;
 const DocSidebarItemWrapper = observer((props: Props): ReactNode => {
     const pageStore = useStore('pageStore');
-    const { pid } = (props.item.customProps || {}) as { pid?: string };
-    const page = pageStore.find(pid);
+    const path = props.item.type !== 'html' ? ensureTrailingSlash(props.item.href) : undefined;
+    if (!path) {
+        console.log(props.item);
+    }
+
+    const page = pageStore.pages.find((p) => p.path === path);
     return (
         <div className={clsx(styles.item)}>
             <Icon
