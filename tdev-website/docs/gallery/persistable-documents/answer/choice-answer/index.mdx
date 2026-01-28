@@ -12,7 +12,7 @@ import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
 
 ## Standalone-Fragen
-Einfache Single- und Multiple-Choice-Fragen:
+Einfache Single- und Multiple-Choice-Fragen: 
 
 ```md
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
@@ -20,8 +20,8 @@ Einfache Single- und Multiple-Choice-Fragen:
 
     1. Steve **Jobs**
     2. Tim Berners-Lee
-    3. Ada Lovelace
-    4. Alain Berset
+    3. Ada __Lovelace__
+    4. Alain Berset :mdi[cheese]
     5. Charles Bartowski
 </ChoiceAnswer>
 ```
@@ -32,13 +32,11 @@ Einfache Single- und Multiple-Choice-Fragen:
 
         1. Steve **Jobs**
         2. Tim Berners-Lee
-        3. Ada Lovelace
-        4. Alain Berset
+        3. Ada __Lovelace__
+        4. Alain Berset :mdi[cheese]
         5. Charles Bartowski
     </ChoiceAnswer>
 </BrowserWindow>
-
-Kontextueller Text (z.B. die Fragestellung, Hinweise oder sonstige Informationen) können vor oder nach der Liste der Antwortmöglichkeiten angegeben werden. **Wichtig:** Freitext (ohne Admonition) muss in einem Zitat-Block (`>`) stehen.
 
 ```md
 <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5">
@@ -54,8 +52,7 @@ Kontextueller Text (z.B. die Fragestellung, Hinweise oder sonstige Informationen
     4. 5 ist eine Primzahl.
     5. Primzahlen sind nur durch 1 und sich selbst teilbar.
 
-    > Gewusst? **Prim**zahlen haben nichts mit **Prim**aten zu tun!
-
+    **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
 </ChoiceAnswer>
 ```
 
@@ -73,8 +70,7 @@ Kontextueller Text (z.B. die Fragestellung, Hinweise oder sonstige Informationen
         4. 5 ist eine Primzahl.
         5. Primzahlen sind nur durch 1 und sich selbst teilbar.
 
-        > Gewusst? **Prim**zahlen haben nichts mit **Prim**aten zu tun!
-
+        **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
     </ChoiceAnswer>
 </BrowserWindow>
 
