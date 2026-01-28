@@ -23,7 +23,7 @@ const Val = observer((props: Props) => {
     }
     let value = '';
     if ('code' in props) {
-        value = templateReplacer(props.code, pageStore.current?.dynamicValues);
+        value = templateReplacer(props.code, current.dynamicValues);
     } else if ('name' in props) {
         value = current.dynamicValues.get(props.name) || `<${props.name}>`;
     }

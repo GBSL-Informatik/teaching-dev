@@ -285,7 +285,7 @@ const EditUser = observer((props: Props) => {
                     setSpinState('deleting');
                     authClient.admin.removeUser({ userId: user.id }).then(
                         action((res) => {
-                            if (res.data?.success) {
+                            if (res?.data?.success) {
                                 userStore.removeFromStore(user.id);
                                 props.close();
                             }
