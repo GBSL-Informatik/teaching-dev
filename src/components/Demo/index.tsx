@@ -4,10 +4,14 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 
 export const Comp = observer(() => {
+    const documentRootStore = useStore('documentRootStore');
     const pageStore = useStore('pageStore');
 
     return (
         <div>
+            <CodeBlock language="json">
+                {JSON.stringify(documentRootStore.defaultMetas.map((m) => m.type))}
+            </CodeBlock>
             <CodeBlock language="json">
                 {JSON.stringify(
                     pageStore.pages
