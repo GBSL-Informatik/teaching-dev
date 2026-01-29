@@ -17,6 +17,8 @@ interface PageTree {
     pages: PageTree[];
 }
 
+const TaskableDocument = new Set<DocumentType>(['task_state', 'progress_state']);
+
 export default class Page {
     readonly store: PageStore;
     readonly id: string;
@@ -171,7 +173,20 @@ export default class Page {
     get taskableDocumentRootIds() {
         return [...this.documentRootConfigs.keys()].filter((id) => {
             const config = this.documentRootConfigs.get(id)!;
-            return config === 'task_state' || config === 'progress_state';
+            return TaskableDocument.has(config);
+        });
+    }
+
+    @computed
+    get taskableDocuments() {
+        const uid = this.store.root.userStore.viewedUserId;
+        if (!uid) {
+            return [];
+        }
+        return this.taskableDocumentRootIds.flatMap((rid) => {
+            return this.store.root.documentStore
+                .findByDocumentRoot(rid)
+                .filter((doc) => doc.authorId === uid && TaskableDocument.has(doc.type));
         });
     }
 

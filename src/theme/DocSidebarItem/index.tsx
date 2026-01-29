@@ -19,19 +19,17 @@ type Props = WrapperProps<typeof DocSidebarItemType>;
 const DocSidebarItemWrapper = observer((props: Props): ReactNode => {
     const pageStore = useStore('pageStore');
     const path = props.item.type !== 'html' ? ensureTrailingSlash(props.item.href) : undefined;
-    if (!path) {
-        console.log(props.item);
-    }
-
     const page = pageStore.pages.find((p) => p.path === path);
     return (
         <div className={clsx(styles.item)}>
-            <Icon
-                path={page ? mdiCheckCircle : mdiProgressQuestion}
-                size={0.4}
-                color={page ? 'var(--ifm-color-success)' : 'var(--ifm-color-warning)'}
-                className={clsx(styles.icon)}
-            />
+            {(page?.taskableDocuments?.length ?? 0) > 0 && (
+                <Icon
+                    path={page ? mdiCheckCircle : mdiProgressQuestion}
+                    size={0.4}
+                    color={page ? 'var(--ifm-color-success)' : 'var(--ifm-color-warning)'}
+                    className={clsx(styles.icon)}
+                />
+            )}
             <DocSidebarItem {...props} />
         </div>
     );

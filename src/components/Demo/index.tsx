@@ -7,5 +7,22 @@ import { useStore } from '@tdev-hooks/useStore';
 export const Comp = observer(() => {
     const pageStore = useStore('pageStore');
 
-    return <CodeBlock language="json">{JSON.stringify(pageStore.tree, null, 2)}</CodeBlock>;
+    return (
+        <div>
+            <CodeBlock language="json">
+                {JSON.stringify(
+                    pageStore.pages
+                        .filter((p) => p.taskableDocumentRootIds.length > 0)
+                        .map((p) => ({
+                            path: p.path,
+                            rids: p.taskableDocumentRootIds,
+                            docs: p.taskableDocuments.map((d) => d.id)
+                        })),
+                    null,
+                    2
+                )}
+            </CodeBlock>
+            <CodeBlock language="json">{JSON.stringify(pageStore.tree, null, 2)}</CodeBlock>;
+        </div>
+    );
 });
