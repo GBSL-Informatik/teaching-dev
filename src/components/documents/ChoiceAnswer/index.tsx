@@ -2,13 +2,12 @@ import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 
 interface ChoiceAnswerProps {
     id: string;
-    index?: number;
+    questionIndex?: number;
     multiple?: boolean;
     readonly?: boolean;
     children: React.ReactNode;
@@ -20,7 +19,7 @@ interface ThinWrapperProps {
 
 interface OptionProps {
     children: React.ReactNode;
-    index: number;
+    optionIndex: number;
 }
 
 type ChoiceAnswerSubComponents = {
@@ -34,17 +33,20 @@ const ChoiceAnswerContext = React.createContext({
     id: '',
     multiple: false,
     readonly: false,
-    doc: null
+    selectedChoices: [],
+    onChange: () => {}
 } as {
     id: string;
     multiple?: boolean;
     readonly?: boolean;
-    doc: ChoiceAnswerDocument | null;
+    selectedChoices: number[];
+    onChange: (optionIndex: number, checked: boolean) => void;
 });
 
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstMainDocument(props.id, meta);
+    const questionIndex = props.questionIndex ?? 0;
 
     const childrenArray = React.Children.toArray(props.children);
     const beforeBlock = childrenArray.find(
@@ -57,11 +59,25 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         (child) => React.isValidElement(child) && child.type === ChoiceAnswer.After
     );
 
+    const onOptionChange = (optionIndex: number, checked: boolean) => {
+        if (props.multiple) {
+            doc?.updateMultipleChoiceSelection(questionIndex, optionIndex, checked);
+        } else {
+            doc?.updateSingleChoiceSelection(questionIndex, optionIndex);
+        }
+    };
+
     return (
         <div>
             {beforeBlock}
             <ChoiceAnswerContext.Provider
-                value={{ id: props.id, multiple: props.multiple, readonly: props.readonly, doc }}
+                value={{
+                    id: props.id,
+                    multiple: props.multiple,
+                    readonly: props.readonly,
+                    selectedChoices: doc?.data.choices[questionIndex] || [],
+                    onChange: onOptionChange
+                }}
             >
                 {optionsBlock}
             </ChoiceAnswerContext.Provider>
@@ -70,9 +86,9 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     );
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
-ChoiceAnswer.Option = ({ index, children }: OptionProps) => {
+ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
     const parentProps = React.useContext(ChoiceAnswerContext);
-    const optionId = `${parentProps.id}-option-${index}`;
+    const optionId = `${parentProps.id}-option-${optionIndex}`;
 
     return (
         <div key={optionId} className={clsx(styles.choiceAnswerOptionContainer)}>
@@ -81,6 +97,9 @@ ChoiceAnswer.Option = ({ index, children }: OptionProps) => {
                 id={optionId}
                 name={parentProps.id}
                 value={optionId}
+                onChange={(e) => parentProps.onChange(optionIndex, e.target.checked)}
+                checked={parentProps.selectedChoices.includes(optionIndex)}
+                disabled={parentProps.readonly}
             />
             <label htmlFor={optionId}>{children}</label>
         </div>

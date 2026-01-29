@@ -18,6 +18,7 @@ import type DocumentStore from '@tdev-stores/DocumentStore';
 import iDocumentContainer from '@tdev-models/iDocumentContainer';
 import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import Code from '@tdev-models/documents/Code';
+import ChoiceAnswer, { ChoiceAnswerChoices } from '@tdev-models/documents/ChoiceAnswer';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -38,6 +39,10 @@ export interface ScriptVersionData {
 
 export interface StringData {
     text: string;
+}
+
+export interface ChoiceAnswerData {
+    choices: ChoiceAnswerChoices;
 }
 
 export interface QuillV2Data {
@@ -119,6 +124,7 @@ export interface TypeDataMapping extends ContainerTypeDataMapping {
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersionData;
     ['string']: StringData;
+    ['choice_answer']: ChoiceAnswerData;
     ['quill_v2']: QuillV2Data;
     ['solution']: SolutionData;
     ['dir']: DirData;
@@ -148,6 +154,7 @@ export interface TypeModelMapping extends ContainerTypeModelMapping {
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersion;
     ['string']: String;
+    ['choice_answer']: ChoiceAnswer;
     ['quill_v2']: QuillV2;
     ['solution']: Solution;
     ['dir']: Directory;

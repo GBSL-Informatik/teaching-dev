@@ -27,7 +27,7 @@ const transformOptions = (listChildren: {type: string, children: FlowChildren}[]
   const options = listChildren
     .filter((child) => child.type === 'listItem')
     .map((child, index) => {
-      return createWrapper('ChoiceAnswer.Option', child.children, [{ name: 'index', value: index }]);
+      return createWrapper('ChoiceAnswer.Option', child.children, [{ name: 'optionIndex', value: index }]);
     });
 
   return createWrapper('ChoiceAnswer.Options', options);

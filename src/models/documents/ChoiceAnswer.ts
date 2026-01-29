@@ -5,7 +5,7 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 
 export interface ChoiceAnswerChoices {
-    [type: number]: number | number[];
+    [type: number]: number[];
 }
 
 export interface MetaInit {
@@ -29,7 +29,7 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
 }
 
 class ChoiceAnswer extends iDocument<'choice_answer'> {
-    @observable accessor choices: ChoiceAnswerChoices;
+    @observable.ref accessor choices: ChoiceAnswerChoices;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
@@ -45,6 +45,32 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @action
+    updateSingleChoiceSelection(questionIndex: number, optionIndex: number): void {
+        this.updatedAt = new Date();
+        this.choices = {
+            ...this.choices,
+            [questionIndex]: [optionIndex]
+        };
+        this.saveNow();
+    }
+
+    @action
+    updateMultipleChoiceSelection(questionIndex: number, optionIndex: number, selected: boolean): void {
+        this.updatedAt = new Date();
+        const currentSelections = new Set<number>(this.choices[questionIndex] as number[] | []);
+        if (selected) {
+            currentSelections.add(optionIndex);
+        } else {
+            currentSelections.delete(optionIndex);
+        }
+        this.choices = {
+            ...this.choices,
+            [questionIndex]: Array.from(currentSelections)
+        };
+        this.saveNow();
     }
 
     get data(): TypeDataMapping['choice_answer'] {
