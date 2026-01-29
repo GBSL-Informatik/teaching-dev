@@ -4,6 +4,10 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import SyncStatus from '@tdev-components/SyncStatus';
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import Loader from '@tdev-components/Loader';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 interface ChoiceAnswerProps {
     id: string;
@@ -47,6 +51,15 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstMainDocument(props.id, meta);
     const questionIndex = props.questionIndex ?? 0;
+    const isBrowser = useIsBrowser();
+
+    if (!doc) {
+        return <UnknownDocumentType type={meta.type} />;
+    }
+
+    if (!isBrowser) {
+        return <Loader />;
+    }
 
     const childrenArray = React.Children.toArray(props.children);
     const beforeBlock = childrenArray.find(
@@ -68,7 +81,8 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     };
 
     return (
-        <div>
+        <div className={styles.choiceAnswerContainer}>
+            <SyncStatus className={styles.syncStatus} model={doc} size={0.7} />
             {beforeBlock}
             <ChoiceAnswerContext.Provider
                 value={{

@@ -1,3 +1,13 @@
+.choiceAnswerContainer {
+    position: relative;
+
+    .syncStatus {
+        position: absolute;
+        top: 0.2em;
+        right: 0.2em;
+    }
+}
+
 .choiceAnswerOptionContainer {
     display: flex;
     flex-direction: row;
