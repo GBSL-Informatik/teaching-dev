@@ -88,7 +88,7 @@ export class PageStore extends iStore {
                         const doc = docs[0]!;
                         const page = new Page(doc.page_id, doc.path, this);
                         docs.filter((doc) => doc.position > 0).forEach((d) =>
-                            page.addDocumentRootConfig(d.id, d.type)
+                            page.addDocumentRootConfig(d.id, d)
                         );
                         return page;
                     });

@@ -10,6 +10,8 @@ import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import ProgressState from './documents/ProgressState';
 import { DocumentType } from '@tdev-api/document';
+import type { PageIndex } from '@tdev/page-progress-state';
+import { filter } from '@mdxeditor/editor';
 
 interface PageTree {
     id: string;
@@ -19,6 +21,11 @@ interface PageTree {
 
 const TaskableDocument = new Set<DocumentType>(['task_state', 'progress_state']);
 
+interface PageConfig {
+    type: DocumentType;
+    position: number;
+}
+
 export default class Page {
     readonly store: PageStore;
     readonly id: string;
@@ -27,7 +34,7 @@ export default class Page {
 
     @observable.ref accessor _primaryStudentGroupName: string | undefined = undefined;
     @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
-    documentRootConfigs: ObservableMap<string, DocumentType>;
+    documentRootConfigs: ObservableMap<string, PageConfig>;
 
     dynamicValues = observable.map<string, string>();
 
@@ -35,7 +42,10 @@ export default class Page {
         this.id = id;
         this.path = path;
         this.store = store;
-        this.documentRootConfigs = observable.map<string, DocumentType>([[id, 'mdx_comment']]);
+        this.documentRootConfigs = observable.map<string, PageConfig>(
+            [[id, { type: 'mdx_comment', position: 0 }]],
+            { deep: false }
+        );
     }
 
     @computed
@@ -95,15 +105,19 @@ export default class Page {
     }
 
     @action
-    addDocumentRootConfig(id: string, type: DocumentType) {
-        this.documentRootConfigs.set(id, type);
+    addDocumentRootConfig(id: string, config: PageConfig) {
+        this.documentRootConfigs.set(id, { type: config.type, position: config.position });
     }
 
     @computed
     get documentRoots() {
-        return this.store.root.documentRootStore.documentRoots.filter(
-            (doc) => this.documentRootConfigs.has(doc.id) && !doc.isDummy
-        );
+        return this.store.root.documentRootStore.documentRoots
+            .filter((doc) => this.documentRootConfigs.has(doc.id) && !doc.isDummy)
+            .sort((a, b) => {
+                const pA = this.documentRootConfigs.get(a.id)!.position;
+                const pB = this.documentRootConfigs.get(b.id)!.position;
+                return pA - pB;
+            });
     }
 
     @computed
@@ -123,6 +137,15 @@ export default class Page {
             )
             .filter((d) => d?.root?.meta.pagePosition)
             .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
+    }
+
+    @computed
+    get editingStateV2(): (TaskState | ProgressState)[] {
+        return this.documentRoots
+            .flatMap((doc) => doc.documents)
+            .filter(
+                (d): d is TaskState | ProgressState => d instanceof TaskState || d instanceof ProgressState
+            );
     }
 
     @action
@@ -173,7 +196,7 @@ export default class Page {
     get taskableDocumentRootIds() {
         return [...this.documentRootConfigs.keys()].filter((id) => {
             const config = this.documentRootConfigs.get(id)!;
-            return TaskableDocument.has(config);
+            return TaskableDocument.has(config.type);
         });
     }
 

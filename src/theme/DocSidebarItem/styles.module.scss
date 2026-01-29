@@ -2,7 +2,10 @@
     position: relative;
     .icon {
         position: absolute;
-        right: 0px;
-        top: 12px;
+        right: 0.5em;
+        top: 0;
+        &.category {
+            right: 3em;
+        }
     }
 }

@@ -102,6 +102,21 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
+    get pages() {
+        return this.store.root.pageStore.pages.filter((p) => p.documentRootConfigs.has(this.id));
+    }
+
+    /**
+     * Map of page paths to their position in this document root
+     */
+    @computed
+    get pagePositions() {
+        return new Map<string, number>(
+            this.pages.map((p) => [p.path, p.documentRootConfigs.get(this.id)!.position])
+        );
+    }
+
+    @computed
     get permissions() {
         return [...this.store.currentUsersPermissions(this.id)];
     }

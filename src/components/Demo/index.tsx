@@ -10,6 +10,35 @@ export const Comp = observer(() => {
     return (
         <div>
             <CodeBlock language="json">
+                {JSON.stringify(
+                    pageStore.pages
+                        .filter((p) => p.editingStateV2.length)
+                        .map((p) => [
+                            p.id,
+                            p.path,
+                            [
+                                ...p.editingStateV2.map(
+                                    (s) =>
+                                        `${s.type}:${s.isDone}->${p.documentRootConfigs.get(s.documentRootId)?.position ?? '?'} ${s.documentRootId}::${s.id}`
+                                )
+                            ]
+                        ]),
+                    null,
+                    2
+                )}
+            </CodeBlock>
+            <CodeBlock language="json">
+                {JSON.stringify(
+                    documentRootStore.documentRoots.map((d) => [
+                        d.id,
+                        d.mainDocuments.map((d) => d.type),
+                        [...d.pagePositions.entries()]
+                    ]),
+                    null,
+                    2
+                )}
+            </CodeBlock>
+            <CodeBlock language="json">
                 {JSON.stringify(documentRootStore.defaultMetas.map((m) => m.type))}
             </CodeBlock>
             <CodeBlock language="json">
