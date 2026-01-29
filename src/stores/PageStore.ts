@@ -109,8 +109,8 @@ export class PageStore extends iStore {
         this.pages.forEach((page) => {
             page.taskableDocumentRootIds.forEach((id) => {
                 this.root.documentRootStore.loadInNextBatch(id, undefined, {
-                    documentRoot: false,
-                    skipCreate: true
+                    skipCreate: true,
+                    documentRoot: 'addIfMissing'
                 });
             });
         });

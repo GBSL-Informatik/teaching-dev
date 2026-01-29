@@ -1,6 +1,5 @@
 import React from 'react';
 import CodeBlock from '@theme/CodeBlock';
-import BrowserOnly from '@docusaurus/BrowserOnly';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 

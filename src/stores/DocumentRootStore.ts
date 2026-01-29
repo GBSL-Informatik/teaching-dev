@@ -18,6 +18,15 @@ import { DocumentType } from '@tdev-api/document';
 import _ from 'es-toolkit/compat';
 import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
+import { CodeMeta } from '@tdev-models/documents/Code';
+import { ModelMeta as MdxCommentMeta } from '@tdev-models/documents/MdxComment';
+import { ModelMeta as RestrictedMeta } from '@tdev-models/documents/Restricted';
+import { ModelMeta as SolutionMeta } from '@tdev-models/documents/Solution';
+import { ModelMeta as StringMeta } from '@tdev-models/documents/String';
+import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
+
+import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 
 type LoadConfig = {
     /** if true, user permissions will be loaded
@@ -30,11 +39,14 @@ type LoadConfig = {
      */
     groupPermissions?: boolean;
     /**
-     * if true, the document root will be created and when already exists,
-     * it will replace the existing one
-     * @default true
+     * @option 'replace': the document root will be created and when already exists,
+     *                    it will replace the existing one.
+     * @option 'addIfMissing': when the document root does not exist in the mobx store, it will
+     *                         be added. But no new document root will be created on the api.
+     * @option false: the document root will not be loaded.
+     * @default 'replace'
      */
-    documentRoot?: boolean;
+    documentRoot?: 'replace' | 'addIfMissing' | boolean;
     /**
      * if a document root should not be created when it is not found,
      * set `skipCreate` to true
@@ -59,6 +71,17 @@ type BatchedMeta = {
     access: Partial<Config>;
 };
 
+const DefaultMeta: TypeMeta<DocumentType>[] = [
+    new CodeMeta({}),
+    new MdxCommentMeta({}),
+    new RestrictedMeta({}),
+    new SolutionMeta({}),
+    new StringMeta({}),
+    new TaskStateMeta({}),
+    new ProgressStateMeta({}),
+    new CmsTextMeta({})
+];
+
 export class DocumentRootStore extends iStore {
     readonly root: RootStore;
     documentRoots = observable.array<DocumentRoot<DocumentType>>([]);
@@ -73,6 +96,11 @@ export class DocumentRootStore extends iStore {
     @computed
     get hasApiAccess() {
         return this.root.sessionStore.isLoggedIn;
+    }
+
+    @computed
+    get defaultMetas(): TypeMeta<DocumentType>[] {
+        return [...DefaultMeta, ...this.root.componentStore.defaultMeta];
     }
 
     @action
@@ -123,7 +151,7 @@ export class DocumentRootStore extends iStore {
         this.queued.set(id, {
             meta: meta,
             load: {
-                documentRoot: true,
+                documentRoot: 'replace',
                 groupPermissions: true,
                 userPermissions: true,
                 skipCreate: false,
@@ -275,17 +303,27 @@ export class DocumentRootStore extends iStore {
 
     @action
     addApiResultToStore(data: ApiDocumentRoot, config: Omit<BatchedMeta, 'access'>) {
-        if (config.load.documentRoot && !config.meta) {
+        if (config.load.documentRoot === 'replace' && !config.meta) {
             return;
         }
-        const documentRoot = config.load.documentRoot
-            ? new DocumentRoot(data, config.meta!, this)
-            : this.find(data.id);
+        const defaultType = data.documents[0]?.type;
+        const meta =
+            config.meta ||
+            (this.find(data.id)?.meta as TypeMeta<any>) ||
+            (defaultType ? this.defaultMetas.find((m) => m.type === defaultType) : undefined);
+        const documentRoot =
+            config.load.documentRoot && meta ? new DocumentRoot(data, meta, this) : this.find(data.id);
         if (!documentRoot) {
             return;
         }
         if (config.load.documentRoot) {
-            this.addDocumentRoot(documentRoot, { cleanup: true, deep: false });
+            if (config.load.documentRoot === 'addIfMissing') {
+                if (!this.find(data.id)) {
+                    this.addDocumentRoot(documentRoot);
+                }
+            } else {
+                this.addDocumentRoot(documentRoot, { cleanup: true, deep: false });
+            }
         }
         if (config.load.groupPermissions) {
             data.groupPermissions.forEach((gp) => {
@@ -391,7 +429,7 @@ export class DocumentRootStore extends iStore {
     @action
     reload(documentRoot: DocumentRoot<any>) {
         this.loadInNextBatch(documentRoot.id, documentRoot.meta, {
-            documentRoot: true,
+            documentRoot: 'replace',
             documents: true,
             groupPermissions: true,
             userPermissions: true

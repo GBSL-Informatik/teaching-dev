@@ -63,6 +63,14 @@ class ComponentStore {
     }
 
     @computed
+    get defaultMeta() {
+        return [
+            ...[...this.components.values()].map((comp) => comp.defaultMeta),
+            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({}))
+        ];
+    }
+
+    @computed
     get registeredContainerTypes(): ContainerType[] {
         return [...this.components.keys()];
     }
