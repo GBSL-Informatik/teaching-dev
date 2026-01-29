@@ -7,6 +7,7 @@ tags:
 import PermissionsPanel from "@tdev-components/PermissionsPanel"
 import BrowserWindow from '@tdev-components/BrowserWindow';
 import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
 
 # Choice Answer
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
@@ -96,7 +97,7 @@ Mit der `randomize`-Property werden die Antwortmöglichkeiten in zufälliger Rei
 </ChoiceAnswer>
 ```
 
-## Fragegruppen
+## Quizzes mit mehreren Fragen
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```html
@@ -123,8 +124,31 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Frag
         3. IMAP
         4. HTTP
     </ChoiceAnswer>
-</ChoiceAnswer.Group>
+</Quiz>
 ```
+
+<BrowserWindow>
+    <Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
+        <ChoiceAnswer correct={[5]}>
+            > In welchem Jahr war 2024?
+            
+            1. 1965
+            2. 1983
+            3. 1991
+            4. 2000
+            5. 2024
+        </ChoiceAnswer>
+        
+        <ChoiceAnswer correct={[1, 3]} multiple>
+            > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+            
+            1. SMTP
+            2. FTP
+            3. IMAP
+            4. HTTP
+        </ChoiceAnswer>
+    </Quiz>
+</BrowserWindow>
 
 ## Eigenschaften
 ### ChoiceAnswer

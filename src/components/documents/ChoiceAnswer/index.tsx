@@ -8,10 +8,11 @@ import SyncStatus from '@tdev-components/SyncStatus';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { QuizContext } from './Quiz';
 
 interface ChoiceAnswerProps {
     id: string;
-    questionIndex?: number;
+    questionIndex?: string;
     multiple?: boolean;
     readonly?: boolean;
     children: React.ReactNode;
@@ -23,7 +24,7 @@ interface ThinWrapperProps {
 
 interface OptionProps {
     children: React.ReactNode;
-    optionIndex: number;
+    optionIndex: string;
 }
 
 type ChoiceAnswerSubComponents = {
@@ -35,22 +36,26 @@ type ChoiceAnswerSubComponents = {
 
 const ChoiceAnswerContext = React.createContext({
     id: '',
+    questionIndex: '0',
     multiple: false,
     readonly: false,
     selectedChoices: [],
     onChange: () => {}
 } as {
     id: string;
+    questionIndex: string;
     multiple?: boolean;
     readonly?: boolean;
-    selectedChoices: number[];
-    onChange: (optionIndex: number, checked: boolean) => void;
+    selectedChoices: string[];
+    onChange: (optionIndex: string, checked: boolean) => void;
 });
 
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
+    const parentProps = React.useContext(QuizContext);
     const [meta] = React.useState(new ModelMeta(props));
-    const doc = useFirstMainDocument(props.id, meta);
-    const questionIndex = props.questionIndex ?? 0;
+    const id = parentProps.id || props.id;
+    const doc = useFirstMainDocument(id, meta);
+    const questionIndex = props.questionIndex ?? '0';
     const isBrowser = useIsBrowser();
 
     if (!doc) {
@@ -72,7 +77,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         (child) => React.isValidElement(child) && child.type === ChoiceAnswer.After
     );
 
-    const onOptionChange = (optionIndex: number, checked: boolean) => {
+    const onOptionChange = (optionIndex: string, checked: boolean) => {
         if (props.multiple) {
             doc?.updateMultipleChoiceSelection(questionIndex, optionIndex, checked);
         } else {
@@ -86,7 +91,8 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             {beforeBlock}
             <ChoiceAnswerContext.Provider
                 value={{
-                    id: props.id,
+                    id: id,
+                    questionIndex: questionIndex,
                     multiple: props.multiple,
                     readonly: props.readonly,
                     selectedChoices: doc?.data.choices[questionIndex] || [],
@@ -102,7 +108,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 
 ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
     const parentProps = React.useContext(ChoiceAnswerContext);
-    const optionId = `${parentProps.id}-option-${optionIndex}`;
+    const optionId = `${parentProps.id}-${parentProps.questionIndex}-option-${optionIndex}`;
 
     return (
         <div key={optionId} className={clsx(styles.choiceAnswerOptionContainer)}>

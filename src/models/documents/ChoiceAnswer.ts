@@ -5,7 +5,7 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 
 export interface ChoiceAnswerChoices {
-    [type: number]: number[];
+    [type: string]: string[];
 }
 
 export interface MetaInit {
@@ -48,7 +48,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     }
 
     @action
-    updateSingleChoiceSelection(questionIndex: number, optionIndex: number): void {
+    updateSingleChoiceSelection(questionIndex: string, optionIndex: string): void {
         this.updatedAt = new Date();
         this.choices = {
             ...this.choices,
@@ -58,9 +58,9 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     }
 
     @action
-    updateMultipleChoiceSelection(questionIndex: number, optionIndex: number, selected: boolean): void {
+    updateMultipleChoiceSelection(questionIndex: string, optionIndex: string, selected: boolean): void {
         this.updatedAt = new Date();
-        const currentSelections = new Set<number>(this.choices[questionIndex] as number[] | []);
+        const currentSelections = new Set<string>(this.choices[questionIndex] as string[] | []);
         if (selected) {
             currentSelections.add(optionIndex);
         } else {
