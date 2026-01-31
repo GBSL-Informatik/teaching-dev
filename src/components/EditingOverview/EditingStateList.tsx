@@ -6,9 +6,10 @@ import { useStore } from '@tdev-hooks/useStore';
 import Icon from '@mdi/react';
 import TaskState from '@tdev-models/documents/TaskState';
 import ProgressState from '@tdev-models/documents/ProgressState';
+import type { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 
 interface Props {
-    editingStatus: (TaskState | ProgressState)[];
+    editingStatus: iTaskableDocument[];
 }
 
 const EditingStateList = observer((props: Props) => {
@@ -28,6 +29,7 @@ const EditingStateList = observer((props: Props) => {
                                 userStore.switchUser(es.authorId);
                             }
                         }}
+                        title={`${es.type}: ${es.documentRootId} - ${es.id}`}
                     >
                         <Icon path={path} color={color} size={0.8} />
                     </span>

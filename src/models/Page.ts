@@ -131,16 +131,16 @@ export default class Page {
             .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
     }
 
-    @computed
-    get editingStates(): (TaskState | ProgressState)[] {
-        return this.documentRoots
-            .flatMap((doc) => doc.firstMainDocument)
-            .filter(
-                (d): d is TaskState | ProgressState => d instanceof TaskState || d instanceof ProgressState
-            )
-            .filter((d) => d?.root?.meta.pagePosition)
-            .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
-    }
+    // @computed
+    // get editingStates(): (TaskState | ProgressState)[] {
+    //     return this.documentRoots
+    //         .flatMap((doc) => doc.firstMainDocument)
+    //         .filter(
+    //             (d): d is TaskState | ProgressState => d instanceof TaskState || d instanceof ProgressState
+    //         )
+    //         .filter((d) => d?.root?.meta.pagePosition)
+    //         .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
+    // }
 
     @action
     setPrimaryStudentGroupName(name?: string) {
@@ -279,17 +279,15 @@ export default class Page {
     @computed
     get editingStateByUsers() {
         return _.groupBy(
-            this.documentRoots
-                .flatMap((dr) => dr.allDocuments)
-                .filter(
-                    (d): d is TaskState | ProgressState =>
-                        d instanceof TaskState || d instanceof ProgressState
-                )
-                .filter((doc) => doc.isMain && doc.root?.meta.pagePosition)
+            this.taskableDocumentRootIds
+                .flatMap((rid) => {
+                    return this.store.root.documentStore
+                        .findByDocumentRoot(rid)
+                        .filter((doc) => TaskableDocument.has(doc.type)) as iTaskableDocument[];
+                })
                 .filter((doc) =>
                     this.activeStudentGroup ? this.activeStudentGroup.userIds.has(doc.authorId) : true
-                )
-                .sort((a, b) => a.root!.meta.pagePosition - b.root!.meta.pagePosition),
+                ),
             (doc) => doc.authorId
         );
     }

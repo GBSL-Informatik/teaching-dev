@@ -62,7 +62,7 @@ const EditingOverview = observer(() => {
     if (!isBrowser || !currentUser || !currentPage) {
         return null;
     }
-    const taskStates = currentPage.editingStates.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
+    const taskStates = currentPage.taskableDocuments.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
     if (taskStates.length === 0) {
         return null;
     }
