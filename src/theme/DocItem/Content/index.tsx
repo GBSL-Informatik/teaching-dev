@@ -23,6 +23,17 @@ const ContentWrapper = observer((props: Props): React.ReactNode => {
 
     return (
         <>
+            <pre>
+                <code>
+                    {JSON.stringify(
+                        pageStore.current?.taskableDocuments.map(
+                            (doc) => `${doc.type}@${doc.isDone} - ${doc.id}::${doc.documentRootId}`
+                        ) || {},
+                        null,
+                        2
+                    )}
+                </code>
+            </pre>
             <Content {...props} />
         </>
     );

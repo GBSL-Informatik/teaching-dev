@@ -12,6 +12,9 @@ import ProgressState from './documents/ProgressState';
 import { DocumentType } from '@tdev-api/document';
 import type { PageIndex } from '@tdev/page-progress-state';
 import { filter } from '@mdxeditor/editor';
+import { iTaskableDocument } from './iTaskableDocument';
+import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface PageTree {
     id: string;
@@ -129,7 +132,7 @@ export default class Page {
     }
 
     @computed
-    get editingState(): (TaskState | ProgressState)[] {
+    get editingStates(): (TaskState | ProgressState)[] {
         return this.documentRoots
             .flatMap((doc) => doc.firstMainDocument)
             .filter(
@@ -137,15 +140,6 @@ export default class Page {
             )
             .filter((d) => d?.root?.meta.pagePosition)
             .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
-    }
-
-    @computed
-    get editingStateV2(): (TaskState | ProgressState)[] {
-        return this.documentRoots
-            .flatMap((doc) => doc.documents)
-            .filter(
-                (d): d is TaskState | ProgressState => d instanceof TaskState || d instanceof ProgressState
-            );
     }
 
     @action
@@ -201,7 +195,7 @@ export default class Page {
     }
 
     @computed
-    get taskableDocuments() {
+    get taskableDocuments(): iTaskableDocument[] {
         const uid = this.store.root.userStore.viewedUserId;
         if (!uid) {
             return [];
@@ -209,8 +203,51 @@ export default class Page {
         return this.taskableDocumentRootIds.flatMap((rid) => {
             return this.store.root.documentStore
                 .findByDocumentRoot(rid)
-                .filter((doc) => doc.authorId === uid && TaskableDocument.has(doc.type));
+                .filter(
+                    (doc) => doc.authorId === uid && TaskableDocument.has(doc.type)
+                ) as iTaskableDocument[];
         });
+    }
+
+    @computed
+    get totalSteps(): number {
+        return this.taskableDocuments.length + this.subPages.reduce((sum, page) => sum + page.totalSteps, 0);
+    }
+
+    @computed
+    get progress(): number {
+        return (
+            this.taskableDocuments.filter((d) => d.isDone).length +
+            this.subPages.reduce((sum, page) => sum + page.progress, 0)
+        );
+    }
+
+    @computed
+    get isDone(): boolean {
+        return this.progress > 0 && this.progress >= this.totalSteps;
+    }
+
+    @computed
+    get editingIconState() {
+        if (this.isDone) {
+            return { path: mdiCheckCircleOutline, color: IfmColors.green };
+        }
+        const level = this.progress / this.totalSteps;
+        if (this.progress === 0) {
+            return { path: mdiSpeedometerSlow, color: IfmColors.gray };
+        }
+        if (level < 1 / 3) {
+            return { path: mdiSpeedometerSlow, color: IfmColors.red };
+        }
+        if (level < 2 / 3) {
+            return { path: mdiSpeedometerMedium, color: IfmColors.orange };
+        }
+        return { path: mdiSpeedometer, color: IfmColors.lightGreen };
+    }
+
+    @computed
+    get editingState(): iTaskableDocument[] {
+        return this.taskableDocuments;
     }
 
     @action

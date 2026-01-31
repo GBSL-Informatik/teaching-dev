@@ -13,21 +13,16 @@ interface Props {
 
 const TaskableState = observer((props: Props) => {
     const { page } = props;
-    if (!page) {
+    if (!page || page.totalSteps === 0) {
         return null;
     }
 
     return (
-        <div className={clsx(styles.taskableState, props.className)}>
-            <Icon
-                path={page.taskableDocuments?.length > 0 ? mdiCheckCircle : mdiProgressQuestion}
-                size={0.8}
-                color={
-                    page.taskableDocuments?.length > 0
-                        ? 'var(--ifm-color-success)'
-                        : 'var(--ifm-color-warning)'
-                }
-            />
+        <div
+            className={clsx(styles.taskableState, props.className)}
+            title={`Progress: ${page.progress} / ${page.totalSteps}`}
+        >
+            <Icon path={page.editingIconState.path} size={0.8} color={page.editingIconState.color} />
         </div>
     );
 });

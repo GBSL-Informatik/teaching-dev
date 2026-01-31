@@ -7,6 +7,7 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import Step from './Step';
+import type { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -57,7 +58,7 @@ export class ModelMeta extends TypeMeta<'progress_state'> {
     }
 }
 
-class ProgressState extends iDocument<'progress_state'> {
+class ProgressState extends iDocument<'progress_state'> implements iTaskableDocument<'progress_state'> {
     @observable accessor _progress: number = 0;
     @observable accessor _viewedIndex: number | undefined = undefined;
     @observable accessor scrollTo: boolean = false;
