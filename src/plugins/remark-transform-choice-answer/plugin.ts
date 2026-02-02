@@ -1,7 +1,8 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
 import type { Root, BlockContent, DefinitionContent } from 'mdast';
-import type { MdxJsxAttributeValueExpression, MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
+import { toMdxJsxExpressionAttribute } from '../helpers';
 
 enum ChoiceComponentTypes {
     ChoiceAnswer = 'ChoiceAnswer',
@@ -12,15 +13,15 @@ const QUIZ_NODE_NAME = 'Quiz';
 
 type FlowChildren = (BlockContent | DefinitionContent)[];
 
-function createWrapper(name: string, children: FlowChildren, attributes: any[] = []): MdxJsxFlowElement {
+function createWrapper(
+    name: string,
+    children: FlowChildren,
+    attributes: MdxJsxAttribute[] = []
+): MdxJsxFlowElement {
     return {
         type: 'mdxJsxFlowElement',
         name,
-        attributes: attributes.map((attr) => ({
-            type: 'mdxJsxAttribute',
-            name: attr.name,
-            value: attr.value
-        })),
+        attributes,
         children
     };
 }
@@ -30,7 +31,11 @@ const createWrappedOption = (listChildren: { type: string; children: FlowChildre
         .filter((child) => child.type === 'listItem')
         .map((child, index) => {
             return createWrapper('ChoiceAnswer.Option', child.children, [
-                { name: 'optionIndex', value: index }
+                toMdxJsxExpressionAttribute('optionIndex', index, {
+                    type: 'Literal',
+                    value: index,
+                    raw: `${index}`
+                })
             ]);
         });
 
@@ -76,11 +81,20 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
 const transformQuestions = (questionNodes: MdxJsxFlowElement[]) => {
     questionNodes.forEach((questionNode, index: number) => {
         transformQuestion(questionNode);
-        questionNode.attributes.push({
-            type: 'mdxJsxAttribute',
-            name: 'questionIndex',
-            value: index.toString()
-        });
+        questionNode.attributes.push(
+            toMdxJsxExpressionAttribute('questionIndex', true, {
+                type: 'Literal',
+                value: index,
+                raw: `${index}`
+            })
+        );
+        questionNode.attributes.push(
+            toMdxJsxExpressionAttribute('inQuiz', true, {
+                type: 'Literal',
+                value: true,
+                raw: 'true'
+            })
+        );
     });
 };
 
