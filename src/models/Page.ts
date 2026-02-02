@@ -3,15 +3,11 @@
  */
 
 import { action, computed, observable, ObservableMap } from 'mobx';
-import { PageStore, SidebarVersions } from '@tdev-stores/PageStore';
-import TaskState from '@tdev-models/documents/TaskState';
+import { PageStore } from '@tdev-stores/PageStore';
 import _ from 'es-toolkit/compat';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
-import ProgressState from './documents/ProgressState';
 import { DocumentType } from '@tdev-api/document';
-import type { PageIndex } from '@tdev/page-progress-state';
-import { filter } from '@mdxeditor/editor';
 import { iTaskableDocument } from './iTaskableDocument';
 import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
@@ -53,7 +49,7 @@ export default class Page {
 
     @computed
     get isLandingpage() {
-        return SidebarVersions.some((version) => version.entryPath === this.path);
+        return this.store.sidebarVersions.some((version) => version.entryPath === this.path);
     }
 
     @computed
@@ -74,7 +70,7 @@ export default class Page {
             if (parentPage) {
                 return parentPage.path;
             }
-            if (SidebarVersions.some((v) => v.versionPath === parentPath)) {
+            if (this.store.sidebarVersions.some((v) => v.versionPath === parentPath)) {
                 return parentPath;
             }
             parts.splice(-1, 1);

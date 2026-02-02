@@ -11,6 +11,10 @@ import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
 import { getOfflineUser } from '@tdev-api/OfflineApi';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
+import { usePluginData } from '@docusaurus/useGlobalData';
+import { Hashery } from 'hashery';
+const hasher = new Hashery();
 const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
@@ -175,6 +179,45 @@ const FullscreenHandler = observer(() => {
     }, []);
     return null;
 });
+let devHash: string | null = null;
+const DevGlobalDataTracker = observer(() => {
+    if (process.env.NODE_ENV === 'production') {
+        return null;
+    }
+    const pageStore = useStore('pageStore');
+    const global = usePluginData('docusaurus-plugin-content-docs', 'default') as GlobalPluginData;
+    React.useEffect(() => {
+        const controller = new AbortController();
+        const check = async () => {
+            const pIndex = await fetch(
+                `${siteConfig.baseUrl}tdev-artifacts/page-progress-state/pageIndex.json`,
+                { signal: controller.signal }
+            )
+                .then((res) => res.json())
+                .catch(() => null);
+            if (controller.signal.aborted || !pIndex) {
+                return;
+            }
+            const hash = await hasher.toHash(pIndex);
+            if (controller.signal.aborted) {
+                return;
+            }
+            if (!devHash) {
+                devHash = hash;
+                return;
+            }
+            if (devHash !== hash) {
+                devHash = hash;
+                pageStore.loadPageIndex(true);
+            }
+        };
+        check();
+        return () => {
+            controller.abort();
+        };
+    }, [global]);
+    return null;
+});
 
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
@@ -202,6 +245,7 @@ function Root({ children }: { children: React.ReactNode }) {
                 )}
                 <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
+                <DevGlobalDataTracker />
                 {children}
             </StoresProvider>
         </>
