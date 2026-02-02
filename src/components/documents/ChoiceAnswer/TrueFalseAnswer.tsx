@@ -6,7 +6,7 @@ const TrueFalseAnswer = observer((props: ChoiceAnswerProps) => {
         <ChoiceAnswer {...props}>
             {props.children}
             <ChoiceAnswer.Options>
-                <ChoiceAnswer.Option optionIndex={0}>Wahr</ChoiceAnswer.Option>
+                <ChoiceAnswer.Option optionIndex={0}>Richtig</ChoiceAnswer.Option>
                 <ChoiceAnswer.Option optionIndex={1}>Falsch</ChoiceAnswer.Option>
             </ChoiceAnswer.Options>
         </ChoiceAnswer>

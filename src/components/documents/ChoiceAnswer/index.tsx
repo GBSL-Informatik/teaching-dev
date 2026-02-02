@@ -99,17 +99,20 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                 : `Frage ${questionIndex + 1}`
             : props.title;
 
+    const syncStatus = parentProps.focussedQuestion === questionIndex && (
+        <SyncStatus className={styles.syncStatus} model={doc} size={0.7} />
+    );
+
     return (
         <div className={styles.choiceAnswerContainer}>
-            {parentProps.focussedQuestion === questionIndex && (
-                <SyncStatus className={styles.syncStatus} model={doc} size={0.7} />
-            )}
-
             {title && (
                 <div className={clsx(styles.header)}>
                     <span className={clsx(styles.title)}>{title}</span>
+                    {syncStatus}
                 </div>
             )}
+            {!title && syncStatus}
+
             <div className={styles.content}>
                 {beforeBlock}
                 <ChoiceAnswerContext.Provider
