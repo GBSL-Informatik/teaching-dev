@@ -4,7 +4,7 @@ import { RootStore } from '@tdev-stores/rootStore';
 import Page from '@tdev-models/Page';
 import { computedFn } from 'mobx-utils';
 import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
-import type { GlobalPluginData, GlobalVersion, useDocsSidebar } from '@docusaurus/plugin-content-docs/client';
+import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import siteConfig from '@generated/docusaurus.config';
 import { PageIndex } from '@tdev/page-progress-state';
 import { groupBy } from 'es-toolkit/array';
@@ -84,12 +84,12 @@ export class PageStore extends iStore {
             .then(
                 action((data) => {
                     const grouped = groupBy(data.documentRoots, (dr) => `${dr.path}::${dr.page_id}`);
-                    const pages = Object.values(grouped).map((docs) => {
-                        const doc = docs[0]!;
+                    const pages = Object.values(grouped).map((docRootDescriptors) => {
+                        const doc = docRootDescriptors[0]!;
                         const page = new Page(doc.page_id, doc.path, this);
-                        docs.filter((doc) => doc.position > 0).forEach((d) =>
-                            page.addDocumentRootConfig(d.id, d)
-                        );
+                        docRootDescriptors
+                            .filter((doc) => doc.position > 0)
+                            .forEach((d) => page.addDocumentRootConfig(d.id, d));
                         return page;
                     });
                     this.pages.replace(pages);

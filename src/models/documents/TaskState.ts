@@ -80,6 +80,16 @@ class TaskState extends iDocument<'task_state'> implements iTaskableDocument<'ta
     }
 
     @computed
+    get progress(): number {
+        return this.isDone ? 1 : 0;
+    }
+
+    @computed
+    get totalSteps(): number {
+        return 1;
+    }
+
+    @computed
     get editingIconState() {
         return {
             path: mdiIcon[this.taskState],

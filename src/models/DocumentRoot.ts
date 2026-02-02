@@ -4,6 +4,7 @@ import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
 import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
+import { orderBy } from 'es-toolkit/array';
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
@@ -180,9 +181,11 @@ class DocumentRoot<T extends DocumentType> {
      */
     @computed
     get mainDocuments(): TypeModelMapping[T][] {
-        const docs = this.documents
-            .filter((d) => d.isMain)
-            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()) as TypeModelMapping[T][];
+        const docs = orderBy(
+            this.documents.filter((d) => d.isMain),
+            ['createdAt', 'id'],
+            ['asc', 'asc']
+        ) as TypeModelMapping[T][];
         if (this.isDummy) {
             return docs;
         }

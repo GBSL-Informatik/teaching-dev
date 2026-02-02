@@ -25,6 +25,11 @@ const insertDocRoot = db.prepare(
     ) ON CONFLICT(id, path) DO NOTHING`
 );
 
+const cleanupPage = db.prepare(
+    `DELETE FROM document_roots
+     WHERE path = ? AND page_id = ?;`
+);
+
 interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlowElement | MdxJsxTextElement> {
     /**
      * Component Name
@@ -83,7 +88,7 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
             path: filePath,
             position: 0
         });
-
+        cleanupPage.run(filePath, page_id);
         visit(root, (node, index, parent) => {
             if (node.type === 'code') {
                 const idMatch = /id=([a-zA-Z0-9-_]+)/.exec(node.meta || '');

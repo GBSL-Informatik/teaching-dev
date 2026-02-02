@@ -27,7 +27,8 @@ const ContentWrapper = observer((props: Props): React.ReactNode => {
                 <code>
                     {JSON.stringify(
                         pageStore.current?.taskableDocuments.map(
-                            (doc) => `${doc.type}@${doc.isDone} - ${doc.id}::${doc.documentRootId}`
+                            (doc) =>
+                                `[${doc.root?.pagePositions.get(pageStore.current?.path!)}] ${doc.type}@${doc.progress}/${doc.totalSteps} - ${doc.documentRootId}::${doc.id}`
                         ) || {},
                         null,
                         2

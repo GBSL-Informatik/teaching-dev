@@ -4,5 +4,7 @@ import iDocument from './iDocument';
 export interface iTaskableDocument<T extends DocumentType = DocumentType> extends iDocument<T> {
     isDone: boolean;
     editingIconState: { path: string; color: string };
+    progress: number;
+    totalSteps: number;
     setScrollTo(scroll: boolean): void;
 }
