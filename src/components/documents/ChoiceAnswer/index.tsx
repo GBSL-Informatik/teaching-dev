@@ -120,6 +120,10 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
     const parentProps = React.useContext(ChoiceAnswerContext);
     const optionId = `${parentProps.id}-q${parentProps.questionIndex}-opt${optionIndex}`;
 
+    const isChecked = React.useMemo(() => {
+        return parentProps.selectedChoices.includes(optionIndex);
+    }, [parentProps.selectedChoices, optionIndex]);
+
     return (
         <div key={optionId} className={clsx(styles.choiceAnswerOptionContainer)}>
             <input
@@ -128,23 +132,21 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
                 name={optionId}
                 value={optionId}
                 onChange={(e) => parentProps.onChange(optionIndex, e.target.checked)}
-                checked={parentProps.selectedChoices.includes(optionIndex)}
+                checked={isChecked}
                 disabled={parentProps.readonly}
             />
             <label htmlFor={optionId}>{children}</label>
-            {!parentProps.multiple &&
-                !parentProps.readonly &&
-                parentProps.selectedChoices.includes(optionIndex) && (
-                    <Button
-                        text="Antwort löschen"
-                        color="danger"
-                        icon={mdiTrashCanOutline}
-                        iconSide="left"
-                        size={0.7}
-                        onClick={() => parentProps.onChange(optionIndex, false)}
-                        className={clsx(styles.btnDeleteAnswer)}
-                    />
-                )}
+            {!parentProps.multiple && !parentProps.readonly && isChecked && (
+                <Button
+                    text="Löschen"
+                    color="danger"
+                    icon={mdiTrashCanOutline}
+                    iconSide="left"
+                    size={0.7}
+                    onClick={() => parentProps.onChange(optionIndex, false)}
+                    className={clsx(styles.btnDeleteAnswer)}
+                />
+            )}
         </div>
     );
 };
