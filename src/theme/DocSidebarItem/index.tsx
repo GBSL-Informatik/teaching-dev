@@ -21,8 +21,8 @@ const DocSidebarItemWrapper = observer((props: Props): ReactNode => {
     const page = pageStore.pages.find((p) => p.path === path);
     return (
         <div className={clsx(styles.item)}>
-            <TaskableState page={page} className={clsx(styles.icon, styles[props.item.type])} />
             <DocSidebarItem {...props} />
+            <TaskableState page={page} className={clsx(styles.icon, styles[props.item.type])} />
         </div>
     );
 });

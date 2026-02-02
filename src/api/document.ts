@@ -85,6 +85,7 @@ export interface TaskStateData {
 }
 export interface ProgressStateData {
     progress: number;
+    totalSteps: number;
 }
 
 export interface MdxCommentData {

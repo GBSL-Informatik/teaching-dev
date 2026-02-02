@@ -4,7 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Page from '@tdev-models/Page';
 import Icon from '@mdi/react';
-import { mdiCheckCircle, mdiProgressQuestion } from '@mdi/js';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 interface Props {
     page?: Page;
@@ -13,7 +13,8 @@ interface Props {
 
 const TaskableState = observer((props: Props) => {
     const { page } = props;
-    if (!page || page.totalSteps === 0) {
+    const isBrowser = useIsBrowser();
+    if (!isBrowser || !page || page.totalSteps === 0) {
         return null;
     }
 
