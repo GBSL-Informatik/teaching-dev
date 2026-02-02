@@ -1,28 +1,60 @@
 .choiceAnswerContainer {
     position: relative;
+    border-radius: 1em;
+    border: 1px solid var(--ifm-color-secondary);
+    margin-bottom: 1em;
+    overflow: hidden;
+
+    p {
+        margin: 0 0 0.5em 0;
+    }
 
     .syncStatus {
         position: absolute;
         top: 0.2em;
         right: 0.2em;
     }
+
+    .header {
+        background-color: var(--ifm-color-secondary-lightest);
+        padding: 0.7em 1em;
+
+        h3 {
+            margin: 0;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+    }
+
+    .content {
+        padding: 1em;
+    }
 }
 
-.choiceAnswerOptionContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    p {
-        margin: 0;
+.optionsContainer {
+    &:not(:last-child) {
+        margin-bottom: 1em;
     }
 
-    label {
-        margin-left: 0.2em;
-    }
+    .choiceAnswerOptionContainer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
 
-    .btnDeleteAnswer {
-        margin-left: 0.7em;
-        font-size: 0.8em;
+        p {
+            margin: 0;
+        }
+
+        label {
+            margin-left: 0.2em;
+        }
+
+        .btnDeleteAnswer {
+            margin-left: 0.7em;
+            font-size: 0.8em;
+        }
     }
 }

@@ -14,6 +14,7 @@ import { mdiCloseCircleOutline, mdiRestore, mdiTrashCanOutline } from '@mdi/js';
 
 export interface ChoiceAnswerProps {
     id: string;
+    title?: string;
     questionIndex?: number;
     inQuiz?: boolean;
     multiple?: boolean;
@@ -91,27 +92,40 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
     };
 
+    const title =
+        props.inQuiz && !parentProps.hideQuestionNumbers
+            ? props.title
+                ? `Frage ${questionIndex + 1} – ${props.title}`
+                : `Frage ${questionIndex + 1}`
+            : props.title;
+
     return (
         <div className={styles.choiceAnswerContainer}>
             {parentProps.focussedQuestion === questionIndex && (
                 <SyncStatus className={styles.syncStatus} model={doc} size={0.7} />
             )}
 
-            {props.inQuiz && !parentProps.hideQuestionNumbers && <h3>Frage {questionIndex + 1}</h3>}
-            {beforeBlock}
-            <ChoiceAnswerContext.Provider
-                value={{
-                    id: id,
-                    questionIndex: questionIndex,
-                    multiple: props.multiple,
-                    readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
-                    selectedChoices: doc?.data.choices[questionIndex] || [],
-                    onChange: onOptionChange
-                }}
-            >
-                {optionsBlock}
-            </ChoiceAnswerContext.Provider>
-            {afterBlock}
+            {title && (
+                <div className={clsx(styles.header)}>
+                    <span className={clsx(styles.title)}>{title}</span>
+                </div>
+            )}
+            <div className={styles.content}>
+                {beforeBlock}
+                <ChoiceAnswerContext.Provider
+                    value={{
+                        id: id,
+                        questionIndex: questionIndex,
+                        multiple: props.multiple,
+                        readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
+                        selectedChoices: doc?.data.choices[questionIndex] || [],
+                        onChange: onOptionChange
+                    }}
+                >
+                    <div className={styles.optionsContainer}>{optionsBlock}</div>
+                </ChoiceAnswerContext.Provider>
+                {afterBlock}
+            </div>
         </div>
     );
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;

@@ -41,7 +41,9 @@ Einfache Single- und Multiple-Choice-Fragen:
 </BrowserWindow>
 
 ```md
-<ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5">
+Hier steht etwas Text über der Frage.
+
+<ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5" title="Eine Frage zu den Primzahlen">
     > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
 
     :::info[Bewertung]
@@ -56,10 +58,14 @@ Einfache Single- und Multiple-Choice-Fragen:
 
     **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
 </ChoiceAnswer>
+
+Nach der Frage folgt noch weiterer Text.
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5">
+    Hier steht etwas Text über der Frage.
+
+    <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5" title="Eine Frage zu den Primzahlen">
         > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
 
         :::info[Bewertung]
@@ -74,18 +80,20 @@ Einfache Single- und Multiple-Choice-Fragen:
 
         **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
     </ChoiceAnswer>
+
+    Nach der Frage folgt noch weiterer Text.
 </BrowserWindow>
 
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
 ```md
-<TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
-    Die Erde ist flach.
+<TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4" title="Das sollte man wissen…">
+    > Die Erde ist flach.
 </TrueFalseAnswer>
 ```
 
 <BrowserWindow>
-    <TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
+    <TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4" title="Das sollte man wissen…">
         Die Erde ist flach.
     </TrueFalseAnswer>
 </BrowserWindow>
@@ -119,7 +127,7 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
         5. 2024
     </ChoiceAnswer>
     
-    <TrueFalseAnswer correct={false}>
+    <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
         > HTML ist eine Programmiersprache.
     </TrueFalseAnswer>
     
@@ -156,7 +164,7 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
             5. 2024
         </ChoiceAnswer>
 
-        <TrueFalseAnswer correct={false}>
+        <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
             > HTML ist eine Programmiersprache.
         </TrueFalseAnswer>
         
