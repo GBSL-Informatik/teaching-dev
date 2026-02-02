@@ -54,6 +54,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: [optionIndex]
         };
+        console.log('Saving choice answer with choices:', this.choices);
         this.save();
     }
 
@@ -70,6 +71,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: Array.from(currentSelections)
         };
+        console.log('Saving choice answer with choices:', this.choices);
         this.save();
     }
 
@@ -80,6 +82,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: []
         };
+        console.log('Saving choice answer with choices:', this.choices);
         this.save();
     }
 

@@ -10,6 +10,10 @@ enum ChoiceComponentTypes {
 }
 
 const QUIZ_NODE_NAME = 'Quiz';
+const BEFORE_WRAPPER_NAME = 'ChoiceAnswer.Before';
+const OPTIONS_WRAPPER_NAME = 'ChoiceAnswer.Options';
+const OPTION_WRAPPER_NAME = 'ChoiceAnswer.Option';
+const AFTER_WRAPPER_NAME = 'ChoiceAnswer.After';
 
 type FlowChildren = (BlockContent | DefinitionContent)[];
 
@@ -30,7 +34,7 @@ const createWrappedOption = (listChildren: { type: string; children: FlowChildre
     const options = listChildren
         .filter((child) => child.type === 'listItem')
         .map((child, index) => {
-            return createWrapper('ChoiceAnswer.Option', child.children, [
+            return createWrapper(OPTION_WRAPPER_NAME, child.children, [
                 toMdxJsxExpressionAttribute('optionIndex', index, {
                     type: 'Literal',
                     value: index,
@@ -39,7 +43,7 @@ const createWrappedOption = (listChildren: { type: string; children: FlowChildre
             ]);
         });
 
-    return createWrapper('ChoiceAnswer.Options', options);
+    return createWrapper(OPTIONS_WRAPPER_NAME, options);
 };
 
 const transformQuestion = (questionNode: MdxJsxFlowElement) => {
@@ -49,6 +53,8 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         if (questionNode.name !== ChoiceComponentTypes.TrueFalseAnswer) {
             console.warn(`No list found in <${questionNode.name}>. Expected exactly one list child.`);
         }
+
+        questionNode.children = [createWrapper(BEFORE_WRAPPER_NAME, questionNode.children)];
         return;
     }
 
@@ -64,7 +70,7 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     const wrappedChildren: FlowChildren = [];
 
     if (beforeChildren.length > 0) {
-        wrappedChildren.push(createWrapper(`${questionNode.name}.Before`, beforeChildren));
+        wrappedChildren.push(createWrapper(BEFORE_WRAPPER_NAME, beforeChildren));
     }
 
     wrappedChildren.push(
@@ -72,7 +78,7 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     );
 
     if (afterChildren.length > 0) {
-        wrappedChildren.push(createWrapper(`${questionNode.name}.After`, afterChildren));
+        wrappedChildren.push(createWrapper(AFTER_WRAPPER_NAME, afterChildren));
     }
 
     questionNode.children = wrappedChildren;

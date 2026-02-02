@@ -12,7 +12,7 @@ import { QuizContext } from './Quiz';
 import Button from '@tdev-components/shared/Button';
 import { mdiCloseCircleOutline, mdiRestore, mdiTrashCanOutline } from '@mdi/js';
 
-interface ChoiceAnswerProps {
+export interface ChoiceAnswerProps {
     id: string;
     questionIndex?: number;
     inQuiz?: boolean;
@@ -125,7 +125,7 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
             <input
                 type={parentProps.multiple ? 'checkbox' : 'radio'}
                 id={optionId}
-                name={parentProps.id}
+                name={optionId}
                 value={optionId}
                 onChange={(e) => parentProps.onChange(optionIndex, e.target.checked)}
                 checked={parentProps.selectedChoices.includes(optionIndex)}
