@@ -73,6 +73,16 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         this.save();
     }
 
+    @action
+    resetAnswer(questionIndex: number): void {
+        this.updatedAt = new Date();
+        this.choices = {
+            ...this.choices,
+            [questionIndex]: []
+        };
+        this.save();
+    }
+
     get data(): TypeDataMapping['choice_answer'] {
         return {
             choices: this.choices

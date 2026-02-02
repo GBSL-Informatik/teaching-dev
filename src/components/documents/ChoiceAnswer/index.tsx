@@ -9,6 +9,8 @@ import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentTy
 import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { QuizContext } from './Quiz';
+import Button from '@tdev-components/shared/Button';
+import { mdiCloseCircleOutline, mdiRestore, mdiTrashCanOutline } from '@mdi/js';
 
 interface ChoiceAnswerProps {
     id: string;
@@ -83,7 +85,9 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         if (props.multiple) {
             doc?.updateMultipleChoiceSelection(questionIndex, optionIndex, checked);
         } else {
-            doc?.updateSingleChoiceSelection(questionIndex, optionIndex);
+            checked
+                ? doc?.updateSingleChoiceSelection(questionIndex, optionIndex)
+                : doc?.resetAnswer(questionIndex);
         }
     };
 
@@ -128,6 +132,19 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
                 disabled={parentProps.readonly}
             />
             <label htmlFor={optionId}>{children}</label>
+            {!parentProps.multiple &&
+                !parentProps.readonly &&
+                parentProps.selectedChoices.includes(optionIndex) && (
+                    <Button
+                        text="Antwort löschen"
+                        color="danger"
+                        icon={mdiTrashCanOutline}
+                        iconSide="left"
+                        size={0.7}
+                        onClick={() => parentProps.onChange(optionIndex, false)}
+                        className={clsx(styles.btnDeleteAnswer)}
+                    />
+                )}
         </div>
     );
 };
