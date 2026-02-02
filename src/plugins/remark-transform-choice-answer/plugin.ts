@@ -112,12 +112,12 @@ const transformQuiz = (quizNode: MdxJsxFlowElement) => {
 const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {
     return (tree) => {
         visit(tree, 'mdxJsxFlowElement', (node) => {
-            if (node.name == QUIZ_NODE_NAME) {
+            if (node.name === QUIZ_NODE_NAME) {
                 // Enumerate and transform questions inside the quiz.
                 transformQuiz(node);
             } else if (
                 Object.values(ChoiceComponentTypes).includes(node.name as ChoiceComponentTypes) &&
-                !((node as any).parent?.name === QUIZ_NODE_NAME)
+                !((node as any).parent?.name === QUIZ_NODE_NAME) && !node.attributes.some(attr => (attr as any).name === 'inQuiz')
             ) {
                 // Transform standalone question.
                 transformQuestion(node);
