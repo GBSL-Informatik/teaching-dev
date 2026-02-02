@@ -79,6 +79,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     );
 
     const onOptionChange = (optionIndex: number, checked: boolean) => {
+        parentProps.setFocussedQuestion?.(questionIndex);
         if (props.multiple) {
             doc?.updateMultipleChoiceSelection(questionIndex, optionIndex, checked);
         } else {
@@ -88,7 +89,9 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 
     return (
         <div className={styles.choiceAnswerContainer}>
-            <SyncStatus className={styles.syncStatus} model={doc} size={0.7} />
+            {parentProps.focussedQuestion === questionIndex && (
+                <SyncStatus className={styles.syncStatus} model={doc} size={0.7} />
+            )}
 
             {props.inQuiz && !parentProps.hideQuestionNumbers && <h3>Frage {questionIndex + 1}</h3>}
             {beforeBlock}
@@ -97,7 +100,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     id: id,
                     questionIndex: questionIndex,
                     multiple: props.multiple,
-                    readonly: props.readonly || parentProps.readonly,
+                    readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
                     selectedChoices: doc?.data.choices[questionIndex] || [],
                     onChange: onOptionChange
                 }}

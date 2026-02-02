@@ -54,7 +54,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: [optionIndex]
         };
-        this.saveNow();
+        this.save();
     }
 
     @action
@@ -70,7 +70,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: Array.from(currentSelections)
         };
-        this.saveNow();
+        this.save();
     }
 
     get data(): TypeDataMapping['choice_answer'] {
