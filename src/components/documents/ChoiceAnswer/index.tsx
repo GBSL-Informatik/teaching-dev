@@ -9,7 +9,6 @@ import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentTy
 import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { QuizContext } from './Quiz';
-import { parse } from 'micromatch';
 
 interface ChoiceAnswerProps {
     id: string;
@@ -56,7 +55,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const parentProps = React.useContext(QuizContext);
     const [meta] = React.useState(new ModelMeta(props));
     const id = parentProps.id || props.id;
-    const doc = useFirstMainDocument(id, meta);
+    const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(id, meta);
     const questionIndex = props.questionIndex ?? 0;
     const isBrowser = useIsBrowser();
 
