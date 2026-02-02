@@ -98,7 +98,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     id: id,
                     questionIndex: questionIndex,
                     multiple: props.multiple,
-                    readonly: props.readonly,
+                    readonly: props.readonly || parentProps.readonly,
                     selectedChoices: doc?.data.choices[questionIndex] || [],
                     onChange: onOptionChange
                 }}

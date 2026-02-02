@@ -156,15 +156,16 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere MC- und SC-Frag
 |------------------|-------------------|---------------------------------------------------|
 | `correct`        | `number[]`        | Array mit den IDs der Indizes der korrekten Antwortmöglichkeiten. |
 | `multiple`       | Flag         | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
-| `randomize`     | Flag         | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt.  |
+| `randomize` (TODO)     | Flag         | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt.  |
+| `hideQuestionNumbers`     | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
 
 ### Quiz
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
-| `randomize`     | Flag         | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge dargestellt. |
-| `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge dargestellt (analog zu `ChoiceAnswer.randomize` für einzelne Fragen). |
-| `carrousel` | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
-| `grading` | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
+| `randomize` (TODO)     | Flag         | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge dargestellt. |
+| `randomizeOptions` (TODO) | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge dargestellt (analog zu `ChoiceAnswer.randomize` für einzelne Fragen). |
+| `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
+| `grading` (TODO) | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
 
 ## TODO
 - Bei MC-Aufgaben sind Teilpunktzahlen möglich.
