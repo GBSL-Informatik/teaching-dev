@@ -18,7 +18,7 @@ import type DocumentStore from '@tdev-stores/DocumentStore';
 import iDocumentContainer from '@tdev-models/iDocumentContainer';
 import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import Code from '@tdev-models/documents/Code';
-import ChoiceAnswer, { ChoiceAnswerChoices } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswer, { ChoiceAnswerChoices, ChoiceAnswerOrders } from '@tdev-models/documents/ChoiceAnswer';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -43,6 +43,7 @@ export interface StringData {
 
 export interface ChoiceAnswerData {
     choices: ChoiceAnswerChoices;
+    orders: ChoiceAnswerOrders;
 }
 
 export interface QuillV2Data {

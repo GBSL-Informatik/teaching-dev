@@ -10,7 +10,9 @@ import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { QuizContext } from './Quiz';
 import Button from '@tdev-components/shared/Button';
-import { mdiCloseCircleOutline, mdiRestore, mdiTrashCanOutline } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
+import _ from 'es-toolkit/compat';
+import { createRandomOptionsOrder } from './helpers';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -18,6 +20,8 @@ export interface ChoiceAnswerProps {
     questionIndex?: number;
     inQuiz?: boolean;
     multiple?: boolean;
+    randomizeOptions?: boolean;
+    numOptions: number;
     readonly?: boolean;
     children: React.ReactNode;
 }
@@ -44,6 +48,7 @@ const ChoiceAnswerContext = React.createContext({
     multiple: false,
     readonly: false,
     selectedChoices: [],
+    optionOrder: undefined,
     onChange: () => {}
 } as {
     id: string;
@@ -51,6 +56,7 @@ const ChoiceAnswerContext = React.createContext({
     multiple?: boolean;
     readonly?: boolean;
     selectedChoices: number[];
+    optionOrder?: { [originalOptionIndex: number]: number };
     onChange: (optionIndex: number, checked: boolean) => void;
 });
 
@@ -60,6 +66,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const id = parentProps.id || props.id;
     const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(id, meta);
     const questionIndex = props.questionIndex ?? 0;
+    const randomizeOptions = props.randomizeOptions;
     const isBrowser = useIsBrowser();
 
     if (!doc) {
@@ -92,6 +99,16 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
     };
 
+    if (randomizeOptions && !doc.data.orders[questionIndex]?.optionsOrder) {
+        doc.updateOrders({
+            ...doc.data.orders,
+            [questionIndex]: {
+                index: doc.data.orders[questionIndex]?.index || 0,
+                optionsOrder: createRandomOptionsOrder(props.numOptions)
+            }
+        });
+    }
+
     const title =
         props.inQuiz && !parentProps.hideQuestionNumbers
             ? props.title
@@ -122,10 +139,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                         multiple: props.multiple,
                         readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
                         selectedChoices: doc?.data.choices[questionIndex] || [],
+                        optionOrder: randomizeOptions
+                            ? doc?.data.orders[questionIndex]?.optionsOrder
+                            : undefined,
                         onChange: onOptionChange
                     }}
                 >
-                    <div className={styles.optionsContainer}>{optionsBlock}</div>
+                    <div className={styles.optionsBlock}>{optionsBlock}</div>
                 </ChoiceAnswerContext.Provider>
                 {afterBlock}
             </div>
@@ -141,8 +161,19 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
         return parentProps.selectedChoices.includes(optionIndex);
     }, [parentProps.selectedChoices, optionIndex]);
 
+    const optionOrder = React.useMemo(
+        () => (parentProps.optionOrder !== undefined ? parentProps.optionOrder[optionIndex] : optionIndex),
+        [parentProps.optionOrder, optionIndex]
+    );
+
     return (
-        <div key={optionId} className={clsx(styles.choiceAnswerOptionContainer)}>
+        <div
+            key={optionId}
+            className={clsx(styles.choiceAnswerOptionContainer)}
+            style={{
+                order: optionOrder
+            }}
+        >
             <input
                 type={parentProps.multiple ? 'checkbox' : 'radio'}
                 id={optionId}
@@ -172,7 +203,7 @@ ChoiceAnswer.Before = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
 };
 ChoiceAnswer.Options = ({ children }: { children: React.ReactNode }) => {
-    return <>{children}</>;
+    return <div className={clsx(styles.optionsContainer)}>{children}</div>;
 };
 ChoiceAnswer.After = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;

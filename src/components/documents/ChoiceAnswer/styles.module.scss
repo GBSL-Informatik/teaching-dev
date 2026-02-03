@@ -45,27 +45,32 @@
     }
 }
 
-.optionsContainer {
+.optionsBlock {
     &:not(:last-child) {
         margin-bottom: 1em;
     }
 
-    .choiceAnswerOptionContainer {
+    .optionsContainer {
         display: flex;
-        flex-direction: row;
-        align-items: center;
+        flex-direction: column;
 
-        p {
-            margin: 0;
-        }
+        .choiceAnswerOptionContainer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
 
-        label {
-            margin-left: 0.2em;
-        }
+            p {
+                margin: 0;
+            }
 
-        .btnDeleteAnswer {
-            margin-left: 0.7em;
-            font-size: 0.8em;
+            label {
+                margin-left: 0.2em;
+            }
+
+            .btnDeleteAnswer {
+                margin-left: 0.7em;
+                font-size: 0.8em;
+            }
         }
     }
 }

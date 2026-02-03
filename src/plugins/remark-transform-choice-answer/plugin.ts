@@ -30,7 +30,9 @@ function createWrapper(
     };
 }
 
-const createWrappedOption = (listChildren: { type: string; children: FlowChildren }[]): MdxJsxFlowElement => {
+const createWrappedOption = (
+    listChildren: { type: string; children: FlowChildren }[]
+): { wrappedOptions: MdxJsxFlowElement; numOptions: number } => {
     const options = listChildren
         .filter((child) => child.type === 'listItem')
         .map((child, index) => {
@@ -43,7 +45,7 @@ const createWrappedOption = (listChildren: { type: string; children: FlowChildre
             ]);
         });
 
-    return createWrapper(OPTIONS_WRAPPER_NAME, options);
+    return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), numOptions: options.length };
 };
 
 const transformQuestion = (questionNode: MdxJsxFlowElement) => {
@@ -55,6 +57,17 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         }
 
         questionNode.children = [createWrapper(BEFORE_WRAPPER_NAME, questionNode.children)];
+
+        if (questionNode.name === ChoiceComponentTypes.TrueFalseAnswer) {
+            questionNode.attributes.push(
+                toMdxJsxExpressionAttribute('numOptions', true, {
+                    type: 'Literal',
+                    value: 2,
+                    raw: '2'
+                })
+            );
+        }
+
         return;
     }
 
@@ -73,8 +86,16 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         wrappedChildren.push(createWrapper(BEFORE_WRAPPER_NAME, beforeChildren));
     }
 
-    wrappedChildren.push(
-        createWrappedOption(listChild.children as { type: string; children: FlowChildren }[])
+    const { wrappedOptions, numOptions } = createWrappedOption(
+        listChild.children as { type: string; children: FlowChildren }[]
+    );
+    wrappedChildren.push(wrappedOptions);
+    questionNode.attributes.push(
+        toMdxJsxExpressionAttribute('numOptions', true, {
+            type: 'Literal',
+            value: numOptions,
+            raw: `${numOptions}`
+        })
     );
 
     if (afterChildren.length > 0) {

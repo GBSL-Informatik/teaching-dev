@@ -14,7 +14,8 @@ import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
 
 ## Standalone-Fragen
-Einfache Single- und Multiple-Choice-Fragen: 
+### Single-Choice
+Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
 
 ```md
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
@@ -39,6 +40,53 @@ Einfache Single- und Multiple-Choice-Fragen:
         5. Charles Bartowski
     </ChoiceAnswer>
 </BrowserWindow>
+
+Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `correct`-Liste kann festgelegt werden, welche Antwortmöglichkeit(en) als korrekt gilt/gelten. Dabei ist `1` die erste Antwortmöglichkeit, und so weiter. Im obigen Beispiel ist also nur die zweite Antwort (Tim Berners-Lee) korrekt. Die Verwendung eines Blockzitats (`>`) für die Frage dient lediglich der optischen Gestaltung und ist nicht zwingend notwendig.
+
+Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
+
+```md
+<ChoiceAnswer correct={[2]} id="7d252766-d96e-495d-9e61-52fe0cc6c083">
+    > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+    1. Steve **Jobs**
+    2. Tim Berners-Lee
+    3. Ada __Lovelace__
+    4. Alain Berset :mdi[cheese]
+    5. Charles Bartowski
+</ChoiceAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} id="7d252766-d96e-495d-9e61-52fe0cc6c083" randomizeOptions>
+        > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+        1. Steve **Jobs**
+        2. Tim Berners-Lee
+        3. Ada __Lovelace__
+        4. Alain Berset :mdi[cheese]
+        5. Charles Bartowski
+    </ChoiceAnswer>
+</BrowserWindow>
+
+Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  gespeichert. Dadurch bleibt die Reihenfolge der Antwortmöglichkeiten auch bei einem erneuten Laden der Seite gleich. Wird das Flag temporär entfernt, gehen die Antworten wieder zurück in die ursprüngliche Reihenfolge. Die persistierte Reihenfolge bleibt im Hintergrund aber erhalten und wird wiederhergestellt, sobald das Flag erneut gesetzt wird.
+
+Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
+
+```md
+<ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+### Multiple-Choice
+Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
 
 ```md
 Hier steht etwas Text über der Frage.
@@ -84,6 +132,13 @@ Nach der Frage folgt noch weiterer Text.
     Nach der Frage folgt noch weiterer Text.
 </BrowserWindow>
 
+Hier wird zusätzlich die `title`-Property verwendet, um der Frage einen Titel zu geben. Zudem wird ein Infoblock mit einer Bewertungsinformation eingeblendet.
+
+:::info[Randomisierung]
+Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Aufgaben genau gleich wie bei Single-Choice-Aufgaben.
+:::
+
+### Wahr/Falsch
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
 ```md
@@ -97,20 +152,6 @@ Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
         Die Erde ist flach.
     </TrueFalseAnswer>
 </BrowserWindow>
-
-Mit der `randomize`-Property werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt. Zudem dürfen bei SC-Aufgaben auch mehrere Optionen korrekt sein. Wird eine davon ausgewählt, gilt die Antwort als richtig:
-
-```md
-<ChoiceAnswer correct={[1, 4]} randomize id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
-    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
-    
-    1. TypeScript
-    2. Python
-    3. JavaScript
-    4. Java
-    5. Ruby
-</ChoiceAnswer>
-```
 
 ## Quizzes mit mehreren Fragen
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
@@ -193,16 +234,16 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
 ### ChoiceAnswer
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
-| `correct` | `number[]` | Array mit den IDs der Indizes der korrekten Antwortmöglichkeiten. |
+| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
 | `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
-| `randomize` (TODO) | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt.  |
+| `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
 | `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
 
 ### Quiz
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
-| `randomizeQuestions` (TODO) | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge dargestellt. |
-| `randomizeOptions` (TODO) | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge dargestellt (analog zu `ChoiceAnswer.randomize` für einzelne Fragen). |
+| `randomizeQuestions` (TODO) | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
+| `randomizeOptions` (TODO) | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
 | `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
 | `grading` (TODO) | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
 

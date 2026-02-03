@@ -5,7 +5,16 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 
 export interface ChoiceAnswerChoices {
-    [type: number]: number[];
+    [questionIndex: number]: number[];
+}
+
+export interface ChoiceAnswerOrders {
+    [questionIndex: number]: {
+        index: number;
+        optionsOrder: {
+            [originalOptionIndex: number]: number;
+        };
+    };
 }
 
 export interface MetaInit {
@@ -23,17 +32,20 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
 
     get defaultData(): TypeDataMapping['choice_answer'] {
         return {
-            choices: {}
+            choices: {},
+            orders: {}
         };
     }
 }
 
 class ChoiceAnswer extends iDocument<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
+    @observable.ref accessor orders: ChoiceAnswerOrders;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices = props.data?.choices || {};
+        this.orders = props.data?.orders || {};
     }
 
     @action
@@ -54,7 +66,6 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: [optionIndex]
         };
-        console.log('Saving choice answer with choices:', this.choices);
         this.save();
     }
 
@@ -71,7 +82,6 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: Array.from(currentSelections)
         };
-        console.log('Saving choice answer with choices:', this.choices);
         this.save();
     }
 
@@ -82,13 +92,20 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             ...this.choices,
             [questionIndex]: []
         };
-        console.log('Saving choice answer with choices:', this.choices);
         this.save();
+    }
+
+    @action
+    updateOrders(orders: ChoiceAnswerOrders): void {
+        this.updatedAt = new Date();
+        this.orders = orders;
+        this.saveNow();
     }
 
     get data(): TypeDataMapping['choice_answer'] {
         return {
-            choices: this.choices
+            choices: this.choices,
+            orders: this.orders
         };
     }
 
