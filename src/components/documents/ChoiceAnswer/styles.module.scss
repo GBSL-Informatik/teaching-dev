@@ -1,0 +1,76 @@
+.choiceAnswerContainer {
+    $container-padding-top-bottom: 0.7em;
+    $container-padding-left-right: 1em;
+
+    position: relative;
+    border-radius: 1em;
+    border: 1px solid var(--ifm-color-secondary);
+    margin-bottom: 1em;
+    overflow: hidden;
+
+    p {
+        margin: 0 0 0.5em 0;
+    }
+
+    .syncStatus {
+        position: absolute;
+        top: $container-padding-top-bottom;
+        right: $container-padding-left-right;
+    }
+
+    .header {
+        background-color: var(--ifm-color-secondary-lightest);
+        padding: $container-padding-top-bottom $container-padding-left-right;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        h3 {
+            margin: 0;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .syncStatus {
+            position: static;
+        }
+    }
+
+    .content {
+        padding: $container-padding-top-bottom $container-padding-left-right;
+    }
+}
+
+.optionsBlock {
+    &:not(:last-child) {
+        margin-bottom: 1em;
+    }
+
+    .optionsContainer {
+        display: flex;
+        flex-direction: column;
+
+        .choiceAnswerOptionContainer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            p {
+                margin: 0;
+            }
+
+            label {
+                margin-left: 0.2em;
+            }
+
+            .btnDeleteAnswer {
+                margin-left: 0.7em;
+                font-size: 0.8em;
+            }
+        }
+    }
+}

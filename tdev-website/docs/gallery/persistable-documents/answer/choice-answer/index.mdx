@@ -1,0 +1,265 @@
+---
+page_id: 08ac6803-b890-4608-9d4e-28f334addfb0
+tags:
+  - persistable
+---
+
+import PermissionsPanel from "@tdev-components/PermissionsPanel"
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+
+# Choice Answer
+Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
+
+## Standalone-Fragen
+### Single-Choice
+Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
+
+```md
+<ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+    > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+    1. Steve **Jobs**
+    2. Tim Berners-Lee
+    3. Ada __Lovelace__
+    4. Alain Berset :mdi[cheese]
+    5. Charles Bartowski
+</ChoiceAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+        > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+        1. Steve **Jobs**
+        2. Tim Berners-Lee
+        3. Ada __Lovelace__
+        4. Alain Berset :mdi[cheese]
+        5. Charles Bartowski
+    </ChoiceAnswer>
+</BrowserWindow>
+
+Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `correct`-Liste kann festgelegt werden, welche Antwortmöglichkeit(en) als korrekt gilt/gelten. Dabei ist `1` die erste Antwortmöglichkeit, und so weiter. Im obigen Beispiel ist also nur die zweite Antwort (Tim Berners-Lee) korrekt. Die Verwendung eines Blockzitats (`>`) für die Frage dient lediglich der optischen Gestaltung und ist nicht zwingend notwendig.
+
+Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
+
+```md
+<ChoiceAnswer correct={[2]} id="7d252766-d96e-495d-9e61-52fe0cc6c083">
+    > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+    1. Steve **Jobs**
+    2. Tim Berners-Lee
+    3. Ada __Lovelace__
+    4. Alain Berset :mdi[cheese]
+    5. Charles Bartowski
+</ChoiceAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} id="7d252766-d96e-495d-9e61-52fe0cc6c083" randomizeOptions>
+        > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+        1. Steve **Jobs**
+        2. Tim Berners-Lee
+        3. Ada __Lovelace__
+        4. Alain Berset :mdi[cheese]
+        5. Charles Bartowski
+    </ChoiceAnswer>
+</BrowserWindow>
+
+Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  gespeichert. Dadurch bleibt die Reihenfolge der Antwortmöglichkeiten auch bei einem erneuten Laden der Seite gleich. Wird das Flag temporär entfernt, gehen die Antworten wieder zurück in die ursprüngliche Reihenfolge. Die persistierte Reihenfolge bleibt im Hintergrund aber erhalten und wird wiederhergestellt, sobald das Flag erneut gesetzt wird.
+
+Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
+
+```md
+<ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+### Multiple-Choice
+Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
+
+```md
+Hier steht etwas Text über der Frage.
+
+<ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5" title="Eine Frage zu den Primzahlen">
+    > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+
+    :::info[Bewertung]
+    Die Frage wird nur als richtig bewertet, wenn alle korrekten Antworten (und keine falschen) ausgewählt wurden.
+    :::
+    
+    1. 2 ist die einzige gerade Primzahl.
+    2. Jede Primzahl ist ungerade.
+    3. 1 ist eine Primzahl.
+    4. 5 ist eine Primzahl.
+    5. Primzahlen sind nur durch 1 und sich selbst teilbar.
+
+    **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
+</ChoiceAnswer>
+
+Nach der Frage folgt noch weiterer Text.
+```
+
+<BrowserWindow>
+    Hier steht etwas Text über der Frage.
+
+    <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5" title="Eine Frage zu den Primzahlen">
+        > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+
+        :::info[Bewertung]
+        Die Frage wird nur als richtig bewertet, wenn alle korrekten Antworten (und keine falschen) ausgewählt wurden.
+        :::
+        
+        1. 2 ist die einzige gerade Primzahl.
+        2. Jede Primzahl ist ungerade.
+        3. 1 ist eine Primzahl.
+        4. 5 ist eine Primzahl.
+        5. Primzahlen sind nur durch 1 und sich selbst teilbar.
+
+        **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
+    </ChoiceAnswer>
+
+    Nach der Frage folgt noch weiterer Text.
+</BrowserWindow>
+
+Hier wird zusätzlich die `title`-Property verwendet, um der Frage einen Titel zu geben. Zudem wird ein Infoblock mit einer Bewertungsinformation eingeblendet.
+
+:::info[Randomisierung]
+Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Aufgaben genau gleich wie bei Single-Choice-Aufgaben.
+:::
+
+### Wahr/Falsch
+Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
+
+```md
+<TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4" title="Das sollte man wissen…">
+    > Die Erde ist flach.
+</TrueFalseAnswer>
+```
+
+<BrowserWindow>
+    <TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4" title="Das sollte man wissen…">
+        Die Erde ist flach.
+    </TrueFalseAnswer>
+</BrowserWindow>
+
+## Quizzes mit mehreren Fragen
+Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
+
+```html
+<Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
+    <ChoiceAnswer correct={[5]}>
+        > In welchem Jahr war 2024?
+        
+        1. 1965
+        2. 1983
+        3. 1991
+        4. 2000
+        5. 2024
+    </ChoiceAnswer>
+    
+    <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
+        > HTML ist eine Programmiersprache.
+    </TrueFalseAnswer>
+    
+    <ChoiceAnswer correct={[1, 3]} multiple>
+        > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+        
+        1. SMTP
+        2. FTP
+        3. IMAP
+        4. HTTP
+    </ChoiceAnswer>
+
+    <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+    > Wann ist der Sinn des Lebens?
+    
+        1. Immer im März
+        2. 42
+        3. Das Bundeshaus
+        4. Nein
+        5. Ja, aber nur manchmal
+    </ChoiceAnswer>
+</Quiz>
+```
+
+<BrowserWindow>
+    <Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
+        <ChoiceAnswer correct={[5]}>
+            > In welchem Jahr war 2024?
+            
+            1. 1965
+            2. 1983
+            3. 1991
+            4. 2000
+            5. 2024
+        </ChoiceAnswer>
+
+        <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
+            > HTML ist eine Programmiersprache.
+        </TrueFalseAnswer>
+        
+        <ChoiceAnswer correct={[1, 3]} multiple>
+            > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+            
+            1. SMTP
+            2. FTP
+            3. IMAP
+            4. HTTP
+        </ChoiceAnswer>
+
+        <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+            > Wann ist der Sinn des Lebens?
+            
+            1. Immer im März
+            2. 42
+            3. Das Bundeshaus
+            4. Nein
+            5. Ja, aber nur manchmal
+        </ChoiceAnswer>
+    </Quiz>
+</BrowserWindow>
+
+## Eigenschaften
+### ChoiceAnswer
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
+| `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
+| `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
+| `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
+
+### Quiz
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `randomizeQuestions` (TODO) | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
+| `randomizeOptions` (TODO) | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
+| `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
+| `grading` (TODO) | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
+
+## TODO
+- Bei MC-Aufgaben sind Teilpunktzahlen möglich.
+  - TODO TODO: Standalone MC-Fragen müssten demnach auch nicht nur mit richtig und falsch, sondern mit "teilweise richtig" bewertet werden?
+- Ein Quiz kann auf ein Karussell reduziert werden, um Platz zu sparen.
+- Bei einem Quiz kann eine Gesamtpunktzahl definiert werden, die auf die einzelnen ChoiceAnswers aufgeteilt wird.
+- Die Wertung der Antworten kann angepasst werden – es sind z.B. auch Negativpunkte möglich. Es kann zudem eingestellt werden, ob die Gruppe insgesamt weniger als 0 Punkte ergeben darf.
+- Der Korrekturknopf eines Quiz kann versteckt oder mit einer Permission geschützt werden.
+- Bei einem Quiz kann eingestellt werden, ob die Fragen in der vorgegebenen Reihenfolge oder zufällig angezeigt werden sollen.
+- TODO TODO:
+  - Korrektur: Einzeln oder nur Punkte?
+  - Konzept eines "Durchgangs" (Versuch)? Versuch verwerfen und neu starten nach Korrektur?
+  - Soll eine CA / CA.Group automatische eine Aufgabe sein? Soll sie automatisch eine Checkbox erhalten? Soll diese automatisch aktiviert sein, wenn das Quiz fertig gelöst ist? Soll sie nur aktiviert sein, wenn alles korrekt gelöst wurde? Soll das alles eine Option sein?
+
+## Future Work
+- Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
+- Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).

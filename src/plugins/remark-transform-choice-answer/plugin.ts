@@ -1,0 +1,159 @@
+import { visit } from 'unist-util-visit';
+import type { Plugin } from 'unified';
+import type { Root, BlockContent, DefinitionContent } from 'mdast';
+import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
+import { toMdxJsxExpressionAttribute } from '../helpers';
+
+enum ChoiceComponentTypes {
+    ChoiceAnswer = 'ChoiceAnswer',
+    TrueFalseAnswer = 'TrueFalseAnswer'
+}
+
+const QUIZ_NODE_NAME = 'Quiz';
+const BEFORE_WRAPPER_NAME = 'ChoiceAnswer.Before';
+const OPTIONS_WRAPPER_NAME = 'ChoiceAnswer.Options';
+const OPTION_WRAPPER_NAME = 'ChoiceAnswer.Option';
+const AFTER_WRAPPER_NAME = 'ChoiceAnswer.After';
+
+type FlowChildren = (BlockContent | DefinitionContent)[];
+
+function createWrapper(
+    name: string,
+    children: FlowChildren,
+    attributes: MdxJsxAttribute[] = []
+): MdxJsxFlowElement {
+    return {
+        type: 'mdxJsxFlowElement',
+        name,
+        attributes,
+        children
+    };
+}
+
+const createWrappedOption = (
+    listChildren: { type: string; children: FlowChildren }[]
+): { wrappedOptions: MdxJsxFlowElement; numOptions: number } => {
+    const options = listChildren
+        .filter((child) => child.type === 'listItem')
+        .map((child, index) => {
+            return createWrapper(OPTION_WRAPPER_NAME, child.children, [
+                toMdxJsxExpressionAttribute('optionIndex', index, {
+                    type: 'Literal',
+                    value: index,
+                    raw: `${index}`
+                })
+            ]);
+        });
+
+    return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), numOptions: options.length };
+};
+
+const transformQuestion = (questionNode: MdxJsxFlowElement) => {
+    const listIndex = questionNode.children.findIndex((child) => child.type === 'list');
+
+    if (listIndex === -1) {
+        if (questionNode.name !== ChoiceComponentTypes.TrueFalseAnswer) {
+            console.warn(`No list found in <${questionNode.name}>. Expected exactly one list child.`);
+        }
+
+        questionNode.children = [createWrapper(BEFORE_WRAPPER_NAME, questionNode.children)];
+
+        if (questionNode.name === ChoiceComponentTypes.TrueFalseAnswer) {
+            questionNode.attributes.push(
+                toMdxJsxExpressionAttribute('numOptions', true, {
+                    type: 'Literal',
+                    value: 2,
+                    raw: '2'
+                })
+            );
+        }
+
+        return;
+    }
+
+    if (questionNode.children.filter((child) => child.type === 'list').length > 1) {
+        console.warn(`Multiple lists found in <${questionNode.name}>. Only the first one is used.`);
+    }
+
+    const beforeChildren = questionNode.children.slice(0, listIndex) as FlowChildren;
+    const listChild = questionNode.children[listIndex] as { children: FlowChildren };
+
+    const afterChildren = questionNode.children.slice(listIndex + 1) as FlowChildren;
+
+    const wrappedChildren: FlowChildren = [];
+
+    if (beforeChildren.length > 0) {
+        wrappedChildren.push(createWrapper(BEFORE_WRAPPER_NAME, beforeChildren));
+    }
+
+    const { wrappedOptions, numOptions } = createWrappedOption(
+        listChild.children as { type: string; children: FlowChildren }[]
+    );
+    wrappedChildren.push(wrappedOptions);
+    questionNode.attributes.push(
+        toMdxJsxExpressionAttribute('numOptions', true, {
+            type: 'Literal',
+            value: numOptions,
+            raw: `${numOptions}`
+        })
+    );
+
+    if (afterChildren.length > 0) {
+        wrappedChildren.push(createWrapper(AFTER_WRAPPER_NAME, afterChildren));
+    }
+
+    questionNode.children = wrappedChildren;
+};
+
+const transformQuestions = (questionNodes: MdxJsxFlowElement[]) => {
+    questionNodes.forEach((questionNode, index: number) => {
+        transformQuestion(questionNode);
+        questionNode.attributes.push(
+            toMdxJsxExpressionAttribute('questionIndex', true, {
+                type: 'Literal',
+                value: index,
+                raw: `${index}`
+            })
+        );
+        questionNode.attributes.push(
+            toMdxJsxExpressionAttribute('inQuiz', true, {
+                type: 'Literal',
+                value: true,
+                raw: 'true'
+            })
+        );
+    });
+};
+
+const transformQuiz = (quizNode: MdxJsxFlowElement) => {
+    const questions = [] as MdxJsxFlowElement[];
+    visit(quizNode, 'mdxJsxFlowElement', (childNode) => {
+        if (Object.values(ChoiceComponentTypes).includes(childNode.name as ChoiceComponentTypes)) {
+            questions.push(childNode);
+        }
+    });
+
+    transformQuestions(questions);
+};
+
+const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {
+    return (tree) => {
+        visit(tree, 'mdxJsxFlowElement', (node) => {
+            if (node.name === QUIZ_NODE_NAME) {
+                // Enumerate and transform questions inside the quiz.
+                transformQuiz(node);
+            } else if (
+                Object.values(ChoiceComponentTypes).includes(node.name as ChoiceComponentTypes) &&
+                !((node as any).parent?.name === QUIZ_NODE_NAME) &&
+                !node.attributes.some((attr) => (attr as any).name === 'inQuiz')
+            ) {
+                // Transform standalone question.
+                transformQuestion(node);
+            } else {
+                return;
+            }
+        });
+    };
+};
+
+export default plugin;

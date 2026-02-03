@@ -18,6 +18,7 @@ import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
+import transformChoiceAnswerPlugin from '../plugins/remark-transform-choice-answer/plugin';
 
 export const flexCardsPluginConfig = [
     flexCardsPlugin,
@@ -153,6 +154,8 @@ export const linkAnnotationPluginConfig = [
     }
 ];
 
+export const transformChoiceAnswerPluginConfig = transformChoiceAnswerPlugin;
+
 export const rehypeKatexPluginConfig = rehypeKatex;
 
 export const recommendedBeforeDefaultRemarkPlugins = [
@@ -175,7 +178,8 @@ export const recommendedRemarkPlugins = [
     pagePluginConfig,
     commentPluginConfig,
     linkAnnotationPluginConfig,
-    codeAsAttributePluginConfig
+    codeAsAttributePluginConfig,
+    transformChoiceAnswerPluginConfig
 ];
 
 export const recommendedRehypePlugins = [rehypeKatexPluginConfig];

@@ -35,6 +35,7 @@ import ProgressState from '@tdev-models/documents/ProgressState';
 import Script from '@tdev-models/documents/Code';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
+import ChoiceAnswer from '@tdev-models/documents/ChoiceAnswer';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -60,6 +61,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new ScriptVersion(data as DocumentProps<'script_version'>, store);
         case 'string':
             return new String(data as DocumentProps<'string'>, store);
+        case 'choice_answer':
+            return new ChoiceAnswer(data as DocumentProps<'choice_answer'>, store);
         case 'quill_v2':
             return new QuillV2(data as DocumentProps<'quill_v2'>, store);
         case 'solution':
@@ -87,6 +90,7 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['progress_state', CreateDocumentModel],
     ['script_version', CreateDocumentModel],
     ['string', CreateDocumentModel],
+    ['choice_answer', CreateDocumentModel],
     ['quill_v2', CreateDocumentModel],
     ['solution', CreateDocumentModel],
     ['dir', CreateDocumentModel],
