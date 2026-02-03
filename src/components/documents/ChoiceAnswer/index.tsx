@@ -12,7 +12,7 @@ import { QuizContext } from './Quiz';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
 import _ from 'es-toolkit/compat';
-import { createRandomOptionsOrder } from './helpers';
+import { createRandomOrderMap } from './helpers';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -66,7 +66,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const id = parentProps.id || props.id;
     const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(id, meta);
     const questionIndex = props.questionIndex ?? 0;
-    const randomizeOptions = props.randomizeOptions;
+    const randomizeOptions = parentProps.randomizeOptions || props.randomizeOptions;
     const isBrowser = useIsBrowser();
 
     if (!doc) {
@@ -99,13 +99,14 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
     };
 
-    if (randomizeOptions && !doc.data.orders[questionIndex]?.optionsOrder) {
-        doc.updateOrders({
-            ...doc.data.orders,
-            [questionIndex]: {
-                index: doc.data.orders[questionIndex]?.index || 0,
-                optionsOrder: createRandomOptionsOrder(props.numOptions)
-            }
+    const questionOrder =
+        parentProps.randomizeQuestions && parentProps.questionOrder
+            ? parentProps.questionOrder[questionIndex]
+            : questionIndex;
+    if (randomizeOptions && !doc.data.optionOrders?.[questionIndex]) {
+        doc.updateOptionOrders({
+            ...doc.data.optionOrders,
+            [questionIndex]: createRandomOrderMap(props.numOptions)
         });
     }
 
@@ -121,7 +122,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     );
 
     return (
-        <div className={styles.choiceAnswerContainer}>
+        <div className={styles.choiceAnswerContainer} style={{ order: questionOrder }}>
             {title && (
                 <div className={clsx(styles.header)}>
                     <span className={clsx(styles.title)}>{title}</span>
@@ -139,9 +140,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                         multiple: props.multiple,
                         readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
                         selectedChoices: doc?.data.choices[questionIndex] || [],
-                        optionOrder: randomizeOptions
-                            ? doc?.data.orders[questionIndex]?.optionsOrder
-                            : undefined,
+                        optionOrder: randomizeOptions ? doc?.data.optionOrders[questionIndex] : undefined,
                         onChange: onOptionChange
                     }}
                 >

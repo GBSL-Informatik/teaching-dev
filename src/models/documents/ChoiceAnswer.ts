@@ -8,14 +8,13 @@ export interface ChoiceAnswerChoices {
     [questionIndex: number]: number[];
 }
 
-export interface ChoiceAnswerOrders {
+export interface ChoiceAnswerOptionOrders {
     [questionIndex: number]: {
-        index: number;
-        optionsOrder: {
-            [originalOptionIndex: number]: number;
-        };
+        [originalOptionIndex: number]: number;
     };
 }
+
+export type ChoiceAnswerQuestionOrder = { [originalQuestionIndex: number]: number };
 
 export interface MetaInit {
     readonly?: boolean;
@@ -33,19 +32,22 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
     get defaultData(): TypeDataMapping['choice_answer'] {
         return {
             choices: {},
-            orders: {}
+            optionOrders: {},
+            questionOrder: null
         };
     }
 }
 
 class ChoiceAnswer extends iDocument<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
-    @observable.ref accessor orders: ChoiceAnswerOrders;
+    @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
+    @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices = props.data?.choices || {};
-        this.orders = props.data?.orders || {};
+        this.optionOrders = props.data?.optionOrders || {};
+        this.questionOrder = props.data?.questionOrder || null;
     }
 
     @action
@@ -96,16 +98,25 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     }
 
     @action
-    updateOrders(orders: ChoiceAnswerOrders): void {
+    updateOptionOrders(optionOrders: ChoiceAnswerOptionOrders): void {
         this.updatedAt = new Date();
-        this.orders = orders;
+        this.optionOrders = optionOrders;
+        this.saveNow();
+    }
+
+    @action
+    updateQuestionOrder(questionOrder: ChoiceAnswerQuestionOrder): void {
+        console.log('Updating question order to', questionOrder);
+        this.updatedAt = new Date();
+        this.questionOrder = questionOrder;
         this.saveNow();
     }
 
     get data(): TypeDataMapping['choice_answer'] {
         return {
             choices: this.choices,
-            orders: this.orders
+            optionOrders: this.optionOrders,
+            questionOrder: this.questionOrder
         };
     }
 

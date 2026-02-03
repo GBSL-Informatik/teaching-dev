@@ -134,6 +134,13 @@ const transformQuiz = (quizNode: MdxJsxFlowElement) => {
     });
 
     transformQuestions(questions);
+    quizNode.attributes.push(
+        toMdxJsxExpressionAttribute('numQuestions', true, {
+            type: 'Literal',
+            value: questions.length,
+            raw: `${questions.length}`
+        })
+    );
 };
 
 const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {

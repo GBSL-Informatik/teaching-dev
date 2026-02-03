@@ -46,7 +46,7 @@ Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `corr
 Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
 
 ```md
-<ChoiceAnswer correct={[2]} id="7d252766-d96e-495d-9e61-52fe0cc6c083">
+<ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
     > Wir gilt als Erfinder des World Wide Web (WWW)?
 
     1. Steve **Jobs**
@@ -58,7 +58,7 @@ Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[2]} id="7d252766-d96e-495d-9e61-52fe0cc6c083" randomizeOptions>
+    <ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
         > Wir gilt als Erfinder des World Wide Web (WWW)?
 
         1. Steve **Jobs**
@@ -91,7 +91,7 @@ Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werde
 ```md
 Hier steht etwas Text über der Frage.
 
-<ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5" title="Eine Frage zu den Primzahlen">
+<ChoiceAnswer correct={[2, 4, 5]} multiple title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
     > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
 
     :::info[Bewertung]
@@ -113,7 +113,7 @@ Nach der Frage folgt noch weiterer Text.
 <BrowserWindow>
     Hier steht etwas Text über der Frage.
 
-    <ChoiceAnswer correct={[2, 4, 5]} multiple id="7b97dd5d-d304-46db-823f-68237814fee5" title="Eine Frage zu den Primzahlen">
+    <ChoiceAnswer correct={[2, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
         > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
 
         :::info[Bewertung]
@@ -142,18 +142,22 @@ Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Au
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
 ```md
-<TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4" title="Das sollte man wissen…">
+<TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
     > Die Erde ist flach.
 </TrueFalseAnswer>
 ```
 
 <BrowserWindow>
-    <TrueFalseAnswer correct={false} id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4" title="Das sollte man wissen…">
+    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
         Die Erde ist flach.
     </TrueFalseAnswer>
 </BrowserWindow>
 
-## Quizzes mit mehreren Fragen
+:::info[Randomisierung]
+Bei Wahr/Falsch-Fragen gibt es keine Randomisierung der Antwortmöglichkeiten, da es nur zwei fixe Optionen gibt. Dies gilt sowohl bei Standalone-Fragen, als auch bei Wahr/Falsch-Fragen innerhalb eines Quizzes.
+:::
+
+## Quizzes
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```html
@@ -230,6 +234,83 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
     </Quiz>
 </BrowserWindow>
 
+### Randomisierung
+Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten randomisiert werden. Das Verhalten ist analog zu den einzelnen ChoiceAnswer-Fragen (siehe oben). Wird `randomizeOptions` auf Quiz-Ebene gesetzt, gilt dies für alle enthaltenen Fragen (wobei die Antwortoptionen von Wahr/Falsch-Fragen nie randomisiert werden).
+
+```html
+<Quiz randomizeQuestions randomizeOptions id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
+    <ChoiceAnswer correct={[5]}>
+        > In welchem Jahr war 2024?
+        
+        1. 1965
+        2. 1983
+        3. 1991
+        4. 2000
+        5. 2024
+    </ChoiceAnswer>
+    
+    <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
+        > HTML ist eine Programmiersprache.
+    </TrueFalseAnswer>
+    
+    <ChoiceAnswer correct={[1, 3]} multiple>
+        > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+        
+        1. SMTP
+        2. FTP
+        3. IMAP
+        4. HTTP
+    </ChoiceAnswer>
+
+    <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+    > Wann ist der Sinn des Lebens?
+    
+        1. Immer im März
+        2. 42
+        3. Das Bundeshaus
+        4. Nein
+        5. Ja, aber nur manchmal
+    </ChoiceAnswer>
+</Quiz>
+```
+
+<BrowserWindow>
+    <Quiz randomizeQuestions randomizeOptions id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
+        <ChoiceAnswer correct={[5]}>
+            > In welchem Jahr war 2024?
+            
+            1. 1965
+            2. 1983
+            3. 1991
+            4. 2000
+            5. 2024
+        </ChoiceAnswer>
+
+        <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
+            > HTML ist eine Programmiersprache.
+        </TrueFalseAnswer>
+        
+        <ChoiceAnswer correct={[1, 3]} multiple>
+            > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+            
+            1. SMTP
+            2. FTP
+            3. IMAP
+            4. HTTP
+        </ChoiceAnswer>
+
+        <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+            > Wann ist der Sinn des Lebens?
+            
+            1. Immer im März
+            2. 42
+            3. Das Bundeshaus
+            4. Nein
+            5. Ja, aber nur manchmal
+        </ChoiceAnswer>
+    </Quiz>
+</BrowserWindow>
+
 ## Eigenschaften
 ### ChoiceAnswer
 | Eigenschaft      | Typ               | Beschreibung                                      |
@@ -242,8 +323,8 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
 ### Quiz
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
-| `randomizeQuestions` (TODO) | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
-| `randomizeOptions` (TODO) | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
+| `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
+| `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
 | `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
 | `grading` (TODO) | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
 
