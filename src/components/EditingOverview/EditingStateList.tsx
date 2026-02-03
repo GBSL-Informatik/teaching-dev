@@ -29,7 +29,6 @@ const EditingStateList = observer((props: Props) => {
                                 userStore.switchUser(es.authorId);
                             }
                         }}
-                        title={`${es.type}: ${es.documentRootId} - ${es.id}`}
                     >
                         <Icon path={path} color={color} size={0.8} />
                     </span>
