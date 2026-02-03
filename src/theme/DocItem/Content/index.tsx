@@ -21,23 +21,7 @@ const ContentWrapper = observer((props: Props): React.ReactNode => {
         };
     }, [pageStore.current, location.pathname]);
 
-    return (
-        <>
-            <pre>
-                <code>
-                    {JSON.stringify(
-                        pageStore.current?.taskableDocuments.map(
-                            (doc) =>
-                                `[${doc.root?.pagePositions.get(pageStore.current?.path!)}] ${doc.type}@${doc.progress}/${doc.totalSteps} - ${doc.documentRootId}::${doc.id}`
-                        ) || {},
-                        null,
-                        2
-                    )}
-                </code>
-            </pre>
-            <Content {...props} />
-        </>
-    );
+    return <Content {...props} />;
 });
 
 export default ContentWrapper;
