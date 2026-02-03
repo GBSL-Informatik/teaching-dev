@@ -55,17 +55,8 @@ const Quiz = observer((props: Props) => {
     }
 
     if (props.randomizeQuestions && !doc.data.questionOrder) {
-        console.log('Initializing question order for num questions', props.numQuestions);
         doc.updateQuestionOrder(createRandomOrderMap(props.numQuestions));
     }
-    console.log(
-        'randomize',
-        props.randomizeQuestions,
-        'noOrderPresent',
-        !doc.data.questionOrder,
-        'order',
-        doc.data.questionOrder
-    );
 
     return (
         <QuizContext.Provider

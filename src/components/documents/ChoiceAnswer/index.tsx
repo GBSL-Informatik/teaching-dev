@@ -110,11 +110,15 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         });
     }
 
+    const questionNumberToDisplay =
+        (parentProps.randomizeQuestions
+            ? (parentProps.questionOrder?.[questionIndex] ?? questionIndex)
+            : questionIndex) + 1;
     const title =
         props.inQuiz && !parentProps.hideQuestionNumbers
             ? props.title
-                ? `Frage ${questionIndex + 1} – ${props.title}`
-                : `Frage ${questionIndex + 1}`
+                ? `Frage ${questionNumberToDisplay} – ${props.title}`
+                : `Frage ${questionNumberToDisplay}`
             : props.title;
 
     const syncStatus = parentProps.focussedQuestion === questionIndex && (
@@ -154,7 +158,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 
 ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
     const parentProps = React.useContext(ChoiceAnswerContext);
-    const optionId = `${parentProps.id}-q${parentProps.questionIndex}-opt${optionIndex}`;
+    const optionId = React.useId();
 
     const isChecked = React.useMemo(() => {
         return parentProps.selectedChoices.includes(optionIndex);
