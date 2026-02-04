@@ -3,9 +3,24 @@ page_id: cfbd9607-c2d5-4c2a-82e0-9f39c5756747
 tags:
   - '@tdev/'
 ---
-import { Comp } from '@tdev-components/Demo';
+
+import { useStore } from '@tdev-hooks/useStore'
 
 # page-progress-state
+
+Dieses Plugin ermöglicht eine Übersicht über alle speicherbaren Dokumente. So kann der Bearbeitungsstand in der Seitenleiste angezeigt werden.
+
+
+export const Comp = observer(() => {
+    const pageStore = useStore('pageStore');
+
+    return (
+        <div>
+            <CodeBlock language="json">{JSON.stringify(pageStore.tree, null, 2)}</CodeBlock>;
+        </div>
+    );
+});
+
 
 
 <Comp />
