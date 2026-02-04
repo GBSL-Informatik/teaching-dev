@@ -1,6 +1,6 @@
 import type { Code, Node } from 'mdast';
 import type { LeafDirective } from 'mdast-util-directive';
-import type { MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
+import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
 import mdiPlugin from '../plugins/remark-mdi/plugin';
@@ -14,7 +14,9 @@ import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
-import pageIndexPlugin from '@tdev/page-index/remark-plugin';
+import pageIndexPlugin, {
+    type PluginOptions as PageIndexPluginOptions
+} from '@tdev/page-index/remark-plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
@@ -138,71 +140,72 @@ export const pdfPluginConfig = pdfPlugin;
 
 export const pagePluginConfig = [pagePlugin, {}];
 
-export const pageIndexPluginConfig = [
-    pageIndexPlugin,
-    {
-        components: [
-            {
-                name: 'Answer',
-                docTypeExtractor: (node: MdxJsxFlowElement) =>
+export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
+    components: [
+        {
+            name: 'Answer',
+            docTypeExtractor: (node) => {
+                return (
                     getAnswerDocumentType(
                         node.attributes.find((a) => a.type === 'mdxJsxAttribute' && a.name === 'type')
                             ?.value as string
                     ) || 'unknown'
-            },
-            {
-                name: 'ProgressState',
-                docTypeExtractor: () => 'progress_state'
-            },
-            {
-                name: 'TaskState',
-                docTypeExtractor: () => 'task_state'
-            },
-            {
-                name: 'QuillV2',
-                docTypeExtractor: () => 'quill_v2'
-            },
-            {
-                name: 'String',
-                docTypeExtractor: () => 'string'
-            },
-            {
-                name: 'CmsText',
-                docTypeExtractor: () => 'cms_text'
-            },
-            {
-                name: 'CmsCode',
-                docTypeExtractor: () => 'cms_text'
-            },
-            {
-                name: 'Restricted',
-                docTypeExtractor: () => 'restricted'
-            },
-            {
-                name: 'DynamicDocumentRoots',
-                docTypeExtractor: () => 'dynamic_document_roots'
+                );
             }
-        ],
-        persistedCodeType: (node: Code) => {
-            if (node.lang === 'html') {
-                return 'script';
-            }
-            const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
-            const liveCode = liveLangMatch ? liveLangMatch[1] : null;
+        },
+        {
+            name: 'ProgressState',
+            docTypeExtractor: () => 'progress_state'
+        },
+        {
+            name: 'TaskState',
+            docTypeExtractor: () => 'task_state'
+        },
+        {
+            name: 'QuillV2',
+            docTypeExtractor: () => 'quill_v2'
+        },
+        {
+            name: 'String',
+            docTypeExtractor: () => 'string'
+        },
+        {
+            name: 'CmsText',
+            docTypeExtractor: () => 'cms_text'
+        },
+        {
+            name: 'CmsCode',
+            docTypeExtractor: () => 'cms_text'
+        },
+        {
+            name: 'Restricted',
+            docTypeExtractor: () => 'restricted'
+        },
+        {
+            name: 'DynamicDocumentRoots',
+            docTypeExtractor: () => 'dynamic_document_roots'
+        }
+    ],
+    persistedCodeType: (node: Code) => {
+        if (node.lang === 'html') {
+            return 'script';
+        }
+        const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
+        const liveCode = liveLangMatch ? liveLangMatch[1] : null;
 
-            switch (liveCode) {
-                case 'live_py':
-                case 'live_bry':
-                    // legacy name, TODO. should be 'brython_code'?
-                    return 'script';
-                case 'live_pyo':
-                    return 'pyodide_code';
-                default:
-                    return 'code';
-            }
+        switch (liveCode) {
+            case 'live_py':
+            case 'live_bry':
+                // legacy name, TODO. should be 'brython_code'?
+                return 'script';
+            case 'live_pyo':
+                return 'pyodide_code';
+            default:
+                return 'code';
         }
     }
-];
+};
+export const pageIndexPluginConfig = [pageIndexPlugin, PageIndexPluginDefaultOptions];
 
 export const graphvizPluginConfig = graphvizPlugin;
 

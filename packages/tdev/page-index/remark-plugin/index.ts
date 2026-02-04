@@ -6,6 +6,7 @@ import db from '../utils/db';
 import { exportDB } from '../utils/exportDb';
 import { debounce } from 'es-toolkit/function';
 import { tdevRoot } from '../utils/options';
+import { TypeModelMapping } from '@tdev-api/document';
 
 const TdevRoot = `${tdevRoot === '' ? '' : '/'}${tdevRoot}`;
 const TdevRootRegex = new RegExp(`^${TdevRoot}`);
@@ -33,7 +34,7 @@ const cleanupPage = db.prepare(
      WHERE path = ? AND page_id = ?;`
 );
 
-interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlowElement | MdxJsxTextElement> {
+interface JsxConfig {
     /**
      * Component Name
      */
@@ -42,13 +43,12 @@ interface JsxConfig<T extends MdxJsxFlowElement | MdxJsxTextElement = MdxJsxFlow
      * @default id
      */
     attributeName?: string;
-    docTypeExtractor: (node: T) => string;
+    docTypeExtractor: (node: MdxJsxFlowElement | MdxJsxTextElement) => keyof TypeModelMapping;
 }
 
 export interface PluginOptions {
     components: JsxConfig[];
     persistedCodeType?: (code: Code) => string;
-    docsParentDir?: string;
 }
 
 const slugCountMap = new Map<string, number>();
