@@ -14,7 +14,7 @@ import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
-import pageProgressStatePlugin from '@tdev/page-index/remark-plugin';
+import pageIndexPlugin from '@tdev/page-index/remark-plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
@@ -138,8 +138,8 @@ export const pdfPluginConfig = pdfPlugin;
 
 export const pagePluginConfig = [pagePlugin, {}];
 
-export const pageProgressStatePluginConfig = [
-    pageProgressStatePlugin,
+export const pageIndexPluginConfig = [
+    pageIndexPlugin,
     {
         components: [
             {
@@ -243,7 +243,7 @@ export const recommendedRemarkPlugins = [
     enumerateAnswersPluginConfig,
     pdfPluginConfig,
     pagePluginConfig,
-    pageProgressStatePluginConfig,
+    pageIndexPluginConfig,
     commentPluginConfig,
     linkAnnotationPluginConfig,
     codeAsAttributePluginConfig

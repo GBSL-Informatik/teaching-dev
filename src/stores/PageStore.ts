@@ -72,17 +72,11 @@ export class PageStore extends iStore {
                 path: version.versionPath,
                 pages: version.rootPaths.map((rootPath) => {
                     const rootLandingPage = this.pages.find((page) => page.path === rootPath);
-                    console.log(
-                        'Looking for landing page for root path',
-                        rootPath,
-                        rootLandingPage,
-                        this.pages.map((p) => p.path)
-                    );
                     if (rootLandingPage) {
-                        console.log('Found landing page for root path', rootPath);
                         return {
                             version: version.name,
                             path: rootPath,
+                            documentRootIds: rootLandingPage.taskableDocumentRootIds,
                             pages: [rootLandingPage.tree]
                         };
                     }

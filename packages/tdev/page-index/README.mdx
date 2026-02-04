@@ -12,7 +12,13 @@ import CodeBlock from '@theme/CodeBlock';
 
 Dieses Plugin ermöglicht eine Übersicht über alle speicherbaren Dokumente. So kann bspw. der Bearbeitungsstand in der Seitenleiste angezeigt werden.
 
+## Page index
 
+Der Seitenindex ist ein Baum aller speicherbaren Dokumente in der aktuellen Seite.
+
+Im `dev`-Modus wird er automatisch aktualisiert, wenn sich die Seite ändert.
+
+:::details[Page Index]
 export const Comp = observer(() => {
     const pageStore = useStore('pageStore');
 
@@ -24,9 +30,24 @@ export const Comp = observer(() => {
 });
 
 <Comp />
-
+:::
 
 ## Installation
+
+:::info[`docusaurus.config.ts`]
+```ts
+import pageIndexPlugin from './packages/tdev/page-index/plugin';
+
+export default {
+    // ...
+    plugins: [
+        // ...
+        pageIndexPlugin
+    ]
+};
+
+```
+:::
 
 
 :::details[remark config]
@@ -36,6 +57,9 @@ import pageProgressStatePlugin from '@tdev/page-index/remark-plugin';
 export const pageProgressStatePluginConfig = [
     pageProgressStatePlugin,
     {
+        /**
+         * Dynamische Komponenten, die im Seitenindex erfasst werden sollen.
+         */
         components: [
             {
                 name: 'Answer',
@@ -78,6 +102,9 @@ export const pageProgressStatePluginConfig = [
                 docTypeExtractor: () => 'dynamic_document_roots'
             }
         ],
+        /**
+         * Code-Blöcke mit persistierten Inhalten, die im Seitenindex erfasst werden sollen.
+         */
         persistedCodeType: (node: Code) => {
             if (node.lang === 'html') {
                 return 'script';
