@@ -7,12 +7,37 @@ tags:
 import { useStore } from '@tdev-hooks/useStore'
 import { observer } from 'mobx-react-lite';
 import CodeBlock from '@theme/CodeBlock';
+import JsObjectViewer from '@tdev-components/shared/JsObject/Viewer';
 
 # page-index
 
 Dieses Plugin ermöglicht eine Übersicht über alle speicherbaren Dokumente. So kann bspw. der Bearbeitungsstand in der Seitenleiste angezeigt werden.
 
-TODO: document `taskable_state: 'show' | 'hide'`
+Standardmässig wird in der Seitenleiste der Bearbeitungsstand in zwei Fällen angezeigt:
+1. Auf einer Seite sind *Statusdokument* vorhanden, deren Fortschritt bestimmt werden kann (sog. `TaskableDocuments`, bspw. `task_state` oder `progress_state`).
+2. In einer Kategorie befinden sich direkt untergeordnete Seiten mit *Statusdokumenten*. 
+
+![--width=800px](./images/taskable-sidebar.png)
+
+Dieses Verhalten kann über das *Frontmatter* der Seite angepasst werden:
+
+:::cards{flexBasis="300px"}
+```yaml
+---
+sidebar_custom_props:
+    taskable_state: 'show'
+---
+```
+Bearbeitungsstand anzeigen, auch wenn keine Statusdokumente in den direkt untergeordneten Seiten vorhanden sind.
+::br
+```yaml
+---
+sidebar_custom_props:
+    taskable_state: 'hide'
+---
+```
+Bearbeitungsstand nicht anzeigen, auch wenn Statusdokumente vorhanden sind.
+:::
 
 ## Page index
 
@@ -21,18 +46,67 @@ Der Seitenindex ist ein Baum aller speicherbaren Dokumente in der aktuellen Seit
 Im `dev`-Modus wird er automatisch aktualisiert, wenn sich die Seite ändert.
 
 :::details[Page Index]
+
 export const Comp = observer(() => {
-    const pageStore = useStore('pageStore');
+    const pageStore = useStore('pageStore')
 
     return (
         <div>
-            <CodeBlock language="json">{JSON.stringify(pageStore.tree, null, 2)}</CodeBlock>;
+            <CodeBlock language="json">{JSON.stringify(pageStore.tree, null, 2)}</CodeBlock>
         </div>
     );
 });
 
 <Comp />
 :::
+
+## Für Plugin-Autoren
+
+Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex erfasst werden soll, müssen folgende Schritte durchgeführt werden:
+1. In der `siteConfig` die neue Komponente für das `remark`-Plugin registrieren:
+    ```ts  title="siteConfig.ts"
+    import { PageIndexPluginDefaultOptions } from './src/siteConfig/markdownPluginConfigs';
+    const indexPluginOptions = {
+        ...PageIndexPluginDefaultOptions,
+        components: [
+            ...PageIndexPluginDefaultOptions.components,
+            {
+                name: 'MyNewTaskableDocument',
+                docTypeExtractor: (node: MdxJsxFlowElement) => 'my_new_taskable_document'
+            }
+        ]
+    };
+    export const pageIndexPluginConfig = [pageIndexPlugin, indexPluginOptions];
+    ```
+2. Im `index.ts` des neuen Plugins den neuen Dokumenttyp importieren:
+    ```ts title="packages/<scope>/<new-plugin>/index.ts"
+    declare module '@tdev-api/document' {
+        export interface TaskableDocumentMapping {
+            ['my_new_taskable_document']: MyNewTaskableData;
+        }
+        export interface TypeModelMapping {
+            ['my_new_taskable_document']: MyNewTaskableDocument;
+        }
+    }
+    ```
+    :::warning[iTaskableDocument]
+    Das neue `MyNewTaskableDocument`-Modell muss das Interface `iTaskableDocument<'my_new_taskable_document'>` implementieren, damit es im Seitenindex als *Statusdokument* erkannt wird.
+    :::
+3. Im `apiDocumentProviders` den neuen Dokumenttyp registrieren:
+    ```ts title="siteConfig.ts"
+    const getSiteConfig = () => {
+        apiDocumentProviders: {
+            ...,
+            require.resolve('@scope/new-plugin/register')
+        }
+    }
+    ```
+    und den neuen Dokumenttyp im `ComponentStore` registrieren:
+    ```ts title="packages/<scope>/<new-plugin>/register.ts"
+    const register = () => {
+        rootStore.componentStore.registerTaskableDocumentType('my_new_taskable_document');
+    };
+    ```
 
 ## Installation
 

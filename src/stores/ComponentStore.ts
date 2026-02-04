@@ -2,9 +2,11 @@ import { CodeMeta } from '@tdev-models/documents/Code';
 import { RootStore } from './rootStore';
 import {
     type CodeType,
+    type DocumentType,
     TypeModelMapping,
     type ContainerType,
-    type ContainerTypeModelMapping
+    type ContainerTypeModelMapping,
+    TaskableType
 } from '@tdev-api/document';
 import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
@@ -49,6 +51,7 @@ class ComponentStore {
     readonly root: RootStore;
     components = new Map<ContainerType, ContainerComponent>();
     editorComponents = new Map<CodeType, EditorComponent>();
+    taskableDocuments = new Set<DocumentType>(['task_state', 'progress_state']);
 
     constructor(root: RootStore) {
         this.root = root;
@@ -60,6 +63,10 @@ class ComponentStore {
 
     registerContainerComponent<T extends ContainerType>(type: T, component: ContainerComponent<T>) {
         this.components.set(type, component as ContainerComponent<any>);
+    }
+
+    registerTaskableDocumentType(type: TaskableType) {
+        this.taskableDocuments.add(type);
     }
 
     @computed

@@ -15,11 +15,9 @@ import { IfmColors } from '@tdev-components/shared/Colors';
 interface PageTree {
     id: string;
     path: string;
-    documentRootIds: string[];
+    documentRoots: (PageConfig & { documentRootId: string })[];
     pages: PageTree[];
 }
-
-const TaskableDocument = new Set<DocumentType>(['task_state', 'progress_state']);
 
 interface PageConfig {
     type: DocumentType;
@@ -63,7 +61,10 @@ export default class Page {
         return {
             id: this.id,
             path: this.path,
-            documentRootIds: [...this.documentRootConfigs.keys()],
+            documentRoots: [...this.documentRootConfigs.entries()].map(([id, config]) => ({
+                documentRootId: id,
+                ...config
+            })),
             pages: this.subPages.map((page) => page.tree)
         };
     }
@@ -101,7 +102,6 @@ export default class Page {
 
     @action
     assertDocumentRoot(doc: iDocument<any>) {
-        // this.documentRootIds.add(doc.documentRootId);
         if (process.env.NODE_ENV === 'production') {
             return;
         }
@@ -133,17 +133,6 @@ export default class Page {
             .filter((d) => d?.root?.meta.pagePosition)
             .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
     }
-
-    // @computed
-    // get editingStates(): (TaskState | ProgressState)[] {
-    //     return this.documentRoots
-    //         .flatMap((doc) => doc.firstMainDocument)
-    //         .filter(
-    //             (d): d is TaskState | ProgressState => d instanceof TaskState || d instanceof ProgressState
-    //         )
-    //         .filter((d) => d?.root?.meta.pagePosition)
-    //         .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
-    // }
 
     @action
     setPrimaryStudentGroupName(name?: string) {
@@ -189,11 +178,15 @@ export default class Page {
         return this.store.loadAllDocuments(this);
     }
 
+    get TaskableDocuments() {
+        return this.store.root.componentStore.taskableDocuments;
+    }
+
     @computed
     get taskableDocumentRootIds() {
         return [...this.documentRootConfigs.keys()].filter((id) => {
             const config = this.documentRootConfigs.get(id)!;
-            return TaskableDocument.has(config.type);
+            return this.TaskableDocuments.has(config.type);
         });
     }
 
@@ -207,7 +200,7 @@ export default class Page {
             return this.store.root.documentStore
                 .findByDocumentRoot(rid)
                 .filter(
-                    (doc) => doc.authorId === uid && TaskableDocument.has(doc.type)
+                    (doc) => doc.authorId === uid && this.TaskableDocuments.has(doc.type)
                 ) as iTaskableDocument[];
         });
     }
@@ -296,7 +289,7 @@ export default class Page {
                 .flatMap((rid) => {
                     return this.store.root.documentStore
                         .findByDocumentRoot(rid)
-                        .filter((doc) => TaskableDocument.has(doc.type)) as iTaskableDocument[];
+                        .filter((doc) => this.TaskableDocuments.has(doc.type)) as iTaskableDocument[];
                 })
                 .filter((doc) =>
                     this.activeStudentGroup ? this.activeStudentGroup.userIds.has(doc.authorId) : true
