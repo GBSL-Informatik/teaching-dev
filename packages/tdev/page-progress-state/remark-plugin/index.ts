@@ -5,7 +5,10 @@ import path from 'path';
 import db from '../utils/db';
 import { exportDB } from '../utils/exportDb';
 import { debounce } from 'es-toolkit/function';
+import { tdevRoot } from '../utils/options';
 
+const TdevRoot = `${tdevRoot === '' ? '' : '/'}${tdevRoot}`;
+const TdevRootRegex = new RegExp(`^${TdevRoot}`);
 const projectRoot = process.cwd();
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -63,11 +66,10 @@ const scheduleExportDb = debounce(
  * custom MDX components by converting the code content into attributes.
  */
 const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
-    options = { components: [], persistedCodeType: () => 'code', docsParentDir: '' }
+    options = { components: [], persistedCodeType: () => 'code' }
 ): Transformer<Root> {
     const { components } = options;
     const mdxJsxComponents = new Map<string, JsxConfig>(components.map((c) => [c.name, c]));
-    const replaceStart = new RegExp(`^${options.docsParentDir}`);
     return async (root, file) => {
         const { page_id } = (file.data?.frontMatter || {}) as { page_id?: string };
         if (components.length < 1 || !page_id) {
@@ -77,7 +79,7 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
         const filePath = `/${path.relative(projectRoot, file.path)}`
             .replace(/\/(index|README)\.mdx?$/i, '/')
             .replace(/\.mdx?$/i, '/')
-            .replace(replaceStart, '')
+            .replace(TdevRootRegex, '')
             .replace(/^\/versioned_docs\/version-/, '/');
         slugCountMap.set(filePath, 1);
 

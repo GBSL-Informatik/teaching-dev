@@ -5,10 +5,12 @@ tags:
 ---
 
 import { useStore } from '@tdev-hooks/useStore'
+import { observer } from 'mobx-react-lite';
+import CodeBlock from '@theme/CodeBlock';
 
 # page-progress-state
 
-Dieses Plugin ermöglicht eine Übersicht über alle speicherbaren Dokumente. So kann der Bearbeitungsstand in der Seitenleiste angezeigt werden.
+Dieses Plugin ermöglicht eine Übersicht über alle speicherbaren Dokumente. So kann bspw. der Bearbeitungsstand in der Seitenleiste angezeigt werden.
 
 
 export const Comp = observer(() => {
@@ -21,6 +23,80 @@ export const Comp = observer(() => {
     );
 });
 
-
-
 <Comp />
+
+
+## Installation
+
+
+:::details[remark config]
+```ts
+import pageProgressStatePlugin from '@tdev/page-progress-state/remark-plugin';
+
+export const pageProgressStatePluginConfig = [
+    pageProgressStatePlugin,
+    {
+        components: [
+            {
+                name: 'Answer',
+                docTypeExtractor: (node: MdxJsxFlowElement) =>
+                    getAnswerDocumentType(
+                        node.attributes.find((a) => a.type === 'mdxJsxAttribute' && a.name === 'type')
+                            ?.value as string
+                    ) || 'unknown'
+            },
+            {
+                name: 'ProgressState',
+                docTypeExtractor: () => 'progress_state'
+            },
+            {
+                name: 'TaskState',
+                docTypeExtractor: () => 'task_state'
+            },
+            {
+                name: 'QuillV2',
+                docTypeExtractor: () => 'quill_v2'
+            },
+            {
+                name: 'String',
+                docTypeExtractor: () => 'string'
+            },
+            {
+                name: 'CmsText',
+                docTypeExtractor: () => 'cms_text'
+            },
+            {
+                name: 'CmsCode',
+                docTypeExtractor: () => 'cms_text'
+            },
+            {
+                name: 'Restricted',
+                docTypeExtractor: () => 'restricted'
+            },
+            {
+                name: 'DynamicDocumentRoots',
+                docTypeExtractor: () => 'dynamic_document_roots'
+            }
+        ],
+        persistedCodeType: (node: Code) => {
+            if (node.lang === 'html') {
+                return 'script';
+            }
+            const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
+            const liveCode = liveLangMatch ? liveLangMatch[1] : null;
+
+            switch (liveCode) {
+                case 'live_py':
+                case 'live_bry':
+                    // legacy name, TODO. should be 'brython_code'?
+                    return 'script';
+                case 'live_pyo':
+                    return 'pyodide_code';
+                default:
+                    return 'code';
+            }
+        }
+    }
+];
+```
+:::

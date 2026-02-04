@@ -1,7 +1,7 @@
 import type { Code, Node } from 'mdast';
 import path from 'path';
 import type { LeafDirective } from 'mdast-util-directive';
-import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx-jsx';
+import type { MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
 import mdiPlugin from '../plugins/remark-mdi/plugin';
@@ -137,10 +137,6 @@ export const enumerateAnswersPluginConfig = [
 
 export const pdfPluginConfig = pdfPlugin;
 
-const cwd = process.cwd();
-const indexPath = path.resolve(cwd, './src/.page-index');
-const ComponentsWithId = new Set(['TaskState', 'ProgressState']);
-const AnswerTypes = new Set(['state', 'progress']);
 export const pagePluginConfig = [pagePlugin, {}];
 
 export const pageProgressStatePluginConfig = [
@@ -205,8 +201,7 @@ export const pageProgressStatePluginConfig = [
                 default:
                     return 'code';
             }
-        },
-        docsParentDir: '/tdev-website'
+        }
     }
 ];
 
