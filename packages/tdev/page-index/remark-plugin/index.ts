@@ -43,7 +43,7 @@ interface JsxConfig {
      * @default id
      */
     attributeName?: string;
-    docTypeExtractor: (node: MdxJsxFlowElement | MdxJsxTextElement) => keyof TypeModelMapping;
+    docTypeExtractor: (node: MdxJsxFlowElement | MdxJsxTextElement) => keyof TypeModelMapping | string;
 }
 
 export interface PluginOptions {
