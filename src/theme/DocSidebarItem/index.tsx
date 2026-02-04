@@ -22,7 +22,11 @@ const DocSidebarItemWrapper = observer((props: Props): ReactNode => {
     return (
         <div className={clsx(styles.item)}>
             <DocSidebarItem {...props} />
-            <TaskableState page={page} className={clsx(styles.icon, styles[props.item.type])} />
+            <TaskableState
+                page={page}
+                className={clsx(styles.icon, styles[props.item.type])}
+                forcedAction={props.item.customProps?.taskable_state as 'show' | 'hide'}
+            />
         </div>
     );
 });
