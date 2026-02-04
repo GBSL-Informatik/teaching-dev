@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import TaskableState from './TaskableState';
+import TaskableState from '@tdev/page-index/components/TaskableState';
 const ensureTrailingSlash = (path?: string) => {
     if (!path) {
         return '';
