@@ -6,7 +6,7 @@ import { computedFn } from 'mobx-utils';
 import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
 import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import siteConfig from '@generated/docusaurus.config';
-import { PageIndex } from '@tdev/page-progress-state';
+import { PageIndex } from '@tdev/page-index';
 import { groupBy } from 'es-toolkit/array';
 import globalData from '@generated/globalData';
 const ensureTrailingSlash = (str: string) => {

@@ -1,5 +1,4 @@
 import type { Code, Node } from 'mdast';
-import path from 'path';
 import type { LeafDirective } from 'mdast-util-directive';
 import type { MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
@@ -15,7 +14,7 @@ import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
-import pageProgressStatePlugin from '@tdev/page-progress-state/remark-plugin';
+import pageProgressStatePlugin from '@tdev/page-index/remark-plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';

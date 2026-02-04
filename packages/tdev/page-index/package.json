@@ -1,5 +1,5 @@
 {
-    "name": "@tdev/page-progress-state",
+    "name": "@tdev/page-index",
     "version": "1.0.0",
     "main": "index.ts",
     "types": "index.ts",

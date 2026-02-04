@@ -7,7 +7,7 @@ import { pageIndexPath } from './utils/options';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-const persistableDocuments: PluginModule = (context: LoadContext) => {
+const pageIndexPlugin: PluginModule = (context: LoadContext) => {
     const config: Plugin<{}> = {
         name: PluginName,
         async allContentLoaded() {
@@ -32,4 +32,4 @@ const persistableDocuments: PluginModule = (context: LoadContext) => {
     return config as Plugin;
 };
 
-export default persistableDocuments;
+export default pageIndexPlugin;
