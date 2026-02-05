@@ -59,7 +59,14 @@ export const sentryPluginConfig: PluginConfig = () => {
                     sentryWebpackPlugin({
                         authToken: SENTRY_AUTH_TOKEN,
                         org: SENTRY_ORG,
-                        project: SENTRY_PROJECT
+                        project: SENTRY_PROJECT,
+                        sourcemaps: {
+                            // As you're enabling client source maps, you probably want to delete them after they're uploaded to Sentry.
+                            // Set the appropriate glob pattern for your output folder - some glob examples below:
+                            filesToDeleteAfterUpload: ['./**/*.map', './build/**/*.map']
+                        },
+                        telemetry: false,
+                        silent: true
                     })
                 ]
             };
