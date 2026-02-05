@@ -134,76 +134,71 @@ See the swizzled component of this page. This should be synced with the `updateT
 ```ts
 import pageProgressStatePlugin from '@tdev/page-index/remark-plugin';
 
-export const pageProgressStatePluginConfig = [
-    pageProgressStatePlugin,
-    {
-        /**
-         * Dynamische Komponenten, die im Seitenindex erfasst werden sollen.
-         */
-        components: [
-            {
-                name: 'Answer',
-                docTypeExtractor: (node: MdxJsxFlowElement) =>
+export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
+    components: [
+        {
+            name: 'Answer',
+            docTypeExtractor: (node) => {
+                return (
                     getAnswerDocumentType(
                         node.attributes.find((a) => a.type === 'mdxJsxAttribute' && a.name === 'type')
                             ?.value as string
                     ) || 'unknown'
-            },
-            {
-                name: 'ProgressState',
-                docTypeExtractor: () => 'progress_state'
-            },
-            {
-                name: 'TaskState',
-                docTypeExtractor: () => 'task_state'
-            },
-            {
-                name: 'QuillV2',
-                docTypeExtractor: () => 'quill_v2'
-            },
-            {
-                name: 'String',
-                docTypeExtractor: () => 'string'
-            },
-            {
-                name: 'CmsText',
-                docTypeExtractor: () => 'cms_text'
-            },
-            {
-                name: 'CmsCode',
-                docTypeExtractor: () => 'cms_text'
-            },
-            {
-                name: 'Restricted',
-                docTypeExtractor: () => 'restricted'
-            },
-            {
-                name: 'DynamicDocumentRoots',
-                docTypeExtractor: () => 'dynamic_document_roots'
+                );
             }
-        ],
-        /**
-         * Code-Blöcke mit persistierten Inhalten, die im Seitenindex erfasst werden sollen.
-         */
-        persistedCodeType: (node: Code) => {
-            if (node.lang === 'html') {
-                return 'script';
-            }
-            const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
-            const liveCode = liveLangMatch ? liveLangMatch[1] : null;
+        },
+        {
+            name: 'ProgressState',
+            docTypeExtractor: () => 'progress_state'
+        },
+        {
+            name: 'TaskState',
+            docTypeExtractor: () => 'task_state'
+        },
+        {
+            name: 'QuillV2',
+            docTypeExtractor: () => 'quill_v2'
+        },
+        {
+            name: 'String',
+            docTypeExtractor: () => 'string'
+        },
+        {
+            name: 'CmsText',
+            docTypeExtractor: () => 'cms_text'
+        },
+        {
+            name: 'CmsCode',
+            docTypeExtractor: () => 'cms_text'
+        },
+        {
+            name: 'Restricted',
+            docTypeExtractor: () => 'restricted'
+        },
+        {
+            name: 'DynamicDocumentRoots',
+            docTypeExtractor: () => 'dynamic_document_roots'
+        }
+    ],
+    persistedCodeType: (node: Code) => {
+        if (node.lang === 'html') {
+            return 'script';
+        }
+        const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
+        const liveCode = liveLangMatch ? liveLangMatch[1] : null;
 
-            switch (liveCode) {
-                case 'live_py':
-                case 'live_bry':
-                    // legacy name, TODO. should be 'brython_code'?
-                    return 'script';
-                case 'live_pyo':
-                    return 'pyodide_code';
-                default:
-                    return 'code';
-            }
+        switch (liveCode) {
+            case 'live_py':
+            case 'live_bry':
+                // legacy name, TODO. should be 'brython_code'?
+                return 'script';
+            case 'live_pyo':
+                return 'pyodide_code';
+            default:
+                return 'code';
         }
     }
-];
+};
+export const pageIndexPluginConfig = [pageIndexPlugin, PageIndexPluginDefaultOptions];
 ```
 :::
