@@ -13,6 +13,7 @@ export interface Props {
     code: Script;
     controls?: React.ReactNode;
     main?: React.ReactNode;
+    scrollOffsetY?: number;
 }
 const Graphics = observer((props: Props) => {
     const { code } = props;
@@ -22,6 +23,7 @@ const Graphics = observer((props: Props) => {
             onStop={checkForButtonClick}
             positionOffset={{ x: '15%', y: '25%' }}
             nodeRef={nodeRef as React.RefObject<HTMLDivElement>}
+            defaultPosition={{ y: -1 * (props.scrollOffsetY ?? 0), x: 0 }}
         >
             <div className={styles.brythonGraphicsResult} ref={nodeRef}>
                 <div className={styles.brythonGraphicsResultHead}>

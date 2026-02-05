@@ -32,6 +32,7 @@ const downloadCanvas = (canvasId: string) => {
 
 interface Props {
     code: Script;
+    scrollOffsetY?: number;
 }
 
 const Canvas = observer((props: Props) => {
@@ -40,6 +41,7 @@ const Canvas = observer((props: Props) => {
     return (
         <Graphics
             code={code}
+            scrollOffsetY={props.scrollOffsetY}
             controls={
                 <Button
                     icon={mdiDownload}
