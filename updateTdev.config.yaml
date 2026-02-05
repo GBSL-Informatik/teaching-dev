@@ -21,6 +21,8 @@ trackedElements:
       dst: static/bry-libs
     - src: static/pyodide.sw.js
       dst: static/pyodide.sw.js
+    - src: static/tdev-artifacts/.gitignore
+      dst: static/tdev-artifacts/.gitignore
 watchedElements:
     - .babel.config.js
     - package.json
