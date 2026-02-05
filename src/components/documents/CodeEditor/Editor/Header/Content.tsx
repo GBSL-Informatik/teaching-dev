@@ -12,6 +12,8 @@ import DownloadCode from '../../Actions/DownloadCode';
 import ShowRaw from '../../Actions/ShowRaw';
 import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
 import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
+import { reaction } from 'mobx';
+import { useStore } from '@tdev-hooks/useStore';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
@@ -20,8 +22,18 @@ interface Props<T extends CodeType> {
 
 const Content = observer(<T extends CodeType>(props: Props<T>) => {
     const { code, showFullscreenButton } = props;
+    const viewStore = useStore('viewStore');
     const notifyUnpersisted = code.root?.isDummy && !code.meta.slim && !code.meta.hideWarning;
     const targetId = useFullscreenTargetId();
+    React.useEffect(() => {
+        return reaction(
+            () => viewStore.fullscreenTargetId === targetId,
+            () => {
+                code.stopExecution();
+            },
+            { fireImmediately: false }
+        );
+    }, [targetId, code]);
     return (
         <>
             <div className={clsx(styles.title)}>{code.title}</div>
@@ -30,9 +42,6 @@ const Content = observer(<T extends CodeType>(props: Props<T>) => {
                 targetId={targetId}
                 adminOnly={!showFullscreenButton}
                 className={clsx(styles.fullscreenButton)}
-                onFullscreenChange={() => {
-                    code.stopExecution();
-                }}
             />
             {notifyUnpersisted && (
                 <Icon
