@@ -9,4 +9,12 @@
             right: 3em;
         }
     }
+    &:has(> .icon:hover) {
+        > li:has(+ .icon:hover) {
+            > a,
+            > div {
+                background: var(--ifm-menu-color-background-hover);
+            }
+        }
+    }
 }

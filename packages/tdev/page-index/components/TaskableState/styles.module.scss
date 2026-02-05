@@ -3,5 +3,10 @@
     align-items: center;
     justify-content: center;
     height: 2em;
+    width: 2em;
     cursor: pointer;
+    border-radius: 1em;
+    &:hover {
+        background-color: var(--ifm-hover-overlay);
+    }
 }

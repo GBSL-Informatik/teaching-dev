@@ -33,8 +33,17 @@ const TaskableState = observer((props: Props) => {
         <div
             className={clsx(styles.taskableState, props.className)}
             title={`Progress: ${page.progress} / ${page.totalSteps}`}
+            onClick={(e) => {
+                const thisElement = e.currentTarget;
+                thisElement.parentElement?.querySelector('a')?.click();
+            }}
         >
-            <Icon path={page.editingIconState.path} size={0.8} color={page.editingIconState.color} />
+            <Icon
+                path={page.editingIconState.path}
+                size={0.8}
+                color={page.editingIconState.color}
+                className={clsx(styles.icon)}
+            />
         </div>
     );
 });
