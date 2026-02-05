@@ -51,8 +51,8 @@ export const Comp = observer(() => {
     const pageStore = useStore('pageStore')
 
     return (
-        <div>
-            <CodeBlock language="json">{JSON.stringify(pageStore.tree, null, 2)}</CodeBlock>
+        <div style={{ maxHeight: '550px', overflow: 'auto' }}>
+            <CodeBlock language="json">{JSON.stringify(pageStore._pageIndex, null, 2)}</CodeBlock>
         </div>
     );
 });
