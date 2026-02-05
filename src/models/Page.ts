@@ -11,14 +11,6 @@ import { DocumentType } from '@tdev-api/document';
 import { iTaskableDocument } from './iTaskableDocument';
 import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
-
-interface PageTree {
-    id: string;
-    path: string;
-    documentRoots: (PageConfig & { documentRootId: string })[];
-    pages: PageTree[];
-}
-
 interface PageConfig {
     type: DocumentType;
     position: number;
@@ -54,19 +46,6 @@ export default class Page {
     @computed
     get isLandingpage() {
         return this.store.sidebarVersions.some((version) => version.rootPaths.includes(this.path));
-    }
-
-    @computed
-    get tree(): PageTree {
-        return {
-            id: this.id,
-            path: this.path,
-            documentRoots: [...this.documentRootConfigs.entries()].map(([id, config]) => ({
-                documentRootId: id,
-                ...config
-            })),
-            pages: this.subPages.map((page) => page.tree)
-        };
     }
 
     @computed

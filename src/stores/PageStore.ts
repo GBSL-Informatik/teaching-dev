@@ -64,33 +64,6 @@ export class PageStore extends iStore {
         return this.pages.filter((page) => page.isLandingpage);
     }
 
-    @computed
-    get tree() {
-        return SidebarVersions.map((version) => {
-            return {
-                version: version.name,
-                path: version.versionPath,
-                pages: version.rootPaths.map((rootPath) => {
-                    const rootLandingPage = this.pages.find((page) => page.path === rootPath);
-                    if (rootLandingPage) {
-                        return {
-                            version: version.name,
-                            path: rootPath,
-                            documentRootIds: rootLandingPage.taskableDocumentRootIds,
-                            pages: [rootLandingPage.tree]
-                        };
-                    }
-                    const pages = this.pages.filter((page) => page.parentPath === rootPath);
-                    return {
-                        version: version.name,
-                        path: rootPath,
-                        pages: pages.map((page) => page.tree)
-                    };
-                })
-            };
-        });
-    }
-
     @action
     loadPageIndex(force: boolean = false) {
         if (!force && this._pageIndex.length > 0) {
