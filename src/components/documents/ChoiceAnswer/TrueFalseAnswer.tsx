@@ -1,13 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import ChoiceAnswer, { ChoiceAnswerProps } from '.';
-import { QuizContext } from './Quiz';
 import React from 'react';
 
 const TrueFalseAnswer = observer((props: ChoiceAnswerProps) => {
-    const parentProps = React.useContext(QuizContext);
-
     return (
-        <ChoiceAnswer {...props} randomizeOptions={props.randomizeOptions || parentProps.randomizeTrueFalse}>
+        <ChoiceAnswer {...props} randomizeOptions={false}>
             <ChoiceAnswer.Before>{props.children}</ChoiceAnswer.Before>
             <ChoiceAnswer.Options>
                 <ChoiceAnswer.Option optionIndex={0}>Richtig</ChoiceAnswer.Option>

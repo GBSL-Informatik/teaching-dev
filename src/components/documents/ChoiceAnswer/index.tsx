@@ -69,6 +69,15 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const randomizeOptions = parentProps.randomizeOptions || props.randomizeOptions;
     const isBrowser = useIsBrowser();
 
+    React.useEffect(() => {
+        if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
+            doc?.updateOptionOrders({
+                ...doc.data.optionOrders,
+                [questionIndex]: createRandomOrderMap(props.numOptions)
+            });
+        }
+    }, [randomizeOptions, doc, questionIndex, props.numOptions]);
+
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
     }
@@ -103,12 +112,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         parentProps.randomizeQuestions && parentProps.questionOrder
             ? parentProps.questionOrder[questionIndex]
             : questionIndex;
-    if (randomizeOptions && !doc.data.optionOrders?.[questionIndex]) {
-        doc.updateOptionOrders({
-            ...doc.data.optionOrders,
-            [questionIndex]: createRandomOrderMap(props.numOptions)
-        });
-    }
 
     const questionNumberToDisplay =
         (parentProps.randomizeQuestions

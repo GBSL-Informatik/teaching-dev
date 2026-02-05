@@ -46,16 +46,18 @@ const Quiz = observer((props: Props) => {
 
     const [focussedQuestion, setFocussedQuestion] = React.useState(0);
 
+    React.useEffect(() => {
+        if (props.randomizeQuestions && !doc?.data.questionOrder) {
+            doc?.updateQuestionOrder(createRandomOrderMap(props.numQuestions));
+        }
+    }, [props.randomizeQuestions, doc, props.numQuestions]);
+
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
     }
 
     if (!isBrowser) {
         return <Loader />;
-    }
-
-    if (props.randomizeQuestions && !doc.data.questionOrder) {
-        doc.updateQuestionOrder(createRandomOrderMap(props.numQuestions));
     }
 
     return (

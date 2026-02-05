@@ -106,7 +106,6 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @action
     updateQuestionOrder(questionOrder: ChoiceAnswerQuestionOrder): void {
-        console.log('Updating question order to', questionOrder);
         this.updatedAt = new Date();
         this.questionOrder = questionOrder;
         this.saveNow();
