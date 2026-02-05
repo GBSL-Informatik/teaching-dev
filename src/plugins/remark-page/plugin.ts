@@ -1,6 +1,6 @@
 import type { Plugin, Transformer } from 'unified';
 import type { MdxJsxFlowElement } from 'mdast-util-mdx';
-import type { Node, Root } from 'mdast';
+import type { Root } from 'mdast';
 import { toJsxAttribute } from '../helpers';
 
 /**
@@ -8,7 +8,7 @@ import { toJsxAttribute } from '../helpers';
  * This is useful to initialize a page model on page load and to trigger side-effects on page display,
  * as to load models attached to the `page_id`'s root document.
  */
-const plugin: Plugin<any, Root> = function plugin(): Transformer<Root> {
+const plugin: Plugin<unknown[], Root> = function plugin(): Transformer<Root> {
     return async (root, file) => {
         const { visit, EXIT } = await import('unist-util-visit');
         const { page_id } = (file.data?.frontMatter || {}) as { page_id?: string };
