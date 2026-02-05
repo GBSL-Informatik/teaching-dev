@@ -7,6 +7,7 @@ import Canvas from './Graphics/Canvas';
 import Graphics from './Graphics';
 import BrythonCommunicator from './BrythonCommunicator';
 import Script from '@tdev/brython-code/models/Script';
+import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
 
 interface Props {
     code: Script;
@@ -27,7 +28,10 @@ const getNearestScrollParent = (el: HTMLElement | null): HTMLElement | null => {
 const Meta = observer((props: Props) => {
     const { code } = props;
     const pageStore = useStore('pageStore');
+    const viewStore = useStore('viewStore');
 
+    const fullscreenTargetId = useFullscreenTargetId();
+    const isFullscreen = viewStore.isFullscreenTarget(fullscreenTargetId);
     const ref = React.useRef<HTMLDivElement>(null);
     const parentRef = React.useMemo(() => {
         if (ref.current && pageStore.runningTurtleScriptId === code.id) {
@@ -38,17 +42,18 @@ const Meta = observer((props: Props) => {
     if (code.lang !== 'python') {
         return null;
     }
+    const scrollOffsetY = isFullscreen ? undefined : parentRef?.scrollTop;
     return (
         <>
             <div id={DOM_ELEMENT_IDS.outputDiv(code.codeId)} ref={ref}></div>
             {code.graphicsModalExecutionNr > 0 && (
                 <>
                     {code.hasTurtleOutput && pageStore.runningTurtleScriptId === code.id && (
-                        <Turtle code={code} scrollOffsetY={parentRef?.scrollTop} />
+                        <Turtle code={code} scrollOffsetY={scrollOffsetY} />
                     )}
-                    {code.hasCanvasOutput && <Canvas code={code} scrollOffsetY={parentRef?.scrollTop} />}
+                    {code.hasCanvasOutput && <Canvas code={code} scrollOffsetY={scrollOffsetY} />}
                     {!code.hasCanvasOutput && !code.hasTurtleOutput && (
-                        <Graphics code={code} scrollOffsetY={parentRef?.scrollTop} />
+                        <Graphics code={code} scrollOffsetY={scrollOffsetY} />
                     )}
                 </>
             )}
