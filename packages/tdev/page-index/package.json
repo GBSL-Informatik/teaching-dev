@@ -3,11 +3,12 @@
     "version": "1.0.0",
     "main": "index.ts",
     "types": "index.ts",
-    "dependencies": { },
+    "dependencies": {},
     "devDependencies": {
-        "vitest": "*",
+        "@docusaurus/core": "*",
         "@docusaurus/module-type-aliases": "*",
-        "@docusaurus/core": "*"
+        "@types/better-sqlite3": "^7.6.13",
+        "better-sqlite3": "^12.6.2"
     },
     "peerDependencies": {
         "@tdev/core": "1.0.0"
