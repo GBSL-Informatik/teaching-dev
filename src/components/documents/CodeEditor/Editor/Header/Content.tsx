@@ -30,6 +30,9 @@ const Content = observer(<T extends CodeType>(props: Props<T>) => {
                 targetId={targetId}
                 adminOnly={!showFullscreenButton}
                 className={clsx(styles.fullscreenButton)}
+                onFullscreenChange={() => {
+                    code.stopExecution();
+                }}
             />
             {notifyUnpersisted && (
                 <Icon

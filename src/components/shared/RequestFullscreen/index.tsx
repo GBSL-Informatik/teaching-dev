@@ -13,6 +13,7 @@ interface Props {
     color?: Color | string;
     adminOnly?: boolean;
     className?: string;
+    onFullscreenChange?: (isFullscreen: boolean) => void;
 }
 
 const RequestFullscreen = observer((props: Props) => {
@@ -28,8 +29,10 @@ const RequestFullscreen = observer((props: Props) => {
             onClick={() => {
                 if (viewStore.isFullscreenTarget(id)) {
                     viewStore.exitFullscreen();
+                    props.onFullscreenChange?.(false);
                 } else {
                     viewStore.requestFullscreen(id);
+                    props.onFullscreenChange?.(true);
                 }
             }}
             className={props.className}
