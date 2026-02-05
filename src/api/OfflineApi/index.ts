@@ -239,6 +239,7 @@ export default class OfflineApi {
                                 ) || []
                         };
                     }) as unknown as T;
+                    log('-> get', url, documenRoots);
                     return resolveResponse(documenRoots);
                 }
                 return resolveResponse([OfflineUser] as unknown as T);

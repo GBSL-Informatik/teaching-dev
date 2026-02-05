@@ -87,7 +87,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
                 }
                 if (userStore.isUserSwitched) {
                     documentRootStore.loadInNextBatch(id, meta, {
-                        documentRoot: false,
+                        documentRoot: 'addIfMissing',
                         skipCreate: true
                     });
                 } else {

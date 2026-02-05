@@ -80,9 +80,9 @@ abstract class iDocumentContainer<Type extends ContainerType> extends iDocument<
             this.documentRootId,
             undefined /* meta is only needed when you want to create a "default" document */,
             {
-                userPermissions: false /* already present from this container */,
-                groupPermissions: false /* already present from this container */,
-                documentRoot: false /* already present from this container */,
+                userPermissions: false /* already present for this container */,
+                groupPermissions: false /* already present for this container */,
+                documentRoot: false /* already present for this container */,
                 skipCreate: true,
                 documents: true
             }

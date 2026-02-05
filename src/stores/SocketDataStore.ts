@@ -260,7 +260,7 @@ export class SocketDataStore extends iStore<'ping'> {
                     this.root.documentRootStore.addApiResultToStore(docRoot, {
                         meta: current.meta,
                         load: {
-                            documentRoot: true,
+                            documentRoot: 'replace',
                             documents: NoneAccess.has(
                                 current.permission
                             ) /** only load the documents, when the current permission is None */,

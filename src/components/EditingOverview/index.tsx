@@ -62,7 +62,7 @@ const EditingOverview = observer(() => {
     if (!isBrowser || !currentUser || !currentPage) {
         return null;
     }
-    const taskStates = currentPage.editingState.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
+    const taskStates = currentPage.taskableDocuments.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
     if (taskStates.length === 0) {
         return null;
     }
@@ -78,7 +78,7 @@ const EditingOverview = observer(() => {
                         </div>
                     }
                     onOpen={() => {
-                        currentPage.loadLinkedDocumentRoots();
+                        currentPage.loadLinkedDocumentRoots(true);
                     }}
                     contentStyle={{
                         position: 'fixed'

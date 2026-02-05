@@ -4,6 +4,7 @@ import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
 import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
+import { orderBy } from 'es-toolkit/array';
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
@@ -102,6 +103,21 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
+    get pages() {
+        return this.store.root.pageStore.pages.filter((p) => p.documentRootConfigs.has(this.id));
+    }
+
+    /**
+     * Map of page paths to their position in this document root
+     */
+    @computed
+    get pagePositions() {
+        return new Map<string, number>(
+            this.pages.map((p) => [p.path, p.documentRootConfigs.get(this.id)!.position])
+        );
+    }
+
+    @computed
     get permissions() {
         return [...this.store.currentUsersPermissions(this.id)];
     }
@@ -165,9 +181,11 @@ class DocumentRoot<T extends DocumentType> {
      */
     @computed
     get mainDocuments(): TypeModelMapping[T][] {
-        const docs = this.documents
-            .filter((d) => d.isMain)
-            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()) as TypeModelMapping[T][];
+        const docs = orderBy(
+            this.documents.filter((d) => d.isMain),
+            ['createdAt', 'id'],
+            ['asc', 'asc']
+        ) as TypeModelMapping[T][];
         if (this.isDummy) {
             return docs;
         }

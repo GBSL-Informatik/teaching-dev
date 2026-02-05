@@ -21,11 +21,7 @@ const ContentWrapper = observer((props: Props): React.ReactNode => {
         };
     }, [pageStore.current, location.pathname]);
 
-    return (
-        <>
-            <Content {...props} />
-        </>
-    );
+    return <Content {...props} />;
 });
 
 export default ContentWrapper;

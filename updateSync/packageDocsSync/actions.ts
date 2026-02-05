@@ -27,6 +27,9 @@ const DEFAULT_README_CONFIG: Omit<TdevPackageConfig['docs'], 'org' | 'package'> 
         'README.mdx',
         '_category_.yml',
         '_category_.json',
+        'assets/',
+        'images/',
+        'img/',
         'assets/**',
         'images/**',
         'img/**'

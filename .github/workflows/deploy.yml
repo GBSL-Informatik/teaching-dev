@@ -19,15 +19,15 @@ jobs:
         with:
           node-version: '>=24.13.0'
           cache: yarn
-      - name: Install dependencies and build website
+      - name: Install dependencies
+        run: yarn install
+      - name: Build Site
         env:
           APP_URL: ${{ secrets.APP_URL }}
           BACKEND_URL: ${{ secrets.BACKEND_URL }}
           GH_OAUTH_CLIENT_ID: ${{ vars.GH_OAUTH_CLIENT_ID}}
           SITE_CONFIG_PATH: ${{ vars.SITE_CONFIG_PATH }}
-        run: |
-            yarn install
-            yarn build
+        run: yarn build
         working-directory: .
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3

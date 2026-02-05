@@ -32,6 +32,7 @@ import {
   socketIoNoDepWarningsPluginConfig,
   aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
+import pageIndexPlugin from './packages/tdev/page-index/plugin';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
 import {
@@ -383,7 +384,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             ...(siteConfig.pages || {})
           }
         ],
-        ...((siteConfig.plugins as Config['plugins']) || [])
+        ...((siteConfig.plugins as Config['plugins']) || []),
+        pageIndexPlugin
       ],
       themes: [
         '@docusaurus/theme-mermaid',

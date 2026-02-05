@@ -17,8 +17,8 @@ const TemplateCode = observer((props: Props) => {
     if (!current) {
         return null;
     }
-    const code = templateReplacer(props.code, pageStore.current?.dynamicValues);
-    const metastring = templateReplacer(props.codeAttributes?.meta, pageStore.current?.dynamicValues);
+    const code = templateReplacer(props.code, current.dynamicValues);
+    const metastring = templateReplacer(props.codeAttributes?.meta, current.dynamicValues);
     return (
         <CodeBlock language={props.codeAttributes?.lang} metastring={metastring}>
             {code}
