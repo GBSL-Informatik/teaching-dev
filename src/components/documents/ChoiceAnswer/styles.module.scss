@@ -46,7 +46,7 @@
 }
 
 .optionsBlock {
-    $btnRemoveAnswerTransitionDuration: 0.2s;
+    $btnRemoveAnswerTransitionDuration: 0.15s;
 
     &:not(:last-child) {
         margin-bottom: 1em;
