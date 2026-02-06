@@ -63,6 +63,7 @@ const Quiz = observer((props: Props) => {
     return (
         <QuizContext.Provider
             value={{
+                doc,
                 id: props.id,
                 readonly: props.readonly,
                 hideQuestionNumbers: props.hideQuestionNumbers,
@@ -70,8 +71,7 @@ const Quiz = observer((props: Props) => {
                 questionOrder: doc.data.questionOrder,
                 randomizeOptions: props.randomizeOptions,
                 focussedQuestion: focussedQuestion,
-                setFocussedQuestion: setFocussedQuestion,
-                doc
+                setFocussedQuestion: setFocussedQuestion
             }}
         >
             <div className={styles.quizContainer}>{props.children}</div>

@@ -59,8 +59,7 @@ const ChoiceAnswerContext = React.createContext({
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const parentProps = React.useContext(QuizContext);
     const [meta] = React.useState(new ModelMeta(props));
-    const id = parentProps.id || props.id;
-    const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(id, meta);
+    const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(props.id, meta);
     const questionIndex = props.questionIndex ?? 0;
     const randomizeOptions =
         props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
@@ -154,15 +153,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     );
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
-ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
+ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
     const { doc, questionIndex, multiple, randomizeOptions, onChange } =
         React.useContext(ChoiceAnswerContext);
 
     const optionId = React.useId();
 
-    const isChecked = React.useMemo(() => {
-        return doc?.choices[questionIndex]?.includes(optionIndex);
-    }, [doc?.choices[questionIndex], optionIndex]);
+    const isChecked = !!doc?.choices[questionIndex]?.includes(optionIndex);
 
     const optionOrder = React.useMemo(
         () =>
@@ -183,14 +180,14 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
             <input
                 type={multiple ? 'checkbox' : 'radio'}
                 id={optionId}
-                name={optionId}
+                name={optionId} // Use a radioGroup name here to make sure keyboard navigation still works.
                 value={optionId}
                 onChange={(e) => onChange(optionIndex, e.target.checked)}
                 checked={isChecked}
-                disabled={doc?.meta.readonly /* TODO: Use doc.canEdit */}
+                disabled={!doc?.canEdit}
             />
             <label htmlFor={optionId}>{children}</label>
-            {!multiple && !doc?.meta.readonly /* TODO: Use doc.canEdit */ && isChecked && (
+            {!multiple && doc?.canEdit && isChecked && (
                 <Button
                     text="Löschen"
                     color="danger"
@@ -203,7 +200,7 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
             )}
         </div>
     );
-};
+});
 
 ChoiceAnswer.Before = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
