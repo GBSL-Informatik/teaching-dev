@@ -106,6 +106,11 @@ export class PageStore extends iStore {
                     this._pageIndex = data.documentRoots;
                 })
             )
+            .then(() => {
+                if (this.currentPath) {
+                    this.loadTaskableDocuments(this.currentStudentGroupName);
+                }
+            })
             .catch((err) => {
                 console.error('Failed to load page index', err);
             });
