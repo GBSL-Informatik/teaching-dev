@@ -12,6 +12,10 @@ import globalData from '@generated/globalData';
 const ensureTrailingSlash = (str: string) => {
     return str.endsWith('/') ? str : `${str}/`;
 };
+const ensureLeadingSlash = (str: string) => {
+    return str.startsWith('/') ? str : `/${str}`;
+};
+const BasePathRegex = new RegExp(`^${siteConfig.baseUrl}`, 'i');
 export const AUTO_GENERATED_PAGE_PREFIX = '__auto_generated__';
 export const SidebarVersions = (
     globalData['docusaurus-plugin-content-docs'].default as GlobalPluginData
@@ -43,12 +47,14 @@ interface PagesIndex {
 export class PageStore extends iStore {
     readonly root: RootStore;
 
-    pages = observable<Page>([]);
+    pages = observable<Page>([], { deep: false });
 
     @observable accessor currentPageId: string | undefined = undefined;
     @observable accessor runningTurtleScriptId: string | undefined = undefined;
 
     @observable.ref accessor _pageIndex: PageIndex[] = [];
+    @observable accessor currentPath: string | undefined = undefined;
+    loadedPageIndices = new Set<string>();
 
     constructor(store: RootStore) {
         super();
@@ -64,9 +70,14 @@ export class PageStore extends iStore {
         return this.pages.filter((page) => page.isLandingpage);
     }
 
+    @computed
+    get isPageIndexLoaded() {
+        return this._pageIndex.length > 0;
+    }
+
     @action
     loadPageIndex(force: boolean = false) {
-        if (!force && this._pageIndex.length > 0) {
+        if (!force && this.isPageIndexLoaded) {
             return Promise.resolve();
         }
         return fetch(`${siteConfig.baseUrl}tdev-artifacts/page-progress-state/pageIndex.json`)
@@ -95,24 +106,64 @@ export class PageStore extends iStore {
                     this._pageIndex = data.documentRoots;
                 })
             )
-            .then(() => {
-                this.loadTaskableDocuments();
-            })
             .catch((err) => {
                 console.error('Failed to load page index', err);
             });
     }
 
     @action
-    loadTaskableDocuments() {
-        this.pages.forEach((page) => {
-            page.taskableDocumentRootIds.forEach((id) => {
-                this.root.documentRootStore.loadInNextBatch(id, undefined, {
-                    skipCreate: true,
-                    documentRoot: 'addIfMissing'
+    setCurrentPath(path: string | undefined) {
+        if (path === this.currentPath) {
+            return;
+        }
+        if (!path) {
+            this.currentPath = undefined;
+            return;
+        }
+        this.currentPath = path.replace(BasePathRegex, '/');
+        if (this.isPageIndexLoaded) {
+            this.loadTaskableDocuments(this.currentStudentGroupName);
+        }
+        this.resetPagesStudentGroups();
+    }
+
+    @action
+    resetPagesStudentGroups() {
+        this.pages
+            .filter((p) => p.hasCustomPrimaryStudentGroup)
+            .forEach((p) => p.setPrimaryStudentGroupName(undefined));
+    }
+
+    @computed
+    get currentPathParts() {
+        if (!this.currentPath) {
+            return [];
+        }
+        return this.currentPath.split('/').filter((p) => p.length > 0);
+    }
+
+    @computed
+    get currentStudentGroupName() {
+        return this.currentPathParts[0];
+    }
+
+    @action
+    loadTaskableDocuments(pathPrefix: string | undefined, force?: boolean) {
+        const prefix = ensureLeadingSlash(ensureTrailingSlash(pathPrefix ?? ''));
+        if (!force && this.loadedPageIndices.has(prefix)) {
+            return;
+        }
+        this.loadedPageIndices.add(prefix);
+        this.pages
+            .filter((p) => p.path.startsWith(prefix))
+            .forEach((page) => {
+                page.taskableDocumentRootIds.forEach((id) => {
+                    this.root.documentRootStore.loadInNextBatch(id, undefined, {
+                        skipCreate: true,
+                        documentRoot: 'addIfMissing'
+                    });
                 });
             });
-        });
     }
 
     find = computedFn(

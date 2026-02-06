@@ -198,7 +198,7 @@ export default class OfflineApi {
                     log('-> post', url, documenRoots);
                     return resolveResponse(documenRoots);
                 }
-                return resolveResponse([OfflineUser] as unknown as T);
+                return resolveResponse([] as unknown as T);
             case 'documents':
                 if (url === 'documents/multiple') {
                     const documentRootIds = new Set((data as { documentRootIds: string[] }).documentRootIds);
@@ -284,6 +284,8 @@ export default class OfflineApi {
                 return resolveResponse(
                     (await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE)) as unknown as T
                 );
+            case 'users':
+                return resolveResponse([OfflineUser] as unknown as T);
             case 'documentRoots':
                 if (parts[0] === 'permissions') {
                     return resolveResponse({
