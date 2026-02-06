@@ -46,11 +46,13 @@ const ChoiceAnswerContext = React.createContext({
     doc: undefined,
     questionIndex: 0,
     multiple: false,
+    randomizeOptions: false,
     onChange: () => {}
 } as {
     doc?: ChoiceAnswerDocument;
     questionIndex: number;
     multiple?: boolean;
+    randomizeOptions?: boolean;
     onChange: (optionIndex: number, checked: boolean) => void;
 });
 
@@ -60,7 +62,8 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const id = parentProps.id || props.id;
     const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(id, meta);
     const questionIndex = props.questionIndex ?? 0;
-    const randomizeOptions = parentProps.randomizeOptions || props.randomizeOptions; // TODO: Let local props override quiz-level props instead of just using OR logic.
+    const randomizeOptions =
+        props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
     const isBrowser = useIsBrowser();
 
     React.useEffect(() => {
@@ -139,6 +142,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                         doc: doc,
                         questionIndex: questionIndex,
                         multiple: props.multiple,
+                        randomizeOptions: randomizeOptions,
                         onChange: onOptionChange
                     }}
                 >
@@ -151,7 +155,8 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
 ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
-    const { doc, questionIndex, multiple, onChange } = React.useContext(ChoiceAnswerContext);
+    const { doc, questionIndex, multiple, randomizeOptions, onChange } =
+        React.useContext(ChoiceAnswerContext);
 
     const optionId = React.useId();
 
@@ -159,9 +164,9 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
         return doc?.choices[questionIndex]?.includes(optionIndex);
     }, [doc?.choices[questionIndex], optionIndex]);
 
-    const applicableOptionOrder = React.useMemo(
+    const optionOrder = React.useMemo(
         () =>
-            doc?.optionOrders[questionIndex] !== undefined
+            randomizeOptions && doc?.optionOrders[questionIndex] !== undefined
                 ? doc?.optionOrders[questionIndex][optionIndex]
                 : optionIndex,
         [doc?.optionOrders[questionIndex], questionIndex, optionIndex]
@@ -172,7 +177,7 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
             key={optionId}
             className={clsx(styles.choiceAnswerOptionContainer)}
             style={{
-                order: applicableOptionOrder
+                order: optionOrder
             }}
         >
             <input
