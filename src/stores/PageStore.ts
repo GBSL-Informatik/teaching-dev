@@ -174,7 +174,7 @@ export class PageStore extends iStore {
         if (!pathPrefix) {
             return;
         }
-        const prefix = ensureLeadingSlash(ensureTrailingSlash(pathPrefix ?? ''));
+        const prefix = ensureLeadingSlash(ensureTrailingSlash(pathPrefix));
         const isVersion =
             prefix === '/'
                 ? (p: string) => {

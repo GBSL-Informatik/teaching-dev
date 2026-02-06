@@ -80,7 +80,8 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
             .replace(/\/(index|README)\.mdx?$/i, '/')
             .replace(/\.mdx?$/i, '/')
             .replace(TdevRootRegex, '')
-            .replace(/^\/versioned_docs\/version-/, '/');
+            .replace(/^\/versioned_docs\/version-/, '/')
+            .replace(/\/\d+-(?=.)/g, '/'); // (?=.) is a lookahead to avoid replacing version numbers in the middle of the path)
         slugCountMap.set(filePath, 1);
 
         insertDocRoot.run({
