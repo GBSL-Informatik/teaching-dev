@@ -46,13 +46,11 @@ const ChoiceAnswerContext = React.createContext({
     doc: undefined,
     questionIndex: 0,
     multiple: false,
-    selectedChoices: [],
     onChange: () => {}
 } as {
     doc?: ChoiceAnswerDocument;
     questionIndex: number;
     multiple?: boolean;
-    selectedChoices: number[];
     onChange: (optionIndex: number, checked: boolean) => void;
 });
 
@@ -62,7 +60,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const id = parentProps.id || props.id;
     const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(id, meta);
     const questionIndex = props.questionIndex ?? 0;
-    const randomizeOptions = parentProps.randomizeOptions || props.randomizeOptions;
+    const randomizeOptions = parentProps.randomizeOptions || props.randomizeOptions; // TODO: Let local props override quiz-level props instead of just using OR logic.
     const isBrowser = useIsBrowser();
 
     React.useEffect(() => {
@@ -141,7 +139,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                         doc: doc,
                         questionIndex: questionIndex,
                         multiple: props.multiple,
-                        selectedChoices: doc?.data.choices[questionIndex] || [],
                         onChange: onOptionChange
                     }}
                 >
@@ -154,18 +151,20 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
 ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
-    const { doc, questionIndex, multiple, selectedChoices, onChange } =
-        React.useContext(ChoiceAnswerContext);
+    const { doc, questionIndex, multiple, onChange } = React.useContext(ChoiceAnswerContext);
 
     const optionId = React.useId();
 
     const isChecked = React.useMemo(() => {
-        return selectedChoices.includes(optionIndex);
-    }, [selectedChoices, optionIndex]);
+        return doc?.choices[questionIndex]?.includes(optionIndex);
+    }, [doc?.choices[questionIndex], optionIndex]);
 
     const applicableOptionOrder = React.useMemo(
-        () => (doc?.optionOrders[questionIndex] !== undefined ? doc?.optionOrders[questionIndex][optionIndex] : optionIndex),
-        [doc?.optionOrders, questionIndex, optionIndex]
+        () =>
+            doc?.optionOrders[questionIndex] !== undefined
+                ? doc?.optionOrders[questionIndex][optionIndex]
+                : optionIndex,
+        [doc?.optionOrders[questionIndex], questionIndex, optionIndex]
     );
 
     return (
