@@ -249,9 +249,7 @@ export function update<Type extends DocumentType>(
  * TODO: would it be better to only grab documents from a specific student group?
  */
 export function allDocuments(documentRootIds: string[], signal: AbortSignal): AxiosPromise<Document<any>[]> {
-    return api.get(`/documents?${documentRootIds.map((id) => `rids=${id}`).join('&')}`, {
-        signal
-    });
+    return api.post('/documents/multiple', { documentRootIds }, { signal });
 }
 
 export function linkTo<Type extends DocumentType>(

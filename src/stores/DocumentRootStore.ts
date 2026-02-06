@@ -161,18 +161,12 @@ export class DocumentRootStore extends iStore {
             access: accessConfig || {}
         });
         this.loadQueued();
-        if (this.queued.size > 42) {
-            // max 2048 characters in URL - flush if too many
-            this.loadQueued.flush();
-        }
     }
 
     /**
      * load the documentRoots only
      * - after 20 ms of "silence" (=no further load-requests during this period)
      * - or after 25ms have elapsed
-     * - or when more then 42 records are queued (@see loadInNextBatch)
-     *    (otherwise the URL maxlength would be reached)
      */
     loadQueued = _.debounce(action(this._loadQueued), 25, {
         leading: false,
@@ -192,12 +186,6 @@ export class DocumentRootStore extends iStore {
         }
         const batch = [...this.queued];
         this.queued.clear();
-        if (batch.length > 42) {
-            const postponed = batch.splice(42);
-            postponed.forEach((item) => this.queued.set(item[0], item[1]));
-            this.loadQueued();
-            console.log('Postponing', postponed.length, 'document roots for next batch');
-        }
         const currentBatch = new Map(batch);
         /**
          * if the user is not logged in, we can't load the documents

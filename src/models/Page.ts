@@ -113,9 +113,18 @@ export default class Page {
             .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
     }
 
+    @computed
+    get primaryStudentGroupName() {
+        return this._primaryStudentGroupName ?? this.store.currentStudentGroupName;
+    }
+
     @action
     setPrimaryStudentGroupName(name?: string) {
         this._primaryStudentGroupName = name;
+    }
+
+    get hasCustomPrimaryStudentGroup() {
+        return !!this._primaryStudentGroupName;
     }
 
     @computed

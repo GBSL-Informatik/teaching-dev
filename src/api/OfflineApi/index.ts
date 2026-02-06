@@ -159,14 +159,56 @@ export default class OfflineApi {
 
     // Method to handle POST requests
     async post<T = any>(url: string, data: T, ...config: any): AxiosPromise<T> {
-        const { model, id, query } = urlParts(url);
+        const { model, id, query, parts } = urlParts(url);
         log('post', url, data);
         switch (model) {
             case 'admin':
                 return resolveResponse(data as unknown as T);
             case 'cms':
                 return resolveResponse({} as unknown as T);
+            case 'users':
+                if (parts.length === 1 && parts[0] === 'documentRoots') {
+                    const { documentRootIds, type } = data as {
+                        documentRootIds: string[];
+                        type?: DocumentType;
+                    };
+                    if (documentRootIds.length === 0) {
+                        resolveResponse([] as unknown as T);
+                    }
+                    const documentRootDocs = await Promise.all(
+                        documentRootIds.map((id) => this.documentsBy(id))
+                    );
+                    const filteredDocs = type
+                        ? documentRootDocs.map((docs) => docs.filter((doc) => doc.type === type))
+                        : documentRootDocs;
+
+                    const documenRoots = documentRootIds.map((rid) => {
+                        return {
+                            id: rid,
+                            access: Access.RW_DocumentRoot,
+                            sharedAccess: Access.RW_DocumentRoot,
+                            userPermissions: [],
+                            groupPermissions: [],
+                            documents:
+                                filteredDocs.find(
+                                    (docs) => docs.length > 0 && docs[0].documentRootId === rid
+                                ) || []
+                        };
+                    }) as unknown as T;
+                    log('-> post', url, documenRoots);
+                    return resolveResponse(documenRoots);
+                }
+                return resolveResponse([] as unknown as T);
             case 'documents':
+                if (url === 'documents/multiple') {
+                    const documentRootIds = new Set((data as { documentRootIds: string[] }).documentRootIds);
+                    const allDocuments = await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE);
+
+                    const filteredDocuments = allDocuments.filter((doc) =>
+                        documentRootIds.has(doc.documentRootId)
+                    );
+                    return resolveResponse(filteredDocuments as unknown as T);
+                }
                 const document = await this.upsertDocumentRecord<any>(
                     data as Partial<Document<any>>,
                     query.has('uniqueMain')
@@ -214,35 +256,6 @@ export default class OfflineApi {
         switch (model) {
             case 'user':
                 return resolveResponse(OfflineUser as unknown as T);
-            case 'users':
-                if (parts.length === 1 && parts[0] === 'documentRoots') {
-                    const ids = query.getAll('ids');
-                    const docType = query.get('type') as DocumentType | null;
-                    if (ids.length === 0) {
-                        resolveResponse([] as unknown as T);
-                    }
-                    const documentRootDocs = await Promise.all(ids.map((id) => this.documentsBy(id)));
-                    const filteredDocs = docType
-                        ? documentRootDocs.map((docs) => docs.filter((doc) => doc.type === docType))
-                        : documentRootDocs;
-
-                    const documenRoots = ids.map((rid) => {
-                        return {
-                            id: rid,
-                            access: Access.RW_DocumentRoot,
-                            sharedAccess: Access.RW_DocumentRoot,
-                            userPermissions: [],
-                            groupPermissions: [],
-                            documents:
-                                filteredDocs.find(
-                                    (docs) => docs.length > 0 && docs[0].documentRootId === rid
-                                ) || []
-                        };
-                    }) as unknown as T;
-                    log('-> get', url, documenRoots);
-                    return resolveResponse(documenRoots);
-                }
-                return resolveResponse([OfflineUser] as unknown as T);
             case 'admin':
                 return resolveResponse([] as unknown as T);
             case 'allowedActions':
@@ -255,6 +268,7 @@ export default class OfflineApi {
                     }
                     return resolveResponse(null);
                 }
+                // TODO: is this needed/used at all?
                 if (query.has('ids')) {
                     const ids = query.getAll('ids');
                     const filteredDocuments: Document<any>[] = [];
@@ -266,19 +280,12 @@ export default class OfflineApi {
                     }
                     return resolveResponse(filteredDocuments as unknown as T);
                 }
-                if (query.has('rids')) {
-                    const rids = query.getAll('rids');
-
-                    const allDocuments = await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE);
-
-                    const filteredDocuments = allDocuments.filter((doc) => rids.includes(doc.documentRootId));
-
-                    return resolveResponse(filteredDocuments as unknown as T);
-                }
 
                 return resolveResponse(
                     (await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE)) as unknown as T
                 );
+            case 'users':
+                return resolveResponse([OfflineUser] as unknown as T);
             case 'documentRoots':
                 if (parts[0] === 'permissions') {
                     return resolveResponse({

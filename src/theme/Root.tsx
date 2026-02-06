@@ -6,7 +6,7 @@ import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
 import { reaction } from 'mobx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useHistory } from '@docusaurus/router';
+import { useHistory, useLocation } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
 import { getOfflineUser } from '@tdev-api/OfflineApi';
@@ -219,6 +219,15 @@ const DevGlobalDataTracker = observer(() => {
     return null;
 });
 
+const VisitedPagesTracker = observer(() => {
+    const location = useLocation();
+    const pageStore = useStore('pageStore');
+    React.useEffect(() => {
+        pageStore.setCurrentPath(location.pathname);
+    }, [location]);
+    return null;
+});
+
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
 
@@ -246,6 +255,7 @@ function Root({ children }: { children: React.ReactNode }) {
                 <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
                 <DevGlobalDataTracker />
+                <VisitedPagesTracker />
                 {children}
             </StoresProvider>
         </>
