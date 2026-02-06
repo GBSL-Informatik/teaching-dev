@@ -46,6 +46,8 @@
 }
 
 .optionsBlock {
+    $btnRemoveAnswerTransitionDuration: 0.2s;
+
     &:not(:last-child) {
         margin-bottom: 1em;
     }
@@ -67,10 +69,22 @@
                 margin-left: 0.2em;
             }
 
-            .btnDeleteAnswer {
-                margin-left: 0.7em;
-                font-size: 0.8em;
+            &:hover .btnDeleteAnswer {
+                opacity: 1;
+                transition: opacity $btnRemoveAnswerTransitionDuration;
             }
+        }
+
+        .btnDeleteAnswer {
+            margin-left: 0.7em;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity $btnRemoveAnswerTransitionDuration;
+        }
+
+        &:hover .btnDeleteAnswer {
+            opacity: 0.6;
+            transition: opacity $btnRemoveAnswerTransitionDuration;
         }
     }
 }
