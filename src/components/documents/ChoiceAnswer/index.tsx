@@ -1,5 +1,5 @@
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import clsx from 'clsx';
@@ -43,7 +43,7 @@ type ChoiceAnswerSubComponents = {
 };
 
 const ChoiceAnswerContext = React.createContext({
-    id: '',
+    doc: undefined,
     questionIndex: 0,
     multiple: false,
     readonly: false,
@@ -51,7 +51,7 @@ const ChoiceAnswerContext = React.createContext({
     optionOrder: undefined,
     onChange: () => {}
 } as {
-    id: string;
+    doc?: ChoiceAnswerDocument;
     questionIndex: number;
     multiple?: boolean;
     readonly?: boolean;
@@ -142,7 +142,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                 {beforeBlock}
                 <ChoiceAnswerContext.Provider
                     value={{
-                        id: id,
+                        doc: doc,
                         questionIndex: questionIndex,
                         multiple: props.multiple,
                         readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
@@ -160,16 +160,18 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
 ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
-    const parentProps = React.useContext(ChoiceAnswerContext);
+    const { doc, questionIndex, multiple, selectedChoices, optionOrder, onChange } =
+        React.useContext(ChoiceAnswerContext);
+
     const optionId = React.useId();
 
     const isChecked = React.useMemo(() => {
-        return parentProps.selectedChoices.includes(optionIndex);
-    }, [parentProps.selectedChoices, optionIndex]);
+        return selectedChoices.includes(optionIndex);
+    }, [selectedChoices, optionIndex]);
 
-    const optionOrder = React.useMemo(
-        () => (parentProps.optionOrder !== undefined ? parentProps.optionOrder[optionIndex] : optionIndex),
-        [parentProps.optionOrder, optionIndex]
+    const applicableOptionOrder = React.useMemo(
+        () => (optionOrder !== undefined ? optionOrder[optionIndex] : optionIndex),
+        [optionOrder, optionIndex]
     );
 
     return (
@@ -177,27 +179,27 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
             key={optionId}
             className={clsx(styles.choiceAnswerOptionContainer)}
             style={{
-                order: optionOrder
+                order: applicableOptionOrder
             }}
         >
             <input
-                type={parentProps.multiple ? 'checkbox' : 'radio'}
+                type={multiple ? 'checkbox' : 'radio'}
                 id={optionId}
                 name={optionId}
                 value={optionId}
-                onChange={(e) => parentProps.onChange(optionIndex, e.target.checked)}
+                onChange={(e) => onChange(optionIndex, e.target.checked)}
                 checked={isChecked}
-                disabled={parentProps.readonly}
+                disabled={doc?.meta.readonly /* TODO: Use doc.canEdit */}
             />
             <label htmlFor={optionId}>{children}</label>
-            {!parentProps.multiple && !parentProps.readonly && isChecked && (
+            {!multiple && !doc?.meta.readonly /* TODO: Use doc.canEdit */ && isChecked && (
                 <Button
                     text="Löschen"
                     color="danger"
                     icon={mdiTrashCanOutline}
                     iconSide="left"
                     size={0.7}
-                    onClick={() => parentProps.onChange(optionIndex, false)}
+                    onClick={() => onChange(optionIndex, false)}
                     className={clsx(styles.btnDeleteAnswer)}
                 />
             )}
