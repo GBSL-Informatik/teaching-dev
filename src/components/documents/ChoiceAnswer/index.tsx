@@ -46,17 +46,13 @@ const ChoiceAnswerContext = React.createContext({
     doc: undefined,
     questionIndex: 0,
     multiple: false,
-    readonly: false,
     selectedChoices: [],
-    optionOrder: undefined,
     onChange: () => {}
 } as {
     doc?: ChoiceAnswerDocument;
     questionIndex: number;
     multiple?: boolean;
-    readonly?: boolean;
     selectedChoices: number[];
-    optionOrder?: { [originalOptionIndex: number]: number };
     onChange: (optionIndex: number, checked: boolean) => void;
 });
 
@@ -145,9 +141,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                         doc: doc,
                         questionIndex: questionIndex,
                         multiple: props.multiple,
-                        readonly: props.readonly || parentProps.readonly || !doc || doc.isDummy,
                         selectedChoices: doc?.data.choices[questionIndex] || [],
-                        optionOrder: randomizeOptions ? doc?.data.optionOrders[questionIndex] : undefined,
                         onChange: onOptionChange
                     }}
                 >
@@ -160,7 +154,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
 ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
-    const { doc, questionIndex, multiple, selectedChoices, optionOrder, onChange } =
+    const { doc, questionIndex, multiple, selectedChoices, onChange } =
         React.useContext(ChoiceAnswerContext);
 
     const optionId = React.useId();
@@ -170,8 +164,8 @@ ChoiceAnswer.Option = ({ optionIndex, children }: OptionProps) => {
     }, [selectedChoices, optionIndex]);
 
     const applicableOptionOrder = React.useMemo(
-        () => (optionOrder !== undefined ? optionOrder[optionIndex] : optionIndex),
-        [optionOrder, optionIndex]
+        () => (doc?.optionOrders[questionIndex] !== undefined ? doc?.optionOrders[questionIndex][optionIndex] : optionIndex),
+        [doc?.optionOrders, questionIndex, optionIndex]
     );
 
     return (
