@@ -3,10 +3,7 @@
     $container-padding-left-right: 1em;
 
     position: relative;
-    border-radius: 1em;
-    border: 1px solid var(--ifm-color-secondary);
     margin-bottom: 1em;
-    overflow: hidden;
 
     p {
         margin: 0 0 0.5em 0;
@@ -38,10 +35,6 @@
         .syncStatus {
             position: static;
         }
-    }
-
-    .content {
-        padding: $container-padding-top-bottom $container-padding-left-right;
     }
 }
 

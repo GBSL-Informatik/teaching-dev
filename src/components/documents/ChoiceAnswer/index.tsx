@@ -125,16 +125,16 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     );
 
     return (
-        <div className={styles.choiceAnswerContainer} style={{ order: questionOrder }}>
+        <div className={clsx('card', styles.choiceAnswerContainer)} style={{ order: questionOrder }}>
             {title && (
-                <div className={clsx(styles.header)}>
+                <div className={clsx('card__header', styles.header)}>
                     <span className={clsx(styles.title)}>{title}</span>
                     {syncStatus}
                 </div>
             )}
             {!title && syncStatus}
 
-            <div className={styles.content}>
+            <div className={clsx('card__body')}>
                 {beforeBlock}
                 <ChoiceAnswerContext.Provider
                     value={{
