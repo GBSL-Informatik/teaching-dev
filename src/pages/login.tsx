@@ -30,7 +30,7 @@ const LoginPage = observer(() => {
     const { data: session } = authClient.useSession();
     const signInPage = useBaseUrl('/signIn');
     if (session?.user || NO_AUTH) {
-        return <Redirect to={'/user'} />;
+        return <Redirect to={'/'} />;
     }
     return (
         <Layout>
@@ -81,7 +81,7 @@ const Login = observer(() => {
     const { data: session } = authClient.useSession();
 
     if (session?.user || NO_AUTH) {
-        return <Redirect to={'/user'} />;
+        return <Redirect to={'/'} />;
     }
     return <LoginPage />;
 });
