@@ -41,7 +41,7 @@ const LoginPage = observer(() => {
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'microsoft',
-                                callbackURL: `${APP_URL}/user`
+                                callbackURL: APP_URL
                             })
                         }
                         text="Schul-Account"
@@ -55,7 +55,7 @@ const LoginPage = observer(() => {
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'github',
-                                callbackURL: `${APP_URL}/user`
+                                callbackURL: APP_URL
                             })
                         }
                         text="Github"
