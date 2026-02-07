@@ -6,16 +6,11 @@ import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
 import {
     mdiArrowRightThin,
-    mdiBackupRestore,
     mdiCircle,
     mdiCloudQuestion,
     mdiDeleteEmptyOutline,
     mdiHarddiskRemove,
-    mdiLogout,
-    mdiMoonWaxingCrescent,
-    mdiRefresh,
-    mdiThemeLightDark,
-    mdiWhiteBalanceSunny
+    mdiLogout
 } from '@mdi/js';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
@@ -23,11 +18,8 @@ import Button from '@tdev-components/shared/Button';
 import Loader from '@tdev-components/Loader';
 import DefinitionList from '@tdev-components/DefinitionList';
 import Icon from '@mdi/react';
-import UserTable from '@tdev-components/Admin/UserTable';
 import NavReloadRequest from '@tdev-components/Admin/ActionRequest/NavReloadRequest';
-import Storage from '@tdev-stores/utils/Storage';
-import { AuthProviderColor, AuthProviderIcons, logout } from '@tdev-api/user';
-import SelectInput from '@tdev-components/shared/SelectInput';
+import { AuthProviderColor, AuthProviderIcons } from '@tdev-api/user';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Badge from '@tdev-components/shared/Badge';
@@ -35,7 +27,6 @@ import { SIZE_M, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import api from '@tdev-api/base';
 import { authClient } from '@tdev/auth-client';
-import useCodeTheme from '@tdev-hooks/useCodeTheme';
 import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
 
 const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
