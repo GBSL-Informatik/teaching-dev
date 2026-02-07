@@ -114,6 +114,20 @@ export default class Page {
     }
 
     @computed
+    get studentGroupName() {
+        const pathParts = this.path.split('/').filter((p) => p.length > 0);
+        const name = pathParts[0];
+        if (!name) {
+            return '/';
+        }
+        const pName = `/${name}/`;
+        if (this.store.sidebarVersionPaths.has(pName)) {
+            return pName;
+        }
+        return '/';
+    }
+
+    @computed
     get primaryStudentGroupName() {
         return this._primaryStudentGroupName ?? this.store.currentStudentGroupName;
     }
