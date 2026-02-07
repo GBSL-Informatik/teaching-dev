@@ -4,7 +4,7 @@ import { enableStaticRendering, observer } from 'mobx-react-lite';
 import Head from '@docusaurus/Head';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
-import { reaction } from 'mobx';
+import { action, reaction } from 'mobx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useHistory, useLocation } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
@@ -108,6 +108,21 @@ const Sentry = observer(() => {
                 console.error('Sentry failed to load');
             });
     }, [SENTRY_DSN]);
+    return null;
+});
+
+const TrackPageVisibility = observer(() => {
+    const viewStore = useStore('viewStore');
+    const onVisibilityChange = React.useEffectEvent(() => {
+        viewStore.setPageVisibility(!document.hidden);
+    });
+    React.useEffect(() => {
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [viewStore]);
     return null;
 });
 
@@ -252,6 +267,7 @@ function Root({ children }: { children: React.ReactNode }) {
                         <LivenessChecker />
                     </>
                 )}
+                <TrackPageVisibility />
                 <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
                 <DevGlobalDataTracker />

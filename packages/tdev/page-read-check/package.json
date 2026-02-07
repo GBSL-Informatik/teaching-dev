@@ -1,0 +1,17 @@
+{
+    "name": "@tdev/page-read-check",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "vitest": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@docusaurus/core": "*",
+        "@types/node": "*"
+    },
+    "peerDependencies": {
+        "@tdev/core": "1.0.0"
+    }
+}
