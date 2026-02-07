@@ -3,13 +3,12 @@ import clsx from 'clsx';
 import Layout from '@theme/Layout';
 
 import styles from './styles.module.scss';
-import { useStore } from '../../hooks/useStore';
-import Button from '../../components/shared/Button';
 import { authClient } from '@site/src/auth-client';
 import { Redirect } from '@docusaurus/router';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 import TextInput from '@tdev-components/shared/TextInput';
 import { observer } from 'mobx-react-lite';
+import { useStore } from '@tdev-hooks/useStore';
+import Button from '@tdev-components/shared/Button';
 
 const SignIn = observer((): React.ReactNode => {
     const [email, setEmail] = React.useState('');
@@ -17,10 +16,9 @@ const SignIn = observer((): React.ReactNode => {
     const authStore = useStore('authStore');
 
     const { data: session } = authClient.useSession();
-    const userPage = useBaseUrl('/user');
 
     if (session?.user) {
-        return <Redirect to={userPage} />;
+        return <Redirect to={'/'} />;
     }
 
     return (
