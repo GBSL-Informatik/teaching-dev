@@ -1,4 +1,4 @@
-import { action, computed, observable, transaction } from 'mobx';
+import { action, computed, observable, reaction, transaction } from 'mobx';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import Page from '@tdev-models/Page';
@@ -62,6 +62,15 @@ export class PageStore extends iStore {
     constructor(store: RootStore) {
         super();
         this.root = store;
+        reaction(
+            () => this.root.userStore.viewedUserId,
+            (userId) => {
+                if (userId) {
+                    this.loadedPageIndices.clear();
+                    this.loadTaskableDocuments(this.currentStudentGroupName);
+                }
+            }
+        );
     }
 
     get sidebarVersions() {
@@ -171,7 +180,7 @@ export class PageStore extends iStore {
 
     @action
     loadTaskableDocuments(pathPrefix: string | undefined, force?: boolean) {
-        if (!pathPrefix) {
+        if (!pathPrefix || !this.isPageIndexLoaded) {
             return;
         }
         const prefix = ensureLeadingSlash(ensureTrailingSlash(pathPrefix));
@@ -210,7 +219,11 @@ export class PageStore extends iStore {
             if (!id) {
                 return;
             }
-            return this.pages.find((d) => d.id === id) as Page;
+            const pages = this.pages.filter((p) => p.id === id);
+            if (pages.length <= 1) {
+                return pages[0];
+            }
+            return pages.find((p) => p.studentGroupName === this.currentStudentGroupName) || pages[0];
         },
         { keepAlive: true }
     );
