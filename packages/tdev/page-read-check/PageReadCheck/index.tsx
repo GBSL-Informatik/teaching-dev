@@ -5,9 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { MetaInit, ModelMeta } from '../model/ModelMeta';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import Button from '@tdev-components/shared/Button';
-import { mdiClock, mdiClockDigital } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import SlideButton from '@tdev-components/shared/SlideButton';
 
 interface Props extends MetaInit {
     id: string;
@@ -34,16 +32,12 @@ const PageReadCheck = observer((props: Props) => {
     }
 
     return (
-        <Button
+        <SlideButton
             text={doc.fReadTime}
-            icon={mdiClock}
-            color={doc.read ? 'green' : 'gray'}
-            iconSide="left"
-            title={`Lesezeit: ${doc.fReadTimeLong}`}
-            size={SIZE_S}
-            onClick={() => {
-                doc.setReadState(!doc.read);
-            }}
+            unlockedText={`Gelesen ${doc.fReadTime}`}
+            onUnlock={() => doc.setReadState(true)}
+            onReset={() => doc.setReadState(false)}
+            isUnlocked={doc.read}
         />
     );
 });
