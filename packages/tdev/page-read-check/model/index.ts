@@ -1,16 +1,19 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
+import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import { Document as DocumentProps, TypeDataMapping, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
+import { mdiBookCheck, mdiBookCheckOutline, mdiBookEducation, mdiBookOpenVariantOutline } from '@mdi/js';
 
 export const createModel: Factory = (data, store) => {
     return new PageReadChecker(data as DocumentProps<'page_read_check'>, store);
 };
 
-class PageReadChecker extends iDocument<'page_read_check'> {
+class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableDocument<'page_read_check'> {
     @observable accessor readTime: number = 0;
     @observable accessor read: boolean = false;
+    @observable accessor scrollTo: boolean = false;
     constructor(props: DocumentProps<'page_read_check'>, store: DocumentStore) {
         super(props, store);
         this.readTime = props.data.readTime || 0;
@@ -31,6 +34,43 @@ class PageReadChecker extends iDocument<'page_read_check'> {
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    get isDone() {
+        return this.read;
+    }
+
+    get progress() {
+        return this.read ? 1 : 0;
+    }
+
+    get totalSteps() {
+        return 1;
+    }
+
+    @computed
+    get editingIconState() {
+        if (this.read) {
+            return {
+                path: mdiBookCheck,
+                color: 'var(--ifm-color-success)'
+            };
+        }
+        if (this.readTime < this.meta.minReadTime) {
+            return {
+                path: mdiBookOpenVariantOutline,
+                color: 'var(--ifm-color-grey-500)'
+            };
+        }
+        return {
+            path: mdiBookEducation,
+            color: 'var(--ifm-color-warning)'
+        };
+    }
+
+    @action
+    setScrollTo(scrollTo: boolean) {
+        this.scrollTo = scrollTo;
     }
 
     @computed

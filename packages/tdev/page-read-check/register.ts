@@ -3,6 +3,7 @@ import { createModel } from './model';
 
 const register = () => {
     rootStore.documentStore.registerFactory('page_read_check', createModel);
+    rootStore.componentStore.registerTaskableDocumentType('page_read_check');
 };
 
 register();

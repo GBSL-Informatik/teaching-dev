@@ -5,10 +5,10 @@ export interface PageReadCheckData {
 }
 
 declare module '@tdev-api/document' {
-    export interface TypeDataMapping {
+    export interface TaskableDocumentMapping {
         ['page_read_check']: PageReadCheckData;
     }
-    export interface TypeModelMapping {
+    export interface TaskableTypeModelMapping {
         ['page_read_check']: PageReadCheck;
     }
 }
