@@ -84,7 +84,7 @@ Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex 
         export interface TaskableDocumentMapping {
             ['my_new_taskable_document']: MyNewTaskableData;
         }
-        export interface TypeModelMapping {
+        export interface TaskableTypeModelMapping {
             ['my_new_taskable_document']: MyNewTaskableDocument;
         }
     }
@@ -104,6 +104,7 @@ Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex 
     und den neuen Dokumenttyp im `ComponentStore` registrieren:
     ```ts title="packages/<scope>/<new-plugin>/register.ts"
     const register = () => {
+        rootStore.documentStore.registerFactory('my_new_taskable_document', createModel);
         rootStore.componentStore.registerTaskableDocumentType('my_new_taskable_document');
     };
     ```
