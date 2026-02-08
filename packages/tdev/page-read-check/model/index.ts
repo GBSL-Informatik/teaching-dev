@@ -41,11 +41,11 @@ class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableD
     }
 
     get progress() {
-        return this.read ? 1 : 0;
+        return this.read ? 2 : this.readTime > this.meta.minReadTime ? 1 : 0;
     }
 
     get totalSteps() {
-        return 1;
+        return 2;
     }
 
     @computed

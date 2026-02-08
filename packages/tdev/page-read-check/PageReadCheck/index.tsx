@@ -1,6 +1,4 @@
 import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { MetaInit, ModelMeta } from '../model/ModelMeta';
@@ -24,6 +22,7 @@ const PageReadCheck = observer((props: Props) => {
             doc?.incrementReadTime(1);
         }, 1000);
         return () => {
+            doc?.saveNow();
             clearInterval(id);
         };
     }, [doc, viewStore.isPageVisible]);
@@ -38,6 +37,7 @@ const PageReadCheck = observer((props: Props) => {
             onUnlock={() => doc.setReadState(true)}
             onReset={() => doc.setReadState(false)}
             isUnlocked={doc.read}
+            disabled={doc.readTime < meta.minReadTime}
         />
     );
 });

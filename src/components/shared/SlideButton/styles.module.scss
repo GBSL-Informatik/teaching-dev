@@ -111,4 +111,25 @@
             }
         }
     }
+    &.disabled {
+        .track {
+            &.unlocked {
+                background: linear-gradient(
+                    90deg,
+                    var(--ifm-color-gray-400) 0%,
+                    var(--ifm-color-gray-100) 100%
+                );
+            }
+            .handle {
+                &.handleUnlocked {
+                    background: var(--ifm-color-secondary-darkest);
+                }
+
+                &:active,
+                &:hover {
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
 }

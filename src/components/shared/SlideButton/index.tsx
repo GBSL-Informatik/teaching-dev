@@ -19,10 +19,11 @@ interface Props {
     unlockedText?: string;
     sliderWidth?: number;
     title?: string;
+    disabled?: boolean;
 }
 
 const SlideButton = observer((props: Props) => {
-    const { onUnlock, text = 'Ziehen', sliderWidth = SLIDER_WIDTH } = props;
+    const { onUnlock, text, sliderWidth = SLIDER_WIDTH } = props;
     const trackRef = useRef<HTMLDivElement | null>(null);
     const [dragging, setDragging] = useState(false);
     const [offset, setOffset] = useState(props.isUnlocked ? sliderWidth - HANDLE_SIZE : 0);
@@ -89,7 +90,7 @@ const SlideButton = observer((props: Props) => {
     }, [dragging, offset, unlocked]);
 
     return (
-        <div className={styles.container} title={props.title}>
+        <div className={clsx(styles.container, props.disabled && styles.disabled)} title={props.title}>
             <div
                 className={clsx(styles.track, unlocked && styles.unlocked)}
                 ref={trackRef}
@@ -98,6 +99,7 @@ const SlideButton = observer((props: Props) => {
                 {props.onReset && unlocked && (
                     <div className={styles.resetButton}>
                         <Button
+                            disabled={props.disabled}
                             icon={mdiCloseCircle}
                             color="red"
                             size={SIZE_S}
@@ -111,16 +113,17 @@ const SlideButton = observer((props: Props) => {
                         />
                     </div>
                 )}
-                <span className={styles.text}>{unlocked ? props.unlockedText : text}</span>
+                <span className={styles.text}>{unlocked ? props.unlockedText : (text ?? 'Ziehen')}</span>
                 <div
                     className={clsx(
                         styles.handle,
                         dragging && styles.dragging,
                         unlocked && styles.handleUnlocked
                     )}
+                    title={props.disabled ? 'Deakitiviert' : unlocked ? undefined : 'Ziehen zum Entsperren'}
                     style={{ left: unlocked ? undefined : offset }}
-                    onMouseDown={handleDragStart}
-                    onTouchStart={handleDragStart}
+                    onMouseDown={props.disabled ? undefined : handleDragStart}
+                    onTouchStart={props.disabled ? undefined : handleDragStart}
                     tabIndex={0}
                 >
                     <span className={clsx(styles.arrow)}>
