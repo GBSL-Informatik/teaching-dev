@@ -93,13 +93,13 @@ class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableD
     @action
     setReadState(read: boolean) {
         this.read = read;
-        this.save();
+        this.saveNow();
     }
 
     @action
     incrementReadTime(by: number = 1) {
         this.readTime += by;
-        this.save();
+        this.saveNow();
     }
 
     get data(): TypeDataMapping['page_read_check'] {

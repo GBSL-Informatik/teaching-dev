@@ -4,9 +4,11 @@
     align-items: center;
     .status {
         margin-left: 240px;
+        min-width: 4em;
         display: flex;
         gap: 8px;
         align-items: center;
+        justify-content: flex-end;
         .minReadTime {
             border-top-left-radius: 0;
             border-top-right-radius: 0;

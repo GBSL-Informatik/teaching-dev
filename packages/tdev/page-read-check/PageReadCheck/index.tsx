@@ -7,7 +7,6 @@ import SlideButton from '@tdev-components/shared/SlideButton';
 import Badge from '@tdev-components/shared/Badge';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
-import SyncStatus from '@tdev-components/SyncStatus';
 import { mdiFlashTriangle } from '@mdi/js';
 import Icon from '@mdi/react';
 
@@ -15,6 +14,7 @@ interface Props extends MetaInit {
     id: string;
     hideTime?: boolean;
     hideWarning?: boolean;
+    continueAfterUnlock?: boolean;
 }
 
 const PageReadCheck = observer((props: Props) => {
@@ -26,13 +26,14 @@ const PageReadCheck = observer((props: Props) => {
             return;
         }
         const id = setInterval(() => {
-            doc?.incrementReadTime(1);
+            if (!doc?.read || props.continueAfterUnlock) {
+                doc?.incrementReadTime(1);
+            }
         }, 1000);
         return () => {
-            doc?.saveNow();
             clearInterval(id);
         };
-    }, [doc, viewStore.isPageVisible]);
+    }, [doc, viewStore.isPageVisible, props.continueAfterUnlock]);
     if (!doc) {
         return null;
     }

@@ -1,5 +1,7 @@
 ---
 page_id: 34714568-d5e3-4965-8947-fdcf46da810a
+sidebar_custom_props:
+    taskable_state: 'show'
 ---
 
 import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
@@ -7,7 +9,11 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # page-read-check
 
+Mit der Komponente `PageReadCheck` kann die Bearbeitung einer Seite gekennzeichnet werden.
+
 ```tsx
+import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
+
 <PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
 ```
 
@@ -21,11 +27,21 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 Über die `minReadTime` kann eine Mindestlesezeit vorgegeben werden, bevor die Seite als "gelesen" markiert werden kann. Der Timer startet und stoppt automatisch, wenn die Seite sichtbar bzw. unsichtbar wird. Der Standardwert beträgt 10 Sekunden.
 
 ```tsx
-<PageReadCheck minReadTime={15} hideWarning />
+<PageReadCheck minReadTime={15} />
 ```
 
 <BrowserWindow>
-    <PageReadCheck minReadTime={15} hideWarning/>
+    <PageReadCheck minReadTime={15}/>
 </BrowserWindow>
 
+## Lesezeit nach Freischaltung fortsetzen
 
+Standardmässig wird die Lesezeit nicht weiter gezählt, wenn die Seite freigeschaltet wurde. Mit der Option `continueAfterUnlock` kann dieses Verhalten geändert werden, sodass die Lesezeit auch nach Freischaltung weiter gezählt wird.
+
+```tsx
+<PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
+```
+
+<BrowserWindow>
+    <PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
+</BrowserWindow>
