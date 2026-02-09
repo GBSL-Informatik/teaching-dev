@@ -15,11 +15,11 @@ interface Props {
     onUnlock: () => void;
     onReset?: () => void;
     isUnlocked?: boolean;
-    text?: string;
-    unlockedText?: string;
+    text?: (unlocked: boolean) => string;
     sliderWidth?: number;
     title?: string;
     disabled?: boolean;
+    disabledReason?: string;
 }
 
 const SlideButton = observer((props: Props) => {
@@ -48,19 +48,25 @@ const SlideButton = observer((props: Props) => {
     }, [props.isUnlocked]);
 
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-        if (unlocked) return;
+        if (unlocked) {
+            return;
+        }
         setDragging(true);
         e.preventDefault();
     };
 
     const handleDragMove = (e: MouseEvent | TouchEvent) => {
-        if (!dragging || unlocked) return;
+        if (!dragging || unlocked) {
+            return;
+        }
         let clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
         setOffset(getRelativeX(clientX));
     };
 
     const handleDragEnd = () => {
-        if (!dragging || unlocked) return;
+        if (!dragging || unlocked) {
+            return;
+        }
         const progress = offset / (sliderWidth - HANDLE_SIZE);
         if (progress >= THRESHOLD) {
             setOffset(sliderWidth - HANDLE_SIZE);
@@ -113,31 +119,43 @@ const SlideButton = observer((props: Props) => {
                         />
                     </div>
                 )}
-                <span className={styles.text}>{unlocked ? props.unlockedText : (text ?? 'Ziehen')}</span>
+                <Label text={text} isUnlocked={unlocked} />
                 <div
                     className={clsx(
                         styles.handle,
                         dragging && styles.dragging,
                         unlocked && styles.handleUnlocked
                     )}
-                    title={props.disabled ? 'Deakitiviert' : unlocked ? undefined : 'Ziehen zum Entsperren'}
+                    title={
+                        props.disabled
+                            ? (props.disabledReason ?? 'Deakitiviert')
+                            : unlocked
+                              ? undefined
+                              : 'Ziehen zum Entsperren'
+                    }
                     style={{ left: unlocked ? undefined : offset }}
                     onMouseDown={props.disabled ? undefined : handleDragStart}
                     onTouchStart={props.disabled ? undefined : handleDragStart}
                     tabIndex={0}
                 >
-                    <span className={clsx(styles.arrow)}>
+                    <div className={clsx(styles.arrow)}>
                         <Icon
                             path={unlocked ? mdiCheckCircle : mdiArrowRightBoldBox}
                             size={1}
                             color={unlocked ? 'white' : 'var(--ifm-color-blue-darkest)'}
                             className={clsx(styles.arrowIcon)}
                         />
-                    </span>
+                    </div>
                 </div>
                 <div className={clsx(styles.progress)} style={{ width: offset + HANDLE_SIZE / 2 }} />
             </div>
         </div>
+    );
+});
+
+const Label = observer((props: Pick<Props, 'text' | 'isUnlocked'>) => {
+    return (
+        <span className={styles.text}>{props.text ? props.text(props.isUnlocked ?? false) : 'Ziehen'}</span>
     );
 });
 

@@ -1,5 +1,6 @@
 import { TypeDataMapping, Access } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { fSeconds } from '../helpers/time';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -20,5 +21,9 @@ export class ModelMeta extends TypeMeta<'page_read_check'> {
             readTime: 0,
             read: false
         };
+    }
+
+    get fMinReadTime() {
+        return fSeconds(this.minReadTime);
     }
 }

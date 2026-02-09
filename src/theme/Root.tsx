@@ -194,6 +194,7 @@ const FullscreenHandler = observer(() => {
     }, []);
     return null;
 });
+
 let devHash: string | null = null;
 const DevGlobalDataTracker = observer(() => {
     if (process.env.NODE_ENV === 'production') {

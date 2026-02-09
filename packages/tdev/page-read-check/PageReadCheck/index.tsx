@@ -4,10 +4,17 @@ import { useStore } from '@tdev-hooks/useStore';
 import { MetaInit, ModelMeta } from '../model/ModelMeta';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import SlideButton from '@tdev-components/shared/SlideButton';
+import Badge from '@tdev-components/shared/Badge';
+import styles from './styles.module.scss';
+import clsx from 'clsx';
+import SyncStatus from '@tdev-components/SyncStatus';
+import { mdiFlashTriangle } from '@mdi/js';
+import Icon from '@mdi/react';
 
 interface Props extends MetaInit {
     id: string;
     hideTime?: boolean;
+    hideWarning?: boolean;
 }
 
 const PageReadCheck = observer((props: Props) => {
@@ -31,14 +38,35 @@ const PageReadCheck = observer((props: Props) => {
     }
 
     return (
-        <SlideButton
-            text={doc.fReadTime}
-            unlockedText={`Gelesen ${doc.fReadTime}`}
-            onUnlock={() => doc.setReadState(true)}
-            onReset={() => doc.setReadState(false)}
-            isUnlocked={doc.read}
-            disabled={doc.readTime < meta.minReadTime}
-        />
+        <div className={clsx(styles.pageReadCheck)}>
+            <SlideButton
+                text={(unlocked) => (unlocked ? `Gelesen ${doc.fReadTime}` : doc.fReadTime)}
+                onUnlock={() => doc.setReadState(true)}
+                onReset={() => doc.setReadState(false)}
+                isUnlocked={doc.read}
+                disabled={!doc.canUnlock}
+                sliderWidth={320}
+                disabledReason={`Mindestens ${doc.meta.fMinReadTime} lesen, um zu entsperren`}
+            />
+            <div className={clsx(styles.status)}>
+                {!doc.canUnlock && (
+                    <Badge
+                        title={`Mindestens ${doc.meta.fMinReadTime} lesen, um zu entsperren`}
+                        className={clsx(styles.minReadTime)}
+                    >
+                        {doc.meta.fMinReadTime}
+                    </Badge>
+                )}
+                {doc.isDummy && !props.hideWarning && (
+                    <Icon
+                        path={mdiFlashTriangle}
+                        size={0.7}
+                        color="var(--ifm-color-warning)"
+                        title="Wird nicht gespeichert."
+                    />
+                )}
+            </div>
+        </div>
     );
 });
 

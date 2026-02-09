@@ -3,10 +3,29 @@ page_id: 34714568-d5e3-4965-8947-fdcf46da810a
 ---
 
 import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
+import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # page-read-check
 
+```tsx
 <PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
+```
 
 
-<PageReadCheck id="2c48f62d-0123-49c1-8296-c8cae7b54832" minReadTime={120} />
+<BrowserWindow>
+    <PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
+</BrowserWindow>
+
+## Mit Mindestlesezeit
+
+Über die `minReadTime` kann eine Mindestlesezeit vorgegeben werden, bevor die Seite als "gelesen" markiert werden kann. Der Timer startet und stoppt automatisch, wenn die Seite sichtbar bzw. unsichtbar wird. Der Standardwert beträgt 10 Sekunden.
+
+```tsx
+<PageReadCheck minReadTime={15} hideWarning />
+```
+
+<BrowserWindow>
+    <PageReadCheck minReadTime={15} hideWarning/>
+</BrowserWindow>
+
+

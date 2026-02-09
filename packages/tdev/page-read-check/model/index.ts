@@ -5,6 +5,7 @@ import { Document as DocumentProps, TypeDataMapping, Factory } from '@tdev-api/d
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
 import { mdiBookCheck, mdiBookCheckOutline, mdiBookEducation, mdiBookOpenVariantOutline } from '@mdi/js';
+import { fSeconds, fSecondsLong } from '../helpers/time';
 
 export const createModel: Factory = (data, store) => {
     return new PageReadChecker(data as DocumentProps<'page_read_check'>, store);
@@ -40,8 +41,14 @@ class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableD
         return this.read;
     }
 
+    @computed
+    get canUnlock() {
+        return this.readTime >= this.meta.minReadTime;
+    }
+
+    @computed
     get progress() {
-        return this.read ? 2 : this.readTime > this.meta.minReadTime ? 1 : 0;
+        return this.read ? 2 : this.canUnlock ? 1 : 0;
     }
 
     get totalSteps() {
@@ -56,15 +63,15 @@ class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableD
                 color: 'var(--ifm-color-success)'
             };
         }
-        if (this.readTime < this.meta.minReadTime) {
+        if (this.canUnlock) {
             return {
-                path: mdiBookOpenVariantOutline,
-                color: 'var(--ifm-color-grey-500)'
+                path: mdiBookEducation,
+                color: 'var(--ifm-color-warning)'
             };
         }
         return {
-            path: mdiBookEducation,
-            color: 'var(--ifm-color-warning)'
+            path: mdiBookOpenVariantOutline,
+            color: 'var(--ifm-color-grey-500)'
         };
     }
 
@@ -75,24 +82,12 @@ class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableD
 
     @computed
     get fReadTime(): string {
-        const hours = Math.floor(this.readTime / 3600);
-        const minutes = Math.floor((this.readTime % 3600) / 60);
-        const seconds = this.readTime % 60;
-        if (hours > 0) {
-            return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        return fSeconds(this.readTime);
     }
 
     @computed
     get fReadTimeLong(): string {
-        const hours = Math.floor(this.readTime / 3600);
-        const minutes = Math.floor((this.readTime % 3600) / 60);
-        const seconds = this.readTime % 60;
-        if (hours > 0) {
-            return `${hours} Stunden ${minutes.toString().padStart(2, '0')} Minuten ${seconds.toString().padStart(2, '0')} Sekunden`;
-        }
-        return `${minutes} Minuten ${seconds.toString().padStart(2, '0')} Sekunden`;
+        return fSecondsLong(this.readTime);
     }
 
     @action

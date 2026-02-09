@@ -57,12 +57,9 @@
             }
 
             .arrow {
-                font-size: 1.7rem;
                 user-select: none;
                 pointer-events: none;
-                .arrowIcon {
-                    line-height: 0;
-                }
+                line-height: 0;
             }
         }
         .progress {

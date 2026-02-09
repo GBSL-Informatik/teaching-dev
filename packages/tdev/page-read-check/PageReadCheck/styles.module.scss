@@ -1,0 +1,15 @@
+.pageReadCheck {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .status {
+        margin-left: 240px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        .minReadTime {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+}
