@@ -11,7 +11,6 @@
         border-radius: var(--ifm-global-radius);
         overflow: hidden;
         box-shadow: var(--ifm-global-shadow-tl);
-        transition: background 0.2s;
         .text {
             position: absolute;
             left: 0;
@@ -27,7 +26,6 @@
             z-index: 2;
             pointer-events: none;
             letter-spacing: 0.04em;
-            transition: opacity 0.3s;
         }
         .handle {
             position: absolute;
@@ -37,25 +35,23 @@
             height: var(--tdev-slide-button-size);
             border-radius: var(--ifm-global-radius);
 
-            background: var(--ifm-background-surface-color);
+            background-color: var(--ifm-background-surface-color);
             box-shadow: var(--ifm-global-shadow-md);
             z-index: 3;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: grab;
-            transition:
-                box-shadow 0.15s,
-                background 0.15s;
             user-select: none;
+            background-color: var(--ifm-color-white);
             &:active,
             &.dragging {
-                background: var(--ifm-color-gray-100);
+                background-color: var(--ifm-color-gray-300);
                 box-shadow: 0 3px 28px 0 var(--ifm-color-success-lightest);
                 cursor: grabbing;
             }
             &.handleUnlocked {
-                background: var(--ifm-color-success);
+                background-color: var(--ifm-color-success);
                 color: var(--ifm-color-white);
                 pointer-events: none;
             }
@@ -64,6 +60,9 @@
                 font-size: 1.7rem;
                 user-select: none;
                 pointer-events: none;
+                .arrowIcon {
+                    line-height: 0;
+                }
             }
         }
         .progress {
@@ -79,7 +78,6 @@
             border-radius: var(--ifm-global-radius);
             z-index: 1;
             pointer-events: none;
-            transition: width 0.15s;
         }
         .resetButton {
             display: none;
@@ -101,6 +99,12 @@
             .handle {
                 right: 0;
                 left: auto;
+                .arrow {
+                    background-color: unset;
+                    .arrowIcon {
+                        line-height: 0;
+                    }
+                }
             }
         }
     }
@@ -121,10 +125,6 @@
                 );
             }
             .handle {
-                &.handleUnlocked {
-                    background: var(--ifm-color-secondary-darkest);
-                }
-
                 &:active,
                 &:hover {
                     cursor: not-allowed;

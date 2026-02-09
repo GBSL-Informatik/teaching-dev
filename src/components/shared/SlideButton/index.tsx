@@ -127,7 +127,12 @@ const SlideButton = observer((props: Props) => {
                     tabIndex={0}
                 >
                     <span className={clsx(styles.arrow)}>
-                        <Icon path={unlocked ? mdiCheckCircle : mdiArrowRightBoldBox} size={1} />
+                        <Icon
+                            path={unlocked ? mdiCheckCircle : mdiArrowRightBoldBox}
+                            size={1}
+                            color={unlocked ? 'white' : 'var(--ifm-color-blue-darkest)'}
+                            className={clsx(styles.arrowIcon)}
+                        />
                     </span>
                 </div>
                 <div className={clsx(styles.progress)} style={{ width: offset + HANDLE_SIZE / 2 }} />
