@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import styles from './styles.module.scss';
 import Icon from '@mdi/react';
-import { mdiArrowRightBoldBox, mdiCheckCircle, mdiCloseCircle } from '@mdi/js';
+import { mdiArrowRightBoldBox, mdiCheckCircle, mdiCloseCircle, mdiTimerSand } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { observer } from 'mobx-react-lite';
@@ -140,9 +140,21 @@ const SlideButton = observer((props: Props) => {
                 >
                     <div className={clsx(styles.arrow)}>
                         <Icon
-                            path={unlocked ? mdiCheckCircle : mdiArrowRightBoldBox}
+                            path={
+                                unlocked
+                                    ? mdiCheckCircle
+                                    : props.disabled
+                                      ? mdiTimerSand
+                                      : mdiArrowRightBoldBox
+                            }
                             size={1}
-                            color={unlocked ? 'white' : 'var(--ifm-color-blue-darkest)'}
+                            color={
+                                props.disabled
+                                    ? 'var(--ifm-color-gray-700)'
+                                    : unlocked
+                                      ? 'var(--ifm-color-white)'
+                                      : 'var(--ifm-color-blue-darkest)'
+                            }
                             className={clsx(styles.arrowIcon)}
                         />
                     </div>
