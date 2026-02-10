@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
-import { mdiAccountAlert, mdiAccountSyncOutline, mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
+import { mdiAccountSyncOutline, mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
 import { StateType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import Popup from 'reactjs-popup';
