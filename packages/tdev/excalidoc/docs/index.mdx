@@ -181,15 +181,18 @@ Unterstützte Bildformate:
 ## Installation
 
 :::info[`siteConfig.ts`]
-
 ```ts
-const config: SiteConfigProvider = {
-    tdevConfig: {
-        excalidraw: {
-            imageMarkupEditor: true,
-            excalidoc: true
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        tdevConfig: {
+            // highlight-start
+            excalidraw: {
+                imageMarkupEditor: true,
+                excalidoc: true
+            }
+            // highlight-end
         }
-    }
-}
+    };
+};
 ```
 :::
