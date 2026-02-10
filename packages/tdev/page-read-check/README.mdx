@@ -1,0 +1,125 @@
+---
+page_id: 34714568-d5e3-4965-8947-fdcf46da810a
+sidebar_custom_props:
+    taskable_state: 'show'
+---
+
+import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import { action } from 'mobx';
+
+# page-read-check
+
+Mit der Komponente `PageReadCheck` kann der Bearbeitungs- und Lesezustand einer Seite als "gelesen" oder "ungelesen" markiert werden.
+
+```tsx
+import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
+
+<PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
+```
+
+
+<BrowserWindow>
+    <PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
+</BrowserWindow>
+
+## Mit Mindestlesezeit
+
+Über die `minReadTime` kann eine Mindestlesezeit vorgegeben werden, bevor die Seite als "gelesen" markiert werden kann. Der Timer startet und stoppt automatisch, wenn die Seite sichtbar bzw. unsichtbar wird. Der Standardwert beträgt 10 Sekunden.
+
+```tsx
+<PageReadCheck minReadTime={15} />
+```
+
+<BrowserWindow>
+    <PageReadCheck minReadTime={15}/>
+</BrowserWindow>
+
+## Lesezeit nach Freischaltung fortsetzen
+
+Standardmässig wird die Lesezeit nicht weiter gezählt, wenn die Seite freigeschaltet wurde. Mit der Option `continueAfterUnlock` kann dieses Verhalten geändert werden, sodass die Lesezeit auch nach Freischaltung weiter gezählt wird.
+
+```tsx
+<PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
+```
+
+<BrowserWindow>
+    <PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
+</BrowserWindow>
+
+## Anpassung der Texte
+
+Die angezeigten Texte und Tooltipps können angepasst werden:
+
+```tsx
+<PageReadCheck
+    text={(unlocked, doc) => {
+        if (unlocked || doc.canUnlock) {
+            return `Gelesen ${doc.fReadTime}`;
+        }
+        return `Noch ${doc.meta.minReadTime - doc.readTime}s übrig`;
+    }}
+    disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
+/>
+```
+
+<BrowserWindow>
+    <PageReadCheck
+        text={(unlocked, doc) => {
+            if (unlocked || doc.canUnlock) {
+                return `Gelesen ${doc.fReadTime}`;
+            }
+            return `Noch ${doc.meta.minReadTime - doc.readTime}s übrig`;
+        }}
+        disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
+    />
+</BrowserWindow>
+
+## Installation
+
+:::info[`packages/tdev/page-read-check`]
+Kopiere des `packages/tdev/page-read-check`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
+:::
+
+Hinzufügen des `page-read-check`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
+
+```ts title="siteConfig.ts"
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        apiDocumentProviders: [
+            require.resolve('@tdev/page-read-check/register'),
+        ]
+    };
+};
+```
+
+Falls **nicht** die standardoptionen des `PageIndexPluginDefaultOptions` verwendet werden, muss zusätzlich die `remark`-Plugin-Konfiguration angepasst werden, damit die neuen Dokumente im Seitenindex erfasst werden:
+
+```ts title="siteConfig.ts"
+import pageIndexPlugin from './packages/tdev/page-index/plugin';
+
+const getSiteConfig: SiteConfigProvider = () => ({
+    remarkPlugins: [
+        [
+            pageIndexPlugin,
+            {
+                // ...
+                components: [
+                    // highlight-start
+                    {
+                        name: 'PageReadCheck',
+                        docTypeExtractor: () => 'page_read_check'
+                    }
+                    // highlight-end
+                ]
+            }
+        ]
+    ]
+});
+```
+
+Danach muss erneut installiert werden:
+
+```bash
+yarn install
+```

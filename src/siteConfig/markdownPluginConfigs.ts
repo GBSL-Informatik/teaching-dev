@@ -158,6 +158,10 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
             docTypeExtractor: () => 'progress_state'
         },
         {
+            name: 'PageReadCheck',
+            docTypeExtractor: () => 'page_read_check'
+        },
+        {
             name: 'TaskState',
             docTypeExtractor: () => 'task_state'
         },

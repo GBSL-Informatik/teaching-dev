@@ -62,6 +62,11 @@ export const Comp = observer(() => {
 
 ## Für Plugin-Autoren
 
+:::tip[`@tdev/page-read-check` als Beispiel]
+Das Plugin `@tdev/page-read-check` implementiert das `iTaskableDocument`-Interface und wird daher automatisch im Seitenindex erfasst.
+Es dient als Beispiel und Referenz, wie ein *Statusdokument* implementiert werden kann, damit es im Seitenindex erfasst wird.
+:::
+
 Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex erfasst werden soll, müssen folgende Schritte durchgeführt werden:
 1. In der `siteConfig` die neue Komponente für das `remark`-Plugin registrieren:
     ```ts  title="siteConfig.ts"
@@ -84,7 +89,7 @@ Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex 
         export interface TaskableDocumentMapping {
             ['my_new_taskable_document']: MyNewTaskableData;
         }
-        export interface TypeModelMapping {
+        export interface TaskableTypeModelMapping {
             ['my_new_taskable_document']: MyNewTaskableDocument;
         }
     }
@@ -104,6 +109,7 @@ Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex 
     und den neuen Dokumenttyp im `ComponentStore` registrieren:
     ```ts title="packages/<scope>/<new-plugin>/register.ts"
     const register = () => {
+        rootStore.documentStore.registerFactory('my_new_taskable_document', createModel);
         rootStore.componentStore.registerTaskableDocumentType('my_new_taskable_document');
     };
     ```

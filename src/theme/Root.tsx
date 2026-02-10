@@ -4,7 +4,7 @@ import { enableStaticRendering, observer } from 'mobx-react-lite';
 import Head from '@docusaurus/Head';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
-import { reaction } from 'mobx';
+import { action, reaction } from 'mobx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useHistory, useLocation } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
@@ -111,6 +111,21 @@ const Sentry = observer(() => {
     return null;
 });
 
+const TrackPageVisibility = observer(() => {
+    const viewStore = useStore('viewStore');
+    const onVisibilityChange = React.useEffectEvent(() => {
+        viewStore.setPageVisibility(!document.hidden);
+    });
+    React.useEffect(() => {
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [viewStore]);
+    return null;
+});
+
 const LivenessChecker = observer(() => {
     const lastHiddenTimeRef = React.useRef<number | null>(null);
     React.useEffect(() => {
@@ -179,6 +194,7 @@ const FullscreenHandler = observer(() => {
     }, []);
     return null;
 });
+
 let devHash: string | null = null;
 const DevGlobalDataTracker = observer(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -252,6 +268,7 @@ function Root({ children }: { children: React.ReactNode }) {
                         <LivenessChecker />
                     </>
                 )}
+                <TrackPageVisibility />
                 <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
                 <DevGlobalDataTracker />
