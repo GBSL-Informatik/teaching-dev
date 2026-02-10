@@ -46,6 +46,14 @@ export const useDocumentRoot = <Type extends DocumentType>(
             () => documentRootStore.find(id),
             (docRoot) => {
                 if (docRoot) {
+                    if (docRoot.isLoadable && !docRoot.isLoaded) {
+                        documentRootStore.loadInNextBatch(
+                            id!,
+                            meta,
+                            { skipCreate: !!skipCreate, documentType: loadOnlyType, documentRoot: 'replace' },
+                            access
+                        );
+                    }
                     return;
                 }
                 if (addDummyToStore) {

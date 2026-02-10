@@ -209,7 +209,9 @@ export default class Page {
 
     @computed
     get stepsOnPage(): number {
-        return this.taskableDocuments.length;
+        // use the id's, otherwise not yet created documents would not be counted,
+        // which leads to wrong progress values until all documents are loaded
+        return this.taskableDocumentRootIds.length;
     }
 
     @computed

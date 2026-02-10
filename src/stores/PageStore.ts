@@ -22,10 +22,14 @@ export const SidebarVersions = (
 ).versions.map((version) => {
     const versionPath = ensureTrailingSlash(version.path);
     const slashCount = version.path.split('/').length + 1;
-    const rdocs = version.docs.filter(
-        (doc) =>
+    const rdocs = version.docs.filter((doc) => {
+        if (version.mainDocId === 'index' && doc.id === version.mainDocId) {
+            return true;
+        }
+        return (
             doc.path.startsWith(version.path) && doc.path.replace(/\/$/, '').split('/').length === slashCount
-    );
+        );
+    });
     return {
         name: version.name,
         rootPaths: rdocs.map((doc) => ensureTrailingSlash(doc.path)),

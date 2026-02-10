@@ -62,10 +62,11 @@ const EditingOverview = observer(() => {
     if (!isBrowser || !currentUser || !currentPage) {
         return null;
     }
-    const taskStates = currentPage.taskableDocuments.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
-    if (taskStates.length === 0) {
+    const taskableDocumentsCount = currentPage.taskableDocumentRootIds.length;
+    if (taskableDocumentsCount === 0) {
         return null;
     }
+    const taskStates = currentPage.taskableDocuments.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
     const someChecked = taskStates.some((d) => d.isDone);
     const allChecked = someChecked && taskStates.every((d) => d.isDone);
     return (
