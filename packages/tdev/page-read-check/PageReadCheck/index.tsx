@@ -28,8 +28,11 @@ const defaultDisabledReason = (doc: PageReadChecker) =>
 const PageReadCheck = observer((props: Props) => {
     const { text = defaultText, disabledReason = defaultDisabledReason } = props;
     const [meta] = React.useState(new ModelMeta(props));
+    const ref = React.useRef<HTMLDivElement>(null);
+
     const viewStore = useStore('viewStore');
     const doc = useFirstMainDocument(props.id, meta);
+    const [animate, setAnimate] = React.useState(false);
     React.useEffect(() => {
         if (!viewStore.isPageVisible) {
             return;
@@ -43,12 +46,32 @@ const PageReadCheck = observer((props: Props) => {
             clearInterval(id);
         };
     }, [doc, viewStore.isPageVisible, props.continueAfterUnlock]);
+
+    React.useEffect(() => {
+        if (ref.current && doc?.scrollTo) {
+            ref.current.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'start' });
+            doc.setScrollTo(false);
+            setAnimate(true);
+        }
+    }, [ref, doc?.scrollTo]);
+
+    React.useEffect(() => {
+        if (animate) {
+            const timeout = setTimeout(() => {
+                setAnimate(false);
+            }, 2000);
+            return () => {
+                clearTimeout(timeout);
+            };
+        }
+    }, [animate]);
+
     if (!doc) {
         return null;
     }
 
     return (
-        <div className={clsx(styles.pageReadCheck)}>
+        <div className={clsx(styles.pageReadCheck, animate && styles.animate)} ref={ref}>
             <SlideButton
                 text={(unlocked) => text(unlocked, doc)}
                 onUnlock={() => doc.setReadState(true)}
