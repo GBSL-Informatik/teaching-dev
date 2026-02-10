@@ -235,7 +235,12 @@ export class PageStore extends iStore {
 
     @computed
     get current(): Page | undefined {
-        return this.find(this.currentPageId);
+        const currentPath = this.find(this.currentPageId);
+        if (currentPath || !this.currentPath) {
+            return currentPath;
+        }
+        const byPath = this.pages.find((p) => p.path === this.currentPath);
+        return byPath;
     }
 
     @action

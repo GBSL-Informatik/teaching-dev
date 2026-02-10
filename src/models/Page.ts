@@ -67,7 +67,7 @@ export default class Page {
 
     @computed
     get subPages() {
-        return this.store.pages.filter((page) => page.parentPath === this.path);
+        return this.store.pages.filter((page) => page.parentPath === this.path && !page.isLandingpage);
     }
 
     @action
