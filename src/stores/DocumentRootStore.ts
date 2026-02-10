@@ -146,7 +146,13 @@ export class DocumentRootStore extends iStore {
         accessConfig?: Partial<Config>
     ) {
         if (this.queued.has(id)) {
-            return;
+            const currentConfig = this.queued.get(id);
+            const needsReplacement =
+                loadConfig?.documentRoot === 'replace' && currentConfig?.load.documentRoot !== 'replace';
+            if (!needsReplacement) {
+                // already queued with same or higher loadConfig - do nothing
+                return;
+            }
         }
         this.queued.set(id, {
             meta: meta,

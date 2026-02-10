@@ -22,10 +22,14 @@ export const SidebarVersions = (
 ).versions.map((version) => {
     const versionPath = ensureTrailingSlash(version.path);
     const slashCount = version.path.split('/').length + 1;
-    const rdocs = version.docs.filter(
-        (doc) =>
+    const rdocs = version.docs.filter((doc) => {
+        if (version.mainDocId === 'index' && doc.id === version.mainDocId) {
+            return true;
+        }
+        return (
             doc.path.startsWith(version.path) && doc.path.replace(/\/$/, '').split('/').length === slashCount
-    );
+        );
+    });
     return {
         name: version.name,
         rootPaths: rdocs.map((doc) => ensureTrailingSlash(doc.path)),
@@ -136,14 +140,15 @@ export class PageStore extends iStore {
 
     @action
     setCurrentPath(path: string | undefined) {
-        if (path === this.currentPath) {
+        const normalizedPath = path?.replace(BasePathRegex, '/');
+        if (normalizedPath === this.currentPath) {
             return;
         }
-        if (!path) {
+        if (!normalizedPath) {
             this.currentPath = undefined;
             return;
         }
-        this.currentPath = path.replace(BasePathRegex, '/');
+        this.currentPath = normalizedPath;
         if (this.isPageIndexLoaded) {
             this.loadTaskableDocuments(this.currentStudentGroupName);
         }

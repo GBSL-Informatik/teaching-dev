@@ -4,7 +4,7 @@ import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import { Document as DocumentProps, TypeDataMapping, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
-import { mdiBookCheck, mdiBookCheckOutline, mdiBookEducation, mdiBookOpenVariantOutline } from '@mdi/js';
+import { mdiBookCheck, mdiBookEducation, mdiBookOpenVariantOutline } from '@mdi/js';
 import { fSeconds, fSecondsLong } from '../helpers/time';
 
 export const createModel: Factory = (data, store) => {
