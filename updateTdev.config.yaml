@@ -11,6 +11,8 @@ trackedElements:
       dst: updateSync
     - src: tsconfig.tdev.json
       dst: tsconfig.json
+    - src: tsconfig.package.json
+      dst: tsconfig.package.json
     - src: .prettierrc
       dst: .prettierrc
     - src: .prettierignore

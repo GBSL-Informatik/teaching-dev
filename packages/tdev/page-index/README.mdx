@@ -110,7 +110,7 @@ Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex 
     ```ts title="packages/<scope>/<new-plugin>/register.ts"
     const register = () => {
         rootStore.documentStore.registerFactory('my_new_taskable_document', createModel);
-        rootStore.componentStore.registerTaskableDocumentType('my_new_taskable_document');
+        rootStore.componentStore.registerTaskableDocumentType(new ModelMeta({}));
     };
     ```
 

@@ -12,6 +12,9 @@ import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/Conta
 import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { computed } from 'mobx';
 import React from 'react';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
+import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
 
 export type LiveCode = `live_${string}`;
 
@@ -51,7 +54,10 @@ class ComponentStore {
     readonly root: RootStore;
     components = new Map<ContainerType, ContainerComponent>();
     editorComponents = new Map<CodeType, EditorComponent>();
-    taskableDocuments = new Set<DocumentType>(['task_state', 'progress_state']);
+    taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
+        ['task_state', new TaskStateMeta({})],
+        ['progress_state', new ProgressStateMeta({})]
+    ]);
 
     constructor(root: RootStore) {
         this.root = root;
@@ -65,15 +71,21 @@ class ComponentStore {
         this.components.set(type, component as ContainerComponent<any>);
     }
 
-    registerTaskableDocumentType(type: TaskableType) {
-        this.taskableDocuments.add(type);
+    registerTaskableDocumentType<T extends TaskableType>(defaultMeta: TypeMeta<T>) {
+        this.taskableDocumentsMeta.set(defaultMeta.type, defaultMeta);
+    }
+
+    @computed
+    get taskableDocuments() {
+        return new Set([...this.taskableDocumentsMeta.keys()]);
     }
 
     @computed
     get defaultMeta() {
         return [
             ...[...this.components.values()].map((comp) => comp.defaultMeta),
-            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({}))
+            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({})),
+            ...[...this.taskableDocumentsMeta.values()]
         ];
     }
 

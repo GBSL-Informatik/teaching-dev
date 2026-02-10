@@ -18,13 +18,11 @@ import { DocumentType } from '@tdev-api/document';
 import _ from 'es-toolkit/compat';
 import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
 import { CodeMeta } from '@tdev-models/documents/Code';
 import { ModelMeta as MdxCommentMeta } from '@tdev-models/documents/MdxComment';
 import { ModelMeta as RestrictedMeta } from '@tdev-models/documents/Restricted';
 import { ModelMeta as SolutionMeta } from '@tdev-models/documents/Solution';
 import { ModelMeta as StringMeta } from '@tdev-models/documents/String';
-import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
 
 import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 
@@ -77,8 +75,6 @@ const DefaultMeta: TypeMeta<DocumentType>[] = [
     new RestrictedMeta({}),
     new SolutionMeta({}),
     new StringMeta({}),
-    new TaskStateMeta({}),
-    new ProgressStateMeta({}),
     new CmsTextMeta({})
 ];
 
