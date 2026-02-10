@@ -6,10 +6,11 @@ sidebar_custom_props:
 
 import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import { action } from 'mobx';
 
 # page-read-check
 
-Mit der Komponente `PageReadCheck` kann die Bearbeitung einer Seite gekennzeichnet werden.
+Mit der Komponente `PageReadCheck` kann der Bearbeitungs- und Lesezustand einer Seite als "gelesen" oder "ungelesen" markiert werden.
 
 ```tsx
 import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
@@ -44,4 +45,32 @@ Standardmässig wird die Lesezeit nicht weiter gezählt, wenn die Seite freigesc
 
 <BrowserWindow>
     <PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
+</BrowserWindow>
+
+## Anpassung der Texte
+
+Die angezeigten Texte und Tooltipps können angepasst werden:
+
+```tsx
+<PageReadCheck
+    text={(unlocked, doc) => {
+        if (unlocked || doc.canUnlock) {
+            return `Gelesen ${doc.fReadTime}`;
+        }
+        return `Noch ${doc.meta.minReadTime - doc.readTime}s übrig`;
+    }}
+    disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
+/>
+```
+
+<BrowserWindow>
+    <PageReadCheck
+        text={(unlocked, doc) => {
+            if (unlocked || doc.canUnlock) {
+                return `Gelesen ${doc.fReadTime}`;
+            }
+            return `Noch ${doc.meta.minReadTime - doc.readTime}s übrig`;
+        }}
+        disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
+    />
 </BrowserWindow>

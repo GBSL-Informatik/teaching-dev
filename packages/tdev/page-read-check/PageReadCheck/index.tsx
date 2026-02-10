@@ -9,15 +9,24 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { mdiFlashTriangle } from '@mdi/js';
 import Icon from '@mdi/react';
+import PageReadChecker from '../model';
 
 interface Props extends MetaInit {
     id: string;
+    text?: (unlocked: boolean, doc: PageReadChecker) => string;
+    disabledReason?: (doc: PageReadChecker) => string;
     hideTime?: boolean;
     hideWarning?: boolean;
     continueAfterUnlock?: boolean;
 }
 
+const defaultText = (unlocked: boolean, doc: PageReadChecker) =>
+    unlocked ? `Gelesen ${doc.fReadTime}` : doc.fReadTime;
+const defaultDisabledReason = (doc: PageReadChecker) =>
+    `Mindestens ${doc.meta.fMinReadTime} lesen, um zu entsperren`;
+
 const PageReadCheck = observer((props: Props) => {
+    const { text = defaultText, disabledReason = defaultDisabledReason } = props;
     const [meta] = React.useState(new ModelMeta(props));
     const viewStore = useStore('viewStore');
     const doc = useFirstMainDocument(props.id, meta);
@@ -41,20 +50,17 @@ const PageReadCheck = observer((props: Props) => {
     return (
         <div className={clsx(styles.pageReadCheck)}>
             <SlideButton
-                text={(unlocked) => (unlocked ? `Gelesen ${doc.fReadTime}` : doc.fReadTime)}
+                text={(unlocked) => text(unlocked, doc)}
                 onUnlock={() => doc.setReadState(true)}
                 onReset={() => doc.setReadState(false)}
                 isUnlocked={doc.read}
                 disabled={!doc.canUnlock}
                 sliderWidth={320}
-                disabledReason={`Mindestens ${doc.meta.fMinReadTime} lesen, um zu entsperren`}
+                disabledReason={disabledReason(doc)}
             />
             <div className={clsx(styles.status)}>
                 {!doc.canUnlock && (
-                    <Badge
-                        title={`Mindestens ${doc.meta.fMinReadTime} lesen, um zu entsperren`}
-                        className={clsx(styles.minReadTime)}
-                    >
+                    <Badge title={disabledReason(doc)} className={clsx(styles.minReadTime)}>
                         {doc.meta.fMinReadTime}
                     </Badge>
                 )}
