@@ -33,19 +33,21 @@ const PageReadCheck = observer((props: Props) => {
     const viewStore = useStore('viewStore');
     const doc = useFirstMainDocument(props.id, meta);
     const [animate, setAnimate] = React.useState(false);
+
     React.useEffect(() => {
-        if (!viewStore.isPageVisible) {
+        if (!viewStore.isPageVisible || !doc) {
+            return;
+        }
+        if (doc.read && !props.continueAfterUnlock) {
             return;
         }
         const id = setInterval(() => {
-            if (!doc?.read || props.continueAfterUnlock) {
-                doc?.incrementReadTime(1);
-            }
+            doc.incrementReadTime(1);
         }, 1000);
         return () => {
             clearInterval(id);
         };
-    }, [doc, viewStore.isPageVisible, props.continueAfterUnlock]);
+    }, [doc, doc?.read, viewStore.isPageVisible, props.continueAfterUnlock]);
 
     React.useEffect(() => {
         if (ref.current && doc?.scrollTo) {
