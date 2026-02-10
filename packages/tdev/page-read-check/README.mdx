@@ -74,3 +74,52 @@ Die angezeigten Texte und Tooltipps können angepasst werden:
         disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
     />
 </BrowserWindow>
+
+## Installation
+
+:::info[`packages/tdev/page-read-check`]
+Kopiere des `packages/tdev/page-read-check`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
+:::
+
+Hinzufügen des `page-read-check`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
+
+```ts title="siteConfig.ts"
+const getSiteConfig: SiteConfigProvider = () => {
+    return {
+        apiDocumentProviders: [
+            require.resolve('@tdev/page-read-check/register'),
+        ]
+    };
+};
+```
+
+Falls **nicht** die standardoptionen des `PageIndexPluginDefaultOptions` verwendet werden, muss zusätzlich die `remark`-Plugin-Konfiguration angepasst werden, damit die neuen Dokumente im Seitenindex erfasst werden:
+
+```ts title="siteConfig.ts"
+import pageIndexPlugin from './packages/tdev/page-index/plugin';
+
+const getSiteConfig: SiteConfigProvider = () => ({
+    remarkPlugins: [
+        [
+            pageIndexPlugin,
+            {
+                // ...
+                components: [
+                    // highlight-start
+                    {
+                        name: 'PageReadCheck',
+                        docTypeExtractor: () => 'page_read_check'
+                    }
+                    // highlight-end
+                ]
+            }
+        ]
+    ]
+});
+```
+
+Danach muss erneut installiert werden:
+
+```bash
+yarn install
+```
