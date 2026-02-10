@@ -140,14 +140,15 @@ export class PageStore extends iStore {
 
     @action
     setCurrentPath(path: string | undefined) {
-        if (path === this.currentPath) {
+        const normalizedPath = path?.replace(BasePathRegex, '/');
+        if (normalizedPath === this.currentPath) {
             return;
         }
-        if (!path) {
+        if (!normalizedPath) {
             this.currentPath = undefined;
             return;
         }
-        this.currentPath = path.replace(BasePathRegex, '/');
+        this.currentPath = normalizedPath;
         if (this.isPageIndexLoaded) {
             this.loadTaskableDocuments(this.currentStudentGroupName);
         }
