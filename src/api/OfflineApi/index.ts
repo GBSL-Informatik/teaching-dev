@@ -200,13 +200,14 @@ export default class OfflineApi {
                 }
                 return resolveResponse([] as unknown as T);
             case 'documents':
-                if (url === 'documents/multiple') {
+                if (url === '/documents/multiple') {
                     const documentRootIds = new Set((data as { documentRootIds: string[] }).documentRootIds);
                     const allDocuments = await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE);
 
                     const filteredDocuments = allDocuments.filter((doc) =>
                         documentRootIds.has(doc.documentRootId)
                     );
+                    log('-> post', url, filteredDocuments);
                     return resolveResponse(filteredDocuments as unknown as T);
                 }
                 const document = await this.upsertDocumentRecord<any>(

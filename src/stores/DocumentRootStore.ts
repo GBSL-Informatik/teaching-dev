@@ -23,6 +23,7 @@ import { ModelMeta as MdxCommentMeta } from '@tdev-models/documents/MdxComment';
 import { ModelMeta as RestrictedMeta } from '@tdev-models/documents/Restricted';
 import { ModelMeta as SolutionMeta } from '@tdev-models/documents/Solution';
 import { ModelMeta as StringMeta } from '@tdev-models/documents/String';
+import { ModelMeta as QuillV2Meta } from '@tdev-models/documents/QuillV2';
 
 import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 
@@ -75,7 +76,8 @@ const DefaultMeta: TypeMeta<DocumentType>[] = [
     new RestrictedMeta({}),
     new SolutionMeta({}),
     new StringMeta({}),
-    new CmsTextMeta({})
+    new CmsTextMeta({}),
+    new QuillV2Meta({})
 ];
 
 export class DocumentRootStore extends iStore {

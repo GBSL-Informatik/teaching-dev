@@ -233,6 +233,16 @@ export class PageStore extends iStore {
         { keepAlive: true }
     );
 
+    findByPath = computedFn(
+        function (this: PageStore, path?: string): Page | undefined {
+            if (!path) {
+                return;
+            }
+            return this.pages.find((p) => p.path === path);
+        },
+        { keepAlive: true }
+    );
+
     @computed
     get current(): Page | undefined {
         const currentPath = this.find(this.currentPageId);
@@ -257,6 +267,16 @@ export class PageStore extends iStore {
     @action
     setCurrentPageId(pageId: string | undefined) {
         this.currentPageId = pageId;
+    }
+
+    @action
+    loadLinkedDocumentRoots(page: Page) {
+        [...page.documentRootConfigs.keys()].forEach((rootId) => {
+            this.root.documentRootStore.loadInNextBatch(rootId, undefined, {
+                skipCreate: true,
+                documentRoot: 'addIfMissing'
+            });
+        });
     }
 
     @action
