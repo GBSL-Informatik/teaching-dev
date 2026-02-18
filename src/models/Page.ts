@@ -145,7 +145,7 @@ export default class Page {
     get primaryStudentGroup() {
         return this._primaryStudentGroupName
             ? this.store.root.studentGroupStore.findByName(this._primaryStudentGroupName)
-            : undefined;
+            : this.store.root.studentGroupStore.findByName(this.primaryStudentGroupName);
     }
 
     @action
