@@ -22,8 +22,8 @@ export default class Page {
     readonly path: string;
     initialLoadComplete = false;
 
-    @observable.ref accessor _primaryStudentGroupName: string | undefined = undefined;
-    @observable.ref accessor _activeStudentGroup: StudentGroup | undefined = undefined;
+    @observable.ref accessor _primaryViewedStudentGroupName: string | undefined = undefined;
+    @observable.ref accessor _viewedStudentGroup: StudentGroup | undefined = undefined;
     documentRootConfigs: ObservableMap<string, PageConfig>;
 
     dynamicValues = observable.map<string, string>();
@@ -118,50 +118,56 @@ export default class Page {
         const pathParts = this.path.split('/').filter((p) => p.length > 0);
         const name = pathParts[0];
         if (!name) {
-            return '/';
-        }
-        const pName = `/${name}/`;
-        if (this.store.sidebarVersionPaths.has(pName)) {
-            return pName;
-        }
-        return '/';
-    }
-
-    @computed
-    get primaryStudentGroupName() {
-        return this._primaryStudentGroupName ?? this.store.currentStudentGroupName;
-    }
-
-    @action
-    setPrimaryStudentGroupName(name?: string) {
-        this._primaryStudentGroupName = name;
-    }
-
-    get hasCustomPrimaryStudentGroup() {
-        return !!this._primaryStudentGroupName;
-    }
-
-    @computed
-    get primaryStudentGroup() {
-        return this._primaryStudentGroupName
-            ? this.store.root.studentGroupStore.findByName(this._primaryStudentGroupName)
-            : this.store.root.studentGroupStore.findByName(this.primaryStudentGroupName);
-    }
-
-    @action
-    setPrimaryStudentGroup(group?: StudentGroup) {
-        if (
-            group &&
-            (group.id === this.primaryStudentGroup?.id ||
-                this._activeStudentGroup?.parentIds.includes(group.id))
-        ) {
-            this.setPrimaryStudentGroupName(undefined);
-            this._activeStudentGroup = undefined;
             return;
         }
-        this.setPrimaryStudentGroupName(group?.name);
+        if (this.store.sidebarVersionPaths.has(`/${name}/`)) {
+            return name;
+        }
+        return;
+    }
+
+    @computed
+    get studentGroupScope() {
+        const name = this.studentGroupName;
+        if (!name) {
+            return '/';
+        }
+        return `/${name}/`;
+    }
+
+    @computed
+    get primaryViewedStudentGroupName() {
+        return this._primaryViewedStudentGroupName ?? this.store.currentStudentGroupName;
+    }
+
+    @action
+    setPrimaryViewedStudentGroupName(name?: string) {
+        this._primaryViewedStudentGroupName = name;
+    }
+
+    get hasCustomViewedPrimaryStudentGroup() {
+        return !!this._primaryViewedStudentGroupName;
+    }
+
+    @computed
+    get primaryViewedStudentGroup() {
+        return this._primaryViewedStudentGroupName
+            ? this.store.root.studentGroupStore.findByName(this._primaryViewedStudentGroupName)
+            : this.store.root.studentGroupStore.findByName(this.primaryViewedStudentGroupName);
+    }
+
+    @action
+    setPrimaryViewedStudentGroup(group?: StudentGroup) {
+        const isCurrent = group && this.primaryViewedStudentGroup?.id === group.id;
+        const isInFocus = group && this._viewedStudentGroup?.parentIds.includes(group.id);
+        if (isCurrent || isInFocus) {
+            this.setPrimaryViewedStudentGroupName(undefined);
+            this._viewedStudentGroup = undefined;
+            return;
+        }
+        this.setPrimaryViewedStudentGroupName(group?.name);
         if (group) {
-            this._activeStudentGroup = undefined;
+            this._viewedStudentGroup = undefined;
         }
     }
 
@@ -261,18 +267,18 @@ export default class Page {
     }
 
     @action
-    toggleActiveStudentGroup(studentGroup: StudentGroup) {
-        if (this._activeStudentGroup && this._activeStudentGroup.id === studentGroup.id) {
-            this._activeStudentGroup = undefined;
+    toggleViewedStudentGroup(studentGroup: StudentGroup) {
+        if (this._viewedStudentGroup && this._viewedStudentGroup.id === studentGroup.id) {
+            this._viewedStudentGroup = undefined;
         } else {
-            this._activeStudentGroup = studentGroup;
+            this._viewedStudentGroup = studentGroup;
         }
     }
 
     @computed
     get childStudentGroups() {
-        if (this.primaryStudentGroup) {
-            return this.primaryStudentGroup.children;
+        if (this.primaryViewedStudentGroup) {
+            return this.primaryViewedStudentGroup.children;
         }
         return _.orderBy(
             this.store.root.studentGroupStore.managedStudentGroups.filter((sg) => !!sg.parentId),
@@ -282,8 +288,8 @@ export default class Page {
     }
 
     @computed
-    get activeStudentGroup() {
-        return this._activeStudentGroup || this.primaryStudentGroup;
+    get viewedStudentGroup() {
+        return this._viewedStudentGroup || this.primaryViewedStudentGroup;
     }
 
     @computed
@@ -296,7 +302,7 @@ export default class Page {
                         .filter((doc) => this.TaskableDocuments.has(doc.type)) as iTaskableDocument[];
                 })
                 .filter((doc) =>
-                    this.activeStudentGroup ? this.activeStudentGroup.userIds.has(doc.authorId) : true
+                    this.viewedStudentGroup ? this.viewedStudentGroup.userIds.has(doc.authorId) : true
                 ),
             (doc) => doc.authorId
         );
@@ -306,7 +312,7 @@ export default class Page {
     get userIdsWithoutEditingState(): string[] {
         const editingStates = this.editingStateByUsers;
         const userIds = new Set<string>(
-            this.activeStudentGroup?.userIds ||
+            this.viewedStudentGroup?.userIds ||
                 this.store.root.studentGroupStore.managedStudentGroups.flatMap((g) => [...g.userIds])
         );
         return [...userIds].filter((userId) => !editingStates[userId]);

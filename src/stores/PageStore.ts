@@ -158,8 +158,8 @@ export class PageStore extends iStore {
     @action
     resetPagesStudentGroups() {
         this.pages
-            .filter((p) => p.hasCustomPrimaryStudentGroup)
-            .forEach((p) => p.setPrimaryStudentGroupName(undefined));
+            .filter((p) => p.hasCustomViewedPrimaryStudentGroup)
+            .forEach((p) => p.setPrimaryViewedStudentGroupName(undefined));
     }
 
     @computed
