@@ -105,9 +105,6 @@ export default class WebserialStore {
 
         const mergedOptions = { ...this.serialOptions, ...(options ?? {}) };
 
-        // Strip out custom options that are not part of the Web Serial API's SerialOptions
-        const { clearReceivedDataOnString, ...nativeSerialOptions } = mergedOptions;
-
         try {
             this.setConnectionState('connecting');
             this.setError(null);
@@ -116,8 +113,34 @@ export default class WebserialStore {
             const port = await navigator.serial.requestPort();
             this.port = port;
 
-            // Open the port with only native serial options
-            await port.open(nativeSerialOptions);
+            // If the port is already open (e.g. from a previous session that didn't
+            // close properly), try to close it first before reopening.
+            if (port.readable || port.writable) {
+                try {
+                    await port.close();
+                } catch {
+                    // Ignore — we'll try to open anyway
+                }
+            }
+
+            // Open the port (retry once after a short delay if it fails)
+            try {
+                await port.open(mergedOptions);
+            } catch (openErr: any) {
+                if (openErr.name === 'InvalidStateError' || openErr.name === 'NetworkError') {
+                    // Port may still be releasing — wait and retry once
+                    await new Promise((r) => setTimeout(r, 1000));
+                    await port.open(mergedOptions);
+                } else {
+                    throw openErr;
+                }
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (this.port) {
+                    this.cleanup();
+                }
+            });
 
             this.abortController = new AbortController();
 
@@ -151,6 +174,14 @@ export default class WebserialStore {
             } else {
                 this.setError(err.message ?? 'Unknown error');
                 this.setConnectionState('error');
+                // Release the port claim so it can be opened next time
+                if (this.port) {
+                    try {
+                        await this.port.forget();
+                    } catch {
+                        // Ignore
+                    }
+                }
             }
             this.port = null;
         }
