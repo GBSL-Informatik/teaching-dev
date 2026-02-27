@@ -34,6 +34,7 @@ const DEFAULT_CONFIG: Config = {
 export default class SerialDevice {
     readonly webserialStore: WebserialStore;
     readonly serialOptions: SerialOptions;
+    readonly config: Config;
 
     @observable accessor connectionState: ConnectionState = 'disconnected';
     @observable accessor error: string | null = null;
@@ -46,7 +47,6 @@ export default class SerialDevice {
     private writableStreamClosed: Promise<void> | null = null;
     private writer: WritableStreamDefaultWriter<string> | null = null;
     private abortController: AbortController | null = null;
-    private config: Config;
 
     constructor(options: Partial<SerialOptions>, config: Partial<Config>, webserialStore: WebserialStore) {
         this.serialOptions = { ...DEFAULT_SERIAL_OPTIONS, ...options };
@@ -163,10 +163,10 @@ export default class SerialDevice {
             } else {
                 this.setError(err.message ?? 'Unknown error');
                 this.setConnectionState('error');
-                // Release the port claim so it can be opened next time
+                // Release the port so it can be opened next time
                 if (this.port) {
                     try {
-                        await this.port.forget();
+                        await this.port.close();
                     } catch {
                         // Ignore
                     }
@@ -193,6 +193,11 @@ export default class SerialDevice {
         await this.send(data + '\n');
     }
 
+    @computed
+    get portName(): number {
+        return this.port?.getInfo().usbProductId || -1;
+    }
+
     /**
      * Disconnects from the serial port.
      */
@@ -200,7 +205,7 @@ export default class SerialDevice {
         if (!this.port) {
             return;
         }
-        this.cleanup();
+        return this.cleanup();
     }
 
     private handleDisconnect = action(() => {
@@ -208,7 +213,7 @@ export default class SerialDevice {
     });
 
     @action
-    private cleanup() {
+    private async cleanup() {
         const port = this.port;
         const reader = this.reader;
         const writer = this.writer;
@@ -230,60 +235,56 @@ export default class SerialDevice {
             port.removeEventListener('disconnect', this.handleDisconnect);
         }
 
-        // Async cleanup — release locks, then close port
-        (async () => {
-            try {
-                // Cancel the reader to release the lock on readable
-                if (reader) {
-                    try {
-                        await reader.cancel();
-                    } catch {
-                        // Already cancelled
-                    }
-                    try {
-                        reader.releaseLock();
-                    } catch {
-                        // Already released
-                    }
-                }
-
-                // Abort the pipeTo to release the readable stream
-                if (abortController) {
-                    try {
-                        abortController.abort();
-                    } catch {
-                        // Already aborted
-                    }
-                }
-                await readableStreamClosed?.catch(() => {});
-
-                // Close the writer to release the lock on writable
-                if (writer) {
-                    try {
-                        await writer.close();
-                    } catch {
-                        // Already closed
-                    }
-                    try {
-                        writer.releaseLock();
-                    } catch {
-                        // Already released
-                    }
-                }
-                await writableStreamClosed?.catch(() => {});
-
-                // Now the streams are unlocked — safe to close the port
-                if (port) {
-                    try {
-                        await port.close();
-                    } catch {
-                        // Port already closed or device removed
-                    }
-                }
-            } catch (err) {
-                console.warn('Error during serial cleanup:', err);
+        // Async cleanup — must follow the correct order to release OS handles:
+        //   1. Abort the readable pipeTo  → releases lock on port.readable
+        //   2. Close the writer            → releases lock on port.writable
+        //   3. Close the port              → releases OS serial handle
+        // Getting this order wrong leaves port.readable locked, so port.close()
+        // silently fails to release the OS handle and the next open() errors.
+        try {
+            // 1. Abort the pipeTo so port.readable is cancelled & unlocked.
+            //    The in-flight reader.read() in readLoop will reject (AbortError)
+            //    and the loop will exit.
+            if (abortController) {
+                abortController.abort();
             }
-        })();
+            await readableStreamClosed?.catch(() => {});
+
+            // The reader's lock on textDecoder.readable can now be released.
+            if (reader) {
+                try {
+                    reader.releaseLock();
+                } catch {
+                    // Already released
+                }
+            }
+
+            // 2. Close the writer so port.writable is unlocked.
+            if (writer) {
+                try {
+                    await writer.close();
+                } catch {
+                    // Already closed
+                }
+                try {
+                    writer.releaseLock();
+                } catch {
+                    // Already released
+                }
+            }
+            await writableStreamClosed?.catch(() => {});
+
+            // 3. Both streams are unlocked — safe to close the port.
+            if (port) {
+                try {
+                    await port.close();
+                } catch {
+                    // Port already closed or device removed
+                }
+            }
+        } catch (err) {
+            console.warn('Error during serial cleanup:', err);
+        }
     }
 
     private async readLoop(): Promise<void> {

@@ -29,6 +29,16 @@ const Webserial = observer((props: Props) => {
         await webserialStore.disconnectDevice(deviceId ?? defaultId);
     };
 
+    React.useEffect(() => {
+        return () => {
+            webserialStore.clearDevice(deviceId ?? defaultId);
+        };
+    }, [deviceId]);
+
+    if (!device) {
+        return null;
+    }
+
     return (
         <FullscreenContext.Provider value={'webserial'}>
             <div className={clsx(styles.Webserial)}>
@@ -53,7 +63,7 @@ const Webserial = observer((props: Props) => {
 
                     {device.isConnected && (
                         <button className={clsx(styles.disconnectButton)} onClick={handleDisconnect}>
-                            ⏏ Disconnect
+                            ⏏ {device.portName}
                         </button>
                     )}
 

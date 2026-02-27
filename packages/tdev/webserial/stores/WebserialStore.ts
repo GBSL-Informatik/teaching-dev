@@ -10,11 +10,6 @@ export default class WebserialStore {
         this.viewStore = viewStore;
     }
 
-    @computed
-    get isConnected(): boolean {
-        return [...this.devices.values()].some((d) => d.isConnected);
-    }
-
     useDevice(id: string, options?: Partial<SerialOptions>, config?: Partial<Config>): SerialDevice {
         if (!this.isSupported) {
             return null as unknown as SerialDevice;
@@ -31,9 +26,15 @@ export default class WebserialStore {
     async disconnectDevice(id: string): Promise<void> {
         const device = this.devices.get(id);
         if (device) {
+            this.devices.set(id, new SerialDevice(device.serialOptions, device.config, this));
             await device.disconnect();
-            this.devices.delete(id);
         }
+    }
+
+    @action
+    async clearDevice(id: string): Promise<void> {
+        await this.disconnectDevice(id);
+        this.devices.delete(id);
     }
 
     @computed
