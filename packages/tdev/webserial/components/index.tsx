@@ -9,19 +9,24 @@ import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 interface Props {
     /** Override default baud rate (default: 115200) */
     baudRate?: number;
+    deviceId?: string;
 }
 
 const Webserial = observer((props: Props) => {
-    const { baudRate } = props;
+    const defaultId = React.useId();
+    const { baudRate, deviceId } = props;
     const viewStore = useStore('viewStore');
     const webserialStore = viewStore.useStore('webserialStore');
+    const device = webserialStore.useDevice(deviceId ?? defaultId, baudRate ? { baudRate } : {}, {
+        onReadyString: '::READY::'
+    });
 
     const handleConnect = async () => {
-        await webserialStore.connect(baudRate ? { baudRate } : undefined);
+        await device.connect();
     };
 
     const handleDisconnect = async () => {
-        await webserialStore.disconnect();
+        await webserialStore.disconnectDevice(deviceId ?? defaultId);
     };
 
     return (
@@ -34,38 +39,38 @@ const Webserial = observer((props: Props) => {
                         </p>
                     )}
 
-                    {webserialStore.isSupported && !webserialStore.isConnected && (
+                    {webserialStore.isSupported && !device.isConnected && (
                         <button
                             className={clsx(styles.connectButton)}
                             onClick={handleConnect}
-                            disabled={webserialStore.connectionState === 'connecting'}
+                            disabled={device.connectionState === 'connecting'}
                         >
-                            {webserialStore.connectionState === 'connecting'
+                            {device.connectionState === 'connecting'
                                 ? 'Connecting…'
                                 : '🔌 Connect Serial Device'}
                         </button>
                     )}
 
-                    {webserialStore.isConnected && (
+                    {device.isConnected && (
                         <button className={clsx(styles.disconnectButton)} onClick={handleDisconnect}>
                             ⏏ Disconnect
                         </button>
                     )}
 
-                    <span className={clsx(styles.status, styles[webserialStore.connectionState])}>
-                        {webserialStore.connectionState}
+                    <span className={clsx(styles.status, styles[device.connectionState])}>
+                        {device.connectionState}
                     </span>
                 </div>
 
-                {webserialStore.error && <p className={clsx(styles.error)}>Error: {webserialStore.error}</p>}
+                {device.error && <p className={clsx(styles.error)}>Error: {device.error}</p>}
 
-                {webserialStore.isConnected && (
+                {device.isConnected && (
                     <Logs
-                        messages={webserialStore.receivedData.map((d) => ({
+                        messages={device.receivedData.map((d) => ({
                             type: 'log',
                             message: d.trim()
                         }))}
-                        onClear={() => webserialStore.clearReceivedData()}
+                        onClear={() => device.clearReceivedData()}
                         maxLines={25}
                     />
                 )}
