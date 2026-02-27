@@ -113,11 +113,11 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(
                     try {
                         new URL(src); // ensure the src has no protocol
                     } catch (err) {
-                        const tSrc = srcTransformer(src);
-                        const fSrc = tSrc.startsWith('/')
-                            ? path.join(STATIC_DIR, tSrc)
-                            : path.resolve(dir, tSrc).replace(BUILD_LOCATION, '');
-                        srcAttr.push(toJsxAttribute(optionsInput.srcAttr, fSrc));
+                        const fSrc = src.startsWith('/')
+                            ? path.join(STATIC_DIR, src)
+                            : path.resolve(dir, src).replace(BUILD_LOCATION, '');
+                        const tSrc = srcTransformer(fSrc);
+                        srcAttr.push(toJsxAttribute(optionsInput.srcAttr, tSrc));
                     }
                 }
                 return {
