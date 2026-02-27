@@ -88,6 +88,12 @@ export const imagePluginConfig = [
             figure: 'Figure'
         },
         srcAttr: process.env.NODE_ENV === 'development' ? 'src' : undefined,
+        srcTransformer: (src: string) => {
+            if (process.env.NODE_ENV !== 'production') {
+                // console.log(process.env.PACKAGE_DEST, process.env.PACKAGE_SRC, src);
+            }
+            return src;
+        },
         captionVisitors: [
             (ast, caption) =>
                 captionVisitor(ast, caption, (children) => {
@@ -99,7 +105,7 @@ export const imagePluginConfig = [
                     };
                 })
         ] satisfies CaptionVisitor[]
-    }
+    } satisfies Parameters<typeof imagePlugin>[1]
 ];
 
 export const detailsPluginConfig = detailsPlugin;

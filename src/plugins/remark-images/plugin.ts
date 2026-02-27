@@ -26,6 +26,7 @@ interface OptionsInput {
     inlineEmptyCaptions?: boolean;
     captionVisitors?: CaptionVisitor[];
     srcAttr?: string;
+    srcTransformer?: (src: string) => string;
 }
 
 const SPACER_SPAN = {
@@ -40,6 +41,7 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(
     this,
     optionsInput = { tagNames: DEFAULT_TAG_NAMES }
 ): Transformer<Root> {
+    const srcTransformer = optionsInput.srcTransformer || ((src: string) => src);
     return async (ast, vfile) => {
         const dir = path.dirname(vfile.history[0] || '');
         await transformer(ast, vfile.value.toString(), {
@@ -111,9 +113,10 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(
                     try {
                         new URL(src); // ensure the src has no protocol
                     } catch (err) {
-                        const fSrc = src.startsWith('/')
-                            ? path.join(STATIC_DIR, src)
-                            : path.resolve(dir, src).replace(BUILD_LOCATION, '');
+                        const tSrc = srcTransformer(src);
+                        const fSrc = tSrc.startsWith('/')
+                            ? path.join(STATIC_DIR, tSrc)
+                            : path.resolve(dir, tSrc).replace(BUILD_LOCATION, '');
                         srcAttr.push(toJsxAttribute(optionsInput.srcAttr, fSrc));
                     }
                 }
