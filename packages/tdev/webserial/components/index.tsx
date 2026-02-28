@@ -28,6 +28,7 @@ interface Props {
     inputPlaceholder?: string;
     inputLabel?: string;
     output?: React.ReactNode;
+    onReadyString?: string;
 }
 
 const ConnectionStateMessage: Record<ConnectionState, string> = {
@@ -78,7 +79,7 @@ const Webserial = observer((props: Props) => {
     const viewStore = useStore('viewStore');
     const webserialStore = viewStore.useStore('webserialStore');
     const device = webserialStore.useDevice(deviceId ?? defaultId, baudRate ? { baudRate } : {}, {
-        onReadyString: '::READY::'
+        onReadyString: props.onReadyString
     });
 
     const handleConnect = async () => {
