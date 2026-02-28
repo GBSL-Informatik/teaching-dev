@@ -12,13 +12,22 @@ import { ConnectionState } from '../models/SerialDevice';
 import Badge from '@tdev-components/shared/Badge';
 import Card from '@tdev-components/shared/Card';
 import Button from '@tdev-components/shared/Button';
-import { mdiCloseNetwork, mdiConnection, mdiEjectCircle, mdiLoading } from '@mdi/js';
+import { mdiCloseNetwork, mdiConnection, mdiEjectCircle, mdiLoading, mdiSend } from '@mdi/js';
 import Icon from '@mdi/react';
+import TextInput from '@tdev-components/shared/TextInput';
+// @ts-ignore
+import Details from '@theme/Details';
 
 interface Props {
     /** Override default baud rate (default: 115200) */
     baudRate?: number;
     deviceId?: string;
+    hideLogs?: boolean;
+    collapseLogs?: boolean;
+    showInput?: boolean;
+    inputPlaceholder?: string;
+    inputLabel?: string;
+    output?: React.ReactNode;
 }
 
 const ConnectionStateMessage: Record<ConnectionState, string> = {
@@ -53,6 +62,15 @@ const ButtonText: Record<ConnectionState, string> = {
     connected: 'Verbindung trennen',
     error: 'Erneut versuchen'
 };
+
+const SwitchCollapsed = observer(
+    ({ children, collapsed, title }: { children: React.ReactNode; collapsed?: boolean; title: string }) => {
+        if (collapsed) {
+            return <Details summary={title}>{children}</Details>;
+        }
+        return <>{children}</>;
+    }
+);
 
 const Webserial = observer((props: Props) => {
     const defaultId = React.useId();
@@ -108,6 +126,7 @@ const Webserial = observer((props: Props) => {
                         </Badge>
                     </div>
                 }
+                footer={props.output}
             >
                 {device.error && (
                     <>
@@ -127,15 +146,45 @@ const Webserial = observer((props: Props) => {
                     </>
                 )}
 
-                {(device.isConnected || device.receivedData.length > 0) && (
-                    <Logs
-                        messages={device.receivedData.map((d) => ({
-                            type: 'log',
-                            message: d
-                        }))}
-                        onClear={() => device.clearReceivedData()}
-                        maxLines={25}
-                    />
+                {!props.hideLogs && (device.isConnected || device.receivedData.length > 0) && (
+                    <SwitchCollapsed collapsed={props.collapseLogs} title="Logs">
+                        <Logs
+                            messages={(device.receivedData[device.receivedData.length - 1] === ''
+                                ? device.receivedData.slice(0, -1)
+                                : device.receivedData
+                            ).map((d) => ({
+                                type: 'log',
+                                message: d
+                            }))}
+                            onClear={() => device.clearReceivedData()}
+                            maxLines={25}
+                        />
+                    </SwitchCollapsed>
+                )}
+                {props.showInput && device.isConnected && (
+                    <div className={clsx(styles.input)}>
+                        <TextInput
+                            onChange={(text) => {
+                                device.setInputValue(text);
+                            }}
+                            placeholder={props.inputPlaceholder}
+                            label={props.inputLabel}
+                            value={device.inputValue || ''}
+                            onEnter={() => {
+                                device.sendLine(device.inputValue);
+                                device.setInputValue('');
+                            }}
+                            className={clsx(styles.textInput)}
+                            labelClassName={clsx(styles.label)}
+                        />
+                        <Button
+                            onClick={() => {
+                                device.sendLine(device.inputValue);
+                                device.setInputValue('');
+                            }}
+                            icon={mdiSend}
+                        />
+                    </div>
                 )}
             </Card>
         </FullscreenContext.Provider>

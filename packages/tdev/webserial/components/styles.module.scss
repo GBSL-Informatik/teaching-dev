@@ -15,4 +15,16 @@
     .error {
         margin-bottom: 0.2em;
     }
+    .input {
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .textInput {
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 12em;
+            margin-top: 0;
+        }
+    }
 }

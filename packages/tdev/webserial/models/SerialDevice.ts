@@ -38,6 +38,7 @@ export default class SerialDevice {
 
     @observable accessor connectionState: ConnectionState = 'disconnected';
     @observable accessor error: string | null = null;
+    @observable accessor inputValue: string = '';
 
     receivedData = observable.array<string>([]);
 
@@ -57,6 +58,11 @@ export default class SerialDevice {
     @computed
     get isConnected(): boolean {
         return this.connectionState === 'connected';
+    }
+
+    @action
+    setInputValue(value: string) {
+        this.inputValue = value;
     }
 
     @action

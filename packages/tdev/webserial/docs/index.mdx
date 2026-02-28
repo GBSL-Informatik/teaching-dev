@@ -4,24 +4,54 @@ page_id: 6908277e-0a05-4eda-b8a9-b63760dbfcd2
 
 import Webserial from '@tdev/webserial/components'
 import Badge from '@tdev-components/shared/Badge'
+import BrowserWindow from '@tdev-components/BrowserWindow';
 
 # webserial
 
-<Webserial baudRate={115200} deviceId='foo'/>
-<Webserial baudRate={115200} deviceId='bar'/>
+Mit dem Webserial Package können auf [unterstützten Browsern](https://caniuse.com/web-serial) Geräte über die serielle Schnittstelle angesprochen werden. Es bietet eine einfache API, um Daten zu senden und zu empfangen.
+
+```tsx
+<Webserial baudRate={115200} deviceId='foo' showInput />
+```
+
+<BrowserWindow>
+    <Webserial baudRate={115200} deviceId='foo' showInput />
+</BrowserWindow>
+
+
+## Optionen für `<Webserial />`
+
+`deviceId`
+: `string`
+: Die `deviceId` wird nur verwendet, um das Gerät im `WebserialStore` zu identifizieren. So kann das entsprechende Gerät angesprochen werden und bspw. die empfangenen Daten angezeigt werden.
+`baudRate`
+: `number`
+: Die Baudrate, mit der die serielle Verbindung aufgebaut wird. Standard ist `115200`.
+`showInput`
+: `boolean`
+: Wenn `true`, wird ein Eingabefeld angezeigt, mit dem Daten an das serielle Gerät gesendet werden können. Standard ist `false`.
+`collapseLogs`
+: `boolean`
+: Wenn `true`, werden die Logs in einem collapsible Element angezeigt. Standard ist `false`.
+`hideLogs`
+: `boolean`
+: Wenn `true`, werden die Logs nicht angezeigt. Standard ist `false`.
+`output`
+: `React.ReactNode`
+: Mit `output` kann ein eigenes Element unterhalb der Logs angezeigt werden.
 
 ## Troubleshooting
 
 <details>
 <summary>Fehler: <Badge type='danger'>Error: Failed to execute 'open' on 'SerialPort': Failed to open serial port</Badge></summary>
 :::cards{flexBasis="350px"}
-![--width=200px](./images/01-device-manager.png)
+![1. --width=200px](./images/01-device-manager.png)
 ::br
-![--width=450px](./images/02-com-port.png)
+![2. --width=450px](./images/02-com-port.png)
 ::br
-![--width=450px](./images/03-com-settings.png)
+![3. --width=450px](./images/03-com-settings.png)
 ::br
-![--width=450px](./images/04-com-advanced.png)
+![4. --width=450px](./images/04-com-advanced.png)
 :::
 
 </details>
