@@ -71,10 +71,24 @@ export default class SerialDevice {
 
     @action
     appendReceivedData(data: string) {
-        if (this.config.onReadyString && data.trim() === this.config.onReadyString) {
+        const lines = data.replaceAll(/\r/g, '').split('\n');
+        if (this.receivedData.length > 0) {
+            if (lines[0].length > 0) {
+                this.receivedData.splice(
+                    this.receivedData.length - 1,
+                    1,
+                    `${this.receivedData[this.receivedData.length - 1]}${lines[0]}`
+                );
+            }
+            lines.shift();
+        }
+        this.receivedData.push(...lines);
+        if (
+            this.config.onReadyString &&
+            this.receivedData.slice(-(lines.length + 1)).some((l) => l.trim() === this.config.onReadyString)
+        ) {
             return this.clearReceivedData();
         }
-        this.receivedData.push(data);
         // Keep a rolling buffer of last 1000 entries
         if (this.receivedData.length > this.config.dataBufferSize && this.config.dataBufferSize > 0) {
             this.receivedData.replace(this.receivedData.slice(-Math.ceil(this.config.dataBufferSize / 2)));
@@ -93,6 +107,7 @@ export default class SerialDevice {
         if (this.isConnected) {
             return;
         }
+        this.clearReceivedData();
 
         try {
             this.setConnectionState('connecting');

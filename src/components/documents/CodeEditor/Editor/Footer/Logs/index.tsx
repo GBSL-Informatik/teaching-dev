@@ -57,7 +57,7 @@ const Logs = observer((props: Props) => {
             >
                 {messages.map((msg, idx) => (
                     <pre key={idx} className={clsx(styles.message, styles[msg.type])}>
-                        {msg.message}
+                        {msg.message || <br />}
                     </pre>
                 ))}
                 {hasHorizontalOverflow && (

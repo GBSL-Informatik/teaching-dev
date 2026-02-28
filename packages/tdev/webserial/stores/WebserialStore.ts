@@ -17,6 +17,7 @@ export default class WebserialStore {
         if (this.devices.has(id)) {
             return this.devices.get(id)!;
         }
+        console.log('Creating new SerialDevice with id', id, 'and options', options, 'and config', config);
         const device = new SerialDevice(options ?? {}, config ?? {}, this);
         this.devices.set(id, device);
         return device;
@@ -26,7 +27,7 @@ export default class WebserialStore {
     async disconnectDevice(id: string): Promise<void> {
         const device = this.devices.get(id);
         if (device) {
-            this.devices.set(id, new SerialDevice(device.serialOptions, device.config, this));
+            // this.devices.set(id, new SerialDevice(device.serialOptions, device.config, this));
             await device.disconnect();
         }
     }

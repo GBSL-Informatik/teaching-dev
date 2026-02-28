@@ -5,12 +5,54 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
+import Alert from '@tdev-components/shared/Alert';
+import Admonition from '@theme-original/Admonition';
+import CodeBlock from '@theme-original/CodeBlock';
+import { ConnectionState } from '../models/SerialDevice';
+import Badge from '@tdev-components/shared/Badge';
+import Card from '@tdev-components/shared/Card';
+import Button from '@tdev-components/shared/Button';
+import { mdiCloseNetwork, mdiConnection, mdiEjectCircle, mdiLoading } from '@mdi/js';
+import Icon from '@mdi/react';
 
 interface Props {
     /** Override default baud rate (default: 115200) */
     baudRate?: number;
     deviceId?: string;
 }
+
+const ConnectionStateMessage: Record<ConnectionState, string> = {
+    disconnected: 'Getrennt',
+    connecting: 'Verbinden…',
+    connected: 'Verbunden',
+    error: 'Fehler'
+};
+
+const ConnectionStateColor: Record<ConnectionState, string> = {
+    disconnected: 'gray',
+    connecting: 'orange',
+    connected: 'green',
+    error: 'red'
+};
+
+const ButtonIcon: Record<ConnectionState, string> = {
+    disconnected: mdiConnection,
+    connecting: mdiLoading,
+    connected: mdiEjectCircle,
+    error: mdiConnection
+};
+const ButtonColor: Record<ConnectionState, string> = {
+    disconnected: 'blue',
+    connecting: 'orange',
+    connected: 'red',
+    error: 'blue'
+};
+const ButtonText: Record<ConnectionState, string> = {
+    disconnected: 'Serielles Gerät verbinden',
+    connecting: 'Verbinden…',
+    connected: 'Verbindung trennen',
+    error: 'Erneut versuchen'
+};
 
 const Webserial = observer((props: Props) => {
     const defaultId = React.useId();
@@ -41,50 +83,61 @@ const Webserial = observer((props: Props) => {
 
     return (
         <FullscreenContext.Provider value={'webserial'}>
-            <div className={clsx(styles.Webserial)}>
-                <div className={clsx(styles.toolbar)}>
-                    {!webserialStore.isSupported && (
-                        <p className={clsx(styles.warning)}>
-                            ⚠️ Web Serial API is not supported in this browser. Use Chrome or Edge.
-                        </p>
-                    )}
+            <Card
+                classNames={{ card: clsx(styles.webserial) }}
+                header={
+                    <div className={clsx(styles.toolbar)}>
+                        {!webserialStore.isSupported && (
+                            <Alert type="warning">
+                                ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
+                            </Alert>
+                        )}
 
-                    {webserialStore.isSupported && !device.isConnected && (
-                        <button
-                            className={clsx(styles.connectButton)}
-                            onClick={handleConnect}
-                            disabled={device.connectionState === 'connecting'}
+                        {webserialStore.isSupported && (
+                            <Button
+                                onClick={device.isConnected ? handleDisconnect : handleConnect}
+                                disabled={device.connectionState === 'connecting'}
+                                spin={device.connectionState === 'connecting'}
+                                icon={ButtonIcon[device.connectionState]}
+                                color={ButtonColor[device.connectionState]}
+                                text={ButtonText[device.connectionState]}
+                            />
+                        )}
+                        <Badge color={ConnectionStateColor[device.connectionState]}>
+                            {ConnectionStateMessage[device.connectionState]}
+                        </Badge>
+                    </div>
+                }
+            >
+                {device.error && (
+                    <>
+                        <Admonition
+                            type="danger"
+                            title="Fehler"
+                            icon={<Icon path={mdiCloseNetwork} size={1} />}
+                            className={styles.error}
                         >
-                            {device.connectionState === 'connecting'
-                                ? 'Connecting…'
-                                : '🔌 Connect Serial Device'}
-                        </button>
-                    )}
+                            <CodeBlock language="text">{device.error}</CodeBlock>
+                        </Admonition>
+                        {/Failed to open serial port/.test(device.error) && (
+                            <Admonition type="info" title="Troubleshooting" className={styles.error}>
+                                Trennen Sie das Gerät vom Computer und verbinden Sie es erneut.
+                            </Admonition>
+                        )}
+                    </>
+                )}
 
-                    {device.isConnected && (
-                        <button className={clsx(styles.disconnectButton)} onClick={handleDisconnect}>
-                            ⏏ {device.portName}
-                        </button>
-                    )}
-
-                    <span className={clsx(styles.status, styles[device.connectionState])}>
-                        {device.connectionState}
-                    </span>
-                </div>
-
-                {device.error && <p className={clsx(styles.error)}>Error: {device.error}</p>}
-
-                {device.isConnected && (
+                {(device.isConnected || device.receivedData.length > 0) && (
                     <Logs
                         messages={device.receivedData.map((d) => ({
                             type: 'log',
-                            message: d.trim()
+                            message: d
                         }))}
                         onClear={() => device.clearReceivedData()}
                         maxLines={25}
                     />
                 )}
-            </div>
+            </Card>
         </FullscreenContext.Provider>
     );
 });
