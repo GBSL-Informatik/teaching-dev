@@ -15,6 +15,11 @@ interface Props {
     messages: LogMessage[];
     onClear: () => void;
     maxLines?: number;
+    /**
+     * Use this when not used inside FullscreenTarget, no Context must be provided and useFullscreenTargetId hook
+     * will simply return null.
+     */
+    standalone?: boolean;
 }
 // make it scroll always to bottom - add a ref to the messages container and useEffect to scroll
 const Logs = observer((props: Props) => {
@@ -22,7 +27,7 @@ const Logs = observer((props: Props) => {
     const ref = React.useRef<HTMLDivElement>(null);
     const viewStore = useStore('viewStore');
     const [hasHorizontalOverflow, setHasHorizontalOverflow] = React.useState(false);
-    const targetId = useFullscreenTargetId();
+    const targetId = useFullscreenTargetId(props.standalone);
     React.useEffect(() => {
         if (ref.current) {
             ref.current.scrollTop = ref.current.scrollHeight;

@@ -1,0 +1,13 @@
+.binaryDecoder {
+    position: relative;
+    .indicator {
+        position: absolute;
+        top: 0.5em;
+        right: 0.5em;
+    }
+    .bytes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em;
+    }
+}

@@ -31,10 +31,18 @@ const DEFAULT_CONFIG: Config = {
     dataBufferSize: 1000
 };
 
+export interface iSubscriber {
+    id: string;
+    onNewLines: (newLines: string[]) => void;
+    reset: () => void;
+}
+
 export default class SerialDevice {
     readonly webserialStore: WebserialStore;
     readonly serialOptions: SerialOptions;
     readonly config: Config;
+    private lineBuffer: string = '';
+    private subscriptions = new Map<string, iSubscriber>();
 
     @observable accessor connectionState: ConnectionState = 'disconnected';
     @observable accessor error: string | null = null;
@@ -53,6 +61,16 @@ export default class SerialDevice {
         this.serialOptions = { ...DEFAULT_SERIAL_OPTIONS, ...options };
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.webserialStore = webserialStore;
+    }
+
+    @action
+    subscribe(subscriber: iSubscriber) {
+        this.subscriptions.set(subscriber.id, subscriber);
+    }
+
+    @action
+    unsubscribe(id: string) {
+        this.subscriptions.delete(id);
     }
 
     @computed
@@ -78,21 +96,34 @@ export default class SerialDevice {
     @action
     appendReceivedData(data: string) {
         const lines = data.replaceAll(/\r/g, '').split('\n');
-        if (this.receivedData.length > 0) {
-            if (lines[0].length > 0) {
-                this.receivedData.splice(
-                    this.receivedData.length - 1,
-                    1,
-                    `${this.receivedData[this.receivedData.length - 1]}${lines[0]}`
-                );
-            }
-            lines.shift();
+        const [first, ...rest] = lines;
+        if (first === undefined) {
+            return;
         }
-        this.receivedData.push(...lines);
-        if (
-            this.config.onReadyString &&
-            this.receivedData.slice(-(lines.length + 1)).some((l) => l.trim() === this.config.onReadyString)
-        ) {
+        const last = rest.splice(-1)[0];
+        console.log('Received data:', { data: JSON.stringify(data), lines, first, rest, last });
+        const currentLine = this.receivedData.length;
+        if (this.lineBuffer.length > 0) {
+            this.lineBuffer += first;
+        } else {
+            this.lineBuffer = first;
+        }
+        if (this.lineBuffer.length > 0 && last === undefined) {
+            return;
+        }
+        if (last !== undefined) {
+            this.receivedData.push(this.lineBuffer);
+        }
+        this.receivedData.push(...rest);
+        this.lineBuffer = last ?? '';
+        const addedLines = this.receivedData.slice(currentLine);
+        if (addedLines.length > 0) {
+            for (const subscriber of this.subscriptions.values()) {
+                subscriber.onNewLines(addedLines);
+            }
+        }
+
+        if (this.config.onReadyString && addedLines.some((l) => l.trim() === this.config.onReadyString)) {
             return this.clearReceivedData();
         }
         // Keep a rolling buffer of last 1000 entries
@@ -104,6 +135,10 @@ export default class SerialDevice {
     @action
     clearReceivedData() {
         this.receivedData.clear();
+        this.lineBuffer = '';
+        for (const subscriber of this.subscriptions.values()) {
+            subscriber.reset();
+        }
     }
 
     /**

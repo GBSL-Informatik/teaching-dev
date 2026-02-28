@@ -1,0 +1,8 @@
+.bit {
+    width: 5px;
+    background: black;
+    height: 5px;
+    &.active {
+        height: 15px;
+    }
+}

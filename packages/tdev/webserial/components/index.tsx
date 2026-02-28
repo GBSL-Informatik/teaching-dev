@@ -17,6 +17,7 @@ import Icon from '@mdi/react';
 import TextInput from '@tdev-components/shared/TextInput';
 // @ts-ignore
 import Details from '@theme/Details';
+import { DeviceContext } from '../hooks/useDeviceId';
 
 interface Props {
     /** Override default baud rate (default: 115200) */
@@ -101,7 +102,7 @@ const Webserial = observer((props: Props) => {
     }
 
     return (
-        <FullscreenContext.Provider value={'webserial'}>
+        <DeviceContext.Provider value={deviceId ?? defaultId}>
             <Card
                 classNames={{ card: clsx(styles.webserial) }}
                 header={
@@ -188,7 +189,7 @@ const Webserial = observer((props: Props) => {
                     </div>
                 )}
             </Card>
-        </FullscreenContext.Provider>
+        </DeviceContext.Provider>
     );
 });
 
