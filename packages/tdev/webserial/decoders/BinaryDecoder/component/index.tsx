@@ -25,10 +25,51 @@ const BinaryDecoder = observer((props: Props) => {
         }
     }, [device, subscriptionId]);
     React.useEffect(() => {
-        decoder?.onNewLines(['0', '1', '0', '0', '0', '0', '0', '1', '0', '1', '1']);
-        return () => {
-            decoder?.cleanup();
-        };
+        if (decoder) {
+            let i = 0;
+            const bits = [
+                '0',
+                '1',
+                '0',
+                '0',
+                '0',
+                '0',
+                '0',
+                '1',
+                '0',
+                '1',
+                '1',
+                '0',
+                '0',
+                '0',
+                '1',
+                '0',
+                '0',
+                '1',
+                '0',
+                '0',
+                '0',
+                '0',
+                '1',
+                '0',
+                '0',
+                '1',
+                '0',
+                '0'
+            ];
+            const interval = setInterval(() => {
+                if (i < bits.length) {
+                    decoder.onNewLines([bits[i]]);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 500);
+            return () => {
+                clearInterval(interval);
+                decoder?.cleanup();
+            };
+        }
     }, [decoder, subscriptionId]);
 
     if (!decoder) {
@@ -52,7 +93,6 @@ const BinaryDecoder = observer((props: Props) => {
                 className={clsx(styles.indicator)}
             />
             <div className={clsx(styles.bytes)}>
-                {decoder.size} bytes
                 {[...Array(decoder.size)].map((_, i) => (
                     <Byte key={i} decoder={decoder} offset={i} />
                 ))}

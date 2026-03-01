@@ -6,7 +6,7 @@ class Decoder implements iSubscriber {
     readonly device: SerialDevice;
 
     private bufferOffset = 0;
-    buffer = observable.array<string>([], { deep: false });
+    buffer = observable.array<'0' | '1'>([], { deep: false });
     characters = observable.array<string>([], { deep: false });
 
     constructor(id: string, device: SerialDevice) {
@@ -62,6 +62,32 @@ class Decoder implements iSubscriber {
     @action
     cleanup() {
         this.device.unsubscribe(this.id);
+    }
+
+    byteAt(offset: number): ('0' | '1')[] {
+        const bits = this.buffer.slice(offset * 8, offset * 8 + 8);
+        if (bits.length < 8) {
+            return [];
+        }
+        return bits;
+    }
+
+    getHex(byteOffset: number): string {
+        const bits = this.byteAt(byteOffset).join('');
+        if (bits.length < 8) {
+            return '';
+        }
+        const byteValue = parseInt(bits, 2);
+        return byteValue.toString(16).toUpperCase().padStart(2, '0');
+    }
+
+    getDec(byteOffset: number): string {
+        const bits = this.byteAt(byteOffset).join('');
+        if (bits.length < 8) {
+            return '';
+        }
+        const byteValue = parseInt(bits, 2);
+        return byteValue.toString(10);
     }
 }
 

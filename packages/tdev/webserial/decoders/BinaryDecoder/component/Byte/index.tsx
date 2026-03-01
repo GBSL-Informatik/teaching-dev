@@ -17,11 +17,18 @@ const Byte = observer((props: Props) => {
     if (offset >= decoder.size) {
         return null;
     }
+    console.log('rerender byte', offset);
     return (
         <div className={clsx(styles.byte)}>
-            {BYTE_POS.map((pos) => (
-                <Bit key={pos} decoder={decoder} bitPos={offset * 8 + pos} />
-            ))}
+            <div className={clsx(styles.bits)}>
+                {BYTE_POS.map((pos) => (
+                    <Bit key={pos} decoder={decoder} bitPos={offset * 8 + pos} />
+                ))}
+            </div>
+            <div className={clsx(styles.decoded)}>
+                <div className={clsx(styles.hex)}>{decoder.getHex(offset)}</div>
+                <div className={clsx(styles.dec)}>{decoder.getDec(offset)}</div>
+            </div>
         </div>
     );
 });
