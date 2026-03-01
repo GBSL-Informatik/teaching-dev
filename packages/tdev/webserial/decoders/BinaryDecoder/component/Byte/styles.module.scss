@@ -1,7 +1,16 @@
 .byte {
     .bits {
+        height: var(--tdev-bit-height);
         display: flex;
         align-items: flex-end;
         gap: 1px;
+    }
+    .decoded {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0px;
+        font-size: smaller;
+        line-height: 1em;
     }
 }

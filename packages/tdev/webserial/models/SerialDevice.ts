@@ -48,6 +48,9 @@ export default class SerialDevice {
     @observable accessor error: string | null = null;
     @observable accessor inputValue: string = '';
 
+    @observable accessor isProcessing = false;
+    _isProcessingCounterTimeout: NodeJS.Timeout | null = null;
+
     receivedData = observable.array<string>([]);
 
     private port: SerialPort | null = null;
@@ -94,14 +97,27 @@ export default class SerialDevice {
     }
 
     @action
+    setIsProcessing(isProcessing: boolean) {
+        this.isProcessing = isProcessing;
+        if (isProcessing) {
+            if (this._isProcessingCounterTimeout) {
+                clearTimeout(this._isProcessingCounterTimeout);
+            }
+            this._isProcessingCounterTimeout = setTimeout(() => {
+                this.setIsProcessing(false);
+            }, 2000);
+        }
+    }
+
+    @action
     appendReceivedData(data: string) {
         const lines = data.replaceAll(/\r/g, '').split('\n');
         const [first, ...rest] = lines;
+        this.setIsProcessing(true);
         if (first === undefined) {
             return;
         }
         const last = rest.splice(-1)[0];
-        console.log('Received data:', { data: JSON.stringify(data), lines, first, rest, last });
         const currentLine = this.receivedData.length;
         if (this.lineBuffer.length > 0) {
             this.lineBuffer += first;
@@ -138,6 +154,11 @@ export default class SerialDevice {
         this.lineBuffer = '';
         for (const subscriber of this.subscriptions.values()) {
             subscriber.reset();
+        }
+        this.isProcessing = false;
+        if (this._isProcessingCounterTimeout) {
+            clearTimeout(this._isProcessingCounterTimeout);
+            this._isProcessingCounterTimeout = null;
         }
     }
 

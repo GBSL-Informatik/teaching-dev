@@ -5,8 +5,8 @@ class Decoder implements iSubscriber {
     readonly id: string;
     readonly device: SerialDevice;
 
-    private bufferOffset = 0;
     buffer = observable.array<'0' | '1'>([], { deep: false });
+    bytes = observable.array<string>([], { deep: false });
     characters = observable.array<string>([], { deep: false });
 
     constructor(id: string, device: SerialDevice) {
@@ -19,26 +19,21 @@ class Decoder implements iSubscriber {
     onNewLines(lines: string[]) {
         const bits = lines.map((l) => l.trim()).filter((l) => l === '0' || l === '1');
         this.buffer.push(...bits);
-        while (this.buffer.length - this.bufferOffset >= 8) {
-            const byte = this.buffer.slice(this.bufferOffset, this.bufferOffset + 8).join('');
+        while (this.buffer.length >= 8) {
+            const byte = this.buffer.splice(0, 8).join('');
+            this.bytes.push(byte);
             const charCode = parseInt(byte, 2);
             if (!isNaN(charCode)) {
                 this.characters.push(String.fromCharCode(charCode));
             }
-            this.bufferOffset += 8;
         }
     }
 
     @action
     reset() {
         this.buffer.clear();
+        this.bytes.clear();
         this.characters.clear();
-        this.bufferOffset = 0;
-    }
-
-    @computed
-    get isProcessing(): boolean {
-        return this.buffer.length % 8 !== 0;
     }
 
     /**
@@ -46,7 +41,7 @@ class Decoder implements iSubscriber {
      */
     @computed
     get size(): number {
-        return Math.ceil(this.buffer.length / 8);
+        return this.bytes.length;
     }
 
     @computed
@@ -62,32 +57,6 @@ class Decoder implements iSubscriber {
     @action
     cleanup() {
         this.device.unsubscribe(this.id);
-    }
-
-    byteAt(offset: number): ('0' | '1')[] {
-        const bits = this.buffer.slice(offset * 8, offset * 8 + 8);
-        if (bits.length < 8) {
-            return [];
-        }
-        return bits;
-    }
-
-    getHex(byteOffset: number): string {
-        const bits = this.byteAt(byteOffset).join('');
-        if (bits.length < 8) {
-            return '';
-        }
-        const byteValue = parseInt(bits, 2);
-        return byteValue.toString(16).toUpperCase().padStart(2, '0');
-    }
-
-    getDec(byteOffset: number): string {
-        const bits = this.byteAt(byteOffset).join('');
-        if (bits.length < 8) {
-            return '';
-        }
-        const byteValue = parseInt(bits, 2);
-        return byteValue.toString(10);
     }
 }
 

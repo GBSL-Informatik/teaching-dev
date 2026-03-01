@@ -1,15 +1,12 @@
 .binaryDecoder {
-    position: relative;
     --tdev-bit-width: 5px;
     --tdev-bit-height: 15px;
-    .indicator {
-        position: absolute;
-        top: 0.5em;
-        right: 0.5em;
-    }
     .bytes {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5em;
+    }
+    .output {
+        font-size: 2em;
     }
 }

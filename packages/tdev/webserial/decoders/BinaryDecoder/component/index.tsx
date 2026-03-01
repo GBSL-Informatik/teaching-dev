@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import byteStyles from './Byte/styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { useDeviceId } from '@tdev/webserial/hooks/useDeviceId';
@@ -8,9 +9,12 @@ import Decoder from '../model/Decoder';
 import Icon from '@mdi/react';
 import { mdiCircleSmall, mdiLoading } from '@mdi/js';
 import Byte from './Byte';
+import Card from '@tdev-components/shared/Card';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface Props {
     bitDimension?: { width: string; height: string };
+    demoData?: string;
 }
 
 const BinaryDecoder = observer((props: Props) => {
@@ -25,41 +29,12 @@ const BinaryDecoder = observer((props: Props) => {
         }
     }, [device, subscriptionId]);
     React.useEffect(() => {
-        if (decoder) {
+        if (decoder && props.demoData) {
             let i = 0;
-            const bits = [
-                '0',
-                '1',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '1',
-                '0',
-                '1',
-                '1',
-                '0',
-                '0',
-                '0',
-                '1',
-                '0',
-                '0',
-                '1',
-                '0',
-                '0',
-                '0',
-                '0',
-                '1',
-                '0',
-                '0',
-                '1',
-                '0',
-                '0'
-            ];
+            const bits = props.demoData.split('').filter((c) => c === '0' || c === '1');
             const interval = setInterval(() => {
                 if (i < bits.length) {
-                    decoder.onNewLines([bits[i]]);
+                    device?.appendReceivedData(bits[i] + '\n');
                     i++;
                 } else {
                     clearInterval(interval);
@@ -70,7 +45,7 @@ const BinaryDecoder = observer((props: Props) => {
                 decoder?.cleanup();
             };
         }
-    }, [decoder, subscriptionId]);
+    }, [decoder, subscriptionId, props.demoData]);
 
     if (!decoder) {
         return null;
@@ -86,20 +61,28 @@ const BinaryDecoder = observer((props: Props) => {
                 } as React.CSSProperties
             }
         >
-            <Icon
-                path={decoder.isProcessing ? mdiLoading : mdiCircleSmall}
-                size={0.75}
-                spin={decoder.isProcessing}
-                className={clsx(styles.indicator)}
-            />
             <div className={clsx(styles.bytes)}>
-                {[...Array(decoder.size)].map((_, i) => (
-                    <Byte key={i} decoder={decoder} offset={i} />
+                <div className={clsx(byteStyles.byte)}>
+                    <div className={clsx(byteStyles.bits)}></div>
+                    <div className={clsx(byteStyles.decoded)}>
+                        <div className={clsx(byteStyles.hex)}>
+                            <b>Hex</b>
+                        </div>
+                        <div className={clsx(byteStyles.dec)}>
+                            <b>Dez</b>
+                        </div>
+                    </div>
+                </div>
+                {decoder.bytes.map((byte, i) => (
+                    <Byte key={i} byteString={byte} />
                 ))}
+                {decoder.buffer.length > 0 && <Byte byteString={decoder.buffer.join('')} />}
             </div>
-            {decoder.lines.map((line, i) => (
-                <div key={i}>{line}</div>
-            ))}
+            <Card classNames={{ card: clsx(styles.output) }}>
+                {decoder.lines.map((line, i) => (
+                    <div key={i}>{line}</div>
+                ))}
+            </Card>
         </div>
     );
 });

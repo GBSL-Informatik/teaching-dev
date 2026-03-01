@@ -11,7 +11,16 @@ import { ConnectionState } from '../models/SerialDevice';
 import Badge from '@tdev-components/shared/Badge';
 import Card from '@tdev-components/shared/Card';
 import Button from '@tdev-components/shared/Button';
-import { mdiCloseNetwork, mdiConnection, mdiEjectCircle, mdiLoading, mdiSend } from '@mdi/js';
+import {
+    mdiCheckCircle,
+    mdiCloseNetwork,
+    mdiCloseOctagon,
+    mdiConnection,
+    mdiEjectCircle,
+    mdiLoading,
+    mdiSend,
+    mdiSync
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import TextInput from '@tdev-components/shared/TextInput';
 // @ts-ignore
@@ -56,6 +65,12 @@ const ButtonColor: Record<ConnectionState, string> = {
     connecting: 'orange',
     connected: 'red',
     error: 'blue'
+};
+const BadgeIcon: Record<ConnectionState, string> = {
+    disconnected: mdiCloseNetwork,
+    connecting: mdiLoading,
+    connected: mdiCheckCircle,
+    error: mdiCloseOctagon
 };
 const ButtonText: Record<ConnectionState, string> = {
     disconnected: 'Serielles Gerät verbinden',
@@ -134,6 +149,11 @@ const Webserial = observer((props: Props) => {
                             />
                         )}
                         <Badge color={ConnectionStateColor[device.connectionState]}>
+                            <Icon
+                                path={device.isProcessing ? mdiSync : BadgeIcon[device.connectionState]}
+                                size={0.75}
+                                spin={device.isProcessing ? -2 : 0}
+                            />
                             {ConnectionStateMessage[device.connectionState]}
                         </Badge>
                     </div>

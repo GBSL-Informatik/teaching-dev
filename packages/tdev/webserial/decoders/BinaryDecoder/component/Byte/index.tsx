@@ -2,33 +2,32 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import Decoder from '../../model/Decoder';
 import Bit from '../Bit';
 
 interface Props {
-    decoder: Decoder;
-    offset: number;
+    byteString: string;
 }
 
 const BYTE_POS = [0, 1, 2, 3, 4, 5, 6, 7];
 
 const Byte = observer((props: Props) => {
-    const { decoder, offset } = props;
-    if (offset >= decoder.size) {
-        return null;
-    }
-    console.log('rerender byte', offset);
+    const { byteString } = props;
+    console.log('rerender byte', byteString);
+    const hex = byteString.length >= 8 ? parseInt(byteString, 2).toString(16).toUpperCase() : undefined;
+    const dec = byteString.length >= 8 ? parseInt(byteString, 2) : undefined;
     return (
         <div className={clsx(styles.byte)}>
             <div className={clsx(styles.bits)}>
                 {BYTE_POS.map((pos) => (
-                    <Bit key={pos} decoder={decoder} bitPos={offset * 8 + pos} />
+                    <Bit key={pos} value={byteString.charAt(pos) as '0' | '1' | ''} />
                 ))}
             </div>
-            <div className={clsx(styles.decoded)}>
-                <div className={clsx(styles.hex)}>{decoder.getHex(offset)}</div>
-                <div className={clsx(styles.dec)}>{decoder.getDec(offset)}</div>
-            </div>
+            {byteString.length >= 8 && (
+                <div className={clsx(styles.decoded)}>
+                    <div className={clsx(styles.hex)}>{hex}</div>
+                    <div className={clsx(styles.dec)}>{dec}</div>
+                </div>
+            )}
         </div>
     );
 });
