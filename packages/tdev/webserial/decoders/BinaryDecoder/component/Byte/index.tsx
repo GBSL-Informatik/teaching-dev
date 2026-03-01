@@ -12,8 +12,10 @@ const BYTE_POS = [0, 1, 2, 3, 4, 5, 6, 7];
 
 const Byte = observer((props: Props) => {
     const { byteString } = props;
-    console.log('rerender byte', byteString);
-    const hex = byteString.length >= 8 ? parseInt(byteString, 2).toString(16).toUpperCase() : undefined;
+    const hex =
+        byteString.length >= 8
+            ? parseInt(byteString, 2).toString(16).toUpperCase().padStart(2, '0')
+            : undefined;
     const dec = byteString.length >= 8 ? parseInt(byteString, 2) : undefined;
     return (
         <div className={clsx(styles.byte)}>

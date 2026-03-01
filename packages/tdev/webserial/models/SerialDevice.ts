@@ -52,6 +52,7 @@ export default class SerialDevice {
 
     @observable accessor isProcessing = false;
     @observable accessor _replayInterval: NodeJS.Timeout | null = null;
+    @observable accessor replaySpeed: number = 500;
     @observable accessor _replayPausedAt: number = 0;
     _replayPristineData: string[] = [];
     _isProcessingCounterTimeout: NodeJS.Timeout | null = null;
@@ -98,7 +99,7 @@ export default class SerialDevice {
     }
 
     @action
-    replay(from: number = 0, intervalMs: number = 500) {
+    replay(from: number = 0) {
         if (this.isConnected) {
             return;
         }
@@ -122,18 +123,32 @@ export default class SerialDevice {
             } else {
                 this.stopReplay();
             }
-        }, intervalMs);
+        }, this.replaySpeed);
     }
 
     @action
     pauseReplay() {
-        if (!this.isReplaying) {
+        if (!this.isReplaying || this._replayPristineData.length === 0) {
             return;
+        }
+        // this happens only on double-clicking the replay button.
+        // ensure at least one data entry was received.
+        if (this.size === 0) {
+            this.appendReceivedData(this._replayPristineData[0] + '\n');
         }
         this._replayPausedAt = this.size;
         if (this._replayInterval) {
             clearInterval(this._replayInterval);
             this._replayInterval = null;
+        }
+    }
+
+    @action
+    setReplaySpeed(speed: number) {
+        this.replaySpeed = speed;
+        if (this.isReplaying) {
+            this.pauseReplay();
+            this.replay(this._replayPausedAt);
         }
     }
 

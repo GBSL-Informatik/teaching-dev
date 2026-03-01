@@ -19,11 +19,7 @@ import {
     mdiConnection,
     mdiEjectCircle,
     mdiLoading,
-    mdiMotionPauseOutline,
-    mdiMotionPlay,
-    mdiMotionPlayOutline,
     mdiSend,
-    mdiStopCircleOutline,
     mdiSync
 } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -31,6 +27,7 @@ import TextInput from '@tdev-components/shared/TextInput';
 // @ts-ignore
 import Details from '@theme/Details';
 import { DeviceContext } from '../hooks/useDeviceId';
+import ReplayControl from './ReplayControl';
 
 interface Props {
     /** Override default baud rate (default: 115200) */
@@ -143,51 +140,29 @@ const Webserial = observer((props: Props) => {
                 }}
                 header={
                     <div className={clsx(styles.toolbar)}>
-                        {webserialStore.isSupported && (
-                            <Button
-                                onClick={device.isConnected ? handleDisconnect : handleConnect}
-                                disabled={device.connectionState === 'connecting'}
-                                spin={device.connectionState === 'connecting'}
-                                icon={ButtonIcon[device.connectionState]}
-                                color={ButtonColor[device.connectionState]}
-                                text={ButtonText[device.connectionState]}
-                            />
-                        )}
-                        <div className={clsx(styles.replayControls)}>
-                            {(device.canReplay || device.isReplaying) && (
+                        <div className={clsx(styles.actions)}>
+                            {webserialStore.isSupported && (
                                 <Button
-                                    onClick={() =>
-                                        device.isReplaying
-                                            ? device.pauseReplay()
-                                            : device.replay(device._replayPausedAt || 0)
-                                    }
-                                    icon={
-                                        device.isReplaying
-                                            ? mdiMotionPauseOutline
-                                            : device.isReplayPaused
-                                              ? mdiMotionPlay
-                                              : mdiMotionPlayOutline
-                                    }
-                                    title={`Replay ${device.isReplaying ? 'pausieren' : 'starten'}`}
-                                    color={device.isReplaying || device.isReplayPaused ? 'blue' : undefined}
+                                    onClick={device.isConnected ? handleDisconnect : handleConnect}
+                                    disabled={device.connectionState === 'connecting'}
+                                    spin={device.connectionState === 'connecting'}
+                                    icon={ButtonIcon[device.connectionState]}
+                                    color={ButtonColor[device.connectionState]}
+                                    text={ButtonText[device.connectionState]}
                                 />
                             )}
-                            {(device.isReplaying || device.isReplayPaused) && (
-                                <Button
-                                    onClick={() => device.stopReplay()}
-                                    icon={mdiStopCircleOutline}
-                                    title="Replay stoppen"
-                                    color="red"
-                                />
-                            )}
+                            <ReplayControl device={device} />
                         </div>
-                        {device.size > 0 && webserialStore.isSupported && (
-                            <Button
-                                onClick={() => device.clearReceivedData()}
-                                icon={mdiCardRemoveOutline}
-                                title="Empfangene Daten löschen"
-                            />
-                        )}
+
+                        {device.size > 0 &&
+                            webserialStore.isSupported &&
+                            !(device.isReplaying || device.isReplayPaused) && (
+                                <Button
+                                    onClick={() => device.clearReceivedData()}
+                                    icon={mdiCardRemoveOutline}
+                                    title="Empfangene Daten löschen"
+                                />
+                            )}
                         <Badge color={ConnectionStateColor[device.connectionState]}>
                             <Icon
                                 path={device.isProcessing ? mdiSync : BadgeIcon[device.connectionState]}

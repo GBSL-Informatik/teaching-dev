@@ -1,0 +1,12 @@
+.replayControls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    .speedControl {
+        display: flex;
+        flex-wrap: wrap;
+        flex-basis: 150px;
+        min-width: 150px;
+        justify-content: center;
+    }
+}
