@@ -49,7 +49,7 @@ interface Props {
      * Each string in the array represents a line of data that would be received, and
      * they will be emitted with a delay between them to simulate real-time data reception.
      */
-    initialData?: string;
+    initialData?: string[];
 }
 
 const ConnectionStateMessage: Record<ConnectionState, string> = {
@@ -119,8 +119,8 @@ const Webserial = observer((props: Props) => {
     };
 
     React.useEffect(() => {
-        if (props.initialData) {
-            device.setReplayData(props.initialData.split(''));
+        if (props.initialData && props.initialData.length > 0) {
+            device.setReplayData(props.initialData);
         }
     }, [device]);
 
