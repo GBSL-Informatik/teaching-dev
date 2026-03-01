@@ -1,6 +1,6 @@
 .bit {
     width: var(--tdev-bit-width);
-    background: black;
+    background: var(--ifm-color-content);
     height: calc(var(--tdev-bit-height) / 3);
     border-radius: calc(var(--tdev-bit-width) / 5);
     border-bottom-left-radius: 0;
@@ -9,6 +9,6 @@
         height: var(--tdev-bit-height);
     }
     &.unset {
-        background: lightgray;
+        background: var(--ifm-color-secondary-darker);
     }
 }

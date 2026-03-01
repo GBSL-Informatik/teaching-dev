@@ -4,7 +4,6 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
-import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 import Alert from '@tdev-components/shared/Alert';
 import Admonition from '@theme-original/Admonition';
 import CodeBlock from '@theme-original/CodeBlock';
@@ -98,13 +97,24 @@ const Webserial = observer((props: Props) => {
     }, [deviceId]);
 
     if (!device) {
-        return null;
+        return (
+            <Alert type="warning">
+                ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
+            </Alert>
+        );
     }
 
     return (
         <DeviceContext.Provider value={deviceId ?? defaultId}>
             <Card
-                classNames={{ card: clsx(styles.webserial) }}
+                classNames={{
+                    card: clsx(styles.webserial),
+                    body: clsx(
+                        !device.error &&
+                            (props.hideLogs || !device.isConnected || device.receivedData.length === 0) &&
+                            styles.noBody
+                    )
+                }}
                 header={
                     <div className={clsx(styles.toolbar)}>
                         {!webserialStore.isSupported && (

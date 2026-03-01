@@ -4,7 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { useDeviceId } from '@tdev/webserial/hooks/useDeviceId';
-import Decoder from './model/Decoder';
+import Decoder from '../model/Decoder';
 import Icon from '@mdi/react';
 import { mdiCircleSmall, mdiLoading } from '@mdi/js';
 import Byte from './Byte';
@@ -25,6 +25,7 @@ const BinaryDecoder = observer((props: Props) => {
         }
     }, [device, subscriptionId]);
     React.useEffect(() => {
+        decoder?.onNewLines(['0', '1', '0', '0', '0', '0', '0', '1', '0', '1', '1']);
         return () => {
             decoder?.cleanup();
         };
