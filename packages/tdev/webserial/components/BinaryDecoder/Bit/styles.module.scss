@@ -1,8 +1,14 @@
 .bit {
-    width: 5px;
+    width: var(--tdev-bit-width);
     background: black;
-    height: 5px;
-    &.active {
-        height: 15px;
+    height: calc(var(--tdev-bit-height) / 3);
+    border-radius: calc(var(--tdev-bit-width) / 5);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    &.one {
+        height: var(--tdev-bit-height);
+    }
+    &.unset {
+        background: lightgray;
     }
 }

@@ -9,7 +9,9 @@ import Icon from '@mdi/react';
 import { mdiCircleSmall, mdiLoading } from '@mdi/js';
 import Byte from './Byte';
 
-interface Props {}
+interface Props {
+    bitDimension?: { width: string; height: string };
+}
 
 const BinaryDecoder = observer((props: Props) => {
     const subscriptionId = React.useId();
@@ -33,7 +35,15 @@ const BinaryDecoder = observer((props: Props) => {
     }
 
     return (
-        <div className={clsx(styles.binaryDecoder)}>
+        <div
+            className={clsx(styles.binaryDecoder)}
+            style={
+                {
+                    '--tdev-bit-width': `${props.bitDimension?.width ?? '5px'}`,
+                    '--tdev-bit-height': `${props.bitDimension?.height ?? '15px'}`
+                } as React.CSSProperties
+            }
+        >
             <Icon
                 path={decoder.isProcessing ? mdiLoading : mdiCircleSmall}
                 size={0.75}

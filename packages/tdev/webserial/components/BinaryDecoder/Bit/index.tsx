@@ -12,8 +12,17 @@ interface Props {
 
 const Bit = observer((props: Props) => {
     const { decoder, bitPos } = props;
-    const value = decoder.buffer.length < bitPos ? undefined : decoder.buffer[bitPos] === '1' ? 1 : 0;
-    return <div className={clsx(styles.bit, value === 1 ? styles.active : styles.inactive)}></div>;
+    const value = decoder.buffer[bitPos];
+    return (
+        <div
+            className={clsx(
+                styles.bit,
+                value === '1' && styles.one,
+                value === '0' && styles.zero,
+                value === undefined && styles.unset
+            )}
+        ></div>
+    );
 });
 
 export default Bit;

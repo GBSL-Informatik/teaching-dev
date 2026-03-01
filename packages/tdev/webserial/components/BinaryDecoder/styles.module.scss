@@ -1,5 +1,7 @@
 .binaryDecoder {
     position: relative;
+    --tdev-bit-width: 5px;
+    --tdev-bit-height: 15px;
     .indicator {
         position: absolute;
         top: 0.5em;
