@@ -28,6 +28,8 @@ import TextInput from '@tdev-components/shared/TextInput';
 import Details from '@theme/Details';
 import { DeviceContext } from '../hooks/useDeviceId';
 import ReplayControl from './ReplayControl';
+import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
+import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
 
 interface Props {
     /** Override default baud rate (default: 115200) */
@@ -99,6 +101,7 @@ const SwitchCollapsed = observer(
 );
 
 const Webserial = observer((props: Props) => {
+    const id = React.useId();
     const defaultId = React.useId();
     const { baudRate, deviceId } = props;
     const viewStore = useStore('viewStore');
@@ -128,117 +131,129 @@ const Webserial = observer((props: Props) => {
     }, [deviceId]);
 
     return (
-        <DeviceContext.Provider value={deviceId ?? defaultId}>
-            <Card
-                classNames={{
-                    card: clsx(styles.webserial),
-                    body: clsx(
-                        !device.error &&
-                            (props.hideLogs || !device.isConnected || device.receivedData.length === 0) &&
-                            styles.noBody
-                    )
-                }}
-                header={
-                    <div className={clsx(styles.toolbar)}>
-                        <div className={clsx(styles.actions)}>
-                            {webserialStore.isSupported && (
-                                <Button
-                                    onClick={device.isConnected ? handleDisconnect : handleConnect}
-                                    disabled={device.connectionState === 'connecting'}
-                                    spin={device.connectionState === 'connecting'}
-                                    icon={ButtonIcon[device.connectionState]}
-                                    color={ButtonColor[device.connectionState]}
-                                    text={ButtonText[device.connectionState]}
+        <FullscreenContext.Provider value={id}>
+            <div id={id} className={clsx(viewStore.isFullscreenTarget(id) && styles.fullscreen)}>
+                <DeviceContext.Provider value={deviceId ?? defaultId}>
+                    <Card
+                        classNames={{
+                            card: clsx(styles.webserial),
+                            body: clsx(
+                                !device.error &&
+                                    (props.hideLogs ||
+                                        !device.isConnected ||
+                                        device.receivedData.length === 0) &&
+                                    styles.noBody
+                            )
+                        }}
+                        header={
+                            <div className={clsx(styles.toolbar)}>
+                                <div className={clsx(styles.actions)}>
+                                    {webserialStore.isSupported && (
+                                        <Button
+                                            onClick={device.isConnected ? handleDisconnect : handleConnect}
+                                            disabled={device.connectionState === 'connecting'}
+                                            spin={device.connectionState === 'connecting'}
+                                            icon={ButtonIcon[device.connectionState]}
+                                            color={ButtonColor[device.connectionState]}
+                                            text={ButtonText[device.connectionState]}
+                                        />
+                                    )}
+                                    <ReplayControl device={device} />
+                                </div>
+                                <RequestFullscreen
+                                    targetId={id}
+                                    adminOnly
+                                    className={clsx(styles.fullscreenButton)}
                                 />
-                            )}
-                            <ReplayControl device={device} />
-                        </div>
-
-                        {device.size > 0 &&
-                            webserialStore.isSupported &&
-                            !(device.isReplaying || device.isReplayPaused) && (
-                                <Button
-                                    onClick={() => device.clearReceivedData()}
-                                    icon={mdiCardRemoveOutline}
-                                    title="Empfangene Daten löschen"
-                                />
-                            )}
-                        <Badge color={ConnectionStateColor[device.connectionState]}>
-                            <Icon
-                                path={device.isProcessing ? mdiSync : BadgeIcon[device.connectionState]}
-                                size={0.75}
-                                horizontal
-                                spin={device.isProcessing}
-                            />
-                            {ConnectionStateMessage[device.connectionState]}
-                        </Badge>
-                    </div>
-                }
-                footer={props.output}
-            >
-                {!webserialStore.isSupported && (
-                    <Alert type="warning">
-                        ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
-                    </Alert>
-                )}
-                {device.error && (
-                    <>
-                        <Admonition
-                            type="danger"
-                            title="Fehler"
-                            icon={<Icon path={mdiCloseNetwork} size={1} />}
-                            className={styles.error}
-                        >
-                            <CodeBlock language="text">{device.error}</CodeBlock>
-                        </Admonition>
-                        {/Failed to open serial port/.test(device.error) && (
-                            <Admonition type="info" title="Troubleshooting" className={styles.error}>
-                                Trennen Sie das Gerät vom Computer und verbinden Sie es erneut.
-                            </Admonition>
+                                {device.size > 0 &&
+                                    webserialStore.isSupported &&
+                                    !(device.isReplaying || device.isReplayPaused) && (
+                                        <Button
+                                            onClick={() => device.clearReceivedData()}
+                                            icon={mdiCardRemoveOutline}
+                                            title="Empfangene Daten löschen"
+                                        />
+                                    )}
+                                <Badge color={ConnectionStateColor[device.connectionState]}>
+                                    <Icon
+                                        path={
+                                            device.isProcessing ? mdiSync : BadgeIcon[device.connectionState]
+                                        }
+                                        size={0.75}
+                                        horizontal={device.isProcessing}
+                                        spin={device.isProcessing}
+                                    />
+                                    {ConnectionStateMessage[device.connectionState]}
+                                </Badge>
+                            </div>
+                        }
+                        footer={props.output}
+                    >
+                        {!webserialStore.isSupported && (
+                            <Alert type="warning">
+                                ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
+                            </Alert>
                         )}
-                    </>
-                )}
-                {!props.hideLogs && (device.isConnected || device.receivedData.length > 0) && (
-                    <SwitchCollapsed collapsed={props.collapseLogs} title="Logs">
-                        <Logs
-                            messages={(device.receivedData[device.receivedData.length - 1] === ''
-                                ? device.receivedData.slice(0, -1)
-                                : device.receivedData
-                            ).map((d) => ({
-                                type: 'log',
-                                message: d
-                            }))}
-                            maxLines={25}
-                        />
-                    </SwitchCollapsed>
-                )}
-                {props.showInput && device.isConnected && (
-                    <div className={clsx(styles.input)}>
-                        <TextInput
-                            onChange={(text) => {
-                                device.setInputValue(text);
-                            }}
-                            placeholder={props.inputPlaceholder}
-                            label={props.inputLabel}
-                            value={device.inputValue || ''}
-                            onEnter={() => {
-                                device.sendLine(device.inputValue);
-                                device.setInputValue('');
-                            }}
-                            className={clsx(styles.textInput)}
-                            labelClassName={clsx(styles.label)}
-                        />
-                        <Button
-                            onClick={() => {
-                                device.sendLine(device.inputValue);
-                                device.setInputValue('');
-                            }}
-                            icon={mdiSend}
-                        />
-                    </div>
-                )}
-            </Card>
-        </DeviceContext.Provider>
+                        {device.error && (
+                            <>
+                                <Admonition
+                                    type="danger"
+                                    title="Fehler"
+                                    icon={<Icon path={mdiCloseNetwork} size={1} />}
+                                    className={styles.error}
+                                >
+                                    <CodeBlock language="text">{device.error}</CodeBlock>
+                                </Admonition>
+                                {/Failed to open serial port/.test(device.error) && (
+                                    <Admonition type="info" title="Troubleshooting" className={styles.error}>
+                                        Trennen Sie das Gerät vom Computer und verbinden Sie es erneut.
+                                    </Admonition>
+                                )}
+                            </>
+                        )}
+                        {!props.hideLogs && (device.isConnected || device.receivedData.length > 0) && (
+                            <SwitchCollapsed collapsed={props.collapseLogs} title="Logs">
+                                <Logs
+                                    messages={(device.receivedData[device.receivedData.length - 1] === ''
+                                        ? device.receivedData.slice(0, -1)
+                                        : device.receivedData
+                                    ).map((d) => ({
+                                        type: 'log',
+                                        message: d
+                                    }))}
+                                    maxLines={25}
+                                />
+                            </SwitchCollapsed>
+                        )}
+                        {props.showInput && device.isConnected && (
+                            <div className={clsx(styles.input)}>
+                                <TextInput
+                                    onChange={(text) => {
+                                        device.setInputValue(text);
+                                    }}
+                                    placeholder={props.inputPlaceholder}
+                                    label={props.inputLabel}
+                                    value={device.inputValue || ''}
+                                    onEnter={() => {
+                                        device.sendLine(device.inputValue);
+                                        device.setInputValue('');
+                                    }}
+                                    className={clsx(styles.textInput)}
+                                    labelClassName={clsx(styles.label)}
+                                />
+                                <Button
+                                    onClick={() => {
+                                        device.sendLine(device.inputValue);
+                                        device.setInputValue('');
+                                    }}
+                                    icon={mdiSend}
+                                />
+                            </div>
+                        )}
+                    </Card>
+                </DeviceContext.Provider>
+            </div>
+        </FullscreenContext.Provider>
     );
 });
 

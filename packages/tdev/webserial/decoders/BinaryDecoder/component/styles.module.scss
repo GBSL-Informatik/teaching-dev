@@ -1,6 +1,10 @@
 .binaryDecoder {
     --tdev-bit-width: 5px;
     --tdev-bit-height: 15px;
+    --tdev-bindecoder-zoom: 1;
+    &.fullscreen {
+        --tdev-bindecoder-zoom: 2;
+    }
     .meta {
         display: flex;
         align-items: flex-start;
@@ -12,6 +16,6 @@
         }
     }
     .output {
-        font-size: 2em;
+        font-size: calc(2em * var(--tdev-bindecoder-zoom));
     }
 }

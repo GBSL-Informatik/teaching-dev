@@ -37,3 +37,14 @@
         }
     }
 }
+
+.fullscreen {
+    --ifm-code-font-size: 2rem;
+    background: var(--ifm-color-white);
+    padding: 3em;
+    overflow-y: auto;
+    max-height: 95vh;
+    .editorContainer {
+        box-shadow: var(--ifm-global-shadow-md);
+    }
+}

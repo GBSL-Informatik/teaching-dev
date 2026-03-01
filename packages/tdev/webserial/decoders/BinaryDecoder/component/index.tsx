@@ -8,6 +8,7 @@ import { useDeviceId } from '@tdev/webserial/hooks/useDeviceId';
 import Decoder from '../model/Decoder';
 import Byte from './Byte';
 import Card from '@tdev-components/shared/Card';
+import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
 
 interface Props {
     bitDimension?: { width: string; height: string };
@@ -19,7 +20,9 @@ const BinaryDecoder = observer((props: Props) => {
     const viewStore = useStore('viewStore');
     const webserialStore = viewStore.useStore('webserialStore');
     const deviceId = useDeviceId();
+    const fullscreenTargetId = useFullscreenTargetId();
     const device = webserialStore.devices.get(deviceId);
+    const isFullscreen = viewStore.isFullscreenTarget(fullscreenTargetId);
     const decoder = React.useMemo(() => {
         if (device) {
             return new Decoder(subscriptionId, device);
@@ -29,14 +32,18 @@ const BinaryDecoder = observer((props: Props) => {
     if (!decoder) {
         return null;
     }
+    const bitSize = props.bitDimension ?? {
+        width: '5px',
+        height: '15px'
+    };
 
     return (
         <div
-            className={clsx(styles.binaryDecoder)}
+            className={clsx(styles.binaryDecoder, isFullscreen && styles.fullscreen)}
             style={
                 {
-                    '--tdev-bit-width': `${props.bitDimension?.width ?? '5px'}`,
-                    '--tdev-bit-height': `${props.bitDimension?.height ?? '15px'}`
+                    '--tdev-bit-width': bitSize.width,
+                    '--tdev-bit-height': bitSize.height
                 } as React.CSSProperties
             }
         >
