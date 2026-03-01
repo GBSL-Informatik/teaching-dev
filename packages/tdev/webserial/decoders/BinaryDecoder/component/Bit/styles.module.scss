@@ -12,3 +12,11 @@
         background: var(--ifm-color-secondary-darker);
     }
 }
+
+[data-theme='dark'] {
+    .bit {
+        &.unset {
+            background: var(--ifm-color-gray-800);
+        }
+    }
+}

@@ -6,11 +6,8 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { useDeviceId } from '@tdev/webserial/hooks/useDeviceId';
 import Decoder from '../model/Decoder';
-import Icon from '@mdi/react';
-import { mdiCircleSmall, mdiLoading } from '@mdi/js';
 import Byte from './Byte';
 import Card from '@tdev-components/shared/Card';
-import { IfmColors } from '@tdev-components/shared/Colors';
 
 interface Props {
     bitDimension?: { width: string; height: string };
@@ -28,24 +25,6 @@ const BinaryDecoder = observer((props: Props) => {
             return new Decoder(subscriptionId, device);
         }
     }, [device, subscriptionId]);
-    React.useEffect(() => {
-        if (decoder && props.demoData) {
-            let i = 0;
-            const bits = props.demoData.split('').filter((c) => c === '0' || c === '1');
-            const interval = setInterval(() => {
-                if (i < bits.length) {
-                    device?.appendReceivedData(bits[i] + '\n');
-                    i++;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 500);
-            return () => {
-                clearInterval(interval);
-                decoder?.cleanup();
-            };
-        }
-    }, [decoder, subscriptionId, props.demoData]);
 
     if (!decoder) {
         return null;
@@ -61,22 +40,26 @@ const BinaryDecoder = observer((props: Props) => {
                 } as React.CSSProperties
             }
         >
-            <div className={clsx(styles.bytes)}>
-                <div className={clsx(byteStyles.byte)}>
-                    <div className={clsx(byteStyles.bits)}></div>
-                    <div className={clsx(byteStyles.decoded)}>
-                        <div className={clsx(byteStyles.hex)}>
-                            <b>Hex</b>
-                        </div>
-                        <div className={clsx(byteStyles.dec)}>
-                            <b>Dez</b>
+            <div className={clsx(styles.meta)}>
+                <div className={clsx(styles.bytes)}>
+                    <div className={clsx(byteStyles.byte)}>
+                        <div className={clsx(byteStyles.bits)}></div>
+                        <div className={clsx(byteStyles.decoded)}>
+                            <div className={clsx(byteStyles.hex)}>
+                                <b>Hex</b>
+                            </div>
+                            <div className={clsx(byteStyles.dec)}>
+                                <b>Dez</b>
+                            </div>
                         </div>
                     </div>
                 </div>
-                {decoder.bytes.map((byte, i) => (
-                    <Byte key={i} byteString={byte} />
-                ))}
-                {decoder.buffer.length > 0 && <Byte byteString={decoder.buffer.join('')} />}
+                <div className={clsx(styles.bytes)}>
+                    {decoder.bytes.map((byte, i) => (
+                        <Byte key={i} byteString={byte} />
+                    ))}
+                    {decoder.buffer.length > 0 && <Byte byteString={decoder.buffer.join('')} />}
+                </div>
             </div>
             <Card classNames={{ card: clsx(styles.output) }}>
                 {decoder.lines.map((line, i) => (

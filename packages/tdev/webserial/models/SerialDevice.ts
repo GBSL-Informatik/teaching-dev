@@ -1,5 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import WebserialStore from '../stores/WebserialStore';
+import { Hashery } from 'hashery';
+const hasher = new Hashery();
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -28,7 +30,7 @@ export interface Config {
 
 const DEFAULT_CONFIG: Config = {
     onReadyString: undefined,
-    dataBufferSize: 1000
+    dataBufferSize: 20000
 };
 
 export interface iSubscriber {
@@ -49,6 +51,9 @@ export default class SerialDevice {
     @observable accessor inputValue: string = '';
 
     @observable accessor isProcessing = false;
+    @observable accessor _replayInterval: NodeJS.Timeout | null = null;
+    @observable accessor _replayPausedAt: number = 0;
+    _replayPristineData: string[] = [];
     _isProcessingCounterTimeout: NodeJS.Timeout | null = null;
 
     receivedData = observable.array<string>([]);
@@ -64,6 +69,93 @@ export default class SerialDevice {
         this.serialOptions = { ...DEFAULT_SERIAL_OPTIONS, ...options };
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.webserialStore = webserialStore;
+    }
+
+    @computed
+    get size(): number {
+        return this.receivedData.length;
+    }
+
+    @computed
+    get canReplay(): boolean {
+        return !this.isConnected && this.size > 0;
+    }
+
+    @computed
+    get isReplaying(): boolean {
+        return this._replayInterval !== null;
+    }
+
+    @computed
+    get isReplayPaused(): boolean {
+        return this._replayPausedAt > 0;
+    }
+
+    @action
+    setReplayData(data: string[]) {
+        this.stopReplay();
+        this.receivedData.replace(data);
+    }
+
+    @action
+    replay(from: number = 0, intervalMs: number = 500) {
+        if (this.isConnected) {
+            return;
+        }
+        this.stopReplay();
+        this._replayPristineData = this.receivedData.slice();
+        const data = this.receivedData.slice(from);
+        const currentData = this.receivedData.slice(0, from);
+        this.receivedData.clear();
+        this.lineBuffer = '';
+        for (const subscriber of this.subscriptions.values()) {
+            subscriber.reset();
+        }
+        if (currentData.length > 0) {
+            this.appendReceivedData(currentData.join('\n') + '\n');
+        }
+        let i = 0;
+        this._replayInterval = setInterval(() => {
+            if (i < data.length) {
+                this.appendReceivedData(data[i] + '\n');
+                i++;
+            } else {
+                this.stopReplay();
+            }
+        }, intervalMs);
+    }
+
+    @action
+    pauseReplay() {
+        if (!this.isReplaying) {
+            return;
+        }
+        this._replayPausedAt = this.size;
+        if (this._replayInterval) {
+            clearInterval(this._replayInterval);
+            this._replayInterval = null;
+        }
+    }
+
+    @action
+    stopReplay() {
+        if (this._replayInterval) {
+            clearInterval(this._replayInterval);
+            this._replayInterval = null;
+        }
+        if (this._replayPristineData.length > 0) {
+            const currentDataHash = hasher.toHashSync(this.receivedData);
+            const pristineDataHash = hasher.toHashSync(this._replayPristineData);
+            if (currentDataHash !== pristineDataHash) {
+                this.receivedData.replace(this._replayPristineData);
+                for (const subscriber of this.subscriptions.values()) {
+                    subscriber.reset();
+                    subscriber.onNewLines(this.receivedData.slice());
+                }
+            }
+            this._replayPristineData = [];
+        }
+        this._replayPausedAt = 0;
     }
 
     @action
@@ -118,7 +210,7 @@ export default class SerialDevice {
             return;
         }
         const last = rest.splice(-1)[0];
-        const currentLine = this.receivedData.length;
+        const currentLine = this.size;
         if (this.lineBuffer.length > 0) {
             this.lineBuffer += first;
         } else {
@@ -143,13 +235,14 @@ export default class SerialDevice {
             return this.clearReceivedData();
         }
         // Keep a rolling buffer of last 1000 entries
-        if (this.receivedData.length > this.config.dataBufferSize && this.config.dataBufferSize > 0) {
+        if (this.size > this.config.dataBufferSize && this.config.dataBufferSize > 0) {
             this.receivedData.replace(this.receivedData.slice(-Math.ceil(this.config.dataBufferSize / 2)));
         }
     }
 
     @action
     clearReceivedData() {
+        this.stopReplay();
         this.receivedData.clear();
         this.lineBuffer = '';
         for (const subscriber of this.subscriptions.values()) {

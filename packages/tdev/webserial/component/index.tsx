@@ -12,13 +12,18 @@ import Badge from '@tdev-components/shared/Badge';
 import Card from '@tdev-components/shared/Card';
 import Button from '@tdev-components/shared/Button';
 import {
+    mdiCardRemoveOutline,
     mdiCheckCircle,
     mdiCloseNetwork,
     mdiCloseOctagon,
     mdiConnection,
     mdiEjectCircle,
     mdiLoading,
+    mdiMotionPauseOutline,
+    mdiMotionPlay,
+    mdiMotionPlayOutline,
     mdiSend,
+    mdiStopCircleOutline,
     mdiSync
 } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -38,6 +43,14 @@ interface Props {
     inputLabel?: string;
     output?: React.ReactNode;
     onReadyString?: string;
+    /**
+     * this data can be used to simulate a device by providing an array of strings that
+     * will be emitted as if they were received from the serial device.
+     * This is useful for testing and demo purposes without needing a real serial device.
+     * Each string in the array represents a line of data that would be received, and
+     * they will be emitted with a delay between them to simulate real-time data reception.
+     */
+    initialData?: string;
 }
 
 const ConnectionStateMessage: Record<ConnectionState, string> = {
@@ -73,7 +86,7 @@ const BadgeIcon: Record<ConnectionState, string> = {
     error: mdiCloseOctagon
 };
 const ButtonText: Record<ConnectionState, string> = {
-    disconnected: 'Serielles Gerät verbinden',
+    disconnected: 'Gerät verbinden',
     connecting: 'Verbinden…',
     connected: 'Verbindung trennen',
     error: 'Erneut versuchen'
@@ -106,18 +119,16 @@ const Webserial = observer((props: Props) => {
     };
 
     React.useEffect(() => {
+        if (props.initialData) {
+            device.setReplayData(props.initialData.split(''));
+        }
+    }, [device]);
+
+    React.useEffect(() => {
         return () => {
             webserialStore.clearDevice(deviceId ?? defaultId);
         };
     }, [deviceId]);
-
-    if (!device) {
-        return (
-            <Alert type="warning">
-                ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
-            </Alert>
-        );
-    }
 
     return (
         <DeviceContext.Provider value={deviceId ?? defaultId}>
@@ -132,12 +143,6 @@ const Webserial = observer((props: Props) => {
                 }}
                 header={
                     <div className={clsx(styles.toolbar)}>
-                        {!webserialStore.isSupported && (
-                            <Alert type="warning">
-                                ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
-                            </Alert>
-                        )}
-
                         {webserialStore.isSupported && (
                             <Button
                                 onClick={device.isConnected ? handleDisconnect : handleConnect}
@@ -148,11 +153,47 @@ const Webserial = observer((props: Props) => {
                                 text={ButtonText[device.connectionState]}
                             />
                         )}
+                        <div className={clsx(styles.replayControls)}>
+                            {(device.canReplay || device.isReplaying) && (
+                                <Button
+                                    onClick={() =>
+                                        device.isReplaying
+                                            ? device.pauseReplay()
+                                            : device.replay(device._replayPausedAt || 0)
+                                    }
+                                    icon={
+                                        device.isReplaying
+                                            ? mdiMotionPauseOutline
+                                            : device.isReplayPaused
+                                              ? mdiMotionPlay
+                                              : mdiMotionPlayOutline
+                                    }
+                                    title={`Replay ${device.isReplaying ? 'pausieren' : 'starten'}`}
+                                    color={device.isReplaying || device.isReplayPaused ? 'blue' : undefined}
+                                />
+                            )}
+                            {(device.isReplaying || device.isReplayPaused) && (
+                                <Button
+                                    onClick={() => device.stopReplay()}
+                                    icon={mdiStopCircleOutline}
+                                    title="Replay stoppen"
+                                    color="red"
+                                />
+                            )}
+                        </div>
+                        {device.size > 0 && webserialStore.isSupported && (
+                            <Button
+                                onClick={() => device.clearReceivedData()}
+                                icon={mdiCardRemoveOutline}
+                                title="Empfangene Daten löschen"
+                            />
+                        )}
                         <Badge color={ConnectionStateColor[device.connectionState]}>
                             <Icon
                                 path={device.isProcessing ? mdiSync : BadgeIcon[device.connectionState]}
                                 size={0.75}
-                                spin={device.isProcessing ? -2 : 0}
+                                horizontal
+                                spin={device.isProcessing}
                             />
                             {ConnectionStateMessage[device.connectionState]}
                         </Badge>
@@ -160,6 +201,11 @@ const Webserial = observer((props: Props) => {
                 }
                 footer={props.output}
             >
+                {!webserialStore.isSupported && (
+                    <Alert type="warning">
+                        ⚠️ Die Web Serial API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
+                    </Alert>
+                )}
                 {device.error && (
                     <>
                         <Admonition
@@ -177,7 +223,6 @@ const Webserial = observer((props: Props) => {
                         )}
                     </>
                 )}
-
                 {!props.hideLogs && (device.isConnected || device.receivedData.length > 0) && (
                     <SwitchCollapsed collapsed={props.collapseLogs} title="Logs">
                         <Logs
@@ -188,7 +233,6 @@ const Webserial = observer((props: Props) => {
                                 type: 'log',
                                 message: d
                             }))}
-                            onClear={() => device.clearReceivedData()}
                             maxLines={25}
                         />
                     </SwitchCollapsed>

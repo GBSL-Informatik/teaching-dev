@@ -11,9 +11,6 @@ export default class WebserialStore {
     }
 
     useDevice(id: string, options?: Partial<SerialOptions>, config?: Partial<Config>): SerialDevice {
-        if (!this.isSupported) {
-            return null as unknown as SerialDevice;
-        }
         if (this.devices.has(id)) {
             return this.devices.get(id)!;
         }

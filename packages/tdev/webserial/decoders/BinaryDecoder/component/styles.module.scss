@@ -1,10 +1,15 @@
 .binaryDecoder {
     --tdev-bit-width: 5px;
     --tdev-bit-height: 15px;
-    .bytes {
+    .meta {
         display: flex;
-        flex-wrap: wrap;
-        gap: 0.5em;
+        align-items: flex-start;
+        gap: 4px;
+        .bytes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5em;
+        }
     }
     .output {
         font-size: 2em;

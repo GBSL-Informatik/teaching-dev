@@ -13,7 +13,7 @@ export type LogMessage = { type: 'log' | 'error'; message: string };
 
 interface Props {
     messages: LogMessage[];
-    onClear: () => void;
+    onClear?: () => void;
     maxLines?: number;
     /**
      * Use this when not used inside FullscreenTarget, no Context must be provided and useFullscreenTargetId hook
@@ -44,13 +44,15 @@ const Logs = observer((props: Props) => {
                         title="Kopieren"
                         className={clsx(styles.button)}
                     />
-                    <Button
-                        title="Logs leeren"
-                        onClick={onClear}
-                        icon={mdiCardRemoveOutline}
-                        size={SIZE_S}
-                        className={clsx(styles.button)}
-                    />
+                    {onClear && (
+                        <Button
+                            title="Logs leeren"
+                            onClick={onClear}
+                            icon={mdiCardRemoveOutline}
+                            size={SIZE_S}
+                            className={clsx(styles.button)}
+                        />
+                    )}
                 </div>
             </div>
             <div
