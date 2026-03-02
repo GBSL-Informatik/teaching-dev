@@ -139,9 +139,7 @@ const Webserial = observer((props: Props) => {
                             card: clsx(styles.webserial),
                             body: clsx(
                                 !device.error &&
-                                    (props.hideLogs ||
-                                        !device.isConnected ||
-                                        device.receivedData.length === 0) &&
+                                    (props.hideLogs || !(device.isConnected || device.size > 0)) &&
                                     styles.noBody
                             )
                         }}
@@ -211,10 +209,10 @@ const Webserial = observer((props: Props) => {
                                 )}
                             </>
                         )}
-                        {!props.hideLogs && (device.isConnected || device.receivedData.length > 0) && (
+                        {!props.hideLogs && (device.isConnected || device.size > 0) && (
                             <SwitchCollapsed collapsed={props.collapseLogs} title="Logs">
                                 <Logs
-                                    messages={(device.receivedData[device.receivedData.length - 1] === ''
+                                    messages={(device.receivedData[device.size - 1] === ''
                                         ? device.receivedData.slice(0, -1)
                                         : device.receivedData
                                     ).map((d) => ({
