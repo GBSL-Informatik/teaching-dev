@@ -21,9 +21,6 @@ const ReplayControl = observer((props: Props) => {
             {(device.canReplay || device.isReplaying) && (
                 <Button
                     onClick={() => {
-                        console.log(device.isReplaying ? 'Pausing replay' : 'Starting replay', {
-                            pausedAt: device._replayPausedAt
-                        });
                         device.isReplaying
                             ? device.pauseReplay()
                             : device.replay(device._replayPausedAt || 0);
