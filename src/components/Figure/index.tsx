@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import EditorPopup from '@tdev/excalidoc/ImageMarkupEditor/EditorPopup';
 
 const defaultUnit = (value: string | number, unit: string = 'px') => {
@@ -22,7 +21,6 @@ interface Props {
 const IMG_STYLE_PROPS = ['width', 'maxWidth', 'maxHeight', 'height'];
 
 const Figure = observer((props: Props): React.ReactNode => {
-    const sessionStore = useStore('sessionStore');
     const ref = React.useRef<HTMLElement>(null);
     const opts = { ...props.options };
     if (opts) {

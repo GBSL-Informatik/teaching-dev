@@ -79,7 +79,8 @@ const getSiteConfig: SiteConfigProvider = () => {
             require.resolve('@tdev/text-message/register'),
             require.resolve('@tdev/pyodide-code/register'),
             require.resolve('@tdev/brython-code/register'),
-            require.resolve('@tdev/page-read-check/register')
+            require.resolve('@tdev/page-read-check/register'),
+            require.resolve('@tdev/webserial/register')
         ]
     };
 };

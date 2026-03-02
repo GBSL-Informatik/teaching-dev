@@ -1,0 +1,22 @@
+.bit {
+    background: var(--ifm-color-content);
+    width: calc(var(--tdev-bit-width) * var(--tdev-bindecoder-zoom));
+    height: calc(var(--tdev-bit-height) * var(--tdev-bindecoder-zoom) / 3);
+    border-radius: calc(var(--tdev-bit-width) * var(--tdev-bindecoder-zoom) / 5);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    &.one {
+        height: calc(var(--tdev-bit-height) * var(--tdev-bindecoder-zoom));
+    }
+    &.unset {
+        background: var(--ifm-color-secondary-darker);
+    }
+}
+
+[data-theme='dark'] {
+    .bit {
+        &.unset {
+            background: var(--ifm-color-gray-800);
+        }
+    }
+}

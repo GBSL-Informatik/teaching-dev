@@ -72,7 +72,10 @@ export default class ViewStore {
         return this.fullscreenTargetId !== null;
     }
 
-    isFullscreenTarget(targetId: string) {
+    isFullscreenTarget(targetId: string | null) {
+        if (!targetId) {
+            return false;
+        }
         return this.fullscreenTargetId === targetId;
     }
 }

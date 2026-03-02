@@ -1,6 +1,5 @@
 import type { Code, Node } from 'mdast';
 import type { LeafDirective } from 'mdast-util-directive';
-import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
 import mdiPlugin from '../plugins/remark-mdi/plugin';
@@ -23,6 +22,8 @@ import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
 import { getAnswerDocumentType } from '../components/Answer/helper.answer';
+import fs from 'fs';
+import path from 'path';
 
 export const flexCardsPluginConfig = [
     flexCardsPlugin,
@@ -80,6 +81,38 @@ export const codeAsAttributePluginConfig = [
     }
 ];
 
+export const defaultImageDevSrcTransformer = () => {
+    const fsMap = new Map<string, boolean>();
+    return (src: string) => {
+        if (process.env.NODE_ENV === 'production' || !process.env.PACKAGE_DEST || !process.env.PACKAGE_SRC) {
+            return src;
+        }
+        const packageDest = path.join('/', process.env.PACKAGE_DEST, '/');
+        const packageSrc = path.join('/', process.env.PACKAGE_SRC, '/');
+        if (src.startsWith(packageDest)) {
+            const relativeSrc = src.slice(packageDest.length);
+            const simpleImgPath = path.join(process.cwd(), packageSrc, relativeSrc);
+            if (fsMap.get(simpleImgPath) || fs.existsSync(simpleImgPath)) {
+                fsMap.set(simpleImgPath, true);
+                return `${packageSrc}${relativeSrc}`;
+            } else {
+                fsMap.set(simpleImgPath, false);
+                const [scope, pkg, ...rest] = relativeSrc.split(path.sep);
+                const docsDir = path.join(process.cwd(), packageSrc, scope, pkg, 'docs', ...rest);
+                if (fsMap.get(docsDir) || fs.existsSync(docsDir)) {
+                    fsMap.set(docsDir, true);
+                    return path.join(packageSrc, scope, pkg, 'docs', ...rest);
+                }
+                fsMap.set(docsDir, false);
+                console.warn(
+                    `Transformed src "${src}" to "${packageSrc}${relativeSrc}" and "${docsDir}", but the file does not exist at that location.`
+                );
+            }
+        }
+        return src;
+    };
+};
+
 export const imagePluginConfig = [
     imagePlugin,
     {
@@ -88,6 +121,7 @@ export const imagePluginConfig = [
             figure: 'Figure'
         },
         srcAttr: process.env.NODE_ENV === 'development' ? 'src' : undefined,
+        srcTransformer: defaultImageDevSrcTransformer(),
         captionVisitors: [
             (ast, caption) =>
                 captionVisitor(ast, caption, (children) => {
@@ -99,7 +133,7 @@ export const imagePluginConfig = [
                     };
                 })
         ] satisfies CaptionVisitor[]
-    }
+    } satisfies Parameters<typeof imagePlugin>[1]
 ];
 
 export const detailsPluginConfig = detailsPlugin;
