@@ -45,6 +45,11 @@ class Decoder implements iSubscriber {
     }
 
     @computed
+    get bitSize(): number {
+        return this.buffer.length + this.size * 8;
+    }
+
+    @computed
     get text(): string {
         return this.characters.join('');
     }

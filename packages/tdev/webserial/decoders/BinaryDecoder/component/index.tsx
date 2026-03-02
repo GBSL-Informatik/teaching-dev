@@ -29,7 +29,7 @@ const BinaryDecoder = observer((props: Props) => {
         }
     }, [device, subscriptionId]);
 
-    if (!(decoder && device && (device.isProcessing || decoder.bytes.length > 0))) {
+    if (!(decoder && device && (device.isProcessing || decoder.bitSize > 0))) {
         return <div>Binärer Decoder</div>;
     }
     const bitSize = props.bitDimension ?? {
