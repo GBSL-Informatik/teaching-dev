@@ -52,7 +52,7 @@ export default class SerialDevice {
 
     @observable accessor isProcessing = false;
     @observable accessor _replayInterval: NodeJS.Timeout | null = null;
-    @observable accessor replaySpeed: number = 500;
+    @observable accessor replaySpeed: number = 250;
     @observable accessor _replayPausedAt: number = 0;
     _replayPristineData: string[] = [];
     _isProcessingCounterTimeout: NodeJS.Timeout | null = null;
