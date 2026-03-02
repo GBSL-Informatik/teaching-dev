@@ -18,7 +18,7 @@ import Webserial from '@tdev/webserial/component'
     baudRate={115200}
     deviceId='foo'
     showInput
-    onReadyString='::READY::'
+    resetTrigger='::READY::'
     initialData={['Hello World', 'Foo Bar']}
 />
 ```
@@ -28,7 +28,7 @@ import Webserial from '@tdev/webserial/component'
         baudRate={115200}
         deviceId='foo'
         showInput
-        onReadyString='::READY::'
+        resetTrigger='::READY::'
         initialData={['Hello World', 'Foo Bar']}
     />
 </BrowserWindow>
@@ -44,7 +44,7 @@ import BinaryDecoder from '@tdev/webserial/decoders/BinaryDecoder/component'
 <Webserial 
     baudRate={115200}
     hideLogs
-    onReadyString='::READY::'
+    resetTrigger='::READY::'
     initialData={'01001000 01100001 01101100 01101100 01101111 00100001'.replace(' ', '').split('')}
     output={<BinaryDecoder />}
 />
@@ -54,7 +54,7 @@ import BinaryDecoder from '@tdev/webserial/decoders/BinaryDecoder/component'
     <Webserial 
         baudRate={115200}
         hideLogs
-        onReadyString='::READY::'
+        resetTrigger='::READY::'
         initialData={'01001000 01100001 01101100 01101100 01101111 00100001'.replace(' ', '').split('')}
         output={<BinaryDecoder />}
     />
@@ -75,9 +75,9 @@ Für die Implementierung eines eigenen Decoders dient der [BinaryDecoder](https:
 `baudRate`
 : `number`
 : Die Baudrate, mit der die serielle Verbindung aufgebaut wird. Standard ist `115200`.
-`onReadyString`
+`resetTrigger`
 : `string`
-: Wird der `onReadyString` empfangen, so werden die Logs zurückgesetzt.
+: Wird der `resetTrigger` empfangen, so werden die empfangenen Daten zurückgesetzt.
 `showInput`
 : `boolean`
 : Wenn `true`, wird ein Eingabefeld angezeigt, mit dem Daten an das serielle Gerät gesendet werden können. Standard ist `false`.
@@ -179,7 +179,7 @@ Die serielle Schnittstelle kann am einfachsten mit einem Micro:Bit ausprobiert w
 <Webserial 
     baudRate={115200}
     showInput
-    onReadyString='::READY::'
+    resetTrigger='::READY::'
 />
 
 ```py
@@ -199,7 +199,7 @@ while True:
 <Webserial 
     baudRate={115200}
     hideLogs
-    onReadyString='::READY::'
+    resetTrigger='::READY::'
     output={<BinaryDecoder />}
 />
 

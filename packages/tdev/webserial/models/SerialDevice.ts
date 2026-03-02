@@ -24,12 +24,12 @@ const DEFAULT_SERIAL_OPTIONS: SerialOptions = {
 };
 
 export interface Config {
-    onReadyString: string | undefined;
+    resetTrigger: string | undefined;
     dataBufferSize: number;
 }
 
 const DEFAULT_CONFIG: Config = {
-    onReadyString: undefined,
+    resetTrigger: undefined,
     dataBufferSize: 20000
 };
 
@@ -246,7 +246,7 @@ export default class SerialDevice {
             }
         }
 
-        if (this.config.onReadyString && addedLines.some((l) => l.trim() === this.config.onReadyString)) {
+        if (this.config.resetTrigger && addedLines.some((l) => l.trim() === this.config.resetTrigger)) {
             return this.clearReceivedData();
         }
         // Keep a rolling buffer of last 1000 entries

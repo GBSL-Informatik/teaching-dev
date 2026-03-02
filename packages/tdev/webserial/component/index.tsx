@@ -41,7 +41,10 @@ interface Props {
     inputPlaceholder?: string;
     inputLabel?: string;
     output?: React.ReactNode;
-    onReadyString?: string;
+    /**
+     * When this string is received from the serial device, the received data will be cleared.
+     */
+    resetTrigger?: string;
     /**
      * this data can be used to simulate a device by providing an array of strings that
      * will be emitted as if they were received from the serial device.
@@ -107,7 +110,7 @@ const Webserial = observer((props: Props) => {
     const viewStore = useStore('viewStore');
     const webserialStore = viewStore.useStore('webserialStore');
     const device = webserialStore.useDevice(deviceId ?? defaultId, baudRate ? { baudRate } : {}, {
-        onReadyString: props.onReadyString
+        resetTrigger: props.resetTrigger
     });
 
     const handleConnect = async () => {
