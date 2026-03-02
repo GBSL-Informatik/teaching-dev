@@ -223,3 +223,27 @@ while True:
             sleep(20)
     count = count + 1
 ```
+
+## Installation
+
+:::info[`packages/tdev/webserial`]
+Kopiere des `packages/tdev/webserial`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
+:::
+
+Danach muss das `webserial`-Package bei den `apiDocumentProviders` im `siteConfig.ts` registriert werden:
+```ts title="siteConfig.ts"
+const getSiteConfig: SiteConfigProvider = () => {
+   return {
+       apiDocumentProviders: [
+           require.resolve('@tdev/webserial/register'),
+       ]
+   };
+};
+```
+
+
+Zum Schluss muss erneut installiert werden, so dass yarn das neue Package verwenden kann:
+
+```bash
+yarn install
+```
