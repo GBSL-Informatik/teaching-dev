@@ -12,6 +12,8 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 Mit dem Webserial Package können auf [unterstützten Browsern](https://caniuse.com/web-serial) Geräte über die serielle Schnittstelle angesprochen werden. Es bietet eine einfache API, um Daten zu senden und zu empfangen.
 
 ```tsx
+import Webserial from '@tdev/webserial/component'
+
 <Webserial 
     baudRate={115200}
     deviceId='foo'
@@ -36,6 +38,9 @@ Mit dem Webserial Package können auf [unterstützten Browsern](https://caniuse.
 Decoder und Outputs können individuell erstellt und über die Option `output` eingebunden werden. Im folgenden Beispiel wird ein Decoder verwendet, der die empfangenen Daten als Binärstring interpretiert und in lesbaren Text umwandelt.
 
 ```tsx
+import Webserial from '@tdev/webserial/component'
+import BinaryDecoder from '@tdev/webserial/decoders/BinaryDecoder/component'
+
 <Webserial 
     baudRate={115200}
     hideLogs
@@ -135,7 +140,7 @@ Soll in jedem Fall eine `SerialDevice`-Instanz abgerufen werden, so kann auch di
 const Logger = observer((props: Props) => {
     const viewStore = useStore('viewStore');
     const webserialStore = viewStore.useStore('webserialStore');
-    const device = webserialStore.useDevice('<deviceId>', { baudRate: 115200 }, { onReadyString: '::READY::' });
+    const device = webserialStore.useDevice('<deviceId>', { baudRate: 115200 }, {});
     return (
         <pre>
             <code>{device.receivedData.join('\n')}</code>
