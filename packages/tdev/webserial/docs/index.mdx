@@ -55,8 +55,8 @@ Decoder und Outputs können individuell erstellt und über die Option `output` e
     />
 </BrowserWindow>
 
-:::tip[BinaryDecoder]
-Für die Implementierung eines eigenen Decoders kann der `BinaryDecoder` als Referenz dienen.
+:::tip[`BinaryDecoder`]
+Für die Implementierung eines eigenen Decoders dient der [BinaryDecoder](https://github.com/GBSL-Informatik/teaching-dev/blob/main/packages/tdev/webserial/decoders/BinaryDecoder/model/Decoder.ts) als Referenz.
 :::
 
 
@@ -174,11 +174,13 @@ Die serielle Schnittstelle kann am einfachsten mit einem Micro:Bit ausprobiert w
 <Webserial 
     baudRate={115200}
     showInput
+    onReadyString='::READY::'
 />
 
 ```py
 from microbit import *
-import sys
+
+print('::READY::')
 
 while True:
     if uart.any():
