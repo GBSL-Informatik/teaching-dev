@@ -10,13 +10,18 @@ const useLocalStorage = <T = string>(
 ) => {
     const initialValue = React.useRef(Storage.get(key, defaultValue, useJson));
     const [value, setValue] = React.useState<T | undefined>(initialValue.current);
-    const update = React.useEffectEvent((newValue: T) => {
-        if (newValue === value) {
-            return;
-        }
-        Storage.set(key, newValue, useJson);
-        setValue(newValue);
-    });
+    const update = React.useCallback(
+        (newValue: T) => {
+            setValue((prev) => {
+                if (newValue === prev) {
+                    return prev;
+                }
+                Storage.set(key, newValue, useJson);
+                return newValue;
+            });
+        },
+        [key, useJson]
+    );
     React.useEffect(() => {
         if (!syncTabs) {
             return;
