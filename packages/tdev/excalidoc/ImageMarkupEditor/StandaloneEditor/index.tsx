@@ -130,16 +130,17 @@ const StandaloneEditor = observer((props: Props) => {
 
     const onSelect = React.useCallback(
         (fName?: string) => {
-            if (!fName) {
+            if (!fName || !dirTree) {
                 return;
             }
-            // Strip root dir name prefix that Dir prepends
-            const relativePath = fName.replace(/^\/+/, '');
-            if (IMAGE_RE.test(relativePath)) {
+            // Dir prepends the root dir name (e.g. "myFolder/tmp/image.png"),
+            // but dirHandle already IS that root, so strip the prefix.
+            const relativePath = fName.replace(/^\/+/, '').replace(new RegExp(`^${dirTree.name}/`), '');
+            if (relativePath && IMAGE_RE.test(relativePath)) {
                 openImage(relativePath);
             }
         },
-        [openImage]
+        [openImage, dirTree]
     );
 
     return (
