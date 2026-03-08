@@ -16,6 +16,7 @@ import buildImageTree from '../helpers/buildImageTree';
 import useCreateNewDrawing from '../hooks/useCreateNewDrawing';
 import useRenameImage from '../hooks/useRenameImage';
 import useExcalidrawSource from '../hooks/useExcalidrawSource';
+import Alert from '@tdev-components/shared/Alert';
 import DesktopSidebar from './DesktopSidebar';
 import MobileSidebar from './MobileSidebar';
 
@@ -104,77 +105,84 @@ const StandaloneEditor = observer((props: Props) => {
     const isMobile = useIsMobileView();
 
     return (
-        <FullscreenContext.Provider value={id}>
-            <div
-                id={id}
-                className={clsx(
-                    styles.standaloneEditor,
-                    viewStore.isFullscreenTarget(id) && styles.fullscreen,
-                    props.className
-                )}
-            >
-                {isMobile ? (
-                    <MobileSidebar
-                        fullscreenTargetId={id}
-                        dirHandle={dirHandle}
-                        dirTree={dirTree}
-                        selectedSrc={selectedSrc}
-                        onSelectFolder={selectFolder}
-                        onSelect={onSelect}
-                        onCreateNewDrawing={createNewDrawing}
-                        onRenameImage={renameImage}
-                    />
-                ) : (
-                    <DesktopSidebar
-                        fullscreenTargetId={id}
-                        dirHandle={dirHandle}
-                        dirTree={dirTree}
-                        selectedSrc={selectedSrc}
-                        onSelectFolder={selectFolder}
-                        onSelect={onSelect}
-                        onCreateNewDrawing={createNewDrawing}
-                        onRenameImage={renameImage}
-                    />
-                )}
-                <div className={clsx(styles.editorPane)}>
-                    {excaliState && selectedSrc ? (
-                        <ImageMarkupEditor
-                            key={selectedSrc}
-                            initialData={excaliState}
-                            mimeType={mimeType}
-                            onDiscard={() => {
-                                setExcaliState(null);
-                                setSelectedSrc(null);
-                            }}
-                            onSave={async (state, blob, asWebp) => {
-                                const imgExport = await save(state, blob, asWebp);
-                                // Refresh tree so newly created images appear
-                                const tree = await buildImageTree(dirHandle!);
-                                setDirTree(tree);
-                                if (imgExport) {
-                                    openImage(imgExport);
-                                }
-                            }}
-                            onRestore={async () => {
-                                const restored = await restore();
-                                if (restored) {
-                                    const tree = await buildImageTree(dirHandle!);
-                                    setDirTree(tree);
-                                    setExcaliState(null);
-                                    setSelectedSrc(null);
-                                }
-                            }}
+        <>
+            {!('showDirectoryPicker' in window) && (
+                <Alert type="warning">
+                    ⚠️ Die File System API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
+                </Alert>
+            )}
+            <FullscreenContext.Provider value={id}>
+                <div
+                    id={id}
+                    className={clsx(
+                        styles.standaloneEditor,
+                        viewStore.isFullscreenTarget(id) && styles.fullscreen,
+                        props.className
+                    )}
+                >
+                    {isMobile ? (
+                        <MobileSidebar
+                            fullscreenTargetId={id}
+                            dirHandle={dirHandle}
+                            dirTree={dirTree}
+                            selectedSrc={selectedSrc}
+                            onSelectFolder={selectFolder}
+                            onSelect={onSelect}
+                            onCreateNewDrawing={createNewDrawing}
+                            onRenameImage={renameImage}
                         />
                     ) : (
-                        <div className={clsx(styles.placeholder)}>
-                            {dirHandle
-                                ? 'Wähle ein Bild aus der Dateiliste aus.'
-                                : 'Wähle zuerst einen Ordner aus.'}
-                        </div>
+                        <DesktopSidebar
+                            fullscreenTargetId={id}
+                            dirHandle={dirHandle}
+                            dirTree={dirTree}
+                            selectedSrc={selectedSrc}
+                            onSelectFolder={selectFolder}
+                            onSelect={onSelect}
+                            onCreateNewDrawing={createNewDrawing}
+                            onRenameImage={renameImage}
+                        />
                     )}
+                    <div className={clsx(styles.editorPane)}>
+                        {excaliState && selectedSrc ? (
+                            <ImageMarkupEditor
+                                key={selectedSrc}
+                                initialData={excaliState}
+                                mimeType={mimeType}
+                                onDiscard={() => {
+                                    setExcaliState(null);
+                                    setSelectedSrc(null);
+                                }}
+                                onSave={async (state, blob, asWebp) => {
+                                    const imgExport = await save(state, blob, asWebp);
+                                    // Refresh tree so newly created images appear
+                                    const tree = await buildImageTree(dirHandle!);
+                                    setDirTree(tree);
+                                    if (imgExport) {
+                                        openImage(imgExport);
+                                    }
+                                }}
+                                onRestore={async () => {
+                                    const restored = await restore();
+                                    if (restored) {
+                                        const tree = await buildImageTree(dirHandle!);
+                                        setDirTree(tree);
+                                        setExcaliState(null);
+                                        setSelectedSrc(null);
+                                    }
+                                }}
+                            />
+                        ) : (
+                            <div className={clsx(styles.placeholder)}>
+                                {dirHandle
+                                    ? 'Wähle ein Bild aus der Dateiliste aus.'
+                                    : 'Wähle zuerst einen Ordner aus.'}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </FullscreenContext.Provider>
+            </FullscreenContext.Provider>
+        </>
     );
 });
 
