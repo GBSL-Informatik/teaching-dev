@@ -20,14 +20,7 @@ import { IMAGE_RE, NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../he
 import writeFileHandle from '../helpers/writeFileHandle';
 import buildImageTree from '../helpers/buildImageTree';
 import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
-
-const DEFAULT_IMAGES: Record<string, string> = {
-    '.png': require('../../Component/Preview/images/excalidraw-logo.png').default,
-    '.jpg': require('../../Component/Preview/images/excalidraw-logo.jpg').default,
-    '.jpeg': require('../../Component/Preview/images/excalidraw-logo.jpg').default,
-    '.svg': require('../../Component/Preview/images/excalidraw-logo.svg').default,
-    '.webp': require('../../Component/Preview/images/excalidraw-logo.webp').default
-};
+import useCreateNewDrawing from '../hooks/useCreateNewDrawing';
 import DesktopSidebar from './DesktopSidebar';
 import MobileSidebar from './MobileSidebar';
 
@@ -124,52 +117,7 @@ const StandaloneEditor = observer((props: Props) => {
         [openImage, dirTree]
     );
 
-    const createNewDrawing = React.useCallback(async () => {
-        if (!dirHandle) {
-            return;
-        }
-        const input = window.prompt('Name der neuen Zeichnung (z.B. sketch.png):');
-        if (!input) {
-            return;
-        }
-        const name = input.trim();
-        if (!name) {
-            return;
-        }
-        // Ensure the name has a valid export extension
-        const hasValidExt = VALID_EXPORT_EXTENSIONS.has(`.${name.split('.').pop()?.toLowerCase()}`);
-        const fileName = hasValidExt ? name : `${name}.png`;
-        const excaliFileName = `${fileName}.excalidraw`;
-        try {
-            // Check if file already exists
-            try {
-                await dirHandle.getFileHandle(excaliFileName);
-                window.alert(`Die Datei "${excaliFileName}" existiert bereits.`);
-                return;
-            } catch {
-                // Expected – file doesn't exist yet
-            }
-            // Write default image file based on extension
-            const ext = `.${fileName.split('.').pop()!.toLowerCase()}`;
-            const defaultImageUrl = DEFAULT_IMAGES[ext];
-            if (defaultImageUrl) {
-                const response = await fetch(defaultImageUrl);
-                const blob = await response.blob();
-                const imgFile = await dirHandle.getFileHandle(fileName, { create: true });
-                await writeFileHandle(imgFile, blob);
-            }
-            const excaliFile = await dirHandle.getFileHandle(excaliFileName, { create: true });
-            await writeFileHandle(excaliFile, JSON.stringify(NEW_EXCALIDRAW_DRAWING, null, 2));
-            // Refresh tree and open the new drawing
-            const tree = await buildImageTree(dirHandle);
-            setDirTree(tree);
-            setSelectedSrc(fileName);
-            setExcaliState(NEW_EXCALIDRAW_DRAWING as ExcalidrawInitialDataState);
-        } catch (error) {
-            console.error('Error creating new drawing:', error);
-            window.alert(`Fehler beim Erstellen der Zeichnung: ${error}`);
-        }
-    }, [dirHandle]);
+    const createNewDrawing = useCreateNewDrawing(dirHandle, setDirTree, setSelectedSrc, setExcaliState);
 
     const renameImage = React.useCallback(async () => {
         if (!dirHandle || !selectedSrc) {
