@@ -3,7 +3,8 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '@tdev-components/shared/Button';
-import { mdiFolderOpen } from '@mdi/js';
+import Icon from '@mdi/react';
+import { mdiFolderOpen, mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import ImageMarkupEditor from '..';
 import requestLocalDirectoryAccess, {
     restoreAccess
@@ -173,27 +174,40 @@ const StandaloneEditor = observer((props: Props) => {
         [openImage, dirTree]
     );
 
+    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+
     return (
         <div className={clsx(styles.standaloneEditor, props.className)}>
-            <div className={clsx(styles.sidebar)}>
-                <div className={clsx(styles.sidebarHeader)}>
-                    <Button
-                        icon={mdiFolderOpen}
-                        text="Ordner auswählen"
-                        onClick={selectFolder}
-                        color="primary"
-                    />
-                </div>
-                {dirTree && (
-                    <div className={clsx(styles.fileTree)}>
-                        <Dir
-                            dir={dirTree}
-                            open={2}
-                            path={selectedSrc ? `${dirTree.name}/${selectedSrc}` : undefined}
-                            onSelect={onSelect}
-                        />
-                    </div>
+            <div className={clsx(styles.sidebar, sidebarCollapsed && styles.collapsed)}>
+                {!sidebarCollapsed && (
+                    <>
+                        <div className={clsx(styles.sidebarHeader)}>
+                            <Button
+                                icon={mdiFolderOpen}
+                                text="Ordner auswählen"
+                                onClick={selectFolder}
+                                color="primary"
+                            />
+                        </div>
+                        {dirTree && (
+                            <div className={clsx(styles.fileTree)}>
+                                <Dir
+                                    dir={dirTree}
+                                    open={2}
+                                    path={selectedSrc ? `${dirTree.name}/${selectedSrc}` : undefined}
+                                    onSelect={onSelect}
+                                />
+                            </div>
+                        )}
+                    </>
                 )}
+                <button
+                    className={clsx(styles.collapseToggle)}
+                    onClick={() => setSidebarCollapsed((prev) => !prev)}
+                    title={sidebarCollapsed ? 'Dateiliste einblenden' : 'Dateiliste ausblenden'}
+                >
+                    <Icon path={sidebarCollapsed ? mdiChevronRight : mdiChevronLeft} size={0.8} />
+                </button>
             </div>
             <div className={clsx(styles.editorPane)}>
                 {excaliState && selectedSrc ? (
