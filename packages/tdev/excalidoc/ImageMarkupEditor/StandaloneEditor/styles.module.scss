@@ -3,6 +3,12 @@
     height: 80vh;
     width: 100%;
     gap: 0.5em;
+
+    &.fullscreen {
+        height: 100vh;
+        background: var(--ifm-color-white);
+        padding: 0.5em;
+    }
 }
 
 .sidebar {
