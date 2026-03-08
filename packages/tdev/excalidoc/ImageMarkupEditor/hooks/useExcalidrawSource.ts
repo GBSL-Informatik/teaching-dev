@@ -7,7 +7,7 @@ import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
 
 const useExcalidrawSource = (root: FileSystemDirectoryHandle | null, src: string | null) => {
     const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
-
+    const loadIdRef = React.useRef(0);
     const { excaliName, excaliSrc, imgName, mimeType } = React.useMemo(
         () =>
             src
@@ -22,13 +22,18 @@ const useExcalidrawSource = (root: FileSystemDirectoryHandle | null, src: string
             if (!root || !target) {
                 return;
             }
+            const id = ++loadIdRef.current;
             setExcaliState(null);
             try {
                 const data = await loadExcalidrawState(root, target);
-                setExcaliState(data);
+                if (id === loadIdRef.current) {
+                    setExcaliState(data);
+                }
             } catch (error) {
-                console.error('Error processing image:', error);
-                window.alert(`Error processing image: ${error}`);
+                if (id === loadIdRef.current) {
+                    console.error('Error processing image:', error);
+                    window.alert(`Error processing image: ${error}`);
+                }
             }
         },
         [root, src]
