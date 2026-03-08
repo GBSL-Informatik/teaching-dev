@@ -5,7 +5,8 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
-import { mdiFolderOpen, mdiChevronLeft, mdiChevronRight } from '@mdi/js';
+import { mdiFolderOpen, mdiChevronLeft, mdiChevronRight, mdiFileTree, mdiClose } from '@mdi/js';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import ImageMarkupEditor from '..';
 import requestLocalDirectoryAccess, {
     restoreAccess
@@ -180,6 +181,16 @@ const StandaloneEditor = observer((props: Props) => {
     );
 
     const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+    const isMobile = useIsMobileView();
+    const [mobileTreeOpen, setMobileTreeOpen] = React.useState(false);
+
+    const onMobileSelect = React.useCallback(
+        (fName?: string) => {
+            onSelect(fName);
+            setMobileTreeOpen(false);
+        },
+        [onSelect]
+    );
 
     return (
         <FullscreenContext.Provider value={id}>
@@ -191,36 +202,88 @@ const StandaloneEditor = observer((props: Props) => {
                     props.className
                 )}
             >
-                <div className={clsx(styles.sidebar, sidebarCollapsed && styles.collapsed)}>
-                    <div className={clsx(styles.sidebarHeader)}>
-                        {!sidebarCollapsed && (
-                            <Button
-                                icon={mdiFolderOpen}
-                                text="Ordner auswählen"
-                                onClick={selectFolder}
-                                color="primary"
-                            />
+                {isMobile ? (
+                    <>
+                        {mobileTreeOpen && (
+                            <div className={clsx(styles.mobileOverlay)}>
+                                <div className={clsx(styles.mobileOverlayHeader)}>
+                                    <Button
+                                        icon={mdiFolderOpen}
+                                        text="Ordner auswählen"
+                                        onClick={selectFolder}
+                                        color="primary"
+                                    />
+                                    <button
+                                        className={clsx(styles.collapseToggle)}
+                                        onClick={() => setMobileTreeOpen(false)}
+                                        title="Dateiliste schliessen"
+                                    >
+                                        <Icon path={mdiClose} size={0.8} />
+                                    </button>
+                                </div>
+                                {dirTree && (
+                                    <div className={clsx(styles.fileTree)}>
+                                        <Dir
+                                            dir={dirTree}
+                                            open={2}
+                                            path={selectedSrc ? `${dirTree.name}/${selectedSrc}` : undefined}
+                                            onSelect={onMobileSelect}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         )}
-                        <RequestFullscreen targetId={id} />
-                        <button
-                            className={clsx(styles.collapseToggle)}
-                            onClick={() => setSidebarCollapsed((prev) => !prev)}
-                            title={sidebarCollapsed ? 'Dateiliste einblenden' : 'Dateiliste ausblenden'}
-                        >
-                            <Icon path={sidebarCollapsed ? mdiChevronRight : mdiChevronLeft} size={0.8} />
-                        </button>
-                    </div>
-                    {!sidebarCollapsed && dirTree && (
-                        <div className={clsx(styles.fileTree)}>
-                            <Dir
-                                dir={dirTree}
-                                open={2}
-                                path={selectedSrc ? `${dirTree.name}/${selectedSrc}` : undefined}
-                                onSelect={onSelect}
-                            />
+                        <div className={clsx(styles.mobileToolbar)}>
+                            <button
+                                className={clsx(styles.collapseToggle)}
+                                onClick={() => setMobileTreeOpen(true)}
+                                title="Dateiliste anzeigen"
+                            >
+                                <Icon path={mdiFileTree} size={0.8} />
+                            </button>
+                            {!dirHandle && (
+                                <Button
+                                    icon={mdiFolderOpen}
+                                    text="Ordner auswählen"
+                                    onClick={selectFolder}
+                                    color="primary"
+                                />
+                            )}
+                            <RequestFullscreen targetId={id} />
                         </div>
-                    )}
-                </div>
+                    </>
+                ) : (
+                    <div className={clsx(styles.sidebar, sidebarCollapsed && styles.collapsed)}>
+                        <div className={clsx(styles.sidebarHeader)}>
+                            {!sidebarCollapsed && (
+                                <Button
+                                    icon={mdiFolderOpen}
+                                    text="Ordner auswählen"
+                                    onClick={selectFolder}
+                                    color="primary"
+                                />
+                            )}
+                            <RequestFullscreen targetId={id} />
+                            <button
+                                className={clsx(styles.collapseToggle)}
+                                onClick={() => setSidebarCollapsed((prev) => !prev)}
+                                title={sidebarCollapsed ? 'Dateiliste einblenden' : 'Dateiliste ausblenden'}
+                            >
+                                <Icon path={sidebarCollapsed ? mdiChevronRight : mdiChevronLeft} size={0.8} />
+                            </button>
+                        </div>
+                        {!sidebarCollapsed && dirTree && (
+                            <div className={clsx(styles.fileTree)}>
+                                <Dir
+                                    dir={dirTree}
+                                    open={2}
+                                    path={selectedSrc ? `${dirTree.name}/${selectedSrc}` : undefined}
+                                    onSelect={onSelect}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
                 <div className={clsx(styles.editorPane)}>
                     {excaliState && selectedSrc ? (
                         <ImageMarkupEditor

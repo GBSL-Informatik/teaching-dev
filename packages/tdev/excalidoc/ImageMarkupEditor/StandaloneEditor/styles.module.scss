@@ -3,6 +3,11 @@
     height: 80vh;
     width: 100%;
     gap: 0.5em;
+    position: relative;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
 
     &.fullscreen {
         height: 100vh;
@@ -58,6 +63,32 @@
     overflow: auto;
     padding: 0.25em;
     scrollbar-width: thin;
+}
+
+/* Mobile: overlay for the file tree */
+.mobileOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: var(--ifm-background-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.mobileOverlayHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.5em;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.mobileToolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.25em 0.5em;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
 }
 
 .editorPane {
