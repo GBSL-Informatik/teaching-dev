@@ -16,7 +16,7 @@ import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 import loadExcalidrawState from '../helpers/loadExcalidrawState';
 import saveExcalidrawToFs from '../helpers/saveExcalidrawToFs';
 import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
-import { IMAGE_RE, NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../helpers/constants';
+import { IMAGE_RE } from '../helpers/constants';
 import buildImageTree from '../helpers/buildImageTree';
 import useCreateNewDrawing from '../hooks/useCreateNewDrawing';
 import useRenameImage from '../hooks/useRenameImage';
