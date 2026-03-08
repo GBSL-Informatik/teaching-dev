@@ -12,17 +12,14 @@ import requestLocalDirectoryAccess, {
     restoreAccess
 } from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
 import { indexedDb } from '@tdev-api/base';
-import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
-import { createExcalidrawMarkup, updateRectangleDimensions } from '../helpers/createExcalidrawMarkup';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import extractExalidrawImageName from '../helpers/extractExalidrawImageName';
-import dataUrlToBlob from '../helpers/dataUrlToBlob';
-import { getImageElementFromScene, getImageFileFromScene } from '../helpers/getElementsFromScene';
-import type { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import { CustomData } from '../helpers/constants';
 import Dir, { DirType } from '@tdev-components/FileSystem/Dir';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
+import loadExcalidrawState from '../helpers/loadExcalidrawState';
+import saveExcalidrawToFs from '../helpers/saveExcalidrawToFs';
+import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
 
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|bmp|webp|svg|avif|tiff|ico|heic|heif)$/i;
 
@@ -124,39 +121,15 @@ const StandaloneEditor = observer((props: Props) => {
             if (!dirHandle || !src) {
                 return;
             }
-            // Guard: track which image we're loading so stale results are discarded
             loadingRef.current = src;
             setSelectedSrc(src);
             setExcaliState(null);
-            const { excaliSrc: eSrc, excaliName: eName } = extractExalidrawImageName(src);
             try {
-                let fileHandle: FileSystemFileHandle;
-                let parentDir: FileSystemDirectoryHandle;
-                try {
-                    ({ fileHandle, parentDir } = await requestFileHandle(dirHandle, eSrc, 'readwrite'));
-                } catch {
-                    // excalidraw file doesn't exist yet – create from image
-                    ({ fileHandle, parentDir } = await requestFileHandle(dirHandle, src, 'read'));
-                    const excaliData = await createExcalidrawMarkup(fileHandle);
-                    const excaliFile = await parentDir.getFileHandle(eName, { create: true });
-                    await excaliFile.createWritable().then(async (writable) => {
-                        await writable.write(JSON.stringify(excaliData, null, 2));
-                        await writable.close();
-                    });
-                    fileHandle = excaliFile;
-                }
-                // Discard result if the user already selected a different image
+                const data = await loadExcalidrawState(dirHandle, src);
                 if (loadingRef.current !== src) {
                     return;
                 }
-                const data = await fileHandle
-                    .getFile()
-                    .then((content) => content.text())
-                    .then((text) => JSON.parse(text) as ExcalidrawInitialDataState);
-                if (loadingRef.current !== src) {
-                    return;
-                }
-                setExcaliState(updateRectangleDimensions(data));
+                setExcaliState(data);
             } catch (error) {
                 console.error('Error processing image:', error);
                 window.alert(`Error processing image: ${error}`);
@@ -295,82 +268,25 @@ const StandaloneEditor = observer((props: Props) => {
                                 setSelectedSrc(null);
                             }}
                             onSave={async (state, blob, asWebp) => {
-                                let exaliExport = excaliSrc;
-                                let imgExport = selectedSrc;
-                                const needsTransform = asWebp && !/\.webp$/i.test(selectedSrc);
-                                if (needsTransform) {
-                                    exaliExport = exaliExport.replace(
-                                        `${imgName}.excalidraw`,
-                                        `${imgName.split('.').slice(0, -1).join('.')}.webp.excalidraw`
-                                    );
-                                    imgExport = imgExport.replace(
-                                        `${imgName}`,
-                                        `${imgName.split('.').slice(0, -1).join('.')}.webp`
-                                    );
-                                }
-
-                                const { fileHandle, parentDir } = await requestFileHandle(
+                                const imgExport = await saveExcalidrawToFs(
                                     dirHandle!,
-                                    exaliExport,
-                                    'readwrite',
-                                    true
+                                    selectedSrc,
+                                    excaliSrc,
+                                    imgName,
+                                    state,
+                                    blob,
+                                    asWebp
                                 );
-                                const { fileHandle: imgFileHandle } = await requestFileHandle(
-                                    dirHandle!,
-                                    imgExport,
-                                    'readwrite',
-                                    true
-                                );
-                                await fileHandle.createWritable().then(async (writable) => {
-                                    await writable.write(JSON.stringify(state, null, 2));
-                                    await writable.close();
-                                });
-                                await imgFileHandle.createWritable().then(async (writable) => {
-                                    await writable.write(blob);
-                                    await writable.close();
-                                });
-                                if (needsTransform) {
-                                    try {
-                                        await parentDir.removeEntry(imgName);
-                                        await parentDir.removeEntry(`${imgName}.excalidraw`);
-                                    } catch (err) {
-                                        console.error(`Error removing entry when transforming to WebP:`, err);
-                                    }
-                                }
-                                // Reload the saved image to reset the editor (clears "unsaved" state)
                                 openImage(imgExport);
                             }}
                             onRestore={async () => {
-                                const { fileHandle, parentDir } = await requestFileHandle(
+                                const restored = await restoreExcalidrawFromFs(
                                     dirHandle!,
                                     excaliSrc,
-                                    'read'
+                                    excaliName,
+                                    imgName
                                 );
-                                const data = await fileHandle
-                                    .getFile()
-                                    .then((content) => content.text())
-                                    .then((text) => JSON.parse(text) as ExcalidrawInitialDataState);
-                                const [backgroundImage] = getImageElementFromScene(
-                                    data.elements as readonly OrderedExcalidrawElement[]
-                                );
-                                const backgroundFile = getImageFileFromScene(data.files);
-                                if (backgroundFile && backgroundImage) {
-                                    const cData = backgroundImage.customData as Partial<CustomData>;
-                                    const initExtension = cData.initExtension || '.png';
-                                    const restoredName = imgName.endsWith(initExtension)
-                                        ? imgName
-                                        : `${imgName.split('.').slice(0, -1).join('.')}${initExtension}`;
-                                    const imgFileHandle = await parentDir.getFileHandle(restoredName, {
-                                        create: true
-                                    });
-                                    await imgFileHandle.createWritable().then(async (writable) => {
-                                        await writable.write(dataUrlToBlob(backgroundFile.dataURL));
-                                        await writable.close();
-                                    });
-                                    await parentDir.removeEntry(excaliName);
-                                    if (restoredName !== imgName) {
-                                        await parentDir.removeEntry(imgName);
-                                    }
+                                if (restored) {
                                     setExcaliState(null);
                                     setSelectedSrc(null);
                                 }
