@@ -34,6 +34,12 @@ const StandaloneEditor = observer((props: Props) => {
     const [selectedSrc, setSelectedSrc] = React.useState<string | null>(null);
     const loadingRef = React.useRef<string | null>(null);
 
+    const [canUseFileSystemAccessAPI, setCanUseFileSystemAccessAPI] = React.useState(false);
+
+    React.useEffect(() => {
+        setCanUseFileSystemAccessAPI('showDirectoryPicker' in window);
+    }, []);
+
     const { excaliState, setExcaliState, excaliName, excaliSrc, mimeType, load, save, restore } =
         useExcalidrawSource(dirHandle, selectedSrc);
 
@@ -106,7 +112,7 @@ const StandaloneEditor = observer((props: Props) => {
 
     return (
         <>
-            {!('showDirectoryPicker' in window) && (
+            {!canUseFileSystemAccessAPI && (
                 <Alert type="warning">
                     ⚠️ Die File System API ist nicht unterstützt. Verwenden Sie Chrome oder Edge.
                 </Alert>
