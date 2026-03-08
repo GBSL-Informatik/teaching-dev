@@ -263,7 +263,7 @@ const StandaloneEditor = observer((props: Props) => {
                                     color="primary"
                                 />
                             )}
-                            <RequestFullscreen targetId={id} />
+                            {!sidebarCollapsed && <RequestFullscreen targetId={id} />}
                             <button
                                 className={clsx(styles.collapseToggle)}
                                 onClick={() => setSidebarCollapsed((prev) => !prev)}
