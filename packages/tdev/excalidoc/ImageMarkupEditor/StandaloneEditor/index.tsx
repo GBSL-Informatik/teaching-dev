@@ -5,7 +5,10 @@ import { observer } from 'mobx-react-lite';
 import Button from '@tdev-components/shared/Button';
 import { mdiFolderOpen } from '@mdi/js';
 import ImageMarkupEditor from '..';
-import requestLocalDirectoryAccess from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
+import requestLocalDirectoryAccess, {
+    restoreAccess
+} from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
+import { indexedDb } from '@tdev-api/base';
 import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
 import { createExcalidrawMarkup, updateRectangleDimensions } from '../helpers/createExcalidrawMarkup';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
@@ -66,6 +69,7 @@ const StandaloneEditor = observer((props: Props) => {
     const [dirTree, setDirTree] = React.useState<DirType | null>(null);
     const [selectedSrc, setSelectedSrc] = React.useState<string | null>(null);
     const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
+    const loadingRef = React.useRef<string | null>(null);
 
     const { excaliName, excaliSrc, imgName, mimeType } = React.useMemo(
         () =>
@@ -75,29 +79,48 @@ const StandaloneEditor = observer((props: Props) => {
         [selectedSrc]
     );
 
-    const selectFolder = React.useCallback(async () => {
-        const handle = await requestLocalDirectoryAccess(
-            'readwrite',
-            [],
-            'Wähle den Ordner mit den Bildern aus, welche bearbeitet werden sollen.',
-            FS_STANDALONE_EDITOR_ID
-        );
-        if (!handle) {
-            return;
-        }
+    const applyDirHandle = React.useCallback(async (handle: FileSystemDirectoryHandle) => {
         setDirHandle(handle);
         const tree = await buildImageTree(handle);
         setDirTree(tree);
         setSelectedSrc(null);
         setExcaliState(null);
+        loadingRef.current = null;
     }, []);
+
+    // Restore previously granted folder on mount
+    React.useEffect(() => {
+        restoreAccess(FS_STANDALONE_EDITOR_ID, 'readwrite', []).then((handle) => {
+            if (handle) {
+                applyDirHandle(handle);
+            }
+        });
+    }, [applyDirHandle]);
+
+    const selectFolder = React.useCallback(async () => {
+        // Always prompt the user (no cacheKey so the picker always opens)
+        const handle = await requestLocalDirectoryAccess(
+            'readwrite',
+            [],
+            'Wähle den Ordner mit den Bildern aus, welche bearbeitet werden sollen.'
+        );
+        if (!handle) {
+            return;
+        }
+        // Cache for future page loads
+        await indexedDb.put('fsHandles', handle, FS_STANDALONE_EDITOR_ID);
+        applyDirHandle(handle);
+    }, [applyDirHandle]);
 
     const openImage = React.useCallback(
         async (src: string) => {
             if (!dirHandle || !src) {
                 return;
             }
+            // Guard: track which image we're loading so stale results are discarded
+            loadingRef.current = src;
             setSelectedSrc(src);
+            setExcaliState(null);
             const { excaliSrc: eSrc, excaliName: eName } = extractExalidrawImageName(src);
             try {
                 let fileHandle: FileSystemFileHandle;
@@ -115,10 +138,17 @@ const StandaloneEditor = observer((props: Props) => {
                     });
                     fileHandle = excaliFile;
                 }
+                // Discard result if the user already selected a different image
+                if (loadingRef.current !== src) {
+                    return;
+                }
                 const data = await fileHandle
                     .getFile()
                     .then((content) => content.text())
                     .then((text) => JSON.parse(text) as ExcalidrawInitialDataState);
+                if (loadingRef.current !== src) {
+                    return;
+                }
                 setExcaliState(updateRectangleDimensions(data));
             } catch (error) {
                 console.error('Error processing image:', error);
