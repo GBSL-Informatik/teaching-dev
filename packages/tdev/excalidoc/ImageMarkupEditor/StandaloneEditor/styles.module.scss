@@ -1,0 +1,57 @@
+.standaloneEditor {
+    display: flex;
+    height: 80vh;
+    width: 100%;
+    gap: 0.5em;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    min-width: 200px;
+    border-right: 1px solid var(--ifm-color-emphasis-300);
+    overflow: hidden;
+}
+
+.sidebarHeader {
+    padding: 0.5em;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.fileTree {
+    flex: 1;
+    overflow: auto;
+    padding: 0.25em;
+    scrollbar-width: thin;
+}
+
+.editorPane {
+    flex: 1;
+    min-width: 0;
+    :global(.excalidraw) {
+        :global(.App-bottom-bar) {
+            :global(.Island) {
+                min-width: unset;
+                width: auto;
+                :global(.dropdown-menu.dropdown-menu--mobile) {
+                    min-width: 13em;
+                }
+                :global(.App-toolbar) {
+                    :global(.App-toolbar-content) {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--ifm-color-emphasis-600);
+    font-style: italic;
+}
