@@ -19,6 +19,14 @@ import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
 import { IMAGE_RE, NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../helpers/constants';
 import writeFileHandle from '../helpers/writeFileHandle';
 import buildImageTree from '../helpers/buildImageTree';
+
+const DEFAULT_IMAGES: Record<string, string> = {
+    '.png': require('../../Component/Preview/images/excalidraw-logo.png').default,
+    '.jpg': require('../../Component/Preview/images/excalidraw-logo.jpg').default,
+    '.jpeg': require('../../Component/Preview/images/excalidraw-logo.jpg').default,
+    '.svg': require('../../Component/Preview/images/excalidraw-logo.svg').default,
+    '.webp': require('../../Component/Preview/images/excalidraw-logo.webp').default
+};
 import DesktopSidebar from './DesktopSidebar';
 import MobileSidebar from './MobileSidebar';
 
@@ -139,6 +147,15 @@ const StandaloneEditor = observer((props: Props) => {
                 return;
             } catch {
                 // Expected – file doesn't exist yet
+            }
+            // Write default image file based on extension
+            const ext = `.${fileName.split('.').pop()!.toLowerCase()}`;
+            const defaultImageUrl = DEFAULT_IMAGES[ext];
+            if (defaultImageUrl) {
+                const response = await fetch(defaultImageUrl);
+                const blob = await response.blob();
+                const imgFile = await dirHandle.getFileHandle(fileName, { create: true });
+                await writeFileHandle(imgFile, blob);
             }
             const excaliFile = await dirHandle.getFileHandle(excaliFileName, { create: true });
             await writeFileHandle(excaliFile, JSON.stringify(NEW_EXCALIDRAW_DRAWING, null, 2));
