@@ -3,7 +3,13 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
-import { mdiFolderOpen, mdiChevronLeft, mdiChevronRight, mdiFilePlusOutline } from '@mdi/js';
+import {
+    mdiFolderOpen,
+    mdiChevronLeft,
+    mdiChevronRight,
+    mdiFilePlusOutline,
+    mdiRenameOutline
+} from '@mdi/js';
 import Dir, { DirType } from '@tdev-components/FileSystem/Dir';
 import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
 
@@ -15,6 +21,7 @@ interface Props {
     onSelectFolder: () => void;
     onSelect: (fName?: string) => void;
     onCreateNewDrawing: () => void;
+    onRenameImage: () => void;
 }
 
 const DesktopSidebar = (props: Props) => {
@@ -25,7 +32,8 @@ const DesktopSidebar = (props: Props) => {
         selectedSrc,
         onSelectFolder,
         onSelect,
-        onCreateNewDrawing
+        onCreateNewDrawing,
+        onRenameImage
     } = props;
     const [collapsed, setCollapsed] = React.useState(false);
 
@@ -45,6 +53,14 @@ const DesktopSidebar = (props: Props) => {
                                 icon={mdiFilePlusOutline}
                                 title="Neue Zeichnung erstellen"
                                 onClick={onCreateNewDrawing}
+                                color="primary"
+                            />
+                        )}
+                        {selectedSrc && (
+                            <Button
+                                icon={mdiRenameOutline}
+                                title="Bild umbenennen"
+                                onClick={onRenameImage}
                                 color="primary"
                             />
                         )}
