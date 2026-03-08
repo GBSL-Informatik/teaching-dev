@@ -16,13 +16,11 @@ import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 import loadExcalidrawState from '../helpers/loadExcalidrawState';
 import saveExcalidrawToFs from '../helpers/saveExcalidrawToFs';
 import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
-import { NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../helpers/constants';
+import { IMAGE_RE, NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../helpers/constants';
 import writeFileHandle from '../helpers/writeFileHandle';
 import buildImageTree from '../helpers/buildImageTree';
 import DesktopSidebar from './DesktopSidebar';
 import MobileSidebar from './MobileSidebar';
-
-const IMAGE_RE = /\.(jpg|jpeg|png|gif|bmp|webp|svg|avif|tiff|ico|heic|heif)$/i;
 
 interface Props {
     className?: string;

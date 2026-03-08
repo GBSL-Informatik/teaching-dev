@@ -1,6 +1,5 @@
 import type { DirType } from '@tdev-components/FileSystem/Dir';
-
-const IMAGE_RE = /\.(jpg|jpeg|png|gif|bmp|webp|svg|avif|tiff|ico|heic|heif)$/i;
+import { IMAGE_RE } from './constants';
 
 /**
  * Recursively scan a directory handle and build a DirType tree containing only
