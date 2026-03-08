@@ -9,17 +9,13 @@ import requestLocalDirectoryAccess, {
     restoreAccess
 } from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
 import { indexedDb } from '@tdev-api/base';
-import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
-import extractExalidrawImageName from '../helpers/extractExalidrawImageName';
 import type { DirType } from '@tdev-components/FileSystem/Dir';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
-import loadExcalidrawState from '../helpers/loadExcalidrawState';
-import saveExcalidrawToFs from '../helpers/saveExcalidrawToFs';
-import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
 import { IMAGE_RE } from '../helpers/constants';
 import buildImageTree from '../helpers/buildImageTree';
 import useCreateNewDrawing from '../hooks/useCreateNewDrawing';
 import useRenameImage from '../hooks/useRenameImage';
+import useExcalidrawSource from '../hooks/useExcalidrawSource';
 import DesktopSidebar from './DesktopSidebar';
 import MobileSidebar from './MobileSidebar';
 
@@ -35,16 +31,10 @@ const StandaloneEditor = observer((props: Props) => {
     const [dirHandle, setDirHandle] = React.useState<FileSystemDirectoryHandle | null>(null);
     const [dirTree, setDirTree] = React.useState<DirType | null>(null);
     const [selectedSrc, setSelectedSrc] = React.useState<string | null>(null);
-    const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
     const loadingRef = React.useRef<string | null>(null);
 
-    const { excaliName, excaliSrc, imgName, mimeType } = React.useMemo(
-        () =>
-            selectedSrc
-                ? extractExalidrawImageName(selectedSrc)
-                : { excaliName: '', excaliSrc: '', imgName: '', mimeType: '' },
-        [selectedSrc]
-    );
+    const { excaliState, setExcaliState, excaliName, excaliSrc, mimeType, load, save, restore } =
+        useExcalidrawSource(dirHandle, selectedSrc);
 
     const applyDirHandle = React.useCallback(async (handle: FileSystemDirectoryHandle) => {
         setDirHandle(handle);
@@ -87,18 +77,9 @@ const StandaloneEditor = observer((props: Props) => {
             loadingRef.current = src;
             setSelectedSrc(src);
             setExcaliState(null);
-            try {
-                const data = await loadExcalidrawState(dirHandle, src);
-                if (loadingRef.current !== src) {
-                    return;
-                }
-                setExcaliState(data);
-            } catch (error) {
-                console.error('Error processing image:', error);
-                window.alert(`Error processing image: ${error}`);
-            }
+            await load(src);
         },
-        [dirHandle]
+        [dirHandle, load, setExcaliState]
     );
 
     const onSelect = React.useCallback(
@@ -166,27 +147,16 @@ const StandaloneEditor = observer((props: Props) => {
                                 setSelectedSrc(null);
                             }}
                             onSave={async (state, blob, asWebp) => {
-                                const imgExport = await saveExcalidrawToFs(
-                                    dirHandle!,
-                                    selectedSrc,
-                                    excaliSrc,
-                                    imgName,
-                                    state,
-                                    blob,
-                                    asWebp
-                                );
+                                const imgExport = await save(state, blob, asWebp);
                                 // Refresh tree so newly created images appear
                                 const tree = await buildImageTree(dirHandle!);
                                 setDirTree(tree);
-                                openImage(imgExport);
+                                if (imgExport) {
+                                    openImage(imgExport);
+                                }
                             }}
                             onRestore={async () => {
-                                const restored = await restoreExcalidrawFromFs(
-                                    dirHandle!,
-                                    excaliSrc,
-                                    excaliName,
-                                    imgName
-                                );
+                                const restored = await restore();
                                 if (restored) {
                                     const tree = await buildImageTree(dirHandle!);
                                     setDirTree(tree);

@@ -10,12 +10,8 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { mdiClose, mdiImageEditOutline } from '@mdi/js';
 import ImageMarkupEditor from '..';
 import requestDocusaurusRootAcess from '@tdev-components/util/localFS/requestDocusaurusRootAcess';
-import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { PopupActions } from 'reactjs-popup/dist/types';
-import extractExalidrawImageName from '../helpers/extractExalidrawImageName';
-import loadExcalidrawState from '../helpers/loadExcalidrawState';
-import saveExcalidrawToFs from '../helpers/saveExcalidrawToFs';
-import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
+import useExcalidrawSource from '../hooks/useExcalidrawSource';
 
 interface Props {
     src: string;
@@ -25,11 +21,11 @@ interface Props {
 const EditorPopup = observer((props: Props) => {
     const sessionStore = useStore('sessionStore');
     const ref = React.useRef<PopupActions>(null);
-    const { excaliName, excaliSrc, imgName, mimeType } = React.useMemo(
-        () => extractExalidrawImageName(props.src),
-        [props.src]
+    const root = sessionStore.fileSystemDirectoryHandles.get('root') || null;
+    const { excaliState, setExcaliState, mimeType, load, save, restore } = useExcalidrawSource(
+        root,
+        props.src
     );
-    const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
 
     return (
         <Popup
@@ -50,18 +46,11 @@ const EditorPopup = observer((props: Props) => {
                         return;
                     }
                 }
-                const root = sessionStore.fileSystemDirectoryHandles.get('root');
-                if (!root) {
+                if (!sessionStore.fileSystemDirectoryHandles.get('root')) {
                     window.alert('Kein Zugriff auf lokale Dateien. Bitte aktiviere den Zugriff.');
                     return;
                 }
-                try {
-                    const data = await loadExcalidrawState(root, props.src);
-                    setExcaliState(data);
-                } catch (error) {
-                    console.error('Error processing image:', error);
-                    window.alert(`Error processing image: ${error}`);
-                }
+                await load();
             }}
             onClose={() => {
                 setExcaliState(null);
@@ -94,26 +83,11 @@ const EditorPopup = observer((props: Props) => {
                             ref.current?.close();
                         }}
                         onSave={async (state, blob, asWebp) => {
-                            const root = sessionStore.fileSystemDirectoryHandles.get('root');
-                            await saveExcalidrawToFs(
-                                root!,
-                                props.src,
-                                excaliSrc,
-                                imgName,
-                                state,
-                                blob,
-                                asWebp
-                            );
+                            await save(state, blob, asWebp);
                             ref.current?.close();
                         }}
                         onRestore={async () => {
-                            const root = sessionStore.fileSystemDirectoryHandles.get('root');
-                            const restored = await restoreExcalidrawFromFs(
-                                root!,
-                                excaliSrc,
-                                excaliName,
-                                imgName
-                            );
+                            const restored = await restore();
                             if (restored) {
                                 ref.current?.close();
                             }
