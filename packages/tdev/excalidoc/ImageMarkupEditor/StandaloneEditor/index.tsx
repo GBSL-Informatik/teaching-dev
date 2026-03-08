@@ -260,6 +260,8 @@ const StandaloneEditor = observer((props: Props) => {
                                     console.error(`Error removing entry when transforming to WebP:`, err);
                                 }
                             }
+                            // Reload the saved image to reset the editor (clears "unsaved" state)
+                            openImage(imgExport);
                         }}
                         onRestore={async () => {
                             const { fileHandle, parentDir } = await requestFileHandle(
