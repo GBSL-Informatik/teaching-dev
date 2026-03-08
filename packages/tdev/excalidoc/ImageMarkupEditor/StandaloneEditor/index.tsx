@@ -219,6 +219,8 @@ const StandaloneEditor = observer((props: Props) => {
                                     imgName
                                 );
                                 if (restored) {
+                                    const tree = await buildImageTree(dirHandle!);
+                                    setDirTree(tree);
                                     setExcaliState(null);
                                     setSelectedSrc(null);
                                 }
