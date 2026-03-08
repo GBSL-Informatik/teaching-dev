@@ -44,7 +44,6 @@ const MobileSidebar = (props: Props) => {
                     <div className={clsx(styles.mobileOverlayHeader)}>
                         <Button
                             icon={mdiFolderOpen}
-                            text="Ordner"
                             title="Ordner auswählen"
                             onClick={onSelectFolder}
                             color="primary"

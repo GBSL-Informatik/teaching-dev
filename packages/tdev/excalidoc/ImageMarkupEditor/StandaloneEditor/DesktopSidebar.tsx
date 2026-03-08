@@ -36,7 +36,6 @@ const DesktopSidebar = (props: Props) => {
                     <>
                         <Button
                             icon={mdiFolderOpen}
-                            text="Ordner"
                             title="Ordner auswählen"
                             onClick={onSelectFolder}
                             color="primary"
