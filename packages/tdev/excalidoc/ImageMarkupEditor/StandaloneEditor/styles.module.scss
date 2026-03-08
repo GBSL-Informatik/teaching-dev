@@ -24,9 +24,6 @@
 }
 
 .collapseToggle {
-    position: absolute;
-    bottom: 8px;
-    right: 4px;
     background: var(--ifm-color-emphasis-200);
     border: none;
     border-radius: 4px;
@@ -36,12 +33,16 @@
     align-items: center;
     justify-content: center;
     color: var(--ifm-color-emphasis-700);
+    margin-left: auto;
     &:hover {
         background: var(--ifm-color-emphasis-300);
     }
 }
 
 .sidebarHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
     padding: 0.5em;
     border-bottom: 1px solid var(--ifm-color-emphasis-200);
 }
