@@ -5,7 +5,14 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
-import { mdiFolderOpen, mdiChevronLeft, mdiChevronRight, mdiFileTree, mdiClose } from '@mdi/js';
+import {
+    mdiFolderOpen,
+    mdiChevronLeft,
+    mdiChevronRight,
+    mdiFileTree,
+    mdiClose,
+    mdiFilePlusOutline
+} from '@mdi/js';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import ImageMarkupEditor from '..';
 import requestLocalDirectoryAccess, {
@@ -20,6 +27,8 @@ import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
 import loadExcalidrawState from '../helpers/loadExcalidrawState';
 import saveExcalidrawToFs from '../helpers/saveExcalidrawToFs';
 import restoreExcalidrawFromFs from '../helpers/restoreExcalidrawFromFs';
+import { NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../helpers/constants';
+import writeFileHandle from '../helpers/writeFileHandle';
 
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|bmp|webp|svg|avif|tiff|ico|heic|heif)$/i;
 
@@ -153,6 +162,44 @@ const StandaloneEditor = observer((props: Props) => {
         [openImage, dirTree]
     );
 
+    const createNewDrawing = React.useCallback(async () => {
+        if (!dirHandle) {
+            return;
+        }
+        const input = window.prompt('Name der neuen Zeichnung (z.B. sketch.png):');
+        if (!input) {
+            return;
+        }
+        const name = input.trim();
+        if (!name) {
+            return;
+        }
+        // Ensure the name has a valid export extension
+        const hasValidExt = VALID_EXPORT_EXTENSIONS.has(`.${name.split('.').pop()?.toLowerCase()}`);
+        const fileName = hasValidExt ? name : `${name}.png`;
+        const excaliFileName = `${fileName}.excalidraw`;
+        try {
+            // Check if file already exists
+            try {
+                await dirHandle.getFileHandle(excaliFileName);
+                window.alert(`Die Datei "${excaliFileName}" existiert bereits.`);
+                return;
+            } catch {
+                // Expected – file doesn't exist yet
+            }
+            const excaliFile = await dirHandle.getFileHandle(excaliFileName, { create: true });
+            await writeFileHandle(excaliFile, JSON.stringify(NEW_EXCALIDRAW_DRAWING, null, 2));
+            // Refresh tree and open the new drawing
+            const tree = await buildImageTree(dirHandle);
+            setDirTree(tree);
+            setSelectedSrc(fileName);
+            setExcaliState(NEW_EXCALIDRAW_DRAWING as ExcalidrawInitialDataState);
+        } catch (error) {
+            console.error('Error creating new drawing:', error);
+            window.alert(`Fehler beim Erstellen der Zeichnung: ${error}`);
+        }
+    }, [dirHandle]);
+
     const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
     const isMobile = useIsMobileView();
     const [mobileTreeOpen, setMobileTreeOpen] = React.useState(false);
@@ -182,10 +229,19 @@ const StandaloneEditor = observer((props: Props) => {
                                 <div className={clsx(styles.mobileOverlayHeader)}>
                                     <Button
                                         icon={mdiFolderOpen}
-                                        text="Ordner auswählen"
+                                        text="Ordner"
+                                        title="Ordner auswählen"
                                         onClick={selectFolder}
                                         color="primary"
                                     />
+                                    {dirHandle && (
+                                        <Button
+                                            icon={mdiFilePlusOutline}
+                                            title="Neue Zeichnung erstellen"
+                                            onClick={createNewDrawing}
+                                            color="primary"
+                                        />
+                                    )}
                                     <button
                                         className={clsx(styles.collapseToggle)}
                                         onClick={() => setMobileTreeOpen(false)}
@@ -217,7 +273,8 @@ const StandaloneEditor = observer((props: Props) => {
                             {!dirHandle && (
                                 <Button
                                     icon={mdiFolderOpen}
-                                    text="Ordner auswählen"
+                                    text="Ordner"
+                                    title="Ordner auswählen"
                                     onClick={selectFolder}
                                     color="primary"
                                 />
@@ -229,12 +286,23 @@ const StandaloneEditor = observer((props: Props) => {
                     <div className={clsx(styles.sidebar, sidebarCollapsed && styles.collapsed)}>
                         <div className={clsx(styles.sidebarHeader)}>
                             {!sidebarCollapsed && (
-                                <Button
-                                    icon={mdiFolderOpen}
-                                    text="Ordner auswählen"
-                                    onClick={selectFolder}
-                                    color="primary"
-                                />
+                                <>
+                                    <Button
+                                        icon={mdiFolderOpen}
+                                        text="Ordner"
+                                        title="Ordner auswählen"
+                                        onClick={selectFolder}
+                                        color="primary"
+                                    />
+                                    {dirHandle && (
+                                        <Button
+                                            icon={mdiFilePlusOutline}
+                                            title="Neue Zeichnung erstellen"
+                                            onClick={createNewDrawing}
+                                            color="primary"
+                                        />
+                                    )}
+                                </>
                             )}
                             {!sidebarCollapsed && <RequestFullscreen targetId={id} />}
                             <button
@@ -277,6 +345,9 @@ const StandaloneEditor = observer((props: Props) => {
                                     blob,
                                     asWebp
                                 );
+                                // Refresh tree so newly created images appear
+                                const tree = await buildImageTree(dirHandle!);
+                                setDirTree(tree);
                                 openImage(imgExport);
                             }}
                             onRestore={async () => {
