@@ -67,6 +67,19 @@ const getSiteConfig: SiteConfigProvider = () => {
                             to: '/blog'
                         }
                     ]
+                },
+                {
+                    title: 'Tools',
+                    items: [
+                        {
+                            label: 'Icon Selector',
+                            to: '/mdi'
+                        },
+                        {
+                            label: 'Excalidraw',
+                            to: '/excalidraw'
+                        }
+                    ]
                 }
             ]
         },
