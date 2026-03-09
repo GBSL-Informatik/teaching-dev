@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import Layout from '@theme/Layout';
 import StandaloneEditor from '@tdev/excalidoc/ImageMarkupEditor/StandaloneEditor';
 import { observer } from 'mobx-react-lite';
-import styles from './excalidraw.module.scss';
+import styles from './styles.module.scss';
 
 const ExcalidrawEditor = observer((): React.ReactNode => {
     return (
