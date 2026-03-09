@@ -33,6 +33,9 @@ const getSiteConfig: SiteConfigProvider = () => {
         blog: {
             path: 'tdev-website/blog'
         },
+        pages: {
+            path: 'tdev-website/pages'
+        },
         navbarItems: [
             gallery,
             blog,
