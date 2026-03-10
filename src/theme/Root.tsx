@@ -4,7 +4,7 @@ import { enableStaticRendering, observer } from 'mobx-react-lite';
 import Head from '@docusaurus/Head';
 import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
-import { action, reaction } from 'mobx';
+import { reaction } from 'mobx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useHistory, useLocation } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
@@ -14,7 +14,7 @@ import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { Hashery } from 'hashery';
-const hasher = new Hashery();
+const hasher = new Hashery({ cache: { enabled: true, maxSize: 5 } });
 const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';

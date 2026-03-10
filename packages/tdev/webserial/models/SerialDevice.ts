@@ -1,7 +1,7 @@
 import { action, computed, observable } from 'mobx';
 import WebserialStore from '../stores/WebserialStore';
 import { Hashery } from 'hashery';
-const hasher = new Hashery();
+const hasher = new Hashery({ cache: { enabled: false } });
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
