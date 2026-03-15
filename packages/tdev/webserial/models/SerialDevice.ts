@@ -35,8 +35,19 @@ const DEFAULT_CONFIG: Config = {
 
 export interface iSubscriber {
     id: string;
+    /**
+     * called when a complete line (ending with a newline) is received from the serial device.
+     */
     onNewLines: (newLines: string[]) => void;
+    /**
+     * called when the reset trigger is received or when the replay is reset/started.
+     * Subscribers should clear any state that depends on the received lines when this is called.
+     */
     reset: () => void;
+    /**
+     * called when the connection state changes (e.g. from 'connected' to 'disconnected').
+     */
+    onConnectionStateChange?: (state: ConnectionState) => void;
 }
 
 export default class SerialDevice {
@@ -196,6 +207,9 @@ export default class SerialDevice {
     @action
     setConnectionState(state: ConnectionState) {
         this.connectionState = state;
+        for (const subscriber of this.subscriptions.values()) {
+            subscriber.onConnectionStateChange?.(state);
+        }
     }
 
     @action
