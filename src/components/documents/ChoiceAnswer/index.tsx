@@ -62,9 +62,6 @@ const ChoiceAnswerContext = React.createContext({
     onChange: (optionIndex: number, checked: boolean) => void;
 });
 
-// TODO: Use graded status + correct[] to show whether the question was answered correctly, keeping in mind that there will also be a notion
-// of actual "grading" and partial points (for MC questions).
-
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const parentProps = React.useContext(QuizContext);
     const [meta] = React.useState(new ModelMeta(props));
@@ -84,7 +81,39 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     }, [randomizeOptions, doc, questionIndex, props.numOptions]);
 
     React.useEffect(() => {
-        // TODO: Implement grading logic.
+        if (!doc) {
+            return;
+        }
+        const correctOptions = new Set(props.correct || []);
+        if (correctOptions.size === 0) {
+            // If no correct options are given, we assume that this question doesn't support grading.
+            // TODO: Factor out this logic and don't show the grading button in that case.
+            return;
+        }
+
+        // TODO: Implement points logic.
+        let grading: ChoiceAnswerGrading = {
+            result: ChoiceAnswerResult.NA
+        };
+        if (props.multiple) {
+            // TODO: Implement MC grading.
+            grading = {
+                result: ChoiceAnswerResult.PartiallyCorrect
+            };
+        } else {
+            const selectedOption = doc?.choices[questionIndex]?.[0];
+            if (selectedOption === undefined) {
+                grading = {
+                    result: ChoiceAnswerResult.NA
+                };
+            } else {
+                grading = correctOptions.has(selectedOption + 1) // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
+                    ? { result: ChoiceAnswerResult.Correct }
+                    : { result: ChoiceAnswerResult.Incorrect };
+            }
+        }
+
+        doc.updateGrading(questionIndex, grading);
     }, [doc?.choices]);
 
     if (!doc) {
@@ -167,7 +196,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     <div className={styles.optionsBlock}>{optionsBlock}</div>
                 </ChoiceAnswerContext.Provider>
                 {afterBlock}
-                {<QuestionGrading doc={doc} />}
+                {<QuestionGrading doc={doc} questionIndex={questionIndex} />}
             </div>
         </div>
     );

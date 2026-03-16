@@ -1,12 +1,8 @@
 import { mdiCheckCircle, mdiCheckCircleOutline } from '@mdi/js';
-import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, { ChoiceAnswerResult } from '@tdev-models/documents/ChoiceAnswer';
 import Admonition from '@theme/Admonition';
 import { divide } from 'es-toolkit/compat';
 import { observer } from 'mobx-react-lite';
-
-interface Props {
-    doc: ChoiceAnswerDocument;
-}
 
 const CorrectIcon = (): React.JSX.Element => {
     return (
@@ -59,12 +55,32 @@ const noAnswerAdmonition = (
     </Admonition>
 );
 
+interface Props {
+    doc: ChoiceAnswerDocument;
+    questionIndex: number;
+}
+
 // TODO: Should the grading decide its own visibility? Will quizzes prevent the entire grading, or just the result display?
-const QuestionGrading = observer(({ doc }: Props) => {
+const QuestionGrading = observer(({ doc, questionIndex }: Props) => {
     if (!doc || !doc.graded) {
         return;
     }
-    return <>{noAnswerAdmonition}</>;
+
+    const grading = doc.gradings[questionIndex];
+    if (!grading) {
+        return;
+    }
+
+    switch (grading.result) {
+        case ChoiceAnswerResult.Correct:
+            return <>{correctAdmonition}</>;
+        case ChoiceAnswerResult.Incorrect:
+            return <>{incorrectAdmonition}</>;
+        case ChoiceAnswerResult.NA:
+            return <>{noAnswerAdmonition}</>;
+        default:
+            return;
+    }
 });
 
 export default QuestionGrading;

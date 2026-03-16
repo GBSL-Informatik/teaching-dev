@@ -23,13 +23,12 @@ export interface MetaInit {
 export enum ChoiceAnswerResult {
     Correct = 'correct',
     Incorrect = 'incorrect',
-    PartiallyCorrect = 'partially_correct'
+    PartiallyCorrect = 'partially_correct',
+    NA = 'not_answered'
 }
 
 export interface ChoiceAnswerGrading {
     result: ChoiceAnswerResult;
-    correctChoices: number[];
-    incorrectChoices: number[];
     points?: number;
 }
 

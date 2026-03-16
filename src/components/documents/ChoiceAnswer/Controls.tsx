@@ -41,7 +41,7 @@ const Controls = observer(({ doc, questionIndex, focussedQuestion: isFocussedQue
                     icon={mdiRestore}
                     iconSide="left"
                     size={0.7}
-                    confirmText="Antworten wirklich zurücksetzen?"
+                    confirmText="Antwort zurücksetzen?"
                     onConfirm={() => {
                         doc.graded = false;
                         doc.resetAnswer(questionIndex);
