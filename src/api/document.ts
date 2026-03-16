@@ -49,6 +49,7 @@ export interface ChoiceAnswerData {
     choices: ChoiceAnswerChoices;
     optionOrders: ChoiceAnswerOptionOrders;
     questionOrder: ChoiceAnswerQuestionOrder | null;
+    graded: boolean;
 }
 
 export interface QuillV2Data {

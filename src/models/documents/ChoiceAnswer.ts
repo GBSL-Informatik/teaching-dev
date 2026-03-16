@@ -33,7 +33,8 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
         return {
             choices: {},
             optionOrders: {},
-            questionOrder: null
+            questionOrder: null,
+            graded: false
         };
     }
 }
@@ -42,12 +43,14 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
     @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
     @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
+    @observable accessor graded: boolean;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices = props.data?.choices || {};
         this.optionOrders = props.data?.optionOrders || {};
         this.questionOrder = props.data?.questionOrder || null;
+        this.graded = props.data?.graded || false;
     }
 
     @action
@@ -115,7 +118,8 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         return {
             choices: this.choices,
             optionOrders: this.optionOrders,
-            questionOrder: this.questionOrder
+            questionOrder: this.questionOrder,
+            graded: this.graded
         };
     }
 

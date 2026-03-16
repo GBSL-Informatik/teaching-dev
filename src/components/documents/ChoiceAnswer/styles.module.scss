@@ -1,18 +1,12 @@
-.choiceAnswerContainer {
-    $container-padding-top-bottom: 0.7em;
-    $container-padding-left-right: 1em;
+$container-padding-top-bottom: 0.7em;
+$container-padding-left-right: 1em;
 
+.choiceAnswerContainer {
     position: relative;
     margin-bottom: 1em;
 
     p {
         margin: 0 0 0.5em 0;
-    }
-
-    .syncStatus {
-        position: absolute;
-        top: $container-padding-top-bottom;
-        right: $container-padding-left-right;
     }
 
     .header {
@@ -34,6 +28,12 @@
 
         .syncStatus {
             position: static;
+        }
+
+        .controlsContainer {
+            position: relative;
+            top: 0;
+            right: 0;
         }
     }
 }
@@ -85,4 +85,14 @@
 .quizContainer {
     display: flex;
     flex-direction: column;
+}
+
+.controlsContainer {
+    position: absolute;
+    top: $container-padding-top-bottom;
+    right: $container-padding-left-right;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
 }
