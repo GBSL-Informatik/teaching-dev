@@ -1,19 +1,23 @@
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import ChoiceAnswerDocument, { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, {
+    ChoiceAnswerGrading,
+    ChoiceAnswerResult,
+    ModelMeta
+} from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import SyncStatus from '@tdev-components/SyncStatus';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { QuizContext } from './Quiz';
 import Button from '@tdev-components/shared/Button';
-import { mdiCheckboxMarkedCircleAutoOutline, mdiRestore, mdiTrashCanOutline } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from './helpers';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import Controls from './Controls';
+import QuestionGrading from './QuestionGrading';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -58,54 +62,6 @@ const ChoiceAnswerContext = React.createContext({
     onChange: (optionIndex: number, checked: boolean) => void;
 });
 
-interface ControlsProps {
-    doc: ChoiceAnswerDocument;
-    questionIndex: number;
-    focussedQuestion?: boolean;
-}
-
-const Controls = observer(({ doc, questionIndex, focussedQuestion: isFocussedQuestion }: ControlsProps) => {
-    if (!doc) {
-        return;
-    }
-
-    // TODO: Potentially factor out grade / reset buttons, since they shouldn't show on a per-question basis in case of a quiz.
-    // TODO: Hide grade / reset button per question in quiz, show on quiz level.
-    const syncStatus = isFocussedQuestion && (
-        <div className={styles.controlsContainer}>
-            <SyncStatus model={doc} size={0.7} />
-            {!doc.graded && (
-                <Button
-                    text="Prüfen"
-                    title="Antworten prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
-                    color="success"
-                    icon={mdiCheckboxMarkedCircleAutoOutline}
-                    iconSide="left"
-                    size={0.7}
-                    onClick={() => (doc.graded = true)}
-                />
-            )}
-            {doc.graded && (
-                <Confirm
-                    text="Zurücksetzen"
-                    title="Antworten zurücksetzen."
-                    color="warning"
-                    icon={mdiRestore}
-                    iconSide="left"
-                    size={0.7}
-                    confirmText="Antworten wirklich zurücksetzen?"
-                    onConfirm={() => {
-                        doc.graded = false;
-                        doc.resetAnswer(questionIndex);
-                    }}
-                />
-            )}
-        </div>
-    );
-
-    return <div className={styles.controlsContainer}>{syncStatus}</div>;
-});
-
 // TODO: Use graded status + correct[] to show whether the question was answered correctly, keeping in mind that there will also be a notion
 // of actual "grading" and partial points (for MC questions).
 
@@ -126,6 +82,10 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             });
         }
     }, [randomizeOptions, doc, questionIndex, props.numOptions]);
+
+    React.useEffect(() => {
+        // TODO: Implement grading logic.
+    }, [doc?.choices]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
@@ -207,6 +167,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     <div className={styles.optionsBlock}>{optionsBlock}</div>
                 </ChoiceAnswerContext.Provider>
                 {afterBlock}
+                {<QuestionGrading doc={doc} />}
             </div>
         </div>
     );
@@ -228,10 +189,6 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
         [doc?.optionOrders[questionIndex], questionIndex, optionIndex]
     );
 
-    const canEdit = React.useMemo(() => {
-        return doc?.canEdit && !doc?.graded;
-    }, [doc?.canEdit, doc?.graded]);
-
     return (
         <div
             key={optionId}
@@ -247,10 +204,10 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
                 value={optionId}
                 onChange={(e) => onChange(optionIndex, e.target.checked)}
                 checked={isChecked}
-                disabled={!canEdit}
+                disabled={!doc?.canUpdateAnswer}
             />
             <label htmlFor={optionId}>{children}</label>
-            {!multiple && canEdit && isChecked && (
+            {!multiple && doc?.canUpdateAnswer && isChecked && (
                 <Button
                     text="Löschen"
                     color="danger"

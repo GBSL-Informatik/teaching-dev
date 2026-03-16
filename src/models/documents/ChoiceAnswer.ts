@@ -20,6 +20,23 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
+export enum ChoiceAnswerResult {
+    Correct = 'correct',
+    Incorrect = 'incorrect',
+    PartiallyCorrect = 'partially_correct'
+}
+
+export interface ChoiceAnswerGrading {
+    result: ChoiceAnswerResult;
+    correctChoices: number[];
+    incorrectChoices: number[];
+    points?: number;
+}
+
+export interface ChoiceAnswerGradings {
+    [questionIndex: number]: ChoiceAnswerGrading;
+}
+
 export class ModelMeta extends TypeMeta<'choice_answer'> {
     readonly type = 'choice_answer';
     readonly readonly?: boolean;
@@ -43,25 +60,36 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
     @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
     @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
-    @observable accessor graded: boolean;
+    @observable accessor _graded: boolean;
+    @observable.ref accessor gradings: ChoiceAnswerGradings;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices = props.data?.choices || {};
         this.optionOrders = props.data?.optionOrders || {};
         this.questionOrder = props.data?.questionOrder || null;
-        this.graded = props.data?.graded || false;
+        this._graded = props.data?.graded || false;
+        this.gradings = {};
     }
 
     @action
     setData(data: TypeDataMapping['choice_answer'], from: Source, updatedAt?: Date): void {
         this.choices = data.choices;
+        this.optionOrders = data.optionOrders;
+        this.questionOrder = data.questionOrder;
+        this._graded = data.graded;
+
         if (from === Source.LOCAL) {
             this.save();
         }
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @computed
+    get canUpdateAnswer() {
+        return this.canEdit && !this._graded;
     }
 
     @action
@@ -114,12 +142,29 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         this.saveNow();
     }
 
+    get graded() {
+        return this._graded;
+    }
+
+    @action
+    set graded(value: boolean) {
+        this.updatedAt = new Date();
+        this._graded = value;
+        console.log('Setting graded to', value);
+        this.saveNow();
+    }
+
+    @action
+    updateGrading(questionIndex: number, grading: ChoiceAnswerGrading): void {
+        this.gradings[questionIndex] = grading;
+    }
+
     get data(): TypeDataMapping['choice_answer'] {
         return {
             choices: this.choices,
             optionOrders: this.optionOrders,
             questionOrder: this.questionOrder,
-            graded: this.graded
+            graded: this._graded
         };
     }
 
