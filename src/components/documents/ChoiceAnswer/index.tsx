@@ -92,27 +92,40 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
 
         // TODO: Implement points logic.
-        let grading: ChoiceAnswerGrading = {
+        const grading: ChoiceAnswerGrading = {
             result: ChoiceAnswerResult.NA
         };
         if (props.multiple) {
-            // TODO: Implement MC grading.
-            grading = {
-                result: ChoiceAnswerResult.PartiallyCorrect
-            };
+            const selectedOptions = new Set(doc.choices[questionIndex] || []);
+            if (selectedOptions.size > 0) {
+                const numCorrectDecisions = _.range(0, props.numOptions).filter((optionIndex) => {
+                    const isCorrect = correctOptions.has(optionIndex + 1); // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
+                    const isSelected = selectedOptions.has(optionIndex);
+                    console.log(
+                        `Option ${optionIndex + 1}: isCorrect=${isCorrect}, isSelected=${isSelected}`
+                    );
+                    return (isCorrect && isSelected) || (!isCorrect && !isSelected);
+                }).length;
+
+                grading.result =
+                    numCorrectDecisions === props.numOptions
+                        ? ChoiceAnswerResult.Correct
+                        : numCorrectDecisions > 0
+                          ? ChoiceAnswerResult.PartiallyCorrect
+                          : ChoiceAnswerResult.Incorrect;
+            }
         } else {
             const selectedOption = doc?.choices[questionIndex]?.[0];
             if (selectedOption === undefined) {
-                grading = {
-                    result: ChoiceAnswerResult.NA
-                };
+                grading.result = ChoiceAnswerResult.NA;
             } else {
-                grading = correctOptions.has(selectedOption + 1) // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
-                    ? { result: ChoiceAnswerResult.Correct }
-                    : { result: ChoiceAnswerResult.Incorrect };
+                grading.result = correctOptions.has(selectedOption + 1) // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
+                    ? ChoiceAnswerResult.Correct
+                    : ChoiceAnswerResult.Incorrect;
             }
         }
 
+        console.log(`Grading question ${questionIndex}:`, grading.result);
         doc.updateGrading(questionIndex, grading);
     }, [doc?.choices]);
 

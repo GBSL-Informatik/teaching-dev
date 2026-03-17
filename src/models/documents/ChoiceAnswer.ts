@@ -149,7 +149,6 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     set graded(value: boolean) {
         this.updatedAt = new Date();
         this._graded = value;
-        console.log('Setting graded to', value);
         this.saveNow();
     }
 
