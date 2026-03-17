@@ -101,9 +101,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                 const numCorrectDecisions = _.range(0, props.numOptions).filter((optionIndex) => {
                     const isCorrect = correctOptions.has(optionIndex + 1); // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
                     const isSelected = selectedOptions.has(optionIndex);
-                    console.log(
-                        `Option ${optionIndex + 1}: isCorrect=${isCorrect}, isSelected=${isSelected}`
-                    );
                     return (isCorrect && isSelected) || (!isCorrect && !isSelected);
                 }).length;
 
@@ -125,7 +122,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             }
         }
 
-        console.log(`Grading question ${questionIndex}:`, grading.result);
         doc.updateGrading(questionIndex, grading);
     }, [doc?.choices]);
 
