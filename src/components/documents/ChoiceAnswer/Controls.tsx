@@ -44,7 +44,7 @@ const Controls = observer(({ doc, questionIndex, focussedQuestion: isFocussedQue
                     confirmText="Antwort zurücksetzen?"
                     onConfirm={() => {
                         doc.graded = false;
-                        doc.resetAnswer(questionIndex);
+                        doc.resetAllAnswers();
                     }}
                 />
             )}

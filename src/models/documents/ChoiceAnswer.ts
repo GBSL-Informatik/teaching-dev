@@ -118,6 +118,13 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     }
 
     @action
+    resetAllAnswers(): void {
+        this.updatedAt = new Date();
+        this.choices = {};
+        this.save();
+    }
+
+    @action
     resetAnswer(questionIndex: number): void {
         this.updatedAt = new Date();
         this.choices = {
