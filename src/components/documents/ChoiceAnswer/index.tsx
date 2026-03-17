@@ -16,7 +16,7 @@ import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
 import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from './helpers';
-import Controls from './Controls';
+import QuestionControls from './Controls';
 import QuestionGrading from './QuestionGrading';
 
 export interface ChoiceAnswerProps {
@@ -176,18 +176,20 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             {title && (
                 <div className={clsx('card__header', styles.header)}>
                     <span className={clsx(styles.title)}>{title}</span>
-                    <Controls
+                    <QuestionControls
                         doc={doc}
                         questionIndex={questionIndex}
                         focussedQuestion={parentProps.focussedQuestion === questionIndex}
+                        inQuiz={props.inQuiz}
                     />
                 </div>
             )}
             {!title && (
-                <Controls
+                <QuestionControls
                     doc={doc}
                     questionIndex={questionIndex}
                     focussedQuestion={parentProps.focussedQuestion === questionIndex}
+                    inQuiz={props.inQuiz}
                 />
             )}
 

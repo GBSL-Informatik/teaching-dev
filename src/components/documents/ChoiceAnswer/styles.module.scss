@@ -96,3 +96,13 @@ $container-padding-left-right: 1em;
     align-items: center;
     gap: 0.5em;
 }
+
+.checkButton {
+    z-index: 9999;
+}
+
+.quizCheckOrResetButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}

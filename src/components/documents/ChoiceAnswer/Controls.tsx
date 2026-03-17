@@ -10,38 +10,84 @@ interface Props {
     doc: ChoiceAnswerDocument;
     questionIndex: number;
     focussedQuestion?: boolean;
+    inQuiz?: boolean;
 }
 
-const Controls = observer(({ doc, questionIndex, focussedQuestion: isFocussedQuestion }: Props) => {
+const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, inQuiz }: Props) => {
     if (!doc) {
         return;
     }
 
-    // TODO: Potentially factor out grade / reset buttons, since they shouldn't show on a per-question basis in case of a quiz.
-    // TODO: Hide grade / reset button per question in quiz, show on quiz level.
-    const syncStatus = isFocussedQuestion && (
-        <div className={styles.controlsContainer}>
-            <SyncStatus model={doc} size={0.7} />
+    const syncStatus = isFocussedQuestion && <SyncStatus model={doc} size={0.7} />;
+
+    // TODO: Hide if in quiz.
+    const checkOrResetButton = !inQuiz && (
+        <>
             {!doc.graded && (
                 <Button
                     text="Prüfen"
-                    title="Antworten prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
+                    title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
                     color="success"
                     icon={mdiCheckboxMarkedCircleAutoOutline}
                     iconSide="left"
                     size={0.7}
+                    className={styles.checkButton}
                     onClick={() => (doc.graded = true)}
                 />
             )}
             {doc.graded && (
                 <Confirm
                     text="Zurücksetzen"
-                    title="Antworten zurücksetzen."
+                    title="Antwort zurücksetzen."
                     color="warning"
                     icon={mdiRestore}
                     iconSide="left"
                     size={0.7}
-                    confirmText="Antwort zurücksetzen?"
+                    className={styles.checkButton}
+                    confirmText="Wirklich zurücksetzen?"
+                    onConfirm={() => {
+                        doc.graded = false;
+                        doc.resetAllAnswers();
+                    }}
+                />
+            )}
+        </>
+    );
+
+    return (
+        <div className={styles.controlsContainer}>
+            {syncStatus}
+            {checkOrResetButton}
+        </div>
+    );
+});
+
+export const QuizCheckOrResetButton = observer(({ doc }: { doc: ChoiceAnswerDocument }) => {
+    return (
+        <div className={styles.quizCheckOrResetButtonContainer}>
+            {!doc.graded && (
+                <Confirm
+                    text="Quiz beenden"
+                    title="Quiz beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich."
+                    color="success"
+                    icon={mdiCheckboxMarkedCircleAutoOutline}
+                    iconSide="left"
+                    size={0.7}
+                    className={styles.checkButton}
+                    confirmText="Quiz beenden und Antworten prüfen?"
+                    onConfirm={() => (doc.graded = true)}
+                />
+            )}
+            {doc.graded && (
+                <Confirm
+                    text="Zurücksetzen"
+                    title="Quiz zurücksetzen."
+                    color="warning"
+                    icon={mdiRestore}
+                    iconSide="left"
+                    size={0.7}
+                    className={styles.checkButton}
+                    confirmText="Wirklich zurücksetzen?"
                     onConfirm={() => {
                         doc.graded = false;
                         doc.resetAllAnswers();
@@ -50,8 +96,6 @@ const Controls = observer(({ doc, questionIndex, focussedQuestion: isFocussedQue
             )}
         </div>
     );
-
-    return <div className={styles.controlsContainer}>{syncStatus}</div>;
 });
 
-export default Controls;
+export default QuestionControls;

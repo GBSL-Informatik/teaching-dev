@@ -8,6 +8,7 @@ import { isBrowser } from 'es-toolkit';
 import Loader from '@tdev-components/Loader';
 import { createRandomOrderMap } from './helpers';
 import styles from './styles.module.scss';
+import { QuizCheckOrResetButton } from './Controls';
 
 interface Props {
     id: string;
@@ -75,6 +76,7 @@ const Quiz = observer((props: Props) => {
             }}
         >
             <div className={styles.quizContainer}>{props.children}</div>
+            <QuizCheckOrResetButton doc={doc} />
         </QuizContext.Provider>
     );
 });
