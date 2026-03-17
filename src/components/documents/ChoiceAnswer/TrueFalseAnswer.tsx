@@ -2,9 +2,9 @@ import { observer } from 'mobx-react-lite';
 import ChoiceAnswer, { ChoiceAnswerProps } from '.';
 import React from 'react';
 
-const TrueFalseAnswer = observer((props: ChoiceAnswerProps) => {
+const TrueFalseAnswer = observer((props: ChoiceAnswerProps & { correct: boolean }) => {
     return (
-        <ChoiceAnswer {...props} randomizeOptions={false}>
+        <ChoiceAnswer {...props} randomizeOptions={false} correct={props.correct ? [1] : [2]}>
             <ChoiceAnswer.Before>{props.children}</ChoiceAnswer.Before>
             <ChoiceAnswer.Options>
                 <ChoiceAnswer.Option optionIndex={0}>Richtig</ChoiceAnswer.Option>
