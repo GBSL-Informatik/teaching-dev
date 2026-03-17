@@ -17,6 +17,18 @@ $container-padding-left-right: 1em;
         align-items: center;
         justify-content: space-between;
 
+        &.correct {
+            background-color: var(--ifm-color-success-contrast-background);
+        }
+
+        &.partiallyCorrect {
+            background-color: var(--ifm-color-warning-contrast-background);
+        }
+
+        &.incorrect {
+            background-color: var(--ifm-color-danger-contrast-background);
+        }
+
         h3 {
             margin: 0;
         }

@@ -39,7 +39,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
                 <Confirm
                     text="Zurücksetzen"
                     title="Antwort zurücksetzen."
-                    color="warning"
+                    color="secondary"
                     icon={mdiRestore}
                     iconSide="left"
                     size={0.7}
@@ -80,9 +80,9 @@ export const QuizCheckOrResetButton = observer(({ doc }: { doc: ChoiceAnswerDocu
             )}
             {doc.graded && (
                 <Confirm
-                    text="Zurücksetzen"
-                    title="Quiz zurücksetzen."
-                    color="warning"
+                    text="Quiz zurücksetzen"
+                    title="Alle Antworten zurücksetzen und Quiz neu beginnen"
+                    color="secondary"
                     icon={mdiRestore}
                     iconSide="left"
                     size={0.7}

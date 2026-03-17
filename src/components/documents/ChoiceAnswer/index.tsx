@@ -125,6 +125,11 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         doc.updateGrading(questionIndex, grading);
     }, [doc?.choices]);
 
+    const gradingResult = React.useMemo(() => {
+        console.log('Recomputing grading result');
+        return doc?.graded ? doc?.gradings[questionIndex]?.result : undefined;
+    }, [doc?.graded, doc?.gradings, questionIndex]);
+
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
     }
@@ -174,7 +179,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     return (
         <div className={clsx('card', styles.choiceAnswerContainer)} style={{ order: questionOrder }}>
             {title && (
-                <div className={clsx('card__header', styles.header)}>
+                <div
+                    className={clsx('card__header', styles.header, {
+                        [styles.correct]: gradingResult === ChoiceAnswerResult.Correct,
+                        [styles.partiallyCorrect]: gradingResult === ChoiceAnswerResult.PartiallyCorrect,
+                        [styles.incorrect]: gradingResult === ChoiceAnswerResult.Incorrect
+                    })}
+                >
                     <span className={clsx(styles.title)}>{title}</span>
                     <QuestionControls
                         doc={doc}
