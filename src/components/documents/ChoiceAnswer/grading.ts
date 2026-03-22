@@ -34,6 +34,10 @@ export const partialPoints = () => {
     };
 };
 
+export const noPoints = () => {
+    return () => undefined;
+};
+
 export const updateGrading = (
     doc: ChoiceAnswerDocument,
     multiple: boolean,
