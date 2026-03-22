@@ -9,7 +9,7 @@ import clsx from 'clsx';
 
 export const FeedbackBadge = observer(
     ({ doc, questionIndex }: { doc: ChoiceAnswerDocument; questionIndex: number }) => {
-        if (!doc || !doc.graded) {
+        if (!doc) {
             return;
         }
 
@@ -43,17 +43,18 @@ export const FeedbackBadge = observer(
             <div className={styles.feedbackBadge}>
                 {grading.points && (
                     <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
-                        {grading.points.pointsAchieved}/{grading.points.maxPoints} Punkte
+                        {doc.graded && <span>{grading.points.pointsAchieved}/</span>}
+                        {grading.points.maxPoints} {grading.points.maxPoints === 1 ? 'Punkt' : 'Punkte'}
                     </span>
                 )}
-                {icon && <Icon path={icon} color={`var(${color})`} size={1} />}
+                {icon && doc.graded && <Icon path={icon} color={`var(${color})`} size={1} />}
             </div>
         );
     }
 );
 
 export const QuizGrading = observer(({ doc }: { doc: ChoiceAnswerDocument }) => {
-    if (!doc || !doc.graded || doc.gradings.size === 0) {
+    if (!doc || doc.gradings.size === 0) {
         return;
     }
 
@@ -68,7 +69,8 @@ export const QuizGrading = observer(({ doc }: { doc: ChoiceAnswerDocument }) => 
 
     return (
         <span className={clsx('badge badge--primary', styles.pointsBadge)}>
-            {totalPointsAchieved}/{totalMaxPoints} Punkte
+            {doc.graded && <span>{totalPointsAchieved}/</span>}
+            {totalMaxPoints} {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
         </span>
     );
 });
