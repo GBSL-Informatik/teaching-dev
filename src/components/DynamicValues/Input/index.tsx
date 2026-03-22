@@ -19,6 +19,29 @@ interface Props {
     hidden?: boolean;
 }
 
+const DynamicInputPlaceholder = (props: {
+    value: string;
+    label?: string;
+    placeholder?: string;
+    monospace?: boolean;
+    derived?: boolean;
+}) => {
+    return (
+        <div className={clsx(styles.dynamicInput)}>
+            <TextInput
+                noAutoFocus
+                value={props.value}
+                onChange={() => {}}
+                label={props.label}
+                placeholder={props.placeholder}
+                className={clsx(styles.input, props.monospace && styles.monospace)}
+                labelClassName={clsx(styles.label, props.derived && styles.derived)}
+                readOnly
+            />
+        </div>
+    );
+};
+
 const DynamicInput = observer((props: Props) => {
     const pageStore = useStore('pageStore');
     const { current } = pageStore;
@@ -34,18 +57,27 @@ const DynamicInput = observer((props: Props) => {
     const defaultValue =
         typeof props.default === 'function' ? (current ? props.default(current) : '') : props.default;
     React.useEffect(() => {
-        if (current && isDerived && defaultValue) {
+        if (current && isDerived && defaultValue !== undefined) {
+            // always update the dynamic value for derived inputs, so that they reflect changes in the page state
             current.setDynamicValue(props.name, defaultValue);
         }
-    }, [current, defaultValue, isDerived]);
-    if (!current) {
-        return null;
-    }
-    const value = current.dynamicValues.get(props.name);
-    const needsReset = defaultValue && value !== defaultValue;
+    }, [current, defaultValue, isDerived, props.name]);
     if (props.hidden) {
         return null;
     }
+    if (!current) {
+        return (
+            <DynamicInputPlaceholder
+                value={defaultValue || ''}
+                label={props.label || props.name}
+                placeholder={props.placeholder}
+                monospace={props.monospace}
+                derived={isDerived}
+            />
+        );
+    }
+    const value = current.dynamicValues.get(props.name);
+    const needsReset = defaultValue !== undefined && value !== defaultValue;
     return (
         <div className={clsx(styles.dynamicInput)}>
             <TextInput
@@ -79,7 +111,7 @@ const DynamicInput = observer((props: Props) => {
                         className={clsx(styles.recalculateButton)}
                         icon={mdiSync}
                         onClick={() => {
-                            current.setDynamicValue(props.name, props.onRecalculate!(current));
+                            current.setDynamicValue(props.name, props.onRecalculate?.(current));
                         }}
                         color="secondary"
                         size={SIZE_S}
