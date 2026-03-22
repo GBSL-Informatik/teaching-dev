@@ -91,7 +91,14 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
 
         const gradingFunction = props.grading ?? parentProps.grading;
-        const grading = grade(doc, props.multiple ?? false, questionIndex, correctOptions, props.numOptions);
+        const grading = grade(
+            doc,
+            props.multiple ?? false,
+            questionIndex,
+            correctOptions,
+            props.numOptions,
+            gradingFunction
+        );
         setGradingStyle({
             [styles.correct]: doc.graded && grading.result === ChoiceAnswerResult.Correct,
             [styles.partiallyCorrect]: doc.graded && grading.result === ChoiceAnswerResult.PartiallyCorrect,

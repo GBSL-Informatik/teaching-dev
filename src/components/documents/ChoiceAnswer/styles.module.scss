@@ -120,6 +120,15 @@ $container-padding-left-right: 1em;
     flex-direction: column;
 }
 
+.quizFooter {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.5em;
+    gap: 0.5em;
+}
+
 .controlsContainer {
     position: absolute;
     top: $container-padding-top-bottom;
@@ -145,4 +154,8 @@ $container-padding-left-right: 1em;
     height: 100%;
     align-items: center;
     justify-content: center;
+
+    .pointsBadge {
+        margin-right: 0.5em;
+    }
 }

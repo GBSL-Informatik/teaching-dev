@@ -27,9 +27,14 @@ export enum ChoiceAnswerResult {
     NA = 'not_answered'
 }
 
+export interface ChoiceAnswerPoints {
+    maxPoints: number;
+    pointsAchieved: number;
+}
+
 export interface ChoiceAnswerGrading {
     result: ChoiceAnswerResult;
-    points?: number;
+    points?: ChoiceAnswerPoints;
 }
 
 export class ModelMeta extends TypeMeta<'choice_answer'> {

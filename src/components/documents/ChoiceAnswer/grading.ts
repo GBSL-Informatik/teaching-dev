@@ -1,31 +1,37 @@
-import { ChoiceAnswerGrading, ChoiceAnswerResult } from '@tdev-models/documents/ChoiceAnswer';
+import {
+    ChoiceAnswerGrading,
+    ChoiceAnswerPoints,
+    ChoiceAnswerResult
+} from '@tdev-models/documents/ChoiceAnswer';
 import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import _ from 'es-toolkit/compat';
 
-export type GradingFunction = (grading: ChoiceAnswerGrading) => number;
+export type GradingFunction = (result: ChoiceAnswerResult, numMistakes: number) => ChoiceAnswerPoints;
 
 export const points: (
     forCorrect?: number,
     forIncorrect?: number,
     forUnanswered?: number
 ) => GradingFunction = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
-    return (grading: ChoiceAnswerGrading) => {
-        switch (grading.result) {
+    return (result) => {
+        switch (result) {
             case ChoiceAnswerResult.Correct:
-                return forCorrect;
+                return { maxPoints: forCorrect, pointsAchieved: forCorrect };
             case ChoiceAnswerResult.PartiallyCorrect:
             case ChoiceAnswerResult.Incorrect:
-                return forIncorrect;
+                return { maxPoints: forCorrect, pointsAchieved: forIncorrect };
             case ChoiceAnswerResult.NA:
-                return forUnanswered;
+                return { maxPoints: forCorrect, pointsAchieved: forUnanswered };
             default:
-                return 0;
+                return { maxPoints: 0, pointsAchieved: 0 };
         }
     };
 };
 
 export const partialPoints = () => {
-    // TODO.
+    return (result: ChoiceAnswerResult, numMistakes: number) => {
+        return undefined;
+    };
 };
 
 export const updateGrading = (
@@ -33,8 +39,10 @@ export const updateGrading = (
     multiple: boolean,
     questionIndex: number,
     correctOptions: Set<number>,
-    numOptions: number
+    numOptions: number,
+    gradingFunction?: GradingFunction
 ) => {
+    let numMistakes = 0;
     const grading: ChoiceAnswerGrading = {
         result: ChoiceAnswerResult.NA
     };
@@ -46,6 +54,7 @@ export const updateGrading = (
                 const isSelected = selectedOptions.has(optionIndex);
                 return (isCorrect && isSelected) || (!isCorrect && !isSelected);
             }).length;
+            numMistakes = numOptions - numCorrectDecisions;
 
             grading.result =
                 numCorrectDecisions === numOptions
@@ -63,6 +72,10 @@ export const updateGrading = (
                 ? ChoiceAnswerResult.Correct
                 : ChoiceAnswerResult.Incorrect;
         }
+    }
+
+    if (gradingFunction) {
+        grading.points = gradingFunction(grading.result, numMistakes) ?? undefined;
     }
 
     return grading;

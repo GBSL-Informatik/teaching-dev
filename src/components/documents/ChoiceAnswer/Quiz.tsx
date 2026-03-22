@@ -10,6 +10,7 @@ import { createRandomOrderMap } from './helpers';
 import styles from './styles.module.scss';
 import { QuizCheckOrResetButton } from './Controls';
 import { GradingFunction } from './grading';
+import { QuizGrading } from './Feedback';
 
 interface Props {
     id: string;
@@ -80,7 +81,10 @@ const Quiz = observer((props: Props) => {
             }}
         >
             <div className={styles.quizContainer}>{props.children}</div>
-            <QuizCheckOrResetButton doc={doc} />
+            <div className={styles.quizFooter}>
+                <QuizGrading doc={doc} />
+                <QuizCheckOrResetButton doc={doc} />
+            </div>
         </QuizContext.Provider>
     );
 });

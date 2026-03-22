@@ -14,8 +14,8 @@ import { points, partialPoints } from '@tdev-components/documents/ChoiceAnswer/g
 # Playground
 Diese Seite dient nur der Entwicklung. Sie soll vor dem Merge entfernt werden.
 
-<Quiz id="07897c4d-c8ff-4d3c-b170-870bc31f651e" grading={points(1)} randomizeOptions randomizeQuestions>
-  <ChoiceAnswer correct={[5]}>
+<Quiz id="07897c4d-c8ff-4d3c-b170-870bc31f651e" grading={points(1)}>
+  <ChoiceAnswer correct={[5]} grading={points(2)}>
       > In welchem Jahr war 2024?
       
       1. 1965
@@ -29,7 +29,7 @@ Diese Seite dient nur der Entwicklung. Sie soll vor dem Merge entfernt werden.
       > HTML ist eine Programmiersprache.
   </TrueFalseAnswer>
   
-  <ChoiceAnswer correct={[1, 3]} grading={partialPoints()} multiple>
+  <ChoiceAnswer correct={[1, 3]} grading={(partialPoints())} multiple>
       > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
       
       1. SMTP

@@ -5,6 +5,7 @@ import Admonition from '@theme/Admonition';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
+import clsx from 'clsx';
 
 export const FeedbackBadge = observer(
     ({ doc, questionIndex }: { doc: ChoiceAnswerDocument; questionIndex: number }) => {
@@ -40,11 +41,37 @@ export const FeedbackBadge = observer(
 
         return (
             <div className={styles.feedbackBadge}>
+                {grading.points && (
+                    <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
+                        {grading.points.pointsAchieved}/{grading.points.maxPoints} Punkte
+                    </span>
+                )}
                 {icon && <Icon path={icon} color={`var(${color})`} size={1} />}
             </div>
         );
     }
 );
+
+export const QuizGrading = observer(({ doc }: { doc: ChoiceAnswerDocument }) => {
+    if (!doc || !doc.graded || doc.gradings.size === 0) {
+        return;
+    }
+
+    let totalPointsAchieved = 0;
+    let totalMaxPoints = 0;
+    doc.gradings.forEach((grading) => {
+        if (grading.points) {
+            totalPointsAchieved += grading.points.pointsAchieved;
+            totalMaxPoints += grading.points.maxPoints;
+        }
+    });
+
+    return (
+        <span className={clsx('badge badge--primary', styles.pointsBadge)}>
+            {totalPointsAchieved}/{totalMaxPoints} Punkte
+        </span>
+    );
+});
 
 const CorrectIcon = (): React.JSX.Element => {
     return (
