@@ -9,6 +9,7 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
 import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+import { points, partialPoints } from '@tdev-components/documents/ChoiceAnswer/grading';
 
 # Choice Answer
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
@@ -18,6 +19,8 @@ Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeig
 Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
 
 ```md
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
     > Wir gilt als Erfinder des World Wide Web (WWW)?
 
@@ -46,6 +49,8 @@ Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `corr
 Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
 
 ```md
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+
 <ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
     > Wir gilt als Erfinder des World Wide Web (WWW)?
 
@@ -74,6 +79,8 @@ Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  g
 Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
 
 ```md
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+
 <ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
     Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
     
@@ -89,6 +96,8 @@ Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben 
 Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
 
 ```md
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+
 Hier steht etwas Text über der Frage.
 
 <ChoiceAnswer correct={[1, 4, 5]} multiple title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
@@ -142,6 +151,8 @@ Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Au
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
 ```md
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+
 <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
     > Die Erde ist flach.
 </TrueFalseAnswer>
@@ -161,45 +172,50 @@ Bei Wahr/Falsch-Fragen gibt es keine Randomisierung der Antwortmöglichkeiten, d
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```html
-<Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
-    <ChoiceAnswer correct={[5]} >
-        > In welchem Jahr war 2024?
-        
-        1. 1965
-        2. 1983
-        3. 1991
-        4. 2000
-        5. 2024
-    </ChoiceAnswer>
-    
-    <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
-        > HTML ist eine Programmiersprache.
-    </TrueFalseAnswer>
-    
-    <ChoiceAnswer correct={[1, 3]} multiple>
-        > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
-        
-        1. SMTP
-        2. FTP
-        3. IMAP
-        4. HTTP
-    </ChoiceAnswer>
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+import { points } from '@tdev-components/documents/ChoiceAnswer/grading';
 
-    <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
-    > Wann ist der Sinn des Lebens?
-    
-        1. Immer im März
-        2. 42
-        3. Das Bundeshaus
-        4. Nein
-        5. Ja, aber nur manchmal
-    </ChoiceAnswer>
+<Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" grading={points(1)}>
+  <ChoiceAnswer correct={[5]} grading={points(2)}>
+      > In welchem Jahr war 2024?
+      
+      1. 1965
+      2. 1983
+      3. 1991
+      4. 2000
+      5. 2024
+  </ChoiceAnswer>
+
+  <TrueFalseAnswer correct={false} grading={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
+      > HTML ist eine Programmiersprache.
+  </TrueFalseAnswer>
+  
+  <ChoiceAnswer correct={[1, 3]} grading={(partialPoints())} multiple>
+      > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+      
+      1. SMTP
+      2. FTP
+      3. IMAP
+      4. HTTP
+  </ChoiceAnswer>
+
+  <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+      > Wann ist der Sinn des Lebens?
+      
+      1. Immer im März
+      2. 42
+      3. Das Bundeshaus
+      4. Nein
+      5. Ja, aber nur manchmal
+  </ChoiceAnswer>
 </Quiz>
 ```
 
 <BrowserWindow>
-    <Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf">
-        <ChoiceAnswer correct={[5]}>
+    <Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" grading={points(1)}>
+        <ChoiceAnswer correct={[5]} grading={points(2)}>
             > In welchem Jahr war 2024?
             
             1. 1965
@@ -209,11 +225,11 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
             5. 2024
         </ChoiceAnswer>
 
-        <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
+        <TrueFalseAnswer correct={false} grading={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
             > HTML ist eine Programmiersprache.
         </TrueFalseAnswer>
         
-        <ChoiceAnswer correct={[1, 3]} multiple>
+        <ChoiceAnswer correct={[1, 3]} grading={(partialPoints())} multiple>
             > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
             
             1. SMTP
@@ -234,10 +250,16 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
     </Quiz>
 </BrowserWindow>
 
+Dabei kann für das Quiz eine `grading`-Funktion angegeben werden, die als Standard-Bewertungsfunktion für alle enthaltenen Fragen gilt. Diese kann bei Bedarf durch die `grading`-Property der einzelnen Fragen überschrieben werden (siehe obiges Beispiel). In diesem Fall gilt die spezifische Bewertungsfunktion nur für diese eine Frage, während die anderen Fragen weiterhin die Bewertungsfunktion des übergeordneten Quizzes verwenden. Es kann entweder eine vordefinierte Bewertungsfunktion (z.B. `points(1, 0, 0)`) oder eine benutzerdefinierte Funktion verwendet werden. Mehr dazu [hier]()
+
 ### Randomisierung
 Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten randomisiert werden. Das Verhalten ist analog zu den einzelnen ChoiceAnswer-Fragen (siehe oben). Wird `randomizeOptions` auf Quiz-Ebene gesetzt, gilt dies für alle enthaltenen Fragen (wobei die Antwortoptionen von Wahr/Falsch-Fragen nie randomisiert werden).
 
 ```html
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+
 <Quiz randomizeQuestions randomizeOptions id="040006ed-1198-4d0d-bd9d-50822c45cd76">
     <ChoiceAnswer correct={[5]}>
         > In welchem Jahr war 2024?
@@ -311,35 +333,35 @@ Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Frag
     </Quiz>
 </BrowserWindow>
 
-## Eigenschaften
-### ChoiceAnswer
+## Eigenschaften und Funktionen
+### Eigenschaften ChoiceAnswer
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
-| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
 | `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
+| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
+| `grading` | `GradingFunction` | Übersteuert die `GradingFunction` des übergeordneten Quizzes für diese spezifische Frage. |
 | `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
 | `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
 
-### Quiz
+### Eigenschaften Quiz
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
 | `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
 | `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
 | `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
-| `grading` (TODO) | Object | **TODO.** Objekt zur Anpassung der Bewertungslogik. Siehe unten. |
+| `grading` | `GradingFunction` | Eine vordefinierte oder benutzerdefinierte `GradingFunction`. |
+
+### `GradingFunction`
+Eine `GradingFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Grading-Funktionen sind:
+
+- `points(pointsForCorrect: number, pointsForIncorrect: number, pointsForUnanswered: number)`: Bewertet die Frage mit einer festen Punktzahl für richtig, falsch und nicht beantwortet (z.B. `points(1, 0, 0)` für 1 Punkt bei richtiger Antwort und 0 Punkte bei falscher oder nicht beantworteter Frage). Die Standard-Wertung (`points()`) entspricht `points(1, 0, 0)`.
+- `partialPoints()`: Bewertet die Frage mit Teilpunktzahlen. TODO.
 
 ## TODO
-- Die Property `showCorrectAnswer` (default: `false`) zeigt in der Frage direkt an, welche Optionen richtig und welche Falsch beantwortet wurden (oder: «welche richtig / falsch sind»?).
 - Bei MC-Aufgaben sind Teilpunktzahlen möglich.
   - TODO TODO: Standalone MC-Fragen müssten demnach auch nicht nur mit richtig und falsch, sondern mit "teilweise richtig" bewertet werden?
 - Ein Quiz kann auf ein Karussell reduziert werden, um Platz zu sparen.
-- Bei einem Quiz kann eine Gesamtpunktzahl definiert werden, die auf die einzelnen ChoiceAnswers aufgeteilt wird.
-- Die Wertung der Antworten kann angepasst werden – es sind z.B. auch Negativpunkte möglich. Es kann zudem eingestellt werden, ob die Gruppe insgesamt weniger als 0 Punkte ergeben darf.
 - Der Korrekturknopf eines Quiz kann versteckt oder mit einer Permission geschützt werden.
-- TODO TODO:
-  - Korrektur: Einzeln oder nur Punkte?
-  - Konzept eines "Durchgangs" (Versuch)? Versuch verwerfen und neu starten nach Korrektur?
-  - Soll eine CA / CA.Group automatische eine Aufgabe sein? Soll sie automatisch eine Checkbox erhalten? Soll diese automatisch aktiviert sein, wenn das Quiz fertig gelöst ist? Soll sie nur aktiviert sein, wenn alles korrekt gelöst wurde? Soll das alles eine Option sein?
 
 ## Future Work
 - Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
