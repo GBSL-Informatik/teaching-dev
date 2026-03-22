@@ -13,6 +13,7 @@ import {
     requestTarget,
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
+import { themes as prismThemes } from 'prism-react-renderer';
 import { brythonCodePluginConfig } from '../src/siteConfig/pluginConfigs';
 
 const getSiteConfig: SiteConfigProvider = () => {
@@ -35,6 +36,13 @@ const getSiteConfig: SiteConfigProvider = () => {
         },
         pages: {
             path: 'tdev-website/pages'
+        },
+        themeConfig: {
+            prism: {
+                theme: prismThemes.github,
+                darkTheme: prismThemes.dracula,
+                additionalLanguages: ['bash', 'typescript', 'json', 'python', 'ruby']
+            }
         },
         navbarItems: [
             gallery,
