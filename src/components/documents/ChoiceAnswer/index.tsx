@@ -1,9 +1,5 @@
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import ChoiceAnswerDocument, {
-    ChoiceAnswerGrading,
-    ChoiceAnswerResult,
-    ModelMeta
-} from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, { ChoiceAnswerResult, ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import clsx from 'clsx';
@@ -18,11 +14,13 @@ import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from './helpers';
 import QuestionControls from './Controls';
 import { FeedbackAdmonition, FeedbackBadge } from './Feedback';
+import { GradingFunction, updateGrading as grade } from './grading';
 
 export interface ChoiceAnswerProps {
     id: string;
     title?: string;
     correct?: number[];
+    grading?: GradingFunction;
     questionIndex?: number;
     inQuiz?: boolean;
     multiple?: boolean;
@@ -92,37 +90,8 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             return;
         }
 
-        // TODO: Implement points logic.
-        const grading: ChoiceAnswerGrading = {
-            result: ChoiceAnswerResult.NA
-        };
-        if (props.multiple) {
-            const selectedOptions = new Set(doc.choices[questionIndex] || []);
-            if (selectedOptions.size > 0) {
-                const numCorrectDecisions = _.range(0, props.numOptions).filter((optionIndex) => {
-                    const isCorrect = correctOptions.has(optionIndex + 1); // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
-                    const isSelected = selectedOptions.has(optionIndex);
-                    return (isCorrect && isSelected) || (!isCorrect && !isSelected);
-                }).length;
-
-                grading.result =
-                    numCorrectDecisions === props.numOptions
-                        ? ChoiceAnswerResult.Correct
-                        : numCorrectDecisions > 0
-                          ? ChoiceAnswerResult.PartiallyCorrect
-                          : ChoiceAnswerResult.Incorrect;
-            }
-        } else {
-            const selectedOption = doc?.choices[questionIndex]?.[0];
-            if (selectedOption === undefined) {
-                grading.result = ChoiceAnswerResult.NA;
-            } else {
-                grading.result = correctOptions.has(selectedOption + 1) // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
-                    ? ChoiceAnswerResult.Correct
-                    : ChoiceAnswerResult.Incorrect;
-            }
-        }
-
+        const gradingFunction = props.grading ?? parentProps.grading;
+        const grading = grade(doc, props.multiple ?? false, questionIndex, correctOptions, props.numOptions);
         setGradingStyle({
             [styles.correct]: doc.graded && grading.result === ChoiceAnswerResult.Correct,
             [styles.partiallyCorrect]: doc.graded && grading.result === ChoiceAnswerResult.PartiallyCorrect,

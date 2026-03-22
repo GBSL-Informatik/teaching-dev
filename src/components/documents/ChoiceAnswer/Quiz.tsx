@@ -9,6 +9,7 @@ import Loader from '@tdev-components/Loader';
 import { createRandomOrderMap } from './helpers';
 import styles from './styles.module.scss';
 import { QuizCheckOrResetButton } from './Controls';
+import { GradingFunction } from './grading';
 
 interface Props {
     id: string;
@@ -16,6 +17,7 @@ interface Props {
     hideQuestionNumbers?: boolean;
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
+    grading?: GradingFunction;
     numQuestions: number;
     children?: React.ReactNode[];
 }
@@ -34,6 +36,7 @@ export const QuizContext = React.createContext({
     readonly?: boolean;
     hideQuestionNumbers?: boolean;
     randomizeQuestions?: boolean;
+    grading?: GradingFunction;
     questionOrder: { [originalQuestionIndex: number]: number } | null;
     randomizeOptions?: boolean;
     focussedQuestion: number;
@@ -71,6 +74,7 @@ const Quiz = observer((props: Props) => {
                 randomizeQuestions: props.randomizeQuestions,
                 questionOrder: doc.data.questionOrder,
                 randomizeOptions: props.randomizeOptions,
+                grading: props.grading,
                 focussedQuestion: focussedQuestion,
                 setFocussedQuestion: setFocussedQuestion
             }}
