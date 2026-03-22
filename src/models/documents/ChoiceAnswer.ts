@@ -32,10 +32,6 @@ export interface ChoiceAnswerGrading {
     points?: number;
 }
 
-export interface ChoiceAnswerGradings {
-    [questionIndex: number]: ChoiceAnswerGrading;
-}
-
 export class ModelMeta extends TypeMeta<'choice_answer'> {
     readonly type = 'choice_answer';
     readonly readonly?: boolean;
@@ -59,8 +55,8 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
     @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
     @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
+    gradings = observable.map<number, ChoiceAnswerGrading>();
     @observable accessor _graded: boolean;
-    @observable.ref accessor gradings: ChoiceAnswerGradings;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
@@ -68,7 +64,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         this.optionOrders = props.data?.optionOrders || {};
         this.questionOrder = props.data?.questionOrder || null;
         this._graded = props.data?.graded || false;
-        this.gradings = {};
+        this.gradings = observable.map<number, ChoiceAnswerGrading>();
     }
 
     @action
@@ -161,7 +157,11 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @action
     updateGrading(questionIndex: number, grading: ChoiceAnswerGrading): void {
-        this.gradings[questionIndex] = grading;
+        this.gradings.set(questionIndex, grading);
+    }
+
+    getGrading(questionIndex: number): ChoiceAnswerGrading | undefined {
+        return this.gradings.get(questionIndex);
     }
 
     get data(): TypeDataMapping['choice_answer'] {

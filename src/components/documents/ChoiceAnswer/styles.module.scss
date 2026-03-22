@@ -9,6 +9,32 @@ $container-padding-left-right: 1em;
         margin: 0 0 0.5em 0;
     }
 
+    $boxShadowDefaults: 0 0 8px;
+
+    &.correct {
+        box-shadow: $boxShadowDefaults var(--ifm-color-success);
+
+        .header {
+            background-color: var(--ifm-color-success-contrast-background);
+        }
+    }
+
+    &.partiallyCorrect {
+        box-shadow: $boxShadowDefaults var(--ifm-color-warning);
+
+        .header {
+            background-color: var(--ifm-color-warning-contrast-background);
+        }
+    }
+
+    &.incorrect {
+        box-shadow: $boxShadowDefaults var(--ifm-color-danger-lighter);
+
+        .header {
+            background-color: var(--ifm-color-danger-contrast-background);
+        }
+    }
+
     .header {
         background-color: var(--ifm-color-secondary-lightest);
         padding: $container-padding-top-bottom $container-padding-left-right;
@@ -16,18 +42,6 @@ $container-padding-left-right: 1em;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-
-        &.correct {
-            background-color: var(--ifm-color-success-contrast-background);
-        }
-
-        &.partiallyCorrect {
-            background-color: var(--ifm-color-warning-contrast-background);
-        }
-
-        &.incorrect {
-            background-color: var(--ifm-color-danger-contrast-background);
-        }
 
         h3 {
             margin: 0;
@@ -40,6 +54,13 @@ $container-padding-left-right: 1em;
 
         .syncStatus {
             position: static;
+        }
+
+        .controlsAndFeedback {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5em;
         }
 
         .controlsContainer {
@@ -117,4 +138,11 @@ $container-padding-left-right: 1em;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+}
+
+.feedbackBadge {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
 }

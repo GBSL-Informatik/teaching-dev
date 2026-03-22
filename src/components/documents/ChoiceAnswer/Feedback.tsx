@@ -1,8 +1,50 @@
-import { mdiCheckCircle, mdiCheckCircleOutline } from '@mdi/js';
+import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
+import Icon from '@mdi/react';
 import ChoiceAnswerDocument, { ChoiceAnswerResult } from '@tdev-models/documents/ChoiceAnswer';
 import Admonition from '@theme/Admonition';
-import { divide } from 'es-toolkit/compat';
 import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
+import React from 'react';
+
+export const FeedbackBadge = observer(
+    ({ doc, questionIndex }: { doc: ChoiceAnswerDocument; questionIndex: number }) => {
+        if (!doc || !doc.graded) {
+            return;
+        }
+
+        const grading = doc.gradings.get(questionIndex);
+        if (!grading) {
+            return;
+        }
+
+        let icon;
+        let color;
+        switch (grading.result) {
+            case ChoiceAnswerResult.Correct:
+                icon = mdiCheckCircleOutline;
+                color = '--ifm-color-success';
+                break;
+            case ChoiceAnswerResult.PartiallyCorrect:
+                icon = mdiProgressCheck;
+                color = '--ifm-color-warning';
+                break;
+            case ChoiceAnswerResult.Incorrect:
+                icon = mdiCloseCircleOutline;
+                color = '--ifm-color-danger';
+                break;
+            case ChoiceAnswerResult.NA:
+                icon = mdiProgressQuestion;
+                color = '--ifm-color-info';
+                break;
+        }
+
+        return (
+            <div className={styles.feedbackBadge}>
+                {icon && <Icon path={icon} color={`var(${color})`} size={1} />}
+            </div>
+        );
+    }
+);
 
 const CorrectIcon = (): React.JSX.Element => {
     return (
@@ -42,32 +84,32 @@ const NoAnswerIcon = (): React.JSX.Element => {
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path
                 fill="currentColor"
-                d="M11 15.5h1.5V17H11zm1-8.55c2.7.11 3.87 2.83 2.28 4.86c-.42.5-1.09.83-1.43 1.26c-.35.43-.35.93-.35 1.43H11c0-.85 0-1.56.35-2.06c.33-.5 1-.8 1.42-1.13c1.23-1.13.91-2.72-.77-2.85c-.82 0-1.5.67-1.5 1.51H9c0-1.67 1.35-3.02 3-3.02M12 2c-.5 0-1 .19-1.41.59l-8 8c-.79.78-.79 2.04 0 2.82l8 8c.78.79 2.04.79 2.82 0l8-8c.79-.78.79-2.04 0-2.82l-8-8C13 2.19 12.5 2 12 2m0 2l8 8l-8 8l-8-8Z"
+                d="M13 18h-2v-2h2zm0-3h-2c0-3.25 3-3 3-5c0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5m9-3c0 5.18-3.95 9.45-9 9.95v-2.01c3.95-.49 7-3.86 7-7.94s-3.05-7.45-7-7.94V2.05c5.05.5 9 4.77 9 9.95M11 2.05v2.01c-1.46.18-2.8.76-3.91 1.62L5.67 4.26C7.15 3.05 9 2.25 11 2.05M4.06 11H2.05c.2-2 1-3.85 2.21-5.33L5.68 7.1A7.9 7.9 0 0 0 4.06 11M11 19.94v2.01c-2-.2-3.85-.99-5.33-2.21l1.42-1.42c1.11.86 2.45 1.44 3.91 1.62M2.05 13h2.01c.18 1.46.76 2.8 1.62 3.91l-1.42 1.42A10 10 0 0 1 2.05 13"
             />
         </svg>
     );
 };
 
 const correctAdmonition = (
-    <Admonition type="success" title="Richtig" icon={<CorrectIcon />}>
+    <Admonition type="note" title="Richtig" icon={<CorrectIcon />}>
         Sie haben die Frage korrekt beantwortet!
     </Admonition>
 );
 
 const partiallyCorrectAdmonition = (
-    <Admonition type="warning" title="Teilweise richtig" icon={<PartiallyCorrectIcon />}>
+    <Admonition type="note" title="Teilweise richtig" icon={<PartiallyCorrectIcon />}>
         Sie haben diese Frage teilweise richtig beantwortet.
     </Admonition>
 );
 
 const incorrectAdmonition = (
-    <Admonition type="danger" title="Falsch" icon={<IncorrectIcon />}>
+    <Admonition type="note" title="Falsch" icon={<IncorrectIcon />}>
         Sie haben diese Frage falsch beantwortet.
     </Admonition>
 );
 
 const noAnswerAdmonition = (
-    <Admonition type="info" title="Keine Antwort" icon={<NoAnswerIcon />}>
+    <Admonition type="note" title="Keine Antwort" icon={<NoAnswerIcon />}>
         Sie haben diese Frage nicht beantwortet.
     </Admonition>
 );
@@ -78,12 +120,12 @@ interface Props {
 }
 
 // TODO: Should the grading decide its own visibility? Will quizzes prevent the entire grading, or just the result display?
-const QuestionGrading = observer(({ doc, questionIndex }: Props) => {
+export const FeedbackAdmonition = observer(({ doc, questionIndex }: Props) => {
     if (!doc || !doc.graded) {
         return;
     }
 
-    const grading = doc.gradings[questionIndex];
+    const grading = doc.gradings.get(questionIndex);
     if (!grading) {
         return;
     }
@@ -101,5 +143,3 @@ const QuestionGrading = observer(({ doc, questionIndex }: Props) => {
             return;
     }
 });
-
-export default QuestionGrading;

@@ -17,7 +17,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from './helpers';
 import QuestionControls from './Controls';
-import QuestionGrading from './QuestionGrading';
+import { FeedbackAdmonition, FeedbackBadge } from './Feedback';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -70,6 +70,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const randomizeOptions =
         props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
     const isBrowser = useIsBrowser();
+    const [gradingStyle, setGradingStyle] = React.useState({});
 
     React.useEffect(() => {
         if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
@@ -122,13 +123,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             }
         }
 
+        setGradingStyle({
+            [styles.correct]: doc.graded && grading.result === ChoiceAnswerResult.Correct,
+            [styles.partiallyCorrect]: doc.graded && grading.result === ChoiceAnswerResult.PartiallyCorrect,
+            [styles.incorrect]: doc.graded && grading.result === ChoiceAnswerResult.Incorrect
+        });
         doc.updateGrading(questionIndex, grading);
-    }, [doc?.choices]);
-
-    const gradingResult = React.useMemo(() => {
-        console.log('Recomputing grading result');
-        return doc?.graded ? doc?.gradings[questionIndex]?.result : undefined;
-    }, [doc?.graded, doc?.gradings, questionIndex]);
+    }, [doc, doc?.choices, doc?.graded]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
@@ -177,22 +178,22 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             : props.title;
 
     return (
-        <div className={clsx('card', styles.choiceAnswerContainer)} style={{ order: questionOrder }}>
+        <div
+            className={clsx('card', styles.choiceAnswerContainer, gradingStyle)}
+            style={{ order: questionOrder }}
+        >
             {title && (
-                <div
-                    className={clsx('card__header', styles.header, {
-                        [styles.correct]: gradingResult === ChoiceAnswerResult.Correct,
-                        [styles.partiallyCorrect]: gradingResult === ChoiceAnswerResult.PartiallyCorrect,
-                        [styles.incorrect]: gradingResult === ChoiceAnswerResult.Incorrect
-                    })}
-                >
+                <div className={clsx('card__header', styles.header, gradingStyle)}>
                     <span className={clsx(styles.title)}>{title}</span>
-                    <QuestionControls
-                        doc={doc}
-                        questionIndex={questionIndex}
-                        focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                        inQuiz={props.inQuiz}
-                    />
+                    <div className={clsx(styles.controlsAndFeedback)}>
+                        <QuestionControls
+                            doc={doc}
+                            questionIndex={questionIndex}
+                            focussedQuestion={parentProps.focussedQuestion === questionIndex}
+                            inQuiz={props.inQuiz}
+                        />
+                        <FeedbackBadge doc={doc} questionIndex={questionIndex} />
+                    </div>
                 </div>
             )}
             {!title && (
@@ -218,7 +219,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     <div className={styles.optionsBlock}>{optionsBlock}</div>
                 </ChoiceAnswerContext.Provider>
                 {afterBlock}
-                {<QuestionGrading doc={doc} questionIndex={questionIndex} />}
+                {!title && <FeedbackAdmonition doc={doc} questionIndex={questionIndex} />}
             </div>
         </div>
     );
