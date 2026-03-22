@@ -14,9 +14,9 @@ Referenz
 : [docs.gitlab.com/install/docker](https://docs.gitlab.com/install/docker/)
 
 
-<DynamicInput name="app" default='gitlab' />
-<DynamicInput name="domain" default='gitlab.domain.ch' />
-<DynamicInput name="gitlab_image" default='gitlab/gitlab-ee:18.10.0-ee.0' />
+<DynamicInput name="app" default='gitlab' monospace/>
+<DynamicInput name="domain" default='gitlab.domain.ch' monospace/>
+<DynamicInput name="gitlab_image" default='gitlab/gitlab-ee:18.10.0-ee.0' monospace/>
 
 <TemplateCode>
     ```bash title="root@dokku"
@@ -172,14 +172,14 @@ nano /var/lib/dokku/data/storage/{{app}}/config/gitlab.rb
 ```
 </TemplateCode>
 
-<DynamicInput name="smtp_address" default='authsmtp.securemail.pro' />
-<DynamicInput name="smtp_port" default="587" />
-<DynamicInput name="smtp_user_name" default="foo@bar.ch" />
-<DynamicInput name="smtp_password" default="PW" />
-<DynamicInput name="smtp_domain" default="bar.ch" />
-<DynamicInput name="gitlab_email_from" default="foo@bar.ch" />
-<DynamicInput name="gitlab_email_display_name" default="GitLab GBSL" />
-<DynamicInput name="gitlab_email_reply_to" default="foo@bar.ch" />
+<DynamicInput name="smtp_address" default='authsmtp.securemail.pro' monospace />
+<DynamicInput name="smtp_port" default="587" monospace />
+<DynamicInput name="smtp_user_name" default="foo@bar.ch" monospace />
+<DynamicInput name="smtp_password" default="PW" monospace />
+<DynamicInput name="smtp_domain" default="bar.ch" monospace />
+<DynamicInput name="gitlab_email_from" default="foo@bar.ch" monospace />
+<DynamicInput name="gitlab_email_display_name" default="GitLab GBSL" monospace />
+<DynamicInput name="gitlab_email_reply_to" default="foo@bar.ch" monospace />
 
 <TemplateCode>
     ```rb title="/var/lib/dokku/data/storage/{{app}}/config/gitlab.rb"
