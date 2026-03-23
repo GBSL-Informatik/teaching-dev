@@ -9,7 +9,7 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
 import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
-import { points, partialPoints } from '@tdev-components/documents/ChoiceAnswer/grading';
+import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceAnswer/grading';
 
 # Choice Answer
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
@@ -229,7 +229,7 @@ import { points } from '@tdev-components/documents/ChoiceAnswer/grading';
             > HTML ist eine Programmiersprache.
         </TrueFalseAnswer>
         
-        <ChoiceAnswer correct={[1, 3]} grading={(partialPoints())} multiple>
+        <ChoiceAnswer correct={[1, 3]} grading={(multipleChoicePoints())} multiple>
             > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
             
             1. SMTP

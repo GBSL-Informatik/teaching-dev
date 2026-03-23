@@ -54,10 +54,44 @@ export const points: (
     };
 };
 
-export const partialPoints = (points: { [key: number]: number }) => {
-    // TODO: Implement.
-    return (result: ChoiceAnswerResult, numMistakes: number) => {
-        return undefined;
+export const multipleChoicePoints = (
+    maxPoints: number,
+    deductionPerWrongChoice: number,
+    allowNegativeTotal: boolean = false
+) => {
+    const gradingHint = () => (
+        <ul>
+            <li>
+                <span className={clsx('badge badge--success')}>{maxPoints}</span>{' '}
+                {maxPoints === 1 ? 'Punkt' : 'Punkte'} wenn alle Antworten richtig sind
+            </li>
+            <li>
+                <span className={clsx('badge badge--danger')}>{deductionPerWrongChoice}</span>{' '}
+                {deductionPerWrongChoice === 1 ? 'Punkt' : 'Punkte'} Abzug pro falscher Auswahl /
+                Nicht-Auswahl
+            </li>
+            {allowNegativeTotal && (
+                <li>
+                    Die Gesamtpunktzahl <b>kann negativ sein</b>, wenn mehr falsche als richtige Antworten
+                    ausgewählt wurden.
+                </li>
+            )}
+            {!allowNegativeTotal && (
+                <li>
+                    Es werden <b>nicht</b> weniger als 0 Punkte vergeben.
+                </li>
+            )}
+        </ul>
+    );
+
+    return (_: ChoiceAnswerResult, numMistakes: number) => {
+        const points = maxPoints - numMistakes * deductionPerWrongChoice;
+        const finalPoints = allowNegativeTotal ? points : Math.max(points, 0);
+        return {
+            maxPoints,
+            pointsAchieved: finalPoints,
+            gradingHint
+        };
     };
 };
 
