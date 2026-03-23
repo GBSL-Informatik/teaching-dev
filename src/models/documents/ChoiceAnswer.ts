@@ -96,6 +96,10 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @action
     updateSingleChoiceSelection(questionIndex: number, optionIndex: number): void {
+        if (!this.canUpdateAnswer) {
+            return;
+        }
+
         this.updatedAt = new Date();
         this.choices = {
             ...this.choices,
@@ -106,6 +110,10 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @action
     updateMultipleChoiceSelection(questionIndex: number, optionIndex: number, selected: boolean): void {
+        if (!this.canUpdateAnswer) {
+            return;
+        }
+
         this.updatedAt = new Date();
         const currentSelections = new Set<number>(this.choices[questionIndex] as number[] | []);
         if (selected) {
@@ -122,6 +130,10 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @action
     resetAllAnswers(): void {
+        if (!this.canUpdateAnswer) {
+            return;
+        }
+
         this.updatedAt = new Date();
         this.choices = {};
         this.save();
@@ -129,6 +141,10 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @action
     resetAnswer(questionIndex: number): void {
+        if (!this.canUpdateAnswer) {
+            return;
+        }
+
         this.updatedAt = new Date();
         this.choices = {
             ...this.choices,
