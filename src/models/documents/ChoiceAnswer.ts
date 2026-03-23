@@ -3,6 +3,7 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
+import type { ReactElement } from 'react';
 
 export interface ChoiceAnswerChoices {
     [questionIndex: number]: number[];
@@ -30,6 +31,7 @@ export enum ChoiceAnswerResult {
 export interface ChoiceAnswerPoints {
     maxPoints: number;
     pointsAchieved: number;
+    gradingHint?: string | (() => ReactElement);
 }
 
 export interface ChoiceAnswerGrading {

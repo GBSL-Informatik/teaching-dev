@@ -4,6 +4,7 @@ import {
     ChoiceAnswerResult
 } from '@tdev-models/documents/ChoiceAnswer';
 import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
+import clsx from 'clsx';
 import _ from 'es-toolkit/compat';
 
 export type GradingFunction = (result: ChoiceAnswerResult, numMistakes: number) => ChoiceAnswerPoints;
@@ -13,22 +14,48 @@ export const points: (
     forIncorrect?: number,
     forUnanswered?: number
 ) => GradingFunction = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
+    const gradingHint = () => (
+        <ul>
+            <li>
+                <span className={clsx('badge badge--success')}>{forCorrect}</span>{' '}
+                {forCorrect === 1 ? 'Punkt' : 'Punkte'} wenn richtig
+            </li>
+            <li>
+                <span className={clsx('badge badge--danger')}>{forIncorrect}</span>{' '}
+                {forIncorrect === 1 ? 'Punkt' : 'Punkte'} wenn falsch{' '}
+            </li>
+            <li>
+                <span className={clsx('badge badge--secondary')}>{forUnanswered}</span>{' '}
+                {forUnanswered === 1 ? 'Punkt' : 'Punkte'} wenn nicht beantwortet
+            </li>
+        </ul>
+    );
+    const template: ChoiceAnswerPoints = {
+        maxPoints: forCorrect,
+        pointsAchieved: 0,
+        gradingHint
+    };
+
     return (result) => {
         switch (result) {
             case ChoiceAnswerResult.Correct:
-                return { maxPoints: forCorrect, pointsAchieved: forCorrect };
+                return { ...template, pointsAchieved: forCorrect };
             case ChoiceAnswerResult.PartiallyCorrect:
             case ChoiceAnswerResult.Incorrect:
-                return { maxPoints: forCorrect, pointsAchieved: forIncorrect };
+                return { ...template, pointsAchieved: forIncorrect };
             case ChoiceAnswerResult.NA:
-                return { maxPoints: forCorrect, pointsAchieved: forUnanswered };
+                return { ...template, pointsAchieved: forUnanswered };
             default:
-                return { maxPoints: 0, pointsAchieved: 0 };
+                console.warn(
+                    `Unhandled grading result '${result}' in points() grading function. This should not happen.`
+                );
+                return { ...template };
         }
     };
 };
 
-export const partialPoints = () => {
+export const partialPoints = (points: { [key: number]: number }) => {
+    // TODO: Implement.
     return (result: ChoiceAnswerResult, numMistakes: number) => {
         return undefined;
     };

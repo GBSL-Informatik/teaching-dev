@@ -15,6 +15,7 @@ import { createRandomOrderMap } from './helpers';
 import QuestionControls from './Controls';
 import { FeedbackAdmonition, FeedbackBadge } from './Feedback';
 import { GradingFunction, updateGrading as grade } from './grading';
+import { QuestionGradingHint } from './Hints';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -169,6 +170,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                             inQuiz={props.inQuiz}
                         />
                         <FeedbackBadge doc={doc} questionIndex={questionIndex} />
+                        <QuestionGradingHint doc={doc} questionIndex={questionIndex} />
                     </div>
                 </div>
             )}
