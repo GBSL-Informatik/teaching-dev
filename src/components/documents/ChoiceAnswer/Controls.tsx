@@ -65,7 +65,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
 export const QuizCheckOrResetButton = observer(({ doc }: { doc: ChoiceAnswerDocument }) => {
     return (
         <div className={styles.quizCheckOrResetButtonContainer}>
-            {!doc.graded && (
+            {!doc.graded && doc.gradings.size > 0 && (
                 <Confirm
                     text="Quiz beenden"
                     title="Quiz beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich."

@@ -112,22 +112,25 @@ export const updateGrading = (
     };
     if (multiple) {
         const selectedOptions = new Set(doc.choices[questionIndex] || []);
-        if (selectedOptions.size > 0) {
-            const numCorrectDecisions = _.range(0, numOptions).filter((optionIndex) => {
-                const isCorrect = correctOptions.has(optionIndex + 1); // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
-                const isSelected = selectedOptions.has(optionIndex);
-                return (isCorrect && isSelected) || (!isCorrect && !isSelected);
-            }).length;
-            numMistakes = numOptions - numCorrectDecisions;
+        const numCorrectDecisions = _.range(0, numOptions).filter((optionIndex) => {
+            const isCorrect = correctOptions.has(optionIndex + 1); // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
+            const isSelected = selectedOptions.has(optionIndex);
+            return (isCorrect && isSelected) || (!isCorrect && !isSelected);
+        }).length;
+        numMistakes = numOptions - numCorrectDecisions;
 
-            grading.result =
-                numCorrectDecisions === numOptions
-                    ? ChoiceAnswerResult.Correct
-                    : numCorrectDecisions > 0
-                      ? ChoiceAnswerResult.PartiallyCorrect
-                      : ChoiceAnswerResult.Incorrect;
-        }
+        grading.result =
+            numCorrectDecisions === numOptions
+                ? ChoiceAnswerResult.Correct
+                : numCorrectDecisions > 0
+                  ? ChoiceAnswerResult.PartiallyCorrect
+                  : ChoiceAnswerResult.Incorrect;
     } else {
+        if (correctOptions.size === 0) {
+            console.warn(
+                `Question ${questionIndex} has an empty list of correct options. This is not allowed for single-choice questions and may lead to unexpected grading results (no options selected = question not answered).`
+            );
+        }
         const selectedOption = doc?.choices[questionIndex]?.[0];
         if (selectedOption === undefined) {
             grading.result = ChoiceAnswerResult.NA;

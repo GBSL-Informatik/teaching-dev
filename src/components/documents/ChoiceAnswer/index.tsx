@@ -84,12 +84,12 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         if (!doc) {
             return;
         }
-        const correctOptions = new Set(props.correct || []);
-        if (correctOptions.size === 0) {
+
+        if (props.correct === undefined) {
             // If no correct options are given, we assume that this question doesn't support grading.
-            // TODO: Factor out this logic and don't show the grading button in that case.
             return;
         }
+        const correctOptions = new Set(props.correct);
 
         const gradingFunction = props.grading ?? parentProps.grading;
         const grading = grade(
@@ -163,18 +163,20 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                 <div className={clsx('card__header', styles.header, gradingStyle)}>
                     <span className={clsx(styles.title)}>{title}</span>
                     <div className={clsx(styles.controlsAndFeedback)}>
-                        <QuestionControls
-                            doc={doc}
-                            questionIndex={questionIndex}
-                            focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                            inQuiz={props.inQuiz}
-                        />
+                        {!!props.correct && (
+                            <QuestionControls
+                                doc={doc}
+                                questionIndex={questionIndex}
+                                focussedQuestion={parentProps.focussedQuestion === questionIndex}
+                                inQuiz={props.inQuiz}
+                            />
+                        )}
                         <FeedbackBadge doc={doc} questionIndex={questionIndex} />
                         <QuestionGradingHint doc={doc} questionIndex={questionIndex} />
                     </div>
                 </div>
             )}
-            {!title && (
+            {!title && !!props.correct && (
                 <QuestionControls
                     doc={doc}
                     questionIndex={questionIndex}

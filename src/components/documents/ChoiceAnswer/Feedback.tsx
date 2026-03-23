@@ -68,6 +68,11 @@ export const QuizGrading = observer(
             }
         });
 
+        if (totalMaxPoints === 0) {
+            // No gradings with points, so we don't show anything.
+            return;
+        }
+
         if (minPoints !== undefined) {
             totalPointsAchieved = Math.max(totalPointsAchieved, minPoints);
         }
