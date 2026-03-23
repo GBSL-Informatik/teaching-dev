@@ -14,7 +14,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 # Playground
 Diese Seite dient nur der Entwicklung. Sie soll vor dem Merge entfernt werden.
 
-<Quiz id="07897c4d-c8ff-4d3c-b170-870bc31f651e" grading={points(1)}>
+<Quiz id="07897c4d-c8ff-4d3c-b170-870bc31f651e" grading={points(1)} minPoints={0}>
   <ChoiceAnswer correct={[5]} grading={points(2)}>
       > In welchem Jahr war 2024?
       
@@ -33,7 +33,7 @@ Diese Seite dient nur der Entwicklung. Sie soll vor dem Merge entfernt werden.
       > Mayonnaise ist ein Instrument.
   </TrueFalseAnswer>
   
-  <ChoiceAnswer correct={[1, 3]} grading={(multipleChoicePoints(2, 1))} multiple>
+  <ChoiceAnswer correct={[1, 3]} grading={(multipleChoicePoints(2, 1, true))} multiple>
       > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
       
       1. SMTP

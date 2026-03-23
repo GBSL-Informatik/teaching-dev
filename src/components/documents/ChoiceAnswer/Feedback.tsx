@@ -53,27 +53,33 @@ export const FeedbackBadge = observer(
     }
 );
 
-export const QuizGrading = observer(({ doc }: { doc: ChoiceAnswerDocument }) => {
-    if (!doc || doc.gradings.size === 0) {
-        return;
-    }
-
-    let totalPointsAchieved = 0;
-    let totalMaxPoints = 0;
-    doc.gradings.forEach((grading) => {
-        if (grading.points) {
-            totalPointsAchieved += grading.points.pointsAchieved;
-            totalMaxPoints += grading.points.maxPoints;
+export const QuizGrading = observer(
+    ({ doc, minPoints }: { doc: ChoiceAnswerDocument; minPoints?: number }) => {
+        if (!doc || doc.gradings.size === 0) {
+            return;
         }
-    });
 
-    return (
-        <span className={clsx('badge badge--primary', styles.pointsBadge)}>
-            {doc.graded && <span>{totalPointsAchieved}/</span>}
-            {totalMaxPoints} {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
-        </span>
-    );
-});
+        let totalPointsAchieved = 0;
+        let totalMaxPoints = 0;
+        doc.gradings.forEach((grading) => {
+            if (grading.points) {
+                totalPointsAchieved += grading.points.pointsAchieved;
+                totalMaxPoints += grading.points.maxPoints;
+            }
+        });
+
+        if (minPoints !== undefined) {
+            totalPointsAchieved = Math.max(totalPointsAchieved, minPoints);
+        }
+
+        return (
+            <span className={clsx('badge badge--primary', styles.pointsBadge)}>
+                {doc.graded && <span>{totalPointsAchieved}/</span>}
+                {totalMaxPoints} {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
+            </span>
+        );
+    }
+);
 
 const CorrectIcon = (): React.JSX.Element => {
     return (

@@ -19,6 +19,7 @@ interface Props {
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
     grading?: GradingFunction;
+    minPoints?: number;
     numQuestions: number;
     children?: React.ReactNode[];
 }
@@ -82,7 +83,7 @@ const Quiz = observer((props: Props) => {
         >
             <div className={styles.quizContainer}>{props.children}</div>
             <div className={styles.quizFooter}>
-                <QuizGrading doc={doc} />
+                <QuizGrading doc={doc} minPoints={props.minPoints} />
                 <QuizCheckOrResetButton doc={doc} />
             </div>
         </QuizContext.Provider>
