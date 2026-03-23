@@ -72,13 +72,12 @@ export const multipleChoicePoints = (
             </li>
             {allowNegativeTotal && (
                 <li>
-                    Die Gesamtpunktzahl <b>kann negativ sein</b>, wenn mehr falsche als richtige Antworten
-                    ausgewählt wurden.
+                    Die Gesamtpunktzahl <b>kann negativ sein</b>.
                 </li>
             )}
             {!allowNegativeTotal && (
                 <li>
-                    Es werden <b>nicht</b> weniger als 0 Punkte vergeben.
+                    Die Gesamtpunktzahl kann <b>nicht</b> negativ sein.
                 </li>
             )}
         </ul>
