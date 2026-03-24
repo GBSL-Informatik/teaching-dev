@@ -1,5 +1,8 @@
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import ChoiceAnswerDocument, { ChoiceAnswerResult, ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, {
+    ChoiceAnswerCorrectness,
+    ModelMeta
+} from '@tdev-models/documents/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import clsx from 'clsx';
@@ -15,7 +18,7 @@ import { createRandomOrderMap } from '../helpers/shared';
 import QuestionControls from '../Controls';
 import { FeedbackAdmonition, FeedbackBadge } from '../Feedback';
 import { GradingFunction, updateGrading as grade } from '../helpers/grading';
-import { QuestionGradingHint } from '../Hints';
+import { QuestionScoringHint } from '../Hints';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -101,12 +104,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             gradingFunction
         );
         setGradingStyle({
-            [styles.correct]: doc.graded && grading.result === ChoiceAnswerResult.Correct,
-            [styles.partiallyCorrect]: doc.graded && grading.result === ChoiceAnswerResult.PartiallyCorrect,
-            [styles.incorrect]: doc.graded && grading.result === ChoiceAnswerResult.Incorrect
+            [styles.correct]: doc.assessed && grading.correctness === ChoiceAnswerCorrectness.Correct,
+            [styles.partiallyCorrect]:
+                doc.assessed && grading.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
+            [styles.incorrect]: doc.assessed && grading.correctness === ChoiceAnswerCorrectness.Incorrect
         });
-        doc.updateGrading(questionIndex, grading);
-    }, [doc, doc?.choices, doc?.graded]);
+        doc.updateAssessment(questionIndex, grading);
+    }, [doc, doc?.choices, doc?.assessed]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;

@@ -25,7 +25,7 @@ const QuestionControls = observer(
 
         const checkOrResetButton = !inQuiz && (
             <>
-                {!doc.graded && (
+                {!doc.assessed && (
                     <Button
                         text="Prüfen"
                         title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
@@ -34,10 +34,10 @@ const QuestionControls = observer(
                         iconSide="left"
                         size={0.7}
                         className={styles.checkButton}
-                        onClick={() => (doc.graded = true)}
+                        onClick={() => (doc.assessed = true)}
                     />
                 )}
-                {doc.graded && (
+                {doc.assessed && (
                     <Confirm
                         text="Zurücksetzen"
                         title="Antwort zurücksetzen."
@@ -48,7 +48,7 @@ const QuestionControls = observer(
                         className={styles.checkButton}
                         confirmText="Wirklich zurücksetzen?"
                         onConfirm={() => {
-                            doc.graded = false;
+                            doc.assessed = false;
                             doc.resetAllAnswers();
                         }}
                     />
@@ -72,7 +72,7 @@ interface QuizControlsProps {
 export const QuizControls = observer(({ doc }: QuizControlsProps) => {
     return (
         <div className={styles.quizControlsContainer}>
-            {!doc.graded && doc.gradings.size > 0 && (
+            {!doc.assessed && doc.assessments.size > 0 && (
                 <Confirm
                     text="Quiz beenden"
                     title="Quiz beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich."
@@ -82,10 +82,10 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     size={0.7}
                     className={styles.checkButton}
                     confirmText="Quiz beenden und Antworten prüfen?"
-                    onConfirm={() => (doc.graded = true)}
+                    onConfirm={() => (doc.assessed = true)}
                 />
             )}
-            {doc.graded && (
+            {doc.assessed && (
                 <Confirm
                     text="Quiz zurücksetzen"
                     title="Alle Antworten zurücksetzen und Quiz neu beginnen"
@@ -96,7 +96,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     className={styles.checkButton}
                     confirmText="Wirklich zurücksetzen?"
                     onConfirm={() => {
-                        doc.graded = false;
+                        doc.assessed = false;
                         doc.resetAllAnswers();
                     }}
                 />

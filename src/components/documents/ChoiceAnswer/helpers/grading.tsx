@@ -1,13 +1,13 @@
 import {
-    ChoiceAnswerGrading,
-    ChoiceAnswerPoints,
-    ChoiceAnswerResult
+    ChoiceAnswerAssessment,
+    ChoiceAnswerScoring,
+    ChoiceAnswerCorrectness
 } from '@tdev-models/documents/ChoiceAnswer';
 import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import clsx from 'clsx';
 import _ from 'es-toolkit/compat';
 
-export type GradingFunction = (result: ChoiceAnswerResult, numMistakes: number) => ChoiceAnswerPoints;
+export type GradingFunction = (result: ChoiceAnswerCorrectness, numMistakes: number) => ChoiceAnswerScoring;
 
 export const points: (
     forCorrect?: number,
@@ -30,20 +30,20 @@ export const points: (
             </li>
         </ul>
     );
-    const template: ChoiceAnswerPoints = {
+    const template: ChoiceAnswerScoring = {
         maxPoints: forCorrect,
         pointsAchieved: 0,
-        gradingHint
+        scoringHint: gradingHint
     };
 
     return (result) => {
         switch (result) {
-            case ChoiceAnswerResult.Correct:
+            case ChoiceAnswerCorrectness.Correct:
                 return { ...template, pointsAchieved: forCorrect };
-            case ChoiceAnswerResult.PartiallyCorrect:
-            case ChoiceAnswerResult.Incorrect:
+            case ChoiceAnswerCorrectness.PartiallyCorrect:
+            case ChoiceAnswerCorrectness.Incorrect:
                 return { ...template, pointsAchieved: forIncorrect };
-            case ChoiceAnswerResult.NA:
+            case ChoiceAnswerCorrectness.NA:
                 return { ...template, pointsAchieved: forUnanswered };
             default:
                 console.warn(
@@ -83,7 +83,7 @@ export const multipleChoicePoints = (
         </ul>
     );
 
-    return (_: ChoiceAnswerResult, numMistakes: number) => {
+    return (_: ChoiceAnswerCorrectness, numMistakes: number) => {
         const points = maxPoints - numMistakes * deductionPerWrongChoice;
         const finalPoints = allowNegativeTotal ? points : Math.max(points, 0);
         return {
@@ -107,8 +107,8 @@ export const updateGrading = (
     gradingFunction?: GradingFunction
 ) => {
     let numMistakes = 0;
-    const grading: ChoiceAnswerGrading = {
-        result: ChoiceAnswerResult.NA
+    const grading: ChoiceAnswerAssessment = {
+        correctness: ChoiceAnswerCorrectness.NA
     };
     if (multiple) {
         const selectedOptions = new Set(doc.choices[questionIndex] || []);
@@ -119,12 +119,12 @@ export const updateGrading = (
         }).length;
         numMistakes = numOptions - numCorrectDecisions;
 
-        grading.result =
+        grading.correctness =
             numCorrectDecisions === numOptions
-                ? ChoiceAnswerResult.Correct
+                ? ChoiceAnswerCorrectness.Correct
                 : numCorrectDecisions > 0
-                  ? ChoiceAnswerResult.PartiallyCorrect
-                  : ChoiceAnswerResult.Incorrect;
+                  ? ChoiceAnswerCorrectness.PartiallyCorrect
+                  : ChoiceAnswerCorrectness.Incorrect;
     } else {
         if (correctOptions.size === 0) {
             console.warn(
@@ -133,16 +133,16 @@ export const updateGrading = (
         }
         const selectedOption = doc?.choices[questionIndex]?.[0];
         if (selectedOption === undefined) {
-            grading.result = ChoiceAnswerResult.NA;
+            grading.correctness = ChoiceAnswerCorrectness.NA;
         } else {
-            grading.result = correctOptions.has(selectedOption + 1) // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
-                ? ChoiceAnswerResult.Correct
-                : ChoiceAnswerResult.Incorrect;
+            grading.correctness = correctOptions.has(selectedOption + 1) // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
+                ? ChoiceAnswerCorrectness.Correct
+                : ChoiceAnswerCorrectness.Incorrect;
         }
     }
 
     if (gradingFunction) {
-        grading.points = gradingFunction(grading.result, numMistakes) ?? undefined;
+        grading.scoring = gradingFunction(grading.correctness, numMistakes) ?? undefined;
     }
 
     return grading;

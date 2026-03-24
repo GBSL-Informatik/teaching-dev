@@ -10,7 +10,7 @@ import { createRandomOrderMap } from '../helpers/shared';
 import styles from './styles.module.scss';
 import { QuizControls } from '../Controls';
 import { GradingFunction } from '../helpers/grading';
-import { QuizGrading } from '../Feedback';
+import { QuizScore } from '../Feedback';
 
 interface Props {
     id: string;
@@ -83,7 +83,7 @@ const Quiz = observer((props: Props) => {
         >
             <div className={styles.content}>{props.children}</div>
             <div className={styles.footer}>
-                <QuizGrading doc={doc} minPoints={props.minPoints} />
+                <QuizScore doc={doc} minPoints={props.minPoints} />
                 <QuizControls doc={doc} />
             </div>
         </QuizContext.Provider>

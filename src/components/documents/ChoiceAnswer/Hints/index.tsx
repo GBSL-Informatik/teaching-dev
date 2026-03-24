@@ -2,7 +2,7 @@ import { mdiClose, mdiCloseCircleOutline, mdiInformationOutline } from '@mdi/js'
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
-import ChoiceAnswerDocument, { ChoiceAnswerPoints } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, { ChoiceAnswerScoring } from '@tdev-models/documents/ChoiceAnswer';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -16,15 +16,15 @@ interface QuestionGradingHintProps {
     questionIndex?: number;
 }
 
-export const QuestionGradingHint = observer(({ doc, trigger, questionIndex }: QuestionGradingHintProps) => {
+export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: QuestionGradingHintProps) => {
     const ref = React.useRef<PopupActions>(null);
 
     if (!doc || questionIndex === undefined) {
         return;
     }
 
-    const grading = doc?.gradings.get(questionIndex);
-    if (!!grading?.points && !grading.points.gradingHint) {
+    const grading = doc?.assessments.get(questionIndex);
+    if (!!grading?.scoring && !grading.scoring.scoringHint) {
         // This question has a grading but no grading hint, so we don't show anything.
         return;
     }
@@ -60,11 +60,11 @@ export const QuestionGradingHint = observer(({ doc, trigger, questionIndex }: Qu
                 }
             >
                 <div>
-                    {!grading?.points && <p>Für diese Frage besteht keine Bewertung.</p>}
-                    {!!grading?.points?.gradingHint &&
-                        (typeof grading.points?.gradingHint === 'function'
-                            ? grading.points.gradingHint()
-                            : grading.points?.gradingHint)}
+                    {!grading?.scoring && <p>Für diese Frage besteht keine Bewertung.</p>}
+                    {!!grading?.scoring?.scoringHint &&
+                        (typeof grading.scoring?.scoringHint === 'function'
+                            ? grading.scoring.scoringHint()
+                            : grading.scoring?.scoringHint)}
                 </div>
             </Card>
         </Popup>

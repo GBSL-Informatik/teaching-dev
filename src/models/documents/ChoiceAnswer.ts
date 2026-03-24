@@ -21,22 +21,22 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-export enum ChoiceAnswerResult {
+export enum ChoiceAnswerCorrectness {
     Correct = 'correct',
     Incorrect = 'incorrect',
     PartiallyCorrect = 'partially_correct',
     NA = 'not_answered'
 }
 
-export interface ChoiceAnswerPoints {
+export interface ChoiceAnswerScoring {
     maxPoints: number;
     pointsAchieved: number;
-    gradingHint?: string | (() => ReactElement);
+    scoringHint?: string | (() => ReactElement);
 }
 
-export interface ChoiceAnswerGrading {
-    result: ChoiceAnswerResult;
-    points?: ChoiceAnswerPoints;
+export interface ChoiceAnswerAssessment {
+    correctness: ChoiceAnswerCorrectness;
+    scoring?: ChoiceAnswerScoring;
 }
 
 export class ModelMeta extends TypeMeta<'choice_answer'> {
@@ -53,7 +53,7 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
             choices: {},
             optionOrders: {},
             questionOrder: null,
-            graded: false
+            assessed: false
         };
     }
 }
@@ -62,16 +62,16 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
     @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
     @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
-    gradings = observable.map<number, ChoiceAnswerGrading>();
-    @observable accessor _graded: boolean;
+    assessments = observable.map<number, ChoiceAnswerAssessment>();
+    @observable accessor _assessed: boolean;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices = props.data?.choices || {};
         this.optionOrders = props.data?.optionOrders || {};
         this.questionOrder = props.data?.questionOrder || null;
-        this._graded = props.data?.graded || false;
-        this.gradings = observable.map<number, ChoiceAnswerGrading>();
+        this._assessed = props.data?.assessed || false;
+        this.assessments = observable.map<number, ChoiceAnswerAssessment>();
     }
 
     @action
@@ -79,7 +79,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         this.choices = data.choices;
         this.optionOrders = data.optionOrders;
         this.questionOrder = data.questionOrder;
-        this._graded = data.graded;
+        this._assessed = data.assessed;
 
         if (from === Source.LOCAL) {
             this.save();
@@ -91,7 +91,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
 
     @computed
     get canUpdateAnswer() {
-        return this.canEdit && !this._graded;
+        return this.canEdit && !this._assessed;
     }
 
     @action
@@ -167,24 +167,24 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         this.saveNow();
     }
 
-    get graded() {
-        return this._graded;
+    get assessed() {
+        return this._assessed;
     }
 
     @action
-    set graded(value: boolean) {
+    set assessed(value: boolean) {
         this.updatedAt = new Date();
-        this._graded = value;
+        this._assessed = value;
         this.saveNow();
     }
 
     @action
-    updateGrading(questionIndex: number, grading: ChoiceAnswerGrading): void {
-        this.gradings.set(questionIndex, grading);
+    updateAssessment(questionIndex: number, assessment: ChoiceAnswerAssessment): void {
+        this.assessments.set(questionIndex, assessment);
     }
 
-    getGrading(questionIndex: number): ChoiceAnswerGrading | undefined {
-        return this.gradings.get(questionIndex);
+    getAssessment(questionIndex: number): ChoiceAnswerAssessment | undefined {
+        return this.assessments.get(questionIndex);
     }
 
     get data(): TypeDataMapping['choice_answer'] {
@@ -192,7 +192,7 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
             choices: this.choices,
             optionOrders: this.optionOrders,
             questionOrder: this.questionOrder,
-            graded: this._graded
+            assessed: this._assessed
         };
     }
 
