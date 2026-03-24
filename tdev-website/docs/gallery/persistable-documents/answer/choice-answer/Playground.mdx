@@ -6,14 +6,25 @@ tags:
 
 import PermissionsPanel from "@tdev-components/PermissionsPanel"
 import BrowserWindow from '@tdev-components/BrowserWindow';
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
 import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
-import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/grading';
+import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/grading';
 
 # Playground
 Diese Seite dient nur der Entwicklung. Sie soll vor dem Merge entfernt werden.
 
+## Einzelfragen
+<ChoiceAnswer correct={[2]} title="Geo-Wissen">
+    > Was ist die Hauptstadt von Frankreich?
+    
+    1. Berlin
+    2. Paris
+    3. Rom
+    4. Madrid
+</ChoiceAnswer>
+
+## Quiz
 <Quiz id="07897c4d-c8ff-4d3c-b170-870bc31f651e" grading={points(1)} minPoints={0}>
   <ChoiceAnswer correct={[5]} grading={points(2)}>
       > In welchem Jahr war 2024?

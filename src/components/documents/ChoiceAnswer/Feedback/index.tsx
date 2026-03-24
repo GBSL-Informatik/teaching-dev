@@ -7,85 +7,6 @@ import styles from './styles.module.scss';
 import React from 'react';
 import clsx from 'clsx';
 
-export const FeedbackBadge = observer(
-    ({ doc, questionIndex }: { doc: ChoiceAnswerDocument; questionIndex: number }) => {
-        if (!doc) {
-            return;
-        }
-
-        const grading = doc.gradings.get(questionIndex);
-        if (!grading) {
-            return;
-        }
-
-        let icon;
-        let color;
-        switch (grading.result) {
-            case ChoiceAnswerResult.Correct:
-                icon = mdiCheckCircleOutline;
-                color = '--ifm-color-success';
-                break;
-            case ChoiceAnswerResult.PartiallyCorrect:
-                icon = mdiProgressCheck;
-                color = '--ifm-color-warning';
-                break;
-            case ChoiceAnswerResult.Incorrect:
-                icon = mdiCloseCircleOutline;
-                color = '--ifm-color-danger';
-                break;
-            case ChoiceAnswerResult.NA:
-                icon = mdiProgressQuestion;
-                color = '--ifm-color-info';
-                break;
-        }
-
-        return (
-            <div className={styles.feedbackBadge}>
-                {grading.points && (
-                    <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
-                        {doc.graded && <span>{grading.points.pointsAchieved}/</span>}
-                        {grading.points.maxPoints} {grading.points.maxPoints === 1 ? 'Punkt' : 'Punkte'}
-                    </span>
-                )}
-                {icon && doc.graded && <Icon path={icon} color={`var(${color})`} size={1} />}
-            </div>
-        );
-    }
-);
-
-export const QuizGrading = observer(
-    ({ doc, minPoints }: { doc: ChoiceAnswerDocument; minPoints?: number }) => {
-        if (!doc || doc.gradings.size === 0) {
-            return;
-        }
-
-        let totalPointsAchieved = 0;
-        let totalMaxPoints = 0;
-        doc.gradings.forEach((grading) => {
-            if (grading.points) {
-                totalPointsAchieved += grading.points.pointsAchieved;
-                totalMaxPoints += grading.points.maxPoints;
-            }
-        });
-
-        if (totalMaxPoints === 0) {
-            // No gradings with points, so we don't show anything.
-            return;
-        }
-
-        if (minPoints !== undefined) {
-            totalPointsAchieved = Math.max(totalPointsAchieved, minPoints);
-        }
-
-        return (
-            <span className={clsx('badge badge--primary', styles.pointsBadge)}>
-                {doc.graded && <span>{totalPointsAchieved}/</span>}
-                {totalMaxPoints} {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
-            </span>
-        );
-    }
-);
-
 const CorrectIcon = (): React.JSX.Element => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -154,13 +75,13 @@ const noAnswerAdmonition = (
     </Admonition>
 );
 
-interface Props {
+interface FeedbackAdmonitionProps {
     doc: ChoiceAnswerDocument;
     questionIndex: number;
 }
 
 // TODO: Should the grading decide its own visibility? Will quizzes prevent the entire grading, or just the result display?
-export const FeedbackAdmonition = observer(({ doc, questionIndex }: Props) => {
+export const FeedbackAdmonition = observer(({ doc, questionIndex }: FeedbackAdmonitionProps) => {
     if (!doc || !doc.graded) {
         return;
     }
@@ -182,4 +103,89 @@ export const FeedbackAdmonition = observer(({ doc, questionIndex }: Props) => {
         default:
             return;
     }
+});
+
+interface FeedbackBadgeProps {
+    doc: ChoiceAnswerDocument;
+    questionIndex: number;
+}
+
+export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProps) => {
+    if (!doc) {
+        return;
+    }
+
+    const grading = doc.gradings.get(questionIndex);
+    if (!grading) {
+        return;
+    }
+
+    let icon;
+    let color;
+    switch (grading.result) {
+        case ChoiceAnswerResult.Correct:
+            icon = mdiCheckCircleOutline;
+            color = '--ifm-color-success';
+            break;
+        case ChoiceAnswerResult.PartiallyCorrect:
+            icon = mdiProgressCheck;
+            color = '--ifm-color-warning';
+            break;
+        case ChoiceAnswerResult.Incorrect:
+            icon = mdiCloseCircleOutline;
+            color = '--ifm-color-danger';
+            break;
+        case ChoiceAnswerResult.NA:
+            icon = mdiProgressQuestion;
+            color = '--ifm-color-info';
+            break;
+    }
+
+    return (
+        <div className={styles.feedbackBadge}>
+            {grading.points && (
+                <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
+                    {doc.graded && <span>{grading.points.pointsAchieved}/</span>}
+                    {grading.points.maxPoints} {grading.points.maxPoints === 1 ? 'Punkt' : 'Punkte'}
+                </span>
+            )}
+            {icon && doc.graded && <Icon path={icon} color={`var(${color})`} size={1} />}
+        </div>
+    );
+});
+
+interface QuizGradingProps {
+    doc: ChoiceAnswerDocument;
+    minPoints?: number;
+}
+
+export const QuizGrading = observer(({ doc, minPoints }: QuizGradingProps) => {
+    if (!doc || doc.gradings.size === 0) {
+        return;
+    }
+
+    let totalPointsAchieved = 0;
+    let totalMaxPoints = 0;
+    doc.gradings.forEach((grading) => {
+        if (grading.points) {
+            totalPointsAchieved += grading.points.pointsAchieved;
+            totalMaxPoints += grading.points.maxPoints;
+        }
+    });
+
+    if (totalMaxPoints === 0) {
+        // No gradings with points, so we don't show anything.
+        return;
+    }
+
+    if (minPoints !== undefined) {
+        totalPointsAchieved = Math.max(totalPointsAchieved, minPoints);
+    }
+
+    return (
+        <span className={clsx('badge badge--primary', styles.pointsBadge)}>
+            {doc.graded && <span>{totalPointsAchieved}/</span>}
+            {totalMaxPoints} {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
+        </span>
+    );
 });

@@ -1,0 +1,10 @@
+.feedbackBadge {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+
+    .pointsBadge {
+        margin-right: 0.5em;
+    }
+}

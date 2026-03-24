@@ -1,5 +1,4 @@
-$container-padding-top-bottom: 0.7em;
-$container-padding-left-right: 1em;
+@use '../_vars' as *;
 
 .choiceAnswerContainer {
     position: relative;
@@ -60,13 +59,7 @@ $container-padding-left-right: 1em;
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 0.5em;
-        }
-
-        .controlsContainer {
-            position: relative;
-            top: 0;
-            right: 0;
+            gap: 0.2em;
         }
     }
 }
@@ -112,73 +105,5 @@ $container-padding-left-right: 1em;
             opacity: 0.6;
             transition: opacity $btnRemoveAnswerTransitionDuration;
         }
-    }
-}
-
-.quizContainer {
-    display: flex;
-    flex-direction: column;
-}
-
-.quizFooter {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 0.5em;
-    gap: 0.5em;
-}
-
-.controlsContainer {
-    position: absolute;
-    top: $container-padding-top-bottom;
-    right: $container-padding-left-right;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5em;
-}
-
-.checkButton {
-    z-index: 9999;
-}
-
-.quizCheckOrResetButtonContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-}
-
-.feedbackBadge {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-
-    .pointsBadge {
-        margin-right: 0.5em;
-    }
-}
-
-.gradingHintTrigger {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.gradingHintPopupHeader {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-
-    h3 {
-        margin: 0;
-    }
-
-    .content {
-        padding: 1em;
     }
 }

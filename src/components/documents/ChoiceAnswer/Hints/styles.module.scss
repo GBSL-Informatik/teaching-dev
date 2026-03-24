@@ -1,0 +1,22 @@
+.gradingHintTrigger {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.gradingHintPopupHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 {
+        margin: 0;
+    }
+
+    .content {
+        padding: 1em;
+    }
+}

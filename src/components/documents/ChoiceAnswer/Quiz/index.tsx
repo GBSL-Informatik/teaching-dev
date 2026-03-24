@@ -6,11 +6,11 @@ import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import { isBrowser } from 'es-toolkit';
 import Loader from '@tdev-components/Loader';
-import { createRandomOrderMap } from './helpers';
+import { createRandomOrderMap } from '../helpers/shared';
 import styles from './styles.module.scss';
-import { QuizCheckOrResetButton } from './Controls';
-import { GradingFunction } from './grading';
-import { QuizGrading } from './Feedback';
+import { QuizControls } from '../Controls';
+import { GradingFunction } from '../helpers/grading';
+import { QuizGrading } from '../Feedback';
 
 interface Props {
     id: string;
@@ -81,10 +81,10 @@ const Quiz = observer((props: Props) => {
                 setFocussedQuestion: setFocussedQuestion
             }}
         >
-            <div className={styles.quizContainer}>{props.children}</div>
-            <div className={styles.quizFooter}>
+            <div className={styles.content}>{props.children}</div>
+            <div className={styles.footer}>
                 <QuizGrading doc={doc} minPoints={props.minPoints} />
-                <QuizCheckOrResetButton doc={doc} />
+                <QuizControls doc={doc} />
             </div>
         </QuizContext.Provider>
     );

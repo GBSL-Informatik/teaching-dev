@@ -7,15 +7,15 @@ import styles from './styles.module.scss';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import { QuizContext } from './Quiz';
+import { QuizContext } from '../Quiz';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
 import _ from 'es-toolkit/compat';
-import { createRandomOrderMap } from './helpers';
-import QuestionControls from './Controls';
-import { FeedbackAdmonition, FeedbackBadge } from './Feedback';
-import { GradingFunction, updateGrading as grade } from './grading';
-import { QuestionGradingHint } from './Hints';
+import { createRandomOrderMap } from '../helpers/shared';
+import QuestionControls from '../Controls';
+import { FeedbackAdmonition, FeedbackBadge } from '../Feedback';
+import { GradingFunction, updateGrading as grade } from '../helpers/grading';
+import { QuestionGradingHint } from '../Hints';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -169,6 +169,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                                 questionIndex={questionIndex}
                                 focussedQuestion={parentProps.focussedQuestion === questionIndex}
                                 inQuiz={props.inQuiz}
+                                inHeader
                             />
                         )}
                         <FeedbackBadge doc={doc} questionIndex={questionIndex} />
@@ -182,6 +183,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     questionIndex={questionIndex}
                     focussedQuestion={parentProps.focussedQuestion === questionIndex}
                     inQuiz={props.inQuiz}
+                    inHeader={false}
                 />
             )}
 

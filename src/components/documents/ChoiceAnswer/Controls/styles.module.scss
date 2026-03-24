@@ -1,0 +1,27 @@
+@use '../_vars' as *;
+
+.questionControlsContainer {
+    position: absolute;
+    top: $container-padding-top-bottom;
+    right: $container-padding-left-right;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+
+    &.inHeader {
+        position: relative;
+        top: 0;
+        right: 0;
+    }
+}
+
+.quizControlsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.checkButton {
+    z-index: 9999;
+}
