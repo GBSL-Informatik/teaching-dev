@@ -10,22 +10,22 @@ import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import styles from './styles.module.scss';
 
-interface QuestionGradingHintProps {
+interface QuestionScoringHintProps {
     doc?: ChoiceAnswerDocument;
     trigger?: React.ReactNode;
     questionIndex?: number;
 }
 
-export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: QuestionGradingHintProps) => {
+export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: QuestionScoringHintProps) => {
     const ref = React.useRef<PopupActions>(null);
 
     if (!doc || questionIndex === undefined) {
         return;
     }
 
-    const grading = doc?.assessments.get(questionIndex);
-    if (!!grading?.scoring && !grading.scoring.scoringHint) {
-        // This question has a grading but no grading hint, so we don't show anything.
+    const assessment = doc?.assessments.get(questionIndex);
+    if (!!assessment?.scoring && !assessment.scoring.scoringHint) {
+        // This question has a scoring but no scoring hint, so we don't show anything.
         return;
     }
 
@@ -60,11 +60,11 @@ export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: Qu
                 }
             >
                 <div>
-                    {!grading?.scoring && <p>Für diese Frage besteht keine Bewertung.</p>}
-                    {!!grading?.scoring?.scoringHint &&
-                        (typeof grading.scoring?.scoringHint === 'function'
-                            ? grading.scoring.scoringHint()
-                            : grading.scoring?.scoringHint)}
+                    {!assessment?.scoring && <p>Für diese Frage besteht keine Bewertung.</p>}
+                    {!!assessment?.scoring?.scoringHint &&
+                        (typeof assessment.scoring?.scoringHint === 'function'
+                            ? assessment.scoring.scoringHint()
+                            : assessment.scoring?.scoringHint)}
                 </div>
             </Card>
         </Popup>

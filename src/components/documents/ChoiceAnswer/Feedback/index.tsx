@@ -81,7 +81,6 @@ interface FeedbackAdmonitionProps {
     questionIndex: number;
 }
 
-// TODO: Should the grading decide its own visibility? Will quizzes prevent the entire grading, or just the result display?
 export const FeedbackAdmonition = observer(({ doc, questionIndex }: FeedbackAdmonitionProps) => {
     if (!doc || !doc.assessed) {
         return;
@@ -189,7 +188,7 @@ export const QuizScore = observer(({ doc, minPoints }: QuizScoreProps) => {
     });
 
     if (totalMaxPoints === 0) {
-        // No gradings with points, so we don't show anything.
+        // No scoring, so we don't show anything.
         return;
     }
 

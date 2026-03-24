@@ -5,7 +5,7 @@ import ChoiceAnswerDocument, {
 import { ScoringFunction } from './scoring';
 import _ from 'es-toolkit/compat';
 
-export const updateAssessment = (
+export const assess = (
     doc: ChoiceAnswerDocument,
     multiple: boolean,
     questionIndex: number,

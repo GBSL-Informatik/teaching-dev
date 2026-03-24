@@ -18,13 +18,13 @@ import { createRandomOrderMap } from '../helpers/shared';
 import QuestionControls from '../Controls';
 import { FeedbackAdmonition, FeedbackBadge } from '../Feedback';
 import { ScoringFunction } from '../helpers/scoring';
-import { updateAssessment } from '../helpers/assessment';
+import { assess } from '../helpers/assessment';
 
 export interface ChoiceAnswerProps {
     id: string;
     title?: string;
     correct?: number[];
-    grading?: ScoringFunction;
+    scoring?: ScoringFunction;
     questionIndex?: number;
     inQuiz?: boolean;
     multiple?: boolean;
@@ -72,7 +72,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const randomizeOptions =
         props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
     const isBrowser = useIsBrowser();
-    const [gradingStyle, setGradingStyle] = React.useState({});
+    const [feedbackStyle, setFeedbackStyle] = React.useState({});
 
     React.useEffect(() => {
         if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
@@ -89,13 +89,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
 
         if (props.correct === undefined) {
-            // If no correct options are given, we assume that this question doesn't support grading.
+            // If no correct options are given, we assume that this question doesn't support assessment.
             return;
         }
         const correctOptions = new Set(props.correct);
 
-        const scoringFunction = props.grading ?? parentProps.grading;
-        const grading = updateAssessment(
+        const scoringFunction = props.scoring ?? parentProps.scoring;
+        const assessment = assess(
             doc,
             props.multiple ?? false,
             questionIndex,
@@ -103,13 +103,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             props.numOptions,
             scoringFunction
         );
-        setGradingStyle({
-            [styles.correct]: doc.assessed && grading.correctness === ChoiceAnswerCorrectness.Correct,
+        setFeedbackStyle({
+            [styles.correct]: doc.assessed && assessment.correctness === ChoiceAnswerCorrectness.Correct,
             [styles.partiallyCorrect]:
-                doc.assessed && grading.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
-            [styles.incorrect]: doc.assessed && grading.correctness === ChoiceAnswerCorrectness.Incorrect
+                doc.assessed && assessment.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
+            [styles.incorrect]: doc.assessed && assessment.correctness === ChoiceAnswerCorrectness.Incorrect
         });
-        doc.updateAssessment(questionIndex, grading);
+        doc.updateAssessment(questionIndex, assessment);
     }, [doc, doc?.choices, doc?.assessed]);
 
     if (!doc) {
@@ -160,11 +160,11 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 
     return (
         <div
-            className={clsx('card', styles.choiceAnswerContainer, gradingStyle)}
+            className={clsx('card', styles.choiceAnswerContainer, feedbackStyle)}
             style={{ order: questionOrder }}
         >
             {title && (
-                <div className={clsx('card__header', styles.header, gradingStyle)}>
+                <div className={clsx('card__header', styles.header, feedbackStyle)}>
                     <span className={clsx(styles.title)}>{title}</span>
                     <div className={clsx(styles.controlsAndFeedback)}>
                         {!!props.correct && (

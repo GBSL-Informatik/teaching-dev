@@ -18,7 +18,7 @@ interface Props {
     hideQuestionNumbers?: boolean;
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
-    grading?: ScoringFunction;
+    scoring?: ScoringFunction;
     minPoints?: number;
     numQuestions: number;
     children?: React.ReactNode[];
@@ -38,7 +38,7 @@ export const QuizContext = React.createContext({
     readonly?: boolean;
     hideQuestionNumbers?: boolean;
     randomizeQuestions?: boolean;
-    grading?: ScoringFunction;
+    scoring?: ScoringFunction;
     questionOrder: { [originalQuestionIndex: number]: number } | null;
     randomizeOptions?: boolean;
     focussedQuestion: number;
@@ -76,7 +76,7 @@ const Quiz = observer((props: Props) => {
                 randomizeQuestions: props.randomizeQuestions,
                 questionOrder: doc.data.questionOrder,
                 randomizeOptions: props.randomizeOptions,
-                grading: props.grading,
+                scoring: props.scoring,
                 focussedQuestion: focussedQuestion,
                 setFocussedQuestion: setFocussedQuestion
             }}
