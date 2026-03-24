@@ -12,58 +12,55 @@ interface ControlsProps {
     questionIndex: number;
     focussedQuestion?: boolean;
     inQuiz?: boolean;
-    inHeader?: boolean;
 }
 
-const QuestionControls = observer(
-    ({ doc, focussedQuestion: isFocussedQuestion, inQuiz, inHeader }: ControlsProps) => {
-        if (!doc) {
-            return;
-        }
-
-        const syncStatus = isFocussedQuestion && <SyncStatus model={doc} size={0.7} />;
-
-        const checkOrResetButton = !inQuiz && (
-            <>
-                {!doc.assessed && (
-                    <Button
-                        text="Prüfen"
-                        title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
-                        color="success"
-                        icon={mdiCheckboxMarkedCircleAutoOutline}
-                        iconSide="left"
-                        size={0.7}
-                        className={styles.checkButton}
-                        onClick={() => (doc.assessed = true)}
-                    />
-                )}
-                {doc.assessed && (
-                    <Confirm
-                        text="Zurücksetzen"
-                        title="Antwort zurücksetzen."
-                        color="secondary"
-                        icon={mdiRestore}
-                        iconSide="left"
-                        size={0.7}
-                        className={styles.checkButton}
-                        confirmText="Wirklich zurücksetzen?"
-                        onConfirm={() => {
-                            doc.assessed = false;
-                            doc.resetAllAnswers();
-                        }}
-                    />
-                )}
-            </>
-        );
-
-        return (
-            <div className={clsx(styles.questionControlsContainer, { [styles.inHeader]: inHeader })}>
-                {syncStatus}
-                {checkOrResetButton}
-            </div>
-        );
+const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, inQuiz }: ControlsProps) => {
+    if (!doc) {
+        return;
     }
-);
+
+    const syncStatus = isFocussedQuestion && <SyncStatus model={doc} size={0.7} />;
+
+    const checkOrResetButton = !inQuiz && (
+        <>
+            {!doc.assessed && (
+                <Button
+                    text="Prüfen"
+                    title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
+                    color="success"
+                    icon={mdiCheckboxMarkedCircleAutoOutline}
+                    iconSide="left"
+                    size={0.7}
+                    className={styles.checkButton}
+                    onClick={() => (doc.assessed = true)}
+                />
+            )}
+            {doc.assessed && (
+                <Confirm
+                    text="Zurücksetzen"
+                    title="Antwort zurücksetzen."
+                    color="secondary"
+                    icon={mdiRestore}
+                    iconSide="left"
+                    size={0.7}
+                    className={styles.checkButton}
+                    confirmText="Wirklich zurücksetzen?"
+                    onConfirm={() => {
+                        doc.assessed = false;
+                        doc.resetAllAnswers();
+                    }}
+                />
+            )}
+        </>
+    );
+
+    return (
+        <div className={clsx(styles.questionControlsContainer)}>
+            {syncStatus}
+            {checkOrResetButton}
+        </div>
+    );
+});
 
 interface QuizControlsProps {
     doc: ChoiceAnswerDocument;

@@ -1,19 +1,9 @@
-@use '../_vars' as *;
-
 .questionControlsContainer {
-    position: absolute;
-    top: $container-padding-top-bottom;
-    right: $container-padding-left-right;
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 0.5em;
-
-    &.inHeader {
-        position: relative;
-        top: 0;
-        right: 0;
-    }
 }
 
 .quizControlsContainer {

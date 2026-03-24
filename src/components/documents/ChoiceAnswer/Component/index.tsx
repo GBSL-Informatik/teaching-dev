@@ -157,7 +157,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                 ? `Frage ${questionNumberToDisplay} – ${props.title}`
                 : `Frage ${questionNumberToDisplay}`
             : props.title;
-    const displayTitle = !canonicalTitle && doc.hasQuestionsWithScoring ? 'Frage' : canonicalTitle;
+    const displayTitle = !canonicalTitle ? 'Frage' : canonicalTitle;
 
     return (
         <div
@@ -174,7 +174,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                                 questionIndex={questionIndex}
                                 focussedQuestion={parentProps.focussedQuestion === questionIndex}
                                 inQuiz={props.inQuiz}
-                                inHeader
                             />
                         )}
                         <FeedbackBadge doc={doc} questionIndex={questionIndex} />
@@ -187,7 +186,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     questionIndex={questionIndex}
                     focussedQuestion={parentProps.focussedQuestion === questionIndex}
                     inQuiz={props.inQuiz}
-                    inHeader={false}
                 />
             )}
 
