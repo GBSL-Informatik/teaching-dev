@@ -348,13 +348,9 @@ import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
 import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
 ```
 
-## TODO
-- Bei MC-Aufgaben sind Teilpunktzahlen möglich.
-- Ein Quiz kann auf ein Karussell reduziert werden, um Platz zu sparen.
-- Der Korrekturknopf eines Quiz kann versteckt oder mit einer Permission geschützt werden.
-
 ## Future Work
-- Es könnte nützlich sein, das Zurücksetzen eines abgeschlossenen Quiz zu unterbinden oder mit einer Permission zu schützen. Falls kein Zurücksetzen möglich ist, sollte statt der Confirmation vermutlich ein Popup angezeigt werden, um Missverständnisse zu vermeiden.
+- Ein Quiz soll auf ein Karussell reduziert werden können, um Platz zu sparen.
+- Der Korrektur-Knopf sollte mit einer Permission geschützt werden können. Weiter könnte es nützlich sein, auch das Zurücksetzen eines abgeschlossenen Quiz mit einer Permission zu schützen. In diese Fall sollte statt der Confirmation vermutlich ein Popup angezeigt werden, um Missverständnisse zu vermeiden.
 - Die `correct`-Logik von MC-Fragen könnte so ausgeweitet werden, dass mehrere Korrekt-Sets möglich sind. Das könnte für Fragen der Art `Wählen Sie aus den folgenden 12 Protokollen zwei aus, die zur selben Schicht des TCP/IP-Stacks gehören` nützlich sein. In dem Zusammenhang könnte es auch sinnvoll sein, eine maximale Anzahl an auswählbaren Antworten zu definieren (z.B. `maxSelectable={2}`), um die Schüler:innen darauf hinzuweisen, dass sie nur zwei Antworten auswählen dürfen.
 - Bei jeder Frage kann eine Funktion angegeben werden, die anhand der Bewertung einen entsprechenden Antworthinweis liefert. Bei einer richtigen Antwort könnte so z.B. eine vertiefende Erklärung geliefert, bei einer falschen Antwort ein Lösungshinweis angeboten werden. Dieser Funktion sollten möglichst viele Bewertungsinformationen zur Verfügung stehen (wobei zu berücksichtigen ist, dass es in Zukunft nicht unbedingt möglich sein wird, auf Ebene der einzelnen Antwortoption zu entscheiden, ob diese korrekt ist oder nicht). Es sollen zudem sinnvolle Default-Funktionen bereitgestellt werden, wie dies beispielsweise bei der `ScoringFunction` der Fall ist.
 - Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
