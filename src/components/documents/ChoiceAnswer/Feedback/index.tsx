@@ -147,10 +147,6 @@ export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProp
             break;
     }
 
-    const questionsWithScoringExist = Array.from(doc.assessments.values()).some(
-        (assessment) => assessment.scoring !== undefined
-    );
-
     return (
         <div className={styles.feedbackBadge}>
             {assessment.scoring && (
@@ -166,7 +162,7 @@ export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProp
                     }
                 />
             )}
-            {!assessment.scoring && questionsWithScoringExist && (
+            {!assessment.scoring && doc.hasQuestionsWithScoring && (
                 <QuestionScoringHint doc={doc} questionIndex={questionIndex} />
             )}
             {icon && doc.assessed && <Icon path={icon} color={`var(${color})`} size={1} />}
