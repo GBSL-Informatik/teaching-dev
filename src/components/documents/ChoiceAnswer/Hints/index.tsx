@@ -33,7 +33,7 @@ export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: Qu
         <Popup
             trigger={
                 trigger || (
-                    <span className={clsx(styles.gradingHintTrigger)}>
+                    <span className={clsx(styles.scoringHintTrigger)}>
                         <Icon path={mdiInformationOutline} size={0.7} />
                     </span>
                 )
@@ -48,7 +48,7 @@ export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: Qu
         >
             <Card
                 header={
-                    <div className={clsx(styles.gradingHintPopupHeader)}>
+                    <div className={clsx(styles.scoringHintPopupHeader)}>
                         <h3>Bewertung</h3>
                         <Button
                             icon={mdiCloseCircleOutline}

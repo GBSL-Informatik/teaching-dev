@@ -19,8 +19,6 @@ Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeig
 Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
 
 ```md
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
-
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
     > Wir gilt als Erfinder des World Wide Web (WWW)?
 
@@ -49,8 +47,6 @@ Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `corr
 Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
 
 ```md
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
-
 <ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
     > Wir gilt als Erfinder des World Wide Web (WWW)?
 
@@ -79,8 +75,6 @@ Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  g
 Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
 
 ```md
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
-
 <ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
     Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
     
@@ -96,8 +90,6 @@ import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
 Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
 
 ```md
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
-
 Hier steht etwas Text über der Frage.
 
 <ChoiceAnswer correct={[1, 4, 5]} multiple title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
@@ -151,8 +143,6 @@ Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Au
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
 ```md
-import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
-
 <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
     > Die Erde ist flach.
 </TrueFalseAnswer>
@@ -172,11 +162,6 @@ Bei Wahr/Falsch-Fragen gibt es keine Randomisierung der Antwortmöglichkeiten, d
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```html
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
-import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
-import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
-import { points } from '@tdev-components/documents/ChoiceAnswer/grading';
-
 <Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" scoring={points(1)}>
   <ChoiceAnswer correct={[5]} scoring={points(2)}>
       > In welchem Jahr war 2024?
@@ -250,16 +235,12 @@ import { points } from '@tdev-components/documents/ChoiceAnswer/grading';
     </Quiz>
 </BrowserWindow>
 
-Dabei kann für das Quiz eine `grading`-Funktion angegeben werden, die als Standard-Bewertungsfunktion für alle enthaltenen Fragen gilt. Diese kann bei Bedarf durch die `grading`-Property der einzelnen Fragen überschrieben werden (siehe obiges Beispiel). In diesem Fall gilt die spezifische Bewertungsfunktion nur für diese eine Frage, während die anderen Fragen weiterhin die Bewertungsfunktion des übergeordneten Quizzes verwenden. Es kann entweder eine vordefinierte Bewertungsfunktion (z.B. `points(1, 0, 0)`) oder eine benutzerdefinierte Funktion verwendet werden. Mehr dazu [hier]()
+Dabei kann für das Quiz eine `scoring`-Funktion angegeben werden, die als Standard-Bewertungsfunktion für alle enthaltenen Fragen gilt. Diese kann bei Bedarf durch die `scoring`-Property der einzelnen Fragen überschrieben werden (siehe obiges Beispiel). In diesem Fall gilt die spezifische Bewertungsfunktion nur für diese eine Frage, während die anderen Fragen weiterhin die Bewertungsfunktion des übergeordneten Quizzes verwenden. Es kann entweder eine vordefinierte Bewertungsfunktion (z.B. `points(1, 0, 0)`) oder eine benutzerdefinierte Funktion verwendet werden. Mehr dazu [hier]()
 
 ### Randomisierung
 Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten randomisiert werden. Das Verhalten ist analog zu den einzelnen ChoiceAnswer-Fragen (siehe oben). Wird `randomizeOptions` auf Quiz-Ebene gesetzt, gilt dies für alle enthaltenen Fragen (wobei die Antwortoptionen von Wahr/Falsch-Fragen nie randomisiert werden).
 
 ```html
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer';
-import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
-import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
-
 <Quiz randomizeQuestions randomizeOptions id="040006ed-1198-4d0d-bd9d-50822c45cd76">
     <ChoiceAnswer correct={[5]}>
         > In welchem Jahr war 2024?
@@ -339,7 +320,7 @@ import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
 |------------------|-------------------|---------------------------------------------------|
 | `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
 | `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
-| `grading` | `GradingFunction` | Übersteuert die `GradingFunction` des übergeordneten Quizzes für diese spezifische Frage. |
+| `scoring` | `ScoringFunction` | Übersteuert die `ScoringFunction` des übergeordneten Quizzes für diese spezifische Frage. |
 | `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
 | `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
 
@@ -349,15 +330,23 @@ import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
 | `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
 | `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
 | `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
-| `grading` | `GradingFunction` | Eine vordefinierte oder benutzerdefinierte `GradingFunction`. |
+| `scoring` | `ScoringFunction` | Eine vordefinierte oder benutzerdefinierte `ScoringFunction`. |
 | `minPoints` | `number` | Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird. Standard: `undefined`. |
 
-### `GradingFunction`
-Eine `GradingFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Grading-Funktionen sind:
+### `ScoringFunction`
+Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Scoring-Funktionen sind:
 
 - `points(pointsForCorrect: number, pointsForIncorrect: number, pointsForUnanswered: number)`: Bewertet die Frage mit einer festen Punktzahl für richtig, falsch und nicht beantwortet (z.B. `points(1, 0, 0)` für 1 Punkt bei richtiger Antwort und 0 Punkte bei falscher oder nicht beantworteter Frage). Die Standard-Wertung (`points()`) entspricht `points(1, 0, 0)`.
 - `multipleChoicePoints(maxPoints: number, deductionPerWrongChoice: number, allowNegativeTotal: boolean = false)`: Bewertet eine Frage mit der gegebenen Maximalpunktzahl, minus einer Abzugsrate pro falscher Entscheidung (fälschlicherweise ausgewählt, oder fälschlicherweise nicht ausgewählt). Standardmässig wird die Frage nicht mit weniger als 0 Punkten bewertet, was mit `allowNegativeTotal` jedoch übersteuert werden kann.
 - `noPoints()`: Bewertet die Frage ohne Punktevergabe (richtig/falsch wird aber weiterhin angezeigt). Diese Funktion ist dann sinnvoll, wenn für das übergeordnete Quiz eine Bewertungsfunktion definiert ist, die aber für diese spezifische Frage nicht gelten soll.
+
+## Imports
+```ts
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+```
 
 ## TODO
 - Bei MC-Aufgaben sind Teilpunktzahlen möglich.
@@ -367,7 +356,7 @@ Eine `GradingFunction` ist eine Funktion, die die Bewertung einer Frage oder ein
 ## Future Work
 - Es könnte nützlich sein, das Zurücksetzen eines abgeschlossenen Quiz zu unterbinden oder mit einer Permission zu schützen. Falls kein Zurücksetzen möglich ist, sollte statt der Confirmation vermutlich ein Popup angezeigt werden, um Missverständnisse zu vermeiden.
 - Die `correct`-Logik von MC-Fragen könnte so ausgeweitet werden, dass mehrere Korrekt-Sets möglich sind. Das könnte für Fragen der Art `Wählen Sie aus den folgenden 12 Protokollen zwei aus, die zur selben Schicht des TCP/IP-Stacks gehören` nützlich sein. In dem Zusammenhang könnte es auch sinnvoll sein, eine maximale Anzahl an auswählbaren Antworten zu definieren (z.B. `maxSelectable={2}`), um die Schüler:innen darauf hinzuweisen, dass sie nur zwei Antworten auswählen dürfen.
-- Bei jeder Frage kann eine Funktion angegeben werden, die anhand der Bewertung einen entsprechenden Antworthinweis liefert. Bei einer richtigen Antwort könnte so z.B. eine vertiefende Erklärung geliefert, bei einer falschen Antwort ein Lösungshinweis angeboten werden. Dieser Funktion sollten möglichst viele Bewertungsinformationen zur Verfügung stehen (wobei zu berücksichtigen ist, dass es in Zukunft nicht unbedingt möglich sein wird, auf Ebene der einzelnen Antwortoption zu entscheiden, ob diese korrekt ist oder nicht). Es sollen zudem sinnvolle Default-Funktionen bereitgestellt werden, wie dies beispielsweise bei der `GradingFunction` der Fall ist.
+- Bei jeder Frage kann eine Funktion angegeben werden, die anhand der Bewertung einen entsprechenden Antworthinweis liefert. Bei einer richtigen Antwort könnte so z.B. eine vertiefende Erklärung geliefert, bei einer falschen Antwort ein Lösungshinweis angeboten werden. Dieser Funktion sollten möglichst viele Bewertungsinformationen zur Verfügung stehen (wobei zu berücksichtigen ist, dass es in Zukunft nicht unbedingt möglich sein wird, auf Ebene der einzelnen Antwortoption zu entscheiden, ob diese korrekt ist oder nicht). Es sollen zudem sinnvolle Default-Funktionen bereitgestellt werden, wie dies beispielsweise bei der `ScoringFunction` der Fall ist.
 - Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
 - Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
 - Für Prüfungen könnte es nützlich sein, das Konzept des Quiz zu erweitern, um nicht nur `ChoiceAnswer`-Fragen zu unterstützen, sondern auch andere Fragetypen wie z.B. `TextAnswer` oder `CodeAnswer`. So könnte eine Prüfung aus einem einzigen Quiz bestehen, in dem auch Fragen vorkommen, die nicht automatisch korrigiert werden können. Der Vorteil dabei wäre, dass so auch diese Fragen in die Randomisierung der Reihenfolge mit einbezogen werden könnten. Zudem könnte ein Report (PDF, druckbar) generiert werden, der die Ergebnisse aller automatisch korrigierten Fragen enthält, und für das Feedback zu den manuell zu korrigierenden Fragen einen Platzhalter lässt.
