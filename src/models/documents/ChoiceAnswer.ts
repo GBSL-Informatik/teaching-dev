@@ -187,6 +187,11 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         return this.assessments.get(questionIndex);
     }
 
+    @computed
+    get hasQuestionsWithScoring(): boolean {
+        return Array.from(this.assessments.values()).some((assessment) => !!assessment.scoring);
+    }
+
     get data(): TypeDataMapping['choice_answer'] {
         return {
             choices: this.choices,

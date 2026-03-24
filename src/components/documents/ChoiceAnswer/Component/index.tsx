@@ -151,21 +151,22 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         (parentProps.randomizeQuestions
             ? (parentProps.questionOrder?.[questionIndex] ?? questionIndex)
             : questionIndex) + 1;
-    const title =
+    const canonicalTitle =
         props.inQuiz && !parentProps.hideQuestionNumbers
             ? props.title
                 ? `Frage ${questionNumberToDisplay} – ${props.title}`
                 : `Frage ${questionNumberToDisplay}`
             : props.title;
+    const displayTitle = !canonicalTitle && doc.hasQuestionsWithScoring ? 'Frage' : canonicalTitle;
 
     return (
         <div
             className={clsx('card', styles.choiceAnswerContainer, feedbackStyle)}
             style={{ order: questionOrder }}
         >
-            {title && (
+            {displayTitle && (
                 <div className={clsx('card__header', styles.header, feedbackStyle)}>
-                    <span className={clsx(styles.title)}>{title}</span>
+                    <span className={clsx(styles.title)}>{displayTitle}</span>
                     <div className={clsx(styles.controlsAndFeedback)}>
                         {!!props.correct && (
                             <QuestionControls
@@ -180,7 +181,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     </div>
                 </div>
             )}
-            {!title && !!props.correct && (
+            {!displayTitle && !!props.correct && (
                 <QuestionControls
                     doc={doc}
                     questionIndex={questionIndex}
@@ -204,7 +205,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     <div className={styles.optionsBlock}>{optionsBlock}</div>
                 </ChoiceAnswerContext.Provider>
                 {afterBlock}
-                {!title && <FeedbackAdmonition doc={doc} questionIndex={questionIndex} />}
+                {!displayTitle && <FeedbackAdmonition doc={doc} questionIndex={questionIndex} />}
             </div>
         </div>
     );
