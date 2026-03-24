@@ -304,7 +304,7 @@ In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene
 Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten innerhalb jeder Frage randomisiert. Die Randomisierung funktioniert dabei genauso wie bei den Standalone-Fragen (siehe oben).
 
 ## Eigenschaften und Funktionen
-### Eigenschaften ChoiceAnswer
+### Eigenschaften der `ChoiceAnswer`
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
 | `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
@@ -313,21 +313,23 @@ Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz 
 | `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
 | `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
 
-### Eigenschaften Quiz
+### Eigenschaften des `Quiz`
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
 | `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
 | `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
-| `carrousel` (TODO) | Flag | Wenn gesetzt, werden die Fragen in einem Karussell dargestellt, sodass immer nur eine Frage sichtbar ist. |
 | `scoring` | `ScoringFunction` | Eine vordefinierte oder benutzerdefinierte `ScoringFunction`. |
 | `minPoints` | `number` | Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird. Standard: `undefined`. |
 
 ### `ScoringFunction`
 Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Scoring-Funktionen sind:
 
-- `points(pointsForCorrect: number, pointsForIncorrect: number, pointsForUnanswered: number)`: Bewertet die Frage mit einer festen Punktzahl für richtig, falsch und nicht beantwortet (z.B. `points(1, 0, 0)` für 1 Punkt bei richtiger Antwort und 0 Punkte bei falscher oder nicht beantworteter Frage). Die Standard-Wertung (`points()`) entspricht `points(1, 0, 0)`.
-- `multipleChoicePoints(maxPoints: number, deductionPerWrongChoice: number, allowNegativeTotal: boolean = false)`: Bewertet eine Frage mit der gegebenen Maximalpunktzahl, minus einer Abzugsrate pro falscher Entscheidung (fälschlicherweise ausgewählt, oder fälschlicherweise nicht ausgewählt). Standardmässig wird die Frage nicht mit weniger als 0 Punkten bewertet, was mit `allowNegativeTotal` jedoch übersteuert werden kann.
-- `noPoints()`: Bewertet die Frage ohne Punktevergabe (richtig/falsch wird aber weiterhin angezeigt). Diese Funktion ist dann sinnvoll, wenn für das übergeordnete Quiz eine Bewertungsfunktion definiert ist, die aber für diese spezifische Frage nicht gelten soll.
+
+| Funktion | Beschreibung |
+| ------------------|-------------------|
+| `points(forCorrect, forIncorrect, forUnanswered)` | Bewertet die Frage mit einer festen Punktzahl für richtig, falsch und nicht beantwortet. Die Standard-Wertung (`points()`) entspricht `points(1, 0, 0)`.<br/><br/>**Beispiel:** `points(1, -0.5, 0)` bewertet die Frage mit 1 Punkt bei richtiger Antwort, -0.5 Punkte bei falscher Antwort und 0 Punkten wenn nicht beantwortet. |
+| `multipleChoicePoints(max, deduction, allowNegative)` | Bewertet eine Frage mit der gegebenen Maximalpunktzahl (`max`), minus einer Abzugsrate (`deduction`) pro falscher Entscheidung (fälschlicherweise ausgewählt, oder fälschlicherweise nicht ausgewählt). Standardmässig wird die Frage nicht mit weniger als 0 Punkten bewertet, was mit `allowNegative = true` jedoch übersteuert werden kann.<br /><br />**Beispiel:** `multipleChoicePoints(3, 1)` bewertet eine vollständig korrekt beantwortete Frage mit 3 Punkten, vergibt bei einem Fehler noch 2 und bei zwei Fehlern noch 1 Punkt, und sonst 0 Punkte. |
+| `noPoints()` | No-Op-Bewertungsfunktion. Kann verwendet werden, wenn für das übergeordnete Quiz eine Bewertungsfunktion definiert ist, für eine spezifische Frage jedoch keine Punkte vergeben werden sollen. |
 
 ## Imports
 ```ts
