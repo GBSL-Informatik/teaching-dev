@@ -24,9 +24,17 @@ export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: Qu
     }
 
     const assessment = doc?.assessments.get(questionIndex);
-    if (!!assessment?.scoring && !assessment.scoring.scoringHint) {
-        // This question has a scoring but no scoring hint, so we don't show anything.
-        return;
+
+    let scoringHint;
+    if (!assessment?.scoring) {
+        scoringHint = 'Für diese Aufgabe gibt es keine Punktebewertung.';
+    } else if (!!assessment.scoring && !assessment?.scoring?.scoringHint) {
+        scoringHint = 'Für diese Aufgabe ist kein Bewertungshinweis verfügbar.';
+    } else {
+        scoringHint =
+            typeof assessment.scoring?.scoringHint === 'function'
+                ? assessment.scoring.scoringHint()
+                : assessment.scoring?.scoringHint;
     }
 
     return (
@@ -59,13 +67,7 @@ export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: Qu
                     </div>
                 }
             >
-                <div>
-                    {!assessment?.scoring && <p>Für diese Frage besteht keine Bewertung.</p>}
-                    {!!assessment?.scoring?.scoringHint &&
-                        (typeof assessment.scoring?.scoringHint === 'function'
-                            ? assessment.scoring.scoringHint()
-                            : assessment.scoring?.scoringHint)}
-                </div>
+                <div>{scoringHint}</div>
             </Card>
         </Popup>
     );
