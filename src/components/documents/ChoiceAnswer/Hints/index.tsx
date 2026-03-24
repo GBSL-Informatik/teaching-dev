@@ -12,10 +12,11 @@ import styles from './styles.module.scss';
 
 interface QuestionGradingHintProps {
     doc?: ChoiceAnswerDocument;
+    trigger?: React.ReactNode;
     questionIndex?: number;
 }
 
-export const QuestionGradingHint = observer(({ doc, questionIndex }: QuestionGradingHintProps) => {
+export const QuestionGradingHint = observer(({ doc, trigger, questionIndex }: QuestionGradingHintProps) => {
     const ref = React.useRef<PopupActions>(null);
 
     if (!doc || questionIndex === undefined) {
@@ -31,9 +32,11 @@ export const QuestionGradingHint = observer(({ doc, questionIndex }: QuestionGra
     return (
         <Popup
             trigger={
-                <span className={clsx(styles.gradingHintTrigger)}>
-                    <Icon path={mdiInformationOutline} size={0.7} />
-                </span>
+                trigger || (
+                    <span className={clsx(styles.gradingHintTrigger)}>
+                        <Icon path={mdiInformationOutline} size={0.7} />
+                    </span>
+                )
             }
             lockScroll
             closeOnEscape={true}

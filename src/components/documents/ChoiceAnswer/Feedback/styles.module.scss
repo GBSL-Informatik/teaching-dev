@@ -3,8 +3,9 @@
     height: 100%;
     align-items: center;
     justify-content: center;
+    gap: 0.5em;
 
     .pointsBadge {
-        margin-right: 0.5em;
+        cursor: pointer;
     }
 }

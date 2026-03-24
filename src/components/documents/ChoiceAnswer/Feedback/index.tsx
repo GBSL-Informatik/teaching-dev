@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
 import clsx from 'clsx';
+import { QuestionGradingHint } from '../Hints';
 
 const CorrectIcon = (): React.JSX.Element => {
     return (
@@ -144,11 +145,18 @@ export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProp
     return (
         <div className={styles.feedbackBadge}>
             {grading.points && (
-                <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
-                    {doc.graded && <span>{grading.points.pointsAchieved}/</span>}
-                    {grading.points.maxPoints} {grading.points.maxPoints === 1 ? 'Punkt' : 'Punkte'}
-                </span>
+                <QuestionGradingHint
+                    doc={doc}
+                    questionIndex={questionIndex}
+                    trigger={
+                        <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
+                            {doc.graded && <span>{grading.points.pointsAchieved}/</span>}
+                            {grading.points.maxPoints} {grading.points.maxPoints === 1 ? 'Punkt' : 'Punkte'}
+                        </span>
+                    }
+                />
             )}
+            {!grading.points && <QuestionGradingHint doc={doc} questionIndex={questionIndex} />}
             {icon && doc.graded && <Icon path={icon} color={`var(${color})`} size={1} />}
         </div>
     );

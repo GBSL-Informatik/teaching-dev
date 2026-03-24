@@ -173,7 +173,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                             />
                         )}
                         <FeedbackBadge doc={doc} questionIndex={questionIndex} />
-                        <QuestionGradingHint doc={doc} questionIndex={questionIndex} />
                     </div>
                 </div>
             )}
