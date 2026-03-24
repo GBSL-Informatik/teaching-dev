@@ -17,14 +17,14 @@ import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from '../helpers/shared';
 import QuestionControls from '../Controls';
 import { FeedbackAdmonition, FeedbackBadge } from '../Feedback';
-import { GradingFunction, updateGrading as grade } from '../helpers/grading';
-import { QuestionScoringHint } from '../Hints';
+import { ScoringFunction } from '../helpers/scoring';
+import { updateAssessment } from '../helpers/assessment';
 
 export interface ChoiceAnswerProps {
     id: string;
     title?: string;
     correct?: number[];
-    grading?: GradingFunction;
+    grading?: ScoringFunction;
     questionIndex?: number;
     inQuiz?: boolean;
     multiple?: boolean;
@@ -94,14 +94,14 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         }
         const correctOptions = new Set(props.correct);
 
-        const gradingFunction = props.grading ?? parentProps.grading;
-        const grading = grade(
+        const scoringFunction = props.grading ?? parentProps.grading;
+        const grading = updateAssessment(
             doc,
             props.multiple ?? false,
             questionIndex,
             correctOptions,
             props.numOptions,
-            gradingFunction
+            scoringFunction
         );
         setGradingStyle({
             [styles.correct]: doc.assessed && grading.correctness === ChoiceAnswerCorrectness.Correct,

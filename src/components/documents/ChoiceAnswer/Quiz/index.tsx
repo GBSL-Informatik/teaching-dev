@@ -9,7 +9,7 @@ import Loader from '@tdev-components/Loader';
 import { createRandomOrderMap } from '../helpers/shared';
 import styles from './styles.module.scss';
 import { QuizControls } from '../Controls';
-import { GradingFunction } from '../helpers/grading';
+import { ScoringFunction } from '../helpers/scoring';
 import { QuizScore } from '../Feedback';
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
     hideQuestionNumbers?: boolean;
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
-    grading?: GradingFunction;
+    grading?: ScoringFunction;
     minPoints?: number;
     numQuestions: number;
     children?: React.ReactNode[];
@@ -38,7 +38,7 @@ export const QuizContext = React.createContext({
     readonly?: boolean;
     hideQuestionNumbers?: boolean;
     randomizeQuestions?: boolean;
-    grading?: GradingFunction;
+    grading?: ScoringFunction;
     questionOrder: { [originalQuestionIndex: number]: number } | null;
     randomizeOptions?: boolean;
     focussedQuestion: number;
