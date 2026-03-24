@@ -1,4 +1,10 @@
-import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
+import {
+    mdiCheckCircleOutline,
+    mdiCloseCircleOutline,
+    mdiHelpCircleOutline,
+    mdiProgressCheck,
+    mdiProgressQuestion
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import ChoiceAnswerDocument, { ChoiceAnswerCorrectness } from '@tdev-models/documents/ChoiceAnswer';
 import Admonition from '@theme/Admonition';
@@ -198,8 +204,9 @@ export const QuizScore = observer(({ doc, minPoints }: QuizScoreProps) => {
 
     return (
         <span className={clsx('badge badge--primary', styles.pointsBadge)}>
-            {doc.assessed && <span>{totalPointsAchieved}/</span>}
-            {totalMaxPoints} {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
+            {!doc.assessed && <span>Zu erreichen: </span>}
+            {doc.assessed && <span>Ergebnis: {totalPointsAchieved} /</span>} {totalMaxPoints}{' '}
+            {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
         </span>
     );
 });
