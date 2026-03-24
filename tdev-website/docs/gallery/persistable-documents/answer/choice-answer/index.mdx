@@ -9,7 +9,7 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
 import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
-import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
 
 # Choice Answer
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
@@ -90,14 +90,8 @@ Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben 
 Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
 
 ```md
-Hier steht etwas Text über der Frage.
-
 <ChoiceAnswer correct={[1, 4, 5]} multiple title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
     > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
-
-    :::info[Bewertung]
-    Die Frage wird nur als richtig bewertet, wenn alle korrekten Antworten (und keine falschen) ausgewählt wurden.
-    :::
     
     1. 2 ist die einzige gerade Primzahl.
     2. Jede Primzahl ist ungerade.
@@ -107,19 +101,11 @@ Hier steht etwas Text über der Frage.
 
     **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
 </ChoiceAnswer>
-
-Nach der Frage folgt noch weiterer Text.
 ```
 
 <BrowserWindow>
-    Hier steht etwas Text über der Frage.
-
     <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
         > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
-
-        :::info[Bewertung]
-        Die Frage wird nur als richtig bewertet, wenn alle korrekten Antworten (und keine falschen) ausgewählt wurden.
-        :::
         
         1. 2 ist die einzige gerade Primzahl.
         2. Jede Primzahl ist ungerade.
@@ -129,8 +115,6 @@ Nach der Frage folgt noch weiterer Text.
 
         **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
     </ChoiceAnswer>
-
-    Nach der Frage folgt noch weiterer Text.
 </BrowserWindow>
 
 Hier wird zusätzlich die `title`-Property verwendet, um der Frage einen Titel zu geben. Zudem wird ein Infoblock mit einer Bewertungsinformation eingeblendet.
@@ -158,12 +142,70 @@ Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 Bei Wahr/Falsch-Fragen gibt es keine Randomisierung der Antwortmöglichkeiten, da es nur zwei fixe Optionen gibt. Dies gilt sowohl bei Standalone-Fragen, als auch bei Wahr/Falsch-Fragen innerhalb eines Quizzes.
 :::
 
+### Bewertung
+Fragen können mit Punkten bewertet werden. Dazu wird die `scoring`-Property verwendet, der man eine vordefinierte oder benutzerdefinierte Bewertungsfunktion ([vgl. `ScoringFunction`](#scoringfunction)) zuweist.
+
+:::info[Bewertungshinweis]
+Bewertungsfunktionen können einen Bewertungshinweis bereitstellen. Bei den vordefinierten Bewertungsfunktionen wird dieser automatisch aus den entsprechenden Parametern generiert. Angezeigt wird der Bewertungshinweis mit einem Klick auf den Punktezahl-Badge im Header der Frage.
+:::
+
+```md
+<ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
+    > Was ist die Hauptstadt von Frankreich?
+    
+    1. Berlin
+    2. Paris
+    3. Rom
+    4. Madrid
+</ChoiceAnswer>
+
+<ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="c1f5b5e5-13b9-4d09-831d-215d4c04ada5">
+    > Wählen Sie alle Primzahlen aus.
+
+    1. 1
+    2. 2
+    3. 3
+    4. 4
+    5. 5
+</ChoiceAnswer>
+
+<TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="75fac390-8846-47b5-8028-52c4258919fc">
+    > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
+</TrueFalseAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
+        > Was ist die Hauptstadt von Frankreich?
+        
+        1. Berlin
+        2. Paris
+        3. Rom
+        4. Madrid
+    </ChoiceAnswer>
+
+    <ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="c1f5b5e5-13b9-4d09-831d-215d4c04ada5">
+        > Wählen Sie alle Primzahlen aus.
+
+        1. 1
+        2. 2
+        3. 3
+        4. 4
+        5. 5
+    </ChoiceAnswer>
+
+    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="75fac390-8846-47b5-8028-52c4258919fc">
+        > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
+    </TrueFalseAnswer>
+</BrowserWindow>
+
+
 ## Quizzes
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```html
-<Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" scoring={points(1)}>
-  <ChoiceAnswer correct={[5]} scoring={points(2)}>
+<Quiz scoring={points(1)} id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" randomizeQuestions randomizeOptions>
+  <ChoiceAnswer correct={[5]}>
       > In welchem Jahr war 2024?
       
       1. 1965
@@ -173,11 +215,21 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
       5. 2024
   </ChoiceAnswer>
 
+  <ChoiceAnswer correct={[2, 3]} scoring={points(2)}>
+      > Wählen Sie eine korrekte Aussage aus.
+
+      1. Wenn Daten in der Cloud (z.B. OneDrive) gespeichert werden, ist kein Backup mehr nötig.
+      2. Cloud-Dienste wie OneDrive erlauben es uns, Dateien mit anderen Personen zu teilen.
+      3. Cloud-Dienste machen es einfacher, Dateien zwischen verschiedenen Geräten zu synchronisieren.
+      4. Das Abspeichern sensibler Daten auf Cloud-Diensten ist immer unproblematisch, da diese ja sicher sind.
+      5. Alle der oben genannten Aussagen sind korrekt.
+  </ChoiceAnswer>
+
   <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
       > HTML ist eine Programmiersprache.
   </TrueFalseAnswer>
   
-  <ChoiceAnswer correct={[1, 3]} scoring={(partialPoints())} multiple>
+  <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple>
       > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
       
       1. SMTP
@@ -186,7 +238,7 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
       4. HTTP
   </ChoiceAnswer>
 
-  <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+  <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()}>
       > Wann ist der Sinn des Lebens?
       
       1. Immer im März
@@ -199,86 +251,7 @@ Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice
 ```
 
 <BrowserWindow>
-    <Quiz id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" scoring={points(1)}>
-        <ChoiceAnswer correct={[5]} scoring={points(2)}>
-            > In welchem Jahr war 2024?
-            
-            1. 1965
-            2. 1983
-            3. 1991
-            4. 2000
-            5. 2024
-        </ChoiceAnswer>
-
-        <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
-            > HTML ist eine Programmiersprache.
-        </TrueFalseAnswer>
-        
-        <ChoiceAnswer correct={[1, 3]} scoring={(multipleChoicePoints())} multiple>
-            > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
-            
-            1. SMTP
-            2. FTP
-            3. IMAP
-            4. HTTP
-        </ChoiceAnswer>
-
-        <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
-            > Wann ist der Sinn des Lebens?
-            
-            1. Immer im März
-            2. 42
-            3. Das Bundeshaus
-            4. Nein
-            5. Ja, aber nur manchmal
-        </ChoiceAnswer>
-    </Quiz>
-</BrowserWindow>
-
-Dabei kann für das Quiz eine `scoring`-Funktion angegeben werden, die als Standard-Bewertungsfunktion für alle enthaltenen Fragen gilt. Diese kann bei Bedarf durch die `scoring`-Property der einzelnen Fragen überschrieben werden (siehe obiges Beispiel). In diesem Fall gilt die spezifische Bewertungsfunktion nur für diese eine Frage, während die anderen Fragen weiterhin die Bewertungsfunktion des übergeordneten Quizzes verwenden. Es kann entweder eine vordefinierte Bewertungsfunktion (z.B. `points(1, 0, 0)`) oder eine benutzerdefinierte Funktion verwendet werden. Mehr dazu [hier]()
-
-### Randomisierung
-Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten randomisiert werden. Das Verhalten ist analog zu den einzelnen ChoiceAnswer-Fragen (siehe oben). Wird `randomizeOptions` auf Quiz-Ebene gesetzt, gilt dies für alle enthaltenen Fragen (wobei die Antwortoptionen von Wahr/Falsch-Fragen nie randomisiert werden).
-
-```html
-<Quiz randomizeQuestions randomizeOptions id="040006ed-1198-4d0d-bd9d-50822c45cd76">
-    <ChoiceAnswer correct={[5]}>
-        > In welchem Jahr war 2024?
-        
-        1. 1965
-        2. 1983
-        3. 1991
-        4. 2000
-        5. 2024
-    </ChoiceAnswer>
-    
-    <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
-        > HTML ist eine Programmiersprache.
-    </TrueFalseAnswer>
-    
-    <ChoiceAnswer correct={[1, 3]} multiple>
-        > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
-        
-        1. SMTP
-        2. FTP
-        3. IMAP
-        4. HTTP
-    </ChoiceAnswer>
-
-    <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
-    > Wann ist der Sinn des Lebens?
-    
-        1. Immer im März
-        2. 42
-        3. Das Bundeshaus
-        4. Nein
-        5. Ja, aber nur manchmal
-    </ChoiceAnswer>
-</Quiz>
-```
-
-<BrowserWindow>
-    <Quiz randomizeQuestions randomizeOptions id="040006ed-1198-4d0d-bd9d-50822c45cd76">
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             
@@ -289,11 +262,21 @@ Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Frag
             5. 2024
         </ChoiceAnswer>
 
-        <TrueFalseAnswer correct={false} title="Kann man das so sagen?">
+        <ChoiceAnswer correct={[2, 3]} scoring={points(2)}>
+            > Wählen Sie eine korrekte Aussage aus.
+
+            1. Wenn Daten in der Cloud (z.B. OneDrive) gespeichert werden, ist kein Backup mehr nötig.
+            2. Cloud-Dienste wie OneDrive erlauben es uns, Dateien mit anderen Personen zu teilen.
+            3. Cloud-Dienste machen es einfacher, Dateien zwischen verschiedenen Geräten zu synchronisieren.
+            4. Das Abspeichern sensibler Daten auf Cloud-Diensten ist immer unproblematisch, da diese ja sicher sind.
+            5. Alle der oben genannten Aussagen sind korrekt.
+        </ChoiceAnswer>
+
+        <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
             > HTML ist eine Programmiersprache.
         </TrueFalseAnswer>
         
-        <ChoiceAnswer correct={[1, 3]} multiple>
+        <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple>
             > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
             
             1. SMTP
@@ -302,7 +285,7 @@ Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Frag
             4. HTTP
         </ChoiceAnswer>
 
-        <ChoiceAnswer correct={[1, 2, 3, 4, 5]}>
+        <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()}>
             > Wann ist der Sinn des Lebens?
             
             1. Immer im März
@@ -313,6 +296,12 @@ Bei einem Quiz kann mit den entsprechenden Flags sowohl die Reihenfolge der Frag
         </ChoiceAnswer>
     </Quiz>
 </BrowserWindow>
+
+### Bewertung
+In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene definiert werden. Sie gilt dann für alle Fragen innerhalb des Quizzes, sofern diese nicht durch die `scoring`-Property der einzelnen Fragen überschrieben wird. 
+
+### Randomisierung
+Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten innerhalb jeder Frage randomisiert. Die Randomisierung funktioniert dabei genauso wie bei den Standalone-Fragen (siehe oben).
 
 ## Eigenschaften und Funktionen
 ### Eigenschaften ChoiceAnswer

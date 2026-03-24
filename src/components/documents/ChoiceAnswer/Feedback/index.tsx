@@ -1,10 +1,4 @@
-import {
-    mdiCheckCircleOutline,
-    mdiCloseCircleOutline,
-    mdiHelpCircleOutline,
-    mdiProgressCheck,
-    mdiProgressQuestion
-} from '@mdi/js';
+import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 import Icon from '@mdi/react';
 import ChoiceAnswerDocument, { ChoiceAnswerCorrectness } from '@tdev-models/documents/ChoiceAnswer';
 import Admonition from '@theme/Admonition';
