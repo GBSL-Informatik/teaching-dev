@@ -31,7 +31,7 @@ export const isBinaryFile = (fileName: string) => {
 export const convertToBase64 = (binData: Uint8Array): Promise<string> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(new Blob([binData]));
+        reader.readAsDataURL(new Blob([binData as unknown as ArrayBuffer]));
         reader.onload = () => {
             const base64String = (reader.result as string).split(',')[1];
             resolve(base64String);

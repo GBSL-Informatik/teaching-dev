@@ -6,11 +6,15 @@ import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
 import { reaction } from 'mobx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useHistory } from '@docusaurus/router';
+import { useHistory, useLocation } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
 import { getOfflineUser } from '@tdev-api/OfflineApi';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
+import { usePluginData } from '@docusaurus/useGlobalData';
+import { Hashery } from 'hashery';
+const hasher = new Hashery({ cache: { enabled: true, maxSize: 5 } });
 const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
     SENTRY_DSN?: string;
     OFFLINE_API?: boolean | 'memory' | 'indexedDB';
@@ -107,6 +111,21 @@ const Sentry = observer(() => {
     return null;
 });
 
+const TrackPageVisibility = observer(() => {
+    const viewStore = useStore('viewStore');
+    const onVisibilityChange = React.useEffectEvent(() => {
+        viewStore.setPageVisibility(!document.hidden);
+    });
+    React.useEffect(() => {
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [viewStore]);
+    return null;
+});
+
 const LivenessChecker = observer(() => {
     const lastHiddenTimeRef = React.useRef<number | null>(null);
     React.useEffect(() => {
@@ -176,6 +195,55 @@ const FullscreenHandler = observer(() => {
     return null;
 });
 
+let devHash: string | null = null;
+const DevGlobalDataTracker = observer(() => {
+    if (process.env.NODE_ENV === 'production') {
+        return null;
+    }
+    const pageStore = useStore('pageStore');
+    const global = usePluginData('docusaurus-plugin-content-docs', 'default') as GlobalPluginData;
+    React.useEffect(() => {
+        const controller = new AbortController();
+        const check = async () => {
+            const pIndex = await fetch(
+                `${siteConfig.baseUrl}tdev-artifacts/page-progress-state/pageIndex.json`,
+                { signal: controller.signal }
+            )
+                .then((res) => res.json())
+                .catch(() => null);
+            if (controller.signal.aborted || !pIndex) {
+                return;
+            }
+            const hash = await hasher.toHash(pIndex);
+            if (controller.signal.aborted) {
+                return;
+            }
+            if (!devHash) {
+                devHash = hash;
+                return;
+            }
+            if (devHash !== hash) {
+                devHash = hash;
+                pageStore.loadPageIndex(true);
+            }
+        };
+        check();
+        return () => {
+            controller.abort();
+        };
+    }, [global]);
+    return null;
+});
+
+const VisitedPagesTracker = observer(() => {
+    const location = useLocation();
+    const pageStore = useStore('pageStore');
+    React.useEffect(() => {
+        pageStore.setCurrentPath(location.pathname);
+    }, [location]);
+    return null;
+});
+
 function Root({ children }: { children: React.ReactNode }) {
     const { siteConfig } = useDocusaurusContext();
 
@@ -200,8 +268,11 @@ function Root({ children }: { children: React.ReactNode }) {
                         <LivenessChecker />
                     </>
                 )}
+                <TrackPageVisibility />
                 <FullscreenHandler />
                 {SENTRY_DSN && <Sentry />}
+                <DevGlobalDataTracker />
+                <VisitedPagesTracker />
                 {children}
             </StoresProvider>
         </>

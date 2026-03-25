@@ -2,14 +2,19 @@ import { CodeMeta } from '@tdev-models/documents/Code';
 import { RootStore } from './rootStore';
 import {
     type CodeType,
+    type DocumentType,
     TypeModelMapping,
     type ContainerType,
-    type ContainerTypeModelMapping
+    type ContainerTypeModelMapping,
+    TaskableType
 } from '@tdev-api/document';
 import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { computed } from 'mobx';
 import React from 'react';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
+import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
 
 export type LiveCode = `live_${string}`;
 
@@ -49,6 +54,10 @@ class ComponentStore {
     readonly root: RootStore;
     components = new Map<ContainerType, ContainerComponent>();
     editorComponents = new Map<CodeType, EditorComponent>();
+    taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
+        ['task_state', new TaskStateMeta({})],
+        ['progress_state', new ProgressStateMeta({})]
+    ]);
 
     constructor(root: RootStore) {
         this.root = root;
@@ -60,6 +69,24 @@ class ComponentStore {
 
     registerContainerComponent<T extends ContainerType>(type: T, component: ContainerComponent<T>) {
         this.components.set(type, component as ContainerComponent<any>);
+    }
+
+    registerTaskableDocumentType<T extends TaskableType>(defaultMeta: TypeMeta<T>) {
+        this.taskableDocumentsMeta.set(defaultMeta.type, defaultMeta);
+    }
+
+    @computed
+    get taskableDocuments() {
+        return new Set([...this.taskableDocumentsMeta.keys()]);
+    }
+
+    @computed
+    get defaultMeta() {
+        return [
+            ...[...this.components.values()].map((comp) => comp.defaultMeta),
+            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({})),
+            ...[...this.taskableDocumentsMeta.values()]
+        ];
     }
 
     @computed

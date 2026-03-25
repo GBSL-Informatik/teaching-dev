@@ -60,21 +60,23 @@ const SelectUser = observer((props: Props) => {
      * this effect ensures that only displayed users are selected
      */
     React.useEffect(() => {
-        if (currentPage?.activeStudentGroup) {
+        if (currentPage?.viewedStudentGroup) {
             setIds(
-                ids.filter((id) => currentPage.activeStudentGroup?.students.map((s) => s.id).includes(id))
+                ids.filter((id) => currentPage.viewedStudentGroup?.students.map((s) => s.id).includes(id))
             );
-        } else if (currentPage?.primaryStudentGroup) {
+        } else if (currentPage?.primaryViewedStudentGroup) {
             setIds(
-                ids.filter((id) => currentPage.primaryStudentGroup?.students.map((s) => s.id).includes(id))
+                ids.filter((id) =>
+                    currentPage.primaryViewedStudentGroup?.students.map((s) => s.id).includes(id)
+                )
             );
         }
-    }, [currentPage?.activeStudentGroup, currentPage?.primaryStudentGroup]);
+    }, [currentPage?.viewedStudentGroup, currentPage?.primaryViewedStudentGroup]);
 
     if (!currentPage) {
         return null;
     }
-    const users = currentPage.activeStudentGroup?.students || userStore.managedUsers;
+    const users = currentPage.viewedStudentGroup?.students || userStore.managedUsers;
     const selectionState = ids.length === users.length ? 'all' : ids.length === 0 ? 'none' : 'some';
     return (
         <div className={clsx(styles.selectUser, props.className)}>

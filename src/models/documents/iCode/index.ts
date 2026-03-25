@@ -221,6 +221,12 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         // to be implemented by subclasses
     }
 
+    @action
+    stopExecution() {
+        // NOOP
+        // to be implemented by subclasses
+    }
+
     get data(): TypeDataMapping[T] {
         return {
             code: this.code

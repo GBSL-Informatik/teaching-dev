@@ -1,0 +1,18 @@
+{
+    "name": "@tdev/webserial",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@docusaurus/core": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@types/w3c-web-serial": "^1.0.8",
+        "vitest": "*"
+    },
+    "peerDependencies": {
+        "@tdev/core": "1.0.0",
+        "hashery": "*"
+    }
+}

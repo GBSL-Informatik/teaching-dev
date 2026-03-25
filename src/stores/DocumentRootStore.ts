@@ -18,6 +18,14 @@ import { DocumentType } from '@tdev-api/document';
 import _ from 'es-toolkit/compat';
 import User from '@tdev-models/User';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import { CodeMeta } from '@tdev-models/documents/Code';
+import { ModelMeta as MdxCommentMeta } from '@tdev-models/documents/MdxComment';
+import { ModelMeta as RestrictedMeta } from '@tdev-models/documents/Restricted';
+import { ModelMeta as SolutionMeta } from '@tdev-models/documents/Solution';
+import { ModelMeta as StringMeta } from '@tdev-models/documents/String';
+import { ModelMeta as QuillV2Meta } from '@tdev-models/documents/QuillV2';
+
+import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 
 type LoadConfig = {
     /** if true, user permissions will be loaded
@@ -30,11 +38,14 @@ type LoadConfig = {
      */
     groupPermissions?: boolean;
     /**
-     * if true, the document root will be created and when already exists,
-     * it will replace the existing one
-     * @default true
+     * @option 'replace': the document root will be created and when already exists,
+     *                    it will replace the existing one.
+     * @option 'addIfMissing': when the document root does not exist in the mobx store, it will
+     *                         be added. But no new document root will be created on the api.
+     * @option false: the document root will not be loaded.
+     * @default 'replace'
      */
-    documentRoot?: boolean;
+    documentRoot?: 'replace' | 'addIfMissing' | boolean;
     /**
      * if a document root should not be created when it is not found,
      * set `skipCreate` to true
@@ -59,6 +70,16 @@ type BatchedMeta = {
     access: Partial<Config>;
 };
 
+const DefaultMeta: TypeMeta<DocumentType>[] = [
+    new CodeMeta({}),
+    new MdxCommentMeta({}),
+    new RestrictedMeta({}),
+    new SolutionMeta({}),
+    new StringMeta({}),
+    new CmsTextMeta({}),
+    new QuillV2Meta({})
+];
+
 export class DocumentRootStore extends iStore {
     readonly root: RootStore;
     documentRoots = observable.array<DocumentRoot<DocumentType>>([]);
@@ -73,6 +94,11 @@ export class DocumentRootStore extends iStore {
     @computed
     get hasApiAccess() {
         return this.root.sessionStore.isLoggedIn;
+    }
+
+    @computed
+    get defaultMetas(): TypeMeta<DocumentType>[] {
+        return [...DefaultMeta, ...this.root.componentStore.defaultMeta];
     }
 
     @action
@@ -118,12 +144,18 @@ export class DocumentRootStore extends iStore {
         accessConfig?: Partial<Config>
     ) {
         if (this.queued.has(id)) {
-            return;
+            const currentConfig = this.queued.get(id);
+            const needsReplacement =
+                loadConfig?.documentRoot === 'replace' && currentConfig?.load.documentRoot !== 'replace';
+            if (!needsReplacement) {
+                // already queued with same or higher loadConfig - do nothing
+                return;
+            }
         }
         this.queued.set(id, {
             meta: meta,
             load: {
-                documentRoot: true,
+                documentRoot: 'replace',
                 groupPermissions: true,
                 userPermissions: true,
                 skipCreate: false,
@@ -133,18 +165,12 @@ export class DocumentRootStore extends iStore {
             access: accessConfig || {}
         });
         this.loadQueued();
-        if (this.queued.size > 42) {
-            // max 2048 characters in URL - flush if too many
-            this.loadQueued.flush();
-        }
     }
 
     /**
      * load the documentRoots only
      * - after 20 ms of "silence" (=no further load-requests during this period)
      * - or after 25ms have elapsed
-     * - or when more then 42 records are queued (@see loadInNextBatch)
-     *    (otherwise the URL maxlength would be reached)
      */
     loadQueued = _.debounce(action(this._loadQueued), 25, {
         leading: false,
@@ -164,19 +190,13 @@ export class DocumentRootStore extends iStore {
         }
         const batch = [...this.queued];
         this.queued.clear();
-        if (batch.length > 42) {
-            const postponed = batch.splice(42);
-            postponed.forEach((item) => this.queued.set(item[0], item[1]));
-            this.loadQueued();
-            console.log('Postponing', postponed.length, 'document roots for next batch');
-        }
-        const current = new Map(batch);
+        const currentBatch = new Map(batch);
         /**
          * if the user is not logged in, we can't load the documents
          * so we just mark all queued documents as loaded
          */
         if (!this.root.sessionStore.isLoggedIn) {
-            [...current.keys()].forEach((id) => {
+            [...currentBatch.keys()].forEach((id) => {
                 const dummyModel = this.find(id);
                 if (dummyModel && dummyModel.isDummy) {
                     dummyModel.setLoaded();
@@ -188,16 +208,16 @@ export class DocumentRootStore extends iStore {
         /**
          * load all queued documents
          */
-        const rootIds = [...current.keys()].sort();
+        const rootIds = [...currentBatch.keys()].sort();
         const idConfigs: [DocumentType | undefined, string[]][] = [];
-        const rootIdsWithDocs = rootIds.filter((id) => !current.get(id)!.load.documentType);
+        const rootIdsWithDocs = rootIds.filter((id) => !currentBatch.get(id)!.load.documentType);
         if (rootIdsWithDocs.length > 0) {
             idConfigs.push([undefined, rootIdsWithDocs]);
         }
         rootIds
-            .filter((id) => current.get(id)!.load.documentType)
+            .filter((id) => currentBatch.get(id)!.load.documentType)
             .reduce((acc, id) => {
-                const type = current.get(id)!.load.documentType;
+                const type = currentBatch.get(id)!.load.documentType;
                 const idx = acc.findIndex((item) => item[0] === type);
                 if (idx < 0) {
                     acc.push([type, [id]]);
@@ -220,21 +240,21 @@ export class DocumentRootStore extends iStore {
             ).then((results) => results.flatMap((r) => r.data));
             runInAction(() => {
                 models.forEach((data) => {
-                    const config = current.get(data.id);
+                    const config = currentBatch.get(data.id);
                     if (!config) {
                         return;
                     }
                     this.addApiResultToStore(data, config);
-                    current.delete(data.id);
+                    currentBatch.delete(data.id);
                 });
             });
             if (!isUserSwitched) {
                 // create all missing root documents
                 const created = await Promise.all(
-                    [...current.keys()]
-                        .filter((id) => !this.find(id)?.isLoaded && !current.get(id)!.load.skipCreate)
+                    [...currentBatch.keys()]
+                        .filter((id) => !this.find(id)?.isLoaded && !currentBatch.get(id)!.load.skipCreate)
                         .map((id) => {
-                            const config = current.get(id);
+                            const config = currentBatch.get(id);
                             if (config && config.meta) {
                                 return this.create(id, config.meta, config.access).catch(() => {
                                     // queue it up for loading later - the model was probably generated in the mean time?
@@ -258,12 +278,12 @@ export class DocumentRootStore extends iStore {
                 created
                     .filter((docRoot) => !!docRoot)
                     .forEach((docRoot) => {
-                        current.delete(docRoot.id);
+                        currentBatch.delete(docRoot.id);
                     });
             }
             // mark all remaining roots as loaded
             runInAction(() => {
-                [...current.keys()].forEach((id) => {
+                [...currentBatch.keys()].forEach((id) => {
                     const dummyModel = this.find(id);
                     if (dummyModel && dummyModel.isDummy) {
                         dummyModel.setLoaded();
@@ -275,17 +295,27 @@ export class DocumentRootStore extends iStore {
 
     @action
     addApiResultToStore(data: ApiDocumentRoot, config: Omit<BatchedMeta, 'access'>) {
-        if (config.load.documentRoot && !config.meta) {
+        if (config.load.documentRoot === 'replace' && !config.meta) {
             return;
         }
-        const documentRoot = config.load.documentRoot
-            ? new DocumentRoot(data, config.meta!, this)
-            : this.find(data.id);
+        const defaultType = data.documents[0]?.type;
+        const meta =
+            config.meta ||
+            (this.find(data.id)?.meta as TypeMeta<any>) ||
+            (defaultType ? this.defaultMetas.find((m) => m.type === defaultType) : undefined);
+        const documentRoot =
+            config.load.documentRoot && meta ? new DocumentRoot(data, meta, this) : this.find(data.id);
         if (!documentRoot) {
             return;
         }
         if (config.load.documentRoot) {
-            this.addDocumentRoot(documentRoot, { cleanup: true, deep: false });
+            if (config.load.documentRoot === 'addIfMissing') {
+                if (!this.find(data.id)) {
+                    this.addDocumentRoot(documentRoot);
+                }
+            } else {
+                this.addDocumentRoot(documentRoot, { cleanup: true, deep: false });
+            }
         }
         if (config.load.groupPermissions) {
             data.groupPermissions.forEach((gp) => {
@@ -391,7 +421,7 @@ export class DocumentRootStore extends iStore {
     @action
     reload(documentRoot: DocumentRoot<any>) {
         this.loadInNextBatch(documentRoot.id, documentRoot.meta, {
-            documentRoot: true,
+            documentRoot: 'replace',
             documents: true,
             groupPermissions: true,
             userPermissions: true

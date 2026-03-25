@@ -25,7 +25,7 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     loadOnlyType?: DocumentType
 ) => {
     const defaultDocId = useDummyId(documentRootId);
-    const documentRoot = useDocumentRoot(documentRootId, meta, true, access, undefined, loadOnlyType);
+    const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
     const [dummyDocument] = React.useState(

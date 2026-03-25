@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { Role, RoleAccessLevel, RoleNames, User as UserProps } from '@tdev-api/user';
+import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
 import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
 import Button from '@tdev-components/shared/Button';
@@ -285,7 +285,7 @@ const EditUser = observer((props: Props) => {
                     setSpinState('deleting');
                     authClient.admin.removeUser({ userId: user.id }).then(
                         action((res) => {
-                            if (res.data?.success) {
+                            if (res?.data?.success) {
                                 userStore.removeFromStore(user.id);
                                 props.close();
                             }

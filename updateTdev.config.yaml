@@ -11,6 +11,8 @@ trackedElements:
       dst: updateSync
     - src: tsconfig.tdev.json
       dst: tsconfig.json
+    - src: tsconfig.package.json
+      dst: tsconfig.package.json
     - src: .prettierrc
       dst: .prettierrc
     - src: .prettierignore
@@ -21,6 +23,10 @@ trackedElements:
       dst: static/bry-libs
     - src: static/pyodide.sw.js
       dst: static/pyodide.sw.js
+    - src: static/tdev-artifacts/
+      dst: static/tdev-artifacts/
+      ignore:
+          - '*/**'
 watchedElements:
     - .babel.config.js
     - package.json

@@ -8,7 +8,7 @@
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
-        "start": "concurrently --raw --kill-others 'docusaurus start' 'sleep 1s && ts-node updateSync/packageDocsSync/watch.ts --src packages --dest tdev-website/docs/packages'",
+        "start": "concurrently --raw --kill-others 'PACKAGE_SRC=packages PACKAGE_DEST=tdev-website/docs/packages docusaurus start' 'sleep 1s && ts-node updateSync/packageDocsSync/watch.ts --src packages --dest tdev-website/docs/packages'",
         "prebuild": "ts-node updateSync/packageDocsSync/preBuild.ts --src packages --dest tdev-website/docs/packages",
         "build": "docusaurus build",
         "swizzle": "docusaurus swizzle",
@@ -114,9 +114,6 @@
         "typescript": "^5.7.2",
         "vfile": "^6.0.3",
         "vitest": "^2.0.5"
-    },
-    "resolutions": {
-        "@rspack/core": "1.6.5"
     },
     "peerDependencies": {
         "react-hook-form": "*"

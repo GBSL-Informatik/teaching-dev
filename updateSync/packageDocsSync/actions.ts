@@ -27,6 +27,9 @@ const DEFAULT_README_CONFIG: Omit<TdevPackageConfig['docs'], 'org' | 'package'> 
         'README.mdx',
         '_category_.yml',
         '_category_.json',
+        'assets/',
+        'images/',
+        'img/',
         'assets/**',
         'images/**',
         'img/**'
@@ -122,7 +125,7 @@ export const syncDocsFolder = async (pkgConfig: TdevPackageConfig, packageDocsDi
     return new Promise<string>((resolve, reject) => {
         const rsync = spawn('rsync', rsyncArgs, { stdio: 'inherit' });
         rsync.on('close', (code) => {
-            if (code === 0) {
+            if (code === 0 || code === 23) {
                 resolve(`✅ ${pkgConfig.docs.org}/${pkgConfig.docs.package} docs synced.`);
             } else {
                 console.error(`rsync failed with exit code ${code}`);

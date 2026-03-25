@@ -1,6 +1,6 @@
 import React from 'react';
 import { Access, DocumentType } from '@tdev-api/document';
-import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
+import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
 import { useDummyId } from './useDummyId';
@@ -46,6 +46,14 @@ export const useDocumentRoot = <Type extends DocumentType>(
             () => documentRootStore.find(id),
             (docRoot) => {
                 if (docRoot) {
+                    if (docRoot.isLoadable && !docRoot.isLoaded) {
+                        documentRootStore.loadInNextBatch(
+                            id!,
+                            meta,
+                            { skipCreate: !!skipCreate, documentType: loadOnlyType, documentRoot: 'replace' },
+                            access
+                        );
+                    }
                     return;
                 }
                 if (addDummyToStore) {
@@ -87,7 +95,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
                 }
                 if (userStore.isUserSwitched) {
                     documentRootStore.loadInNextBatch(id, meta, {
-                        documentRoot: false,
+                        documentRoot: 'addIfMissing',
                         skipCreate: true
                     });
                 } else {
@@ -101,6 +109,30 @@ export const useDocumentRoot = <Type extends DocumentType>(
             }
         );
     }, [userStore, id, userStore.current?.hasElevatedAccess]);
+
+    React.useEffect(() => {
+        const rootDoc = documentRootStore.find<Type>(id);
+        if (!rootDoc || !rootDoc.isLoaded) {
+            return;
+        }
+        const hash = MetaHasher.toHashSync(meta);
+        if (hash === rootDoc._metaHash) {
+            return;
+        }
+        // update the metadata for this documentRoot, because it changed since the last load
+        documentRootStore.addDocumentRoot(
+            new DocumentRoot(
+                {
+                    id: rootDoc.id,
+                    access: rootDoc.rootAccess,
+                    sharedAccess: rootDoc.sharedAccess
+                },
+                meta,
+                documentRootStore,
+                false
+            )
+        );
+    }, [id, meta]);
 
     const rootDoc = documentRootStore.find<Type>(id);
     return rootDoc || dummyDocumentRoot;

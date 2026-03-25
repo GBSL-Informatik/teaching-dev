@@ -13,6 +13,7 @@ import {
     requestTarget,
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
+import { themes as prismThemes } from 'prism-react-renderer';
 import { brythonCodePluginConfig } from '../src/siteConfig/pluginConfigs';
 
 const getSiteConfig: SiteConfigProvider = () => {
@@ -32,6 +33,16 @@ const getSiteConfig: SiteConfigProvider = () => {
         },
         blog: {
             path: 'tdev-website/blog'
+        },
+        pages: {
+            path: 'tdev-website/pages'
+        },
+        themeConfig: {
+            prism: {
+                theme: prismThemes.github,
+                darkTheme: prismThemes.dracula,
+                additionalLanguages: ['bash', 'typescript', 'json', 'python', 'ruby']
+            }
         },
         navbarItems: [
             gallery,
@@ -64,6 +75,19 @@ const getSiteConfig: SiteConfigProvider = () => {
                             to: '/blog'
                         }
                     ]
+                },
+                {
+                    title: 'Tools',
+                    items: [
+                        {
+                            label: 'Icon Selector',
+                            to: '/mdi'
+                        },
+                        {
+                            label: 'Excalidraw',
+                            to: '/excalidraw'
+                        }
+                    ]
                 }
             ]
         },
@@ -78,7 +102,9 @@ const getSiteConfig: SiteConfigProvider = () => {
             require.resolve('@tdev/netpbm-graphic/register'),
             require.resolve('@tdev/text-message/register'),
             require.resolve('@tdev/pyodide-code/register'),
-            require.resolve('@tdev/brython-code/register')
+            require.resolve('@tdev/brython-code/register'),
+            require.resolve('@tdev/page-read-check/register'),
+            require.resolve('@tdev/webserial/register')
         ]
     };
 };

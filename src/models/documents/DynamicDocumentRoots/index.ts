@@ -70,7 +70,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
             addedIds.forEach((id) => {
                 this.store.root.documentRootStore.loadInNextBatch(id, this.defaultContainerMeta, {
                     documentType: this.containerType,
-                    documentRoot: true
+                    documentRoot: 'replace'
                 });
             });
         }
@@ -191,7 +191,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
         return [...this.documentRootIds].map((id) => {
             this.store.root.documentRootStore.loadInNextBatch(id, this.defaultContainerMeta, {
                 documentType: this.containerType,
-                documentRoot: true
+                documentRoot: 'replace'
             });
         });
     }

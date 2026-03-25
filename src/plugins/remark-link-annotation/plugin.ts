@@ -13,6 +13,9 @@ const plugin: Plugin<OptionsInput[], Root> = function plugin(optionsInput = {}):
 
     return (tree) => {
         visit(tree, 'link', (node) => {
+            if (node.url.startsWith('mailto:') || node.url.startsWith('tel:')) {
+                return;
+            }
             if (prefix) {
                 if (node.children.length < 1 || node.children[0].type !== 'text') {
                     node.children.unshift({ type: 'text', value: `${prefix} ` } as Text);

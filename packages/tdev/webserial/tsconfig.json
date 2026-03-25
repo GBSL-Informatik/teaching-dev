@@ -1,0 +1,12 @@
+{
+    "extends": "../../../tsconfig.package.json",
+    "compilerOptions": {
+        "types": [
+            "w3c-web-serial",
+            "docusaurus-plugin-sass",
+            "@docusaurus/module-type-aliases",
+            "@types/node",
+            "@types/wicg-file-system-access"
+        ]
+    }
+}

@@ -1,0 +1,230 @@
+---
+page_id: c04f48af-3a25-424f-a3c4-ea4532fed6f6
+---
+
+
+import Steps from '@tdev-components/Steps'
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Gitlab
+
+Gitlab auf Dokku deployen.
+
+Referenz
+: [docs.gitlab.com/install/docker](https://docs.gitlab.com/install/docker/)
+
+
+<DynamicInput name="app" default='gitlab' monospace/>
+<DynamicInput name="domain" default='gitlab.domain.ch' monospace/>
+<DynamicInput name="gitlab_image" default='gitlab/gitlab-ee:18.10.0-ee.0' monospace/>
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+
+    dokku domains:set {{app}} {{domain}}
+
+    dokku ports:add {{app}} http:80:80
+    # eventually open ssh port aswell. docker options must be used here.
+    # See https://github.com/dokku/dokku/issues/2383#issuecomment-242591167 for more details how to do this.
+    # dokku docker-options:add {{app}} deploy -p 2222:22
+
+    # create the storage directory with permissions for root 0:0
+    dokku storage:ensure-directory --chown root {{app}}
+
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/config
+    chown -R 0:0 /var/lib/dokku/data/storage/{{app}}/config
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/config:/etc/gitlab
+
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/logs
+    chown -R 0:0 /var/lib/dokku/data/storage/{{app}}/logs
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/logs:/var/log/gitlab
+
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/data
+    chown -R 0:0 /var/lib/dokku/data/storage/{{app}}/data
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/data:/var/opt/gitlab
+
+    # configure environment of {{app}} - important to use http:// and not https protocol, since {{app}} runs behind
+    # the nginx reverse proxy!
+    dokku config:set {{app}} GITLAB_OMNIBUS_CONFIG="external_url 'https://{{domain}}'; nginx['listen_port'] = 80; nginx['listen_https'] = false;"
+
+    # set resource limits for {{app}}
+    dokku resource:limit --cpu 4 --memory 4gb --memory-swap 8gb {{app}}
+
+    # set log level to warn to reduce log size [debug, info, warn, error, fatal, unknown]
+    dokku config:set --no-restart {{app}} GITLAB_LOG_LEVEL=warn
+
+    # assign image to {{app}}
+    dokku git:from-image {{app}} {{gitlab_image}}
+
+    # letsencrypt: add ssl certificate
+    dokku letsencrypt:enable {{app}}
+    ```
+</TemplateCode>
+
+## Admin login
+
+Um das Admin-Passwort zu setzen, kann nach der ersten Installation der folgende Befehl ausgeführt werden:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku enter {{app}}
+
+    gitlab-rake "gitlab:password:reset"
+    # username: root
+    # password: <your password>
+    ```
+</TemplateCode>
+
+## Gitlab konfigurieren
+
+Gitlab wird über die `gitlab.rb`-Datei konfiguriert. Weil der Ordner __/var/lib/dokku/data/storage/<Val name="app" />/config__ in den Gitlab-Container gemountet ist, können die Konfigurationen direkt auf dem Host-System vorgenommen werden.
+
+:::info[Hinweis: `config.rb`]
+Die `config.rb`-Datei wird von Gitlab automatisch beim ersten Start generiert. Dieser Schritt soll also erst nach der erstmaligen Installatione erfolgen.
+:::
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    nano /var/lib/dokku/data/storage/{{app}}/config/gitlab.rb
+    ```
+</TemplateCode>
+
+```rb title="/var/lib/dokku/data/storage/{{app}}/config/gitlab.rb"
+# Performance optimizations
+# @see https://docs.gitlab.com/omnibus/settings/memory_constrained_envs/
+
+# Reduce sidekiq concurrency
+sidekiq['concurrency'] = 2
+
+postgresql['shared_buffers'] = "256MB"
+
+# use only a single puma server and no worker
+puma['worker_processes'] = 0
+
+# LOG Level
+registry['log_level'] = 'warn'
+gitlab_shell['log_level'] = 'WARN'
+
+# release memory back to os all 1s
+gitlab_rails['env'] = {
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000',
+  "GITLAB_LOG_LEVEL" => "WARN"
+}
+
+gitaly['configuration'] = {
+  logging: {
+    level: "warn"
+  },
+  concurrency: [
+    {
+        'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
+        'max_per_repo' => 3,
+    }, {
+        'rpc' => "/gitaly.SSHService/SSHUploadPack",
+        'max_per_repo' => 3,
+    },
+  ]
+}
+
+gitaly['env'] = {
+  'GITALY_COMMAND_SPAWN_MAX_PARALLEL' => '2',
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+
+alertmanager['enable'] = false
+gitlab_exporter['enable'] = false
+gitlab_kas['enable'] = false
+node_exporter['enable'] = false
+postgres_exporter['enable'] = false
+prometheus_monitoring['enable'] = false
+prometheus['enable'] = false
+puma['exporter_enabled'] = false
+redis_exporter['enable'] = false
+sidekiq['metrics_enabled'] = false
+```
+
+Danach muss die Konfiguration mit folgendem Befehl neu geladen werden:
+
+<TemplateCode>
+    ```bash
+    # enter the docker container spawned by dokku
+    dokku enter {{app}}
+
+    # and the reconfigure inside the container
+    gitlab-ctl reconfigure
+    ```
+</TemplateCode>
+
+:::info[Ressourcen-Management]
+Damit Gitlab nicht zu viel Ressourcen verbraucht, können neben den Docker-Ressourcen-Limits auch einige Konfigurationen vorgenommen werden, um den Speicherverbrauch von Gitlab zu reduzieren. Dies ist ist dann wichtig, wenn Gitlab nur für eine Klasse (EF) verwendet wird und die Geschwindigkeit nicht das zentrale Kriterium darstellt.
+
+https://docs.gitlab.com/omnibus/settings/memory_constrained_envs
+:::
+
+## Mail konfiguration
+
+Um die Mail-Konfiguration vorzunehmen, muss folgender Abschnitt zur `gitlab.rb`-Datei hinzugefügt werden:
+
+<TemplateCode>
+```bash
+nano /var/lib/dokku/data/storage/{{app}}/config/gitlab.rb
+```
+</TemplateCode>
+
+<DynamicInput name="smtp_address" default='authsmtp.securemail.pro' monospace />
+<DynamicInput name="smtp_port" default="587" monospace />
+<DynamicInput name="smtp_user_name" default="foo@bar.ch" monospace />
+<DynamicInput name="smtp_password" default="PW" monospace />
+<DynamicInput name="smtp_domain" default="bar.ch" monospace />
+<DynamicInput name="gitlab_email_from" default="foo@bar.ch" monospace />
+<DynamicInput name="gitlab_email_display_name" default="GitLab GBSL" monospace />
+<DynamicInput name="gitlab_email_reply_to" default="foo@bar.ch" monospace />
+
+<TemplateCode>
+    ```rb title="/var/lib/dokku/data/storage/{{app}}/config/gitlab.rb"
+    gitlab_rails['smtp_enable'] = true
+    gitlab_rails['smtp_address'] = "{{smtp_address}}"
+    gitlab_rails['smtp_port'] = {{smtp_port}}
+    gitlab_rails['smtp_user_name'] = "{{smtp_user_name}}"
+    gitlab_rails['smtp_password'] = "{{smtp_password}}"
+    gitlab_rails['smtp_domain'] = "{{smtp_domain}}"
+    gitlab_rails['smtp_authentication'] = "plain"
+    gitlab_rails['smtp_enable_starttls_auto'] = true
+    gitlab_rails['smtp_tls'] = false
+    gitlab_rails['smtp_openssl_verify_mode'] = 'peer'
+    gitlab_rails['gitlab_email_enabled'] = true
+
+    gitlab_rails['gitlab_email_from'] = '{{gitlab_email_from}}'
+    gitlab_rails['gitlab_email_display_name'] = '{{gitlab_email_display_name}}'
+    gitlab_rails['gitlab_email_reply_to'] = '{{gitlab_email_reply_to}}'
+    ```
+</TemplateCode>
+
+Danach muss die Konfiguration mit folgendem Befehl neu geladen werden:
+
+<TemplateCode>
+    ```bash
+    # enter the docker container spawned by dokku
+    dokku enter {{app}}
+
+    # and the reconfigure inside the container
+    gitlab-ctl reconfigure
+    ```
+</TemplateCode>
+
+:::details[Überprüfen der Mail-Konfiguration]
+
+<DynamicInput name="mail_app" default='user@outlook.com' />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku enter {{app}}
+    gitlab-rails console
+    # .... wait several seconds
+    # check if you can send an email:
+    Notify.test_email('{{mail_app}}', 'Message Subject', 'Message Body').deliver_now
+    ```
+</TemplateCode>
+
+:::

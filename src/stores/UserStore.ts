@@ -160,7 +160,7 @@ export class UserStore extends iStore<`update-${string}`> {
         return this.withAbortController(`load-all`, async (ct) => {
             return apiAll(ct.signal).then(
                 action((res) => {
-                    const models = res.data.map((d) => this.createModel(d));
+                    const models = res.data?.map((d) => this.createModel(d));
                     this.users.replace(models);
                 })
             );

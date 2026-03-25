@@ -1,0 +1,130 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    --tdev-slide-button-size: 2em;
+    .track {
+        position: relative;
+        height: var(--tdev-slide-button-size);
+        background: linear-gradient(90deg, var(--ifm-color-gray-400) 0%, var(--ifm-color-gray-100) 100%);
+        border-radius: var(--ifm-global-radius);
+        overflow: hidden;
+        box-shadow: var(--ifm-global-shadow-tl);
+        .text {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--ifm-color-secondary-darkest);
+            font-weight: var(--ifm-font-weight-base);
+            z-index: 2;
+            pointer-events: none;
+            letter-spacing: 0.04em;
+        }
+        .handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--tdev-slide-button-size);
+            height: var(--tdev-slide-button-size);
+            border-radius: var(--ifm-global-radius);
+
+            background-color: var(--ifm-background-surface-color);
+            box-shadow: var(--ifm-global-shadow-md);
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            user-select: none;
+            background-color: var(--ifm-color-white);
+            &:active,
+            &.dragging {
+                background-color: var(--ifm-color-gray-300);
+                box-shadow: 0 3px 28px 0 var(--ifm-color-success-lightest);
+                cursor: grabbing;
+            }
+            &.handleUnlocked {
+                background-color: var(--ifm-color-success);
+                color: var(--ifm-color-white);
+                pointer-events: none;
+            }
+
+            .arrow {
+                user-select: none;
+                pointer-events: none;
+                line-height: 0;
+            }
+        }
+        .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                var(--ifm-color-gray-100) 0%,
+                var(--ifm-color-success-lightest) 100%
+            );
+            border-radius: var(--ifm-global-radius);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .resetButton {
+            display: none;
+            align-items: center;
+            height: 100%;
+        }
+        &.unlocked {
+            background: linear-gradient(
+                90deg,
+                var(--ifm-color-gray-100) 0%,
+                var(--ifm-color-success-lightest) 100%
+            );
+            .progress {
+                display: none;
+            }
+            .text {
+                color: var(--ifm-color-gray-700);
+            }
+            .handle {
+                right: 0;
+                left: auto;
+                .arrow {
+                    background-color: unset;
+                    line-height: 0;
+                }
+            }
+        }
+    }
+    &:hover {
+        .track {
+            .resetButton {
+                display: flex;
+            }
+        }
+    }
+    &.disabled {
+        .track {
+            &.unlocked {
+                background: linear-gradient(
+                    90deg,
+                    var(--ifm-color-gray-400) 0%,
+                    var(--ifm-color-gray-100) 100%
+                );
+            }
+            .handle {
+                &:active,
+                &:hover {
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}

@@ -30,7 +30,7 @@ const LoginPage = observer(() => {
     const { data: session } = authClient.useSession();
     const signInPage = useBaseUrl('/signIn');
     if (session?.user || NO_AUTH) {
-        return <Redirect to={'/user'} />;
+        return <Redirect to={'/'} />;
     }
     return (
         <Layout>
@@ -41,7 +41,7 @@ const LoginPage = observer(() => {
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'microsoft',
-                                callbackURL: `${APP_URL}/user`
+                                callbackURL: APP_URL
                             })
                         }
                         text="Schul-Account"
@@ -55,7 +55,7 @@ const LoginPage = observer(() => {
                         onClick={() =>
                             authClient.signIn.social({
                                 provider: 'github',
-                                callbackURL: `${APP_URL}/user`
+                                callbackURL: APP_URL
                             })
                         }
                         text="Github"
@@ -81,7 +81,7 @@ const Login = observer(() => {
     const { data: session } = authClient.useSession();
 
     if (session?.user || NO_AUTH) {
-        return <Redirect to={'/user'} />;
+        return <Redirect to={'/'} />;
     }
     return <LoginPage />;
 });

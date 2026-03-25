@@ -1,6 +1,8 @@
 import type { ExcalidrawElement, ExcalidrawImageElement } from '@excalidraw/excalidraw/element/types';
 import { BinaryFileData } from '@excalidraw/excalidraw/types';
 
+export const IMAGE_RE = /\.(jpg|jpeg|png|gif|bmp|webp|svg|avif|tiff|ico|heic|heif)$/i;
+
 export const EXCALIDRAW_BACKGROUND_IMAGE_ID = 'TDEV-BACKGROUND-IMAGE' as const;
 export const EXCALIDRAW_IMAGE_RECTANGLE_ID = 'TDEV-IMAGE--RECTANGLE' as const;
 export const EXCALIDRAW_BACKGROUND_FILE_ID = 'TDEV-BACKGROUND--FILE' as const;

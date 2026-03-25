@@ -10,6 +10,7 @@ export default class ViewStore {
     readonly root: RootStore;
     stores = new Map<ViewStoreType, ViewStores>();
     @observable accessor fullscreenTargetId: string | null = null;
+    @observable accessor isPageVisible: boolean = true;
     constructor(store: RootStore) {
         this.root = store;
     }
@@ -23,6 +24,11 @@ export default class ViewStore {
         store: (viewStore: ViewStore) => ViewStoreTypeMapping[T]
     ) {
         this.stores.set(type, store(this));
+    }
+
+    @action
+    setPageVisibility(visible: boolean) {
+        this.isPageVisible = visible;
     }
 
     @action
@@ -66,7 +72,10 @@ export default class ViewStore {
         return this.fullscreenTargetId !== null;
     }
 
-    isFullscreenTarget(targetId: string) {
+    isFullscreenTarget(targetId: string | null) {
+        if (!targetId) {
+            return false;
+        }
         return this.fullscreenTargetId === targetId;
     }
 }

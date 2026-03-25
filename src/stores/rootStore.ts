@@ -51,6 +51,7 @@ export class RootStore {
 
     @action
     load(userId: string) {
+        this.pageStore.loadPageIndex();
         this.sessionStore.setCurrentUserId(userId);
         this.sessionStore.setIsLoggedIn(!!userId);
         this.userStore.loadCurrent().then((user) => {
@@ -60,6 +61,7 @@ export class RootStore {
                 /**
                  * load stores
                  */
+
                 this.userStore.load();
                 this.studentGroupStore.load();
                 this.cmsStore.initialize();

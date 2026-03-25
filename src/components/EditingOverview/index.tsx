@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
-import { mdiAccountAlert, mdiAccountSyncOutline, mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
+import { mdiAccountSyncOutline, mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
 import { StateType } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import Popup from 'reactjs-popup';
@@ -62,10 +62,11 @@ const EditingOverview = observer(() => {
     if (!isBrowser || !currentUser || !currentPage) {
         return null;
     }
-    const taskStates = currentPage.editingState.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
-    if (taskStates.length === 0) {
+    const taskableDocumentsCount = currentPage.taskableDocumentRootIds.length;
+    if (taskableDocumentsCount === 0) {
         return null;
     }
+    const taskStates = currentPage.taskableDocuments.filter((ts) => RWAccess.has(ts.root?.permission)) || [];
     const someChecked = taskStates.some((d) => d.isDone);
     const allChecked = someChecked && taskStates.every((d) => d.isDone);
     return (
@@ -78,7 +79,7 @@ const EditingOverview = observer(() => {
                         </div>
                     }
                     onOpen={() => {
-                        currentPage.loadLinkedDocumentRoots();
+                        currentPage.loadLinkedDocumentRoots(true);
                     }}
                     contentStyle={{
                         position: 'fixed'

@@ -24,7 +24,7 @@ const Header = observer((props: Props) => {
                 <Button
                     icon={mdiClose}
                     onClick={() => {
-                        code.pyodideStore.recreatePyWorker();
+                        code.stopExecution();
                     }}
                 />
             )}

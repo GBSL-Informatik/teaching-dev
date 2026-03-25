@@ -10,7 +10,7 @@ import { Hashery } from 'hashery';
 import _ from 'es-toolkit/compat';
 import Loader from '@tdev-components/Loader';
 
-const hashery = new Hashery();
+const hashery = new Hashery({ cache: { enabled: false } });
 
 interface Props {}
 

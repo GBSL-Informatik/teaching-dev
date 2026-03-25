@@ -1,0 +1,131 @@
+.standaloneEditor {
+    display: flex;
+    height: 80vh;
+    width: 100%;
+    gap: 0.5em;
+    position: relative;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+
+    &.fullscreen {
+        height: 100vh;
+        background: var(--ifm-color-white);
+        padding: 0.5em;
+    }
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    min-width: 200px;
+    border-right: 1px solid var(--ifm-color-emphasis-300);
+    overflow: hidden;
+    position: relative;
+    transition:
+        width 0.2s ease,
+        min-width 0.2s ease;
+
+    &.collapsed {
+        width: 32px;
+        min-width: 32px;
+
+        .sidebarHeader {
+            padding: 0.5em 0.25em;
+            justify-content: center;
+        }
+    }
+}
+
+.collapseToggle {
+    background: var(--ifm-color-emphasis-200);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ifm-color-emphasis-700);
+    margin-left: auto;
+    flex-shrink: 0;
+    &:hover {
+        background: var(--ifm-color-emphasis-300);
+    }
+}
+
+.sidebarHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.5em;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.fileTree {
+    flex: 1;
+    overflow: auto;
+    padding: 0.25em;
+    scrollbar-width: thin;
+}
+
+/* Mobile: overlay for the file tree */
+.mobileOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: var(--ifm-background-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.mobileOverlayHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.5em;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.mobileToolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.25em 0.5em;
+    border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.editorPane {
+    flex: 1;
+    min-width: 0;
+    :global(.excalidraw) {
+        :global(.App-bottom-bar) {
+            :global(.Island) {
+                min-width: unset;
+                width: auto;
+                :global(.dropdown-menu.dropdown-menu--mobile) {
+                    min-width: 13em;
+                }
+                :global(.App-toolbar) {
+                    :global(.App-toolbar-content) {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--ifm-color-emphasis-600);
+    font-style: italic;
+}

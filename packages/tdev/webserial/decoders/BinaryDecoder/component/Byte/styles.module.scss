@@ -1,0 +1,31 @@
+.byte {
+    .bits {
+        height: calc(var(--tdev-bit-height) * var(--tdev-bindecoder-zoom));
+        display: flex;
+        align-items: flex-end;
+        gap: 1px;
+    }
+    .decoded {
+        font-family: var(--ifm-font-family-monospace);
+        display: flex;
+        margin-top: 2px;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0px;
+        font-size: calc(0.84rem * var(--tdev-bindecoder-zoom));
+        line-height: 1em;
+        .hex {
+            color: var(--ifm-color-blue-darker);
+        }
+        .dec {
+            color: var(--ifm-color-success-darker);
+        }
+    }
+}
+.lineBreak {
+    flex-basis: 100%;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}

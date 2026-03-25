@@ -1,0 +1,51 @@
+.webserial {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: var(--ifm-spacing-vertical);
+    border: 1px solid var(--ifm-color-emphasis-300, #ccc);
+    --ifm-card-vertical-spacing: 0.5rem;
+    --ifm-card-horizontal-spacing: 0.5rem;
+    .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        .actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+    }
+    .noBody {
+        padding: 0;
+    }
+    .error {
+        margin-bottom: 0.2em;
+    }
+    .input {
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .textInput {
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 12em;
+            margin-top: 0;
+        }
+    }
+}
+
+.fullscreen {
+    --ifm-code-font-size: 2rem;
+    background: var(--ifm-color-white);
+    padding: 3em;
+    overflow-y: auto;
+    max-height: 95vh;
+    .editorContainer {
+        box-shadow: var(--ifm-global-shadow-md);
+    }
+}

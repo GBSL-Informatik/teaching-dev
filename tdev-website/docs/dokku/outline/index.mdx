@@ -1,0 +1,169 @@
+---
+page_id: b724ba6c-ff90-4bc0-995a-fa0534e817c0
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Outline Wiki
+
+Outline Wiki auf Dokku deployen.
+
+Referenz
+: [getoutline.com](https://www.getoutline.com/)
+Dockerhub
+: [hub.docker.com/r/outlinewiki/outline](https://hub.docker.com/r/outlinewiki/outline)
+Guide
+: [docs.getoutline.com](https://docs.getoutline.com/s/hosting/doc/file-storage-N4M0T6Ypu7)
+Envs
+: [.env.sample](https://github.com/outline/outline/blob/main/.env.sample)
+Azure Config
+: [docs.getoutline.com](https://docs.getoutline.com/s/hosting/doc/microsoft-azure-UVz6jsIOcv)
+
+<DynamicInput name="app" default='outline' monospace />
+<DynamicInput name="domain" default='outline.domain.ch' monospace />
+<DynamicInput name="outline_image" default='docker.getoutline.com/outlinewiki/outline:latest' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+
+    dokku domains:set {{app}} {{domain}}
+
+    # Postgres-Datenbank erstellen und verlinken
+    dokku postgres:create {{app}}
+    dokku postgres:link {{app}} {{app}}
+
+    # Redis erstellen und verlinken
+    dokku redis:create {{app}}
+    dokku redis:link {{app}} {{app}}
+
+    # Storage-Verzeichnis erstellen und mounten
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/data
+    chown -R 1001 /var/lib/dokku/data/storage/{{app}}/data
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/data:/var/lib/outline/data
+
+    # Port konfigurieren
+    dokku ports:add {{app}} http:80:3000
+
+    # Maximale Upload-Grösse für Anhänge setzen
+    dokku nginx:set {{app}} client-max-body-size 20m
+
+    # Umgebungsvariablen setzen
+    dokku config:set --no-restart {{app}} NODE_ENV="production"
+    dokku config:set --no-restart {{app}} PORT=3000
+    dokku config:set --no-restart {{app}} FORCE_HTTPS=false
+    dokku config:set --no-restart {{app}} DEFAULT_LANGUAGE="de_DE"
+    dokku config:set --no-restart {{app}} PGSSLMODE=disable
+    dokku config:set --no-restart {{app}} FILE_STORAGE=local
+    dokku config:set --no-restart {{app}} FILE_STORAGE_UPLOAD_MAX_SIZE=26214400
+    dokku config:set --no-restart {{app}} URL="https://{{domain}}"
+    dokku config:set --no-restart {{app}} SECRET_KEY=$(openssl rand -hex 32)
+    dokku config:set --no-restart {{app}} UTILS_SECRET=$(openssl rand -hex 32)
+
+    # Image zuweisen und deployen
+    dokku git:from-image {{app}} {{outline_image}}
+
+    # letsencrypt: SSL-Zertifikat hinzufügen
+    dokku letsencrypt:enable {{app}}
+    ```
+</TemplateCode>
+
+## Azure-Authentifizierung konfigurieren
+
+Für die Authentifizierung über Microsoft Azure müssen folgende Umgebungsvariablen gesetzt werden:
+
+<DynamicInput name="azure_client_id" default='' monospace />
+<DynamicInput name="azure_client_secret" default='' monospace />
+<DynamicInput name="azure_resource_app_id" default='' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku config:set --no-restart {{app}} AZURE_CLIENT_ID="{{azure_client_id}}"
+    dokku config:set --no-restart {{app}} AZURE_CLIENT_SECRET="{{azure_client_secret}}"
+    dokku config:set --no-restart {{app}} AZURE_RESOURCE_APP_ID="{{azure_resource_app_id}}"
+
+    # App neu starten, damit die Änderungen übernommen werden
+    dokku ps:restart {{app}}
+    ```
+</TemplateCode>
+
+:::info[Hinweis]
+Die Azure-Konfiguration ist unter [docs.getoutline.com](https://docs.getoutline.com/s/hosting/doc/microsoft-azure-UVz6jsIOcv) dokumentiert.
+:::
+
+## Mail-Konfiguration
+
+<DynamicInput name="smtp_host" default='authsmtp.securemail.pro' monospace />
+<DynamicInput name="smtp_port" default='587' monospace />
+<DynamicInput name="smtp_username" default='foo@bar.ch' monospace />
+<DynamicInput name="smtp_password" default='PW' monospace />
+<DynamicInput name="smtp_from_email" default='foo@bar.ch' monospace />
+<DynamicInput name="smtp_reply_to_email" default='foo@bar.ch' monospace />
+<DynamicInput name="smtp_name" default='Outline Wiki' monospace />
+
+<TemplateCode>
+    ```bash title="/home/dokku/{{app}}/ENV"
+    SMTP_HOST="{{smtp_host}}"
+    SMTP_PORT="{{smtp_port}}"
+    SMTP_USERNAME="{{smtp_username}}"
+    SMTP_PASSWORD="{{smtp_password}}"
+    SMTP_FROM_EMAIL="{{smtp_from_email}}"
+    SMTP_REPLY_TO_EMAIL="{{smtp_reply_to_email}}"
+    SMTP_NAME="{{smtp_name}}"
+    SMTP_SECURE="false"
+    ```
+</TemplateCode>
+
+Danach muss die App neu gestartet werden, damit die Änderungen übernommen werden:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    # App neu starten, damit die Änderungen übernommen werden
+    dokku ps:restart {{app}}
+    ```
+</TemplateCode>
+
+
+
+## Update
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull {{outline_image}}
+    dokku ps:rebuild {{app}}
+    ```
+</TemplateCode>
+
+:::warning[Fehler: `git repository not initialized`]
+Falls das Docker-Image nicht korrekt konfiguriert wurde, kann ein Fehler auftreten, der auf ein Problem mit dem Git-Repository hinweist. In diesem Fall die App stoppen und mit folgendem Befehl aktualisieren:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku git:from-image {{app}} {{outline_image}}
+    ```
+</TemplateCode>
+
+:::
+
+## Backup-Konfiguration
+
+Beim Backup mit [dokku-keeper](https://github.com/lebalz/dokku-keeper) kann folgende Konfiguration verwendet werden:
+
+<TemplateCode>
+    ```yml title="backup_config.yml"
+    {{app}}:
+      files:
+        - "/home/dokku/{{app}}/ENV"
+      folders:
+        - "/var/lib/dokku/data/storage/{{app}}/data"
+      commands:
+        postgres:
+          cmd: "dokku postgres:export {{app}}"
+          to: "/database/{{app}}.pg.dump"
+          stage: backup
+        redis:
+          cmd: "dokku redis:export {{app}}"
+          to: "/database/{{app}}.redis.dump"
+          stage: backup
+    ```
+</TemplateCode>
