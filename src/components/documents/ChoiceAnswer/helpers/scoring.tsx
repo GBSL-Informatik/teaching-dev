@@ -2,7 +2,10 @@ import { ChoiceAnswerScoring, ChoiceAnswerCorrectness } from '@tdev-models/docum
 import clsx from 'clsx';
 import _ from 'es-toolkit/compat';
 
-export type ScoringFunction = (result: ChoiceAnswerCorrectness, numMistakes: number) => ChoiceAnswerScoring;
+export type ScoringFunction = (
+    result: ChoiceAnswerCorrectness,
+    numMistakes: number
+) => ChoiceAnswerScoring | undefined;
 
 export const points: (
     forCorrect?: number,

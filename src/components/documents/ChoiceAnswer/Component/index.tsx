@@ -16,7 +16,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from '../helpers/shared';
 import QuestionControls from '../Controls';
-import { FeedbackAdmonition, FeedbackBadge } from '../Feedback';
+import { FeedbackBadge } from '../Feedback';
 import { ScoringFunction } from '../helpers/scoring';
 import { assess } from '../helpers/assessment';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
@@ -68,7 +68,8 @@ const ChoiceAnswerContext = React.createContext({
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const parentProps = React.useContext(QuizContext);
     const [meta] = React.useState(new ModelMeta(props));
-    const doc = props.inQuiz ? parentProps.doc : useFirstMainDocument(props.id, meta);
+    const ownDoc = useFirstMainDocument(props.inQuiz ? undefined : props.id, meta);
+    const doc = props.inQuiz ? parentProps.doc : ownDoc;
     const questionIndex = props.questionIndex ?? 0;
     const randomizeOptions =
         props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
@@ -158,37 +159,27 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                 ? `Frage ${questionNumberToDisplay} – ${props.title}`
                 : `Frage ${questionNumberToDisplay}`
             : props.title;
-    const displayTitle = !canonicalTitle ? 'Frage' : canonicalTitle;
+    const displayTitle = canonicalTitle || 'Frage';
 
     return (
         <div
             className={clsx('card', styles.choiceAnswerContainer, feedbackStyle)}
             style={{ order: questionOrder }}
         >
-            {displayTitle && (
-                <div className={clsx('card__header', styles.header, feedbackStyle)}>
-                    <span className={clsx(styles.title)}>{displayTitle}</span>
-                    <div className={clsx(styles.controlsAndFeedback)}>
-                        {!!props.correct && (
-                            <QuestionControls
-                                doc={doc}
-                                questionIndex={questionIndex}
-                                focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                                inQuiz={props.inQuiz}
-                            />
-                        )}
-                        <FeedbackBadge doc={doc} questionIndex={questionIndex} />
-                    </div>
+            <div className={clsx('card__header', styles.header, feedbackStyle)}>
+                <span className={clsx(styles.title)}>{displayTitle}</span>
+                <div className={clsx(styles.controlsAndFeedback)}>
+                    {!!props.correct && (
+                        <QuestionControls
+                            doc={doc}
+                            questionIndex={questionIndex}
+                            focussedQuestion={parentProps.focussedQuestion === questionIndex}
+                            inQuiz={props.inQuiz}
+                        />
+                    )}
+                    <FeedbackBadge doc={doc} questionIndex={questionIndex} />
                 </div>
-            )}
-            {!displayTitle && !!props.correct && (
-                <QuestionControls
-                    doc={doc}
-                    questionIndex={questionIndex}
-                    focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                    inQuiz={props.inQuiz}
-                />
-            )}
+            </div>
 
             <div className={clsx('card__body')}>
                 {beforeBlock}
@@ -204,7 +195,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                     <div className={styles.optionsBlock}>{optionsBlock}</div>
                 </ChoiceAnswerContext.Provider>
                 {afterBlock}
-                {!displayTitle && <FeedbackAdmonition doc={doc} questionIndex={questionIndex} />}
             </div>
         </div>
     );
@@ -218,13 +208,10 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
 
     const isChecked = !!doc?.choices[questionIndex]?.includes(optionIndex);
 
-    const optionOrder = React.useMemo(
-        () =>
-            randomizeOptions && doc?.optionOrders[questionIndex] !== undefined
-                ? doc?.optionOrders[questionIndex][optionIndex]
-                : optionIndex,
-        [doc?.optionOrders[questionIndex], questionIndex, optionIndex]
-    );
+    const optionOrder =
+        randomizeOptions && doc?.optionOrders[questionIndex] !== undefined
+            ? doc.optionOrders[questionIndex][optionIndex]
+            : optionIndex;
 
     return (
         <div
