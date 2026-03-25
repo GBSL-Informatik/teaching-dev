@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 import React from 'react';
 import clsx from 'clsx';
 import { QuestionScoringHint } from '../Hints';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 const CorrectIcon = (): React.JSX.Element => {
     return (
@@ -111,6 +112,8 @@ interface FeedbackBadgeProps {
 }
 
 export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProps) => {
+    const isMobileView = useIsMobileView();
+
     if (!doc) {
         return;
     }
@@ -150,8 +153,8 @@ export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProp
                     trigger={
                         <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
                             {doc.assessed && <span>{assessment.scoring.pointsAchieved}/</span>}
-                            {assessment.scoring.maxPoints}{' '}
-                            {assessment.scoring.maxPoints === 1 ? 'Punkt' : 'Punkte'}
+                            {assessment.scoring.maxPoints}
+                            {isMobileView ? 'p' : assessment.scoring.maxPoints === 1 ? ' Punkt' : ' Punkte'}
                         </span>
                     }
                 />
