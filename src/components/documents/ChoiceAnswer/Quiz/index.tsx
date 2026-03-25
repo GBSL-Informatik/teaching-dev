@@ -4,13 +4,13 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
-import { isBrowser } from 'es-toolkit';
 import Loader from '@tdev-components/Loader';
 import { createRandomOrderMap } from '../helpers/shared';
 import styles from './styles.module.scss';
 import { QuizControls } from '../Controls';
 import { ScoringFunction } from '../helpers/scoring';
 import { QuizScore } from '../Feedback';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 interface Props {
     id: string;
@@ -49,6 +49,7 @@ export const QuizContext = React.createContext({
 const Quiz = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstMainDocument(props.id, meta);
+    const isBrowser = useIsBrowser();
 
     const [focussedQuestion, setFocussedQuestion] = React.useState(0);
 
