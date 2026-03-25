@@ -234,27 +234,32 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
                 order: optionOrder
             }}
         >
-            <input
-                type={multiple ? 'checkbox' : 'radio'}
-                id={optionId}
-                name={optionId} // Use a radioGroup name here to make sure keyboard navigation still works.
-                value={optionId}
-                onChange={(e) => onChange(optionIndex, e.target.checked)}
-                checked={isChecked}
-                disabled={!doc?.canUpdateAnswer}
-            />
+            <div className={styles.checkboxContainer}>
+                <input
+                    type={multiple ? 'checkbox' : 'radio'}
+                    id={optionId}
+                    name={optionId} // Use a radioGroup name here to make sure keyboard navigation still works.
+                    value={optionId}
+                    onChange={(e) => onChange(optionIndex, e.target.checked)}
+                    checked={isChecked}
+                    className={styles.checkbox}
+                    disabled={!doc?.canUpdateAnswer}
+                />
+            </div>
             <label htmlFor={optionId}>{children}</label>
             {!multiple && (
-                <Button
-                    color="danger"
-                    icon={mdiTrashCanOutline}
-                    iconSide="left"
-                    size={0.7}
-                    onClick={() => onChange(optionIndex, false)}
-                    className={clsx(styles.btnDeleteAnswer, {
-                        [styles.visible]: doc?.canUpdateAnswer && isChecked
-                    })}
-                />
+                <div className={styles.btnDeleteAnswerContainer}>
+                    <Button
+                        color="danger"
+                        icon={mdiTrashCanOutline}
+                        iconSide="left"
+                        size={0.7}
+                        onClick={() => onChange(optionIndex, false)}
+                        className={clsx(styles.btnDeleteAnswer, {
+                            [styles.visible]: doc?.canUpdateAnswer && isChecked
+                        })}
+                    />
+                </div>
             )}
         </div>
     );

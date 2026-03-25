@@ -84,10 +84,16 @@
         .choiceAnswerOptionContainer {
             display: flex;
             flex-direction: row;
-            align-items: baseline;
+            align-items: flex-start;
 
             p {
                 margin: 0;
+            }
+
+            .checkboxContainer {
+                display: flex;
+                align-items: center;
+                margin-top: 0.23em;
             }
 
             label {
@@ -100,15 +106,21 @@
             }
         }
 
-        .btnDeleteAnswer {
-            margin-left: 0.7em;
-            font-size: 0.8em;
-            opacity: 0;
-            transition: opacity $btnRemoveAnswerTransitionDuration;
-            visibility: hidden;
+        .btnDeleteAnswerContainer {
+            display: flex;
+            align-items: center;
+            margin-left: 0.5em;
+            margin-top: 0.15em;
 
-            &.visible {
-                visibility: visible;
+            .btnDeleteAnswer {
+                font-size: 0.8em;
+                opacity: 0;
+                transition: opacity $btnRemoveAnswerTransitionDuration;
+                visibility: hidden;
+
+                &.visible {
+                    visibility: visible;
+                }
             }
         }
 
