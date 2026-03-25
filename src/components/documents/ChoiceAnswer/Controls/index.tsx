@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { mdiCheckboxMarkedCircleAutoOutline, mdiRestore } from '@mdi/js';
 import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import clsx from 'clsx';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 interface ControlsProps {
     doc: ChoiceAnswerDocument;
@@ -15,6 +16,8 @@ interface ControlsProps {
 }
 
 const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, inQuiz }: ControlsProps) => {
+    const isMobileView = useIsMobileView();
+
     if (!doc) {
         return;
     }
@@ -25,7 +28,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
         <>
             {!doc.assessed && (
                 <Button
-                    text="Prüfen"
+                    text={isMobileView ? '' : 'Prüfen'}
                     title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
                     color="success"
                     icon={mdiCheckboxMarkedCircleAutoOutline}
@@ -37,14 +40,14 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
             )}
             {doc.assessed && (
                 <Confirm
-                    text="Zurücksetzen"
+                    text={isMobileView ? '' : 'Zurücksetzen'}
                     title="Antwort zurücksetzen."
                     color="secondary"
                     icon={mdiRestore}
                     iconSide="left"
                     size={0.7}
                     className={styles.checkButton}
-                    confirmText="Wirklich zurücksetzen?"
+                    confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
                         doc.assessed = false;
                         doc.resetAllAnswers();

@@ -19,6 +19,7 @@ import QuestionControls from '../Controls';
 import { FeedbackAdmonition, FeedbackBadge } from '../Feedback';
 import { ScoringFunction } from '../helpers/scoring';
 import { assess } from '../helpers/assessment';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 export interface ChoiceAnswerProps {
     id: string;

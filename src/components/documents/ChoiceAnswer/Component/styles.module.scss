@@ -49,6 +49,12 @@
         .title {
             font-weight: bold;
             font-size: 1.1em;
+            margin-right: 1em;
+            min-width: 2em;
+            flex-shrink: 1;
+            overflow: hidden;
+            text-wrap: nowrap;
+            text-overflow: ellipsis;
         }
 
         .syncStatus {
