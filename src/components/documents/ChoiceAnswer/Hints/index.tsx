@@ -1,8 +1,8 @@
-import { mdiClose, mdiCloseCircleOutline, mdiInformationOutline } from '@mdi/js';
+import { mdiCloseCircleOutline, mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
-import ChoiceAnswerDocument, { ChoiceAnswerScoring } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';

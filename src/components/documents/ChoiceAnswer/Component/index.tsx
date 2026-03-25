@@ -13,13 +13,11 @@ import useIsBrowser from '@docusaurus/useIsBrowser';
 import { QuizContext } from '../Quiz';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
-import _ from 'es-toolkit/compat';
 import { createRandomOrderMap } from '../helpers/shared';
 import QuestionControls from '../Controls';
 import { FeedbackBadge } from '../Feedback';
 import { ScoringFunction } from '../helpers/scoring';
 import { assess } from '../helpers/assessment';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 export interface ChoiceAnswerProps {
     id: string;
@@ -165,6 +163,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         <div
             className={clsx('card', styles.choiceAnswerContainer, feedbackStyle)}
             style={{ order: questionOrder }}
+            tabIndex={questionOrder}
         >
             <div className={clsx('card__header', styles.header, feedbackStyle)}>
                 <span className={clsx(styles.title)}>{displayTitle}</span>
@@ -225,12 +224,13 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
                 <input
                     type={multiple ? 'checkbox' : 'radio'}
                     id={optionId}
-                    name={optionId} // Use a radioGroup name here to make sure keyboard navigation still works.
+                    name={multiple ? optionId : `${doc?.id}-q${questionIndex}`}
                     value={optionId}
                     onChange={(e) => onChange(optionIndex, e.target.checked)}
                     checked={isChecked}
                     className={styles.checkbox}
                     disabled={!doc?.canUpdateAnswer}
+                    tabIndex={optionOrder}
                 />
             </div>
             <label htmlFor={optionId}>{children}</label>

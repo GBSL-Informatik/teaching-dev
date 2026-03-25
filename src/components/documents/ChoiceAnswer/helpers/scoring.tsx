@@ -1,6 +1,5 @@
 import { ChoiceAnswerScoring, ChoiceAnswerCorrectness } from '@tdev-models/documents/ChoiceAnswer';
 import clsx from 'clsx';
-import _ from 'es-toolkit/compat';
 
 export type ScoringFunction = (
     result: ChoiceAnswerCorrectness,
