@@ -173,6 +173,8 @@ interface QuizScoreProps {
 }
 
 export const QuizScore = observer(({ doc, minPoints }: QuizScoreProps) => {
+    const isMobileView = useIsMobileView();
+
     if (!doc || doc.assessments.size === 0) {
         return;
     }
@@ -195,11 +197,28 @@ export const QuizScore = observer(({ doc, minPoints }: QuizScoreProps) => {
         totalPointsAchieved = Math.max(totalPointsAchieved, minPoints);
     }
 
-    return (
-        <span className={clsx('badge badge--primary', styles.pointsBadge)}>
+    const wideScreenBadge = (
+        <>
             {!doc.assessed && <span>Zu erreichen: </span>}
             {doc.assessed && <span>Ergebnis: {totalPointsAchieved} /</span>} {totalMaxPoints}{' '}
             {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
+        </>
+    );
+
+    const mobileViewBadge = (
+        <>
+            {!doc.assessed && <span>Max.: {totalMaxPoints}p</span>}
+            {doc.assessed && (
+                <span>
+                    {totalPointsAchieved}/{totalMaxPoints}p
+                </span>
+            )}
+        </>
+    );
+
+    return (
+        <span className={clsx('badge badge--primary', styles.pointsBadge)}>
+            {isMobileView ? mobileViewBadge : wideScreenBadge}
         </span>
     );
 });

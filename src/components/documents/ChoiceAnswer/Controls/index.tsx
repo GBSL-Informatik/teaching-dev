@@ -70,6 +70,8 @@ interface QuizControlsProps {
 }
 
 export const QuizControls = observer(({ doc }: QuizControlsProps) => {
+    const isMobileView = useIsMobileView();
+
     return (
         <div className={styles.quizControlsContainer}>
             {!doc.assessed && doc.assessments.size > 0 && (
@@ -81,7 +83,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     iconSide="left"
                     size={0.7}
                     className={styles.checkButton}
-                    confirmText="Quiz beenden und Antworten prüfen?"
+                    confirmText={isMobileView ? 'Wirklich beenden?' : 'Quiz beenden und Antworten prüfen?'}
                     onConfirm={() => (doc.assessed = true)}
                 />
             )}
@@ -94,7 +96,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     iconSide="left"
                     size={0.7}
                     className={styles.checkButton}
-                    confirmText="Wirklich zurücksetzen?"
+                    confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
                         doc.assessed = false;
                         doc.resetAllAnswers();
