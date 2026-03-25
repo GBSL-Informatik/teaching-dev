@@ -72,7 +72,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const randomizeOptions =
         props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
     const isBrowser = useIsBrowser();
-    const [feedbackStyle, setFeedbackStyle] = React.useState({});
 
     React.useEffect(() => {
         if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
@@ -103,12 +102,6 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             props.numOptions,
             scoringFunction
         );
-        setFeedbackStyle({
-            [styles.correct]: doc.assessed && assessment.correctness === ChoiceAnswerCorrectness.Correct,
-            [styles.partiallyCorrect]:
-                doc.assessed && assessment.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
-            [styles.incorrect]: doc.assessed && assessment.correctness === ChoiceAnswerCorrectness.Incorrect
-        });
         doc.updateAssessment(questionIndex, assessment);
     }, [doc, doc?.choices, doc?.assessed]);
 
@@ -119,6 +112,14 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     if (!isBrowser) {
         return <Loader />;
     }
+
+    const assessment = doc.getAssessment(questionIndex);
+    const feedbackStyle = {
+        [styles.correct]: doc.assessed && assessment?.correctness === ChoiceAnswerCorrectness.Correct,
+        [styles.partiallyCorrect]:
+            doc.assessed && assessment?.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
+        [styles.incorrect]: doc.assessed && assessment?.correctness === ChoiceAnswerCorrectness.Incorrect
+    };
 
     const childrenArray = React.Children.toArray(props.children);
     const beforeBlock = childrenArray.find(
