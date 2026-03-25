@@ -244,15 +244,16 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
                 disabled={!doc?.canUpdateAnswer}
             />
             <label htmlFor={optionId}>{children}</label>
-            {!multiple && doc?.canUpdateAnswer && isChecked && (
+            {!multiple && (
                 <Button
-                    text="Löschen"
                     color="danger"
                     icon={mdiTrashCanOutline}
                     iconSide="left"
                     size={0.7}
                     onClick={() => onChange(optionIndex, false)}
-                    className={clsx(styles.btnDeleteAnswer)}
+                    className={clsx(styles.btnDeleteAnswer, {
+                        [styles.visible]: doc?.canUpdateAnswer && isChecked
+                    })}
                 />
             )}
         </div>

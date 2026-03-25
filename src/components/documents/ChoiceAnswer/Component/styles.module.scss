@@ -84,7 +84,7 @@
         .choiceAnswerOptionContainer {
             display: flex;
             flex-direction: row;
-            align-items: center;
+            align-items: baseline;
 
             p {
                 margin: 0;
@@ -105,6 +105,11 @@
             font-size: 0.8em;
             opacity: 0;
             transition: opacity $btnRemoveAnswerTransitionDuration;
+            visibility: hidden;
+
+            &.visible {
+                visibility: visible;
+            }
         }
 
         &:hover .btnDeleteAnswer {
