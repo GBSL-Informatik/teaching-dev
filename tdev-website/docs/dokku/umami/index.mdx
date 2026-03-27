@@ -1,0 +1,88 @@
+---
+page_id: 9a611adc-e9a4-4b1f-8da3-09e9a80ceabb
+---
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Umami
+
+> Umami is a simple, easy to use, self-hosted web analytics solution. The goal is to provide you with a friendlier, privacy-focused alternative to Google Analytics and a free, open-sourced alternative to paid solutions. [^1]
+
+Siehe das offizielle [docker-compose.yml](https://github.com/mikecao/umami/blob/master/docker-compose.yml) file, um [Umami](https://umami.is/) aufzusetzen.
+.
+
+
+<DynamicInput name="app" default='umami' monospace />
+<DynamicInput name="domain" default='umami.domain.ch' monospace />
+<DynamicInput name="COLLECT_API_ENDPOINT" default='/api/tellme' monospace />
+<DynamicInput name="TRACKER_SCRIPT_NAME" default='tell-me.js' monospace />
+
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+
+    # create and link postgres db
+    dokku postgres:create {{app}}
+    dokku postgres:link {{app}} {{app}}
+
+    # connect to your db
+    dokku postgres:connect {{app}}
+    ```
+</TemplateCode>
+
+Umami benötigt die Postgres-Erweiterung `pgcrypto` für die Generierung von UUIDs. Diese muss manuell in der Datenbank aktiviert werden, bevor Umami korrekt funktioniert. Verbinde dich dazu mit der Postgres-Datenbank und führe die folgenden SQL-Befehle aus:
+
+
+```sql
+-- in postgres, create extension for uuid generation
+CREATE EXTENSION pgcrypto;
+-- ensure it works:
+SELECT gen_random_uuid();
+-- exit
+exit
+```
+
+Anschliessend wie folgt weiter:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+
+    # set env variables
+    dokku config:set {{app}} HASH_SALT=$(openssl rand -hex 32)
+    dokku config:set {{app}} DATABASE_TYPE=postgresql
+
+    # set port mapping
+    dokku ports:set {{app}} http:80:3000
+
+    # add a domain
+    dokku domains:set {{app}} {{domain}}
+
+    # optional: disable umami telemetry
+    dokku config:set --no-restart {{app}} DISABLE_TELEMETRY=1
+    # optional: set custom script name. Default is umami (might be known by ad blockers)
+    dokku config:set --no-restart {{app}} TRACKER_SCRIPT_NAME={{TRACKER_SCRIPT_NAME}}
+    # optional: set custom collect api endpoint (default: /api/collect)
+    dokku config:set --no-restart {{app}} COLLECT_API_ENDPOINT="{{COLLECT_API_ENDPOINT}}"
+
+    # deploy from image
+    dokku git:from-image {{app}} docker.umami.is/umami-software/umami:postgresql-latest
+    ```
+</TemplateCode>
+
+
+## Updating
+
+<DynamicInput name="app" default='umami' monospace />
+<DynamicInput name="domain" default='umami.domain.ch' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    # pull the latest image
+    docker pull docker.umami.dev/umami-software/umami:postgresql-latest
+
+    # rebuild umami
+    dokku ps:rebuild umami
+    ```
+</TemplateCode>
+
+[^1]: Reference: [Umami](https://umami.is/)
