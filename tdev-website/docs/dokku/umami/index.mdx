@@ -73,7 +73,6 @@ Anschliessend wie folgt weiter:
 ## Updating
 
 <DynamicInput name="app" default='umami' monospace />
-<DynamicInput name="domain" default='umami.domain.ch' monospace />
 
 <TemplateCode>
     ```bash title="root@dokku"
@@ -81,7 +80,7 @@ Anschliessend wie folgt weiter:
     docker pull docker.umami.dev/umami-software/umami:postgresql-latest
 
     # rebuild umami
-    dokku ps:rebuild umami
+    dokku ps:rebuild {{app}}
     ```
 </TemplateCode>
 

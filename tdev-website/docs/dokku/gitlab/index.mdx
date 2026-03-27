@@ -90,6 +90,7 @@ Die `config.rb`-Datei wird von Gitlab automatisch beim ersten Start generiert. D
     ```
 </TemplateCode>
 
+<TemplateCode>
 ```rb title="/var/lib/dokku/data/storage/{{app}}/config/gitlab.rb"
 # Performance optimizations
 # @see https://docs.gitlab.com/omnibus/settings/memory_constrained_envs/
@@ -143,6 +144,7 @@ puma['exporter_enabled'] = false
 redis_exporter['enable'] = false
 sidekiq['metrics_enabled'] = false
 ```
+</TemplateCode>
 
 Danach muss die Konfiguration mit folgendem Befehl neu geladen werden:
 
