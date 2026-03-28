@@ -1,0 +1,139 @@
+---
+page_id: 9a611adc-e9a4-4b1f-8da3-09e9a80ceabb
+---
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Planka v1.26.3
+
+:::warning[Veraltete Version]
+Dies ist die alte, freie Version von Planka - mittlerweilen gibt es nur noch eine eingeschränkte freie Version (v2).
+:::
+[Planka](https://planka.app/)
+
+## Dokku installation
+
+- [docker-compose.yml](https://github.com/plankanban/planka/blob/master/docker-compose.yml)
+- [Docker Installation](https://docs.planka.cloud/docs/installation/docker/production_version)
+
+
+<DynamicInput name="app" default='planka' monospace />
+<DynamicInput name="domain" default='planka.domain.ch' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+
+    dokku postgres:create {{app}}
+    dokku postgres:link {{app}} {{app}}
+
+    dokku config:set --no-restart {{app}} BASE_URL=https://{{domain}}
+    dokku domains:set {{app}} {{domain}}
+    dokku ports:set {{app}} http:80:1337
+
+    # create docker volumes for planka's persistent storage needs
+    docker volume create {{app}}-user-avatars
+    docker volume create {{app}}-project-background-images
+    docker volume create {{app}}-attachments
+
+    # mount the docker volumes
+    dokku storage:mount {{app}} {{app}}-user-avatars:/app/public/user-avatars
+    dokku storage:mount {{app}} {{app}}-project-background-images:/app/public/project-background-images
+    dokku storage:mount {{app}} {{app}}-attachments:/app/private/attachments
+
+    # edit env variables
+    nano /home/dokku/{{app}}/ENV
+    ```
+</TemplateCode>
+
+
+<DynamicInput name="DEFAULT_ADMIN_EMAIL" default='admin@foo.ch' monospace />
+<DynamicInput name="DEFAULT_ADMIN_NAME" default='Admin' monospace />
+<DynamicInput name="DEFAULT_ADMIN_PASSWORD" monospace />
+<DynamicInput name="DEFAULT_ADMIN_USERNAME" default='admin' monospace />
+<DynamicInput name="OIDC_CLIENT_ID" monospace />
+<DynamicInput name="OIDC_CLIENT_SECRET" monospace />
+<DynamicInput name="OIDC_ISSUER" default='https://login.microsoftonline.com/<TENANT-ID>/v2.0' monospace /> 
+<DynamicInput name="SECRET_KEY_BASE" default='' monospace />
+<DynamicInput name="SMTP_FROM" default='Planka <mail@domain.ch>' monospace />
+<DynamicInput name="SMTP_HOST" default='authsmtp.securemail.pro' monospace />
+<DynamicInput name="SMTP_PASSWORD" default='B^\$sKcTSAAb3zwAB%sqnC&^bxvEL2GG4' monospace />
+<DynamicInput name="SMTP_PORT" default='587' monospace />
+<DynamicInput name="SMTP_USER" monospace />
+
+<TemplateCode>
+    ```bash title="/home/dokku/{{app}}/ENV"
+    DEFAULT_ADMIN_EMAIL={{DEFAULT_ADMIN_EMAIL}}
+    DEFAULT_ADMIN_NAME={{DEFAULT_ADMIN_NAME}}
+    DEFAULT_ADMIN_PASSWORD={{DEFAULT_ADMIN_PASSWORD}}
+    DEFAULT_ADMIN_USERNAME={{DEFAULT_ADMIN_USERNAME}}
+    NODE_ENV="production"
+    OIDC_CLIENT_ID={{OIDC_CLIENT_ID}}
+    OIDC_CLIENT_SECRET={{OIDC_CLIENT_SECRET}}
+    OIDC_IGNORE_ROLES="true"
+    OIDC_ISSUER={{OIDC_ISSUER}}
+    OIDC_SCOPES="openid profile email"
+    SECRET_KEY_BASE={{SECRET_KEY_BASE}}
+    SMTP_FROM={{SMTP_FROM}}
+    SMTP_HOST={{SMTP_HOST}}
+    SMTP_PASSWORD={{SMTP_PASSWORD}}
+    SMTP_PORT={{SMTP_PORT}}
+    SMTP_SECURE="false"
+    SMTP_USER={{SMTP_USER}}
+    ```
+</TemplateCode>
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku git:from-image {{app}} ghcr.io/plankanban/planka:1.26.3
+    dokku letsencrypt:enable {{app}}
+    ```
+</TemplateCode>
+
+<TemplateCode>
+```yaml title="backup_config.yml"
+planka:
+  files:
+    - "/home/dokku/{{app}}/ENV"
+  folders:
+    - "/tmp/planka-backup/volumes"
+  commands:
+    volume-user-avatars:
+      cmd: "docker run --rm --volumes-from {{app}}.web.1 -v /tmp/planka-backup/volumes:/backup ubuntu cp -r /app/public/user-avatars /backup/user-avatars"
+      stage: "pre-backup"
+    volume-project-background-images:
+      cmd: "docker run --rm --volumes-from {{app}}.web.1 -v /tmp/planka-backup/volumes:/backup ubuntu cp -r /app/public/project-background-images /backup/project-background-images"
+      stage: "pre-backup"
+    volume-attachments:
+      cmd: "docker run --rm --volumes-from {{app}}.web.1 -v /tmp/planka-backup/volumes:/backup ubuntu cp -r /app/private/attachments /backup/attachments"
+      stage: "pre-backup"
+    postgres:
+      cmd: "dokku postgres:export {{app}}"
+      to: "/database/{{app}}.dump"
+      stage: backup
+    cleanup:
+      cmd: "rm -rf /tmp/planka-backup"
+      stage: "post-backup"
+```
+</TemplateCode>
+
+## Export Volumes
+<DynamicInput name="app" default='planka' monospace />
+<DynamicInput name="BACKUP_PATH" default='/tmp/planka-backup' monospace />
+<TemplateCode>
+```bash
+docker run --rm --volumes-from {{app}}.web.1 -v {{BACKUP_PATH}}:/backup ubuntu cp -r /app/public/user-avatars /backup/user-avatars
+docker run --rm --volumes-from {{app}}.web.1 -v {{BACKUP_PATH}}:/backup ubuntu cp -r /app/public/project-background-images /backup/project-background-images
+docker run --rm --volumes-from {{app}}.web.1 -v {{BACKUP_PATH}}:/backup ubuntu cp -r /app/private/attachments /backup/attachments
+```
+</TemplateCode>
+
+## Restore Backup
+<DynamicInput name="app" default='planka' monospace />
+<DynamicInput name="BACKUP_PATH" default='/tmp/planka-backup' monospace />
+<TemplateCode>
+```bash
+docker run --rm --volumes-from {{app}}.web.1 -v {{BACKUP_PATH}}:/backup ubuntu cp -rf /backup/user-avatars /app/public/
+docker run --rm --volumes-from {{app}}.web.1 -v {{BACKUP_PATH}}:/backup ubuntu cp -rf /backup/project-background-images /app/public/
+docker run --rm --volumes-from {{app}}.web.1 -v {{BACKUP_PATH}}:/backup ubuntu cp -rf /backup/attachments /app/private/
+```
+</TemplateCode>
