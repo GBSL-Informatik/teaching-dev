@@ -1,0 +1,122 @@
+---
+page_id: fed88dea-f443-46ed-a8e7-152f7325490c
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Beszel
+
+[Beszel](https://beszel.dev/) auf Dokku deployen.
+
+Referenz
+: [Hub](https://beszel.dev/guide/hub-installation)
+: [Agent](https://beszel.dev/guide/agent-installation)
+
+## Beszel Hub
+
+<DynamicInput name="app" default='beszel-hub' monospace />
+<DynamicInput name="domain" default='beszel-hub.domain.ch' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+
+    dokku domains:set {{app}} {{domain}}
+    dokku ports:add {{app}} http:80:8090
+
+    dokku storage:ensure-directory --chown root {{app}}
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/data
+    chown -R 0:0 /var/lib/dokku/data/storage/{{app}}/data
+    # for local agent
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/beszel_socket
+    chown -R 0:0 /var/lib/dokku/data/storage/{{app}}/beszel_socket
+
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/data:/beszel_data
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/beszel_socket:/beszel_socket
+
+    # create a new docker network for hub and agent
+    dokku network:create {{app}}-net
+    dokku network:set {{app}} attach-post-deploy {{app}}-net
+
+    # Image von Docker Hub ziehen und zuweisen
+    dokku git:from-image {{app}} henrygd/beszel:latest
+
+    dokku letsencrypt:enable {{app}}
+    ```
+</TemplateCode>
+
+## Beszel local Agent
+
+:::warning[Auf demselben Server wie der Hub]
+Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselben Server wie der Hub gedacht. Für die Installation eines Remote-Agenten siehe weiter unten.
+:::
+
+<DynamicInput name="app" default='beszel-hub' monospace />
+<DynamicInput name="app-agent" default='beszel-agent' monospace />
+<DynamicInput name="TOKEN" monospace />
+<DynamicInput name="KEY" monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app-agent}}
+
+    dokku storage:ensure-directory --chown root {{app-agent}}
+    mkdir -p /var/lib/dokku/data/storage/{{app-agent}}/data
+    chown -R 0:0 /var/lib/dokku/data/storage/{{app-agent}}/data
+
+
+    dokku storage:mount {{app-agent}} /var/lib/dokku/data/storage/{{app-agent}}/data:/var/lib/beszel-agent
+    dokku storage:mount {{app-agent}} /var/run/docker.sock:/var/run/docker.sock:ro
+    # shared folder with hub
+    dokku storage:mount {{app-agent}} /var/lib/dokku/data/storage/{{app}}/beszel_socket:/beszel_socket
+
+    dokku config:set --no-restart {{app-agent}} HUB_URL="http://{{app}}.web:8090"
+    dokku config:set --no-restart {{app-agent}} LISTEN="/beszel_socket/beszel.sock"
+    dokku config:set --no-restart {{app-agent}} KEY="{{KEY}}"
+    dokku config:set --no-restart {{app-agent}} TOKEN="{{TOKEN}}"
+
+
+    dokku network:set {{app-agent}} attach-post-deploy {{app}}-net
+
+    # Image von Docker Hub ziehen und zuweisen
+    dokku git:from-image {{app-agent}} henrygd/beszel-agent:latest
+    ```
+</TemplateCode>
+
+
+## Beszel remote Agent
+
+<DynamicInput name="remote-agent" default='beszel-agent' monospace />
+<DynamicInput name="HUB_URL" monospace default="https://beszel.domain.ch" />
+<DynamicInput name="TOKEN" monospace />
+<DynamicInput name="KEY" monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{remote-agent}}
+
+    dokku storage:ensure-directory --chown root {{remote-agent}}
+    mkdir -p /var/lib/dokku/data/storage/{{remote-agent}}/data
+    chown -R 0:0 /var/lib/dokku/data/storage/{{remote-agent}}/data
+
+
+    dokku storage:mount {{remote-agent}} /var/lib/dokku/data/storage/{{remote-agent}}/data:/var/lib/beszel-agent
+    dokku storage:mount {{remote-agent}} /var/run/docker.sock:/var/run/docker.sock:ro
+
+    dokku config:set --no-restart {{remote-agent}} HUB_URL="{{HUB_URL}}"
+    dokku config:set --no-restart {{remote-agent}} LISTEN=45876
+    dokku config:set --no-restart {{remote-agent}} KEY="{{KEY}}"
+    dokku config:set --no-restart {{remote-agent}} TOKEN="{{TOKEN}}"
+
+    # no domain for remote agent
+    dokku domains:clear {{remote-agent}}
+
+    # Image von Docker Hub ziehen und zuweisen
+    dokku git:from-image {{remote-agent}} henrygd/beszel-agent:latest
+    ```
+</TemplateCode>
+
+
+## Einschränkungen
+
+- Die Agent-Installation funktioniert nicht für die Bandbreitenüberwachung, da der Zugriff auf die Docker-API eingeschränkt bzw. nicht konfiguriert ist (um mögliche Probleme mit Dokku zu vermeiden).
