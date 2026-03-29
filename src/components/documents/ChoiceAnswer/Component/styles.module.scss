@@ -1,0 +1,132 @@
+@use '../_vars' as *;
+
+.choiceAnswerContainer {
+    position: relative;
+    margin-bottom: 1em;
+
+    p {
+        margin: 0 0 0.5em 0;
+    }
+
+    $boxShadowDefaults: 0 0 8px;
+
+    &.correct {
+        box-shadow: $boxShadowDefaults var(--ifm-color-success);
+
+        .header {
+            background-color: var(--ifm-color-success-contrast-background);
+        }
+    }
+
+    &.partiallyCorrect {
+        box-shadow: $boxShadowDefaults var(--ifm-color-warning);
+
+        .header {
+            background-color: var(--ifm-color-warning-contrast-background);
+        }
+    }
+
+    &.incorrect {
+        box-shadow: $boxShadowDefaults var(--ifm-color-danger-lighter);
+
+        .header {
+            background-color: var(--ifm-color-danger-contrast-background);
+        }
+    }
+
+    .header {
+        background-color: var(--ifm-color-secondary-lightest);
+        padding: $container-padding-top-bottom $container-padding-left-right;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        h3 {
+            margin: 0;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-right: 1em;
+            min-width: 2em;
+            flex-shrink: 1;
+            overflow: hidden;
+            text-wrap: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .syncStatus {
+            position: static;
+        }
+
+        .controlsAndFeedback {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5em;
+        }
+    }
+}
+
+.optionsBlock {
+    $btnRemoveAnswerTransitionDuration: 0.15s;
+
+    &:not(:last-child) {
+        margin-bottom: 1em;
+    }
+
+    .optionsContainer {
+        display: flex;
+        flex-direction: column;
+
+        .choiceAnswerOptionContainer {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+
+            p {
+                margin: 0;
+            }
+
+            .checkboxContainer {
+                display: flex;
+                align-items: center;
+                margin-top: 0.23em;
+            }
+
+            label {
+                margin-left: 0.2em;
+            }
+
+            &:hover .btnDeleteAnswer {
+                opacity: 1;
+                transition: opacity $btnRemoveAnswerTransitionDuration;
+            }
+        }
+
+        .btnDeleteAnswerContainer {
+            display: flex;
+            align-items: center;
+            margin-left: 0.5em;
+            margin-top: 0.15em;
+
+            .btnDeleteAnswer {
+                font-size: 0.8em;
+                opacity: 0;
+                transition: opacity $btnRemoveAnswerTransitionDuration;
+                visibility: hidden;
+
+                &.visible {
+                    visibility: visible;
+                }
+            }
+        }
+
+        &:hover .btnDeleteAnswer {
+            opacity: 0.6;
+            transition: opacity $btnRemoveAnswerTransitionDuration;
+        }
+    }
+}

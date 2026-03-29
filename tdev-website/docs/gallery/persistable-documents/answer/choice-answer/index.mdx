@@ -1,0 +1,361 @@
+---
+page_id: 08ac6803-b890-4608-9d4e-28f334addfb0
+tags:
+  - persistable
+---
+
+import PermissionsPanel from "@tdev-components/PermissionsPanel"
+import BrowserWindow from '@tdev-components/BrowserWindow';
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+
+# Choice Answer
+Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
+
+:::warning[Voraussetzung]
+Das [remark-transform-choice-answer](../../../../app-architecture/remark-plugins/remark-transform-choice-answer/index.mdx) Plugin muss installiert und in der Docusaurus-Konfiguration aktiviert sein, damit die oben beschriebene MDX-Syntax korrekt in die entsprechenden React-Komponenten transformiert werden kann.
+:::
+
+## Standalone-Fragen
+### Single-Choice
+Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
+
+```tsx
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+
+<ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+    > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+    1. Steve **Jobs**
+    2. Tim Berners-Lee
+    3. Ada __Lovelace__
+    4. Alain Berset :mdi[cheese]
+    5. Charles Bartowski
+</ChoiceAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
+        > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+        1. Steve **Jobs**
+        2. Tim Berners-Lee
+        3. Ada __Lovelace__
+        4. Alain Berset :mdi[cheese]
+        5. Charles Bartowski
+    </ChoiceAnswer>
+</BrowserWindow>
+
+Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `correct`-Liste kann festgelegt werden, welche Antwortmöglichkeit(en) als korrekt gilt/gelten. Dabei ist `1` die erste Antwortmöglichkeit, und so weiter. Im obigen Beispiel ist also nur die zweite Antwort (Tim Berners-Lee) korrekt. Die Verwendung eines Blockzitats (`>`) für die Frage dient lediglich der optischen Gestaltung und ist nicht zwingend notwendig.
+
+Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
+
+```tsx
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+
+<ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
+    > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+    1. Steve **Jobs**
+    2. Tim Berners-Lee
+    3. Ada __Lovelace__
+    4. Alain Berset :mdi[cheese]
+    5. Charles Bartowski
+</ChoiceAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
+        > Wir gilt als Erfinder des World Wide Web (WWW)?
+
+        1. Steve **Jobs**
+        2. Tim Berners-Lee
+        3. Ada __Lovelace__
+        4. Alain Berset :mdi[cheese]
+        5. Charles Bartowski
+    </ChoiceAnswer>
+</BrowserWindow>
+
+Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  gespeichert. Dadurch bleibt die Reihenfolge der Antwortmöglichkeiten auch bei einem erneuten Laden der Seite gleich. Wird das Flag temporär entfernt, gehen die Antworten wieder zurück in die ursprüngliche Reihenfolge. Die persistierte Reihenfolge bleibt im Hintergrund aber erhalten und wird wiederhergestellt, sobald das Flag erneut gesetzt wird.
+
+Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
+
+```tsx
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+
+<ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+### Multiple-Choice
+Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
+
+```tsx
+<ChoiceAnswer correct={[1, 4, 5]} multiple title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
+    > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+    
+    1. 2 ist die einzige gerade Primzahl.
+    2. Jede Primzahl ist ungerade.
+    3. 1 ist eine Primzahl.
+    4. 5 ist eine Primzahl.
+    5. Primzahlen sind nur durch 1 und sich selbst teilbar.
+
+    **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
+</ChoiceAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
+        > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
+        
+        1. 2 ist die einzige gerade Primzahl.
+        2. Jede Primzahl ist ungerade.
+        3. 1 ist eine Primzahl.
+        4. 5 ist eine Primzahl.
+        5. Primzahlen sind nur durch 1 und sich selbst teilbar.
+
+        **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
+    </ChoiceAnswer>
+</BrowserWindow>
+
+Hier wird zusätzlich die `title`-Property verwendet, um der Frage einen Titel zu geben. Zudem wird ein Infoblock mit einer Bewertungsinformation eingeblendet.
+
+:::info[Randomisierung]
+Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Aufgaben genau gleich wie bei Single-Choice-Aufgaben.
+:::
+
+### Wahr/Falsch
+Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
+
+```tsx
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+
+<TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
+    > Die Erde ist flach.
+</TrueFalseAnswer>
+```
+
+<BrowserWindow>
+    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
+        Die Erde ist flach.
+    </TrueFalseAnswer>
+</BrowserWindow>
+
+:::info[Randomisierung]
+Bei Wahr/Falsch-Fragen gibt es keine Randomisierung der Antwortmöglichkeiten, da es nur zwei fixe Optionen gibt. Dies gilt sowohl bei Standalone-Fragen, als auch bei Wahr/Falsch-Fragen innerhalb eines Quizzes.
+:::
+
+### Bewertung
+Fragen können mit Punkten bewertet werden. Dazu wird die `scoring`-Property verwendet, der man eine vordefinierte oder benutzerdefinierte Bewertungsfunktion ([vgl. `ScoringFunction`](#scoringfunction)) zuweist.
+
+:::info[Bewertungshinweis]
+Bewertungsfunktionen können einen Bewertungshinweis bereitstellen. Bei den vordefinierten Bewertungsfunktionen wird dieser automatisch aus den entsprechenden Parametern generiert. Angezeigt wird der Bewertungshinweis mit einem Klick auf den Punktezahl-Badge im Header der Frage.
+:::
+
+```tsx
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+
+<ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
+    > Was ist die Hauptstadt von Frankreich?
+    
+    1. Berlin
+    2. Paris
+    3. Rom
+    4. Madrid
+</ChoiceAnswer>
+
+<ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="c1f5b5e5-13b9-4d09-831d-215d4c04ada5">
+    > Wählen Sie alle Primzahlen aus.
+
+    1. 1
+    2. 2
+    3. 3
+    4. 4
+    5. 5
+</ChoiceAnswer>
+
+<TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="75fac390-8846-47b5-8028-52c4258919fc">
+    > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
+</TrueFalseAnswer>
+```
+
+<BrowserWindow>
+    <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
+        > Was ist die Hauptstadt von Frankreich?
+        
+        1. Berlin
+        2. Paris
+        3. Rom
+        4. Madrid
+    </ChoiceAnswer>
+
+    <ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="c1f5b5e5-13b9-4d09-831d-215d4c04ada5">
+        > Wählen Sie alle Primzahlen aus.
+
+        1. 1
+        2. 2
+        3. 3
+        4. 4
+        5. 5
+    </ChoiceAnswer>
+
+    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="75fac390-8846-47b5-8028-52c4258919fc">
+        > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
+    </TrueFalseAnswer>
+</BrowserWindow>
+
+
+## Quizzes
+Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
+
+```tsx
+import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
+import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+
+<Quiz scoring={points(1)} id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" randomizeQuestions randomizeOptions>
+  <ChoiceAnswer correct={[5]}>
+      > In welchem Jahr war 2024?
+      
+      1. 1965
+      2. 1983
+      3. 1991
+      4. 2000
+      5. 2024
+  </ChoiceAnswer>
+
+  <ChoiceAnswer correct={[2, 3]} scoring={points(2)}>
+      > Wählen Sie eine korrekte Aussage aus.
+
+      1. Wenn Daten in der Cloud (z.B. OneDrive) gespeichert werden, ist kein Backup mehr nötig.
+      2. Cloud-Dienste wie OneDrive erlauben es uns, Dateien mit anderen Personen zu teilen.
+      3. Cloud-Dienste machen es einfacher, Dateien zwischen verschiedenen Geräten zu synchronisieren.
+      4. Das Abspeichern sensibler Daten auf Cloud-Diensten ist immer unproblematisch, da diese ja sicher sind.
+      5. Alle der oben genannten Aussagen sind korrekt.
+  </ChoiceAnswer>
+
+  <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
+      > HTML ist eine Programmiersprache.
+  </TrueFalseAnswer>
+  
+  <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple>
+      > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+      
+      1. SMTP
+      2. FTP
+      3. IMAP
+      4. HTTP
+  </ChoiceAnswer>
+
+  <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()}>
+      > Wann ist der Sinn des Lebens?
+      
+      1. Immer im März
+      2. 42
+      3. Das Bundeshaus
+      4. Nein
+      5. Ja, aber nur manchmal
+  </ChoiceAnswer>
+</Quiz>
+```
+
+<BrowserWindow>
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" >
+        <ChoiceAnswer correct={[5]}>
+            > In welchem Jahr war 2024?
+            
+            1. 1965
+            2. 1983
+            3. 1991
+            4. 2000
+            5. 2024
+        </ChoiceAnswer>
+
+        <ChoiceAnswer correct={[2, 3]} scoring={points(2)}>
+            > Wählen Sie eine korrekte Aussage aus.
+
+            1. Wenn Daten in der Cloud (z.B. OneDrive) gespeichert werden, ist kein Backup mehr nötig.
+            2. Cloud-Dienste wie OneDrive erlauben es uns, Dateien mit anderen Personen zu teilen.
+            3. Cloud-Dienste machen es einfacher, Dateien zwischen verschiedenen Geräten zu synchronisieren.
+            4. Das Abspeichern sensibler Daten auf Cloud-Diensten ist immer unproblematisch, da diese ja sicher sind.
+            5. Alle der oben genannten Aussagen sind korrekt.
+        </ChoiceAnswer>
+
+        <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
+            > HTML ist eine Programmiersprache.
+        </TrueFalseAnswer>
+        
+        <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple>
+            > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
+            
+            1. SMTP
+            2. FTP
+            3. IMAP
+            4. HTTP
+        </ChoiceAnswer>
+
+        <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()}>
+            > Wann ist der Sinn des Lebens?
+            
+            1. Immer im März
+            2. 42
+            3. Das Bundeshaus
+            4. Nein
+            5. Ja, aber nur manchmal
+        </ChoiceAnswer>
+    </Quiz>
+</BrowserWindow>
+
+### Bewertung
+In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene definiert werden. Sie gilt dann für alle Fragen innerhalb des Quizzes, sofern diese nicht durch die `scoring`-Property der einzelnen Fragen überschrieben wird. 
+
+### Randomisierung
+Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten innerhalb jeder Frage randomisiert. Die Randomisierung funktioniert dabei genauso wie bei den Standalone-Fragen (siehe oben).
+
+## Eigenschaften und Funktionen
+### Eigenschaften der `ChoiceAnswer`
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
+| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
+| `scoring` | `ScoringFunction` | Übersteuert die `ScoringFunction` des übergeordneten Quizzes für diese spezifische Frage. |
+| `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
+| `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
+
+### Eigenschaften des `Quiz`
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
+| `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
+| `scoring` | `ScoringFunction` | Eine vordefinierte oder benutzerdefinierte `ScoringFunction`. |
+| `minPoints` | `number` | Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird. Standard: `undefined`. |
+
+### `ScoringFunction`
+Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Scoring-Funktionen sind:
+
+| Funktion | Beschreibung |
+| ------------------|-------------------|
+| `points(forCorrect, forIncorrect, forUnanswered)` | Bewertet die Frage mit einer festen Punktzahl für richtig, falsch und nicht beantwortet. Die Standard-Wertung (`points()`) entspricht `points(1, 0, 0)`.<br/><br/>**Beispiel:** `points(1, -0.5, 0)` bewertet die Frage mit 1 Punkt bei richtiger Antwort, -0.5 Punkte bei falscher Antwort und 0 Punkten wenn nicht beantwortet. |
+| `multipleChoicePoints(max, deduction, allowNegative)` | Bewertet eine Frage mit der gegebenen Maximalpunktzahl (`max`), minus einer Abzugsrate (`deduction`) pro falscher Entscheidung (fälschlicherweise ausgewählt, oder fälschlicherweise nicht ausgewählt). Standardmässig wird die Frage nicht mit weniger als 0 Punkten bewertet, was mit `allowNegative = true` jedoch übersteuert werden kann.<br /><br />**Beispiel:** `multipleChoicePoints(3, 1)` bewertet eine vollständig korrekt beantwortete Frage mit 3 Punkten, vergibt bei einem Fehler noch 2 und bei zwei Fehlern noch 1 Punkt, und sonst 0 Punkte. |
+| `noPoints()` | No-Op-Bewertungsfunktion. Kann verwendet werden, wenn für das übergeordnete Quiz eine Bewertungsfunktion definiert ist, für eine spezifische Frage jedoch keine Punkte vergeben werden sollen. |
+
+## Future Work
+- Ein Quiz soll auf ein Karussell reduziert werden können, um Platz zu sparen.
+- Der Korrektur-Knopf sollte mit einer Permission geschützt werden können. Weiter könnte es nützlich sein, auch das Zurücksetzen eines abgeschlossenen Quiz mit einer Permission zu schützen. In diese Fall sollte statt der Confirmation vermutlich ein Popup angezeigt werden, um Missverständnisse zu vermeiden.
+- Die `correct`-Logik von MC-Fragen könnte so ausgeweitet werden, dass mehrere Korrekt-Sets möglich sind. Das könnte für Fragen der Art `Wählen Sie aus den folgenden 12 Protokollen zwei aus, die zur selben Schicht des TCP/IP-Stacks gehören` nützlich sein. In dem Zusammenhang könnte es auch sinnvoll sein, eine maximale Anzahl an auswählbaren Antworten zu definieren (z.B. `maxSelectable={2}`), um die Schüler:innen darauf hinzuweisen, dass sie nur zwei Antworten auswählen dürfen.
+- Bei jeder Frage kann eine Funktion angegeben werden, die anhand der Bewertung einen entsprechenden Antworthinweis liefert. Bei einer richtigen Antwort könnte so z.B. eine vertiefende Erklärung geliefert, bei einer falschen Antwort ein Lösungshinweis angeboten werden. Dieser Funktion sollten möglichst viele Bewertungsinformationen zur Verfügung stehen (wobei zu berücksichtigen ist, dass es in Zukunft nicht unbedingt möglich sein wird, auf Ebene der einzelnen Antwortoption zu entscheiden, ob diese korrekt ist oder nicht). Es sollen zudem sinnvolle Default-Funktionen bereitgestellt werden, wie dies beispielsweise bei der `ScoringFunction` der Fall ist.
+- Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
+- Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
+- Für Prüfungen könnte es nützlich sein, das Konzept des Quiz zu erweitern, um nicht nur `ChoiceAnswer`-Fragen zu unterstützen, sondern auch andere Fragetypen wie z.B. `TextAnswer` oder `CodeAnswer`. So könnte eine Prüfung aus einem einzigen Quiz bestehen, in dem auch Fragen vorkommen, die nicht automatisch korrigiert werden können. Der Vorteil dabei wäre, dass so auch diese Fragen in die Randomisierung der Reihenfolge mit einbezogen werden könnten. Zudem könnte ein Report (PDF, druckbar) generiert werden, der die Ergebnisse aller automatisch korrigierten Fragen enthält, und für das Feedback zu den manuell zu korrigierenden Fragen einen Platzhalter lässt.
