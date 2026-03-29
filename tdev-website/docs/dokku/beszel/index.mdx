@@ -75,6 +75,8 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
     dokku config:set --no-restart {{app-agent}} KEY="{{KEY}}"
     dokku config:set --no-restart {{app-agent}} TOKEN="{{TOKEN}}"
 
+    # no domain for remote agent
+    dokku domains:clear {{remote-agent}}
 
     dokku network:set {{app-agent}} attach-post-deploy {{app}}-net
 
@@ -87,13 +89,17 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
 ## Beszel remote Agent
 
 <DynamicInput name="remote-agent" default='beszel-agent' monospace />
+<DynamicInput name="agent-domain" default='https://agent-beszel.domain.ch' monospace />
 <DynamicInput name="HUB_URL" monospace default="https://beszel.domain.ch" />
+<DynamicInput name="LISTEN" default='80' monospace />
 <DynamicInput name="TOKEN" monospace />
 <DynamicInput name="KEY" monospace />
 
 <TemplateCode>
     ```bash title="root@dokku"
     dokku apps:create {{remote-agent}}
+    dokku domains:set {{remote-agent}} {{agent-domain}}
+    dokku ports:add {{remote-agent}} http:80:45876
 
     dokku storage:ensure-directory --chown root {{remote-agent}}
     mkdir -p /var/lib/dokku/data/storage/{{remote-agent}}/data
@@ -104,7 +110,7 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
     dokku storage:mount {{remote-agent}} /var/run/docker.sock:/var/run/docker.sock:ro
 
     dokku config:set --no-restart {{remote-agent}} HUB_URL="{{HUB_URL}}"
-    dokku config:set --no-restart {{remote-agent}} LISTEN=45876
+    dokku config:set --no-restart {{remote-agent}} LISTEN="{{LISTEN}}"
     dokku config:set --no-restart {{remote-agent}} KEY="{{KEY}}"
     dokku config:set --no-restart {{remote-agent}} TOKEN="{{TOKEN}}"
 
@@ -113,6 +119,8 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
 
     # Image von Docker Hub ziehen und zuweisen
     dokku git:from-image {{remote-agent}} henrygd/beszel-agent:latest
+
+    # no letsencrypt for remote agent - security is done via the shared secret (KEY) and token
     ```
 </TemplateCode>
 
