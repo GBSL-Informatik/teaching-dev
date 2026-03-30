@@ -98,7 +98,6 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
 <TemplateCode>
     ```bash title="root@dokku"
     dokku apps:create {{remote-agent}}
-    dokku domains:set {{remote-agent}} {{agent-domain}}
     dokku ports:add {{remote-agent}} http:80:45876
 
     dokku storage:ensure-directory --chown root {{remote-agent}}
