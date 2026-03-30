@@ -91,7 +91,7 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
 <DynamicInput name="remote-agent" default='beszel-agent' monospace />
 <DynamicInput name="agent-domain" default='https://agent-beszel.domain.ch' monospace />
 <DynamicInput name="HUB_URL" monospace default="https://beszel.domain.ch" />
-<DynamicInput name="LISTEN" default='80' monospace />
+<DynamicInput name="LISTEN" default='45876' monospace />
 <DynamicInput name="TOKEN" monospace />
 <DynamicInput name="KEY" monospace />
 
@@ -123,8 +123,3 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
     # no letsencrypt for remote agent - security is done via the shared secret (KEY) and token
     ```
 </TemplateCode>
-
-
-## Einschränkungen
-
-- Die Agent-Installation funktioniert nicht für die Bandbreitenüberwachung, da der Zugriff auf die Docker-API eingeschränkt bzw. nicht konfiguriert ist (um mögliche Probleme mit Dokku zu vermeiden).
