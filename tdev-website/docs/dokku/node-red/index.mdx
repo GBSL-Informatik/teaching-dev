@@ -1,0 +1,108 @@
+---
+page_id: 49208f84-f482-4a43-b3f3-845d961cfc5e
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Node-RED
+
+[Node-RED](https://nodered.org/docs/getting-started/docker) auf Dokku deployen.
+
+<DynamicInput name="app" default='node-red' monospace />
+<DynamicInput name="domain" default='node-red.domain.ch' monospace />
+<DynamicInput name="NODE_RED_CREDENTIAL_SECRET" default='replace-with-long-random-secret' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+
+    # Persistenter Speicher für Flows und Einstellungen
+    dokku storage:ensure-directory --chown heroku {{app}}
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/data
+    echo -e "module.exports = {\n  credentialSecret: process.env.NODE_RED_CREDENTIAL_SECRET\n};" > /var/lib/dokku/data/storage/{{app}}/data/settings.js
+    chown -R 1000:1000 /var/lib/dokku/data/storage/{{app}}/data
+
+
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/data:/data
+
+    # Port-Mapping und Domain
+    dokku ports:add {{app}} http:80:1880
+    dokku domains:set {{app}} {{domain}}
+
+    # Node-RED Secret für Credentials
+    dokku config:set --no-restart {{app}} NODE_RED_CREDENTIAL_SECRET="{{NODE_RED_CREDENTIAL_SECRET}}"
+
+    # Deploy
+    dokku git:from-image {{app}} nodered/node-red:latest
+    dokku letsencrypt:enable {{app}}
+    ```
+</TemplateCode>
+
+:::tip[Sicheres Secret erzeugen]
+Ein sicheres Secret kann mit folgendem Befehl generiert werden:
+
+```bash
+openssl rand -hex 32
+```
+:::
+
+## Authentifizierung in settings.js aktivieren
+
+Um eine Benutzerauthentifikation hinzuzufügen, muss in der `settings.js` der `adminAuth`-Block aktiviert werden.
+
+Zuerst lokal einen Passwort-Hash erzeugen:
+
+<TemplateCode>
+    ```bash title="lokal"
+    npm install -g --unsafe-perm node-red-admin
+    node-red-admin hash-pw
+    ```
+</TemplateCode>
+
+<DynamicInput name="admin_user" default='admin' monospace />
+<DynamicInput name="admin_pw_hash" default='$2b$08$replace-with-generated-hash' monospace />
+
+Danach die Datei auf dem Server bearbeiten:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    nano /var/lib/dokku/data/storage/{{app}}/data/settings.js
+    ```
+</TemplateCode>
+
+Beispiel für den `adminAuth`-Block in `settings.js`:
+
+<TemplateCode>
+    ```js title="/var/lib/dokku/data/storage/{{app}}/data/settings.js"
+    adminAuth: {
+        type: "credentials",
+        users: [{
+            username: "{{admin_user}}",
+            password: "{{admin_pw_hash}}",
+            permissions: "*"
+        }]
+    },
+    ```
+</TemplateCode>
+
+Nach der Änderung Node-RED neu starten:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku ps:rebuild {{app}}
+    ```
+</TemplateCode>
+
+## Update
+
+<DynamicInput name="app" default='node-red' monospace />
+<DynamicInput name="image_tag" default='latest' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull nodered/node-red:{{image_tag}}
+    dokku git:from-image {{app}} nodered/node-red:{{image_tag}}
+    ```
+</TemplateCode>
+
+Verfügbare Tags: [nodered/node-red/tags](https://hub.docker.com/r/nodered/node-red/tags)
