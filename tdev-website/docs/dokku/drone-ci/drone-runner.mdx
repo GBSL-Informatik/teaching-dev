@@ -2,66 +2,51 @@
 page_id: 77aa276d-fed2-4ddb-9567-80e58fd4a48c
 ---
 
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
 # Drone Runner
 
+[Drone Docker Runner](https://docs.drone.io/runner/docker/installation/linux/) auf Dokku deployen.
 
-For the runner, follow the same steps as for the server, but make sure you
-follow the instructions for the [runners](https://docs.drone.io/runner/docker/installation/linux/).
+<DynamicInput name="APP" default='drone-runner' monospace />
+<DynamicInput name="DRONE_SERVER_APP" default='drone-server' monospace />
+<DynamicInput name="DRONE_RPC_PROTO" default='https' monospace />
+<DynamicInput name="DRONE_RPC_HOST" default='drone.domain.ch' monospace />
+<DynamicInput name="DRONE_RUNNER_CAPACITY" default='2' monospace />
+<DynamicInput name="DRONE_RUNNER_NAME" default='runner-01' monospace />
 
-```bash {3-7}
-docker run --detach \
-  --volume=/var/run/docker.sock:/var/run/docker.sock \
-  --env=DRONE_RPC_PROTO=https \
-  --env=DRONE_RPC_HOST=drone.company.com \
-  --env=DRONE_RPC_SECRET=super-duper-secret \
-  --env=DRONE_RUNNER_CAPACITY=2 \
-  --env=DRONE_RUNNER_NAME=my-first-runner \
-  --publish=3000:3000 \
-  --restart=always \
-  --name=runner \
-  drone/drone-runner-docker:1
-```
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{APP}}
 
-The instructions state that
+    # Umgebungsvariablen für die Verbindung zum Drone Server
+    dokku config:set --no-restart {{APP}} DRONE_RPC_SECRET="$(dokku config:get {{DRONE_SERVER_APP}} DRONE_RPC_SECRET)"
+    dokku config:set --no-restart {{APP}} DRONE_RPC_PROTO="{{DRONE_RPC_PROTO}}"
+    dokku config:set --no-restart {{APP}} DRONE_RPC_HOST="{{DRONE_RPC_HOST}}"
+    dokku config:set --no-restart {{APP}} DRONE_RUNNER_CAPACITY="{{DRONE_RUNNER_CAPACITY}}"
+    dokku config:set --no-restart {{APP}} DRONE_RUNNER_NAME="{{DRONE_RUNNER_NAME}}"
 
-- the runner requires the file `/var/run/docker.sock` to be mounted
-- it listens on port `3000`
+    # Docker Socket mounten, damit Builds/Container gestartet werden können
+    dokku storage:mount {{APP}} /var/run/docker.sock:/var/run/docker.sock
 
-## Preparing dokku and the image
+    # Port-Mapping (Runner lauscht auf 3000)
+    dokku ports:set {{APP}} http:3000:3000
 
-```bash
-dokku apps:create drone-runner
-
-# env variables
-dokku config:set drone-runner DRONE_RPC_SECRET=$(dokku config:get drone-server DRONE_RPC_SECRET)
-dokku config:set drone-runner DRONE_RPC_PROTO=https
-dokku config:set drone-runner DRONE_RPC_HOST=drone.lebalz.ch
-dokku config:set drone-runner DRONE_RUNNER_CAPACITY=2
-dokku config:set drone-runner DRONE_RUNNER_NAME=bolt
-
-# mount the docker socket
-dokku storage:mount drone-runner /var/run/docker.sock:/var/run/docker.sock
-
-# change port mapping and set domain
-dokku proxy:ports-add drone-runner http:3000:3000
-
-# deploy
-dokku git:from-image drone-runner drone/drone-runner-docker:latest
-```
+    # Deploy
+    dokku git:from-image {{APP}} drone/drone-runner-docker:latest
+    ```
+</TemplateCode>
 
 ## Update
 
-If you deployed `:latest`, then you would need to run
+<DynamicInput name="APP" default='drone-runner' monospace />
+<DynamicInput name="IMAGE_TAG" default='latest' monospace />
 
-```bash
-docker pull drone/drone-runner-docker:latest
-dokku ps:rebuild drone-runner
-```
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull drone/drone-runner-docker:{{IMAGE_TAG}}
+    dokku git:from-image {{APP}} drone/drone-runner-docker:{{IMAGE_TAG}}
+    ```
+</TemplateCode>
 
-To update to a specific version (e.g. `1.8.0`) lookup the tags on [https://hub.docker.com/r/drone/drone-runner-docker/tags](https://hub.docker.com/r/drone/drone-runner-docker/tags) and run on your dokku server:
-
-```bash
-dokku git:from-image drone-runner drone/drone-runner-docker:1.8.0
-```
-
-The application will be rebuilt automatically.
+Verfügbare Tags: [drone/drone-runner-docker/tags](https://hub.docker.com/r/drone/drone-runner-docker/tags)

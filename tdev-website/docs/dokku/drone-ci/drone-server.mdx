@@ -33,7 +33,7 @@ Dockerhub
   dokku domains:set {{APP}} {{DOMAIN}}
   dokku ports:add {{APP}} http:80:80
 
-  # Persistentes Verzeichnis fuer die SQLite-Datenbank mounten
+  # Persistentes Verzeichnis für die SQLite-Datenbank mounten
   mkdir -p /var/lib/dokku/data/storage/{{APP}}
   chown -R 1000:1000 /var/lib/dokku/data/storage/{{APP}}
   dokku storage:mount {{APP}} /var/lib/dokku/data/storage/{{APP}}:/data
@@ -51,7 +51,7 @@ Dockerhub
   # Admin-Benutzer definieren
   dokku config:set --no-restart {{APP}} DRONE_USER_CREATE="{{DRONE_USER_CREATE}}"
 
-  # Optional: E-Mail fuer Let's Encrypt setzen
+  # Optional: E-Mail für Let's Encrypt setzen
   dokku config:set --no-restart {{APP}} DOKKU_LETSENCRYPT_EMAIL="{{DOKKU_LETSENCRYPT_EMAIL}}"
 
   # Image deployen
@@ -63,7 +63,7 @@ Dockerhub
 </TemplateCode>
 
 :::info[DRONE_RPC_SECRET]
-Der Wert ist ein gemeinsames Secret zwischen Drone Server und Runnern. Server und Runner muessen exakt denselben Wert verwenden.
+Der Wert ist ein gemeinsames Secret zwischen Drone Server und Runnern. Server und Runner müssen exakt denselben Wert verwenden.
 
 Ein sicheres Secret kann so generiert werden:
 
@@ -81,7 +81,7 @@ Wenn hier `https` gesetzt wird, kann es zu Redirect-Loops kommen.
 :::
 
 :::warning[DRONE_USER_FILTER setzen]
-Ohne `DRONE_USER_FILTER` kann sich standardmaessig jeder authentifizieren, der ueber den konfigurierten Provider verfuegt.
+Ohne `DRONE_USER_FILTER` kann sich standardmässig jeder authentifizieren, der über den konfigurierten Provider verfügt.
 
 Beispiel:
 
