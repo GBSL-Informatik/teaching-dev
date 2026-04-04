@@ -1,0 +1,110 @@
+---
+page_id: 912ac919-b418-4b2a-bf6e-6ae875311ed9
+---
+
+import { DynamicInput, TemplateCode } from '@tdev-components/DynamicValues';
+
+# Drone Server
+
+Drone Server auf Dokku deployen.
+
+Referenz
+: [docs.drone.io](https://docs.drone.io/server/provider/github/)
+Dockerhub
+: [hub.docker.com/r/drone/drone](https://hub.docker.com/r/drone/drone)
+
+<DynamicInput name="APP" default='drone-server' monospace />
+<DynamicInput name="DOMAIN" default='drone.domain.ch' monospace />
+<DynamicInput name="DRONE_IMAGE" default='drone/drone:latest' monospace />
+<DynamicInput name="DRONE_GITHUB_CLIENT_ID" default='1234' monospace />
+<DynamicInput name="DRONE_GITHUB_CLIENT_SECRET" default='abcdef' monospace />
+<DynamicInput name="DRONE_USER_FILTER" default='alice,bob' monospace />
+<DynamicInput name="DRONE_USER_CREATE" default='username:alice,admin:true' monospace />
+<DynamicInput name="DOKKU_LETSENCRYPT_EMAIL" default='foo@bar.ch' monospace />
+
+## Dokku vorbereiten und deployen
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  # App erstellen
+  dokku apps:create {{APP}}
+
+  # Domain und Port setzen
+  dokku domains:set {{APP}} {{DOMAIN}}
+  dokku ports:add {{APP}} http:80:80
+
+  # Persistentes Verzeichnis fuer die SQLite-Datenbank mounten
+  mkdir -p /var/lib/dokku/data/storage/{{APP}}
+  chown -R 1000:1000 /var/lib/dokku/data/storage/{{APP}}
+  dokku storage:mount {{APP}} /var/lib/dokku/data/storage/{{APP}}:/data
+
+  # GitHub OAuth und Drone-Konfiguration
+  dokku config:set --no-restart {{APP}} DRONE_GITHUB_CLIENT_ID="{{DRONE_GITHUB_CLIENT_ID}}"
+  dokku config:set --no-restart {{APP}} DRONE_GITHUB_CLIENT_SECRET="{{DRONE_GITHUB_CLIENT_SECRET}}"
+  dokku config:set --no-restart {{APP}} DRONE_RPC_SECRET=$(openssl rand -hex 32)
+  dokku config:set --no-restart {{APP}} DRONE_SERVER_HOST="{{DOMAIN}}"
+  dokku config:set --no-restart {{APP}} DRONE_SERVER_PROTO="http"
+
+  # Nur bekannte Benutzer zulassen
+  dokku config:set --no-restart {{APP}} DRONE_USER_FILTER="{{DRONE_USER_FILTER}}"
+
+  # Admin-Benutzer definieren
+  dokku config:set --no-restart {{APP}} DRONE_USER_CREATE="{{DRONE_USER_CREATE}}"
+
+  # Optional: E-Mail fuer Let's Encrypt setzen
+  dokku config:set --no-restart {{APP}} DOKKU_LETSENCRYPT_EMAIL="{{DOKKU_LETSENCRYPT_EMAIL}}"
+
+  # Image deployen
+  dokku git:from-image {{APP}} {{DRONE_IMAGE}}
+
+  # Optional: SSL aktivieren
+  dokku letsencrypt:enable {{APP}}
+  ```
+</TemplateCode>
+
+:::info[DRONE_RPC_SECRET]
+Der Wert ist ein gemeinsames Secret zwischen Drone Server und Runnern. Server und Runner muessen exakt denselben Wert verwenden.
+
+Ein sicheres Secret kann so generiert werden:
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  openssl rand -hex 32
+  ```
+</TemplateCode>
+:::
+
+:::warning[DRONE_SERVER_PROTO auf http lassen]
+Bei Dokku wird TLS von Nginx terminiert. Intern wird die Anfrage per HTTP an den Container weitergeleitet.
+
+Wenn hier `https` gesetzt wird, kann es zu Redirect-Loops kommen.
+:::
+
+:::warning[DRONE_USER_FILTER setzen]
+Ohne `DRONE_USER_FILTER` kann sich standardmaessig jeder authentifizieren, der ueber den konfigurierten Provider verfuegt.
+
+Beispiel:
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  dokku config:set --no-restart {{APP}} DRONE_USER_FILTER="{{DRONE_USER_FILTER}}"
+  ```
+</TemplateCode>
+:::
+
+## Update
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  docker pull {{DRONE_IMAGE}}
+  dokku ps:rebuild {{APP}}
+  ```
+</TemplateCode>
+
+Falls auf eine spezifische Version aktualisiert werden soll:
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  dokku git:from-image {{APP}} drone/drone:2.7.3
+  ```
+</TemplateCode>
