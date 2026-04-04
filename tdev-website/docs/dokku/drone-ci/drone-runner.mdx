@@ -1,0 +1,52 @@
+---
+page_id: 77aa276d-fed2-4ddb-9567-80e58fd4a48c
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Drone Runner
+
+[Drone Docker Runner](https://docs.drone.io/runner/docker/installation/linux/) auf Dokku deployen.
+
+<DynamicInput name="APP" default='drone-runner' monospace />
+<DynamicInput name="DRONE_SERVER_APP" default='drone-server' monospace />
+<DynamicInput name="DRONE_RPC_PROTO" default='https' monospace />
+<DynamicInput name="DRONE_RPC_HOST" default='drone.domain.ch' monospace />
+<DynamicInput name="DRONE_RUNNER_CAPACITY" default='2' monospace />
+<DynamicInput name="DRONE_RUNNER_NAME" default='runner-01' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{APP}}
+
+    # Umgebungsvariablen für die Verbindung zum Drone Server
+    dokku config:set --no-restart {{APP}} DRONE_RPC_SECRET="$(dokku config:get {{DRONE_SERVER_APP}} DRONE_RPC_SECRET)"
+    dokku config:set --no-restart {{APP}} DRONE_RPC_PROTO="{{DRONE_RPC_PROTO}}"
+    dokku config:set --no-restart {{APP}} DRONE_RPC_HOST="{{DRONE_RPC_HOST}}"
+    dokku config:set --no-restart {{APP}} DRONE_RUNNER_CAPACITY="{{DRONE_RUNNER_CAPACITY}}"
+    dokku config:set --no-restart {{APP}} DRONE_RUNNER_NAME="{{DRONE_RUNNER_NAME}}"
+
+    # Docker Socket mounten, damit Builds/Container gestartet werden können
+    dokku storage:mount {{APP}} /var/run/docker.sock:/var/run/docker.sock
+
+    # Port-Mapping (Runner lauscht auf 3000)
+    dokku ports:set {{APP}} http:3000:3000
+
+    # Deploy
+    dokku git:from-image {{APP}} drone/drone-runner-docker:latest
+    ```
+</TemplateCode>
+
+## Update
+
+<DynamicInput name="APP" default='drone-runner' monospace />
+<DynamicInput name="IMAGE_TAG" default='latest' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull drone/drone-runner-docker:{{IMAGE_TAG}}
+    dokku git:from-image {{APP}} drone/drone-runner-docker:{{IMAGE_TAG}}
+    ```
+</TemplateCode>
+
+Verfügbare Tags: [drone/drone-runner-docker/tags](https://hub.docker.com/r/drone/drone-runner-docker/tags)
