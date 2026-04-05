@@ -1,0 +1,148 @@
+---
+page_id: cdfffb5e-7cc2-4def-bd48-4ce85c0c633a
+---
+
+import { DynamicInput, TemplateCode } from '@tdev-components/DynamicValues';
+
+# JupyterHub
+
+JupyterHub auf Dokku deployen.
+
+<DynamicInput name="APP" default='jupyterhub' monospace />
+<DynamicInput name="DOMAIN" default='jupyter.domain.ch' monospace />
+<DynamicInput name="DOCKER_JUPYTER_IMAGE" default='jupyter/scipy-notebook:latest' monospace />
+
+## App erstellen und konfigurieren
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    # App erstellen
+    dokku apps:create {{APP}}
+
+    dokku domains:set {{APP}} {{DOMAIN}}
+    dokku ports:set {{APP}} http:80:8000
+
+    # Docker-Socket mounten, damit JupyterHub neue Container starten kann
+    dokku storage:mount {{APP}} /var/run/docker.sock:/var/run/docker.sock
+
+    # Netzwerk erstellen und konfigurieren
+    dokku network:create {{APP}}
+    dokku network:set {{APP}} bind-all-interfaces true
+    dokku network:set {{APP}} attach-post-create {{APP}}
+
+    # Netzwerk-Umgebungsvariablen setzen
+    dokku config:set --no-restart {{APP}} DOCKER_NETWORK_NAME={{APP}}
+    dokku config:set --no-restart {{APP}} HUB_IP={{APP}}.web
+
+    # Postgres-Datenbank erstellen und verlinken
+    dokku postgres:create {{APP}}
+    dokku postgres:link {{APP}} {{APP}}
+
+    # SQLAlchemy erwartet postgresql:// statt postgres://
+    DB_URL=$(dokku config:get {{APP}} DATABASE_URL)
+    dokku config:set --no-restart {{APP}} DATABASE_URL="${DB_URL//postgres:\/\//postgresql:\/\/}"
+
+    # Post-Deploy-Skript konfigurieren
+    dokku config:set --no-restart {{APP}} DOCKER_JUPYTER_IMAGE="{{DOCKER_JUPYTER_IMAGE}}"
+    dokku config:set --no-restart {{APP}} DOKKU_POST_DEPLOY_SCRIPT_DEPENDENCIES="images/Dockerfile;images/overrides.json"
+    ```
+</TemplateCode>
+
+## Speicher und Datenpersistenz
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    mkdir -p /var/lib/dokku/data/storage/{{APP}}/data
+    dokku storage:mount {{APP}} /var/lib/dokku/data/storage/{{APP}}/data:/data
+
+    # Gemeinsame Verzeichnisse erstellen
+    mkdir -p /var/lib/dokku/data/storage/{{APP}}/data/shared
+    mkdir -p /var/lib/dokku/data/storage/{{APP}}/data/colab
+
+    # Benutzer jovian:users Zugriff auf gemeinsame Verzeichnisse gewähren
+    chown -R 1000:100 /var/lib/dokku/data/storage/{{APP}}/data/shared
+    chown -R 1000:100 /var/lib/dokku/data/storage/{{APP}}/data/colab
+
+    # Maximale Upload-Grösse erhöhen
+    dokku nginx:set {{APP}} client-max-body-size 30m
+    ```
+</TemplateCode>
+
+## Authentifizierung - Azure Active Directory
+
+<DynamicInput name="AAD_TENANT_ID" default='xxxxxx-xxxxxx-xxxxxxx' monospace />
+<DynamicInput name="AAD_CLIENT_ID" default='xxxxxx-xxxxxx-xxxxxxx' monospace />
+<DynamicInput name="AAD_CLIENT_SECRET" default='xxxxxx-xxxxxx-xxxxxxx' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku config:set --no-restart {{APP}} AAD_TENANT_ID="{{AAD_TENANT_ID}}"
+    dokku config:set --no-restart {{APP}} AAD_OAUTH_CALLBACK_URL="https://{{DOMAIN}}/hub/oauth_callback"
+    dokku config:set --no-restart {{APP}} AAD_CLIENT_ID="{{AAD_CLIENT_ID}}"
+    dokku config:set --no-restart {{APP}} AAD_CLIENT_SECRET="{{AAD_CLIENT_SECRET}}"
+
+    dokku ps:restart {{APP}}
+    ```
+</TemplateCode>
+
+## Authentifizierung - GitHub OAuth (optional)
+
+<DynamicInput name="GITHUB_CLIENT_ID" default='XXXXXXXXXXXXXX' monospace />
+<DynamicInput name="GITHUB_CLIENT_SECRET" default='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku config:set --no-restart {{APP}} OAUTH_CALLBACK_URL="https://{{DOMAIN}}/hub/oauth_callback"
+    dokku config:set --no-restart {{APP}} GITHUB_CLIENT_ID="{{GITHUB_CLIENT_ID}}"
+    dokku config:set --no-restart {{APP}} GITHUB_CLIENT_SECRET="{{GITHUB_CLIENT_SECRET}}"
+
+    dokku ps:restart {{APP}}
+    ```
+</TemplateCode>
+
+## App deployen
+
+[Repository](https://github.com/lebalz/dokku-jupyterhub) klonen und auf Dokku pushen:
+
+<DynamicInput name="APP" default='jupyterhub' monospace />
+<DynamicInput name="DOKKU_IP" default='49.123.45.67' monospace />
+
+<TemplateCode>
+    ```bash title="root@local"
+    git clone https://github.com/lebalz/dokku-jupyterhub.git
+    cd dokku-jupyterhub
+    git remote add dokku dokku@{{DOKKU_IP}}:{{APP}}
+    git push dokku
+    ```
+</TemplateCode>
+
+## SSL mit Let's Encrypt
+
+<DynamicInput name="APP" default='jupyterhub' monospace />
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku letsencrypt:enable {{APP}}
+    ```
+</TemplateCode>
+
+## Daten exportieren und importieren
+
+Die Datenbank muss nicht übernommen werden, da sie mit der neuen Instanz neu erstellt wird. Alle wichtigen Daten liegen im /data-Verzeichnis, welches auf dem Host persistiert und gemountet wird. Dieses Verzeichnis kann einfach mit rsync von der alten auf die neue Instanz übertragen werden.
+
+:::info[Alte Instanz]
+<DynamicInput name="APP_OLD" default={(page) => page.dynamicValues.get('APP') ?? 'jupyterhub'} monospace />
+<DynamicInput name="DOKKU_IP_OLD" default='188.123.45.67' monospace />
+:::
+
+:::tip[Neue Instanz]
+<DynamicInput name="APP" default='jupyterhub' monospace />
+<DynamicInput name="DOKKU_IP" default='49.123.45.67' monospace />
+:::
+
+<TemplateCode>
+    ```bash title="root@{{DOKKU_IP}}"
+    rsync -azP root@{{DOKKU_IP_OLD}}:/var/lib/dokku/data/storage/{{APP_OLD}}/data/ /var/lib/dokku/data/storage/{{APP}}/data/
+    ```
+</TemplateCode>
+
+
