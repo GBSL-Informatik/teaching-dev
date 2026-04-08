@@ -2,6 +2,7 @@
     // This file is not used in compilation. It is here just for a nice editor experience.
     "extends": "./tsconfig.tdev.json",
     "compilerOptions": {
+        "ignoreDeprecations": "6.0",
         "paths": {
             "@tdev-components/*": ["tdev-website/website/components/*", "src/components/*"],
             "@tdev-hooks/*": ["tdev-website/website/hooks/*", "src/hooks/*"],

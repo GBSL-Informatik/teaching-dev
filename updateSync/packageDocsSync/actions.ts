@@ -229,7 +229,7 @@ export const getDebouncedSyncer = async (packageDir: string, destDir: string) =>
         }
     });
 
-    const setPackageConfig = async (pkgKey: string, newConfig?: TdevPackageConfig) => {
+    const setPackageConfig = async (pkgKey: string, newConfig?: TdevPackageConfig | null) => {
         if (!newConfig) {
             return false;
         }
@@ -257,7 +257,7 @@ export const getDebouncedSyncer = async (packageDir: string, destDir: string) =>
                     (newConfig) => {
                         return setPackageConfig(pkgKey, newConfig).then((changed) => {
                             if (changed) {
-                                return syncDocsFolder(newConfig, destDir);
+                                return syncDocsFolder(newConfig!, destDir);
                             }
                             return Promise.resolve(`ℹ️ ${pkgKey} docs config unchanged.`);
                         });
