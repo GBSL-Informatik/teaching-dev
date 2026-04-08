@@ -24,8 +24,10 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
          dokku apps:create {{app}}
          dokku config:set {{app}} --no-restart NGINX_ROOT=build
          dokku config:set {{app}} --no-restart NGINX_DEFAULT_REQUEST=index.html
-         # specify the (sub)domain configured in e.g. Cloudflare
+         dokku config:set {{app}} --no-restart DOKKU_APP_TYPE=herokuish
          dokku domains:set {{app}} {{domain}}
+         # optional: indexedDB als offline-api nutzen
+         dokku config:set {{app}} --no-restart OFFLINE_API="indexedDB"
          ```
       </TemplateCode>
       :::info[Mit Authentifizierung]
@@ -65,9 +67,13 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
      :::details[Hintergründe]
      Die Webseite verwendet zwei Buildpacks - die URLs und Versionen sind in der `.buildpacks`-Datei definiert.
 
-     Im `app.json` ist spezifiziert, wie die App gebuildet wird (`yarn install && yarn run build`). Zusätzliche Schritte könnten dort definiert werden.
+     ```txt title=".buildpacks"
+     https://github.com/heroku/heroku-buildpack-nodejs.git#v309
+     https://github.com/dokku/buildpack-nginx.git#v28
+     ```
 
-     Die Datei `.static` ist für das zweite Buildpack `buildpack-nginx` notwendig - ohne diese (leere) Datei wird die Seite nicht veröffentlicht.
+     Mit dem ersten Buildpack wird die statische Seite generiert, mit dem zweiten Buildpack wird die generierte Seite statisch serviert. Damit dies funktioniert, muss eine
+     leere Datei mit dem Namen `.static` im Root-Verzeichnis des Repositories angelegt werden.
      :::
   3. SSL-Zertifikat erstellen
      Nach der ersten Veröffentlichung, muss einmalig ein SSL-Zertifikat erstellt werden. Dies geschieht mit dem Befehl
@@ -99,6 +105,12 @@ Durch das Hosten auf einem eigenen Server kann mit bspw. `http-auth` der Zugriff
       dokku http-auth:remove-user {{app}} <username>
       ```
       </TemplateCode>
+      :::details[Troubleshooting: `500 Internal Server Error`]
+      Falls die Seite nach der Aktivierung einen 500er Fehler zurückgibt, könnte dies an der fehlenden Berechtigung von nginx für die `.htpasswd`-Datei liegen. In diesem Fall muss die Berechtigung mit folgendem Befehl angepasst werden:
+      ```bash title="root@dokku"
+      chmod +x /home/dokku
+      ```
+      :::
   5. (Optional) eine [Github-Action](https://dokku.com/docs/deployment/continuous-integration/github-actions/) erstellen, welche die Seite automatisch veröffentlicht, sobald ein Commit auf `main` gepusht wird.
 
       ```bash title=".github/workflows/deploy.yml"
