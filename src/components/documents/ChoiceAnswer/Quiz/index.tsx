@@ -20,7 +20,7 @@ interface Props {
     randomizeQuestions?: boolean;
     scoring?: ScoringFunction;
     minPoints?: number;
-    numQuestions: number;
+    questionCount: number;
     children?: React.ReactNode[];
 }
 
@@ -55,9 +55,9 @@ const Quiz = observer((props: Props) => {
 
     React.useEffect(() => {
         if (props.randomizeQuestions && !doc?.data.questionOrder) {
-            doc?.updateQuestionOrder(createRandomOrderMap(props.numQuestions));
+            doc?.updateQuestionOrder(createRandomOrderMap(props.questionCount));
         }
-    }, [props.randomizeQuestions, doc, props.numQuestions]);
+    }, [props.randomizeQuestions, doc, props.questionCount]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;

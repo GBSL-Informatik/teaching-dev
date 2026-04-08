@@ -1,8 +1,10 @@
 import { visit } from 'unist-util-visit';
-import type { Plugin } from 'unified';
+import type { Plugin, Transformer } from 'unified';
 import type { Root, BlockContent, DefinitionContent } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
-import { toMdxJsxExpressionAttribute } from '../helpers';
+import { toJsxAttribute, toMdxJsxExpressionAttribute } from '../helpers';
+import path from 'path';
+import { promises as fs } from 'fs';
 
 enum ChoiceComponentTypes {
     ChoiceAnswer = 'ChoiceAnswer',
@@ -127,6 +129,7 @@ const transformQuestions = (questionNodes: MdxJsxFlowElement[]) => {
 
 const transformQuiz = (quizNode: MdxJsxFlowElement) => {
     const questions = [] as MdxJsxFlowElement[];
+
     visit(quizNode, 'mdxJsxFlowElement', (childNode) => {
         if (Object.values(ChoiceComponentTypes).includes(childNode.name as ChoiceComponentTypes)) {
             questions.push(childNode);
@@ -134,17 +137,11 @@ const transformQuiz = (quizNode: MdxJsxFlowElement) => {
     });
 
     transformQuestions(questions);
-    quizNode.attributes.push(
-        toMdxJsxExpressionAttribute('numQuestions', true, {
-            type: 'Literal',
-            value: questions.length,
-            raw: `${questions.length}`
-        })
-    );
+    quizNode.attributes.push(toJsxAttribute('questionCount', questions.length));
 };
 
-const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin() {
-    return (tree) => {
+const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin(this, options = []): Transformer<Root> {
+    return async (tree, vfile) => {
         visit(tree, 'mdxJsxFlowElement', (node) => {
             if (node.name === QUIZ_NODE_NAME) {
                 // Enumerate and transform questions inside the quiz.
