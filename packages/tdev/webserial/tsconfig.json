@@ -5,7 +5,7 @@
             "w3c-web-serial",
             "docusaurus-plugin-sass",
             "@docusaurus/module-type-aliases",
-            "@types/node",
+            "node",
             "@types/wicg-file-system-access"
         ]
     }
