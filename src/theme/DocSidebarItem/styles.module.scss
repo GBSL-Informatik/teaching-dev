@@ -5,15 +5,37 @@
         right: 0.5em;
         top: 0;
         z-index: 0;
-        &.category {
-            right: 3em;
-        }
     }
     &:has(> .icon:hover) {
         > li:has(+ .icon:hover) {
             > a,
             > div {
                 background: var(--ifm-menu-color-background-hover);
+            }
+        }
+    }
+    &:has(> .icon) {
+        > li:global(.theme-doc-sidebar-item-category) {
+            &::after {
+                content: '';
+                position: absolute;
+                right: 0.5em;
+                top: 0;
+                height: 2em;
+                width: 2em;
+                background: var(--ifm-color-gray-600);
+                clip-path: polygon(83% 12%, 90% 21%, 90% 42%, 100% 50%, 90% 58%, 90% 79%, 83% 88%);
+                transform: rotate(90deg);
+                transition: transform 0.3s ease;
+                transition-delay: 0.2s;
+            }
+            &:global(.menu__list-item--collapsed) {
+                &::after {
+                    transform: rotate(0deg);
+                }
+            }
+            button:global(.clean-btn.menu__caret) {
+                opacity: 0;
             }
         }
     }

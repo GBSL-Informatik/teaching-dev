@@ -35,7 +35,14 @@ const TaskableState = observer((props: Props) => {
             title={`Progress: ${page.progress} / ${page.totalSteps}`}
             onClick={(e) => {
                 const thisElement = e.currentTarget;
-                thisElement.parentElement?.querySelector('a')?.click();
+                const categoryButton = thisElement.parentElement?.querySelector<HTMLButtonElement>(
+                    '&>li.theme-doc-sidebar-item-category>div.menu__list-item-collapsible>button'
+                );
+                if (categoryButton) {
+                    categoryButton.click();
+                } else {
+                    thisElement.parentElement?.querySelector('a')?.click();
+                }
             }}
         >
             <Icon
