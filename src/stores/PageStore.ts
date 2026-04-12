@@ -21,7 +21,7 @@ export const SidebarVersions = (
     globalData['docusaurus-plugin-content-docs'].default as GlobalPluginData
 ).versions.map((version) => {
     const versionPath = ensureTrailingSlash(version.path);
-    const slashCount = version.path.split('/').length + 1;
+    const slashCount = version.path === '/' ? 2 : version.path.split('/').length + 1;
     const rdocs = version.docs.filter((doc) => {
         if (version.mainDocId === 'index' && doc.id === version.mainDocId) {
             return true;
