@@ -24,7 +24,7 @@ import { generateRandomBase64 } from '../helpers/secureToken';
       <TemplateCode>
         ```bash title="root@dokku"
         dokku apps:create {{app}}
-        dokku domains:add {{app}} {{domain}}
+        dokku domains:set {{app}} {{domain}}
 
         dokku postgres:create {{app}}
         dokku postgres:link {{app}} {{app}}
@@ -37,11 +37,7 @@ import { generateRandomBase64 } from '../helpers/secureToken';
         dokku config:set --no-restart {{app}} MSAL_TENANT_ID="{{MSAL_TENANT_ID}}"
         dokku config:set --no-restart {{app}} SESSION_SECRET="{{SESSION_SECRET}}"
 
-        # allow file-uploads up to 5mb 
-        mkdir /home/dokku/{{app}}/nginx.conf.d/
-        echo 'client_max_body_size 5m;' > /home/dokku/{{app}}/nginx.conf.d/upload.conf
-        chown dokku:dokku /home/dokku/{{app}}/nginx.conf.d/upload.conf
-        service nginx reload
+        dokku nginx:set {{app}} client-max-body-size 5m
 
         dokku nginx:set {{app}} x-forwarded-proto-value '$http_x_forwarded_proto'
         dokku nginx:set {{app}} x-forwarded-for-value '$http_x_forwarded_for'
@@ -137,6 +133,22 @@ import { generateRandomBase64 } from '../helpers/secureToken';
       ```
       </TemplateCode>
    4. Backups einrichten
+
+      Falls Backups mit [dokku-keeper](https://github.com/lebalz/dokku-keeper) erstellt werden, kann `backup_config.yaml` wie folgt ergänzt werden:
+      <TemplateCode>
+      ```bash title="backup_config.yaml"
+      {{app}}:
+         files:
+            - "/home/dokku/{{app}}/ENV"
+         commands:
+            postgres:
+               cmd: "dokku postgres:export {{app}}"
+               to: "/database/{{app}}.dump"
+               stage: backup
+      ```
+      </TemplateCode>
+
+      ::::details[Backup mit S3 Speicher]
       Dokku ermöglicht das unkomplizierte Backupen von Datenbanken auf S3 Speicher.
       <DynamicInput name="s3-bucket-name" placeholder='fs-informatik' />
       <DynamicInput name="s3-access-key-id" />
@@ -153,6 +165,7 @@ import { generateRandomBase64 } from '../helpers/secureToken';
       dokku postgres:backup-schedule {{app}} "0 3 * * *" {{s3-bucket-name}} # daily backup at 3am
       ```
       </TemplateCode>
+
       :::danger[Speichern des Encryption Key's]
       Werden die Backups verschlüsselt, muss der Schlüssel zwingend sicher verwahrt werden, damit die Backups dann auch wieder entschlüsselt werden können!
       <TemplateCode>
@@ -161,23 +174,27 @@ import { generateRandomBase64 } from '../helpers/secureToken';
       ```
       </TemplateCode>
       :::
-      :::details[Backup wiederherstellen]
-      1. Das Backup herunterladen, z.B. <Val as="code">`postgres-{{app}}-2025-05-19-02-00-02.tgz.gpg`</Val>
-      2. Das Backup entschlüsseln:
-         <TemplateCode>
-         ```bash
-         gpg --decrypt postgres-{{app}}-2025-05-19-02-00-02.tgz.gpg > backup.tgz
-         ```
-         </TemplateCode>
-      3. Entpacken:
-         ```bash
-         tar -xf backup.tgz
-         ```
-      4. Backup wiederherstellen:
-         <TemplateCode>
-         ```bash
-         dokku postgres:import {{app}} < backup/export
-         ```
-         </TemplateCode>
-      :::
+
+      <details>
+         <summary>Backup wiederherstellen</summary>
+         1. Das Backup herunterladen, z.B. <Val as="code">`postgres-{{app}}-2025-05-19-02-00-02.tgz.gpg`</Val>
+         2. Das Backup entschlüsseln:
+            <TemplateCode>
+            ```bash
+            gpg --decrypt postgres-{{app}}-2025-05-19-02-00-02.tgz.gpg > backup.tgz
+            ```
+            </TemplateCode>
+         3. Entpacken:
+            ```bash
+            tar -xf backup.tgz
+            ```
+         4. Backup wiederherstellen:
+            <TemplateCode>
+            ```bash
+            dokku postgres:import {{app}} < backup/export
+            ```
+            </TemplateCode>
+      </details>
+
+      ::::
 </Steps>
