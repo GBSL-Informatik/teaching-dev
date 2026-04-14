@@ -1,0 +1,54 @@
+---
+page_id: 2c18353c-8e4a-4f5c-839d-a9189fab0c31
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# SQL Injection Demo
+
+[SQL Injection Demo](https://github.com/lebalz/sql-injection-demo) auf Dokku deployen:
+
+<DynamicInput name="app" default='sql-injection-demo' monospace />
+<DynamicInput name="domain" default='hacksql.domain.ch' monospace />
+
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku apps:create {{app}}
+    dokku domains:set {{app}} {{domain}}
+
+    dokku mysql:create {{app}}
+    dokku mysql:link {{app}} {{app}}
+    ```
+</TemplateCode>
+
+:::details[Umami-Statistiken hinzufügen]
+<TemplateCode>
+    ```bash title="/home/dokku/{{app}}/ENV"
+    SCRIPT_TAG="<script async src=https://<umami.domain.ch>/<tracker>.js data-website-id=\"uuid\"></script>"
+    ```
+</TemplateCode>
+:::
+
+Auf dem lokalen Rechner:
+<DynamicInput name="DOKKU_IP" default='49.123.45.67' monospace />
+
+<TemplateCode>
+    ```bash title="root@local"
+    git clone https://github.com/lebalz/sql-injection-demo.git
+    cd sql-injection-demo
+    git remote add dokku dokku@{{DOKKU_IP}}:{{app}}
+    git push dokku
+    ```
+</TemplateCode>
+
+Und abschliessend SSL mit Let's Encrypt aktivieren:
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    dokku letsencrypt:enable {{app}}
+
+    # optional expose {{app}}
+    dokku mysql:expose {{app}}
+    ```
+</TemplateCode>
