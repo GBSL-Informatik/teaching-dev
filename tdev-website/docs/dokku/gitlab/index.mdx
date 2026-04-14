@@ -230,3 +230,155 @@ Danach muss die Konfiguration mit folgendem Befehl neu geladen werden:
 </TemplateCode>
 
 :::
+
+
+## Migrieren
+
+Um Gitlab zu aktualisieren, muss sorgfältig von einer Version auf die nächste migriert werden.
+
+Der Migrationspfad kann dabei von der [Gitlab-Versionstoolbox](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path) abgerufen werden.
+
+<DynamicInput name="app" default='gitlab' />
+
+### Vorbereitung
+
+Die Migration erfolgt auf einer Kopie der aktuellen Gitlab-Instanz (verhindert Datenverlust bei Fehlern).
+
+1. Erstelle ein Backup der aktuellen Gitlab-Instanz
+    <TemplateCode>
+    ```bash
+    docker exec -t {{app}}.web.1 gitlab-backup create
+    # erzeugt ein Backup unter /var/lib/dokku/data/storage/{{app}}/data/backups
+    ```
+    </TemplateCode>
+2. Aktuelle Gitlab-Instanz stoppen
+    <TemplateCode>
+    ```bash
+    dokku ps:stop {{app}}
+    ```
+    </TemplateCode>
+3. Daten und Konfiguration in ein neues Verzeichnis kopieren
+    <TemplateCode>
+    ```bash
+    cp -a /var/lib/dokku/data/storage/{{app}}/data /var/lib/dokku/data/storage/{{app}}-migrated/data
+    cp -a /var/lib/dokku/data/storage/{{app}}/config /var/lib/dokku/data/storage/{{app}}-migrated/config
+    ```
+    </TemplateCode>
+4. Gitlab-Instanz wieder starten
+    <TemplateCode>
+    ```bash
+    dokku ps:start {{app}}
+    ```
+    </TemplateCode>
+
+:::info[Ab jetzt auf der `*-migrated`-Instanz arbeiten]
+Die folgenden Schritte müssen auf der neuen `*-migrated`-Instanz durchgeführt werden, damit die alte Instanz als Backup erhalten bleibt.
+:::
+
+### Migration
+
+Die Migration erfolgt in mehreren Schritten, wobei für jede Gitlab-Version des Migrationpfads folgende drei Schritte durchgeführt werden müssen:
+
+
+<Steps>
+1. Docker-Container für die aktuelle Version erzeugen
+    - mounten der lokalen Ordner `data` und `config`
+    - starten des Containers, was die notwendige Datenbankmigration automatisch durchführt
+    - Überprüfen, ob die neue Version korrekt läuft
+2. Backup der neuen Instanz erstellen
+3. Docker-Container wieder stoppen und löschen
+</Steps>
+
+Um bspw. von Version __15.10.0__ auf __16.3.9__ zu migrieren, müssen folgende Schritte durchgeführt werden:
+
+<Steps>
+1. Dockercontainer erzeugen
+    - starten
+        <TemplateCode>
+            ```bash
+            docker run --detach \
+            --name gitlab-migrate-16-3-9 \
+            --volume /var/lib/dokku/data/storage/{{app}}-migrated/config:/etc/gitlab \
+            --volume /var/lib/dokku/data/storage/{{app}}-migrated/data:/var/opt/gitlab \
+            --shm-size 256m \
+            gitlab/gitlab-ee:16.3.9-ee.0
+            ```
+        </TemplateCode>
+    - Überprüfen, ob die neue Version korrekt läuft
+        ```bash
+        docker exec gitlab-migrate-16-3-9 gitlab-ctl status
+        # ausgabe so ähnlich wie:
+        # run: alertmanager: (pid 1403) 513s; run: log: (pid 1068) 560s
+        # run: gitaly: (pid 1332) 522s; run: log: (pid 560) 688s
+        # run: gitlab-exporter: (pid 1375) 515s; run: log: (pid 988) 578s
+        # run: gitlab-kas: (pid 1351) 516s; run: log: (pid 735) 676s
+        # run: gitlab-workhorse: (pid 1363) 516s; run: log: (pid 907) 591s
+        # run: logrotate: (pid 498) 702s; run: log: (pid 510) 699s
+        # run: nginx: (pid 947) 587s; run: log: (pid 970) 584s
+        # run: postgres-exporter: (pid 1416) 512s; run: log: (pid 1096) 554s
+        # run: postgresql: (pid 586) 683s; run: log: (pid 597) 682s
+        # run: prometheus: (pid 1384) 514s; run: log: (pid 1043) 566s
+        # run: puma: (pid 835) 605s; run: log: (pid 846) 602s
+        # run: redis: (pid 515) 695s; run: log: (pid 528) 693s
+        # run: redis-exporter: (pid 1377) 515s; run: log: (pid 1017) 572s
+        # run: sidekiq: (pid 851) 599s; run: log: (pid 860) 598s
+        # run: sshd: (pid 34) 722s; run: log: (pid 33) 722s
+        ```
+2. Backup der neuen Instanz erstellen
+    ```bash    
+    docker exec gitlab-migrate-16-3-9 gitlab-ctl stop puma
+    docker exec gitlab-migrate-16-3-9 gitlab-ctl stop sidekiq
+    docker exec -t gitlab-migrate-16-3-9 gitlab-backup create
+    ```
+3. Docker-Container wieder stoppen und löschen
+    ```bash
+    docker stop gitlab-migrate-16-3-9
+    docker rm gitlab-migrate-16-3-9
+    ```
+</Steps>
+
+Um die einzelnen Befehle nicht manuell zu tippen, hier ein Hilfsskript, wobei die Versionen und der App-Name angepasst werden müssen:
+
+
+<DynamicInput name="app" default='gitlab' />
+<DynamicInput name="upgrade-path" default='16.3.9 => 16.7.10 => 17.1.8' />
+
+:::info
+Der `upgrade-path` kann direkt von der [Gitlab-Versionstoolbox](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path) kopiert und oben eingefügt werden.
+:::
+
+<TemplateCode>
+```py live_py slim
+versions = [f'gitlab/gitlab-ee:{v}-ee.0' for v in '{{upgrade-path}}'.replace(' ', '').split('=>')]
+# pulle alle images vorab
+for v in versions:
+    print(f'docker pull {v}')
+print('')
+
+host_dir = '/var/lib/dokku/data/storage/{{app}}/'
+
+for v in versions:
+    nr = v.split(':')[1].split('-')[0].replace('.', '-')
+    cname = f'gitlab-migrate-{nr}'
+    docker = f'''docker run --detach \\\\
+  --name {cname} \\\\
+  --volume {host_dir}config:/etc/gitlab \\\\
+  --volume {host_dir}data:/var/opt/gitlab \\\\
+  --shm-size 256m \\\\
+  {v}
+'''
+    docker_status = f'docker exec {cname} gitlab-ctl status'
+    print(f'# [ ] migration {v} erledigt? ------------------ \n')
+    print(docker)
+    print('')
+    print(docker_status)
+    print('')
+    print(f'docker exec {cname} gitlab-ctl stop puma')
+    print(f'docker exec {cname} gitlab-ctl stop sidekiq')
+    print(f'docker exec -t {cname} gitlab-backup create')
+    print(f'docker stop {cname}')
+    print(f'docker rm {cname}')
+```
+</TemplateCode>
+
+Ist dies alles erledigt, können die Ordner `data` und `config` zur neuen Instanz kopiert werden (mit `scp -a` damit die Berechtigungen erhalten bleiben). Alternativ kann auch das Backup in die neue Instanz kopiert werden und mit `gitlab-backup restore BACKUP=<timestamp_and_version_prefix>` wiederhergestellt werden.
