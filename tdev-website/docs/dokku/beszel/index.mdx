@@ -45,6 +45,17 @@ Referenz
     ```
 </TemplateCode>
 
+### Updating
+
+<DynamicInput name="remote-agent" default='beszel-agent' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull henrygd/beszel:latest
+    dokku ps:rebuild {{app}}
+    ```
+</TemplateCode>
+
 ## Beszel local Agent
 
 :::warning[Auf demselben Server wie der Hub]
@@ -120,5 +131,16 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
     dokku git:from-image {{remote-agent}} henrygd/beszel-agent:latest
 
     # no letsencrypt for remote agent - security is done via the shared secret (KEY) and token
+    ```
+</TemplateCode>
+
+### Updating
+
+<DynamicInput name="remote-agent" default='beszel-agent' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull henrygd/beszel-agent:latest
+    dokku ps:rebuild {{remote-agent}}
     ```
 </TemplateCode>
