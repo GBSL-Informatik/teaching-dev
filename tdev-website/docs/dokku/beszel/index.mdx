@@ -3,6 +3,7 @@ page_id: fed88dea-f443-46ed-a8e7-152f7325490c
 ---
 
 import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+import Steps from '@tdev-components/Steps';
 
 # Beszel
 
@@ -144,3 +145,52 @@ Diese Anleitung ist nur für die Installation eines lokalen Agenten auf demselbe
     dokku ps:rebuild {{remote-agent}}
     ```
 </TemplateCode>
+
+### S.M.A.R.T. Zugriff auf Festplatten
+
+Um S.M.A.R.T. Statusinformationen der Festplatten zu erhalten, muss der Agent [Zugriff](https://beszel.dev/guide/smart-data) auf die entsprechenden Geräte haben. Dazu muss
+- `smartmontools` auf dem Host installiert sein und
+- die Geräte als Docker-Optionen hinzugefügt werden.
+
+<Steps>
+1. `smartmontools` installieren:
+    ```bash title="root@dokku"
+    apt-get update
+    sudo apt install smartmontools
+    ```
+2. Nach Devices suchen/scannen:
+    ```bash
+    sudo smartctl --scan
+    ``` 
+    ...und Ausgabe der hier einfügen:
+    <DynamicInput name="smartctl-scan-raw" default='/dev/sda -d scsi # /dev/sda, SCSI device' monospace multiline />
+    <DynamicInput 
+        name="smartctl-devices" 
+        default={(store) => store.dynamicValues.get('smartctl-scan-raw')?.split('\n').map(line => line.split(' ')[0]).filter(Boolean).join(', ')}
+        monospace
+    />
+    <DynamicInput 
+        name="smartctl-docker-options" 
+        default={(store) => store.dynamicValues.get('smartctl-devices')?.replaceAll(' ', '').split(',').map(dev => `--device=${dev}:${dev}`).join(' ')}
+        monospace
+        hidden
+    />
+3. Docker-Optionen hinzufügen und Agent neu deployen:
+    <TemplateCode>
+        ```bash
+        dokku docker-options:add {{remote-agent}} deploy "{{smartctl-docker-options}}"
+
+        dokku docker-options:add {{remote-agent}} deploy "--cap-add=SYS_RAWIO"
+        dokku docker-options:add {{remote-agent}} deploy "--cap-add=SYS_ADMIN"
+
+        # deploy the alpine image
+        dokku git:from-image {{remote-agent}} henrygd/beszel-agent:alpine
+
+        # or rebuild if already the alpine version is deployed
+        # dokku ps:rebuild {{remote-agent}}
+        ```
+    </TemplateCode>
+</Steps>
+
+
+

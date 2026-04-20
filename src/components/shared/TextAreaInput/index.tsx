@@ -20,6 +20,8 @@ interface Props {
     label?: string;
     labelClassName?: string;
     noAutoFocus?: boolean;
+    readOnly?: boolean;
+    title?: string;
 }
 
 const TextAreaInput = observer((props: Props) => {
@@ -86,6 +88,7 @@ const TextAreaInput = observer((props: Props) => {
                 ref={ref}
                 placeholder={props.placeholder}
                 value={text}
+                title={props.title}
                 className={clsx(
                     props.className,
                     styles.textAreaInput,
@@ -117,6 +120,7 @@ const TextAreaInput = observer((props: Props) => {
                 autoFocus={!props.noAutoFocus}
                 autoComplete="off"
                 autoCorrect="off"
+                readOnly={props.readOnly}
             />
         </>
     );
