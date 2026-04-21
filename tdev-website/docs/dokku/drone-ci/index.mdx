@@ -1,0 +1,54 @@
+---
+page_id: 7dd02198-e086-4464-b803-71f4f5eb095e
+---
+
+# Drone CI
+
+
+[Drone CI](https://www.drone.io/) kann einfach mit Github, *Bitbucket, Gitlab* usw. verwendet werden. Diese Beschreibung bezieht sich auf die Integration mit Github.
+
+Für das Deployment auf Dokku werden zwei Apps benötigt: [drone-server](./drone-server.mdx) und [drone-runner](./drone-runner.mdx).
+
+Eine `.drone.yml` im Root-Verzeichnis des Repositorys definiert die auszuführenden Schritte.
+
+Als Beispiel folgt hier das minimale Skript, das diese Seite baut und deployt, ohne Cache.
+
+```yml title=.drone.yml
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+
+- name: submodules
+  image: alpine/git
+  commands:
+  - git submodule update --init --recursive
+
+- name: website
+  image: node:16.11.1
+  commands:
+  - mkdir -p $HOME/.ssh
+  - ssh-keyscan -t rsa github.com >> $HOME/.ssh/known_hosts
+  - echo "$GITHUB_PRIVATE_KEY" > "$HOME/.ssh/id_rsa"
+  - chmod 0600 $HOME/.ssh/id_rsa
+  - yarn install --frozen-lockfile
+  - npm run deploy
+  environment:
+    USE_SSH: true
+    GIT_USER: $DRONE_COMMIT_AUTHOR
+    GITHUB_PRIVATE_KEY:
+      from_secret: "git_deploy_private_key"
+  when:
+    event:
+      include:
+      - push
+      - pull_request
+
+trigger:
+  branch:
+  - main
+```
+
+Das Setup erwartet eine Umgebungsvariable mit dem Namen `git_deploy_private_key`, die den privaten Schlüssel enthält. Der zugehörige öffentliche Schlüssel muss beispielsweise in Github als Deploy Key hinterlegt sein.

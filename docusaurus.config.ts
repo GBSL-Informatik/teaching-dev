@@ -143,7 +143,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
       },
       future: {
         v4: true,    
-        experimental_faster: {
+        faster: {
           /**
            * no config options for swcJsLoader so far.
            * Instead configure it over the jsLoader in the next step
@@ -156,7 +156,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           rspackPersistentCache: process.env.NETLIFY ? false : true,
           mdxCrossCompilerCache: true,
           ssgWorkerThreads: true
-        }
+        },
+        experimental_vcs: 'default-v2'
       },
       webpack: {
         jsLoader: (isServer) => {

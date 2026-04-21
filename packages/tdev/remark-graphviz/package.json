@@ -4,7 +4,7 @@
     "main": "remark-plugin/index.ts",
     "types": "remark-plugin/index.ts",
     "dependencies": {
-        "@hpcc-js/wasm-graphviz": "^1.7.0"
+        "@hpcc-js/wasm-graphviz": "^1.21.2"
     },
     "devDependencies": {
         "vitest": "*",

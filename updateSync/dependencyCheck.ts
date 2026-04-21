@@ -25,7 +25,27 @@ interface DiffReport {
     }[];
 }
 
-const diffPackages = (
+const stripVersionRange = (version: string): string => {
+    return version.replace(/^[\^~>=<]+/, '');
+};
+
+const versionArray = (version: string): number[] => {
+    return stripVersionRange(version).split('.').map(Number);
+};
+
+const compareVersions = (a: string, b: string): number => {
+    const partsA = versionArray(a);
+    const partsB = versionArray(b);
+    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+        const diff = (partsA[i] ?? 0) - (partsB[i] ?? 0);
+        if (diff !== 0) {
+            return diff;
+        }
+    }
+    return 0;
+};
+
+export const diffPackages = (
     localDeps: { [key: string]: string },
     tdevDeps: { [key: string]: string }
 ): DiffReport => {
@@ -41,14 +61,14 @@ const diffPackages = (
             version: tdevDeps[packageName]
         })),
         upgradeable: commonDeps
-            .filter((packageName) => localDeps[packageName] < tdevDeps[packageName])
+            .filter((packageName) => compareVersions(localDeps[packageName], tdevDeps[packageName]) < 0)
             .map((packageName) => ({
                 packageName: packageName,
                 from: localDeps[packageName],
                 to: tdevDeps[packageName]
             })),
         downgradeable: commonDeps
-            .filter((packageName) => localDeps[packageName] > tdevDeps[packageName])
+            .filter((packageName) => compareVersions(localDeps[packageName], tdevDeps[packageName]) > 0)
             .map((packageName) => ({
                 packageName: packageName,
                 from: localDeps[packageName],

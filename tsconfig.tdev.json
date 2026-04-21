@@ -3,11 +3,12 @@
     "extends": "@docusaurus/tsconfig",
     "compilerOptions": {
         "baseUrl": ".",
+        "ignoreDeprecations": "6.0",
         "experimentalDecorators": false,
         "types": [
             "docusaurus-plugin-sass",
             "@docusaurus/module-type-aliases",
-            "@types/node",
+            "node",
             "@types/wicg-file-system-access"
         ],
         "module": "esnext",
