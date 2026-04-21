@@ -1,7 +1,7 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin, Transformer } from 'unified';
 import type { Root, BlockContent, DefinitionContent } from 'mdast';
-import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
 import { toJsxAttribute, toMdxJsxExpressionAttribute } from '../helpers';
 import path from 'path';
 import { promises as fs } from 'fs';
@@ -50,7 +50,7 @@ const createWrappedOption = (
     return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), numOptions: options.length };
 };
 
-const transformQuestion = (questionNode: MdxJsxFlowElement) => {
+const transformQuestion = (questionNode: MdxJsxFlowElement, inQuiz?: boolean) => {
     const listIndex = questionNode.children.findIndex((child) => child.type === 'list');
 
     if (listIndex === -1) {
@@ -92,13 +92,10 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         listChild.children as { type: string; children: FlowChildren }[]
     );
     wrappedChildren.push(wrappedOptions);
-    questionNode.attributes.push(
-        toMdxJsxExpressionAttribute('numOptions', true, {
-            type: 'Literal',
-            value: numOptions,
-            raw: `${numOptions}`
-        })
-    );
+    questionNode.attributes.push(toJsxAttribute('optionsCount', numOptions));
+    if (inQuiz) {
+        questionNode.attributes.push(toJsxAttribute('inQuiz', true));
+    }
 
     if (afterChildren.length > 0) {
         wrappedChildren.push(createWrapper(AFTER_WRAPPER_NAME, afterChildren));
@@ -107,37 +104,91 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     questionNode.children = wrappedChildren;
 };
 
-const transformQuestions = (questionNodes: MdxJsxFlowElement[]) => {
-    questionNodes.forEach((questionNode, index: number) => {
-        transformQuestion(questionNode);
-        questionNode.attributes.push(
-            toMdxJsxExpressionAttribute('questionIndex', true, {
-                type: 'Literal',
-                value: index,
-                raw: `${index}`
-            })
-        );
-        questionNode.attributes.push(
-            toMdxJsxExpressionAttribute('inQuiz', true, {
-                type: 'Literal',
-                value: true,
-                raw: 'true'
-            })
-        );
-    });
+const isLiteralExpression = (
+    attr?: MdxJsxAttribute
+): attr is MdxJsxAttribute & {
+    value: { type: 'mdxJsxAttributeValueExpression'; value: string; data: { estree: any } };
+} => {
+    if (!attr) {
+        return false;
+    }
+    return (
+        attr.value !== null &&
+        typeof attr.value === 'object' &&
+        attr.value.type === 'mdxJsxAttributeValueExpression' &&
+        attr.value.data?.estree?.body.length === 1 &&
+        attr.value.data.estree.body[0].type === 'ExpressionStatement' &&
+        attr.value.data.estree.body[0].expression.type === 'Literal'
+    );
+};
+
+const qidGenerator = () => {
+    const qidMap = new Map<string, MdxJsxAttribute>();
+    let counter = 1;
+    const generator = (qid?: MdxJsxAttribute | MdxJsxExpressionAttribute) => {
+        if (qid && qid.type === 'mdxJsxExpressionAttribute') {
+            throw new Error('Expression attributes are not supported for qid generation');
+        }
+        const literalExpression = isLiteralExpression(qid) ? qid : null;
+        if (qid && qid.value && typeof qid.value !== 'string' && !literalExpression) {
+            qidMap.set(qid.value.value, qid);
+            return qid;
+        }
+
+        let id = qid
+            ? literalExpression
+                ? `${literalExpression.value.data.estree.body[0].expression.value}`
+                : (qid.value as string)
+            : `q${counter++}`;
+
+        let localCounter = 1;
+        while (qidMap.has(id)) {
+            if (qid) {
+                id = `${id}.${localCounter++}`;
+            } else {
+                id = `q${counter++}`;
+            }
+        }
+        const jsxAttr = toJsxAttribute('qid', id);
+        qidMap.set(id, jsxAttr);
+        return jsxAttr;
+    };
+    return { generator, qidSet: qidMap };
 };
 
 const transformQuiz = (quizNode: MdxJsxFlowElement) => {
-    const questions = [] as MdxJsxFlowElement[];
+    const { generator: getQid, qidSet } = qidGenerator();
 
     visit(quizNode, 'mdxJsxFlowElement', (childNode) => {
+        // TODO: use a set for the check
         if (Object.values(ChoiceComponentTypes).includes(childNode.name as ChoiceComponentTypes)) {
-            questions.push(childNode);
+            transformQuestion(childNode, true);
+            const qidIdx = childNode.attributes.findIndex((attr) => (attr as any).name === 'qid');
+            const qidAttr = getQid(childNode.attributes[qidIdx]);
+            if (qidIdx === -1) {
+                childNode.attributes.push(qidAttr);
+            } else if (qidAttr !== childNode.attributes[qidIdx]) {
+                childNode.attributes[qidIdx] = qidAttr;
+            }
         }
     });
-
-    transformQuestions(questions);
-    quizNode.attributes.push(toJsxAttribute('questionCount', questions.length));
+    const qids = toMdxJsxExpressionAttribute('questionIds', [...qidSet.keys()], {
+        type: 'ArrayExpression',
+        elements: [...qidSet.values()].map((val) => {
+            if (typeof val.value === 'string') {
+                return {
+                    type: 'Literal',
+                    value: val.value,
+                    raw: `'${val.value}'`
+                };
+            }
+            if (!val.value) {
+                throw new Error('Unexpected non-string qid value');
+            }
+            return (val.value.data?.estree?.body[0] as { expression: any })?.expression;
+        })
+    });
+    quizNode.attributes.push(qids);
 };
 
 const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin(this, options = []): Transformer<Root> {
