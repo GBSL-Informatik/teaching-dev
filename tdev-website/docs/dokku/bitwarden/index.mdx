@@ -1,0 +1,86 @@
+---
+page_id: 0e624b32-ddbc-4a34-8ef4-b80910633e8a
+---
+
+import { Val, TemplateCode, DynamicInput } from '@tdev-components/DynamicValues';
+
+# Bitwarden
+
+[Vaultwarden](https://github.com/dani-garcia/vaultwarden#installation) ist eine inoffizielle Implementierung des Bitwarden-Passwortmanagers, die in Rust geschrieben ist. Sie bietet eine leichtgewichtige und effiziente Alternative zum offiziellen Bitwarden-Server und ist vollständig kompatibel mit den offiziellen Bitwarden-Clients.
+
+<DynamicInput name="app" default='bitwarden' monospace />
+<DynamicInput name="domain" default='bitwarden.domain.ch' monospace />
+
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    # create app
+    dokku apps:create {{app}}
+
+    # setup and mount persitent storage
+    mkdir -p /var/lib/dokku/data/storage/{{app}}/data
+    dokku storage:mount {{app}} /var/lib/dokku/data/storage/{{app}}/data:/data
+
+    # add port mapping
+    dokku ports:set {{app}} http:80:80
+    # set domain
+    dokku domains:set {{app}} {{domain}}
+    
+    # use X-Forwarded-For header to resolve users IP
+    dokku config:set --no-restart {{app}} IP_HEADER="X-Forwarded-For"
+
+    # enable admin route
+    dokku config:set --no-restart {{app}} ADMIN_TOKEN=$(openssl rand -base64 48)
+
+    # for correct propagation of the clients ip:
+    dokku nginx:set {{app}} x-forwarded-for-value "\$proxy_add_x_forwarded_for"
+
+
+    nano /home/dokku/{{app}}/ENV
+    ```
+</TemplateCode>
+
+<DynamicInput name="SMTP_HOST" default='authsmtp.securemail.pro' monospace />
+<DynamicInput name="SMTP_PORT" default='587' monospace />
+<DynamicInput name="SMTP_USERNAME" default='foo@bar.ch' monospace />
+<DynamicInput name="SMTP_PASSWORD" default='PW' monospace />
+<DynamicInput name="SMTP_FROM" default='foo@bar.ch' monospace />
+
+Füge in der geöffneten ENV-Datei folgende Zeilen ein:
+
+<TemplateCode>
+    ```bash title="/home/dokku/{{app}}/ENV"
+    SMTP_AUTH_MECHANISM="Plain"
+    SMTP_FROM_NAME="Bitwarden"
+    SMTP_FROM="{{SMTP_FROM}}"
+    SMTP_HOST="{{SMTP_HOST}}"
+    SMTP_PASSWORD="{{SMTP_PASSWORD}}"
+    SMTP_PORT="{{SMTP_PORT}}"
+    SMTP_USERNAME="{{SMTP_USERNAME}}"
+    SMTP_SECURITY="starttls"
+    SMTP_SSL="true"
+    ```
+</TemplateCode>
+
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    # deploy
+    dokku git:from-image {{app}} vaultwarden/server:latest
+
+    #letsencrypt
+    dokku letsencrypt:enable {{app}}
+    ```
+</TemplateCode>
+
+
+## Updating
+
+<DynamicInput name="app" default='umami' monospace />
+
+<TemplateCode>
+    ```bash title="root@dokku"
+    docker pull vaultwarden/server:latest
+    dokku ps:rebuild {{app}}
+    ```
+</TemplateCode>

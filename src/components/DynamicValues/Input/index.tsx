@@ -8,6 +8,7 @@ import Button from '@tdev-components/shared/Button';
 import { mdiRestore, mdiSync } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import Page from '@tdev-models/Page';
+import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 
 interface Props {
     name: string;
@@ -16,6 +17,11 @@ interface Props {
     onRecalculate?: (page: Page) => string;
     placeholder?: string;
     monospace?: boolean;
+    /**
+     * multiline only works for non-derived values!
+     * (Current limitation of the the TextAreaInput component.)
+     */
+    multiline?: boolean;
     hidden?: boolean;
 }
 
@@ -24,8 +30,24 @@ const DynamicInputPlaceholder = (props: {
     label?: string;
     placeholder?: string;
     monospace?: boolean;
+    multiline?: boolean;
     derived?: boolean;
 }) => {
+    if (props.multiline) {
+        <div className={clsx(styles.dynamicInput)}>
+            <TextAreaInput
+                noAutoFocus
+                defaultValue={props.value}
+                onChange={() => {}}
+                label={props.label}
+                placeholder={props.placeholder}
+                className={clsx(styles.input, props.monospace && styles.monospace)}
+                labelClassName={clsx(styles.label, props.derived && styles.derived)}
+                monospace={props.monospace}
+                readOnly
+            />
+        </div>;
+    }
     return (
         <div className={clsx(styles.dynamicInput)}>
             <TextInput
@@ -71,6 +93,7 @@ const DynamicInput = observer((props: Props) => {
                 value={defaultValue || ''}
                 label={props.label || props.name}
                 placeholder={props.placeholder}
+                multiline={props.multiline}
                 monospace={props.monospace}
                 derived={isDerived}
             />
@@ -80,19 +103,34 @@ const DynamicInput = observer((props: Props) => {
     const needsReset = defaultValue !== undefined && value !== defaultValue;
     return (
         <div className={clsx(styles.dynamicInput)}>
-            <TextInput
-                noAutoFocus
-                value={value ?? defaultValue ?? ''}
-                onChange={(val) => {
-                    current.setDynamicValue(props.name, val);
-                }}
-                defaultValue={defaultValue}
-                label={props.label || props.name}
-                title={isDerived ? 'Abgeleiteter Wert' : undefined}
-                labelClassName={clsx(styles.label, isDerived && styles.derived)}
-                className={clsx(styles.input, props.monospace && styles.monospace)}
-                placeholder={props.placeholder}
-            />
+            {props.multiline && !isDerived ? (
+                <TextAreaInput
+                    noAutoFocus
+                    defaultValue={value ?? defaultValue ?? ''}
+                    onChange={(val) => {
+                        current.setDynamicValue(props.name, val);
+                    }}
+                    label={props.label || props.name}
+                    title={isDerived ? 'Abgeleiteter Wert' : undefined}
+                    labelClassName={clsx(styles.label, isDerived && styles.derived)}
+                    className={clsx(styles.input, props.monospace && styles.monospace)}
+                    placeholder={props.placeholder}
+                />
+            ) : (
+                <TextInput
+                    noAutoFocus
+                    value={value ?? defaultValue ?? ''}
+                    onChange={(val) => {
+                        current.setDynamicValue(props.name, val);
+                    }}
+                    defaultValue={defaultValue}
+                    label={props.label || props.name}
+                    title={isDerived ? 'Abgeleiteter Wert' : undefined}
+                    labelClassName={clsx(styles.label, isDerived && styles.derived)}
+                    className={clsx(styles.input, props.monospace && styles.monospace)}
+                    placeholder={props.placeholder}
+                />
+            )}
             <div className={clsx(styles.action)}>
                 {needsReset && (
                     <Button
