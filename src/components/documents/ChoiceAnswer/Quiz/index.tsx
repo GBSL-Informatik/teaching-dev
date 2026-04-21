@@ -12,6 +12,7 @@ import { ScoringFunction } from '../helpers/scoring';
 import { QuizScore } from '../Feedback';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 
+
 interface Props {
     id: string;
     readonly?: boolean;
