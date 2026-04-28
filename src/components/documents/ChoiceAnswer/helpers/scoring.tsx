@@ -1,4 +1,4 @@
-import { ChoiceAnswerScoring, ChoiceAnswerCorrectness } from '@tdev-models/documents/ChoiceAnswer';
+import { ChoiceAnswerScoring, ChoiceAnswerCorrectness } from '@tdev-models/documents/Quiz/ChoiceAnswer';
 import clsx from 'clsx';
 
 export type ScoringFunction = (

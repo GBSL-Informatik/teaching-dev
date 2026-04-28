@@ -1,6 +1,6 @@
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 import Icon from '@mdi/react';
-import ChoiceAnswerDocument, { ChoiceAnswerCorrectness } from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument, { ChoiceAnswerCorrectness } from '@tdev-models/documents/Quiz/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';

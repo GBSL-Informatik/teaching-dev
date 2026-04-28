@@ -2,7 +2,7 @@ import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import ChoiceAnswerDocument, {
     ChoiceAnswerCorrectness,
     ModelMeta
-} from '@tdev-models/documents/ChoiceAnswer';
+} from '@tdev-models/documents/Quiz/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import clsx from 'clsx';
@@ -19,19 +19,28 @@ import { FeedbackBadge } from '../Feedback';
 import { ScoringFunction } from '../helpers/scoring';
 import { assess } from '../helpers/assessment';
 
-export interface ChoiceAnswerProps {
-    id: string;
+interface SharedProps {
     title?: string;
     correct?: number[];
     scoring?: ScoringFunction;
     questionIndex?: number;
-    inQuiz?: boolean;
     multiple?: boolean;
     randomizeOptions?: boolean;
-    numOptions: number;
+    optionsCount: number;
     readonly?: boolean;
     children: React.ReactNode;
 }
+export interface StandaloneProps extends SharedProps {
+    inQuiz?: false;
+    id: string;
+}
+
+export interface InQuizProps extends SharedProps {
+    inQuiz: true;
+    qid: string;
+}
+
+export type ChoiceAnswerProps = StandaloneProps | InQuizProps;
 
 interface ThinWrapperProps {
     children: React.ReactNode;
@@ -77,10 +86,10 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
             doc?.updateOptionOrders({
                 ...doc.data.optionOrders,
-                [questionIndex]: createRandomOrderMap(props.numOptions)
+                [questionIndex]: createRandomOrderMap(props.optionsCount)
             });
         }
-    }, [randomizeOptions, doc, questionIndex, props.numOptions]);
+    }, [randomizeOptions, doc, questionIndex, props.optionsCount]);
 
     React.useEffect(() => {
         if (!doc) {
@@ -99,7 +108,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             props.multiple ?? false,
             questionIndex,
             correctOptions,
-            props.numOptions,
+            props.optionsCount,
             scoringFunction
         );
         doc.updateAssessment(questionIndex, assessment);

@@ -4,6 +4,7 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import type { ReactElement } from 'react';
+import iAssesable from './iAssessable';
 
 export interface ChoiceAnswerChoices {
     [questionIndex: number]: number[];
@@ -58,19 +59,17 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
     }
 }
 
-class ChoiceAnswer extends iDocument<'choice_answer'> {
+class ChoiceAnswer extends iAssesable<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
     @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
     @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
     assessments = observable.map<number, ChoiceAnswerAssessment>();
-    @observable accessor _assessed: boolean;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices = props.data?.choices || {};
         this.optionOrders = props.data?.optionOrders || {};
         this.questionOrder = props.data?.questionOrder || null;
-        this._assessed = props.data?.assessed || false;
         this.assessments = observable.map<number, ChoiceAnswerAssessment>();
     }
 
@@ -87,11 +86,6 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
-    }
-
-    @computed
-    get canUpdateAnswer() {
-        return this.canEdit && !this._assessed;
     }
 
     @action
@@ -164,17 +158,6 @@ class ChoiceAnswer extends iDocument<'choice_answer'> {
     updateQuestionOrder(questionOrder: ChoiceAnswerQuestionOrder): void {
         this.updatedAt = new Date();
         this.questionOrder = questionOrder;
-        this.saveNow();
-    }
-
-    get assessed() {
-        return this._assessed;
-    }
-
-    @action
-    set assessed(value: boolean) {
-        this.updatedAt = new Date();
-        this._assessed = value;
         this.saveNow();
     }
 

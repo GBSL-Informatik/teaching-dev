@@ -1,8 +1,8 @@
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { ModelMeta } from '@tdev-models/documents/ChoiceAnswer';
+import { ModelMeta } from '@tdev-models/documents/Quiz/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import ChoiceAnswerDocument from '@tdev-models/documents/ChoiceAnswer';
+import ChoiceAnswerDocument from '@tdev-models/documents/Quiz/ChoiceAnswer';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Loader from '@tdev-components/Loader';
 import { createRandomOrderMap } from '../helpers/shared';
@@ -12,9 +12,9 @@ import { ScoringFunction } from '../helpers/scoring';
 import { QuizScore } from '../Feedback';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 
-
 interface Props {
     id: string;
+    questionIds: string[];
     readonly?: boolean;
     hideQuestionNumbers?: boolean;
     randomizeOptions?: boolean;

@@ -1,7 +1,7 @@
 import ChoiceAnswerDocument, {
     ChoiceAnswerAssessment,
     ChoiceAnswerCorrectness
-} from '@tdev-models/documents/ChoiceAnswer';
+} from '@tdev-models/documents/Quiz/ChoiceAnswer';
 import { ScoringFunction } from './scoring';
 import _ from 'es-toolkit/compat';
 
