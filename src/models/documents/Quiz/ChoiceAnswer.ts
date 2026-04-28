@@ -4,7 +4,7 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import type { ReactElement } from 'react';
-import iAssesable from './iAssessable';
+import iAssessable from './iAssessable';
 
 export interface ChoiceAnswerChoices {
     [questionIndex: number]: number[];
@@ -59,7 +59,7 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
     }
 }
 
-class ChoiceAnswer extends iAssesable<'choice_answer'> {
+class ChoiceAnswer extends iAssessable<'choice_answer'> {
     @observable.ref accessor choices: ChoiceAnswerChoices;
     @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
     @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;

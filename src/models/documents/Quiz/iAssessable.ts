@@ -3,7 +3,7 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 
-abstract class iAssesable<T extends AssessableType> extends iDocument<T> {
+abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     @observable accessor _assessed: boolean;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
@@ -34,4 +34,4 @@ abstract class iAssesable<T extends AssessableType> extends iDocument<T> {
     }
 }
 
-export default iAssesable;
+export default iAssessable;
