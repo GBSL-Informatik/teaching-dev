@@ -1,0 +1,73 @@
+---
+page_id: ff29fd25-e332-49d9-8d8a-21322d50d28b
+---
+import { DynamicInput, TemplateCode } from '@tdev-components/DynamicValues';
+import { generateRandomBase64 } from '../helpers/secureToken';
+
+# Directus
+
+Directus auf Dokku deployen.
+
+Referenz
+: [directus.io](https://directus.io/docs/self-hosting/deploying)
+
+<DynamicInput name="APP" default='directus' monospace />
+<DynamicInput name="DOMAIN" default='directus.domain.ch' monospace />
+<DynamicInput name="DIRECTUS_IMAGE" default='directus/directus:latest' monospace />
+<DynamicInput name="ADMIN_EMAIL" default='foo@bar.ch' monospace />
+<DynamicInput name="ADMIN_PASSWORD" default='password' monospace />
+<DynamicInput name="SECRET" monospace default='$(openssl rand -base64 32)' onRecalculate={() => generateRandomBase64()} />
+
+## Dokku vorbereiten und deployen
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  # App erstellen
+  dokku apps:create {{APP}}
+  dokku redis:create {{APP}}
+  dokku redis:link {{APP}} {{APP}}
+  dokku postgres:create {{APP}}
+  dokku postgres:link {{APP}} {{APP}}
+
+  # Domain und Port setzen
+  dokku domains:set {{APP}} {{DOMAIN}}
+  dokku ports:set {{APP}} http:80:8055
+
+  # Persistentes Verzeichnis für die SQLite-Datenbank mounten
+  mkdir -p /var/lib/dokku/data/storage/{{APP}}/uploads
+  mkdir /var/lib/dokku/data/storage/{{APP}}/extensions
+  chown -R 1000:1000 /var/lib/dokku/data/storage/{{APP}}/uploads
+  chown -R 1000:1000 /var/lib/dokku/data/storage/{{APP}}/extensions
+  dokku storage:mount {{APP}} /var/lib/dokku/data/storage/{{APP}}/uploads:/directus/uploads
+  dokku storage:mount {{APP}} /var/lib/dokku/data/storage/{{APP}}/extensions:/directus/extensions
+
+  # GitHub OAuth und Drone-Konfiguration
+  dokku config:set --no-restart {{APP}} DB_CLIENT="pg"
+  dokku config:set --no-restart {{APP}} DB_CONNECTION_STRING="$(dokku postgres:info {{APP}} --dsn)"
+
+  dokku config:set --no-restart {{APP}} CACHE_ENABLED="true"
+  dokku config:set --no-restart {{APP}} CACHE_AUTO_PURGE="true"
+  dokku config:set --no-restart {{APP}} CACHE_STORE="redis"
+  dokku config:set --no-restart {{APP}} REDIS=$(dokku redis:info {{APP}} --dsn)
+
+  dokku config:set --no-restart {{APP}} ADMIN_EMAIL="{{ADMIN_EMAIL}}"
+  dokku config:set --no-restart {{APP}} ADMIN_PASSWORD="{{ADMIN_PASSWORD}}"
+  dokku config:set --no-restart {{APP}} PUBLIC_URL="https://{{DOMAIN}}"
+  dokku config:set --no-restart {{APP}} SECRET="{{SECRET}}"
+
+  # Image deployen
+  dokku git:from-image {{APP}} {{DIRECTUS_IMAGE}}
+
+  # Optional: SSL aktivieren
+  dokku letsencrypt:enable {{APP}}
+  ```
+</TemplateCode>
+
+## Update
+
+<TemplateCode>
+  ```bash title="root@dokku"
+  docker pull {{DIRECTUS_IMAGE}}
+  dokku ps:rebuild {{APP}}
+  ```
+</TemplateCode>
