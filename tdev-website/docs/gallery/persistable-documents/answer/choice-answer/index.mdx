@@ -26,7 +26,7 @@ Eine einfache Single-Choice-Frage kann wie folgt erstellt werden:
 import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
-    > Wir gilt als Erfinder des World Wide Web (WWW)?
+    > Wer gilt als Erfinder des World Wide Web (WWW)?
 
     1. Steve **Jobs**
     2. Tim Berners-Lee
@@ -37,8 +37,8 @@ import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
-        > Wir gilt als Erfinder des World Wide Web (WWW)?
+    <ChoiceAnswer correct={[2]} id="3f78aec5-a39e-4119-9a9d-783f9edb9488">
+        > Wer gilt als Erfinder des World Wide Web (WWW)?
 
         1. Steve **Jobs**
         2. Tim Berners-Lee
@@ -67,7 +67,7 @@ import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
+    <ChoiceAnswer correct={[2]} randomizeOptions id="261f8549-d6e2-474d-91d1-e380ed2c29cc">
         > Wir gilt als Erfinder des World Wide Web (WWW)?
 
         1. Steve **Jobs**
@@ -114,7 +114,7 @@ Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werde
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
+    <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="0b05ea40-4235-4d51-8b30-2a23e045c169">
         > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
         
         1. 2 ist die einzige gerade Primzahl.
@@ -145,7 +145,7 @@ import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAn
 ```
 
 <BrowserWindow>
-    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
+    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="4227646b-458a-418b-9809-f341fd9e640d">
         Die Erde ist flach.
     </TrueFalseAnswer>
 </BrowserWindow>
@@ -191,7 +191,7 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
+    <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="b05ff2c3-393d-4978-8fe8-2b70260237ae">
         > Was ist die Hauptstadt von Frankreich?
         
         1. Berlin
@@ -200,7 +200,7 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
         4. Madrid
     </ChoiceAnswer>
 
-    <ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="c1f5b5e5-13b9-4d09-831d-215d4c04ada5">
+    <ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="0fca03bf-f2a5-4275-8684-6df8539c754b">
         > Wählen Sie alle Primzahlen aus.
 
         1. 1
@@ -210,7 +210,7 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
         5. 5
     </ChoiceAnswer>
 
-    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="75fac390-8846-47b5-8028-52c4258919fc">
+    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="7497ea4d-adbe-4b7e-8353-b2bcd12f796b">
         > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
     </TrueFalseAnswer>
 </BrowserWindow>
@@ -272,7 +272,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 ```
 
 <BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" >
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="7b9dfd17-2ddb-4b71-8a5a-43f556ba5152" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             

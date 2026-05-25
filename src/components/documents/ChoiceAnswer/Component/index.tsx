@@ -13,13 +13,19 @@ import useIsBrowser from '@docusaurus/useIsBrowser';
 import { QuizContext } from '../Quiz';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
-import { createRandomOrderMap } from '../helpers/shared';
 import QuestionControls from '../Controls';
 import { FeedbackBadge } from '../Feedback';
 import { ScoringFunction } from '../helpers/scoring';
-import { assess } from '../helpers/assessment';
+import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
+import { useDummyId } from '@tdev-hooks/useDummyId';
+import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
+import { useFirstDocumentBy } from '@tdev-hooks/useFirstDocumentBy';
+import { DocumentModelType } from '@tdev-api/document';
+import { DocContext } from '@tdev-components/documents/DocumentContext';
+import { useDocument } from '@tdev-hooks/useContextDocument';
 
 interface SharedProps {
+    id?: string;
     title?: string;
     correct?: number[];
     scoring?: ScoringFunction;
@@ -33,6 +39,7 @@ interface SharedProps {
 export interface StandaloneProps extends SharedProps {
     inQuiz?: false;
     id: string;
+    qid: never;
 }
 
 export interface InQuizProps extends SharedProps {
@@ -58,61 +65,57 @@ type ChoiceAnswerSubComponents = {
     After: React.FC<ThinWrapperProps>;
 };
 
-const ChoiceAnswerContext = React.createContext({
-    doc: undefined,
-    questionIndex: 0,
-    multiple: false,
-    randomizeOptions: false,
-    onChange: () => {}
-} as {
-    doc?: ChoiceAnswerDocument;
-    questionIndex: number;
-    multiple?: boolean;
-    randomizeOptions?: boolean;
-    onChange: (optionIndex: number, checked: boolean) => void;
-});
-
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
-    const parentProps = React.useContext(QuizContext);
     const [meta] = React.useState(new ModelMeta(props));
-    const ownDoc = useFirstMainDocument(props.inQuiz ? undefined : props.id, meta);
-    const doc = props.inQuiz ? parentProps.doc : ownDoc;
-    const questionIndex = props.questionIndex ?? 0;
-    const randomizeOptions =
-        props.randomizeOptions !== undefined ? props.randomizeOptions : parentProps.randomizeOptions;
+    const docRootId = useDocumentRootId(props.id);
+    // when inside a quizz, this will share the document root with the quiz
+    const documentRoot = useDocumentRoot(docRootId, meta);
+    const selector = React.useCallback(
+        (doc: DocumentModelType) => {
+            if (props.inQuiz) {
+                return doc.type === meta.type && doc.data.qid === props.qid;
+            }
+            return doc.type === meta.type;
+        },
+        [meta.type, props.inQuiz, props.qid]
+    );
+
+    const doc = useFirstDocumentBy(docRootId, meta, selector);
     const isBrowser = useIsBrowser();
 
-    React.useEffect(() => {
-        if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
-            doc?.updateOptionOrders({
-                ...doc.data.optionOrders,
-                [questionIndex]: createRandomOrderMap(props.optionsCount)
-            });
-        }
-    }, [randomizeOptions, doc, questionIndex, props.optionsCount]);
+    // TODO: shuffle
+    // React.useEffect(() => {
+    //     if (randomizeOptions && !doc?.data.optionOrders?.[questionIndex]) {
+    //         doc?.updateOptionOrders({
+    //             ...doc.data.optionOrders,
+    //             [questionIndex]: createRandomOrderMap(props.optionsCount)
+    //         });
+    //     }
+    // }, [randomizeOptions, doc, questionIndex, props.optionsCount]);
 
-    React.useEffect(() => {
-        if (!doc) {
-            return;
-        }
+    // TODO: assessment
+    // React.useEffect(() => {
+    //     if (!doc) {
+    //         return;
+    //     }
 
-        if (props.correct === undefined) {
-            // If no correct options are given, we assume that this question doesn't support assessment.
-            return;
-        }
-        const correctOptions = new Set(props.correct);
+    //     if (props.correct === undefined) {
+    //         // If no correct options are given, we assume that this question doesn't support assessment.
+    //         return;
+    //     }
+    //     const correctOptions = new Set(props.correct);
 
-        const scoringFunction = props.scoring ?? parentProps.scoring;
-        const assessment = assess(
-            doc,
-            props.multiple ?? false,
-            questionIndex,
-            correctOptions,
-            props.optionsCount,
-            scoringFunction
-        );
-        doc.updateAssessment(questionIndex, assessment);
-    }, [doc, doc?.choices, doc?.assessed]);
+    //     const scoringFunction = props.scoring ?? parentProps.scoring;
+    //     const assessment = assess(
+    //         doc,
+    //         props.multiple ?? false,
+    //         questionIndex,
+    //         correctOptions,
+    //         props.optionsCount,
+    //         scoringFunction
+    //     );
+    //     doc.updateAssessment(questionIndex, assessment);
+    // }, [doc, doc?.choices, doc?.isAssessed]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
@@ -122,13 +125,13 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         return <Loader />;
     }
 
-    const assessment = doc.getAssessment(questionIndex);
-    const feedbackStyle = {
-        [styles.correct]: doc.assessed && assessment?.correctness === ChoiceAnswerCorrectness.Correct,
-        [styles.partiallyCorrect]:
-            doc.assessed && assessment?.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
-        [styles.incorrect]: doc.assessed && assessment?.correctness === ChoiceAnswerCorrectness.Incorrect
-    };
+    // const assessment = doc.getAssessment(questionIndex);
+    // const feedbackStyle = {
+    //     [styles.correct]: doc.isAssessed && assessment?.correctness === ChoiceAnswerCorrectness.Correct,
+    //     [styles.partiallyCorrect]:
+    //         doc.isAssessed && assessment?.correctness === ChoiceAnswerCorrectness.PartiallyCorrect,
+    //     [styles.incorrect]: doc.isAssessed && assessment?.correctness === ChoiceAnswerCorrectness.Incorrect
+    // };
 
     const childrenArray = React.Children.toArray(props.children);
     const beforeBlock = childrenArray.find(
@@ -141,58 +144,62 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
         (child) => React.isValidElement(child) && child.type === ChoiceAnswer.After
     );
 
-    const onOptionChange = (optionIndex: number, checked: boolean) => {
-        parentProps.setFocussedQuestion?.(questionIndex);
-        if (props.multiple) {
-            doc?.updateMultipleChoiceSelection(questionIndex, optionIndex, checked);
-        } else {
-            checked
-                ? doc?.updateSingleChoiceSelection(questionIndex, optionIndex)
-                : doc?.resetAnswer(questionIndex);
-        }
-    };
+    // const onOptionChange = (optionIndex: number, checked: boolean) => {
+    //     parentProps.setFocussedQuestion?.(questionIndex);
+    //     if (props.multiple) {
+    //         doc?.updateMultipleChoiceSelection(questionIndex, optionIndex, checked);
+    //     } else {
+    //         checked
+    //             ? doc?.updateSingleChoiceSelection(questionIndex, optionIndex)
+    //             : doc?.resetAnswer(questionIndex);
+    //     }
+    // };
 
-    const questionOrder =
-        parentProps.randomizeQuestions && parentProps.questionOrder
-            ? parentProps.questionOrder[questionIndex]
-            : questionIndex;
+    // const questionOrder =
+    //     parentProps.randomizeQuestions && parentProps.questionOrder
+    //         ? parentProps.questionOrder[questionIndex]
+    //         : questionIndex;
 
-    const questionNumberToDisplay =
-        (parentProps.randomizeQuestions
-            ? (parentProps.questionOrder?.[questionIndex] ?? questionIndex)
-            : questionIndex) + 1;
-    const canonicalTitle =
-        props.inQuiz && !parentProps.hideQuestionNumbers
-            ? props.title
-                ? `Frage ${questionNumberToDisplay} – ${props.title}`
-                : `Frage ${questionNumberToDisplay}`
-            : props.title;
+    // const questionNumberToDisplay =
+    //     (parentProps.randomizeQuestions
+    //         ? (parentProps.questionOrder?.[questionIndex] ?? questionIndex)
+    //         : questionIndex) + 1;
+    // const canonicalTitle =
+    //     props.inQuiz && !parentProps.hideQuestionNumbers
+    //         ? props.title
+    //             ? `Frage ${questionNumberToDisplay} – ${props.title}`
+    //             : `Frage ${questionNumberToDisplay}`
+    //         : props.title;
+    const canonicalTitle = undefined;
     const displayTitle = canonicalTitle || 'Frage';
 
     return (
         <div
-            className={clsx('card', styles.choiceAnswerContainer, feedbackStyle)}
-            style={{ order: questionOrder }}
-            tabIndex={questionOrder}
+            className={clsx('card', styles.choiceAnswerContainer /*feedbackStyle*/)}
+            // style={{ order: questionOrder }}
+            // tabIndex={questionOrder}
         >
-            <div className={clsx('card__header', styles.header, feedbackStyle)}>
+            <div className={clsx('card__header', styles.header /*feedbackStyle*/)}>
                 <span className={clsx(styles.title)}>{displayTitle}</span>
                 <div className={clsx(styles.controlsAndFeedback)}>
-                    {!!props.correct && (
+                    {/* {!!props.correct && (
                         <QuestionControls
                             doc={doc}
                             questionIndex={questionIndex}
                             focussedQuestion={parentProps.focussedQuestion === questionIndex}
                             inQuiz={props.inQuiz}
                         />
-                    )}
-                    <FeedbackBadge doc={doc} questionIndex={questionIndex} />
+                    )} */}
+                    {/* <FeedbackBadge doc={doc} questionIndex={questionIndex} /> */}
                 </div>
             </div>
 
             <div className={clsx('card__body')}>
                 {beforeBlock}
-                <ChoiceAnswerContext.Provider
+                <DocContext.Provider value={doc}>
+                    <div className={styles.optionsBlock}>{optionsBlock}</div>
+                </DocContext.Provider>
+                {/* <ChoiceAnswerContext.Provider
                     value={{
                         doc: doc,
                         questionIndex: questionIndex,
@@ -200,9 +207,8 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                         randomizeOptions: randomizeOptions,
                         onChange: onOptionChange
                     }}
-                >
-                    <div className={styles.optionsBlock}>{optionsBlock}</div>
-                </ChoiceAnswerContext.Provider>
+                > */}
+                {/* </ChoiceAnswerContext.Provider> */}
                 {afterBlock}
             </div>
         </div>
@@ -210,41 +216,44 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
 ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
-    const { doc, questionIndex, multiple, randomizeOptions, onChange } =
-        React.useContext(ChoiceAnswerContext);
+    const doc = useDocument<'choice_answer'>();
+    // const { doc, questionIndex, multiple, randomizeOptions, onChange } =
+    //     React.useContext(ChoiceAnswerContext);
 
     const optionId = React.useId();
 
-    const isChecked = !!doc?.choices[questionIndex]?.includes(optionIndex);
+    const isChecked = doc.choices.has(optionIndex);
 
-    const optionOrder =
-        randomizeOptions && doc?.optionOrders[questionIndex] !== undefined
-            ? doc.optionOrders[questionIndex][optionIndex]
-            : optionIndex;
+    // const optionOrder =
+    //     randomizeOptions && doc?.optionOrders[questionIndex] !== undefined
+    //         ? doc.optionOrders[questionIndex][optionIndex]
+    //         : optionIndex;
 
     return (
         <div
             key={optionId}
             className={clsx(styles.choiceAnswerOptionContainer)}
-            style={{
-                order: optionOrder
-            }}
+            style={
+                {
+                    // order: optionOrder
+                }
+            }
         >
             <div className={styles.checkboxContainer}>
                 <input
-                    type={multiple ? 'checkbox' : 'radio'}
+                    type={doc.multiple ? 'checkbox' : 'radio'}
                     id={optionId}
-                    name={multiple ? optionId : `${doc?.id}-q${questionIndex}`}
+                    name={doc.multiple ? optionId : `${doc?.id}-q${doc.qid}`}
                     value={optionId}
-                    onChange={(e) => onChange(optionIndex, e.target.checked)}
+                    onChange={(e) => doc.updateSelection(optionIndex, e.target.checked, doc.multiple)}
                     checked={isChecked}
                     className={styles.checkbox}
                     disabled={!doc?.canUpdateAnswer}
-                    tabIndex={optionOrder}
+                    // tabIndex={optionOrder}
                 />
             </div>
             <label htmlFor={optionId}>{children}</label>
-            {!multiple && (
+            {/* {!multiple && (
                 <div className={styles.btnDeleteAnswerContainer}>
                     <Button
                         color="danger"
@@ -257,7 +266,7 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
                         })}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 });

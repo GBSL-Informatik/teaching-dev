@@ -18,7 +18,8 @@ export const assess = (
         correctness: ChoiceAnswerCorrectness.NA
     };
     if (multiple) {
-        const selectedOptions = new Set(doc.choices[questionIndex] || []);
+        // TODO: check if correct and optimal
+        const selectedOptions = new Set(doc.choices);
         const numCorrectDecisions = _.range(0, numOptions).filter((optionIndex) => {
             const isCorrect = correctOptions.has(optionIndex + 1); // +1 since optionIndex is 0-based, but correct[] is 1-based for better readability.
             const isSelected = selectedOptions.has(optionIndex);
@@ -38,7 +39,8 @@ export const assess = (
                 `Question ${questionIndex} has an empty list of correct options. This is not allowed for single-choice questions and may lead to unexpected assessment results (no options selected = question not answered).`
             );
         }
-        const selectedOption = doc?.choices[questionIndex]?.[0];
+        // TODO
+        const selectedOption = 1; // doc?.choices[questionIndex]?.[0];
         if (selectedOption === undefined) {
             assessment.correctness = ChoiceAnswerCorrectness.NA;
         } else {

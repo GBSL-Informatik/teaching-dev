@@ -11,6 +11,7 @@ import { QuizControls } from '../Controls';
 import { ScoringFunction } from '../helpers/scoring';
 import { QuizScore } from '../Feedback';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { DocumentRootIdContext } from '@tdev-hooks/useContextDocumentRootId';
 
 interface Props {
     id: string;
@@ -54,11 +55,11 @@ const Quiz = observer((props: Props) => {
 
     const [focussedQuestion, setFocussedQuestion] = React.useState(0);
 
-    React.useEffect(() => {
-        if (props.randomizeQuestions && !doc?.data.questionOrder) {
-            doc?.updateQuestionOrder(createRandomOrderMap(props.questionCount));
-        }
-    }, [props.randomizeQuestions, doc, props.questionCount]);
+    // React.useEffect(() => {
+    //     if (props.randomizeQuestions && !doc?.data.questionOrder) {
+    //         doc?.updateQuestionOrder(createRandomOrderMap(props.questionCount));
+    //     }
+    // }, [props.randomizeQuestions, doc, props.questionCount]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
@@ -69,26 +70,28 @@ const Quiz = observer((props: Props) => {
     }
 
     return (
-        <QuizContext.Provider
-            value={{
-                doc,
-                id: props.id,
-                readonly: props.readonly,
-                hideQuestionNumbers: props.hideQuestionNumbers,
-                randomizeQuestions: props.randomizeQuestions,
-                questionOrder: doc.data.questionOrder,
-                randomizeOptions: props.randomizeOptions,
-                scoring: props.scoring,
-                focussedQuestion: focussedQuestion,
-                setFocussedQuestion: setFocussedQuestion
-            }}
-        >
+        // <QuizContext.Provider
+        //     value={{
+        //         doc,
+        //         id: props.id,
+        //         readonly: props.readonly,
+        //         hideQuestionNumbers: props.hideQuestionNumbers,
+        //         randomizeQuestions: props.randomizeQuestions,
+        //         questionOrder: doc.data.questionOrder,
+        //         randomizeOptions: props.randomizeOptions,
+        //         scoring: props.scoring,
+        //         focussedQuestion: focussedQuestion,
+        //         setFocussedQuestion: setFocussedQuestion
+        //     }}
+        // >
+        <DocumentRootIdContext id={props.id}>
             <div className={styles.content}>{props.children}</div>
             <div className={styles.footer}>
                 <QuizScore doc={doc} minPoints={props.minPoints} />
                 <QuizControls doc={doc} />
             </div>
-        </QuizContext.Provider>
+        </DocumentRootIdContext>
+        // </QuizContext.Provider>
     );
 });
 

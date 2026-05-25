@@ -19,11 +19,7 @@ import iDocumentContainer from '@tdev-models/iDocumentContainer';
 import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import Code from '@tdev-models/documents/Code';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import ChoiceAnswer, {
-    ChoiceAnswerChoices,
-    ChoiceAnswerOptionOrders,
-    ChoiceAnswerQuestionOrder
-} from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import type ChoiceAnswer from '@tdev-models/documents/Quiz/ChoiceAnswer';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -47,7 +43,7 @@ export interface StringData {
 }
 
 export interface QuizData {
-    // nothing yet, just a wrapper for now
+    questionOrder: number[];
 }
 
 export interface BooleanAnswerData {
@@ -56,10 +52,10 @@ export interface BooleanAnswerData {
 }
 
 export interface ChoiceAnswerData {
-    choices: ChoiceAnswerChoices;
-    optionOrders: ChoiceAnswerOptionOrders;
-    questionOrder: ChoiceAnswerQuestionOrder | null;
+    choices: number[];
+    optionsOrder: number[];
     assessed: boolean;
+    qid?: string;
 }
 
 export interface QuillV2Data {

@@ -26,7 +26,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
 
     const checkOrResetButton = !inQuiz && (
         <>
-            {!doc.assessed && (
+            {!doc.isAssessed && (
                 <Button
                     text={isMobileView ? '' : 'Prüfen'}
                     title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
@@ -35,10 +35,10 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
                     iconSide="left"
                     size={0.7}
                     className={styles.checkButton}
-                    onClick={() => (doc.assessed = true)}
+                    onClick={() => (doc.isAssessed = true)}
                 />
             )}
-            {doc.assessed && (
+            {doc.isAssessed && (
                 <Confirm
                     text={isMobileView ? '' : 'Zurücksetzen'}
                     title="Antwort zurücksetzen."
@@ -49,7 +49,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
-                        doc.assessed = false;
+                        doc.isAssessed = false;
                         doc.resetAllAnswers();
                     }}
                 />
@@ -74,7 +74,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
 
     return (
         <div className={styles.quizControlsContainer}>
-            {!doc.assessed && doc.assessments.size > 0 && (
+            {!doc.isAssessed && doc.assessments.size > 0 && (
                 <Confirm
                     text="Quiz beenden"
                     title="Quiz beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich."
@@ -84,10 +84,10 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     size={0.7}
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Wirklich beenden?' : 'Quiz beenden und Antworten prüfen?'}
-                    onConfirm={() => (doc.assessed = true)}
+                    onConfirm={() => (doc.isAssessed = true)}
                 />
             )}
-            {doc.assessed && (
+            {doc.isAssessed && (
                 <Confirm
                     text="Quiz zurücksetzen"
                     title="Alle Antworten zurücksetzen und Quiz neu beginnen"
@@ -98,7 +98,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
-                        doc.assessed = false;
+                        doc.isAssessed = false;
                         doc.resetAllAnswers();
                     }}
                 />

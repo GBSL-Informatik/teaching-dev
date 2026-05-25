@@ -5,21 +5,12 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import type { ReactElement } from 'react';
 import iAssessable from './iAssessable';
-
-export interface ChoiceAnswerChoices {
-    [questionIndex: number]: number[];
-}
-
-export interface ChoiceAnswerOptionOrders {
-    [questionIndex: number]: {
-        [originalOptionIndex: number]: number;
-    };
-}
-
-export type ChoiceAnswerQuestionOrder = { [originalQuestionIndex: number]: number };
-
+import { createRandomOrderMap } from '@tdev-components/documents/ChoiceAnswer/helpers/shared';
+import { range } from 'es-toolkit/math';
+import { shuffle } from 'es-toolkit/array';
 export interface MetaInit {
     readonly?: boolean;
+    qid?: string;
 }
 
 export enum ChoiceAnswerCorrectness {
@@ -43,42 +34,55 @@ export interface ChoiceAnswerAssessment {
 export class ModelMeta extends TypeMeta<'choice_answer'> {
     readonly type = 'choice_answer';
     readonly readonly?: boolean;
+    readonly qid?: string;
 
     constructor(props: Partial<MetaInit>) {
         super('choice_answer', props.readonly ? Access.RO_User : undefined);
         this.readonly = props.readonly;
+        this.qid = props.qid;
     }
 
     get defaultData(): TypeDataMapping['choice_answer'] {
-        return {
-            choices: {},
-            optionOrders: {},
-            questionOrder: null,
+        const data: TypeDataMapping['choice_answer'] = {
+            choices: [],
+            optionsOrder: [],
             assessed: false
         };
+        if (this.qid) {
+            data.qid = this.qid;
+        }
+        return data;
     }
 }
 
 class ChoiceAnswer extends iAssessable<'choice_answer'> {
-    @observable.ref accessor choices: ChoiceAnswerChoices;
-    @observable.ref accessor optionOrders: ChoiceAnswerOptionOrders;
-    @observable.ref accessor questionOrder: ChoiceAnswerQuestionOrder | null;
+    readonly qid?: string;
+    choices = observable.set<number>();
+    @observable.ref accessor optionOrders: number[];
     assessments = observable.map<number, ChoiceAnswerAssessment>();
+
+    // TODO: make dynamic based on meta or question type
+    readonly multiple = false;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
-        this.choices = props.data?.choices || {};
-        this.optionOrders = props.data?.optionOrders || {};
-        this.questionOrder = props.data?.questionOrder || null;
+        this.choices.replace(props.data.choices ?? []);
+        this.optionOrders = props.data?.optionsOrder || [];
         this.assessments = observable.map<number, ChoiceAnswerAssessment>();
+        this.qid = props.data.qid;
     }
 
     @action
-    setData(data: TypeDataMapping['choice_answer'], from: Source, updatedAt?: Date): void {
-        this.choices = data.choices;
-        this.optionOrders = data.optionOrders;
-        this.questionOrder = data.questionOrder;
-        this._assessed = data.assessed;
+    setData(data: Partial<TypeDataMapping['choice_answer']>, from: Source, updatedAt?: Date): void {
+        if (data.choices) {
+            this.choices.replace(data.choices);
+        }
+        if (data.optionsOrder) {
+            this.optionOrders = data.optionsOrder;
+        }
+        if (data.assessed !== undefined) {
+            this._assessed = data.assessed;
+        }
 
         if (from === Source.LOCAL) {
             this.save();
@@ -89,76 +93,44 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     }
 
     @action
-    updateSingleChoiceSelection(questionIndex: number, optionIndex: number): void {
+    updateSelection(optionIndex: number, selected: boolean = true, multiple: boolean = false): void {
         if (!this.canUpdateAnswer) {
             return;
         }
-
-        this.updatedAt = new Date();
-        this.choices = {
-            ...this.choices,
-            [questionIndex]: [optionIndex]
-        };
-        this.save();
-    }
-
-    @action
-    updateMultipleChoiceSelection(questionIndex: number, optionIndex: number, selected: boolean): void {
-        if (!this.canUpdateAnswer) {
-            return;
-        }
-
-        this.updatedAt = new Date();
-        const currentSelections = new Set<number>(this.choices[questionIndex] as number[] | []);
-        if (selected) {
-            currentSelections.add(optionIndex);
+        if (multiple) {
+            if (selected) {
+                this.choices.add(optionIndex);
+            } else {
+                this.choices.delete(optionIndex);
+            }
         } else {
-            currentSelections.delete(optionIndex);
+            if (selected) {
+                this.choices.replace([optionIndex]);
+            } else {
+                this.choices.clear();
+            }
         }
-        this.choices = {
-            ...this.choices,
-            [questionIndex]: Array.from(currentSelections)
-        };
         this.save();
     }
 
     @action
-    resetAllAnswers(): void {
-        if (!this.canUpdateAnswer) {
-            return;
-        }
-
-        this.updatedAt = new Date();
-        this.choices = {};
-        this.save();
-    }
-
-    @action
-    resetAnswer(questionIndex: number): void {
-        if (!this.canUpdateAnswer) {
-            return;
-        }
-
-        this.updatedAt = new Date();
-        this.choices = {
-            ...this.choices,
-            [questionIndex]: []
-        };
-        this.save();
-    }
-
-    @action
-    updateOptionOrders(optionOrders: ChoiceAnswerOptionOrders): void {
-        this.updatedAt = new Date();
-        this.optionOrders = optionOrders;
+    resetAnswer(): void {
+        this.choices.clear();
+        this.assessments.clear();
+        this.setAssessed(false);
         this.saveNow();
     }
 
     @action
-    updateQuestionOrder(questionOrder: ChoiceAnswerQuestionOrder): void {
-        this.updatedAt = new Date();
-        this.questionOrder = questionOrder;
+    shuffle(optionsCount: number): void {
+        const originalIndices = range(optionsCount);
+        this.optionOrders = shuffle(originalIndices);
         this.saveNow();
+    }
+
+    optionsDisplayOrder(optionIndex: number): number {
+        const orderIndex = this.optionOrders.findIndex((i) => i === optionIndex);
+        return orderIndex !== -1 ? orderIndex : optionIndex;
     }
 
     @action
@@ -176,12 +148,15 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     }
 
     get data(): TypeDataMapping['choice_answer'] {
-        return {
-            choices: this.choices,
-            optionOrders: this.optionOrders,
-            questionOrder: this.questionOrder,
+        const raw: TypeDataMapping['choice_answer'] = {
+            choices: [...this.choices],
+            optionsOrder: this.optionOrders,
             assessed: this._assessed
         };
+        if (this.qid) {
+            raw.qid = this.qid;
+        }
+        return raw;
     }
 
     @computed

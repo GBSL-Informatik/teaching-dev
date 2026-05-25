@@ -409,4 +409,57 @@ describe('#standalone question', () => {
           "
         `);
     });
+
+    it('transforms standalone question with post content', async () => {
+        const input = `# Heading
+          <ChoiceAnswer id="96df6c5b-2750-4269-bc97-cd49c2f0911d" correct={[5]}>
+              > In welchem Jahr war 2024?
+              
+              1. 1965
+              2. 1983
+              3. 1991
+              4. 2000
+              5. 2024
+
+              Überlege es dir gut, bevor du antwortest!
+          </ChoiceAnswer>
+        `;
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "# Heading
+
+          <ChoiceAnswer id="96df6c5b-2750-4269-bc97-cd49c2f0911d" correct={[5]} optionsCount={5}>
+            <ChoiceAnswer.Before>
+              > In welchem Jahr war 2024?
+            </ChoiceAnswer.Before>
+
+            <ChoiceAnswer.Options>
+              <ChoiceAnswer.Option optionIndex={0}>
+                1965
+              </ChoiceAnswer.Option>
+
+              <ChoiceAnswer.Option optionIndex={1}>
+                1983
+              </ChoiceAnswer.Option>
+
+              <ChoiceAnswer.Option optionIndex={2}>
+                1991
+              </ChoiceAnswer.Option>
+
+              <ChoiceAnswer.Option optionIndex={3}>
+                2000
+              </ChoiceAnswer.Option>
+
+              <ChoiceAnswer.Option optionIndex={4}>
+                2024
+              </ChoiceAnswer.Option>
+            </ChoiceAnswer.Options>
+
+            <ChoiceAnswer.After>
+              Überlege es dir gut, bevor du antwortest!
+            </ChoiceAnswer.After>
+          </ChoiceAnswer>
+          "
+        `);
+    });
 });

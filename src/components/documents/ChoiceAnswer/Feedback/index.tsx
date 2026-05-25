@@ -54,7 +54,7 @@ export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProp
                     questionIndex={questionIndex}
                     trigger={
                         <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
-                            {doc.assessed && <span>{assessment.scoring.pointsAchieved}/</span>}
+                            {doc.isAssessed && <span>{assessment.scoring.pointsAchieved}/</span>}
                             {assessment.scoring.maxPoints}
                             {isMobileView ? 'p' : assessment.scoring.maxPoints === 1 ? ' Punkt' : ' Punkte'}
                         </span>
@@ -64,7 +64,7 @@ export const FeedbackBadge = observer(({ doc, questionIndex }: FeedbackBadgeProp
             {!assessment.scoring && doc.hasQuestionsWithScoring && (
                 <QuestionScoringHint doc={doc} questionIndex={questionIndex} />
             )}
-            {icon && doc.assessed && <Icon path={icon} color={`var(${color})`} size={1} />}
+            {icon && doc.isAssessed && <Icon path={icon} color={`var(${color})`} size={1} />}
         </div>
     );
 });
@@ -101,16 +101,16 @@ export const QuizScore = observer(({ doc, minPoints }: QuizScoreProps) => {
 
     const wideScreenBadge = (
         <>
-            {!doc.assessed && <span>Zu erreichen: </span>}
-            {doc.assessed && <span>Ergebnis: {totalPointsAchieved} /</span>} {totalMaxPoints}{' '}
+            {!doc.isAssessed && <span>Zu erreichen: </span>}
+            {doc.isAssessed && <span>Ergebnis: {totalPointsAchieved} /</span>} {totalMaxPoints}{' '}
             {totalMaxPoints === 1 ? 'Punkt' : 'Punkte'}
         </>
     );
 
     const mobileViewBadge = (
         <>
-            {!doc.assessed && <span>Max.: {totalMaxPoints}p</span>}
-            {doc.assessed && (
+            {!doc.isAssessed && <span>Max.: {totalMaxPoints}p</span>}
+            {doc.isAssessed && (
                 <span>
                     {totalPointsAchieved}/{totalMaxPoints}p
                 </span>
