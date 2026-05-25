@@ -37,13 +37,11 @@ interface SharedProps {
     children: React.ReactNode;
 }
 export interface StandaloneProps extends SharedProps {
-    inQuiz?: false;
     id: string;
     qid: never;
 }
 
 export interface InQuizProps extends SharedProps {
-    inQuiz: true;
     qid: string;
 }
 
@@ -72,12 +70,12 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const documentRoot = useDocumentRoot(docRootId, meta);
     const selector = React.useCallback(
         (doc: DocumentModelType) => {
-            if (props.inQuiz) {
+            if (props.qid) {
                 return doc.type === meta.type && doc.data.qid === props.qid;
             }
             return doc.type === meta.type;
         },
-        [meta.type, props.inQuiz, props.qid]
+        [meta.type, props.qid]
     );
 
     const doc = useFirstDocumentBy(docRootId, meta, selector);
@@ -187,7 +185,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
                             doc={doc}
                             questionIndex={questionIndex}
                             focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                            inQuiz={props.inQuiz}
+                            inQuiz={!!props.qid}
                         />
                     )} */}
                     {/* <FeedbackBadge doc={doc} questionIndex={questionIndex} /> */}

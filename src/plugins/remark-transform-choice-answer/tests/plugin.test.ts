@@ -85,7 +85,7 @@ describe('#quiz', () => {
           "# Heading
 
           <Quiz id="8ec64fe7-d9f7-4b91-a9b1-b46a6d4246a7" questionIds={["q1"]}>
-            <ChoiceAnswer correct={[5]} optionsCount={5} inQuiz qid="q1">
+            <ChoiceAnswer correct={[5]} optionsCount={5} qid="q1">
               <ChoiceAnswer.Before>
                 > In welchem Jahr war 2024?
               </ChoiceAnswer.Before>
@@ -170,7 +170,7 @@ describe('#quiz', () => {
           "# Heading
 
           <Quiz id="8ec64fe7-d9f7-4b91-a9b1-b46a6d4246a7" questionIds={["q1","q2","q3","q4","q5"]}>
-            <ChoiceAnswer correct={[5]} optionsCount={5} inQuiz qid="q1">
+            <ChoiceAnswer correct={[5]} optionsCount={5} qid="q1">
               <ChoiceAnswer.Before>
                 > In welchem Jahr war 2024?
               </ChoiceAnswer.Before>
@@ -198,7 +198,7 @@ describe('#quiz', () => {
               </ChoiceAnswer.Options>
             </ChoiceAnswer>
 
-            <ChoiceAnswer correct={[2, 3]} scoring={points(2)} optionsCount={5} inQuiz qid="q2">
+            <ChoiceAnswer correct={[2, 3]} scoring={points(2)} optionsCount={5} qid="q2">
               <ChoiceAnswer.Before>
                 > Wählen Sie eine korrekte Aussage aus.
               </ChoiceAnswer.Before>
@@ -226,15 +226,13 @@ describe('#quiz', () => {
               </ChoiceAnswer.Options>
             </ChoiceAnswer>
 
-            <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?" numOptions={true} qid="q3" numOptions={true}>
+            <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?" numOptions={true} qid="q3">
               <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before>
-                  > HTML ist eine Programmiersprache.
-                </ChoiceAnswer.Before>
+                > HTML ist eine Programmiersprache.
               </ChoiceAnswer.Before>
             </TrueFalseAnswer>
 
-            <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple optionsCount={4} inQuiz qid="q4">
+            <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple optionsCount={4} qid="q4">
               <ChoiceAnswer.Before>
                 > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
               </ChoiceAnswer.Before>
@@ -258,7 +256,7 @@ describe('#quiz', () => {
               </ChoiceAnswer.Options>
             </ChoiceAnswer>
 
-            <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()} optionsCount={5} inQuiz qid="q5">
+            <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()} optionsCount={5} qid="q5">
               <ChoiceAnswer.Before>
                 > Wann ist der Sinn des Lebens?
               </ChoiceAnswer.Before>
@@ -310,51 +308,35 @@ describe('#quiz', () => {
 
           <Quiz id="8ec64fe7-d9f7-4b91-a9b1-b46a6d4246a7" questionIds={["q1","custom-id","q4","q2","expression-sq","expression-dq","q3","q5"]}>
             <ChoiceAnswer qid="q1">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="custom-id">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="q4">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="q2">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="expression-sq">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="expression-dq">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="q3">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
 
             <ChoiceAnswer qid="q5">
-              <ChoiceAnswer.Before>
-                <ChoiceAnswer.Before />
-              </ChoiceAnswer.Before>
+              <ChoiceAnswer.Before />
             </ChoiceAnswer>
           </Quiz>
           "

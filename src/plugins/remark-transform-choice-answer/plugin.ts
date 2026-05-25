@@ -50,7 +50,7 @@ const createWrappedOption = (
     return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), numOptions: options.length };
 };
 
-const transformQuestion = (questionNode: MdxJsxFlowElement, inQuiz?: boolean) => {
+const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     const listIndex = questionNode.children.findIndex((child) => child.type === 'list');
 
     if (listIndex === -1) {
@@ -93,9 +93,6 @@ const transformQuestion = (questionNode: MdxJsxFlowElement, inQuiz?: boolean) =>
     );
     wrappedChildren.push(wrappedOptions);
     questionNode.attributes.push(toJsxAttribute('optionsCount', numOptions));
-    if (inQuiz) {
-        questionNode.attributes.push(toJsxAttribute('inQuiz', true));
-    }
 
     if (afterChildren.length > 0) {
         wrappedChildren.push(createWrapper(AFTER_WRAPPER_NAME, afterChildren));
@@ -162,7 +159,7 @@ const transformQuiz = (quizNode: MdxJsxFlowElement) => {
     visit(quizNode, 'mdxJsxFlowElement', (childNode) => {
         // TODO: use a set for the check
         if (Object.values(ChoiceComponentTypes).includes(childNode.name as ChoiceComponentTypes)) {
-            transformQuestion(childNode, true);
+            transformQuestion(childNode);
             const qidIdx = childNode.attributes.findIndex((attr) => (attr as any).name === 'qid');
             const qidAttr = getQid(childNode.attributes[qidIdx]);
             if (qidIdx === -1) {
@@ -200,7 +197,7 @@ const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin(this, options =
             } else if (
                 Object.values(ChoiceComponentTypes).includes(node.name as ChoiceComponentTypes) &&
                 !((node as any).parent?.name === QUIZ_NODE_NAME) &&
-                !node.attributes.some((attr) => (attr as any).name === 'inQuiz')
+                !node.attributes.some((attr) => (attr as any).name === 'qid')
             ) {
                 // Transform standalone question.
                 transformQuestion(node);

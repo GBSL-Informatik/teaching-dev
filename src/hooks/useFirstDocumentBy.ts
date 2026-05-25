@@ -54,15 +54,12 @@ export const useFirstDocumentBy = <Type extends DocumentType>(
                     return;
                 }
                 if (!loadOnlyType || loadOnlyType === meta.type) {
-                    documentStore.create(
-                        {
-                            documentRootId: documentRoot.id,
-                            authorId: userStore.current!.id,
-                            type: meta.type,
-                            data: meta.defaultData
-                        },
-                        true
-                    );
+                    documentStore.create({
+                        documentRootId: documentRoot.id,
+                        authorId: userStore.current!.id,
+                        type: meta.type,
+                        data: meta.defaultData
+                    });
                 }
             },
             { fireImmediately: true }
@@ -70,6 +67,6 @@ export const useFirstDocumentBy = <Type extends DocumentType>(
     }, [userStore, createDocument, documentRoot, selector]);
 
     const firstDoc = documentRoot?.documents.find(selector) as TypeModelMapping[Type] | undefined;
-
+    console.log('firstDoc', !!firstDoc, meta.type, meta.defaultData);
     return firstDoc || dummyDocument;
 };

@@ -35,7 +35,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
                     iconSide="left"
                     size={0.7}
                     className={styles.checkButton}
-                    onClick={() => (doc.isAssessed = true)}
+                    onClick={() => doc.setAssessed(true)}
                 />
             )}
             {doc.isAssessed && (
@@ -49,8 +49,7 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
-                        doc.isAssessed = false;
-                        doc.resetAllAnswers();
+                        doc.resetAnswer();
                     }}
                 />
             )}
@@ -84,7 +83,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     size={0.7}
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Wirklich beenden?' : 'Quiz beenden und Antworten prüfen?'}
-                    onConfirm={() => (doc.isAssessed = true)}
+                    onConfirm={() => doc.setAssessed(true)}
                 />
             )}
             {doc.isAssessed && (
@@ -98,8 +97,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
-                        doc.isAssessed = false;
-                        doc.resetAllAnswers();
+                        doc.resetAnswer();
                     }}
                 />
             )}

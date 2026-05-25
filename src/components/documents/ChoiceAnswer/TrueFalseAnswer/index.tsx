@@ -3,6 +3,7 @@ import ChoiceAnswer, { ChoiceAnswerProps } from '../Component';
 import React from 'react';
 
 const TrueFalseAnswer = observer((props: ChoiceAnswerProps & { correct: boolean }) => {
+    console.log('tf', props);
     return (
         <ChoiceAnswer {...props} randomizeOptions={false} correct={props.correct ? [1] : [2]}>
             <ChoiceAnswer.Before>{props.children}</ChoiceAnswer.Before>
