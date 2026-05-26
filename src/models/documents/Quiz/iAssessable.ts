@@ -30,10 +30,21 @@ export interface MetaInit {
 abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     @observable accessor _assessed: boolean;
     @observable.ref accessor scoringFunction: ((self: this) => Assessement) | null = null;
+    @observable.ref accessor linkedMeta: TypeMeta<T> | null = null;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
         this._assessed = props.data?.assessed || false;
+    }
+
+    @action
+    setLinkedMeta(metadata: TypeMeta<T> | null) {
+        this.linkedMeta = metadata;
+        this.onLinkedMetaChange();
+    }
+
+    onLinkedMetaChange() {
+        // By default, do nothing. Only applicable for certain assessable document types (e.g. ChoiceAnswer).
     }
 
     @action
@@ -68,7 +79,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
 
     abstract resetAnswer(): void;
 
-    shuffle(optionsCount: number): void {
+    shuffle(): void {
         // By default, do nothing. Only applicable for certain assessable document types (e.g. ChoiceAnswer).
     }
 }

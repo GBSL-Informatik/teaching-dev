@@ -64,10 +64,13 @@ type ChoiceAnswerSubComponents = {
 };
 
 const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
+    if (props.id === '546d9dff-c43c-4a44-8036-3f897788edac') {
+        console.log(props);
+    }
     const [meta] = React.useState(new ModelMeta(props));
     const docRootId = useDocumentRootId(props.id);
-    // when inside a quizz, this will share the document root with the quiz
-    const documentRoot = useDocumentRoot(docRootId, meta);
+    // // when inside a quizz, this will share the document root with the quiz
+    // const documentRoot = useDocumentRoot(docRootId, meta);
     const selector = React.useCallback(
         (doc: DocumentModelType) => {
             if (props.qid) {
@@ -79,6 +82,12 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     );
 
     const doc = useFirstDocumentBy(docRootId, meta, selector);
+    React.useEffect(() => {
+        if (!doc) {
+            return;
+        }
+        doc.setLinkedMeta(meta);
+    }, [doc, meta]);
     const isBrowser = useIsBrowser();
 
     // TODO: shuffle
@@ -178,7 +187,10 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             // tabIndex={questionOrder}
         >
             <div className={clsx('card__header', styles.header /*feedbackStyle*/)}>
-                <span className={clsx(styles.title)}>{displayTitle}</span>
+                <span className={clsx(styles.title)}>
+                    {displayTitle}
+                    {JSON.stringify(doc.optionOrders)}
+                </span>
                 <div className={clsx(styles.controlsAndFeedback)}>
                     {/* {!!props.correct && (
                         <QuestionControls
@@ -231,11 +243,9 @@ ChoiceAnswer.Option = observer(({ optionIndex, children }: OptionProps) => {
         <div
             key={optionId}
             className={clsx(styles.choiceAnswerOptionContainer)}
-            style={
-                {
-                    // order: optionOrder
-                }
-            }
+            style={{
+                order: doc.optionsDisplayOrder(optionIndex)
+            }}
         >
             <div className={styles.checkboxContainer}>
                 <input

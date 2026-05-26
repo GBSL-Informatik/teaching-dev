@@ -11,6 +11,9 @@ import { shuffle } from 'es-toolkit/array';
 export interface MetaInit {
     readonly?: boolean;
     qid?: string;
+    multiple?: boolean;
+    randomizeOptions?: boolean;
+    optionsCount: number;
 }
 
 export enum ChoiceAnswerCorrectness {
@@ -35,11 +38,17 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
     readonly type = 'choice_answer';
     readonly readonly?: boolean;
     readonly qid?: string;
+    readonly multiple?: boolean;
+    readonly randomizeOptions?: boolean;
+    readonly optionsCount: number;
 
-    constructor(props: Partial<MetaInit>) {
+    constructor(props: Partial<MetaInit> & { optionsCount: number }) {
         super('choice_answer', props.readonly ? Access.RO_User : undefined);
         this.readonly = props.readonly;
         this.qid = props.qid;
+        this.multiple = props.multiple;
+        this.randomizeOptions = props.randomizeOptions;
+        this.optionsCount = props.optionsCount;
     }
 
     get defaultData(): TypeDataMapping['choice_answer'] {
@@ -55,14 +64,13 @@ export class ModelMeta extends TypeMeta<'choice_answer'> {
     }
 }
 
+const DEFAULT_META = new ModelMeta({ optionsCount: 0 });
+
 class ChoiceAnswer extends iAssessable<'choice_answer'> {
     readonly qid?: string;
     choices = observable.set<number>();
     @observable.ref accessor optionOrders: number[];
     assessments = observable.map<number, ChoiceAnswerAssessment>();
-
-    // TODO: make dynamic based on meta or question type
-    readonly multiple = false;
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
@@ -122,8 +130,18 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     }
 
     @action
-    shuffle(optionsCount: number): void {
-        const originalIndices = range(optionsCount);
+    onLinkedMetaChange() {
+        if (this.meta.randomizeOptions && this.optionOrders.length !== this.meta.optionsCount) {
+            this.shuffle();
+        }
+    }
+
+    @action
+    shuffle(): void {
+        if (this.meta.optionsCount < 2) {
+            return;
+        }
+        const originalIndices = range(this.meta.optionsCount);
         this.optionOrders = shuffle(originalIndices);
         this.saveNow();
     }
@@ -147,6 +165,11 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
         return Array.from(this.assessments.values()).some((assessment) => !!assessment.scoring);
     }
 
+    @computed
+    get multiple(): boolean {
+        return this.meta?.multiple ?? false;
+    }
+
     get data(): TypeDataMapping['choice_answer'] {
         const raw: TypeDataMapping['choice_answer'] = {
             choices: [...this.choices],
@@ -161,10 +184,13 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
 
     @computed
     get meta(): ModelMeta {
+        if (this.linkedMeta) {
+            return this.linkedMeta as ModelMeta;
+        }
         if (this.root?.type === 'choice_answer') {
             return this.root.meta as ModelMeta;
         }
-        return new ModelMeta({});
+        return DEFAULT_META;
     }
 }
 

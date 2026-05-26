@@ -67,6 +67,5 @@ export const useFirstDocumentBy = <Type extends DocumentType>(
     }, [userStore, createDocument, documentRoot, selector]);
 
     const firstDoc = documentRoot?.documents.find(selector) as TypeModelMapping[Type] | undefined;
-    console.log('firstDoc', !!firstDoc, meta.type, meta.defaultData);
     return firstDoc || dummyDocument;
 };
