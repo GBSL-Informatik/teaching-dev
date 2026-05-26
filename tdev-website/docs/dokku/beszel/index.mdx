@@ -192,5 +192,19 @@ Um S.M.A.R.T. Statusinformationen der Festplatten zu erhalten, muss der Agent [Z
     </TemplateCode>
 </Steps>
 
+### Systemd Services
+
+Um auch Systemd Services zu monitoren, müssen folgende mounts und Optionen hinzugefügt werden (Ubuntu 24+)
+
+<DynamicInput name="remote-agent" default='beszel-agent' monospace />
+
+<TemplateCode>
+    ```bash
+    dokku storage:mount {{remote-agent}} /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro
+    dokku storage:mount {{remote-agent}} /run/systemd/private:/run/systemd/private:ro
+    dokku docker-options:add {{remote-agent}} deploy "--security-opt apparmor:unconfined"
+    dokku ps:restart {{remote-agent}}
+    ```
+</TemplateCode>
 
 
