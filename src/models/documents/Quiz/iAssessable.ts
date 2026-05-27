@@ -4,7 +4,6 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import React from 'react';
 import { AssessableMeta } from './AssessableMeta';
-import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 
 export enum Correctness {
     Correct = 'correct',
@@ -93,29 +92,18 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
         return this.linkedMeta?.correct?.length || 0;
     }
 
+    /**
+     * Returns the number of correctly responded items. This can be "correct choices" for MC questions, "correct matched words" for texts or simply "1/0" for single-choice questions.
+     */
     get achievements(): number {
         return 0;
     }
 
+    /**
+     * Returns the number of incorrectly responded items. This can be "incorrect choices" for MC questions, "wrong matched words" in a text or simply "0/1" for single-choice questions.
+     */
     get mistakes(): number {
         return 0;
-    }
-
-    @computed
-    get correctnessIconColor() {
-        if (!this.correctness) {
-            return { icon: null, color: '' };
-        }
-        switch (this.correctness) {
-            case Correctness.Correct:
-                return { icon: mdiCheckCircleOutline, color: '--ifm-color-success' };
-            case Correctness.PartiallyCorrect:
-                return { icon: mdiProgressCheck, color: '--ifm-color-warning' };
-            case Correctness.Incorrect:
-                return { icon: mdiCloseCircleOutline, color: '--ifm-color-danger' };
-            case Correctness.NA:
-                return { icon: mdiProgressQuestion, color: '--ifm-color-info' };
-        }
     }
 
     @computed
