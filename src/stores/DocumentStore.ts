@@ -36,6 +36,7 @@ import Script from '@tdev-models/documents/Code';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
 import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -63,6 +64,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new String(data as DocumentProps<'string'>, store);
         case 'choice_answer':
             return new ChoiceAnswer(data as DocumentProps<'choice_answer'>, store);
+        case 'true_false_answer':
+            return new TrueFalseAnswer(data as DocumentProps<'true_false_answer'>, store);
         case 'quill_v2':
             return new QuillV2(data as DocumentProps<'quill_v2'>, store);
         case 'solution':
@@ -91,6 +94,7 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['script_version', CreateDocumentModel],
     ['string', CreateDocumentModel],
     ['choice_answer', CreateDocumentModel],
+    ['true_false_answer', CreateDocumentModel],
     ['quill_v2', CreateDocumentModel],
     ['solution', CreateDocumentModel],
     ['dir', CreateDocumentModel],

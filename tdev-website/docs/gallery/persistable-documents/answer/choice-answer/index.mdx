@@ -145,7 +145,7 @@ import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAn
 ```
 
 <BrowserWindow>
-    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="4227646b-458a-418b-9809-f341fd9e640d">
+    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="43b12b71-150e-4428-b86f-050f4fe52a52">
         Die Erde ist flach.
     </TrueFalseAnswer>
 </BrowserWindow>
@@ -210,8 +210,9 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
         5. 5
     </ChoiceAnswer>
 
-    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="7497ea4d-adbe-4b7e-8353-b2bcd12f796b">
+    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="51f7951e-ebd4-4c60-aa43-8023324273c9">
         > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
+
     </TrueFalseAnswer>
 </BrowserWindow>
 
@@ -272,7 +273,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 ```
 
 <BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="7b9dfd17-2ddb-4b71-8a5a-43f556ba5152" >
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="b07dc196-94a9-40c3-8c05-4c3bebd509f4" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             
@@ -295,6 +296,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 
         <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
             > HTML ist eine Programmiersprache.
+
         </TrueFalseAnswer>
         
         <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple>

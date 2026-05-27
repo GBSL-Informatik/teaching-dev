@@ -1,5 +1,11 @@
 import React from 'react';
-import type { DocumentModelType, DocumentType, TypeModelMapping } from '@tdev-api/document';
+import type {
+    AssessableModelType,
+    AssessableType,
+    DocumentModelType,
+    DocumentType,
+    TypeModelMapping
+} from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
@@ -7,6 +13,7 @@ import { Config } from '@tdev-api/documentRoot';
 import { useDummyId } from './useDummyId';
 import { reaction } from 'mobx';
 import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
+import { AssessableMeta } from '@tdev-models/documents/Assessable/AssessableMeta';
 
 /**
  * This hook provides access to the first main document of the rootDocument.
@@ -16,16 +23,26 @@ import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
  * For bridging the time until the first main document is loaded,
  * a dummy document is provided in the meantime.
  */
-export const useFirstDocumentBy = <Type extends DocumentType>(
+export const useFirstDocumentBy = <Type extends AssessableType>(
     documentRootId: string | undefined,
     /** ensure to put meta in a React.useState */
-    meta: TypeMeta<Type>,
+    meta: AssessableMeta<Type>,
     /** ensure to put the selector in a React.useCallback */
-    selector: (doc: DocumentModelType) => boolean,
+    qid: string | undefined,
     createDocument: boolean = true,
     access: Partial<Config> = {},
     loadOnlyType?: DocumentType
 ) => {
+    // // when inside a quizz, this will share the document root with the quiz
+    const selector = React.useCallback(
+        (doc: DocumentModelType) => {
+            if (qid) {
+                return doc.type === meta.type && doc.data.qid === qid;
+            }
+            return doc.type === meta.type;
+        },
+        [meta.type, qid]
+    );
     const defaultDocId = useDummyId(documentRootId);
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
     const userStore = useStore('userStore');
@@ -47,8 +64,7 @@ export const useFirstDocumentBy = <Type extends DocumentType>(
             return;
         }
         return reaction(
-            () =>
-                documentRoot?._canInitializeDocuments && !documentRoot.documents.some((doc) => selector(doc)),
+            () => documentRoot?._canInitializeDocuments && !documentRoot.documents.some(selector),
             (needsCreation) => {
                 if (!needsCreation || !createDocument) {
                     return;
@@ -64,7 +80,7 @@ export const useFirstDocumentBy = <Type extends DocumentType>(
             },
             { fireImmediately: true }
         );
-    }, [userStore, createDocument, documentRoot, selector]);
+    }, [userStore, createDocument, documentRoot]);
 
     const firstDoc = documentRoot?.documents.find(selector) as TypeModelMapping[Type] | undefined;
     return firstDoc || dummyDocument;

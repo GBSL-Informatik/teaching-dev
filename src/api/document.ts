@@ -20,6 +20,7 @@ import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import Code from '@tdev-models/documents/Code';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import type ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import type TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -46,16 +47,18 @@ export interface QuizData {
     questionOrder: number[];
 }
 
-export interface BooleanAnswerData {
-    value: boolean | null;
-    assessed: boolean;
-}
-
-export interface ChoiceAnswerData {
-    choices: number[];
-    optionsOrder: number[];
+interface AssessableData {
     assessed: boolean;
     qid?: string;
+}
+
+export interface TrueFalseAnswerData extends AssessableData {
+    value: boolean | null;
+}
+
+export interface ChoiceAnswerData extends AssessableData {
+    choices: number[];
+    optionsOrder: number[];
 }
 
 export interface QuillV2Data {
@@ -128,7 +131,7 @@ export type ViewStoreType = keyof ViewStoreTypeMapping;
 export type ViewStore = ViewStoreTypeMapping[ViewStoreType];
 
 export interface AssessableDocumentMapping {
-    ['boolean_answer']: BooleanAnswerData;
+    ['true_false_answer']: TrueFalseAnswerData;
     ['choice_answer']: ChoiceAnswerData;
 }
 
@@ -173,7 +176,7 @@ export interface ContainerTypeModelMapping {
 }
 
 export interface AssessableTypeModelMapping {
-    ['boolean_answer']: ChoiceAnswer; // TODO: implement BooleanAnswer model and replace this
+    ['true_false_answer']: TrueFalseAnswer;
     ['choice_answer']: ChoiceAnswer;
 }
 

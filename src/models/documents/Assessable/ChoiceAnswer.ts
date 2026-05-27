@@ -5,7 +5,7 @@ import { action, computed, observable } from 'mobx';
 import iAssessable from './iAssessable';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
-import type { ChoiceAnswerProps } from '@tdev-components/documents/ChoiceAnswer/Component';
+import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import { AssessableMeta } from './AssessableMeta';
 
 export class ModelMeta extends AssessableMeta<'choice_answer'> {

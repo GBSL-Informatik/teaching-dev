@@ -18,7 +18,7 @@ export abstract class AssessableMeta<T extends AssessableType> extends TypeMeta<
     readonly qid?: string;
     readonly correct?: number[];
     readonly scoring?: ScoringFunction<T>;
-    constructor(type: T, props: Partial<AssessableComponentProps<T>> & { optionsCount: number }) {
+    constructor(type: T, props: Partial<AssessableComponentProps<T>>) {
         super(type, props.readonly ? Access.RO_User : undefined);
         this.qid = props.qid;
         this.correct = props.correct?.map((index) => index - 1); // convert to 0-based index

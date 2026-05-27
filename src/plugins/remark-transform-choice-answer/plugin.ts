@@ -12,10 +12,10 @@ enum ChoiceComponentTypes {
 }
 
 const QUIZ_NODE_NAME = 'Quiz';
-const BEFORE_WRAPPER_NAME = 'ChoiceAnswer.Before';
+// const BEFORE_WRAPPER_NAME = 'ChoiceAnswer.Before';
 const OPTIONS_WRAPPER_NAME = 'ChoiceAnswer.Options';
 const OPTION_WRAPPER_NAME = 'ChoiceAnswer.Option';
-const AFTER_WRAPPER_NAME = 'ChoiceAnswer.After';
+// const AFTER_WRAPPER_NAME = 'ChoiceAnswer.After';
 
 type FlowChildren = (BlockContent | DefinitionContent)[];
 
@@ -57,8 +57,6 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         if (questionNode.name !== ChoiceComponentTypes.TrueFalseAnswer) {
             console.warn(`No list found in <${questionNode.name}>. Expected exactly one list child.`);
         }
-
-        questionNode.children = [createWrapper(BEFORE_WRAPPER_NAME, questionNode.children)];
         return;
     }
 
@@ -74,7 +72,7 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     const wrappedChildren: FlowChildren = [];
 
     if (beforeChildren.length > 0) {
-        wrappedChildren.push(createWrapper(BEFORE_WRAPPER_NAME, beforeChildren));
+        wrappedChildren.push(...beforeChildren);
     }
 
     const { wrappedOptions, optionsCount } = createWrappedOption(
@@ -84,7 +82,7 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     questionNode.attributes.push(toJsxAttribute('optionsCount', optionsCount));
 
     if (afterChildren.length > 0) {
-        wrappedChildren.push(createWrapper(AFTER_WRAPPER_NAME, afterChildren));
+        wrappedChildren.push(...afterChildren);
     }
 
     questionNode.children = wrappedChildren;
