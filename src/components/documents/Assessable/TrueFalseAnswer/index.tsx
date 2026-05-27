@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import ChoiceAnswer, { ChoiceAnswerProps } from '../Component';
+import ChoiceAnswer, { ChoiceAnswerProps } from '../ChoiceAnswer';
 import React from 'react';
 
 const TrueFalseAnswer = observer((props: ChoiceAnswerProps & { correct: boolean }) => {
