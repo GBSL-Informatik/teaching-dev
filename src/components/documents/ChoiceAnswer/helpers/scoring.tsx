@@ -1,7 +1,6 @@
-import { AssessableType } from '@tdev-api/document';
 import { ScoringFunction } from '@tdev-models/documents/Assessable/AssessableMeta';
-import ChoiceAnswer, { ChoiceAnswerScoring } from '@tdev-models/documents/Assessable/ChoiceAnswer';
-import { Assessement, Correctness } from '@tdev-models/documents/Assessable/iAssessable';
+import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import { Correctness, Scoring } from '@tdev-models/documents/Assessable/iAssessable';
 import clsx from 'clsx';
 
 export const points: (
@@ -25,7 +24,7 @@ export const points: (
             </li>
         </ul>
     );
-    const template: ChoiceAnswerScoring = {
+    const template: Scoring = {
         maxPoints: forCorrect,
         pointsAchieved: 0,
         scoringHint

@@ -1,33 +1,12 @@
-import { TypeDataMapping, Document as DocumentProps, Access } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
-import iDocument, { Source } from '@tdev-models/iDocument';
+import { TypeDataMapping, Document as DocumentProps } from '@tdev-api/document';
+import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
-import type { ReactElement } from 'react';
 import iAssessable from './iAssessable';
-import { createRandomOrderMap } from '@tdev-components/documents/ChoiceAnswer/helpers/shared';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { ChoiceAnswerProps } from '@tdev-components/documents/ChoiceAnswer/Component';
 import { AssessableMeta } from './AssessableMeta';
-
-export enum ChoiceAnswerCorrectness {
-    Correct = 'correct',
-    Incorrect = 'incorrect',
-    PartiallyCorrect = 'partially_correct',
-    NA = 'not_answered'
-}
-
-export interface ChoiceAnswerScoring {
-    maxPoints: number;
-    pointsAchieved: number;
-    scoringHint?: string | (() => ReactElement);
-}
-
-export interface ChoiceAnswerAssessment {
-    correctness: ChoiceAnswerCorrectness;
-    scoring?: ChoiceAnswerScoring;
-}
 
 export class ModelMeta extends AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';
