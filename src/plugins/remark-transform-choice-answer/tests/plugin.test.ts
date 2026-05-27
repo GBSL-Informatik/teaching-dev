@@ -226,7 +226,7 @@ describe('#quiz', () => {
               </ChoiceAnswer.Options>
             </ChoiceAnswer>
 
-            <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?" numOptions={true} qid="q3">
+            <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?" qid="q3">
               <ChoiceAnswer.Before>
                 > HTML ist eine Programmiersprache.
               </ChoiceAnswer.Before>

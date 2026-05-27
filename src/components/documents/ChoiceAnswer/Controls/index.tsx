@@ -10,7 +10,6 @@ import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 interface ControlsProps {
     doc: ChoiceAnswerDocument;
-    questionIndex: number;
     focussedQuestion?: boolean;
     inQuiz?: boolean;
 }
@@ -19,26 +18,18 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
     const isMobileView = useIsMobileView();
 
     if (!doc) {
-        return;
+        return null;
     }
 
     const syncStatus = isFocussedQuestion && <SyncStatus model={doc} size={0.7} />;
 
-    const checkOrResetButton = !inQuiz && (
-        <>
-            {!doc.isAssessed && (
-                <Button
-                    text={isMobileView ? '' : 'Prüfen'}
-                    title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
-                    color="success"
-                    icon={mdiCheckboxMarkedCircleAutoOutline}
-                    iconSide="left"
-                    size={0.7}
-                    className={styles.checkButton}
-                    onClick={() => doc.setAssessed(true)}
-                />
-            )}
-            {doc.isAssessed && (
+    if (inQuiz) {
+        return <div className={clsx(styles.questionControlsContainer)}>{syncStatus}</div>;
+    }
+    return (
+        <div className={clsx(styles.questionControlsContainer)}>
+            {syncStatus}
+            {doc.isAssessed ? (
                 <Confirm
                     text={isMobileView ? '' : 'Zurücksetzen'}
                     title="Antwort zurücksetzen."
@@ -52,14 +43,18 @@ const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, 
                         doc.resetAnswer();
                     }}
                 />
+            ) : (
+                <Button
+                    text={isMobileView ? '' : 'Prüfen'}
+                    title="Antwort prüfen und Frage als bewertet markieren. Danach ist keine Bearbeitung der Antworten mehr möglich."
+                    color="success"
+                    icon={mdiCheckboxMarkedCircleAutoOutline}
+                    iconSide="left"
+                    size={0.7}
+                    className={styles.checkButton}
+                    onClick={() => doc.setAssessed(true)}
+                />
             )}
-        </>
-    );
-
-    return (
-        <div className={clsx(styles.questionControlsContainer)}>
-            {syncStatus}
-            {checkOrResetButton}
         </div>
     );
 });
@@ -73,7 +68,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
 
     return (
         <div className={styles.quizControlsContainer}>
-            {!doc.isAssessed && doc.assessments.size > 0 && (
+            {!doc.isAssessed /*&& doc.assessments.size > 0 */ && (
                 <Confirm
                     text="Quiz beenden"
                     title="Quiz beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich."

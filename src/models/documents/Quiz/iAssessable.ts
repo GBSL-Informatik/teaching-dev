@@ -1,9 +1,10 @@
-import { Access, AssessableType, Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
-import iDocument, { Source } from '@tdev-models/iDocument';
+import { AssessableType, Document as DocumentProps } from '@tdev-api/document';
+import iDocument from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import React from 'react';
+import { AssessableMeta } from './AssessableMeta';
+import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 
 export enum Correctness {
     Correct = 'correct',
@@ -29,8 +30,8 @@ export interface MetaInit {
 
 abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     @observable accessor _assessed: boolean;
-    @observable.ref accessor scoringFunction: ((self: this) => Assessement) | null = null;
-    @observable.ref accessor linkedMeta: TypeMeta<T> | null = null;
+    // @observable.ref accessor scoringFunction: ((self: this) => Assessement) | null = null;
+    @observable.ref accessor linkedMeta: AssessableMeta<T> | null = null;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
@@ -38,7 +39,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     }
 
     @action
-    setLinkedMeta(metadata: TypeMeta<T> | null) {
+    setLinkedMeta(metadata: AssessableMeta<T> | null) {
         this.linkedMeta = metadata;
         this.onLinkedMetaChange();
     }
@@ -47,9 +48,9 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
         // By default, do nothing. Only applicable for certain assessable document types (e.g. ChoiceAnswer).
     }
 
-    @action
-    setScoringFunction(scoringFn: ((self: this) => Assessement) | null) {
-        this.scoringFunction = scoringFn;
+    @computed
+    get scoringFunction(): ((self: this) => Assessement) | null {
+        return this.linkedMeta?.scoring || null;
     }
 
     @computed
@@ -58,18 +59,63 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     }
 
     @computed
-    get assessment(): Assessement | null {
-        if (!this.isAssessed || !this.scoringFunction) {
-            return null;
-        }
-        // TODO: should the scoring function receive the props/data of the document?
-        return this.scoringFunction(this);
+    get assessment(): Assessement | undefined {
+        return this.scoringFunction?.(this);
     }
 
     @action
     setAssessed(value: boolean) {
         this._assessed = value;
         this.saveNow();
+    }
+
+    @computed
+    get scoring() {
+        if (!this.isAssessed) {
+            return;
+        }
+        return this.assessment?.scoring;
+    }
+
+    @computed
+    get correctness(): Correctness {
+        if (!this.isAssessed) {
+            return Correctness.NA;
+        }
+        return this.achievements === this.maxPoints && this.mistakes === 0
+            ? Correctness.Correct
+            : this.achievements === 0
+              ? Correctness.Incorrect
+              : Correctness.PartiallyCorrect;
+    }
+
+    get maxPoints(): number {
+        return this.linkedMeta?.correct?.length || 0;
+    }
+
+    get achievements(): number {
+        return 0;
+    }
+
+    get mistakes(): number {
+        return 0;
+    }
+
+    @computed
+    get correctnessIconColor() {
+        if (!this.correctness) {
+            return { icon: null, color: '' };
+        }
+        switch (this.correctness) {
+            case Correctness.Correct:
+                return { icon: mdiCheckCircleOutline, color: '--ifm-color-success' };
+            case Correctness.PartiallyCorrect:
+                return { icon: mdiProgressCheck, color: '--ifm-color-warning' };
+            case Correctness.Incorrect:
+                return { icon: mdiCloseCircleOutline, color: '--ifm-color-danger' };
+            case Correctness.NA:
+                return { icon: mdiProgressQuestion, color: '--ifm-color-info' };
+        }
     }
 
     @computed

@@ -1,16 +1,14 @@
-import { ChoiceAnswerScoring, ChoiceAnswerCorrectness } from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import { AssessableType } from '@tdev-api/document';
+import { ScoringFunction } from '@tdev-models/documents/Quiz/AssessableMeta';
+import ChoiceAnswer, { ChoiceAnswerScoring } from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import { Assessement, Correctness } from '@tdev-models/documents/Quiz/iAssessable';
 import clsx from 'clsx';
-
-export type ScoringFunction = (
-    result: ChoiceAnswerCorrectness,
-    numMistakes: number
-) => ChoiceAnswerScoring | undefined;
 
 export const points: (
     forCorrect?: number,
     forIncorrect?: number,
     forUnanswered?: number
-) => ScoringFunction = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
+) => ScoringFunction<'choice_answer'> = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
     const scoringHint = () => (
         <ul>
             <li>
@@ -32,30 +30,39 @@ export const points: (
         pointsAchieved: 0,
         scoringHint
     };
-
-    return (result) => {
-        switch (result) {
-            case ChoiceAnswerCorrectness.Correct:
-                return { ...template, pointsAchieved: forCorrect };
-            case ChoiceAnswerCorrectness.PartiallyCorrect:
-            case ChoiceAnswerCorrectness.Incorrect:
-                return { ...template, pointsAchieved: forIncorrect };
-            case ChoiceAnswerCorrectness.NA:
-                return { ...template, pointsAchieved: forUnanswered };
-            default:
-                console.warn(
-                    `Unhandled correctness type '${result}' in points() scoring function. This should not happen.`
-                );
-                return { ...template };
+    return (model) => {
+        const ca = model as ChoiceAnswer;
+        if (ca.meta.multiple) {
+            throw new Error(
+                'The points() scoring function is not suitable for multiple choice questions. Please use multipleChoicePoints() instead.'
+            );
         }
+        if (!model.isAssessed) {
+            return {
+                correctness: Correctness.NA,
+                scoring: template
+            };
+        }
+        const points =
+            ca.choices.size === 0 ? forUnanswered : ca.achievements > 0 ? forCorrect : forIncorrect;
+        const correctness =
+            points === forCorrect
+                ? Correctness.Correct
+                : points === 0
+                  ? Correctness.Incorrect
+                  : Correctness.PartiallyCorrect;
+        return {
+            correctness: correctness,
+            scoring: { ...template, pointsAchieved: points }
+        };
     };
 };
 
-export const multipleChoicePoints = (
+export const multipleChoicePoints: (
     maxPoints: number,
     deductionPerWrongChoice: number,
-    allowNegativeTotal: boolean = false
-) => {
+    allowNegativeTotal: boolean
+) => ScoringFunction<'choice_answer'> = (maxPoints, deductionPerWrongChoice, allowNegativeTotal = false) => {
     const scoringHint = () => (
         <ul>
             <li>
@@ -67,12 +74,11 @@ export const multipleChoicePoints = (
                 {deductionPerWrongChoice === 1 ? 'Punkt' : 'Punkte'} Abzug pro falscher Auswahl /
                 Nicht-Auswahl
             </li>
-            {allowNegativeTotal && (
+            {allowNegativeTotal ? (
                 <li>
                     Die Gesamtpunktzahl <b>kann negativ sein</b>.
                 </li>
-            )}
-            {!allowNegativeTotal && (
+            ) : (
                 <li>
                     Die Gesamtpunktzahl kann <b>nicht</b> negativ sein.
                 </li>
@@ -80,13 +86,25 @@ export const multipleChoicePoints = (
         </ul>
     );
 
-    return (_: ChoiceAnswerCorrectness, numMistakes: number) => {
-        const points = maxPoints - numMistakes * deductionPerWrongChoice;
+    return (model) => {
+        if (!model.isAssessed) {
+            return {
+                correctness: Correctness.NA,
+                scoring: { maxPoints, pointsAchieved: 0, scoringHint }
+            };
+        }
+        const ca = model as ChoiceAnswer;
+        const points = maxPoints - ca.mistakes * deductionPerWrongChoice;
         const finalPoints = allowNegativeTotal ? points : Math.max(points, 0);
+        const correctness =
+            points === maxPoints
+                ? Correctness.Correct
+                : points === 0
+                  ? Correctness.Incorrect
+                  : Correctness.PartiallyCorrect;
         return {
-            maxPoints,
-            pointsAchieved: finalPoints,
-            scoringHint
+            correctness: correctness,
+            scoring: { maxPoints, pointsAchieved: finalPoints, scoringHint }
         };
     };
 };

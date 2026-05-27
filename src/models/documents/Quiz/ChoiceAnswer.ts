@@ -8,13 +8,8 @@ import iAssessable from './iAssessable';
 import { createRandomOrderMap } from '@tdev-components/documents/ChoiceAnswer/helpers/shared';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
-export interface MetaInit {
-    readonly?: boolean;
-    qid?: string;
-    multiple?: boolean;
-    randomizeOptions?: boolean;
-    optionsCount: number;
-}
+import type { ChoiceAnswerProps } from '@tdev-components/documents/ChoiceAnswer/Component';
+import { AssessableMeta } from './AssessableMeta';
 
 export enum ChoiceAnswerCorrectness {
     Correct = 'correct',
@@ -34,18 +29,15 @@ export interface ChoiceAnswerAssessment {
     scoring?: ChoiceAnswerScoring;
 }
 
-export class ModelMeta extends TypeMeta<'choice_answer'> {
+export class ModelMeta extends AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';
     readonly readonly?: boolean;
-    readonly qid?: string;
+    readonly optionsCount: number;
     readonly multiple?: boolean;
     readonly randomizeOptions?: boolean;
-    readonly optionsCount: number;
 
-    constructor(props: Partial<MetaInit> & { optionsCount: number }) {
-        super('choice_answer', props.readonly ? Access.RO_User : undefined);
-        this.readonly = props.readonly;
-        this.qid = props.qid;
+    constructor(props: Partial<ChoiceAnswerProps> & { optionsCount: number }) {
+        super('choice_answer', props);
         this.multiple = props.multiple;
         this.randomizeOptions = props.randomizeOptions;
         this.optionsCount = props.optionsCount;
@@ -70,13 +62,13 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     readonly qid?: string;
     choices = observable.set<number>();
     @observable.ref accessor optionOrders: number[];
-    assessments = observable.map<number, ChoiceAnswerAssessment>();
+    // assessments = observable.map<number, ChoiceAnswerAssessment>();
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices.replace(props.data.choices ?? []);
         this.optionOrders = props.data?.optionsOrder || [];
-        this.assessments = observable.map<number, ChoiceAnswerAssessment>();
+        // this.assessments = observable.map<number, ChoiceAnswerAssessment>();
         this.qid = props.data.qid;
     }
 
@@ -124,7 +116,7 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     @action
     resetAnswer(): void {
         this.choices.clear();
-        this.assessments.clear();
+        // this.assessments.clear();
         this.setAssessed(false);
         this.saveNow();
     }
@@ -133,6 +125,7 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     onLinkedMetaChange() {
         if (this.meta.randomizeOptions && this.optionOrders.length !== this.meta.optionsCount) {
             this.shuffle();
+            this.saveNow();
         }
     }
 
@@ -143,7 +136,6 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
         }
         const originalIndices = range(this.meta.optionsCount);
         this.optionOrders = shuffle(originalIndices);
-        this.saveNow();
     }
 
     optionsDisplayOrder(optionIndex: number): number {
@@ -151,18 +143,17 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
         return orderIndex !== -1 ? orderIndex : optionIndex;
     }
 
-    @action
-    updateAssessment(questionIndex: number, assessment: ChoiceAnswerAssessment): void {
-        this.assessments.set(questionIndex, assessment);
-    }
-
-    getAssessment(questionIndex: number): ChoiceAnswerAssessment | undefined {
-        return this.assessments.get(questionIndex);
+    @computed
+    get achievements(): number {
+        const correct = new Set(this.meta.correct);
+        return this.choices.intersection(correct).size;
     }
 
     @computed
-    get hasQuestionsWithScoring(): boolean {
-        return Array.from(this.assessments.values()).some((assessment) => !!assessment.scoring);
+    get mistakes(): number {
+        const missedCorrect = (this.meta.correct ?? []).length - this.achievements;
+        const incorrectSelections = this.choices.size - this.achievements;
+        return missedCorrect + incorrectSelections;
     }
 
     @computed

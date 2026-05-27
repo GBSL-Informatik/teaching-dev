@@ -13,17 +13,17 @@ import styles from './styles.module.scss';
 interface QuestionScoringHintProps {
     doc?: ChoiceAnswerDocument;
     trigger?: React.ReactNode;
-    questionIndex?: number;
 }
 
-export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: QuestionScoringHintProps) => {
+export const QuestionScoringHint = observer(({ doc, trigger }: QuestionScoringHintProps) => {
     const ref = React.useRef<PopupActions>(null);
 
-    if (!doc || questionIndex === undefined) {
+    // TODO
+    if (!doc) {
         return;
     }
 
-    const assessment = doc?.assessments.get(questionIndex);
+    const assessment = doc.assessment;
 
     let scoringHint;
     if (!assessment?.scoring) {
@@ -32,9 +32,9 @@ export const QuestionScoringHint = observer(({ doc, trigger, questionIndex }: Qu
         scoringHint = 'Für diese Aufgabe ist kein Bewertungshinweis verfügbar.';
     } else {
         scoringHint =
-            typeof assessment.scoring?.scoringHint === 'function'
+            typeof assessment.scoring.scoringHint === 'function'
                 ? assessment.scoring.scoringHint()
-                : assessment.scoring?.scoringHint;
+                : assessment.scoring.scoringHint;
     }
 
     return (

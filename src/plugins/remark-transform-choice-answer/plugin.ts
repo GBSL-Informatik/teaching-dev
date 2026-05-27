@@ -34,7 +34,7 @@ function createWrapper(
 
 const createWrappedOption = (
     listChildren: { type: string; children: FlowChildren }[]
-): { wrappedOptions: MdxJsxFlowElement; numOptions: number } => {
+): { wrappedOptions: MdxJsxFlowElement; optionsCount: number } => {
     const options = listChildren
         .filter((child) => child.type === 'listItem')
         .map((child, index) => {
@@ -47,7 +47,7 @@ const createWrappedOption = (
             ]);
         });
 
-    return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), numOptions: options.length };
+    return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), optionsCount: options.length };
 };
 
 const transformQuestion = (questionNode: MdxJsxFlowElement) => {
@@ -59,17 +59,6 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         }
 
         questionNode.children = [createWrapper(BEFORE_WRAPPER_NAME, questionNode.children)];
-
-        if (questionNode.name === ChoiceComponentTypes.TrueFalseAnswer) {
-            questionNode.attributes.push(
-                toMdxJsxExpressionAttribute('numOptions', true, {
-                    type: 'Literal',
-                    value: 2,
-                    raw: '2'
-                })
-            );
-        }
-
         return;
     }
 
@@ -88,11 +77,11 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
         wrappedChildren.push(createWrapper(BEFORE_WRAPPER_NAME, beforeChildren));
     }
 
-    const { wrappedOptions, numOptions } = createWrappedOption(
+    const { wrappedOptions, optionsCount } = createWrappedOption(
         listChild.children as { type: string; children: FlowChildren }[]
     );
     wrappedChildren.push(wrappedOptions);
-    questionNode.attributes.push(toJsxAttribute('optionsCount', numOptions));
+    questionNode.attributes.push(toJsxAttribute('optionsCount', optionsCount));
 
     if (afterChildren.length > 0) {
         wrappedChildren.push(createWrapper(AFTER_WRAPPER_NAME, afterChildren));
