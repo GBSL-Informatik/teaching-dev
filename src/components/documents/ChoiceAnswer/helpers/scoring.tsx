@@ -1,7 +1,7 @@
 import { AssessableType } from '@tdev-api/document';
-import { ScoringFunction } from '@tdev-models/documents/Quiz/AssessableMeta';
-import ChoiceAnswer, { ChoiceAnswerScoring } from '@tdev-models/documents/Quiz/ChoiceAnswer';
-import { Assessement, Correctness } from '@tdev-models/documents/Quiz/iAssessable';
+import { ScoringFunction } from '@tdev-models/documents/Assessable/AssessableMeta';
+import ChoiceAnswer, { ChoiceAnswerScoring } from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import { Assessement, Correctness } from '@tdev-models/documents/Assessable/iAssessable';
 import clsx from 'clsx';
 
 export const points: (

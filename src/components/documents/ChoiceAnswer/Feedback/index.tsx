@@ -1,5 +1,5 @@
 import Icon from '@mdi/react';
-import ChoiceAnswerDocument from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import ChoiceAnswerDocument from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { QuestionScoringHint } from '../Hints';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { IfmColors } from '@tdev-components/shared/Colors';
-import { Correctness } from '@tdev-models/documents/Quiz/iAssessable';
+import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 
 interface FeedbackBadgeProps {

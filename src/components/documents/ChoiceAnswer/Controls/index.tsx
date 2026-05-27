@@ -4,7 +4,7 @@ import Button from '@tdev-components/shared/Button';
 import SyncStatus from '@tdev-components/SyncStatus';
 import { observer } from 'mobx-react-lite';
 import { mdiCheckboxMarkedCircleAutoOutline, mdiRestore } from '@mdi/js';
-import ChoiceAnswerDocument from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import ChoiceAnswerDocument from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import clsx from 'clsx';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 

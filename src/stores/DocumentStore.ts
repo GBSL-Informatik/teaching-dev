@@ -35,7 +35,7 @@ import ProgressState from '@tdev-models/documents/ProgressState';
 import Script from '@tdev-models/documents/Code';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
-import ChoiceAnswer from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 
 const IsNotUniqueError = (error: any) => {
     try {

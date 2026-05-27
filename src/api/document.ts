@@ -19,7 +19,7 @@ import iDocumentContainer from '@tdev-models/iDocumentContainer';
 import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import Code from '@tdev-models/documents/Code';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import type ChoiceAnswer from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import type ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',

@@ -1,8 +1,8 @@
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { ModelMeta } from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import { ModelMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import ChoiceAnswerDocument from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import ChoiceAnswerDocument from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Loader from '@tdev-components/Loader';
 import { createRandomOrderMap } from '../helpers/shared';

@@ -18,8 +18,8 @@ import { useFirstDocumentBy } from '@tdev-hooks/useFirstDocumentBy';
 import { DocumentModelType } from '@tdev-api/document';
 import { DocContext } from '@tdev-components/documents/DocumentContext';
 import { useDocument } from '@tdev-hooks/useContextDocument';
-import { AssessableComponentProps } from '@tdev-models/documents/Quiz/AssessableMeta';
-import { ModelMeta } from '@tdev-models/documents/Quiz/ChoiceAnswer';
+import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
+import { ModelMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 
 interface SharedProps extends AssessableComponentProps<'choice_answer'> {
