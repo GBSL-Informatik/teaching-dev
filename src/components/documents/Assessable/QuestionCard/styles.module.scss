@@ -1,0 +1,67 @@
+@use '../_vars' as *;
+
+.questionCard {
+    position: relative;
+    margin-bottom: 1em;
+
+    p {
+        margin: 0 0 0.5em 0;
+    }
+
+    $boxShadowDefaults: 0 0 8px;
+
+    &.correct {
+        box-shadow: $boxShadowDefaults var(--ifm-color-success);
+
+        .header {
+            background-color: var(--ifm-color-success-contrast-background);
+        }
+    }
+
+    &.partially_correct {
+        box-shadow: $boxShadowDefaults var(--ifm-color-warning);
+
+        .header {
+            background-color: var(--ifm-color-warning-contrast-background);
+        }
+    }
+
+    &.incorrect {
+        box-shadow: $boxShadowDefaults var(--ifm-color-danger-lighter);
+
+        .header {
+            background-color: var(--ifm-color-danger-contrast-background);
+        }
+    }
+
+    .header {
+        background-color: var(--ifm-color-secondary-lightest);
+        padding: $container-padding-top-bottom $container-padding-left-right;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        .questionTitle {
+            margin-bottom: 0;
+            font-size: 1.1em;
+            margin-right: 1em;
+            min-width: 2em;
+            flex-shrink: 1;
+            overflow: hidden;
+            text-wrap: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .syncStatus {
+            position: static;
+        }
+
+        .controlsAndFeedback {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5em;
+        }
+    }
+}

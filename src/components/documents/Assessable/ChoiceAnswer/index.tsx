@@ -16,6 +16,7 @@ import { ModelMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import Options from './Options';
 import Option, { type Props as OptionProps } from './Option';
+import QuestionCard from '../QuestionCard';
 
 interface SharedProps extends AssessableComponentProps<'choice_answer'> {
     multiple?: boolean;
@@ -67,7 +68,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const inQuiz = !!props.qid;
     // TODO: update when ModelMeta for Quiz is implemented
     const canonicalTitle =
-        inQuiz && !(doc.root?.meta as { hideQuestionNumbers?: boolean }).hideQuestionNumbers
+        inQuiz && !(doc.root?.meta as { hideQuestionNumbers?: boolean })?.hideQuestionNumbers
             ? props.title
                 ? `Frage ${questionNumberToDisplay} – ${props.title}`
                 : `Frage ${questionNumberToDisplay}`
@@ -75,33 +76,9 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const displayTitle = canonicalTitle || 'Frage';
 
     return (
-        <div
-            className={clsx('card', styles.choiceAnswerContainer, styles[doc.correctness])}
-            // style={{ order: questionOrder }}
-            // tabIndex={questionOrder}
-        >
-            <div className={clsx('card__header', styles.header, styles[doc.correctness])}>
-                <span className={clsx(styles.title)}>
-                    {displayTitle}
-                    {JSON.stringify(props.correct)}
-                    <CopyBadge value={doc.id} label={doc.id.slice(0, 7)} />
-                </span>
-                <div className={clsx(styles.controlsAndFeedback)}>
-                    {!!props.correct && (
-                        <QuestionControls
-                            doc={doc}
-                            // focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                            inQuiz={!!props.qid}
-                        />
-                    )}
-                    <FeedbackBadge doc={doc} />
-                </div>
-            </div>
-
-            <div className={clsx('card__body')}>
-                <DocContext.Provider value={doc}>{props.children}</DocContext.Provider>
-            </div>
-        </div>
+        <QuestionCard title={displayTitle} doc={doc}>
+            <DocContext.Provider value={doc}>{props.children}</DocContext.Provider>
+        </QuestionCard>
     );
 }) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 

@@ -7,14 +7,16 @@ import { mdiCheckboxMarkedCircleAutoOutline, mdiRestore } from '@mdi/js';
 import ChoiceAnswerDocument from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import clsx from 'clsx';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 
-interface ControlsProps {
-    doc: ChoiceAnswerDocument;
+interface ControlsProps<T extends AssessableType> {
+    doc: AssessableTypeModelMapping[T];
     focussedQuestion?: boolean;
     inQuiz?: boolean;
 }
 
-const QuestionControls = observer(({ doc, focussedQuestion: isFocussedQuestion, inQuiz }: ControlsProps) => {
+const QuestionControls = observer(<T extends AssessableType>(props: ControlsProps<T>) => {
+    const { doc, focussedQuestion: isFocussedQuestion, inQuiz } = props;
     const isMobileView = useIsMobileView();
 
     if (!doc) {

@@ -9,9 +9,10 @@ import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
+import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 
-interface FeedbackBadgeProps {
-    doc: ChoiceAnswerDocument;
+interface FeedbackBadgeProps<T extends AssessableType> {
+    doc: AssessableTypeModelMapping[T];
 }
 
 const ICONS_BY_CORRECTNESS: Record<Correctness, string> = {
@@ -28,7 +29,8 @@ const COLORS_BY_CORRECTNESS: Record<Correctness, keyof typeof IfmColors> = {
     [Correctness.NA]: 'lightBlue'
 };
 
-export const FeedbackBadge = observer(({ doc }: FeedbackBadgeProps) => {
+export const FeedbackBadge = observer(<T extends AssessableType>(props: FeedbackBadgeProps<T>) => {
+    const { doc } = props;
     const isMobileView = useIsMobileView();
 
     if (!doc || !doc.isAssessed) {
