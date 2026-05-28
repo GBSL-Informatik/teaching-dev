@@ -2,6 +2,7 @@ import React from 'react';
 import type {
     AssessableModelType,
     AssessableType,
+    AssessableTypeModelMapping,
     DocumentModelType,
     DocumentType,
     TypeModelMapping
@@ -14,6 +15,7 @@ import { useDummyId } from './useDummyId';
 import { reaction } from 'mobx';
 import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
 import { AssessableMeta } from '@tdev-models/documents/Assessable/AssessableMeta';
+import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
 
 /**
  * This hook provides access to the first main document of the rootDocument.
@@ -57,7 +59,7 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
             parentId: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
-        })
+        }) as AssessableTypeModelMapping[Type]
     );
     React.useEffect(() => {
         if (!documentRoot) {
@@ -82,6 +84,11 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
         );
     }, [userStore, createDocument, documentRoot]);
 
-    const firstDoc = documentRoot?.documents.find(selector) as TypeModelMapping[Type] | undefined;
-    return firstDoc || dummyDocument;
+    const firstDoc = documentRoot?.documents.find(selector) as AssessableTypeModelMapping[Type] | undefined;
+    const doc = firstDoc || dummyDocument;
+
+    React.useEffect(() => {
+        (doc as unknown as iAssessable<Type>)?.setLinkedMeta(meta);
+    }, [doc, meta]);
+    return doc;
 };

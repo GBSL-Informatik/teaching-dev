@@ -3,8 +3,6 @@ import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import iAssessable from './iAssessable';
-import { range } from 'es-toolkit/math';
-import { shuffle } from 'es-toolkit/array';
 import type { Props as TrueFalseProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import { AssessableMeta } from './AssessableMeta';
 
@@ -16,6 +14,7 @@ export class ModelMeta extends AssessableMeta<'true_false_answer'> {
         const isTruthy = (props.isTrue ?? props.correct) === true;
         const isFalsey = (props.isFalse ?? props.incorrect) === true;
         const correct = isTruthy ? [1] : isFalsey ? [2] : [2];
+        console.log('Initializing TrueFalseAnswerMeta with correct:', correct);
         super('true_false_answer', { ...props, correct });
         if (isTruthy && isFalsey) {
             console.warn('TrueFalseAnswer cannot be both truthy and falsey. Defaulting to truthy.');
@@ -37,12 +36,10 @@ export class ModelMeta extends AssessableMeta<'true_false_answer'> {
 const DEFAULT_META = new ModelMeta({});
 
 class TrueFalseAnswer extends iAssessable<'true_false_answer'> {
-    readonly qid?: string;
     @observable accessor value: boolean | null = null;
     constructor(props: DocumentProps<'true_false_answer'>, store: DocumentStore) {
         super(props, store);
         this.value = props.data.value ?? null;
-        this.qid = props.data.qid;
     }
 
     @action
@@ -76,10 +73,10 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> {
 
     @computed
     get achievements(): number {
-        const correct = new Set(this.meta.correct);
         if (this.value === null) {
             return 0;
         }
+        const correct = new Set(this.meta.correct);
         if (this.value) {
             return correct.has(0) ? 1 : 0;
         }

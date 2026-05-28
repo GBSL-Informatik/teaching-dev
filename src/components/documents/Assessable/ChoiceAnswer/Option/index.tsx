@@ -5,18 +5,25 @@ import { observer } from 'mobx-react-lite';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
+import { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 
-export interface Props {
+export interface Props<T extends AssessableType> {
+    type?: T;
     children: React.ReactNode;
     optionIndex: number;
+    isChecked: boolean;
+    // !! must be a stable reference, otherwise the whole list will re-render on every change
+    onChange: (doc: AssessableTypeModelMapping[T], optionIndex: number, checked: boolean) => void;
+    optionOrder?: number;
+    multiple?: boolean;
 }
 
-const Option = observer(({ optionIndex, children }: Props) => {
-    const doc = useDocument<'choice_answer'>();
+const Option = observer(<T extends AssessableType>(props: Props<T>) => {
+    const doc = useDocument<T>();
     const optionId = React.useId();
-    const isChecked = doc.choices.has(optionIndex);
+    const { children, optionIndex, optionOrder, onChange, isChecked } = props;
 
-    const optionOrder = doc.optionsDisplayOrder(optionIndex);
+    // const optionOrder = props.optionOrder ? props.optionOrder(doc, optionIndex) : doc.optionsDisplayOrder(optionIndex);
     return (
         <div
             key={optionId}
@@ -27,10 +34,10 @@ const Option = observer(({ optionIndex, children }: Props) => {
         >
             <div className={styles.checkboxContainer}>
                 <input
-                    type={doc.multiple ? 'checkbox' : 'radio'}
+                    type={props.multiple ? 'checkbox' : 'radio'}
                     id={optionId}
                     name={doc.id}
-                    onChange={(e) => doc.updateSelection(optionIndex, e.target.checked, doc.multiple)}
+                    onChange={(e) => onChange(doc, optionIndex, e.target.checked)}
                     checked={isChecked}
                     className={styles.checkbox}
                     disabled={!doc?.canUpdateAnswer}
@@ -38,14 +45,14 @@ const Option = observer(({ optionIndex, children }: Props) => {
                 />
             </div>
             <label htmlFor={optionId}>{children}</label>
-            {!doc.multiple && (
+            {!props.multiple && (
                 <div className={styles.btnDeleteAnswerContainer}>
                     <Button
                         color="danger"
                         icon={mdiTrashCanOutline}
                         iconSide="left"
                         size={0.7}
-                        onClick={() => doc.updateSelection(optionIndex, false)}
+                        onClick={() => onChange(doc, optionIndex, false)}
                         className={clsx(
                             styles.btnDeleteAnswer,
                             doc?.canUpdateAnswer && isChecked && styles.visible

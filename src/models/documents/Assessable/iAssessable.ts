@@ -28,6 +28,7 @@ export interface MetaInit {
 }
 
 abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
+    readonly qid?: string;
     @observable accessor _assessed: boolean;
     // @observable.ref accessor scoringFunction: ((self: this) => Assessement) | null = null;
     @observable.ref accessor linkedMeta: AssessableMeta<T> | null = null;
@@ -35,10 +36,11 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
         this._assessed = props.data?.assessed || false;
+        this.qid = props.data.qid;
     }
 
     @action
-    setLinkedMeta(metadata: AssessableMeta<T> | null) {
+    setLinkedMeta(metadata: AssessableMeta<T>) {
         this.linkedMeta = metadata;
         this.onLinkedMetaChange();
     }
@@ -109,6 +111,24 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     @computed
     get canUpdateAnswer() {
         return this.canEdit && !this.isAssessed;
+    }
+
+    @computed
+    get inQuiz() {
+        return !!this.qid;
+    }
+
+    @computed
+    get displayTitle() {
+        if (!this.linkedMeta) {
+            return 'Frage';
+        }
+        if (!this.inQuiz) {
+            return this.linkedMeta.title ?? 'Frage';
+        }
+        // TODO: check if `hideQuestionNumbers` is set in quiz and remove prefix "Frage X - " if so.
+        const nr = 1;
+        return this.linkedMeta.title ? `Frage ${nr} – ${this.linkedMeta.title}` : `Frage ${nr}`;
     }
 
     abstract resetAnswer(): void;

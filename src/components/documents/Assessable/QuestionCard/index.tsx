@@ -2,24 +2,20 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import Card from '@tdev-components/shared/Card';
-import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
 import { AssessableType, TypeModelMapping } from '@tdev-api/document';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import DocumentContext from '@tdev-components/documents/DocumentContext';
-import { AssessableTypeModelMapping } from '@tdev-api/document';
 import { FeedbackBadge } from '../Feedback';
 import QuestionControls from '../Controls';
 
 interface Props<T extends AssessableType> {
-    title: string | React.ReactNode;
     doc: TypeModelMapping[T];
     children: React.ReactNode;
 }
 
 const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
-    const { doc, title } = props;
+    const { doc } = props;
     const correctAnswer = doc.linkedMeta?.correct ?? [];
     return (
         <Card
@@ -30,8 +26,8 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
             header={
                 <>
                     <h3 className={clsx(styles.questionTitle)}>
-                        {title}
-                        {JSON.stringify(correctAnswer)}
+                        {doc.displayTitle}
+                        {JSON.stringify(doc.linkedMeta?.correct)}
                         <CopyBadge value={doc.id} label={doc.id.slice(0, 7)} />
                     </h3>
                     <div className={clsx(styles.controlsAndFeedback)}>

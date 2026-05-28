@@ -1,10 +1,18 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
-import { ModelMeta } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
+import {
+    type default as TrueFalseAnswerModel,
+    ModelMeta
+} from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
 import { useFirstDocumentBy } from '@tdev-hooks/useFirstDocumentBy';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import QuestionCard from '../QuestionCard';
+import { DocContext } from '@tdev-components/documents/DocumentContext';
+import Options from '../ChoiceAnswer/Options';
+import Option from '../ChoiceAnswer/Option';
+import { action } from 'mobx';
 
 interface BaseProps extends AssessableComponentProps<'true_false_answer'> {}
 
@@ -20,6 +28,12 @@ interface TruthyProps {
 
 export type Props = BaseProps & FalseyProps & TruthyProps;
 
+const onUpdateSelection = action((doc: TrueFalseAnswerModel, optionIndex: number, checked: boolean) => {
+    if (!checked) {
+        return doc.setValue(null);
+    }
+    doc.setValue(optionIndex === 0);
+});
 const TrueFalseAnswer = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta({ ...props }));
     const docRootId = useDocumentRootId(props.id);
@@ -29,13 +43,31 @@ const TrueFalseAnswer = observer((props: Props) => {
         return <UnknownDocumentType type={meta.type} />;
     }
     return (
-        // <ChoiceAnswer {...props} randomizeOptions={false} correct={correct}>
-        <>{props.children}</>
-        //     <ChoiceAnswer.Options>
-        //         <ChoiceAnswer.Option optionIndex={0}>Richtig</ChoiceAnswer.Option>
-        //         <ChoiceAnswer.Option optionIndex={1}>Falsch</ChoiceAnswer.Option>
-        //     </ChoiceAnswer.Options>
-        // </ChoiceAnswer>
+        <QuestionCard doc={doc}>
+            <DocContext.Provider value={doc}>
+                <>
+                    {props.children}
+                    <Options>
+                        <Option
+                            type="true_false_answer"
+                            optionIndex={0}
+                            onChange={onUpdateSelection}
+                            isChecked={doc.value === true}
+                        >
+                            Richtig
+                        </Option>
+                        <Option
+                            type="true_false_answer"
+                            optionIndex={1}
+                            onChange={onUpdateSelection}
+                            isChecked={doc.value === false}
+                        >
+                            Falsch
+                        </Option>
+                    </Options>
+                </>
+            </DocContext.Provider>
+        </QuestionCard>
     );
 });
 
