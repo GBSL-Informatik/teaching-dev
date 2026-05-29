@@ -42,7 +42,7 @@ const QuestionControls = observer(<T extends AssessableType>(props: ControlsProp
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
-                        doc.resetAnswer();
+                        doc.reset();
                     }}
                 />
             ) : (
@@ -94,7 +94,7 @@ export const QuizControls = observer(({ doc }: QuizControlsProps) => {
                     className={styles.checkButton}
                     confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
                     onConfirm={() => {
-                        doc.resetAnswer();
+                        doc.reset();
                     }}
                 />
             )}

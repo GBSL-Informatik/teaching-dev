@@ -65,7 +65,7 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> {
     }
 
     @action
-    resetAnswer(): void {
+    reset(): void {
         this.value = null;
         this.setAssessed(false);
         this.saveNow();

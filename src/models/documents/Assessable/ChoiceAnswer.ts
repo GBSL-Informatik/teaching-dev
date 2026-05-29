@@ -91,7 +91,7 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     }
 
     @action
-    resetAnswer(): void {
+    reset(): void {
         this.choices.clear();
         // this.assessments.clear();
         this.setAssessed(false);

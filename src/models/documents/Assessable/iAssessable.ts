@@ -131,7 +131,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
         return this.linkedMeta.title ? `Frage ${nr} – ${this.linkedMeta.title}` : `Frage ${nr}`;
     }
 
-    abstract resetAnswer(): void;
+    abstract reset(): void;
 
     shuffle(): void {
         // By default, do nothing. Only applicable for certain assessable document types (e.g. ChoiceAnswer).

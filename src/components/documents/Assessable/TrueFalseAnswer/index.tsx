@@ -10,8 +10,8 @@ import { useFirstDocumentBy } from '@tdev-hooks/useFirstDocumentBy';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import QuestionCard from '../QuestionCard';
 import { DocContext } from '@tdev-components/documents/DocumentContext';
-import Options from '../ChoiceAnswer/Options';
-import Option from '../ChoiceAnswer/Option';
+import Options from '../Inputs/Options';
+import Option from '../Inputs/Option';
 import { action } from 'mobx';
 
 interface BaseProps extends AssessableComponentProps<'true_false_answer'> {}

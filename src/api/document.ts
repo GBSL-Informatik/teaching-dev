@@ -21,6 +21,7 @@ import Code from '@tdev-models/documents/Code';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import type ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import type TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
+import type Quiz from '@tdev-models/documents/Assessable/Quiz';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -43,10 +44,6 @@ export interface StringData {
     text: string;
 }
 
-export interface QuizData {
-    questionOrder: number[];
-}
-
 interface AssessableData {
     assessed: boolean;
     qid?: string;
@@ -59,6 +56,10 @@ export interface TrueFalseAnswerData extends AssessableData {
 export interface ChoiceAnswerData extends AssessableData {
     choices: number[];
     optionsOrder: number[];
+}
+
+export interface QuizData extends AssessableData {
+    questionOrder: number[];
 }
 
 export interface QuillV2Data {
@@ -133,6 +134,7 @@ export type ViewStore = ViewStoreTypeMapping[ViewStoreType];
 export interface AssessableDocumentMapping {
     ['true_false_answer']: TrueFalseAnswerData;
     ['choice_answer']: ChoiceAnswerData;
+    ['quiz']: QuizData;
 }
 
 export interface ContainerTypeDataMapping {
@@ -150,7 +152,6 @@ export interface TypeDataMapping
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersionData;
     ['string']: StringData;
-    ['quiz']: QuizData;
     ['quill_v2']: QuillV2Data;
     ['solution']: SolutionData;
     ['dir']: DirData;
@@ -178,6 +179,7 @@ export interface ContainerTypeModelMapping {
 export interface AssessableTypeModelMapping {
     ['true_false_answer']: TrueFalseAnswer;
     ['choice_answer']: ChoiceAnswer;
+    ['quiz']: Quiz;
 }
 
 export interface TaskableTypeModelMapping {
