@@ -5,7 +5,6 @@ import { action, computed, observable } from 'mobx';
 import React from 'react';
 import { AssessableMeta } from './AssessableMeta';
 import Quiz from './Quiz';
-import { ModelMeta } from './ChoiceAnswer';
 
 export enum Correctness {
     Correct = 'correct',
@@ -36,7 +35,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     @observable.ref accessor linkedMeta: AssessableMeta<T> | null = null;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
-        super(props, store);
+        super(props, store, 50);
         this._assessed = props.data?.assessed || false;
         this.qid = props.data.qid;
     }
