@@ -1,16 +1,13 @@
 import Icon from '@mdi/react';
-import ChoiceAnswerDocument from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import React from 'react';
-import clsx from 'clsx';
 import { QuestionScoringHint } from '../Hints';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
-import Quiz from '@tdev-models/documents/Assessable/Quiz';
 import Badge from '@tdev-components/shared/Badge';
 
 interface FeedbackBadgeProps<T extends AssessableType> {
@@ -31,17 +28,15 @@ const COLORS_BY_CORRECTNESS: Record<Correctness, keyof typeof IfmColors> = {
     [Correctness.NA]: 'lightBlue'
 };
 
-export const FeedbackBadge = observer(<T extends AssessableType>(props: FeedbackBadgeProps<T>) => {
+export const QuestionScore = observer(<T extends AssessableType>(props: FeedbackBadgeProps<T>) => {
     const { doc } = props;
     const isMobileView = useIsMobileView();
 
-    if (!doc || !doc.isAssessed) {
+    if (!doc) {
         return null;
     }
-
-    const maxPointsText = isMobileView
-        ? `${doc.maxPoints}p`
-        : `${doc.maxPoints} Punkt${doc.maxPoints !== 1 ? 'e' : ''}`;
+    const maxPoints = doc.assessment?.scoring?.maxPoints ?? doc.maxHits;
+    const maxPointsText = isMobileView ? `${maxPoints}p` : `${maxPoints} Punkt${maxPoints !== 1 ? 'e' : ''}`;
 
     return (
         <div className={styles.feedbackBadge}>
@@ -55,15 +50,6 @@ export const FeedbackBadge = observer(<T extends AssessableType>(props: Feedback
                                 {maxPointsText}
                             </Badge>
                         </span>
-                        // <span className={clsx('badge badge--secondary', styles.pointsBadge)}>
-                        //     {doc.isAssessed && <span>{doc.assessment.scoring.pointsAchieved}/</span>}
-                        //     {doc.assessment.scoring.maxPoints}
-                        //     {isMobileView
-                        //         ? 'p'
-                        //         : doc.assessment.scoring.maxPoints === 1
-                        //           ? ' Punkt'
-                        //           : ' Punkte'}
-                        // </span>
                     }
                 />
             )}
@@ -76,37 +62,5 @@ export const FeedbackBadge = observer(<T extends AssessableType>(props: Feedback
                 />
             )}
         </div>
-    );
-});
-
-interface QuizScoreProps {
-    doc: Quiz;
-}
-
-export const QuizScore = observer(({ doc }: QuizScoreProps) => {
-    const isMobileView = useIsMobileView();
-
-    if (!doc || doc.maxPoints === 0) {
-        // No scoring, so we don't show anything.
-        return null;
-    }
-    const maxPointsText = isMobileView
-        ? `${doc.maxPoints}p`
-        : `${doc.maxPoints} Punkt${doc.maxPoints !== 1 ? 'e' : ''}`;
-
-    if (!doc.isAssessed) {
-        return (
-            <Badge type="primary" className={styles.pointsBadge}>
-                {isMobileView ? `Max.: ${maxPointsText}` : `Zu erreichen: ${maxPointsText}`}
-            </Badge>
-        );
-    }
-    const totalPointsAchieved = doc.assessment?.scoring?.pointsAchieved ?? 'N/A';
-    return (
-        <Badge type="primary" className={styles.pointsBadge}>
-            {isMobileView
-                ? `${totalPointsAchieved}/${maxPointsText}`
-                : `Ergebnis: ${totalPointsAchieved}/${maxPointsText}`}
-        </Badge>
     );
 });

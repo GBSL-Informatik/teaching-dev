@@ -1,6 +1,5 @@
 import { AssessableType } from '@tdev-api/document';
 import { ScoringFunction } from '@tdev-models/documents/Assessable/AssessableMeta';
-import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import { Correctness, Scoring } from '@tdev-models/documents/Assessable/iAssessable';
 import clsx from 'clsx';
 
@@ -37,7 +36,7 @@ export const points: (
                 scoring: template
             };
         }
-        const { achievements, mistakes, maxPoints } = ca;
+        const { hits: achievements, misses: mistakes, maxHits: maxPoints } = ca;
         if (achievements + mistakes > 1) {
             throw new Error(
                 `The points() scoring function is not suitable for questions with multiple answers. Please use multipleChoicePoints() instead! ${ca.id}`
@@ -61,7 +60,7 @@ export const multipleChoicePoints: (
     maxPoints: number,
     deductionPerWrongChoice: number,
     allowNegativeTotal: boolean
-) => ScoringFunction<'choice_answer'> = (maxPoints, deductionPerWrongChoice, allowNegativeTotal = false) => {
+) => ScoringFunction<AssessableType> = (maxPoints, deductionPerWrongChoice, allowNegativeTotal = false) => {
     const scoringHint = () => (
         <ul>
             <li>
@@ -92,8 +91,15 @@ export const multipleChoicePoints: (
                 scoring: { maxPoints, pointsAchieved: 0, scoringHint }
             };
         }
-        const ca = model as ChoiceAnswer;
-        const points = maxPoints - ca.mistakes * deductionPerWrongChoice;
+        if (model.hits === 0 && model.misses === 0) {
+            // No answers selected
+            return {
+                correctness: Correctness.NA,
+                scoring: { maxPoints, pointsAchieved: 0, scoringHint }
+            };
+        }
+
+        const points = maxPoints - model.misses * deductionPerWrongChoice;
         const finalPoints = allowNegativeTotal ? points : Math.max(points, 0);
         const correctness =
             points === maxPoints

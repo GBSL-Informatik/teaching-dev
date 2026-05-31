@@ -4,7 +4,6 @@ import React from 'react';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Loader from '@tdev-components/Loader';
 import styles from './styles.module.scss';
-import { QuizScore } from '../Feedback';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { DocumentRootIdContext } from '@tdev-hooks/useContextDocumentRootId';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
@@ -13,6 +12,7 @@ import useLinkedMetaModel from '@tdev-hooks/useLinkedMetaModel';
 import { AssessableType } from '@tdev-api/document';
 import QuizControls from './QuizControls';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
+import { QuizScore } from '../Feedback/QuizScore';
 
 export interface Props extends AssessableComponentProps<AssessableType> {
     id: string;

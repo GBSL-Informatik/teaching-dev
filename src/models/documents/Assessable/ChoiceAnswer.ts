@@ -115,7 +115,7 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
         this.optionOrders = shuffle(originalIndices);
     }
 
-    get maxPoints(): number {
+    get maxHits(): number {
         if (this.multiple) {
             return this.linkedMeta?.correct?.length || 0;
         }
@@ -128,22 +128,22 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
     }
 
     @computed
-    get achievements(): number {
+    get hits(): number {
         const correct = new Set(this.meta.correct);
         return this.choices.intersection(correct).size;
     }
 
     @computed
-    get mistakes(): number {
+    get misses(): number {
         if (this.choices.size === 0) {
             return 0;
         }
         if (this.multiple) {
-            const missedCorrect = (this.meta.correct ?? []).length - this.achievements;
-            const incorrectSelections = this.choices.size - this.achievements;
+            const missedCorrect = (this.meta.correct ?? []).length - this.hits;
+            const incorrectSelections = this.choices.size - this.hits;
             return missedCorrect + incorrectSelections;
         }
-        return 1 - this.achievements;
+        return 1 - this.hits;
     }
 
     @computed

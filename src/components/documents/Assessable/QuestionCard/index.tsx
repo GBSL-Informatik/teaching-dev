@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import Card from '@tdev-components/shared/Card';
 import { AssessableType, TypeModelMapping } from '@tdev-api/document';
 import DocumentContext from '@tdev-components/documents/DocumentContext';
-import { FeedbackBadge } from '../Feedback';
+import { QuestionScore } from '../Feedback/QuestionScore';
 import QuestionControls from './Controls';
 
 interface Props<T extends AssessableType> {
@@ -36,7 +36,7 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
                                 inQuiz={!!doc.qid}
                             />
                         )}
-                        <FeedbackBadge doc={doc} />
+                        <QuestionScore doc={doc} />
                     </div>
                 </>
             }

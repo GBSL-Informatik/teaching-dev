@@ -74,7 +74,7 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
     }
 
     @computed
-    get achievements(): number {
+    get hits(): number {
         if (this.value === null) {
             return 0;
         }
@@ -86,11 +86,11 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
     }
 
     @computed
-    get mistakes(): number {
+    get misses(): number {
         if (this.value === null) {
             return 0;
         }
-        return 1 - this.achievements;
+        return 1 - this.hits;
     }
 
     get data(): TypeDataMapping['true_false_answer'] {

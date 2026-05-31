@@ -104,32 +104,37 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
 
     @computed
     get correctness(): Correctness {
-        if (!this.isAssessed) {
+        if (!this.isAssessed || (this.hits === 0 && this.misses === 0)) {
             return Correctness.NA;
         }
-        return this.achievements === this.maxPoints && this.mistakes === 0
+        return this.hits === this.maxHits && this.misses === 0
             ? Correctness.Correct
-            : this.achievements === 0
+            : this.hits === 0
               ? Correctness.Incorrect
               : Correctness.PartiallyCorrect;
     }
 
+    /**
+     * Returns the maximum achievable "hits" for this assessable item.
+     */
     @computed
-    get maxPoints(): number {
+    get maxHits(): number {
         return this.linkedMeta?.correct?.length || 0;
     }
 
     /**
-     * Returns the number of correctly responded items. This can be "correct choices" for MC questions, "correct matched words" for texts or simply "1/0" for single-choice questions.
+     * Returns the number of correctly responded items.
+     * This can be "correct choices" for MC questions, "correct matched words" for texts or simply "1/0" for single-choice questions.
      */
-    get achievements(): number {
+    get hits(): number {
         return 0;
     }
 
     /**
-     * Returns the number of incorrectly responded items. This can be "incorrect choices" for MC questions, "wrong matched words" in a text or simply "0/1" for single-choice questions.
+     * Returns the number of incorrectly responded items.
+     * This can be "incorrect choices" for MC questions, "wrong matched words" in a text or simply "0/1" for single-choice questions.
      */
-    get mistakes(): number {
+    get misses(): number {
         return 0;
     }
 

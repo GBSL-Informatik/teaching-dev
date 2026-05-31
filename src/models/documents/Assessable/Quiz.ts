@@ -161,18 +161,18 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
-    get maxPoints(): number {
-        return this.questions.reduce((sum, q) => sum + q.maxPoints, 0);
+    get maxHits(): number {
+        return this.questions.reduce((sum, q) => sum + q.maxHits, 0);
     }
 
     @computed
-    get achievements(): number {
-        return this.questions.reduce((sum, q) => sum + (q.achievements ?? 0), 0);
+    get hits(): number {
+        return this.questions.reduce((sum, q) => sum + (q.hits ?? 0), 0);
     }
 
     @computed
-    get mistakes(): number {
-        return this.questions.reduce((sum, q) => sum + (q.mistakes ?? 0), 0);
+    get misses(): number {
+        return this.questions.reduce((sum, q) => sum + (q.misses ?? 0), 0);
     }
 
     get data(): TypeDataMapping['quiz'] {
