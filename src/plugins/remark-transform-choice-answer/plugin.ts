@@ -3,21 +3,21 @@ import type { Plugin, Transformer } from 'unified';
 import type { Root, BlockContent, DefinitionContent } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
 import { toJsxAttribute, toMdxJsxExpressionAttribute } from '../helpers';
-import path from 'path';
-import { promises as fs } from 'fs';
-
-enum ChoiceComponentTypes {
-    ChoiceAnswer = 'ChoiceAnswer',
-    TrueFalseAnswer = 'TrueFalseAnswer'
-}
-
-const QUIZ_NODE_NAME = 'Quiz';
-// const BEFORE_WRAPPER_NAME = 'ChoiceAnswer.Before';
-const OPTIONS_WRAPPER_NAME = 'ChoiceAnswer.Options';
-const OPTION_WRAPPER_NAME = 'ChoiceAnswer.Option';
-// const AFTER_WRAPPER_NAME = 'ChoiceAnswer.After';
 
 type FlowChildren = (BlockContent | DefinitionContent)[];
+interface CompnentOptions {
+    component: string;
+    itemComponent: string;
+}
+
+interface Options {
+    QuizComponentName: string;
+    AnswerComponents: {
+        [key: string]: {
+            options?: CompnentOptions;
+        };
+    };
+}
 
 function createWrapper(
     name: string,
@@ -33,12 +33,13 @@ function createWrapper(
 }
 
 const createWrappedOption = (
-    listChildren: { type: string; children: FlowChildren }[]
+    listChildren: { type: string; children: FlowChildren }[],
+    config: CompnentOptions
 ): { wrappedOptions: MdxJsxFlowElement; optionsCount: number } => {
     const options = listChildren
         .filter((child) => child.type === 'listItem')
         .map((child, index) => {
-            return createWrapper(OPTION_WRAPPER_NAME, child.children, [
+            return createWrapper(config.itemComponent, child.children, [
                 toMdxJsxExpressionAttribute('optionIndex', index, {
                     type: 'Literal',
                     value: index,
@@ -47,16 +48,26 @@ const createWrappedOption = (
             ]);
         });
 
-    return { wrappedOptions: createWrapper(OPTIONS_WRAPPER_NAME, options), optionsCount: options.length };
+    return { wrappedOptions: createWrapper(config.component, options), optionsCount: options.length };
 };
 
-const transformQuestion = (questionNode: MdxJsxFlowElement) => {
+const transformQuestion = (questionNode: MdxJsxFlowElement, config: Options['AnswerComponents']) => {
+    const conf = config[questionNode.name ?? '-1'];
+    if (!questionNode.name || !conf) {
+        console.warn(
+            `Encountered question node with name "${questionNode.name}", which is not defined in the plugin configuration. Skipping transformation for this node.`
+        );
+        return;
+    }
     const listIndex = questionNode.children.findIndex((child) => child.type === 'list');
 
     if (listIndex === -1) {
-        if (questionNode.name !== ChoiceComponentTypes.TrueFalseAnswer) {
+        if (conf.options) {
             console.warn(`No list found in <${questionNode.name}>. Expected exactly one list child.`);
         }
+        return;
+    }
+    if (!conf.options) {
         return;
     }
 
@@ -76,7 +87,8 @@ const transformQuestion = (questionNode: MdxJsxFlowElement) => {
     }
 
     const { wrappedOptions, optionsCount } = createWrappedOption(
-        listChild.children as { type: string; children: FlowChildren }[]
+        listChild.children as { type: string; children: FlowChildren }[],
+        conf.options
     );
     wrappedChildren.push(wrappedOptions);
     questionNode.attributes.push(toJsxAttribute('optionsCount', optionsCount));
@@ -140,13 +152,16 @@ const qidGenerator = () => {
     return { generator, qidSet: qidMap };
 };
 
-const transformQuiz = (quizNode: MdxJsxFlowElement) => {
+const transformQuiz = (
+    quizNode: MdxJsxFlowElement,
+    answerComponents: Set<string>,
+    config: Options['AnswerComponents']
+) => {
     const { generator: getQid, qidSet } = qidGenerator();
 
     visit(quizNode, 'mdxJsxFlowElement', (childNode) => {
-        // TODO: use a set for the check
-        if (Object.values(ChoiceComponentTypes).includes(childNode.name as ChoiceComponentTypes)) {
-            transformQuestion(childNode);
+        if (childNode.name && answerComponents.has(childNode.name)) {
+            transformQuestion(childNode, config);
             const qidIdx = childNode.attributes.findIndex((attr) => (attr as any).name === 'qid');
             const qidAttr = getQid(childNode.attributes[qidIdx]);
             if (qidIdx === -1) {
@@ -175,19 +190,39 @@ const transformQuiz = (quizNode: MdxJsxFlowElement) => {
     quizNode.attributes.push(qids);
 };
 
-const plugin: Plugin<[], Root> = function choiceAnswerWrapPlugin(this, options = []): Transformer<Root> {
+const DEFAULT_OPTIONS: Options = {
+    QuizComponentName: 'Quiz',
+    AnswerComponents: {
+        ['ChoiceAnswer']: {
+            options: {
+                component: 'ChoiceAnswer.Options',
+                itemComponent: 'ChoiceAnswer.Option'
+            }
+        },
+        ['TrueFalseAnswer']: {}
+    }
+};
+
+const plugin: Plugin<Options[], Root> = function choiceAnswerWrapPlugin(
+    this,
+    options = DEFAULT_OPTIONS
+): Transformer<Root> {
+    const AnswerComponentNames = Object.keys(options.AnswerComponents);
+    const AnswerComponents = new Set(AnswerComponentNames);
+    const Config = options.AnswerComponents;
     return async (tree, vfile) => {
         visit(tree, 'mdxJsxFlowElement', (node) => {
-            if (node.name === QUIZ_NODE_NAME) {
+            if (node.name === options.QuizComponentName) {
                 // Enumerate and transform questions inside the quiz.
-                transformQuiz(node);
+                transformQuiz(node, AnswerComponents, Config);
             } else if (
-                Object.values(ChoiceComponentTypes).includes(node.name as ChoiceComponentTypes) &&
-                !((node as any).parent?.name === QUIZ_NODE_NAME) &&
+                node.name &&
+                AnswerComponents.has(node.name) &&
+                !((node as any).parent?.name === options.QuizComponentName) &&
                 !node.attributes.some((attr) => (attr as any).name === 'qid')
             ) {
                 // Transform standalone question.
-                transformQuestion(node);
+                transformQuestion(node, options.AnswerComponents);
             } else {
                 return;
             }
