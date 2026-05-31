@@ -1,5 +1,5 @@
 ---
-page_id: 08ac6803-b890-4608-9d4e-28f334addfb0
+page_id: e9db277c-0e99-4b56-90b8-0d2130b36e26
 tags:
   - persistable
 ---
@@ -37,7 +37,7 @@ import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[2]} id="3f78aec5-a39e-4119-9a9d-783f9edb9488">
+    <ChoiceAnswer correct={[2]} id="1ac8b1b2-a14a-44b3-986c-273754d3d9f6">
         > Wer gilt als Erfinder des World Wide Web (WWW)?
 
         1. Steve **Jobs**
@@ -67,7 +67,7 @@ import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[2]} randomizeOptions id="6e275c2d-4301-43b0-9b30-c6cd03a4c72f">
+    <ChoiceAnswer correct={[2]} randomizeOptions id="8cedd0b5-a44a-4359-a017-e5a3a7e8891c">
         > Wir gilt als Erfinder des World Wide Web (WWW)?!
 
         1. Steve **Jobs**
@@ -114,7 +114,7 @@ Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werde
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="0b05ea40-4235-4d51-8b30-2a23e045c169">
+    <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="5e2ed74e-df3c-4e67-a7f0-4d27236294dc">
         > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
         
         1. 2 ist die einzige gerade Primzahl.
@@ -145,7 +145,7 @@ import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAn
 ```
 
 <BrowserWindow>
-    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="43b12b71-150e-4428-b86f-050f4fe52a52">
+    <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="5ec01175-fc94-42fd-90ad-a2bbc54eb7d2">
         Die Erde ist flach.
     </TrueFalseAnswer>
 </BrowserWindow>
@@ -191,7 +191,7 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
 ```
 
 <BrowserWindow>
-    <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="b05ff2c3-393d-4978-8fe8-2b70260237ae">
+    <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="f8ebc37e-b9cb-46bc-9e96-f34ccbd7f83e">
         > Was ist die Hauptstadt von Frankreich?
         
         1. Berlin
@@ -200,7 +200,7 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
         4. Madrid
     </ChoiceAnswer>
 
-    <ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="0fca03bf-f2a5-4275-8684-6df8539c754b">
+    <ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="edb14664-62f5-43d8-9cc9-f15b1ff57938">
         > Wählen Sie alle Primzahlen aus.
 
         1. 1
@@ -210,7 +210,7 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
         5. 5
     </ChoiceAnswer>
 
-    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="51f7951e-ebd4-4c60-aa43-8023324273c9">
+    <TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="9e6185c3-2e12-42f0-958f-586b0f422e40">
         > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
 
     </TrueFalseAnswer>
@@ -226,7 +226,7 @@ import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAn
 import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
 import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
 
-<Quiz scoring={points(1)} id="05ff4108-a75d-4978-9b0f-d06be05fc1bf" randomizeQuestions randomizeOptions>
+<Quiz scoring={points(1)} id="04d2153f-1ed3-41bd-835b-a8bebe2ca6e8" randomizeQuestions randomizeOptions>
   <ChoiceAnswer correct={[5]}>
       > In welchem Jahr war 2024?
       
@@ -273,7 +273,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 ```
 
 <BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="5f3b8896-a0fa-4d07-82b6-9d2ab6881ffc" >
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="fe81de29-3fad-4da9-82a5-a4af0050fdbe" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             

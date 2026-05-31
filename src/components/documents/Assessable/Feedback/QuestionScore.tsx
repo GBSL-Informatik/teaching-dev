@@ -9,6 +9,8 @@ import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 import Badge from '@tdev-components/shared/Badge';
+import { useScrollTo } from '@tdev-hooks/useScrollTo';
+import clsx from 'clsx';
 
 interface FeedbackBadgeProps<T extends AssessableType> {
     doc: AssessableTypeModelMapping[T];
@@ -31,6 +33,7 @@ const COLORS_BY_CORRECTNESS: Record<Correctness, keyof typeof IfmColors> = {
 export const QuestionScore = observer(<T extends AssessableType>(props: FeedbackBadgeProps<T>) => {
     const { doc } = props;
     const isMobileView = useIsMobileView();
+    const [ref, animate] = useScrollTo(doc);
 
     if (!doc) {
         return null;
@@ -39,7 +42,7 @@ export const QuestionScore = observer(<T extends AssessableType>(props: Feedback
     const maxPointsText = isMobileView ? `${maxPoints}p` : `${maxPoints} Punkt${maxPoints !== 1 ? 'e' : ''}`;
 
     return (
-        <div className={styles.feedbackBadge}>
+        <div className={clsx(styles.feedbackBadge, animate && styles.animate)} ref={ref}>
             {doc.assessment?.scoring && (
                 <QuestionScoringHint
                     doc={doc}

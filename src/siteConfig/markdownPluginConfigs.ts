@@ -223,6 +223,18 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
         {
             name: 'DynamicDocumentRoots',
             docTypeExtractor: () => 'dynamic_document_roots'
+        },
+        {
+            name: 'Quiz',
+            docTypeExtractor: () => 'quiz'
+        },
+        {
+            name: 'ChoiceAnswer',
+            docTypeExtractor: () => 'choice_answer'
+        },
+        {
+            name: 'TrueFalseAnswer',
+            docTypeExtractor: () => 'true_false_answer'
         }
     ],
     persistedCodeType: (node: Code) => {
@@ -301,11 +313,11 @@ export const recommendedRemarkPlugins = [
     enumerateAnswersPluginConfig,
     pdfPluginConfig,
     pagePluginConfig,
+    transformAssessablePluginConfig,
     pageIndexPluginConfig,
     commentPluginConfig,
     linkAnnotationPluginConfig,
-    codeAsAttributePluginConfig,
-    transformAssessablePluginConfig
+    codeAsAttributePluginConfig
 ];
 
 export const recommendedRehypePlugins = [rehypeKatexPluginConfig];

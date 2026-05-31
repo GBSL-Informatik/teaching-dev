@@ -6,5 +6,7 @@ export interface iTaskableDocument<T extends TaskableType = TaskableType> extend
     editingIconState: { path: string; color: string };
     progress: number;
     totalSteps: number;
+    scrollTo: boolean;
     setScrollTo(scroll: boolean): void;
+    hideFromOverview: boolean;
 }

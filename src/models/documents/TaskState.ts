@@ -41,6 +41,7 @@ export class TaskMeta extends TypeMeta<'task_state'> {
 }
 
 class TaskState extends iDocument<'task_state'> implements iTaskableDocument<'task_state'> {
+    readonly hideFromOverview = false;
     @observable accessor _taskState: StateType;
     @observable accessor scrollTo: boolean = false;
     constructor(props: DocumentProps<'task_state'>, store: DocumentStore) {

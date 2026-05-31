@@ -142,13 +142,12 @@ export interface ContainerTypeDataMapping {
     ['_container_placeholder_']: { name: string }; // placeholder to avoid empty interface error
 }
 
-export interface TaskableDocumentMapping {
+export interface TaskableDocumentMapping extends AssessableDataMapping {
     ['task_state']: TaskStateData;
     ['progress_state']: ProgressStateData;
 }
 
-export interface TypeDataMapping
-    extends TaskableDocumentMapping, ContainerTypeDataMapping, AssessableDataMapping {
+export interface TypeDataMapping extends TaskableDocumentMapping, ContainerTypeDataMapping {
     ['code']: CodeData;
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersionData;
@@ -186,7 +185,7 @@ export interface AssessableTypeModelMapping {
 type EnsureAllAssessable<T extends { [K in keyof T]: iAssessable<any> }> = T;
 null as unknown as EnsureAllAssessable<AssessableTypeModelMapping>;
 
-export interface TaskableTypeModelMapping {
+export interface TaskableTypeModelMapping extends AssessableTypeModelMapping {
     ['task_state']: TaskState;
     ['progress_state']: ProgressState;
 }

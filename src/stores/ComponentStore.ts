@@ -15,6 +15,9 @@ import React from 'react';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
 import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
+import { ModelMeta as QuizMeta } from '@tdev-models/documents/Assessable/Quiz';
+import { ModelMeta as ChoiceMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import { ModelMeta as TrueFalseMeta } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 
 export type LiveCode = `live_${string}`;
 
@@ -56,7 +59,10 @@ class ComponentStore {
     editorComponents = new Map<CodeType, EditorComponent>();
     taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
         ['task_state', new TaskStateMeta({})],
-        ['progress_state', new ProgressStateMeta({})]
+        ['progress_state', new ProgressStateMeta({})],
+        ['quiz', new QuizMeta({})],
+        ['choice_answer', new ChoiceMeta({ optionsCount: 0 })],
+        ['true_false_answer', new TrueFalseMeta({})]
     ]);
 
     constructor(root: RootStore) {

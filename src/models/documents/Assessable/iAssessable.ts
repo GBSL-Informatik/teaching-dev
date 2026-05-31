@@ -5,6 +5,9 @@ import { action, computed, observable } from 'mobx';
 import React from 'react';
 import { AssessableMeta } from './AssessableMeta';
 import Quiz from './Quiz';
+import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
+import { mdiCheckCircleOutline, mdiTooltipQuestionOutline } from '@mdi/js';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 export enum Correctness {
     Correct = 'correct',
@@ -28,8 +31,9 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
+abstract class iAssessable<T extends AssessableType> extends iDocument<T> implements iTaskableDocument<T> {
     readonly qid?: string;
+    @observable accessor scrollTo: boolean = false;
     @observable accessor _assessed: boolean;
     // @observable.ref accessor scoringFunction: ((self: this) => Assessement) | null = null;
     @observable.ref accessor linkedMeta: AssessableMeta<T> | null = null;
@@ -51,6 +55,38 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     }
 
     @computed
+    get isDone(): boolean {
+        return this.isAssessed;
+    }
+
+    @computed
+    get hideFromOverview() {
+        return this.inQuiz;
+    }
+
+    @computed
+    get editingIconState() {
+        return { path: mdiTooltipQuestionOutline, color: this.isAssessed ? IfmColors.green : IfmColors.gray };
+    }
+
+    @computed
+    get progress(): number {
+        if (!this.isAssessed) {
+            return 0;
+        }
+        return this.assessment?.scoring?.pointsAchieved || 0;
+    }
+
+    get totalSteps(): number {
+        return 1;
+    }
+
+    @action
+    setScrollTo(scroll: boolean) {
+        this.scrollTo = scroll;
+    }
+
+    @computed
     get quiz(): Quiz | undefined {
         if (!this.inQuiz || this.root?.firstMainDocument?.type !== 'quiz') {
             return undefined;
@@ -66,12 +102,14 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
         if (this.linkedMeta?.scoring) {
             return this.linkedMeta.scoring;
         }
-        if (!this.inQuiz) {
+        if (!this.inQuiz || this.type === 'quiz') {
             return null;
         }
-        return ((this.root?.firstMainDocument as Quiz)?.scoringFunction ?? null) as
-            | ((self: iAssessable<T>) => Assessement)
-            | null;
+        const quiz = this.root?.firstMainDocument;
+        if (quiz?.type !== 'quiz') {
+            return null;
+        }
+        return quiz.scoringFunction as ((self: iAssessable<T>) => Assessement) | null;
     }
 
     @computed

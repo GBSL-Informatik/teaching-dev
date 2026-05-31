@@ -61,10 +61,6 @@ const scheduleExportDb = debounce(
     { edges: ['trailing'] }
 );
 
-/**
- * This plugin transforms inline code and code blocks in MDX files to use
- * custom MDX components by converting the code content into attributes.
- */
 const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
     options = { components: [], persistedCodeType: () => 'code' }
 ): Transformer<Root> {
