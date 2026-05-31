@@ -4,6 +4,8 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import React from 'react';
 import { AssessableMeta } from './AssessableMeta';
+import Quiz from './Quiz';
+import { ModelMeta } from './ChoiceAnswer';
 
 export enum Correctness {
     Correct = 'correct',
@@ -50,13 +52,35 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     }
 
     @computed
-    get scoringFunction(): ((self: this) => Assessement) | null {
-        return this.linkedMeta?.scoring || null;
+    get quiz(): Quiz | undefined {
+        if (!this.inQuiz || this.root?.firstMainDocument?.type !== 'quiz') {
+            return undefined;
+        }
+        if (this.root.firstMainDocument.id === this.id) {
+            return undefined;
+        }
+        return this.root.firstMainDocument;
     }
 
     @computed
-    get isAssessed() {
-        return this._assessed;
+    get scoringFunction(): ((self: iAssessable<T>) => Assessement) | null {
+        if (this.linkedMeta?.scoring) {
+            return this.linkedMeta.scoring;
+        }
+        if (!this.inQuiz) {
+            return null;
+        }
+        return ((this.root?.firstMainDocument as Quiz)?.scoringFunction ?? null) as
+            | ((self: iAssessable<T>) => Assessement)
+            | null;
+    }
+
+    @computed
+    get isAssessed(): boolean {
+        if (this.type === 'quiz') {
+            return this._assessed;
+        }
+        return this._assessed || !!this.quiz?.isAssessed;
     }
 
     @computed
@@ -90,6 +114,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
               : Correctness.PartiallyCorrect;
     }
 
+    @computed
     get maxPoints(): number {
         return this.linkedMeta?.correct?.length || 0;
     }

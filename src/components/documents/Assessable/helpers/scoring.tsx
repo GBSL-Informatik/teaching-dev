@@ -1,3 +1,4 @@
+import { AssessableType } from '@tdev-api/document';
 import { ScoringFunction } from '@tdev-models/documents/Assessable/AssessableMeta';
 import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import { Correctness, Scoring } from '@tdev-models/documents/Assessable/iAssessable';
@@ -7,7 +8,7 @@ export const points: (
     forCorrect?: number,
     forIncorrect?: number,
     forUnanswered?: number
-) => ScoringFunction<'choice_answer'> = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
+) => ScoringFunction<AssessableType> = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
     const scoringHint = () => (
         <ul>
             <li>
@@ -29,21 +30,20 @@ export const points: (
         pointsAchieved: 0,
         scoringHint
     };
-    return (model) => {
-        const ca = model as ChoiceAnswer;
-        if (ca.meta.multiple) {
-            throw new Error(
-                'The points() scoring function is not suitable for multiple choice questions. Please use multipleChoicePoints() instead.'
-            );
-        }
-        if (!model.isAssessed) {
+    return (ca) => {
+        if (!ca.isAssessed) {
             return {
                 correctness: Correctness.NA,
                 scoring: template
             };
         }
-        const points =
-            ca.choices.size === 0 ? forUnanswered : ca.achievements > 0 ? forCorrect : forIncorrect;
+        const { achievements, mistakes, maxPoints } = ca;
+        if (achievements + mistakes > 1) {
+            throw new Error(
+                `The points() scoring function is not suitable for questions with multiple answers. Please use multipleChoicePoints() instead! ${ca.id}`
+            );
+        }
+        const points = achievements === 1 ? forCorrect : mistakes === 1 ? forIncorrect : forUnanswered;
         const correctness =
             points === forCorrect
                 ? Correctness.Correct

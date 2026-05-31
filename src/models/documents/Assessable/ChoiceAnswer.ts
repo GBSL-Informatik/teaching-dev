@@ -8,7 +8,7 @@ import { shuffle } from 'es-toolkit/array';
 import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import { AssessableMeta } from './AssessableMeta';
 
-export class ModelMeta extends AssessableMeta<'choice_answer'> {
+export class ModelMeta extends AssessableMeta<'choice_answer'> implements AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';
     readonly readonly?: boolean;
     readonly optionsCount: number;
@@ -37,7 +37,7 @@ export class ModelMeta extends AssessableMeta<'choice_answer'> {
 
 const DEFAULT_META = new ModelMeta({ optionsCount: 0 });
 
-class ChoiceAnswer extends iAssessable<'choice_answer'> {
+class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'choice_answer'> {
     choices = observable.set<number>();
     @observable.ref accessor optionOrders: number[];
     // assessments = observable.map<number, ChoiceAnswerAssessment>();
@@ -93,7 +93,6 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
     @action
     reset(): void {
         this.choices.clear();
-        // this.assessments.clear();
         this.setAssessed(false);
         this.saveNow();
     }
@@ -108,11 +107,18 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
 
     @action
     shuffle(): void {
-        if (this.meta.optionsCount < 2) {
+        if (!this.meta.optionsCount || this.meta.optionsCount < 2) {
             return;
         }
         const originalIndices = range(this.meta.optionsCount);
         this.optionOrders = shuffle(originalIndices);
+    }
+
+    get maxPoints(): number {
+        if (this.multiple) {
+            return this.linkedMeta?.correct?.length || 0;
+        }
+        return !!this.linkedMeta?.correct ? 1 : 0;
     }
 
     optionsDisplayOrder(optionIndex: number): number {
@@ -128,9 +134,15 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> {
 
     @computed
     get mistakes(): number {
-        const missedCorrect = (this.meta.correct ?? []).length - this.achievements;
-        const incorrectSelections = this.choices.size - this.achievements;
-        return missedCorrect + incorrectSelections;
+        if (this.choices.size === 0) {
+            return 0;
+        }
+        if (this.multiple) {
+            const missedCorrect = (this.meta.correct ?? []).length - this.achievements;
+            const incorrectSelections = this.choices.size - this.achievements;
+            return missedCorrect + incorrectSelections;
+        }
+        return 1 - this.achievements;
     }
 
     @computed

@@ -22,6 +22,7 @@ import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import type ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import type TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import type Quiz from '@tdev-models/documents/Assessable/Quiz';
+import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -131,7 +132,7 @@ export interface ViewStoreTypeMapping {
 export type ViewStoreType = keyof ViewStoreTypeMapping;
 export type ViewStore = ViewStoreTypeMapping[ViewStoreType];
 
-export interface AssessableDocumentMapping {
+export interface AssessableDataMapping {
     ['true_false_answer']: TrueFalseAnswerData;
     ['choice_answer']: ChoiceAnswerData;
     ['quiz']: QuizData;
@@ -147,7 +148,7 @@ export interface TaskableDocumentMapping {
 }
 
 export interface TypeDataMapping
-    extends TaskableDocumentMapping, ContainerTypeDataMapping, AssessableDocumentMapping {
+    extends TaskableDocumentMapping, ContainerTypeDataMapping, AssessableDataMapping {
     ['code']: CodeData;
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersionData;
@@ -164,7 +165,7 @@ export interface TypeDataMapping
 }
 export type ContainerType = keyof ContainerTypeDataMapping;
 export type TaskableType = keyof TaskableDocumentMapping;
-export type AssessableType = keyof AssessableDocumentMapping;
+export type AssessableType = keyof AssessableDataMapping;
 
 type KeysWithCode<T> = {
     [K in keyof T]: 'code' extends keyof T[K] ? K : never;
@@ -181,6 +182,9 @@ export interface AssessableTypeModelMapping {
     ['choice_answer']: ChoiceAnswer;
     ['quiz']: Quiz;
 }
+// enforce all AssessableTypeModels to extend iAssessable:
+type EnsureAllAssessable<T extends { [K in keyof T]: iAssessable<any> }> = T;
+null as unknown as EnsureAllAssessable<AssessableTypeModelMapping>;
 
 export interface TaskableTypeModelMapping {
     ['task_state']: TaskState;

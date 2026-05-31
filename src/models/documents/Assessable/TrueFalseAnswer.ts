@@ -6,7 +6,10 @@ import iAssessable from './iAssessable';
 import type { Props as TrueFalseProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import { AssessableMeta } from './AssessableMeta';
 
-export class ModelMeta extends AssessableMeta<'true_false_answer'> {
+export class ModelMeta
+    extends AssessableMeta<'true_false_answer'>
+    implements AssessableMeta<'true_false_answer'>
+{
     readonly type = 'true_false_answer';
     readonly readonly?: boolean;
 
@@ -14,7 +17,6 @@ export class ModelMeta extends AssessableMeta<'true_false_answer'> {
         const isTruthy = (props.isTrue ?? props.correct) === true;
         const isFalsey = (props.isFalse ?? props.incorrect) === true;
         const correct = isTruthy ? [1] : isFalsey ? [2] : [2];
-        console.log('Initializing TrueFalseAnswerMeta with correct:', correct);
         super('true_false_answer', { ...props, correct });
         if (isTruthy && isFalsey) {
             console.warn('TrueFalseAnswer cannot be both truthy and falsey. Defaulting to truthy.');
@@ -35,7 +37,7 @@ export class ModelMeta extends AssessableMeta<'true_false_answer'> {
 
 const DEFAULT_META = new ModelMeta({});
 
-class TrueFalseAnswer extends iAssessable<'true_false_answer'> {
+class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAssessable<'true_false_answer'> {
     @observable accessor value: boolean | null = null;
     constructor(props: DocumentProps<'true_false_answer'>, store: DocumentStore) {
         super(props, store);

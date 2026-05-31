@@ -2,13 +2,13 @@ import { TypeDataMapping, Document as DocumentProps, AssessableType } from '@tde
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
-import iAssessable from './iAssessable';
+import iAssessable, { Assessement, Correctness } from './iAssessable';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
 import { AssessableMeta } from './AssessableMeta';
 
-export class ModelMeta extends AssessableMeta<'quiz'> {
+export class ModelMeta extends AssessableMeta<AssessableType> implements AssessableMeta<AssessableType> {
     readonly type = 'quiz';
     readonly randomizeOptions?: boolean;
     readonly randomizeQuestions?: boolean;
@@ -34,7 +34,7 @@ export class ModelMeta extends AssessableMeta<'quiz'> {
 
 const DEFAULT_META = new ModelMeta({});
 
-class Quiz extends iAssessable<'quiz'> {
+class Quiz extends iAssessable<AssessableType> implements iAssessable<AssessableType> {
     @observable.ref accessor questionOrder: number[];
 
     constructor(props: DocumentProps<'quiz'>, store: DocumentStore) {
@@ -61,14 +61,19 @@ class Quiz extends iAssessable<'quiz'> {
 
     @action
     reset(): void {
-        this.questionOrder = [];
         this.setAssessed(false);
+        this.questions.forEach((q) => q.reset());
         this.saveNow();
     }
 
     @computed
     get questionCount(): number {
         return this.meta.questionIds.length;
+    }
+
+    @computed
+    get scoringFunction(): ((self: iAssessable<AssessableType>) => Assessement) | null {
+        return this.meta.scoring ?? null;
     }
 
     @action
@@ -102,6 +107,53 @@ class Quiz extends iAssessable<'quiz'> {
                 (doc as iAssessable<AssessableType>).qid &&
                 qids.has((doc as iAssessable<AssessableType>).qid!)
         ) as iAssessable<AssessableType>[];
+    }
+    @computed
+    get assessment(): Assessement | undefined {
+        const correctness: Correctness[] = [];
+        const assessment = this.questions.reduce(
+            (summary, q) => {
+                if (!q.assessment) {
+                    return summary;
+                }
+                correctness.push(q.correctness);
+                if (q.assessment?.scoring) {
+                    summary.scoring!.pointsAchieved += q.assessment.scoring.pointsAchieved;
+                    summary.scoring!.maxPoints += q.assessment.scoring.maxPoints;
+                }
+
+                return summary;
+            },
+            { correctness: Correctness.NA, scoring: { pointsAchieved: 0, maxPoints: 0 } } as Assessement
+        );
+        const isAllNA = correctness.every((c) => c === Correctness.NA);
+        const isAllCorrect = !isAllNA && correctness.every((c) => c === Correctness.Correct);
+        const isAllIncorrect =
+            !isAllNA && !isAllCorrect && correctness.every((c) => c === Correctness.Incorrect);
+        const totalCorrectness = isAllNA
+            ? Correctness.NA
+            : isAllCorrect
+              ? Correctness.Correct
+              : isAllIncorrect
+                ? Correctness.Incorrect
+                : Correctness.PartiallyCorrect;
+        if (assessment.scoring?.maxPoints === 0) {
+            return { correctness: totalCorrectness };
+        }
+        if (this.meta.minPoints && assessment.scoring) {
+            if (assessment.scoring.pointsAchieved < this.meta.minPoints) {
+                assessment.scoring.pointsAchieved = this.meta.minPoints;
+            }
+            if (assessment.scoring.pointsAchieved > assessment.scoring.maxPoints) {
+                assessment.scoring.pointsAchieved = assessment.scoring.maxPoints;
+            }
+        }
+        return { ...assessment, correctness: totalCorrectness };
+    }
+
+    @computed
+    get maxPoints(): number {
+        return this.questions.reduce((sum, q) => sum + q.maxPoints, 0);
     }
 
     @computed

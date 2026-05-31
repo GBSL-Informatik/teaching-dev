@@ -1,13 +1,5 @@
 import React from 'react';
-import type {
-    AssessableModelType,
-    AssessableType,
-    AssessableTypeModelMapping,
-    DocumentModelType,
-    DocumentType,
-    TypeModelMapping
-} from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
+import type { AssessableType, AssessableTypeModelMapping, DocumentModelType } from '@tdev-api/document';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
@@ -15,7 +7,9 @@ import { useDummyId } from './useDummyId';
 import { reaction } from 'mobx';
 import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
 import { AssessableMeta } from '@tdev-models/documents/Assessable/AssessableMeta';
-import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
+import useLinkedMetaModel from './useLinkedMetaModel';
+
+const access = {} as Config;
 
 /**
  * This hook provides access to the first main document of the rootDocument.
@@ -30,10 +24,7 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
     /** ensure to put meta in a React.useState */
     meta: AssessableMeta<Type>,
     /** ensure to put the selector in a React.useCallback */
-    qid: string | undefined,
-    createDocument: boolean = true,
-    access: Partial<Config> = {},
-    loadOnlyType?: DocumentType
+    qid: string | undefined
 ) => {
     // // when inside a quizz, this will share the document root with the quiz
     const selector = React.useCallback(
@@ -46,7 +37,9 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
         [meta.type, qid]
     );
     const defaultDocId = useDummyId(documentRootId);
-    const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
+    // if qid is provided, we are in e.g. a quiz and don't want to create a new document, since the quiz should already have created it. If we would create a new document root.
+    const skipCreate = !!qid;
+    const documentRoot = useDocumentRoot(documentRootId, meta, true, access, skipCreate);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
     const [dummyDocument] = React.useState(
@@ -68,27 +61,23 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
         return reaction(
             () => documentRoot?._canInitializeDocuments && !documentRoot.documents.some(selector),
             (needsCreation) => {
-                if (!needsCreation || !createDocument) {
+                if (!needsCreation) {
                     return;
                 }
-                if (!loadOnlyType || loadOnlyType === meta.type) {
-                    documentStore.create({
-                        documentRootId: documentRoot.id,
-                        authorId: userStore.current!.id,
-                        type: meta.type,
-                        data: meta.defaultData
-                    });
-                }
+                documentStore.create({
+                    documentRootId: documentRoot.id,
+                    authorId: userStore.current!.id,
+                    type: meta.type,
+                    data: meta.defaultData
+                });
             },
             { fireImmediately: true }
         );
-    }, [userStore, createDocument, documentRoot]);
+    }, [userStore, documentRoot]);
 
     const firstDoc = documentRoot?.documents.find(selector) as AssessableTypeModelMapping[Type] | undefined;
     const doc = firstDoc || dummyDocument;
 
-    React.useEffect(() => {
-        (doc as unknown as iAssessable<Type>)?.setLinkedMeta(meta);
-    }, [doc, meta]);
+    useLinkedMetaModel(doc, meta);
     return doc;
 };

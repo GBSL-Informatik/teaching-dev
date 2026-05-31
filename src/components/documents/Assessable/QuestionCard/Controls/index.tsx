@@ -4,7 +4,6 @@ import Button from '@tdev-components/shared/Button';
 import SyncStatus from '@tdev-components/SyncStatus';
 import { observer } from 'mobx-react-lite';
 import { mdiCheckboxMarkedCircleAutoOutline, mdiRestore } from '@mdi/js';
-import ChoiceAnswerDocument from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import clsx from 'clsx';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
@@ -55,47 +54,6 @@ const QuestionControls = observer(<T extends AssessableType>(props: ControlsProp
                     size={0.7}
                     className={styles.checkButton}
                     onClick={() => doc.setAssessed(true)}
-                />
-            )}
-        </div>
-    );
-});
-
-interface QuizControlsProps {
-    doc: ChoiceAnswerDocument;
-}
-
-export const QuizControls = observer(({ doc }: QuizControlsProps) => {
-    const isMobileView = useIsMobileView();
-
-    return (
-        <div className={styles.quizControlsContainer}>
-            {!doc.isAssessed /*&& doc.assessments.size > 0 */ && (
-                <Confirm
-                    text="Quiz beenden"
-                    title="Quiz beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich."
-                    color="success"
-                    icon={mdiCheckboxMarkedCircleAutoOutline}
-                    iconSide="left"
-                    size={0.7}
-                    className={styles.checkButton}
-                    confirmText={isMobileView ? 'Wirklich beenden?' : 'Quiz beenden und Antworten prüfen?'}
-                    onConfirm={() => doc.setAssessed(true)}
-                />
-            )}
-            {doc.isAssessed && (
-                <Confirm
-                    text="Quiz zurücksetzen"
-                    title="Alle Antworten zurücksetzen und Quiz neu beginnen"
-                    color="secondary"
-                    icon={mdiRestore}
-                    iconSide="left"
-                    size={0.7}
-                    className={styles.checkButton}
-                    confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
-                    onConfirm={() => {
-                        doc.reset();
-                    }}
                 />
             )}
         </div>

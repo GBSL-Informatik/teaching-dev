@@ -4,10 +4,9 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Card from '@tdev-components/shared/Card';
 import { AssessableType, TypeModelMapping } from '@tdev-api/document';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
 import DocumentContext from '@tdev-components/documents/DocumentContext';
 import { FeedbackBadge } from '../Feedback';
-import QuestionControls from '../Controls';
+import QuestionControls from './Controls';
 
 interface Props<T extends AssessableType> {
     doc: TypeModelMapping[T];
@@ -25,11 +24,7 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
             }}
             header={
                 <>
-                    <h3 className={clsx(styles.questionTitle)}>
-                        {doc.displayTitle}
-                        {JSON.stringify(doc.linkedMeta?.correct)}
-                        <CopyBadge value={doc.id} label={doc.id.slice(0, 7)} />
-                    </h3>
+                    <h3 className={clsx(styles.questionTitle)}>{doc.displayTitle}</h3>
                     <div className={clsx(styles.controlsAndFeedback)}>
                         {correctAnswer && (
                             <QuestionControls
