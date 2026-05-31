@@ -83,6 +83,11 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
     }
 
     @computed
+    get isNA(): boolean {
+        return this.hits === 0 && this.misses === 0;
+    }
+
+    @computed
     get assessment(): Assessement | undefined {
         return this.scoringFunction?.(this);
     }
@@ -103,7 +108,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
 
     @computed
     get correctness(): Correctness {
-        if (!this.isAssessed || (this.hits === 0 && this.misses === 0)) {
+        if (!this.isAssessed || this.isNA) {
             return Correctness.NA;
         }
         return this.hits === this.maxHits && this.misses === 0

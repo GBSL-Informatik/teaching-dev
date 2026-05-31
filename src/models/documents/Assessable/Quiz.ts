@@ -161,6 +161,16 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
+    get naCount(): number {
+        return this.questions.reduce((sum, q) => sum + (q.isNA ? 1 : 0), 0);
+    }
+
+    @computed
+    get hasNA(): boolean {
+        return this.naCount > 0;
+    }
+
+    @computed
     get maxHits(): number {
         return this.questions.reduce((sum, q) => sum + q.maxHits, 0);
     }
