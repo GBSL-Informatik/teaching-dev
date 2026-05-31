@@ -148,11 +148,13 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
         if (!this.linkedMeta) {
             return 'Frage';
         }
-        if (!this.inQuiz) {
+        if (!this.inQuiz || !this.quiz) {
             return this.linkedMeta.title ?? 'Frage';
         }
-        // TODO: check if `hideQuestionNumbers` is set in quiz and remove prefix "Frage X - " if so.
-        const nr = 1;
+        if (this.quiz.meta.hideQuestionNumbers && this.linkedMeta.title) {
+            return this.linkedMeta.title;
+        }
+        const nr = this.quiz.questionDisplayOrder(this.linkedMeta.qid) + 1;
         return this.linkedMeta.title ? `Frage ${nr} – ${this.linkedMeta.title}` : `Frage ${nr}`;
     }
 
@@ -160,6 +162,14 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> {
 
     shuffle(): void {
         // By default, do nothing. Only applicable for certain assessable document types (e.g. ChoiceAnswer).
+    }
+
+    @computed
+    get questionIndex(): number | undefined {
+        if (!this.inQuiz || !this.quiz) {
+            return undefined;
+        }
+        return this.quiz.questionDisplayOrder(this.linkedMeta?.qid);
     }
 }
 

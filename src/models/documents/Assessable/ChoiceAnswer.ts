@@ -99,7 +99,8 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     @action
     onLinkedMetaChange() {
-        if (this.meta.randomizeOptions && this.optionOrders.length !== this.meta.optionsCount) {
+        const randomize = this.meta.randomizeOptions || this.quiz?.meta.randomizeOptions;
+        if (randomize && this.optionOrders.length !== this.meta.optionsCount) {
             this.shuffle();
             this.saveNow();
         }

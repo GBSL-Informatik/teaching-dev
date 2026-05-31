@@ -14,6 +14,7 @@ export class ModelMeta extends AssessableMeta<AssessableType> implements Assessa
     readonly randomizeQuestions?: boolean;
     readonly minPoints?: number;
     readonly questionIds: string[];
+    readonly hideQuestionNumbers?: boolean;
 
     constructor(props: Partial<QuizProps>) {
         super('quiz', props);
@@ -21,6 +22,7 @@ export class ModelMeta extends AssessableMeta<AssessableType> implements Assessa
         this.randomizeQuestions = props.randomizeQuestions;
         this.questionIds = props.questionIds ?? [];
         this.minPoints = props.minPoints;
+        this.hideQuestionNumbers = props.hideQuestionNumbers;
     }
 
     get defaultData(): TypeDataMapping['quiz'] {
@@ -93,9 +95,16 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
         this.questionOrder = shuffle(originalIndices);
     }
 
-    questionDisplayOrder(questionIndex: number): number {
-        const orderIndex = this.questionOrder.findIndex((i) => i === questionIndex);
-        return orderIndex !== -1 ? orderIndex : questionIndex;
+    questionDisplayOrder(qid?: string): number {
+        if (!qid) {
+            return 0;
+        }
+        const idx = this.meta.questionIds.findIndex((id) => id === qid);
+        if (idx === -1) {
+            return 0;
+        }
+        const orderIndex = this.questionOrder.findIndex((i) => i === idx);
+        return orderIndex !== -1 ? orderIndex : idx;
     }
 
     @computed

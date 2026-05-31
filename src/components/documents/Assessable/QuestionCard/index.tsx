@@ -22,6 +22,9 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
                 card: clsx(styles.questionCard, styles[doc.correctness]),
                 header: clsx(styles.header, styles[doc.correctness])
             }}
+            style={{
+                order: doc.questionIndex
+            }}
             header={
                 <>
                     <h3 className={clsx(styles.questionTitle)}>{doc.displayTitle}</h3>
