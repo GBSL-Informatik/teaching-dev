@@ -10,26 +10,26 @@ import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/docum
 
 interface ControlsProps<T extends AssessableType> {
     doc: AssessableTypeModelMapping[T];
-    focussedQuestion?: boolean;
-    inQuiz?: boolean;
 }
 
 const QuestionControls = observer(<T extends AssessableType>(props: ControlsProps<T>) => {
-    const { doc, focussedQuestion: isFocussedQuestion, inQuiz } = props;
+    const { doc } = props;
     const isMobileView = useIsMobileView();
 
     if (!doc) {
         return null;
     }
 
-    const syncStatus = isFocussedQuestion && <SyncStatus model={doc} size={0.7} />;
-
-    if (inQuiz) {
-        return <div className={clsx(styles.questionControlsContainer)}>{syncStatus}</div>;
+    if (doc.inQuiz) {
+        return (
+            <div className={clsx(styles.questionControlsContainer)}>
+                <SyncStatus model={doc} size={0.7} />
+            </div>
+        );
     }
     return (
         <div className={clsx(styles.questionControlsContainer)}>
-            {syncStatus}
+            <SyncStatus model={doc} size={0.7} />
             {doc.isAssessed ? (
                 <Confirm
                     text={isMobileView ? '' : 'Zurücksetzen'}

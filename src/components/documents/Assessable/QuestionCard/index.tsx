@@ -29,13 +29,7 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
                 <>
                     <h3 className={clsx(styles.questionTitle)}>{doc.displayTitle}</h3>
                     <div className={clsx(styles.controlsAndFeedback)}>
-                        {correctAnswer && (
-                            <QuestionControls
-                                doc={doc}
-                                // focussedQuestion={parentProps.focussedQuestion === questionIndex}
-                                inQuiz={!!doc.qid}
-                            />
-                        )}
+                        {correctAnswer && <QuestionControls doc={doc} />}
                         <QuestionScore doc={doc} />
                     </div>
                 </>
