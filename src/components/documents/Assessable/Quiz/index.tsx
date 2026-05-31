@@ -13,6 +13,8 @@ import { AssessableType } from '@tdev-api/document';
 import QuizControls from './QuizControls';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 import { QuizScore } from '../Feedback/QuizScore';
+import clsx from 'clsx';
+import { useScrollTo } from '@tdev-hooks/useScrollTo';
 
 export interface Props extends AssessableComponentProps<AssessableType> {
     id: string;
@@ -27,6 +29,7 @@ export interface Props extends AssessableComponentProps<AssessableType> {
 const Quiz = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstRealMainDocument(props.id, meta);
+    const [ref, animate] = useScrollTo(doc, 'end');
     const isBrowser = useIsBrowser();
     useLinkedMetaModel(doc, meta);
 
@@ -41,13 +44,22 @@ const Quiz = observer((props: Props) => {
     }
 
     return (
-        <DocumentRootIdContext id={props.id}>
-            <div className={styles.content}>{props.children}</div>
-            <div className={styles.footer}>
-                <QuizScore doc={doc} />
-                <QuizControls doc={doc} />
-            </div>
-        </DocumentRootIdContext>
+        <div
+            className={clsx(
+                styles.quiz,
+                animate && styles.animate,
+                doc.isAssessed && doc.assessment && styles[doc.assessment?.correctness]
+            )}
+            ref={ref}
+        >
+            <DocumentRootIdContext id={props.id}>
+                <div className={styles.content}>{props.children}</div>
+                <div className={styles.footer}>
+                    <QuizScore doc={doc} />
+                    <QuizControls doc={doc} />
+                </div>
+            </DocumentRootIdContext>
+        </div>
     );
 });
 

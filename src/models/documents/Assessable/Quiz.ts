@@ -7,6 +7,8 @@ import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
 import { AssessableMeta } from './AssessableMeta';
+import { mdiTimelineQuestionOutline } from '@mdi/js';
+import { IfmColors } from '@tdev-components/shared/Colors';
 
 export class ModelMeta extends AssessableMeta<AssessableType> implements AssessableMeta<AssessableType> {
     readonly type = 'quiz';
@@ -191,6 +193,17 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
             assessed: this._assessed
         };
         return raw;
+    }
+
+    get editingIconState() {
+        return {
+            path: mdiTimelineQuestionOutline,
+            color: !this.isAssessed
+                ? IfmColors.gray
+                : this.assessment?.correctness === Correctness.Correct
+                  ? IfmColors.green
+                  : IfmColors.orange
+        };
     }
 
     @computed

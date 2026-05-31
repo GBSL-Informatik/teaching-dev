@@ -3,12 +3,11 @@
 .questionCard {
     position: relative;
     margin-bottom: 1em;
+    $boxShadowDefaults: 0 0 8px;
 
     p {
         margin: 0 0 0.5em 0;
     }
-
-    $boxShadowDefaults: 0 0 8px;
 
     &.correct {
         box-shadow: $boxShadowDefaults var(--ifm-color-success);
@@ -62,6 +61,13 @@
             flex-direction: row;
             align-items: center;
             gap: 0.5em;
+        }
+    }
+}
+[data-theme='dark'] {
+    .questionCard {
+        .header {
+            background-color: var(--ifm-color-secondary-contrast-background);
         }
     }
 }

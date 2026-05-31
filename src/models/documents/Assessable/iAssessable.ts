@@ -66,7 +66,14 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @computed
     get editingIconState() {
-        return { path: mdiTooltipQuestionOutline, color: this.isAssessed ? IfmColors.green : IfmColors.gray };
+        return {
+            path: mdiTooltipQuestionOutline,
+            color: !this.isAssessed
+                ? IfmColors.gray
+                : this.assessment?.correctness === Correctness.Correct
+                  ? IfmColors.green
+                  : IfmColors.orange
+        };
     }
 
     @computed
