@@ -21,7 +21,7 @@ import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
-import transformChoiceAnswerPlugin from '../plugins/remark-transform-choice-answer/plugin';
+import transformAssessableComponentsPlugin from '../plugins/remark-transform-assessable-components/plugin';
 import { getAnswerDocumentType } from '../components/Answer/helper.answer';
 import fs from 'fs';
 import path from 'path';
@@ -265,7 +265,21 @@ export const linkAnnotationPluginConfig = [
     }
 ];
 
-export const transformChoiceAnswerPluginConfig = transformChoiceAnswerPlugin;
+export const transformAssessablePluginConfig = [
+    transformAssessableComponentsPlugin,
+    {
+        QuizComponentName: 'Quiz',
+        AnswerComponents: {
+            ['ChoiceAnswer']: {
+                options: {
+                    component: 'ChoiceAnswer.Options',
+                    itemComponent: 'ChoiceAnswer.Option'
+                }
+            },
+            ['TrueFalseAnswer']: {}
+        }
+    }
+];
 
 export const rehypeKatexPluginConfig = rehypeKatex;
 
@@ -291,7 +305,7 @@ export const recommendedRemarkPlugins = [
     commentPluginConfig,
     linkAnnotationPluginConfig,
     codeAsAttributePluginConfig,
-    transformChoiceAnswerPluginConfig
+    transformAssessablePluginConfig
 ];
 
 export const recommendedRehypePlugins = [rehypeKatexPluginConfig];
