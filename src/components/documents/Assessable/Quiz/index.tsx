@@ -30,17 +30,10 @@ const Quiz = observer((props: Props) => {
     const [meta] = React.useState(new ModelMeta(props));
     const doc = useFirstRealMainDocument(props.id, meta);
     const [ref, animate] = useScrollTo(doc, 'end');
-    const isBrowser = useIsBrowser();
     useLinkedMetaModel(doc, meta);
-
-    // const [focussedQuestion, setFocussedQuestion] = React.useState(0);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
-    }
-
-    if (!isBrowser) {
-        return <Loader />;
     }
 
     return (
