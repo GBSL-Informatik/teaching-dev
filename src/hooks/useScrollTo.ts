@@ -13,7 +13,7 @@ export const useScrollTo = <T extends HTMLElement = HTMLDivElement>(
     const [animate, setAnimate] = React.useState(false);
     React.useEffect(() => {
         if (ref.current && doc?.scrollTo) {
-            ref.current.scrollIntoView({ behavior: 'auto', block: scrollTo || 'center', inline: 'start' });
+            ref.current.scrollIntoView({ behavior: 'auto', block: scrollTo ?? 'center', inline: 'start' });
             doc.setScrollTo(false);
             setAnimate(true);
         }

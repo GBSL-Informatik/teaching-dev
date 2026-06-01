@@ -95,6 +95,23 @@ class ComponentStore {
         ];
     }
 
+    extractDefaultDocumentType(types: DocumentType[]): DocumentType | undefined {
+        if (types.length <= 1) {
+            return types[0];
+        }
+        const typesSet = new Set(types);
+        if (typesSet.size === 1) {
+            return types[0];
+        }
+        if (typesSet.has('quiz')) {
+            return 'quiz';
+        }
+        if (typesSet.has('script')) {
+            return 'script';
+        }
+        return types[0];
+    }
+
     @computed
     get registeredContainerTypes(): ContainerType[] {
         return [...this.components.keys()];
