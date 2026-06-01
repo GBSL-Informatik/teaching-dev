@@ -1,16 +1,14 @@
-@use '../_vars' as *;
-
 .questionCard {
     position: relative;
     margin-bottom: 1em;
-    $boxShadowDefaults: 0 0 8px;
+    --tdev-box-shadow-defaults: 0 0 8px;
 
     p {
         margin: 0 0 0.5em 0;
     }
 
     &.correct {
-        box-shadow: $boxShadowDefaults var(--ifm-color-success);
+        box-shadow: var(--tdev-box-shadow-defaults) var(--ifm-color-success);
 
         .header {
             background-color: var(--ifm-color-success-contrast-background);
@@ -18,7 +16,7 @@
     }
 
     &.partially_correct {
-        box-shadow: $boxShadowDefaults var(--ifm-color-warning);
+        box-shadow: var(--tdev-box-shadow-defaults) var(--ifm-color-warning);
 
         .header {
             background-color: var(--ifm-color-warning-contrast-background);
@@ -26,7 +24,7 @@
     }
 
     &.incorrect {
-        box-shadow: $boxShadowDefaults var(--ifm-color-danger-lighter);
+        box-shadow: var(--tdev-box-shadow-defaults) var(--ifm-color-danger-lighter);
 
         .header {
             background-color: var(--ifm-color-danger-contrast-background);
@@ -35,7 +33,7 @@
 
     .header {
         background-color: var(--ifm-color-secondary-lightest);
-        padding: $container-padding-top-bottom $container-padding-left-right;
+        padding: 0.7em 1em;
         display: flex;
         flex-direction: row;
         align-items: center;

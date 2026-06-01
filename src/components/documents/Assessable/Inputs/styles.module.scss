@@ -1,7 +1,5 @@
-@use '../_vars' as *;
-
 .optionsBlock {
-    $btnRemoveAnswerTransitionDuration: 0.15s;
+    --tdev-assessable-btn-remove-answer-transition-duration: 0.15s;
 
     &:not(:last-child) {
         margin-bottom: 1em;
@@ -32,7 +30,7 @@
 
             &:hover .btnDeleteAnswer {
                 opacity: 1;
-                transition: opacity $btnRemoveAnswerTransitionDuration;
+                transition: opacity var(--tdev-assessable-btn-remove-answer-transition-duration);
             }
         }
 
@@ -45,7 +43,7 @@
             .btnDeleteAnswer {
                 font-size: 0.8em;
                 opacity: 0;
-                transition: opacity $btnRemoveAnswerTransitionDuration;
+                transition: opacity var(--tdev-assessable-btn-remove-answer-transition-duration);
                 visibility: hidden;
 
                 &.visible {
@@ -56,7 +54,7 @@
 
         &:hover .btnDeleteAnswer {
             opacity: 0.6;
-            transition: opacity $btnRemoveAnswerTransitionDuration;
+            transition: opacity var(--tdev-assessable-btn-remove-answer-transition-duration);
         }
     }
 }
