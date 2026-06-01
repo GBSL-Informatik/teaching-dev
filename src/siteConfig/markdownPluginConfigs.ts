@@ -264,7 +264,7 @@ export const commentPluginConfig = [
     commentPlugin,
     {
         commentableJsxFlowElements: ['DefHeading', 'figcaption', 'String'],
-        ignoreJsxFlowElements: ['summary', 'dt'],
+        ignoreJsxFlowElements: ['summary', 'dt', 'ChoiceAnswer.Options'],
         ignoreCodeBlocksWithMeta: /live_py/
     }
 ];
