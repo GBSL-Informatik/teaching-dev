@@ -4,8 +4,7 @@ import styles from './styles.module.scss';
 import React from 'react';
 import { QuestionScoringHint } from '../Hints';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
-import { IfmColors } from '@tdev-components/shared/Colors';
-import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
+import { Correctness, CorrectnessColors } from '@tdev-models/documents/Assessable/iAssessable';
 import { mdiCheckCircleOutline, mdiCloseCircleOutline, mdiProgressCheck, mdiProgressQuestion } from '@mdi/js';
 import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 import Badge from '@tdev-components/shared/Badge';
@@ -21,13 +20,6 @@ const ICONS_BY_CORRECTNESS: Record<Correctness, string> = {
     [Correctness.Incorrect]: mdiCloseCircleOutline,
     [Correctness.PartiallyCorrect]: mdiProgressCheck,
     [Correctness.NA]: mdiProgressQuestion
-};
-
-const COLORS_BY_CORRECTNESS: Record<Correctness, keyof typeof IfmColors> = {
-    [Correctness.Correct]: 'green',
-    [Correctness.Incorrect]: 'red',
-    [Correctness.PartiallyCorrect]: 'orange',
-    [Correctness.NA]: 'lightBlue'
 };
 
 export const QuestionScore = observer(<T extends AssessableType>(props: FeedbackBadgeProps<T>) => {
@@ -60,7 +52,7 @@ export const QuestionScore = observer(<T extends AssessableType>(props: Feedback
             {doc.isAssessed && (
                 <Icon
                     path={ICONS_BY_CORRECTNESS[doc.correctness]}
-                    color={IfmColors[COLORS_BY_CORRECTNESS[doc.correctness]]}
+                    color={CorrectnessColors[doc.correctness]}
                     size={1}
                 />
             )}

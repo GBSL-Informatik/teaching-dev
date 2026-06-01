@@ -46,7 +46,7 @@ export const points: (
         const correctness =
             points === forCorrect
                 ? Correctness.Correct
-                : points === 0
+                : points <= 0
                   ? Correctness.Incorrect
                   : Correctness.PartiallyCorrect;
         return {

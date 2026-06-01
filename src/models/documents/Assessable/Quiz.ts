@@ -2,7 +2,7 @@ import { TypeDataMapping, Document as DocumentProps, AssessableType } from '@tde
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
-import iAssessable, { Assessement, Correctness } from './iAssessable';
+import iAssessable, { Assessement, Correctness, CorrectnessColors } from './iAssessable';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
@@ -140,7 +140,10 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
         const isAllNA = correctness.every((c) => c === Correctness.NA);
         const isAllCorrect = !isAllNA && correctness.every((c) => c === Correctness.Correct);
         const isAllIncorrect =
-            !isAllNA && !isAllCorrect && correctness.every((c) => c === Correctness.Incorrect);
+            !isAllNA &&
+            !isAllCorrect &&
+            (assessment.scoring?.pointsAchieved! <= 0 ||
+                correctness.every((c) => c === Correctness.Incorrect));
         const totalCorrectness = isAllNA
             ? Correctness.NA
             : isAllCorrect
@@ -198,11 +201,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     get editingIconState() {
         return {
             path: mdiTimelineQuestionOutline,
-            color: !this.isAssessed
-                ? IfmColors.gray
-                : this.assessment?.correctness === Correctness.Correct
-                  ? IfmColors.green
-                  : IfmColors.orange
+            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray
         };
     }
 

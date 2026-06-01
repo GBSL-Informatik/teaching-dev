@@ -6,7 +6,7 @@ import React from 'react';
 import { AssessableMeta } from './AssessableMeta';
 import Quiz from './Quiz';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import { mdiCheckCircleOutline, mdiTooltipQuestionOutline } from '@mdi/js';
+import { mdiTooltipQuestionOutline } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 
 export enum Correctness {
@@ -15,6 +15,13 @@ export enum Correctness {
     PartiallyCorrect = 'partially_correct',
     NA = 'not_answered'
 }
+
+export const CorrectnessColors: Record<Correctness, string> = {
+    [Correctness.Correct]: IfmColors.green,
+    [Correctness.Incorrect]: IfmColors.red,
+    [Correctness.PartiallyCorrect]: IfmColors.orange,
+    [Correctness.NA]: IfmColors.lightBlue
+};
 
 export interface Scoring {
     maxPoints: number;
@@ -68,11 +75,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     get editingIconState() {
         return {
             path: mdiTooltipQuestionOutline,
-            color: !this.isAssessed
-                ? IfmColors.gray
-                : this.assessment?.correctness === Correctness.Correct
-                  ? IfmColors.green
-                  : IfmColors.orange
+            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray
         };
     }
 
@@ -155,6 +158,9 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     get correctness(): Correctness {
         if (!this.isAssessed || this.isNA) {
             return Correctness.NA;
+        }
+        if (this.assessment) {
+            return this.assessment.correctness;
         }
         return this.hits === this.maxHits && this.misses === 0
             ? Correctness.Correct
