@@ -23,7 +23,6 @@ const Option = observer(<T extends AssessableType>(props: Props<T>) => {
     const optionId = React.useId();
     const { children, optionIndex, optionOrder, onChange, isChecked } = props;
 
-    // const optionOrder = props.optionOrder ? props.optionOrder(doc, optionIndex) : doc.optionsDisplayOrder(optionIndex);
     return (
         <div
             key={optionId}

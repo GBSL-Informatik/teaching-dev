@@ -21,9 +21,8 @@ export const QuestionScoringHint = observer(
         const { doc, trigger } = props;
         const ref = React.useRef<PopupActions>(null);
 
-        // TODO
         if (!doc) {
-            return;
+            return null;
         }
 
         const assessment = doc.assessment;

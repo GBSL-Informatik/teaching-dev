@@ -21,7 +21,6 @@
         --tdev-quiz-flash-color: var(--ifm-color-danger);
     }
     &.animate {
-        // animation: quiz-flash 1s ease-in;
         animation:
             flash 1s normal,
             shake 1.5s normal;

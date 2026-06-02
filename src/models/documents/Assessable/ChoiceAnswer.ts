@@ -40,13 +40,11 @@ const DEFAULT_META = new ModelMeta({ optionsCount: 0 });
 class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'choice_answer'> {
     choices = observable.set<number>();
     @observable.ref accessor optionOrders: number[];
-    // assessments = observable.map<number, ChoiceAnswerAssessment>();
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);
         this.choices.replace(props.data.choices ?? []);
         this.optionOrders = props.data?.optionsOrder || [];
-        // this.assessments = observable.map<number, ChoiceAnswerAssessment>();
     }
 
     @action
