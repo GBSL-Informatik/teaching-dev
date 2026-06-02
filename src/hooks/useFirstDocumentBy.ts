@@ -37,7 +37,7 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
         [meta.type, qid]
     );
     const defaultDocId = useDummyId(documentRootId);
-    // if qid is provided, we are in e.g. a quiz and don't want to create a new document, since the quiz should already have created it. If we would create a new document root.
+    // if qid is provided, we are in e.g. a quiz and don't want to create a new document, since the quiz should already have created it.
     const skipCreate = !!qid;
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, skipCreate);
     const userStore = useStore('userStore');
