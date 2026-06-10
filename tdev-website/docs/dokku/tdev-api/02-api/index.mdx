@@ -13,13 +13,13 @@ import { generateRandomBase64 } from '../../helpers/secureToken';
 
 <Steps>
   1. Eine neue App __<Val name="app" />__ auf dem Server erstellen
-      <DynamicInput name="app" default='inf-teaching-api' />
-      <DynamicInput name="domain" default='teaching-api.gbsl.website' />
+      <DynamicInput name="app" default='inf-teaching-api' placeholder='inf-teaching-api' />
+      <DynamicInput name="domain" default='teaching-api-xxx.gbsl.website' placeholder='teaching-api-xxx.gbsl.website' />
       <DynamicInput name="APP_NAME" default={(page) => _.camelCase((page.dynamicValues.get('app') || 'inf-teaching-api'))} />
-      <DynamicInput name="ALLOWED_ORIGINS" default='gbsl.website' />
-      <DynamicInput name="ALLOW_SUBDOMAINS" default='true' />
-      <DynamicInput name="SESSION_SECRET" monospace default='$(openssl rand -base64 32)' onRecalculate={() => generateRandomBase64()} />
+      <DynamicInput name="ALLOWED_ORIGINS" default='gbsl.website' placeholder='gbsl.website' />
+      <DynamicInput name="BETTER_AUTH_SECRET" monospace default='$(openssl rand -base64 32)' onRecalculate={() => generateRandomBase64()} />
       <DynamicInput name="MSAL_CLIENT_ID" monospace placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
+      <DynamicInput name="MSAL_CLIENT_SECRET" monospace placeholder='client-secret' />
       <DynamicInput name="MSAL_TENANT_ID" monospace placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
       <TemplateCode>
         ```bash title="root@dokku"
@@ -29,13 +29,14 @@ import { generateRandomBase64 } from '../../helpers/secureToken';
         dokku postgres:create {{app}}
         dokku postgres:link {{app}} {{app}}
 
-        dokku config:set --no-restart {{app}} MSAL_CLIENT_ID="{{MSAL_CLIENT_ID}}"
         # wird für den Cookie-Name auf dem Client gebraucht
         dokku config:set --no-restart {{app}} APP_NAME="{{APP_NAME}}"
         dokku config:set --no-restart {{app}} ALLOWED_ORIGINS="{{ALLOWED_ORIGINS}}"
-
+        dokku config:set --no-restart {{app}} BETTER_AUTH_SECRET="{{BETTER_AUTH_SECRET}}"
+        dokku config:set --no-restart {{app}} BETTER_AUTH_URL="https://{{domain}}"
+        dokku config:set --no-restart {{app}} MSAL_CLIENT_ID="{{MSAL_CLIENT_ID}}"
+        dokku config:set --no-restart {{app}} MSAL_CLIENT_SECRET="{{MSAL_CLIENT_SECRET}}"
         dokku config:set --no-restart {{app}} MSAL_TENANT_ID="{{MSAL_TENANT_ID}}"
-        dokku config:set --no-restart {{app}} SESSION_SECRET="{{SESSION_SECRET}}"
 
         dokku nginx:set {{app}} client-max-body-size 5m
 
@@ -49,12 +50,17 @@ import { generateRandomBase64 } from '../../helpers/secureToken';
          ```bash title="/home/dokku/{{app}}/ENV"
          APP_NAME="{{APP_NAME}}"
          ALLOWED_ORIGINS="{{ALLOWED_ORIGINS}}"
-         SESSION_SECRET="{{SESSION_SECRET}}"
+         BETTER_AUTH_SECRET="{{BETTER_AUTH_SECRET}}"
+         BETTER_AUTH_URL="https://{{domain}}"
          MSAL_CLIENT_ID="{{MSAL_CLIENT_ID}}"
+         MSAL_CLIENT_SECRET="{{MSAL_CLIENT_SECRET}}"
          MSAL_TENANT_ID="{{MSAL_TENANT_ID}}"
          ```
       </TemplateCode>
       :::
+
+      Im Azure-Portal muss zusätzlich eine Umleitungs-URL des Type __Web__ mit <Val as="code">`{{BETTER_AUTH_URL}}/api/auth/callback/microsoft`</Val> hinterlegt werden.
+
   3. Optionale Umgebungsvariablen setzen:
         :::info[CORS: Zugriff von Subdomains]
         Erlaube jegliche Subdomains von <Val name="ALLOWED_ORIGINS" />:
@@ -79,7 +85,19 @@ import { generateRandomBase64 } from '../../helpers/secureToken';
         ```
         </TemplateCode>
         :::
+        :::info[Github-Integration fürs Login]
+        <DynamicInput name="BETTER_AUTH_GITHUB_ID" />
+        <DynamicInput name="BETTER_AUTH_GITHUB_SECRET" />
+        <TemplateCode>
+
+        ```bash title="/home/dokku/{{app}}/ENV"
+        dokku config:set --no-restart {{app}} BETTER_AUTH_GITHUB_ID="{{BETTER_AUTH_GITHUB_ID}}"
+        dokku config:set --no-restart {{app}} BETTER_AUTH_GITHUB_SECRET="{{BETTER_AUTH_GITHUB_SECRET}}"
+        ```
+        </TemplateCode>
+        :::
         :::info[Github-Integration fürs CMS]
+        🚧 TODO: Refactor zu Better Auth 🚧
         <DynamicInput name="GITHUB_CLIENT_ID" />
         <DynamicInput name="GITHUB_CLIENT_SECRET" />
         <DynamicInput name="GITHUB_REDIRECT_URI" />
