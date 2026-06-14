@@ -95,6 +95,10 @@ const getSiteConfig: SiteConfigProvider = () => {
         tdevConfig: {
             excalidraw: {
                 excalidoc: true
+            },
+            loggedOutOverlay: {
+                persistChoiceTo: 'localStorage',
+                disable: process.env.NODE_ENV !== 'production'
             }
         },
         plugins: [brythonCodePluginConfig()],

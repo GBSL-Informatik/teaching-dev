@@ -12,7 +12,8 @@ export const StorageKey = Object.freeze({
     SessionStore: _.upperFirst(_.camelCase(`SessionStore${siteConfig.projectName || ''}`)),
     QrScannerDeviceId: 'QrScannerDeviceId',
     CmsViewMode: 'CmsViewMode',
-    CodeTheme: 'CodeTheme'
+    CodeTheme: 'CodeTheme',
+    LoggedOutOverlayDismissed: 'LoggedOutOverlayDismissed'
 });
 
 /**
