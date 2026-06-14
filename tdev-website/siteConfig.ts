@@ -95,6 +95,11 @@ const getSiteConfig: SiteConfigProvider = () => {
         tdevConfig: {
             excalidraw: {
                 excalidoc: true
+            },
+            loggedOutOverlay: {
+                persistChoiceTo: 'localStorage',
+                // disable for netlify previews and for local development.
+                disable: process.env.NODE_ENV !== 'production' || !!process.env.NETLIFY
             }
         },
         plugins: [brythonCodePluginConfig()],

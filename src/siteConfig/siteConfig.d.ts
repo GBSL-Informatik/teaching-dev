@@ -17,6 +17,11 @@ export interface TdevConfig {
         disableImageMarkupEditor?: boolean;
         excalidoc?: boolean;
     };
+    loggedOutOverlay: {
+        // default: session
+        persistChoiceTo?: 'session' | 'localStorage';
+        disable?: boolean;
+    };
 }
 
 export interface SiteConfig {

@@ -42,6 +42,7 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
+import { TdevCustomFields } from '@tdev/siteConfig/TdevCustomFields';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
@@ -97,6 +98,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
     loadedPlugins.push(excalidrawPluginConfig);
   }
 
+
   const config: Config = applyTransformers(
     {
       title: TITLE,
@@ -120,7 +122,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         /** Use test user in local dev: set DEFAULT_TEST_USER to the default test users email adress*/
         TEST_USER: DEFAULT_TEST_USER,
         OFFLINE_API: OFFLINE_API,
-        NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || OFFLINE_API,
+        NO_AUTH: (process.env.NODE_ENV !== 'production' && !!DEFAULT_TEST_USER) || !!OFFLINE_API,
         /** The Domain Name where the api is running */
         APP_URL: process.env.NETLIFY
           ? process.env.CONTEXT === 'production'
@@ -140,7 +142,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           (['github', 'github-dev', 'cms'] satisfies EditThisPageOption[]),
         editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
         tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
-      },
+      } satisfies TdevCustomFields,
       future: {
         v4: true,    
         faster: {

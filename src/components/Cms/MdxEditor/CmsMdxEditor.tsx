@@ -75,7 +75,7 @@ import { extractOptions } from '@tdev-plugins/helpers';
 import { GenericDirectiveDescriptor } from './plugins/CatchAllUnknown/GenericDirectiveDescriptor';
 import { keepImportsPlugin } from './plugins/keepImportsPlugin';
 import useLocalStorage from '@tdev-hooks/useLocalStorage';
-import { mdiCodeJson, mdiScript } from '@mdi/js';
+import { mdiCodeJson } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { registerKeydownHandler } from './plugins/focusHandler/keyDownHandler';
 

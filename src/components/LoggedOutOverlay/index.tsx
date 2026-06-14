@@ -6,6 +6,9 @@ import Admonition from '@theme/Admonition';
 import { useLocation } from '@docusaurus/router';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
+import customFields from '@tdev-components/util/customFields';
+import useLocalStorage from '@tdev-hooks/useLocalStorage';
+const { loggedOutOverlay } = customFields.tdevConfig;
 
 const ALLOWED_PATHS = new Set(['/login', '/signIn'].map((p) => p.toLowerCase()));
 
@@ -104,6 +107,7 @@ const LoggedOutOverlay = observer((props: Props) => {
     const isLoggedIn = !!userStore.current;
     const documentRootStore = useStore('documentRootStore');
     const socketStore = useStore('socketStore');
+    const [isDismissed, updateDismissed] = useLocalStorage<boolean>('LoggedOutOverlayDismissed', false);
 
     React.useEffect(() => {
         const onVisibilityChange = () => {
@@ -161,6 +165,10 @@ const LoggedOutOverlay = observer((props: Props) => {
         return () => clearTimeout(timeout);
     }, [socketStore.isLive, ignoredIssues, location, isVisible, isUserSwitched]);
 
+    if (loggedOutOverlay?.disable || isDismissed) {
+        return null;
+    }
+
     if (!isVisible) {
         return null;
     }
@@ -182,6 +190,9 @@ const LoggedOutOverlay = observer((props: Props) => {
             <NotLoggedInWarning
                 onDismiss={() => {
                     setIgnoredIssues((s) => new Set([...s, 'not-logged-in']));
+                    if (loggedOutOverlay?.persistChoiceTo === 'localStorage') {
+                        updateDismissed(true);
+                    }
                     setSyncIssue(null);
                 }}
             />
@@ -193,6 +204,9 @@ const LoggedOutOverlay = observer((props: Props) => {
                 <DisconnectedWarning
                     onDismiss={() => {
                         setIgnoredIssues((s) => new Set([...s, 'offline']));
+                        if (loggedOutOverlay?.persistChoiceTo === 'localStorage') {
+                            updateDismissed(true);
+                        }
                         setSyncIssue(null);
                     }}
                 />
@@ -202,6 +216,9 @@ const LoggedOutOverlay = observer((props: Props) => {
                 <StalledWarning
                     onDismiss={() => {
                         setIgnoredIssues((s) => new Set([...s, 'stalled']));
+                        if (loggedOutOverlay?.persistChoiceTo === 'localStorage') {
+                            updateDismissed(true);
+                        }
                         setSyncIssue(null);
                     }}
                 />
