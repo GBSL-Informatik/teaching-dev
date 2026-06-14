@@ -18,6 +18,7 @@ export interface TdevConfig {
         excalidoc?: boolean;
     };
     loggedOutOverlay: {
+        // default: session
         persistChoiceTo?: 'session' | 'localStorage';
         disable?: boolean;
     };

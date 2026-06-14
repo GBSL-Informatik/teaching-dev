@@ -98,7 +98,8 @@ const getSiteConfig: SiteConfigProvider = () => {
             },
             loggedOutOverlay: {
                 persistChoiceTo: 'localStorage',
-                disable: process.env.NODE_ENV !== 'production'
+                // disable for netlify previews and for local development.
+                disable: process.env.NODE_ENV !== 'production' || !!process.env.NETLIFY
             }
         },
         plugins: [brythonCodePluginConfig()],
