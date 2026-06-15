@@ -12,7 +12,8 @@ import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import DefinitionList from '@tdev-components/DefinitionList';
 import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
-const { NO_AUTH, APP_URL } = siteConfig.customFields as { NO_AUTH?: boolean; APP_URL?: string };
+import customFields from '@tdev-components/util/customFields';
+const { NO_AUTH, APP_URL } = customFields;
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
@@ -29,8 +30,9 @@ function HomepageHeader() {
 const LoginPage = observer(() => {
     const { data: session } = authClient.useSession();
     const signInPage = useBaseUrl('/signIn');
+    const rootUrl = useBaseUrl('/');
     if (session?.user || NO_AUTH) {
-        return <Redirect to={'/'} />;
+        return <Redirect to={rootUrl} />;
     }
     return (
         <Layout>
@@ -79,9 +81,10 @@ const LoginPage = observer(() => {
 
 const Login = observer(() => {
     const { data: session } = authClient.useSession();
+    const rootUrl = useBaseUrl('/');
 
     if (session?.user || NO_AUTH) {
-        return <Redirect to={'/'} />;
+        return <Redirect to={rootUrl} />;
     }
     return <LoginPage />;
 });
