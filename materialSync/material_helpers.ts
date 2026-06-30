@@ -1,0 +1,120 @@
+import fs from 'fs';
+import fsp from 'fs/promises';
+import path from 'path';
+import Rsync from 'rsync';
+import yaml from 'js-yaml';
+
+type RsyncInstance = InstanceType<typeof Rsync>;
+
+type BaseConfig = {
+    ignore: string[];
+    open?: boolean;
+};
+
+export type NormalizedConfig = BaseConfig & {
+    from: string;
+    to: string;
+};
+
+export type SyncConfig = BaseConfig &
+    (
+        | {
+              from: string;
+          }
+        | {
+              material?: string;
+          }
+    ) &
+    (
+        | {
+              to: string;
+          }
+        | {
+              section: string;
+          }
+    );
+
+export interface ConfigType {
+    [key: string]: SyncConfig[];
+}
+
+export const CONFIG_NAME = 'material.config.yaml';
+
+const materialConfigPath = path.resolve(__dirname, '..', CONFIG_NAME);
+
+export const resolveMaterialConfig = (klass: string, config: SyncConfig): NormalizedConfig => {
+    let from: string;
+    let to: string;
+    const destinationBase = klass === 'pages' ? 'src/pages/' : `versioned_docs/version-${klass}/`;
+    if ('material' in config && config.material) {
+        from = path.join('docs', config.material);
+    }
+    if ('from' in config && config.from) {
+        from = config.from;
+    }
+    if ('section' in config && config.section) {
+        to = path.join(destinationBase, config.section);
+    }
+    if ('to' in config && config.to) {
+        if (config.to.startsWith(destinationBase)) {
+            to = config.to;
+        } else {
+            to = path.join(destinationBase, config.to);
+        }
+    }
+
+    return { from: from!, to: to!, ignore: config.ignore, open: config.open };
+};
+
+export const loadMaterialConfig = (): ConfigType => {
+    const source = fs.readFileSync(materialConfigPath, 'utf-8');
+    return (yaml.load(source) ?? {}) as ConfigType;
+};
+
+export const saveMaterialConfig = (config: ConfigType): void => {
+    fs.writeFileSync(
+        materialConfigPath,
+        yaml.dump(config, {
+            noRefs: true,
+            lineWidth: -1,
+            sortKeys: false
+        })
+    );
+};
+
+/**
+ * Ensure rsync sync completes successfully, retrying on failure
+ */
+export const ensureSync = async (rsync: RsyncInstance, srcPath: string): Promise<boolean> => {
+    let success = false;
+    let attempt = 0;
+    while (!success) {
+        const rs = new Promise<boolean>((resolve) => {
+            rsync.execute((err: Error | null, code: number, cmd: string) => {
+                if (!err) {
+                    console.log('✅', srcPath, cmd);
+                    attempt = 0;
+                    resolve(true);
+                } else {
+                    console.log(`[attempt ${++attempt}]: could not sync ${srcPath} retrying ...`);
+                    console.log('   ', cmd);
+                    console.log('   ', err);
+                    console.log('   ', code);
+                    console.log('');
+                    resolve(false);
+                }
+            });
+        });
+        success = await rs;
+    }
+    return success;
+};
+
+export const pathExists = async (p: string): Promise<boolean> => {
+    try {
+        await fsp.access(p);
+        return true;
+    } catch {
+        return false;
+    }
+};

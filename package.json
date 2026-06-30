@@ -2,6 +2,7 @@
     "name": "@tdev/core",
     "workspaces": [
         "packages/**",
+        "materialSync",
         "."
     ],
     "version": "1.0.0",
@@ -9,7 +10,7 @@
     "scripts": {
         "docusaurus": "docusaurus",
         "start": "concurrently --raw --kill-others 'PACKAGE_SRC=packages PACKAGE_DEST=tdev-website/docs/packages docusaurus start' 'sleep 1s && ts-node --files updateSync/packageDocsSync/watch.ts --src packages --dest tdev-website/docs/packages'",
-        "prebuild": "ts-node --files updateSync/packageDocsSync/preBuild.ts --src packages --dest tdev-website/docs/packages",
+        "prebuild": "yarn workspace @tdev/material-sync sync && ts-node --files updateSync/packageDocsSync/preBuild.ts --src packages --dest tdev-website/docs/packages",
         "build": "docusaurus build",
         "swizzle": "docusaurus swizzle",
         "deploy": "docusaurus deploy",
@@ -21,7 +22,15 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "test": "vitest --coverage",
-        "updateTdev": "ts-node --files updateSync/updateTdev.ts"
+        "updateTdev": "ts-node --files updateSync/updateTdev.ts",
+        "sync": "yarn workspace @tdev/material-sync sync",
+        "remove": "yarn workspace @tdev/material-sync run remove",
+        "postremove": "yarn workspace @tdev/material-sync sync",
+        "precleanup": "yarn workspace @tdev/material-sync restore",
+        "cleanup": "yarn workspace @tdev/material-sync cleanup",
+        "add": "yarn workspace @tdev/material-sync run add",
+        "addClass": "yarn workspace @tdev/material-sync run addClass",
+        "postadd": "yarn workspace @tdev/material-sync sync"
     },
     "dependencies": {
         "@docusaurus/core": "^3.10.1",
