@@ -66,18 +66,17 @@ const main = async (): Promise<void> => {
         }
         configs[klass] = [];
     }
-    const currentVersions = await fs
-        .readFile(path.join(repoRoot, 'versions.json'), 'utf-8')
-        .then((data) => JSON.parse(data) as string[]);
+    const hasVersions = await pathExists(path.join(repoRoot, 'versions.json'));
+    const currentVersions = await (hasVersions
+        ? fs
+              .readFile(path.join(repoRoot, 'versions.json'), 'utf-8')
+              .then((data) => JSON.parse(data) as string[])
+        : Promise.resolve([]));
     const newVersions = [...new Set([...currentVersions, ...newKlasses].sort())];
     await fs.writeFile(path.join(repoRoot, 'versions.json'), JSON.stringify(newVersions, null, 2));
     saveMaterialConfig(configs);
 
-    console.log(
-        '✅ Added new classes:',
-        newKlasses.join(', '),
-        'Edit website/components/HompageCourses.tsx accordingly'
-    );
+    console.log('✅ Added new classes:', newKlasses.join(', '), 'Edit your siteConfig.ts accordingly');
 };
 
 main().catch((e: Error) => {
