@@ -75,7 +75,7 @@
         "micromark-extension-math": "^3.1.0",
         "micromatch": "^4.0.8",
         "minimist": "^1.2.8",
-        "mobx": "^6.15.0",
+        "mobx": "^6.16.1",
         "mobx-react-lite": "^4.1.1",
         "mobx-utils": "^6.1.1",
         "qrcode.react": "^4.2.0",
@@ -119,7 +119,7 @@
         "remark-directive": "^4.0.0",
         "remark-frontmatter": "^5.0.0",
         "ts-node": "^10.9.2",
-        "typescript": "^6.0.2",
+        "typescript": "^6.0.3",
         "vfile": "^6.0.3",
         "vitest": "^2.0.5"
     },
