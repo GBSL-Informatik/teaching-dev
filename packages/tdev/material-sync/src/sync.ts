@@ -87,7 +87,6 @@ const main = async (): Promise<void> => {
         for (const _config of config) {
             const config = resolveMaterialConfig(klass, _config);
             const resolvedClassDir = classDir ? classDir : config.to.split('/')[0] + '/';
-            console.log(JSON.stringify(config, undefined, 2));
             const ignore: string[] = [];
             ignore.push(...(config.ignore || []));
 

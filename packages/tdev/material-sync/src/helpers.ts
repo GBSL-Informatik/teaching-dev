@@ -74,8 +74,23 @@ export const resolveMaterialConfig = (klass: string, config: SyncConfig): Normal
 };
 
 export const loadMaterialConfig = (): ConfigType => {
-    const source = fs.readFileSync(materialConfigPath, 'utf-8');
-    return (yaml.load(source) ?? {}) as ConfigType;
+    const hasFile = pathExistsSync(materialConfigPath);
+    if (hasFile) {
+        const source = fs.readFileSync(materialConfigPath, 'utf-8');
+        return (yaml.load(source) ?? {}) as ConfigType;
+    }
+    fs.writeFileSync(
+        materialConfigPath,
+        yaml.dump(
+            { pages: [] },
+            {
+                noRefs: true,
+                lineWidth: -1,
+                sortKeys: false
+            }
+        )
+    );
+    return { pages: [] };
 };
 
 export const saveMaterialConfig = (config: ConfigType): void => {
@@ -153,6 +168,14 @@ export const ensureSync = async (rsync: RsyncInstance, srcPath: string): Promise
 export const pathExists = async (p: string): Promise<boolean> => {
     try {
         await fsp.access(p);
+        return true;
+    } catch {
+        return false;
+    }
+};
+export const pathExistsSync = (p: string): boolean => {
+    try {
+        fs.accessSync(p, fs.constants.R_OK);
         return true;
     } catch {
         return false;
