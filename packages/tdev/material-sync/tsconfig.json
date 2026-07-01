@@ -1,5 +1,5 @@
 {
-    "extends": "../tsconfig.json",
+    "extends": "../../../tsconfig.json",
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": ".",
@@ -9,6 +9,7 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
+        "ignoreDeprecations": "6.0",
         "moduleResolution": "node"
     },
     "include": ["src/*.ts"],

@@ -3,8 +3,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import Rsync from 'rsync';
 import yaml from 'js-yaml';
-export const REPO_ROOT = path.resolve(__dirname, '..', '..');
-console.log('REPO_ROOT', REPO_ROOT);
+export const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
 type RsyncInstance = InstanceType<typeof Rsync>;
 

@@ -9,8 +9,6 @@ trackedElements:
       dst: packages
     - src: updateSync/
       dst: updateSync
-    - src: materialSync/
-      dst: materialSync
     - src: tsconfig.tdev.json
       dst: tsconfig.json
     - src: tsconfig.package.json

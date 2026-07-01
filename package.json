@@ -2,7 +2,6 @@
     "name": "@tdev/core",
     "workspaces": [
         "packages/**",
-        "materialSync",
         "."
     ],
     "version": "1.0.0",
