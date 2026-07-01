@@ -14,7 +14,7 @@ import {
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
 import { themes as prismThemes } from 'prism-react-renderer';
-import { brythonCodePluginConfig } from '../src/siteConfig/pluginConfigs';
+import { brythonCodePluginConfig, yamlLoaderPluginConfig } from '../src/siteConfig/pluginConfigs';
 
 const getSiteConfig: SiteConfigProvider = () => {
     return {
@@ -102,7 +102,7 @@ const getSiteConfig: SiteConfigProvider = () => {
                 disable: process.env.NODE_ENV !== 'production' || !!process.env.NETLIFY
             }
         },
-        plugins: [brythonCodePluginConfig()],
+        plugins: [brythonCodePluginConfig(), yamlLoaderPluginConfig],
         apiDocumentProviders: [
             require.resolve('@tdev/netpbm-graphic/register'),
             require.resolve('@tdev/text-message/register'),

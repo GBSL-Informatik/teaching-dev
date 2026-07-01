@@ -26,9 +26,7 @@ export const dynamicRouterPluginConfig: PluginConfig = [
 export const rsDoctorPluginConfig: PluginConfig = process.env.RSDOCTOR === 'true' && [
     'rsdoctor',
     {
-        rsdoctorOptions: {
-            /* Options */
-        }
+        rsdoctorOptions: {/* Options */}
     }
 ];
 
@@ -40,6 +38,24 @@ export const brythonCodePluginConfig: () => PluginConfig = () => [
         libDir: '/bry-libs/'
     }
 ];
+
+export const yamlLoaderPluginConfig: PluginConfig = () => {
+    return {
+        name: 'yaml-loader-config',
+        configureWebpack() {
+            return {
+                module: {
+                    rules: [
+                        {
+                            test: /\.ya?ml$/,
+                            use: 'yaml-loader'
+                        }
+                    ]
+                }
+            };
+        }
+    };
+};
 
 export { aliasConfigurationPlugin };
 
