@@ -5,6 +5,8 @@ import type {
   ShowEditThisPage,
   TdevConfig
 } from '@tdev/siteConfig/siteConfig';
+import type { VersionOptions } from '@docusaurus/plugin-content-docs';
+
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
@@ -96,6 +98,16 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
     const {excalidrawPluginConfig} = (await import('@tdev/excalidoc/index'));
     siteConfig.apiDocumentProviders = [...currentProviders];
     loadedPlugins.push(excalidrawPluginConfig);
+  }
+
+  const hasVersions = await fs.access(path.join(BUILD_LOCATION, 'versions.json')).then(() => true).catch(() => false);
+  const DEFAULT_VERSIONS: { [version: string]: VersionOptions } = {} ;
+  if (hasVersions) {
+    const docusaurusVersions = await fs.readFile(path.join(BUILD_LOCATION, 'versions.json'), 'utf-8').then((data) => JSON.parse(data) as string[]);
+    docusaurusVersions.forEach((version) => {
+      DEFAULT_VERSIONS[version] = { label: version, banner: 'none' };
+    });
+    DEFAULT_VERSIONS['current'] = { label: 'Material', banner: 'none' }
   }
 
 
@@ -272,6 +284,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
                   beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
                   ...DEFAULT_ADMONITION_CONFIG,
                   exclude: [...new Set([...GlobExcludeDefault, '**/node_modules/**'])],
+                  versions: Object.keys(DEFAULT_VERSIONS).length > 0 ? DEFAULT_VERSIONS : undefined,
                   ...(siteConfig.docs || {})
                 }
               : false,

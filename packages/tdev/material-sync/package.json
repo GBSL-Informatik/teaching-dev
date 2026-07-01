@@ -1,0 +1,28 @@
+{
+  "name": "@tdev/material-sync",
+  "version": "1.0.0",
+  "description": "Material synchronization scripts for teaching documentation",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "sync": "tsx src/sync.ts",
+    "add": "tsx src/add.ts",
+    "remove": "tsx src/remove.ts",
+    "cleanup": "tsx src/cleanup.ts",
+    "restore": "tsx src/restore.ts",
+    "addClass": "tsx src/add_class.ts"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^22.0.0",
+    "@types/rsync": "^0.4.36",
+    "js-yaml": "^4.1.1",
+    "minimist": "^1.2.8",
+    "rsync": "^0.6.1",
+    "tsx": "^4.20.3",
+    "typescript": "^6.0.2"
+  }
+}

@@ -1,0 +1,4 @@
+pages: []
+docs:
+  - from: packages/tdev/material-sync/README.mdx
+    to: tdev-website/docs/intro/03-class-management/index.mdx
