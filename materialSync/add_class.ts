@@ -18,7 +18,7 @@ yarn run add_class [className]
 
 examples:
 
-yarn run addClass 30Gx              // adds a new class to 'versioned_docs?, 'versioned_sidebar' and to 'material.config.yaml'
+yarn run addClass 30Gx              // adds a new class to 'versioned_docs', 'versioned_sidebar' and to 'material.config.yaml'
 yarn run addClass 30Ga,30Gx
 yarn run addClass "30Ga, 30Gx"
 `);
