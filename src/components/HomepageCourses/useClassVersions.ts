@@ -29,7 +29,7 @@ export const useClassVersions = () => {
     const gym1NextClasses = validClasses.filter((v) => /G|m/.test(v.charAt(2)) && v.startsWith(gym1Next));
     const gym1Classes = validClasses.filter((v) => /G|m/.test(v.charAt(2)) && v.startsWith(gym1Year));
     const gym2Classes = validClasses.filter((v) => /G|m/.test(v.charAt(2)) && v.startsWith(gym2Year));
-    const fms1NextClasses = validClasses.filter((v) => /F/.test(v.charAt(2)) && v.startsWith(gym1Next));
+    const fms1NextClasses = validClasses.filter((v) => /F/.test(v.charAt(2)) && v.startsWith(gym1Year));
     const fms1Classes = validClasses.filter((v) => /F/.test(v.charAt(2)) && v.startsWith(gym2Year));
     const courseList: Course[] = [];
     if (gym1NextClasses.length > 0) {
