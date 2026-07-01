@@ -67,11 +67,7 @@ export const resolveMaterialConfig = (klass: string, config: SyncConfig): Normal
         to = path.join(destinationBase, config.as);
     }
     if ('to' in config && config.to) {
-        if (config.to.startsWith(destinationBase)) {
-            to = config.to;
-        } else {
-            to = path.join(destinationBase, config.to);
-        }
+        to = config.to;
     }
 
     return { from: from!, to: to!, ignore: config.ignore, open: config.open };

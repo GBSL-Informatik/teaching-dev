@@ -78,9 +78,16 @@ const main = async (): Promise<void> => {
     for (const klass of Object.keys(typedConfig)) {
         const config = typedConfig[klass];
         const gitignore: string[] = [];
-        const classDir = klass === 'pages' ? 'src/pages/' : `versioned_docs/version-${klass}/`;
+        const classDir =
+            klass === 'pages'
+                ? 'src/pages/'
+                : klass === 'docs'
+                  ? undefined
+                  : `versioned_docs/version-${klass}/`;
         for (const _config of config) {
             const config = resolveMaterialConfig(klass, _config);
+            const resolvedClassDir = classDir ? classDir : config.to.split('/')[0] + '/';
+            console.log(JSON.stringify(config, undefined, 2));
             const ignore: string[] = [];
             ignore.push(...(config.ignore || []));
 
@@ -101,7 +108,7 @@ const main = async (): Promise<void> => {
             }
 
             if (isDir) {
-                const sanitizedClassDir = ensureTrailingSlash(config.to.replace(classDir, ''));
+                const sanitizedClassDir = ensureTrailingSlash(config.to.replace(resolvedClassDir, ''));
                 gitignore.push(`${sanitizedClassDir}*`);
                 const rsync = new Rsync()
                     .flags('v')
@@ -132,7 +139,7 @@ const main = async (): Promise<void> => {
                 await ensureSync(rsync, srcPath);
             } else {
                 await fs.copyFile(srcPath, config.to);
-                gitignore.push(config.to.replace(classDir, ''));
+                gitignore.push(config.to.replace(resolvedClassDir, ''));
             }
 
             if (config.open) {
@@ -144,7 +151,7 @@ const main = async (): Promise<void> => {
                 }
                 const categoryPath = path.join(folder, '_category_.json');
                 console.log('---------- CAT', categoryPath);
-                gitignore.push(categoryPath.replace(classDir, ''));
+                gitignore.push(categoryPath.replace(resolvedClassDir, ''));
                 let category: Record<string, unknown> = {
                     collapsible: true,
                     collapsed: false,
@@ -159,7 +166,7 @@ const main = async (): Promise<void> => {
                 await fs.writeFile(categoryPath, JSON.stringify(category, undefined, 2) + '\n');
             }
 
-            await fs.writeFile(`${classDir}.gitignore`, gitignore.join('\n'));
+            await fs.writeFile(`${resolvedClassDir}.gitignore`, gitignore.join('\n'));
         }
     }
 };
