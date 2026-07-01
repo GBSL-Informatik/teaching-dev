@@ -22,13 +22,7 @@ interface Props {
 }
 
 type SpinState =
-    | 'deleting'
-    | 'linking'
-    | 'unlinking'
-    | 'change-pw'
-    | 'block-user'
-    | 'unblock-user'
-    | 'update-user';
+    'deleting' | 'linking' | 'unlinking' | 'change-pw' | 'block-user' | 'unblock-user' | 'update-user';
 
 const SPIN_TEXT = {
     deleting: 'Löschen...',

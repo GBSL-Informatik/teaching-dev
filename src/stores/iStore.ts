@@ -4,11 +4,7 @@ import axios from 'axios';
 import { RootStore } from '@tdev-stores/rootStore';
 
 export type ApiAction =
-    | `load`
-    | `create-${string}`
-    | `load-${string}`
-    | `save-${string}`
-    | `destroy-${string}`;
+    `load` | `create-${string}` | `load-${string}` | `save-${string}` | `destroy-${string}`;
 
 export enum ApiState {
     IDLE = 'idle',

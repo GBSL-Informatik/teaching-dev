@@ -95,8 +95,7 @@ const CodeBlockWrapper = (props: Props & MetaProps): React.ReactNode => {
     if (metaProps.live) {
         const title = props.title || metaProps.title;
         const liveCodeType = Object.keys(metaProps).find((key) => key.startsWith('live_')) as
-            | LiveCode
-            | undefined;
+            LiveCode | undefined;
         const { code, pre, post } = splitCode((props.children as string) || '');
         return (
             <BrowserOnly fallback={<CodeBlock language={lang}>{code}</CodeBlock>}>

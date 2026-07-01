@@ -90,8 +90,7 @@ const HtmlIDE = observer((props: Props) => {
             parts.forEach((part, idx) => {
                 const isLast = idx === parts.length - 1;
                 const nextItem = currentDir.children.find((c) => typeof c === 'object' && c.name === part) as
-                    | DirType
-                    | undefined;
+                    DirType | undefined;
                 if (nextItem) {
                     currentDir = nextItem;
                 } else {

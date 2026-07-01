@@ -14,8 +14,7 @@ import BinFile from './BinFile';
 export type GhRepo = GhTypes['repos']['get']['response']['data'];
 export type GhBranch = GhTypes['repos']['listBranches']['response']['data'][number];
 export type GhPr =
-    | GhTypes['pulls']['list']['response']['data'][number]
-    | GhTypes['pulls']['create']['response']['data'];
+    GhTypes['pulls']['list']['response']['data'][number] | GhTypes['pulls']['create']['response']['data'];
 
 const PR_PAGE_SIZE = 20;
 type FileEntry = FileStub | BinFile | FileModel | Dir;
@@ -37,12 +36,10 @@ class Github {
 
     @observable.ref accessor repo: GhRepo | undefined;
     @observable.ref accessor repositories:
-        | GhTypes['repos']['listForAuthenticatedUser']['response']['data']
-        | undefined;
+        GhTypes['repos']['listForAuthenticatedUser']['response']['data'] | undefined;
     @observable.ref accessor user: GhTypes['users']['getAuthenticated']['response']['data'] | undefined;
     @observable.ref accessor permissions:
-        | GhTypes['repos']['getCollaboratorPermissionLevel']['response']['data']
-        | undefined;
+        GhTypes['repos']['getCollaboratorPermissionLevel']['response']['data'] | undefined;
 
     apiStates = observable.map<string, ApiState>([], { deep: false });
 
@@ -763,8 +760,7 @@ class Github {
                                 return undefined;
                             }
                             const nFile = Github.NewFileModel(file.props, binData, this.store) as
-                                | FileModel
-                                | BinFile;
+                                FileModel | BinFile;
                             this._addFileEntry(file.branch, nFile);
                             if (editAfterFetch && nFile.type === 'file') {
                                 nFile.setEditing(true);

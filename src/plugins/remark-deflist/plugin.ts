@@ -8,11 +8,7 @@ const DD_REGEX = /(\r?\n):[ \t]+(.*?)/;
 const DD_CONSECUTIVE_REGEX = /^(\r?\n)?:[ \t]+(.*?)/;
 const NEWLINE_REGEX = /\r?\n/;
 type ActionStates =
-    | 'SEEK_DD_START'
-    | 'SEEK_CONSECUTIVE_DD_START'
-    | 'COLLECT_DT_BODY'
-    | 'COLLECT_DD_BODY'
-    | 'ADD_TO_DL';
+    'SEEK_DD_START' | 'SEEK_CONSECUTIVE_DD_START' | 'COLLECT_DT_BODY' | 'COLLECT_DD_BODY' | 'ADD_TO_DL';
 
 interface OptionsInput {
     classNames?: {

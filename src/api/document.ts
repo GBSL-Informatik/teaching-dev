@@ -72,14 +72,7 @@ export interface FileData {
 }
 
 export type StateType =
-    | 'checked'
-    | 'question'
-    | 'unset'
-    | 'star'
-    | 'star-half'
-    | 'star-empty'
-    | 'clock-check'
-    | 'progress-check';
+    'checked' | 'question' | 'unset' | 'star' | 'star-half' | 'star-empty' | 'clock-check' | 'progress-check';
 
 export interface TaskStateData {
     state: StateType;

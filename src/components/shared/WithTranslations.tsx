@@ -2,8 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 
 export type Translation =
-    | Record<string, React.ReactNode | ((val: string) => React.ReactNode)>
-    | ((val: string) => React.ReactNode);
+    Record<string, React.ReactNode | ((val: string) => React.ReactNode)> | ((val: string) => React.ReactNode);
 
 export interface Props {
     children: React.ReactNode;

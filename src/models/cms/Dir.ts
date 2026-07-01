@@ -64,8 +64,7 @@ class Dir extends iEntry {
     @computed
     get indexFile(): FileType | undefined {
         return this.enrties?.find((d) => d.isFile() && /(index\.)|(README\.mdx?)/gi.test(d.name)) as
-            | FileType
-            | undefined;
+            FileType | undefined;
     }
 
     @computed
