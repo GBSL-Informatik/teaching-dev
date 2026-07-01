@@ -32,6 +32,9 @@ export type SyncConfig = BaseConfig &
         | {
               section: string;
           }
+        | {
+              as: string;
+          }
     );
 
 export interface ConfigType {
@@ -54,6 +57,9 @@ export const resolveMaterialConfig = (klass: string, config: SyncConfig): Normal
     }
     if ('section' in config && config.section) {
         to = path.join(destinationBase, config.section);
+    }
+    if ('as' in config && config.as) {
+        to = path.join(destinationBase, config.as);
     }
     if ('to' in config && config.to) {
         if (config.to.startsWith(destinationBase)) {
@@ -80,6 +86,39 @@ export const saveMaterialConfig = (config: ConfigType): void => {
             sortKeys: false
         })
     );
+};
+
+export const DOC_PATHS = ['docs/', 'src/pages/', 'blog/'];
+
+export const docBasePath = (src: string): string => {
+    return DOC_PATHS.find((p) => src.startsWith(p)) || DOC_PATHS[0];
+};
+/**
+ * Get path relative to doc base path
+ */
+export const relative2Doc = (p: string): string => {
+    const base = docBasePath(p);
+    return base ? p.slice(base.length) : p;
+};
+
+export const ensureTrailingSlash = (p: string): string => {
+    if (typeof p !== 'string') {
+        return p;
+    }
+    if (p.endsWith('/')) {
+        return p;
+    }
+    return `${p}/`;
+};
+
+export const ensureStartingSlash = (p: string): string => {
+    if (typeof p !== 'string') {
+        return p;
+    }
+    if (p.startsWith('/')) {
+        return p;
+    }
+    return `/${p}`;
 };
 
 /**

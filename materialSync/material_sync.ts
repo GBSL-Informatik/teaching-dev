@@ -3,7 +3,9 @@ import path from 'path';
 import Rsync from 'rsync';
 import {
     ConfigType,
+    ensureStartingSlash,
     ensureSync,
+    ensureTrailingSlash,
     loadMaterialConfig,
     pathExists,
     resolveMaterialConfig
@@ -12,12 +14,6 @@ const repoRoot = path.resolve(__dirname, '..');
 process.chdir(repoRoot);
 
 const typedConfig: ConfigType = loadMaterialConfig();
-
-const DOC_PATHS = ['docs/', 'src/pages/', 'news/'];
-
-const docBasePath = (src: string): string => {
-    return DOC_PATHS.find((p) => src.startsWith(p)) || DOC_PATHS[0];
-};
 
 /**
  * Recursively find markdown template files (starting with _)
@@ -42,34 +38,6 @@ const findMdTemplate = async (src: string): Promise<string[]> => {
         }
     }
     return mdFiles;
-};
-
-/**
- * Get path relative to doc base path
- */
-const relative2Doc = (p: string): string => {
-    const base = docBasePath(p);
-    return base ? p.slice(base.length) : p;
-};
-
-const ensureStartingSlash = (p: string): string => {
-    if (typeof p !== 'string') {
-        return p;
-    }
-    if (p.startsWith('/')) {
-        return p;
-    }
-    return `/${p}`;
-};
-
-const ensureTrailingSlash = (p: string): string => {
-    if (typeof p !== 'string') {
-        return p;
-    }
-    if (p.endsWith('/')) {
-        return p;
-    }
-    return `${p}/`;
 };
 
 const main = async (): Promise<void> => {

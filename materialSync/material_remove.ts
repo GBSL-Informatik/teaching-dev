@@ -2,7 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import minimist from 'minimist';
 import {
+    docBasePath,
+    ensureTrailingSlash,
     loadMaterialConfig,
+    relative2Doc,
     resolveMaterialConfig,
     saveMaterialConfig,
     SyncConfig
@@ -27,30 +30,6 @@ yarn run remove docs/byod-basics/v24/ --from="24a,24b"
 
 const toRemove = argv._;
 const klassen = argv.from ? (argv.from as string).split(',') : Object.keys(configs);
-
-const DOC_PATHS = ['docs/', 'src/pages/', 'news/'];
-
-const docBasePath = (src: string): string => {
-    return DOC_PATHS.find((p) => src.startsWith(p)) || DOC_PATHS[0];
-};
-
-/**
- * Get path relative to doc base path
- */
-const relative2Doc = (p: string): string => {
-    const base = docBasePath(p);
-    return base ? p.slice(base.length) : p;
-};
-
-const ensureTrailingSlash = (p: string): string => {
-    if (typeof p !== 'string') {
-        return p;
-    }
-    if (p.endsWith('/')) {
-        return p;
-    }
-    return `${p}/`;
-};
 
 klassen.forEach((klass) => {
     const klassConfig = configs[klass];
