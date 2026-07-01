@@ -3,6 +3,8 @@ import fsp from 'fs/promises';
 import path from 'path';
 import Rsync from 'rsync';
 import yaml from 'js-yaml';
+export const REPO_ROOT = path.resolve(__dirname, '..', '..');
+console.log('REPO_ROOT', REPO_ROOT);
 
 type RsyncInstance = InstanceType<typeof Rsync>;
 
@@ -43,7 +45,7 @@ export interface ConfigType {
 
 export const CONFIG_NAME = 'material.config.yaml';
 
-const materialConfigPath = path.resolve(__dirname, '..', CONFIG_NAME);
+const materialConfigPath = path.resolve(REPO_ROOT, CONFIG_NAME);
 
 export const resolveMaterialConfig = (klass: string, config: SyncConfig): NormalizedConfig => {
     let from: string;

@@ -1,8 +1,7 @@
 import fs from 'fs';
-import path from 'path';
+import { REPO_ROOT } from './helpers';
 
-const repoRoot = path.resolve(__dirname, '..');
-process.chdir(repoRoot);
+process.chdir(REPO_ROOT);
 
 const main = (): void => {
     if (fs.existsSync('_docs') && fs.lstatSync('_docs').isDirectory()) {

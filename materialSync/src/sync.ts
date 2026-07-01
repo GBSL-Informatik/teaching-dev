@@ -8,10 +8,10 @@ import {
     ensureTrailingSlash,
     loadMaterialConfig,
     pathExists,
+    REPO_ROOT,
     resolveMaterialConfig
-} from './material_helpers';
-const repoRoot = path.resolve(__dirname, '..');
-process.chdir(repoRoot);
+} from './helpers';
+process.chdir(REPO_ROOT);
 
 const typedConfig: ConfigType = loadMaterialConfig();
 
@@ -51,7 +51,7 @@ const main = async (): Promise<void> => {
         await fs.mkdir('docs');
         await fs.cp('_docs/home.md', 'docs/home.md');
         /** copy all markdown-templates - otherwise some pages might fail */
-        const templates = await findMdTemplate(path.join(__dirname, '../_docs'));
+        const templates = await findMdTemplate(path.join(REPO_ROOT, '_docs'));
         await Promise.all(templates.map((file) => fs.cp(file, file.replace('/_docs/', '/docs/'))));
     }
     if (process.env.DOCS_ONLY) {

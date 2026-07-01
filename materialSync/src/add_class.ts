@@ -1,12 +1,10 @@
 import path from 'path';
 import fs from 'fs/promises';
-import { loadMaterialConfig, pathExists, saveMaterialConfig } from './material_helpers';
+import { loadMaterialConfig, pathExists, REPO_ROOT, saveMaterialConfig } from './helpers';
 import minimist from 'minimist';
 import { exit } from 'process';
 import crypto from 'node:crypto';
-
-const repoRoot = path.resolve(__dirname, '..');
-process.chdir(repoRoot);
+process.chdir(REPO_ROOT);
 
 const configs = loadMaterialConfig();
 const currentKlasses = Object.keys(configs);
@@ -43,13 +41,13 @@ page_id: ${crypto.randomUUID()}
 };
 
 const main = async (): Promise<void> => {
-    const versionedSidebarsPath = path.join(repoRoot, 'versioned_sidebars');
+    const versionedSidebarsPath = path.join(REPO_ROOT, 'versioned_sidebars');
     if (!(await pathExists(versionedSidebarsPath))) {
         await fs.mkdir(versionedSidebarsPath, { recursive: true });
     }
 
     for (const klass of newKlasses) {
-        const versionedDocsPath = path.join(repoRoot, 'versioned_docs', `version-${klass}`);
+        const versionedDocsPath = path.join(REPO_ROOT, 'versioned_docs', `version-${klass}`);
         if (!(await pathExists(versionedDocsPath))) {
             await fs.mkdir(versionedDocsPath, { recursive: true });
         }
@@ -66,14 +64,14 @@ const main = async (): Promise<void> => {
         }
         configs[klass] = [];
     }
-    const hasVersions = await pathExists(path.join(repoRoot, 'versions.json'));
+    const hasVersions = await pathExists(path.join(REPO_ROOT, 'versions.json'));
     const currentVersions = await (hasVersions
         ? fs
-              .readFile(path.join(repoRoot, 'versions.json'), 'utf-8')
+              .readFile(path.join(REPO_ROOT, 'versions.json'), 'utf-8')
               .then((data) => JSON.parse(data) as string[])
         : Promise.resolve([]));
     const newVersions = [...new Set([...currentVersions, ...newKlasses].sort())];
-    await fs.writeFile(path.join(repoRoot, 'versions.json'), JSON.stringify(newVersions, null, 2));
+    await fs.writeFile(path.join(REPO_ROOT, 'versions.json'), JSON.stringify(newVersions, null, 2));
     saveMaterialConfig(configs);
 
     console.log('✅ Added new classes:', newKlasses.join(', '), 'Edit your siteConfig.ts accordingly');

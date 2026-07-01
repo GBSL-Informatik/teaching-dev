@@ -6,13 +6,13 @@ import {
     ensureTrailingSlash,
     loadMaterialConfig,
     relative2Doc,
+    REPO_ROOT,
     resolveMaterialConfig,
     saveMaterialConfig,
     SyncConfig
-} from './material_helpers';
+} from './helpers';
 
-const repoRoot = path.resolve(__dirname, '..');
-process.chdir(repoRoot);
+process.chdir(REPO_ROOT);
 
 const configs = loadMaterialConfig();
 const argv = minimist(process.argv.slice(2));

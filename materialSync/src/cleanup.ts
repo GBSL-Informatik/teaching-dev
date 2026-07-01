@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import minimist from 'minimist';
-import { loadMaterialConfig, resolveMaterialConfig } from './material_helpers';
+import { loadMaterialConfig, REPO_ROOT, resolveMaterialConfig } from './helpers';
 
-const repoRoot = path.resolve(__dirname, '..');
-process.chdir(repoRoot);
+process.chdir(REPO_ROOT);
 
 const configs = loadMaterialConfig();
 const argv = minimist(process.argv.slice(2));
