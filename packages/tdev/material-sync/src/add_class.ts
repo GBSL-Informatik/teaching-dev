@@ -1,8 +1,8 @@
-import path from 'path';
-import fs from 'fs/promises';
-import { loadMaterialConfig, pathExists, REPO_ROOT, saveMaterialConfig } from './helpers';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { loadMaterialConfig, pathExists, REPO_ROOT, saveMaterialConfig } from './helpers.js';
 import minimist from 'minimist';
-import { exit } from 'process';
+import { exit } from 'node:process';
 import crypto from 'node:crypto';
 process.chdir(REPO_ROOT);
 

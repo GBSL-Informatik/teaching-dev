@@ -3,14 +3,13 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": ".",
-        "module": "commonjs",
+        "module": "NodeNext",
         "declaration": false,
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
-        "ignoreDeprecations": "6.0",
-        "moduleResolution": "node"
+        "moduleResolution": "NodeNext"
     },
     "include": ["src/*.ts"],
     "exclude": ["node_modules", "dist"]

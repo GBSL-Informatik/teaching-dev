@@ -1,5 +1,5 @@
-import fs from 'fs';
-import { exit } from 'process';
+import fs from 'node:fs';
+import { exit } from 'node:process';
 import minimist from 'minimist';
 import {
     DOC_PATHS,
@@ -8,7 +8,7 @@ import {
     REPO_ROOT,
     resolveMaterialConfig,
     saveMaterialConfig
-} from './helpers';
+} from './helpers.js';
 
 process.chdir(REPO_ROOT);
 

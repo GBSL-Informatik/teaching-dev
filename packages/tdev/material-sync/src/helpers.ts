@@ -1,8 +1,12 @@
-import fs from 'fs';
-import fsp from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs';
+import fsp from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Rsync from 'rsync';
 import yaml from 'js-yaml';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
 type RsyncInstance = InstanceType<typeof Rsync>;

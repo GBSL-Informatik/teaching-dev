@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import Rsync from 'rsync';
 import {
     ConfigType,
@@ -10,7 +10,7 @@ import {
     pathExists,
     REPO_ROOT,
     resolveMaterialConfig
-} from './helpers';
+} from './helpers.js';
 process.chdir(REPO_ROOT);
 
 const typedConfig: ConfigType = loadMaterialConfig();

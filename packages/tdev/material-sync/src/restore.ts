@@ -1,5 +1,5 @@
-import fs from 'fs';
-import { REPO_ROOT } from './helpers';
+import fs from 'node:fs';
+import { REPO_ROOT } from './helpers.js';
 
 process.chdir(REPO_ROOT);
 

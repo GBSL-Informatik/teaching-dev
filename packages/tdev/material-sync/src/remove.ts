@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import minimist from 'minimist';
 import {
     docBasePath,
@@ -10,7 +10,7 @@ import {
     resolveMaterialConfig,
     saveMaterialConfig,
     SyncConfig
-} from './helpers';
+} from './helpers.js';
 
 process.chdir(REPO_ROOT);
 
