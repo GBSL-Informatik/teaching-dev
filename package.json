@@ -86,7 +86,7 @@
         "react-ace": "^14.0.1",
         "react-diff-viewer-continued": "^3.4.0",
         "react-dom": "^19.2.4",
-        "react-draggable": "^4.5.0",
+        "react-draggable": "4.5.0",
         "react-katex": "^3.1.0",
         "react-quilljs": "^2.0.5",
         "react-select": "^5.10.2",
