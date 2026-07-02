@@ -10,8 +10,7 @@ const { DOCS_ONLY } = siteConfig.customFields as { DOCS_ONLY?: boolean };
 import { Course, useClassVersions } from './useClassVersions';
 
 // add additional courses here, e.g. for workshops or alumni
-// CourseList.push({ title: 'Workshops', classes: ['LPs'] });
-const CourseList: Course[] = [];
+// CourseList.push();
 
 // const CourseComponent = (course: Course) => {
 const CourseComponent = ({ course }: { course: Course }) => {
@@ -40,7 +39,13 @@ const CourseComponent = ({ course }: { course: Course }) => {
     );
 };
 
-const HomepageCourses = observer(() => {
+interface Props {
+    // [{ title: 'Workshops', classes: ['LPs'] }]
+    courseList?: Course[];
+    extendDefaultCourses?: boolean;
+}
+
+const HomepageCourses = observer((props: Props) => {
     const userStore = useStore('userStore');
     const { courseList } = useClassVersions();
     const isBrowser = useIsBrowser();
@@ -53,12 +58,16 @@ const HomepageCourses = observer(() => {
         <section className={styles.features}>
             <div className="container">
                 <div className="row">
-                    {!DOCS_ONLY && (
+                    {!DOCS_ONLY && (!props.courseList || props.extendDefaultCourses) && (
                         <>
                             {courseList.map((course, idx) => (
                                 <CourseComponent key={idx} course={course} />
                             ))}
-                            {CourseList.map((course, idx) => (
+                        </>
+                    )}
+                    {!DOCS_ONLY && (
+                        <>
+                            {props.courseList?.map((course, idx) => (
                                 <CourseComponent key={idx} course={course} />
                             ))}
                         </>
