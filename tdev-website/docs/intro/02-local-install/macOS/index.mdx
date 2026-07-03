@@ -1,0 +1,33 @@
+---
+page_id: 32bac747-e12e-43ea-9f10-a5c98107129c
+---
+import Steps from '@tdev-components/Steps'
+
+# MacOS
+
+Für eine reibungslose und zukunfssichere Nutzung von NodeJS, wird NVM (Node Version Manager) empfohlen. NVM ermöglicht es, mehrere NodeJS-Versionen auf demselben System zu installieren und zu verwalten.
+
+NVM
+: [Webseite NVM](https://www.nvmnode.com)
+: [Installationsanleitung](https://www.nvmnode.com/guide/installation-sh.html)
+
+<Steps>
+1. NVM herunterladen und installieren:
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+   source ~/.zshrc
+   nvm -v # 0.39.3
+   ```
+
+2. NodeJS installieren:
+   ```bash
+   nvm install 24.18.0
+   nvm use 24.18.0 # Version v24.18.0 verwenden
+   nvm alias default 24.18.0 # v24.18.0 als Standardversion festlegen
+   node -v # v24.18.0
+   ```
+3. Paketmanager `yarn` installieren:
+   ```bash
+   npm install -g yarn
+   ```
+</Steps>
