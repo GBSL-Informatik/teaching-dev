@@ -100,6 +100,31 @@ class IndexedDbAdapter implements DbAdapter {
             await indexedDB.deleteDatabase(this.dbName);
         });
     }
+    async exportDb(): Promise<{ [storeName: string]: any }> {
+        return withFallback(async () => {
+            const db = await this.dbPromise;
+            const exportData: { [storeName: string]: any } = {};
+            for (const storeName of ['documents', 'studentGroups', 'permissions']) {
+                exportData[storeName] = await db.getAll(storeName);
+            }
+            // Here you can handle the exportData, e.g., save it to a file or send it to a server
+            return exportData;
+        });
+    }
+    async importDb(data: { [storeName: string]: any }): Promise<void> {
+        return withFallback(async () => {
+            const db = await this.dbPromise;
+            for (const storeName of Object.keys(data)) {
+                if (!db.objectStoreNames.contains(storeName)) {
+                    continue;
+                }
+                const items = data[storeName];
+                for (const item of items) {
+                    await db.put(storeName, item);
+                }
+            }
+        });
+    }
 }
 
 export default IndexedDbAdapter;

@@ -1,0 +1,16 @@
+.exportPanel {
+    max-width: 45em;
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    .docTypes {
+        flex-wrap: wrap;
+        --ifm-button-border-radius: 0;
+        justify-content: stretch;
+        .docTypeButton {
+            flex-grow: 1;
+        }
+    }
+}

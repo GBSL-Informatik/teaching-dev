@@ -52,6 +52,15 @@ class MemoryDbAdapter implements DbAdapter {
         console.log('MemoryDbAdapter: Database destroyed');
         return Promise.resolve();
     }
+
+    async exportDb(): Promise<{ [storeName: string]: any }> {
+        return Promise.resolve(this.db);
+    }
+    async importDb(data: { [storeName: string]: any }): Promise<void> {
+        this.db = data;
+        console.log('MemoryDbAdapter: Database imported');
+        return Promise.resolve();
+    }
 }
 
 export default MemoryDbAdapter;

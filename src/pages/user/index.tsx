@@ -8,6 +8,8 @@ import {
     mdiArrowRightThin,
     mdiCircle,
     mdiCloudQuestion,
+    mdiDatabaseExport,
+    mdiDatabaseImport,
     mdiDeleteEmptyOutline,
     mdiHarddiskRemove,
     mdiLogout
@@ -25,7 +27,7 @@ import { useIsLive } from '@tdev-hooks/useIsLive';
 import Badge from '@tdev-components/shared/Badge';
 import { SIZE_M, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import api from '@tdev-api/base';
+import api, { indexedDb } from '@tdev-api/base';
 import { authClient } from '@tdev/auth-client';
 import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
 
@@ -94,6 +96,69 @@ const UserPage = observer(() => {
                             {sessionStore.apiMode}
                         </Badge>
                     </dd>
+                    {sessionStore.apiMode === 'indexedDB' && (
+                        <>
+                            <dt>Datenbank</dt>
+                            <dd>
+                                <Button
+                                    icon={mdiDatabaseExport}
+                                    text="Exportieren"
+                                    color="blue"
+                                    onClick={() => {
+                                        indexedDb.exportDb().then((blob) => {
+                                            const dataStr =
+                                                'data:text/json;charset=utf-8,' +
+                                                encodeURIComponent(JSON.stringify(blob, null, 2));
+                                            const downloadAnchorNode = document.createElement('a');
+                                            downloadAnchorNode.setAttribute('href', dataStr);
+                                            downloadAnchorNode.setAttribute(
+                                                'download',
+                                                `indexedDB_export_${new Date().toISOString()}.json`
+                                            );
+                                            document.body.appendChild(downloadAnchorNode);
+                                            downloadAnchorNode.click();
+                                            downloadAnchorNode.remove();
+                                        });
+                                    }}
+                                />
+                            </dd>
+                            <dd>
+                                <Button
+                                    icon={mdiDatabaseImport}
+                                    text="Importieren"
+                                    color="green"
+                                    iconSide="left"
+                                    onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = '.json';
+                                        input.onchange = (event) => {
+                                            const file = (event.target as HTMLInputElement).files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (e) => {
+                                                    try {
+                                                        const jsonData = JSON.parse(
+                                                            e.target?.result as string
+                                                        );
+                                                        indexedDb.importDb(jsonData).then(() => {
+                                                            window.location.reload();
+                                                        });
+                                                    } catch (error) {
+                                                        window.alert(
+                                                            'Fehler beim Importieren der Daten: ' + error
+                                                        );
+                                                    }
+                                                };
+                                                reader.readAsText(file);
+                                            }
+                                        };
+                                        input.click();
+                                    }}
+                                />
+                            </dd>
+                        </>
+                    )}
                     {sessionStore.apiMode === 'api' && (
                         <>
                             <dt>{userStore.isUserSwitched ? 'Ansicht für' : 'Eingeloggt als'}</dt>
