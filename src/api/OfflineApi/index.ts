@@ -15,7 +15,7 @@ import { DB_NAME } from '@tdev-api/config';
 const TIME_NOW = new Date().toISOString();
 const LOG_REQUESTS = false;
 
-let OfflineUser: User = {
+export const DEFAULT_OFFLINE_USER: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
     email: 'offline.user@tdev.ch',
     name: 'Offline User',
@@ -26,12 +26,24 @@ let OfflineUser: User = {
     updatedAt: TIME_NOW
 };
 
+const UserStore = () => {
+    let user: User = { ...DEFAULT_OFFLINE_USER };
+    return {
+        getUser: () => user,
+        setUser: (newUser: User) => {
+            user = { ...newUser };
+        }
+    };
+};
+
+export const OfflineUser = UserStore();
+
 const DOCUMENTS_STORE = 'documents';
 const STUDENT_GROUPS_STORE = 'studentGroups';
 const PERMISSIONS_STORE = 'permissions';
-export const getOfflineUser = () => ({ ...OfflineUser });
 
 const resolveResponse = <T>(data: T, statusCode: number = 200, statusText: string = ''): AxiosPromise<T> => {
+    logRes(statusCode, statusText, data);
     return Promise.resolve({
         data,
         status: statusCode,
@@ -53,8 +65,25 @@ const rejectResponse = <T>(data: T, statusCode: number = 400, statusText: string
 };
 
 const log = (method: string, url: string, data?: any) => {
-    if (LOG_REQUESTS) {
+    if (!LOG_REQUESTS) {
+        return;
+    }
+    const hasData = Array.isArray(data) ? data.length > 0 : !!data;
+    if (hasData) {
         console.log(`[${method}]: ${url}`, data);
+    } else {
+        console.log(`[${method}]: ${url}`);
+    }
+};
+
+const logRes = (statusCode: number, statusText: string, data?: any) => {
+    if (!LOG_REQUESTS) {
+        return;
+    }
+    if (statusText) {
+        console.log(`     [${statusCode}] ${statusText}`, data);
+    } else {
+        console.log('    ', data);
     }
 };
 
@@ -129,7 +158,7 @@ export default class OfflineApi {
         const document: Document<T> = {
             createdAt: tNow,
             updatedAt: tNow,
-            authorId: OfflineUser.id,
+            authorId: OfflineUser.getUser().id,
             documentRootId: data.documentRootId,
             id: uuidv4(),
             ...data
@@ -145,8 +174,8 @@ export default class OfflineApi {
             id: id,
             name: 'Offline Group',
             description: 'Offline Group Description',
-            userIds: [OfflineUser.id],
-            adminIds: [OfflineUser.id],
+            userIds: [OfflineUser.getUser().id],
+            adminIds: [OfflineUser.getUser().id],
             parentId: null,
             createdAt: TIME_NOW,
             updatedAt: TIME_NOW,
@@ -163,6 +192,16 @@ export default class OfflineApi {
         log('post', url, data);
         switch (model) {
             case 'admin':
+                if (id === 'export') {
+                    const exportedData = await this.dbAdapter
+                        .getAll<Document<any>>(DOCUMENTS_STORE)
+                        .then((docs) => docs.filter((d) => d.authorId === OfflineUser.getUser().id));
+                    const data = {
+                        user: OfflineUser.getUser(),
+                        documents: exportedData
+                    };
+                    return resolveResponse(data as unknown as T);
+                }
                 return resolveResponse(data as unknown as T);
             case 'cms':
                 return resolveResponse({} as unknown as T);
@@ -256,7 +295,7 @@ export default class OfflineApi {
 
         switch (model) {
             case 'user':
-                return resolveResponse(OfflineUser as unknown as T);
+                return resolveResponse(OfflineUser.getUser() as unknown as T);
             case 'admin':
                 return resolveResponse([] as unknown as T);
             case 'allowedActions':
@@ -286,7 +325,7 @@ export default class OfflineApi {
                     (await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE)) as unknown as T
                 );
             case 'users':
-                return resolveResponse([OfflineUser] as unknown as T);
+                return resolveResponse([OfflineUser.getUser()] as unknown as T);
             case 'documentRoots':
                 if (parts[0] === 'permissions') {
                     return resolveResponse({

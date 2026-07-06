@@ -5,6 +5,7 @@ import Layout from '@theme/Layout';
 import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
 import {
+    mdiAlertOutline,
     mdiArrowRightThin,
     mdiCircle,
     mdiCloudQuestion,
@@ -14,7 +15,6 @@ import {
     mdiHarddiskRemove,
     mdiLogout
 } from '@mdi/js';
-import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import Loader from '@tdev-components/Loader';
@@ -30,12 +30,10 @@ import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import api, { indexedDb } from '@tdev-api/base';
 import { authClient } from '@tdev/auth-client';
 import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
+import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi';
+import customFields from '@tdev-components/util/customFields';
 
-const { NO_AUTH, OFFLINE_API, TEST_USER } = siteConfig.customFields as {
-    NO_AUTH?: boolean;
-    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
-    TEST_USER?: string;
-};
+const { NO_AUTH, OFFLINE_API, TEST_USER } = customFields;
 
 const API_MODES_DESCRIPTION: Record<string, string> = {
     api: 'Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten.',
@@ -57,7 +55,7 @@ const UserPage = observer(() => {
     const isBrowser = useIsBrowser();
     const sessionStore = useStore('sessionStore');
     const authStore = useStore('authStore');
-    const adminStore = useStore('adminStore');
+    const rootStore = authStore.root;
     const userStore = useStore('userStore');
     const socketStore = useStore('socketStore');
     const groupStore = useStore('studentGroupStore');
@@ -80,25 +78,19 @@ const UserPage = observer(() => {
             <main className={clsx(styles.main)}>
                 <h2>User</h2>
                 <DefinitionList className={clsx(styles.userInfo)}>
-                    <dt>API-Modus</dt>
-                    <dd>
-                        <Badge
-                            color="blue"
-                            className={clsx(styles.badge)}
-                            title={API_MODES_DESCRIPTION[sessionStore.apiMode]}
-                        >
-                            <Icon
-                                path={sessionStore.apiModeIcon}
-                                size={SIZE_M}
-                                color={'var(--ifm-color-white'}
-                                className={clsx(styles.icon)}
-                            />
-                            {sessionStore.apiMode}
-                        </Badge>
-                    </dd>
+                    {sessionStore.apiMode !== 'api' && userStore.current?.id !== DEFAULT_OFFLINE_USER.id && (
+                        <>
+                            <dt>User</dt>
+                            <dd>
+                                {viewedUser?.firstName} {viewedUser?.lastName}
+                            </dd>
+                            <dt>Email</dt>
+                            <dd>{viewedUser?.email}</dd>
+                        </>
+                    )}
                     {sessionStore.apiMode === 'indexedDB' && (
                         <>
-                            <dt>Datenbank</dt>
+                            <dt>Userdaten</dt>
                             <dd>
                                 <Button
                                     icon={mdiDatabaseExport}
@@ -123,12 +115,15 @@ const UserPage = observer(() => {
                                 />
                             </dd>
                             <dd>
-                                <Button
+                                <Confirm
                                     icon={mdiDatabaseImport}
                                     text="Importieren"
                                     color="green"
                                     iconSide="left"
-                                    onClick={() => {
+                                    confirmColor="warning"
+                                    confirmText="Aktuell geladene Userdaten werden überschrieben. Fortfahren?"
+                                    confirmIcon={mdiAlertOutline}
+                                    onConfirm={() => {
                                         const input = document.createElement('input');
                                         input.type = 'file';
                                         input.accept = '.json';
@@ -159,6 +154,22 @@ const UserPage = observer(() => {
                             </dd>
                         </>
                     )}
+                    <dt>API-Modus</dt>
+                    <dd>
+                        <Badge
+                            color="blue"
+                            className={clsx(styles.badge)}
+                            title={API_MODES_DESCRIPTION[sessionStore.apiMode]}
+                        >
+                            <Icon
+                                path={sessionStore.apiModeIcon}
+                                size={SIZE_M}
+                                color={'var(--ifm-color-white'}
+                                className={clsx(styles.icon)}
+                            />
+                            {sessionStore.apiMode}
+                        </Badge>
+                    </dd>
                     {sessionStore.apiMode === 'api' && (
                         <>
                             <dt>{userStore.isUserSwitched ? 'Ansicht für' : 'Eingeloggt als'}</dt>
