@@ -23,14 +23,10 @@ import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import { CmsSettings } from '@tdev-api/cms';
 import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
 import StudentGroup from '@tdev-models/StudentGroup';
-import siteConfig from '@generated/docusaurus.config';
 import { authClient } from '@tdev/auth-client';
 import { User } from '@tdev-api/user';
-const { OFFLINE_API, BACKEND_URL } = siteConfig.customFields as {
-    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
-    BACKEND_URL: string;
-};
-
+import customFields from '@tdev-components/util/customFields';
+const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.

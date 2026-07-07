@@ -18,7 +18,7 @@ import customFields from '@tdev-components/util/customFields';
 import { indexedDb } from '@tdev-api/base';
 import { User } from '@tdev-api/user';
 const hasher = new Hashery({ cache: { enabled: true, maxSize: 5 } });
-const { OFFLINE_API, SENTRY_DSN } = customFields;
+const { OFFLINE_API, SENTRY_DSN, APP_URL } = customFields;
 
 if (!ExecutionEnvironment.canUseDOM) {
     enableStaticRendering(true);
@@ -271,10 +271,7 @@ function Root({ children }: { children: React.ReactNode }) {
         <>
             <Head>
                 <meta property="og:description" content={siteConfig.tagline} />
-                <meta
-                    property="og:image"
-                    content={`${siteConfig.customFields?.DOMAIN || ''}/img/og-preview.jpeg`}
-                />
+                <meta property="og:image" content={`${APP_URL || ''}/img/og-preview.jpeg`} />
             </Head>
             <StoresProvider value={rootStore}>
                 <ExposeRootStoreToWindow />

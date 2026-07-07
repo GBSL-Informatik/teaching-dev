@@ -5,9 +5,9 @@ export interface TdevCustomFields {
     TEST_USER?: string;
     OFFLINE_API: 'indexedDB' | boolean;
     NO_AUTH: boolean;
-    /** The Domain Name where the api is running */
-    APP_URL?: string;
     /** The Domain Name of this app */
+    APP_URL?: string;
+    /** The Domain Name where the api is running */
     BACKEND_URL: string;
     GIT_COMMIT_SHA: string;
     SENTRY_DSN?: string;
@@ -17,4 +17,7 @@ export interface TdevCustomFields {
     showEditThisPageOptions: EditThisPageOption[];
     editThisPageCmsUrl: string;
     tdevConfig: Partial<TdevConfig>;
+
+    // legacy?
+    DOCS_ONLY?: boolean;
 }

@@ -15,12 +15,9 @@ import _ from 'es-toolkit/compat';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
-import siteConfig from '@generated/docusaurus.config';
-import type { TdevConfig } from '@tdev/siteConfig/siteConfig';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-const { tdevConfig } = siteConfig.customFields as {
-    tdevConfig: Partial<TdevConfig>;
-};
+import customFields from '@tdev-components/util/customFields';
+const { tdevConfig } = customFields;
 
 export const mdiColor: { [key in StateType]: string } = {
     checked: '--ifm-color-success',

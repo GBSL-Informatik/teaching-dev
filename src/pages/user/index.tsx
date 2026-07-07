@@ -33,7 +33,7 @@ import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
 import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi';
 import customFields from '@tdev-components/util/customFields';
 
-const { NO_AUTH, OFFLINE_API, TEST_USER } = customFields;
+const { NO_AUTH, OFFLINE_API } = customFields;
 
 const API_MODES_DESCRIPTION: Record<string, string> = {
     api: 'Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten.',

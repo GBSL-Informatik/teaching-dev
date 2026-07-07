@@ -8,7 +8,8 @@ import AdminNavPopup from './AdminNavPopup';
 import ProfileButton from './ProfileButton';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import { authClient } from '@tdev/auth-client';
-const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
+import customFields from '@tdev-components/util/customFields';
+const { NO_AUTH } = customFields;
 
 const LoginButton = () => {
     const loginUrl = useBaseUrl('/login');
