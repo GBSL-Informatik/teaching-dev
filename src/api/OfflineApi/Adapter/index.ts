@@ -29,4 +29,6 @@ export interface DbAdapter {
     put<T>(storeName: string, item: T & { id: string }, id?: IDBKeyRange | IDBValidKey): Promise<void>;
     delete(storeName: string, id: string): Promise<void>;
     destroyDb(): Promise<void>;
+    importDb(data: { [storeName: string]: any }): Promise<void>;
+    exportDb(): Promise<{ [storeName: string]: any }>;
 }

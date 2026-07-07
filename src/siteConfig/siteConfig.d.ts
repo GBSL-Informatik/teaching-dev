@@ -22,6 +22,14 @@ export interface TdevConfig {
         persistChoiceTo?: 'session' | 'localStorage';
         disable?: boolean;
     };
+    /**
+     * database config for students - this is only relevant for offline mode (indexedDB or memory) and is ignored in online mode (api)
+     */
+    database: {
+        preventImport?: boolean;
+        preventExport?: boolean;
+        preventDestroy?: boolean;
+    };
 }
 
 export interface SiteConfig {

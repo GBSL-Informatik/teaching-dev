@@ -1,5 +1,5 @@
 import siteConfig from '@generated/docusaurus.config';
-import { indexedDb } from '@tdev-api/base';
+import { localDb } from '@tdev-api/base';
 const { organizationName, projectName } = siteConfig;
 
 const hasFileRequiredFiles = async (directoryHandle: FileSystemDirectoryHandle, fileNames: string[]) => {
@@ -23,14 +23,14 @@ export const restoreAccess = async (
     assertFilePresence: string[]
 ) => {
     try {
-        const dirHandle = await indexedDb.get<FileSystemDirectoryHandle>('fsHandles', id);
+        const dirHandle = await localDb.get<FileSystemDirectoryHandle>('fsHandles', id);
         if (dirHandle) {
             if ((await dirHandle.queryPermission({ mode: permission })) !== 'granted') {
                 await dirHandle.requestPermission({ mode: permission });
             }
             const hasFiles = await hasFileRequiredFiles(dirHandle, assertFilePresence);
             if (!hasFiles) {
-                await indexedDb.delete('fsHandles', id);
+                await localDb.delete('fsHandles', id);
                 return null;
             }
             return dirHandle;
@@ -79,7 +79,7 @@ const requestLocalDirectoryAccess = async (
             }
         }
         if (cacheKey) {
-            await indexedDb.put('fsHandles', directoryHandle, cacheKey);
+            await localDb.put('fsHandles', directoryHandle, cacheKey);
         }
         return directoryHandle;
     } catch (err: any) {

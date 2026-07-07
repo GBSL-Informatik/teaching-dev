@@ -11,7 +11,7 @@ import {
     FS_DocusaurusRootID,
     restoreAccess
 } from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
-import { indexedDb } from '@tdev-api/base';
+import { localDb } from '@tdev-api/base';
 
 const IsDevMode = process.env.NODE_ENV === ('development' as const);
 
@@ -64,7 +64,7 @@ const DevModeAccessLocalFS = observer(() => {
                 onClick={async () => {
                     setHovered(false);
                     if (rootHandle) {
-                        indexedDb.delete('fsHandles', FS_DocusaurusRootID);
+                        localDb.delete('fsHandles', FS_DocusaurusRootID);
                         sessionStore.setFileSystemDirectoryHandle('root', undefined);
                     } else {
                         await requestDocusaurusRootAcess();

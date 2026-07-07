@@ -8,7 +8,7 @@ import ImageMarkupEditor from '..';
 import requestLocalDirectoryAccess, {
     restoreAccess
 } from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
-import { indexedDb } from '@tdev-api/base';
+import { localDb } from '@tdev-api/base';
 import type { DirType } from '@tdev-components/FileSystem/Dir';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 import { IMAGE_RE } from '../helpers/constants';
@@ -72,7 +72,7 @@ const StandaloneEditor = observer((props: Props) => {
             return;
         }
         // Cache for future page loads
-        await indexedDb.put('fsHandles', handle, FS_STANDALONE_EDITOR_ID);
+        await localDb.put('fsHandles', handle, FS_STANDALONE_EDITOR_ID);
         applyDirHandle(handle);
     }, [applyDirHandle]);
 

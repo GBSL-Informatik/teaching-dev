@@ -13,7 +13,7 @@ import _ from 'es-toolkit/compat';
 import { DB_NAME } from '@tdev-api/config';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = false;
+const LOG_REQUESTS = true;
 
 export const DEFAULT_OFFLINE_USER: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -32,6 +32,9 @@ const UserStore = () => {
         getUser: () => user,
         setUser: (newUser: User) => {
             user = { ...newUser };
+        },
+        reset: () => {
+            user = { ...DEFAULT_OFFLINE_USER };
         }
     };
 };

@@ -15,7 +15,7 @@ import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { Hashery } from 'hashery';
 import customFields from '@tdev-components/util/customFields';
-import { indexedDb } from '@tdev-api/base';
+import { localDb } from '@tdev-api/base';
 import { User } from '@tdev-api/user';
 const hasher = new Hashery({ cache: { enabled: true, maxSize: 5 } });
 const { OFFLINE_API, SENTRY_DSN, APP_URL } = customFields;
@@ -91,14 +91,14 @@ const OfflineApi = observer(() => {
         if (OFFLINE_API !== 'indexedDB') {
             return load();
         }
-        indexedDb.getAll<User>('users').then(async (users) => {
+        localDb.getAll<User>('users').then(async (users) => {
             if (users.length === 0) {
                 return load();
             }
             while (users.length > 1) {
                 const user = users.pop();
                 if (user) {
-                    await indexedDb.delete('users', user.id);
+                    await localDb.delete('users', user.id);
                 }
             }
             const user = users[0];
