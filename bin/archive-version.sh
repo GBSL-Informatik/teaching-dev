@@ -5,6 +5,9 @@ set -e
 
 usage="usage: ./archive-version.sh \"28Gj,28Gk,28Gl\" git@github.com:lebalz/ofi-blog-v26.gitpo>.git v28.domain.ch"
 
+# export env variable "BUILD_ARCHIVE" to indicate that we are building the archive version
+export BUILD_ARCHIVE=true
+
 # second argument are comma separated list of versions to deploy to, e.g. "28Gj,28Gk,28Gl"
 # split into array using IFS
 IFS=',' read -r -a VERSIONS <<< "$1"
@@ -33,6 +36,24 @@ fi
 
 yarn workspace @tdev/material-sync sync
 yarn workspace @tdev/material-sync prepareArchive "$VERSIONS_CSV" --domain="$DOMAIN"
+
+# inform the user, that now he can make additional changes to the archive versions, e.g. modify landing page or edit the .env file,
+# before committing the changes and building the static site
+echo "You can now make additional changes to the archive versions, e.g. modify landing page or edit the .env file, before committing the changes and building the static site."
+echo "Want to continue? [y/n]"
+read -r answer
+if [[ "$answer" != "y" ]]; then
+  echo "Aborting. Steps to do manually:"
+  echo "1. git add . && git commit -m \"Prepare archive for versions: $VERSIONS_CSV\""
+  echo "2. yarn run docusaurus build"
+  echo "3. git push origin $BRANCH"
+  echo "4. cd build && git init . && git add . && git commit -m \"initial commit\" && git branch -M main && git remote add origin $REMOTE_URL"
+  echo "5. git push -u origin main --force"
+  echo "6. cd .. && rm -rf build # cleanup"
+  echo "7. git checkout main"
+  exit 1
+fi
+
 git add .
 git commit -m "Prepare archive for versions: $VERSIONS_CSV"
 
