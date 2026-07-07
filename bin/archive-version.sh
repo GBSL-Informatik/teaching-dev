@@ -51,9 +51,10 @@ fi
 
 cd build
 git init .
-git remote add origin $REMOTE_URL
 git add .
 git commit -m "initial commit"
+git branch -M main
+git remote add origin $REMOTE_URL
 git push -u origin main --force
 cd ..
 rm -rf build
