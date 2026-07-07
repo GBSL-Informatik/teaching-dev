@@ -10,7 +10,8 @@
     "remove": "tsx src/remove.ts",
     "cleanup": "tsx src/cleanup.ts",
     "restore": "tsx src/restore.ts",
-    "addClass": "tsx src/add_class.ts"
+    "addClass": "tsx src/add_class.ts",
+    "prepareArchive": "tsx src/prepare_archive.ts"
   },
   "dependencies": {
   },
