@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import { observer } from 'mobx-react-lite';
+import { DEFAULT_OFFLINE_USER, OfflineUser } from '@tdev-api/OfflineApi';
 
 interface Props {
     preventClick?: boolean;
@@ -41,7 +42,11 @@ const ProfileButton = observer(({ preventClick = false }: Props) => {
                     color="primary"
                     href={preventClick ? undefined : userUrl}
                     title="Persönlicher Bereich"
-                    text="Profil"
+                    text={
+                        userStore.viewedUserId !== DEFAULT_OFFLINE_USER.id
+                            ? userStore.viewedUser?.nameShort || 'Profil'
+                            : 'Profil'
+                    }
                     className={clsx(styles.button)}
                     textClassName={clsx(styles.text)}
                 />
