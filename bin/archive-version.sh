@@ -3,13 +3,14 @@
 set -e
 
 
-usage="usage: ./archive-version.sh \"28Gj,28Gk,28Gl\" git@github.com:lebalz/ofi-blog-v26.gitpo>.git"
+usage="usage: ./archive-version.sh \"28Gj,28Gk,28Gl\" git@github.com:lebalz/ofi-blog-v26.gitpo>.git v28.domain.ch"
 
 # second argument are comma separated list of versions to deploy to, e.g. "28Gj,28Gk,28Gl"
 # split into array using IFS
 IFS=',' read -r -a VERSIONS <<< "$1"
 
 REMOTE_URL=$2
+DOMAIN=$3
 
 # print the versions to deploy to
 # comma separated list of versions to deploy to, e.g. "28Gj,28Gk,28Gl"
@@ -32,7 +33,7 @@ else
 fi
 
 yarn workspace @tdev/material-sync sync
-yarn workspace @tdev/material-sync prepareArchive "$VERSIONS_CSV"
+yarn workspace @tdev/material-sync prepareArchive "$VERSIONS_CSV" --domain="$DOMAIN"
 git add .
 git commit -m "Prepare archive for versions: $VERSIONS_CSV"
 git tag -a "$VERSIONS_DASH" -m "Archive for versions: $VERSIONS_CSV"

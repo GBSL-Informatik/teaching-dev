@@ -16,8 +16,8 @@ yarn run prepare_archive [classNames]
 
 examples:
 
-yarn run prepare_archive 30Gx               // prepares archive for a single class
-yarn run prepare_archive 30Ga,30Gx          // prepares archive for multiple classes
+yarn run prepare_archive 30Gx --domain=archive.user.com          // prepares archive for a single class
+yarn run prepare_archive 30Ga,30Gx --domain=archive.user.com     // prepares archive for multiple classes
 `);
     exit(0);
 }
@@ -55,6 +55,8 @@ const main = async (): Promise<void> => {
     await fs.rm(DOCS_FOLDER, { recursive: true, force: true });
     await fs.mkdir(DOCS_FOLDER, { recursive: true });
     await fs.writeFile(path.join(DOCS_FOLDER, 'home.mdx'), DocsHome);
+    await fs.writeFile(path.join(REPO_ROOT, 'CNAME'), argv.domain);
+    await fs.writeFile(path.join(REPO_ROOT, 'static', 'CNAME'), argv.domain);
 
     console.log('✅ Created archive for:', toArchive.join(', '), argv);
 };
