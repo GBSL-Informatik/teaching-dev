@@ -27,12 +27,19 @@ if [[ -n $(git status --porcelain) ]]; then
   exit 1
 fi
 
+# ensure that the current branch is main
+if [[ $(git rev-parse --abbrev-ref HEAD) != "main" ]]; then
+  echo "Error: You are not on the main branch. Please switch to the main branch before deploying."
+  exit 1
+fi
+
 # checkout existing branch or create new branch
 if git show-ref --verify --quiet refs/heads/$BRANCH; then
-  git checkout $BRANCH
-else
-  git checkout -b $BRANCH
+  echo "Branch $BRANCH already exists. Forcing to delete it and create a new one based on main."
+  git branch -D $BRANCH
 fi
+
+git checkout -b $BRANCH
 
 yarn workspace @tdev/material-sync sync
 yarn workspace @tdev/material-sync prepareArchive "$VERSIONS_CSV" --domain="$DOMAIN"
