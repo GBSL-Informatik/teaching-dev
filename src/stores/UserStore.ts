@@ -6,7 +6,7 @@ import _ from 'es-toolkit/compat';
 import Storage, { PersistedData } from '@tdev-stores/utils/Storage';
 import { computedFn } from 'mobx-utils';
 import iStore from '@tdev-stores/iStore';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 export class UserStore extends iStore<`update-${string}`> {
     readonly root: RootStore;

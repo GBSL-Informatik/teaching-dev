@@ -9,7 +9,7 @@ import {
     ParagraphNode,
     TextNode
 } from 'lexical';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 let cleanupInsertedParagraph: (() => void) | null = null;
 const lastKeys: [string, string] = ['null', 'null'];
 const OPPOSITE = {

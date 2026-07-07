@@ -16,7 +16,7 @@ import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilt
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 const { tdevConfig } = customFields;
 
 export const mdiColor: { [key in StateType]: string } = {

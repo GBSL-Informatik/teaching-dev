@@ -4,7 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
 import { mdiKeyboardTab } from '@mdi/js';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 interface Props {
     defaultValue?: string;

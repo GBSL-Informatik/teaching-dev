@@ -14,7 +14,7 @@ import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { Hashery } from 'hashery';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 import { localDb } from '@tdev-api/base';
 import { User } from '@tdev-api/user';
 const hasher = new Hashery({ cache: { enabled: true, maxSize: 5 } });

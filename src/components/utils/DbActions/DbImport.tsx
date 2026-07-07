@@ -4,7 +4,7 @@ import { mdiAlertOutline, mdiDatabaseImport } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { localDb } from '@tdev-api/base';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 
 const { tdevConfig } = customFields;
 

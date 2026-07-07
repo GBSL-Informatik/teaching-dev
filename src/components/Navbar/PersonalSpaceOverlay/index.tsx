@@ -10,7 +10,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { authClient } from '@tdev/auth-client';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 const { PERSONAL_SPACE_DOC_ROOT_ID } = customFields;
 
 const PersonalSpaceOverlay = observer(() => {

@@ -8,7 +8,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import Icon from '@mdi/react';
 import { mdiArrowLeftCircle, mdiArrowRightCircle, mdiDownload } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import Loader from '@tdev-components/Loader';
 
 export interface Props {

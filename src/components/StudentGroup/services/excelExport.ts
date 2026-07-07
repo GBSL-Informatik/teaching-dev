@@ -1,7 +1,7 @@
 import StudentGroup from '@tdev-models/StudentGroup';
 import ExcelJS from 'exceljs';
 import siteConfig from '@generated/docusaurus.config';
-import saveAs from '@tdev-components/util/saveAs';
+import saveAs from '@tdev-components/utils/saveAs';
 
 export async function exportAsExcelSpreadsheet(group: StudentGroup) {
     const workbook = new ExcelJS.Workbook();

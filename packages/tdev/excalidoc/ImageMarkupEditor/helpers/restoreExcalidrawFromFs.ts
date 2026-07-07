@@ -1,6 +1,6 @@
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
+import requestFileHandle from '@tdev-components/utils/localFS/requestFileHandle';
 import { getImageElementFromScene, getImageFileFromScene } from './getElementsFromScene';
 import dataUrlToBlob from './dataUrlToBlob';
 import { CustomData } from './constants';

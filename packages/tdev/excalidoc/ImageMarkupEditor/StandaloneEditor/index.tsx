@@ -7,7 +7,7 @@ import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import ImageMarkupEditor from '..';
 import requestLocalDirectoryAccess, {
     restoreAccess
-} from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
+} from '@tdev-components/utils/localFS/requestLocalDirectoryAccess';
 import { localDb } from '@tdev-api/base';
 import type { DirType } from '@tdev-components/FileSystem/Dir';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';

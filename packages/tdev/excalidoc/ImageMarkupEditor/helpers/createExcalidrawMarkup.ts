@@ -1,5 +1,5 @@
-import fileToDataUrl from '@tdev-components/util/localFS/fileToDataUrl';
-import getImageDimensions from '@tdev-components/util/localFS/getImageDimensions';
+import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
+import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { BinaryFileData, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import {

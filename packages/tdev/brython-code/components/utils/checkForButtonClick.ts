@@ -1,4 +1,4 @@
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import { DraggableEvent } from 'react-draggable';
 /**
  * When using react-draggable, the click-event is not propagated

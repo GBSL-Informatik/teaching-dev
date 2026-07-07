@@ -1,5 +1,5 @@
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
-import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
+import requestFileHandle from '@tdev-components/utils/localFS/requestFileHandle';
 import { createExcalidrawMarkup, updateRectangleDimensions } from './createExcalidrawMarkup';
 import extractExalidrawImageName from './extractExalidrawImageName';
 import writeFileHandle from './writeFileHandle';

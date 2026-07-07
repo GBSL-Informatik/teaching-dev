@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { mdiHarddiskRemove } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import { localDb } from '@tdev-api/base';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 
 const { tdevConfig } = customFields;

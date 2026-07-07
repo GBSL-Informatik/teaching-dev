@@ -16,8 +16,8 @@ import { useIsLive } from '@tdev-hooks/useIsLive';
 import Badge from '@tdev-components/shared/Badge';
 import { SIZE_M, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { authClient } from '@tdev/auth-client';
-import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
-import customFields from '@tdev-components/util/customFields';
+import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
+import customFields from '@tdev-components/utils/customFields';
 
 const { OFFLINE_API } = customFields;
 

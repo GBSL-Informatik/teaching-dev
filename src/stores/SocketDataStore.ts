@@ -25,7 +25,7 @@ import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
 import StudentGroup from '@tdev-models/StudentGroup';
 import { authClient } from '@tdev/auth-client';
 import { User } from '@tdev-api/user';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**

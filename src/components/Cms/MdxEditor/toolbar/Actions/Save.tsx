@@ -8,7 +8,7 @@ import { Color } from '@tdev-components/shared/Colors';
 import Icon from '@mdi/react';
 import { useStore } from '@tdev-hooks/useStore';
 import { ApiState } from '@tdev-stores/iStore';
-import { apiButtonColor, apiIcon } from '@tdev-components/util/apiStateIcon';
+import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
 
 export interface Props {
     file: File;

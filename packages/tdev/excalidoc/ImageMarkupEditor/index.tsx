@@ -16,7 +16,7 @@ import { getSelectedStrokeElements } from './helpers/getSelectedStrokeElements';
 import getSelectedTextElementId from './helpers/getSelectedTextElementId';
 import TopRightUi from './TopRightUi';
 import MainMenu from './MainMenu';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import { getImageElementFromScene } from './helpers/getElementsFromScene';
 import { ExcalidrawFreeDrawElement } from '@excalidraw/excalidraw/element/types';
 

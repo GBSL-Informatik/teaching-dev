@@ -11,8 +11,8 @@ import Button from '@tdev-components/shared/Button';
 import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import DefinitionList from '@tdev-components/DefinitionList';
-import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
-import customFields from '@tdev-components/util/customFields';
+import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
+import customFields from '@tdev-components/utils/customFields';
 const { NO_AUTH, APP_URL } = customFields;
 
 function HomepageHeader() {

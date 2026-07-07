@@ -19,7 +19,7 @@ import { PopupActions } from 'reactjs-popup/dist/types';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { useStore } from '@tdev-hooks/useStore';
 import { ApiState } from '@tdev-stores/iStore';
-import { apiButtonColor, apiIcon } from '@tdev-components/util/apiStateIcon';
+import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
 import NewBranch from '@tdev-components/Cms/Github/Branch/NewBranch';
 
 export interface Props {

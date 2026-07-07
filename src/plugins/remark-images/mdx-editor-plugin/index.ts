@@ -40,7 +40,7 @@ import { $createImageFigureNode, ImageFigureNode } from './ImageFigureNode';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { directiveFromMarkdown } from 'mdast-util-directive';
 import { directive } from 'micromark-extension-directive';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import { $isHeadingNode } from '@lexical/rich-text';
 export * from './ImageNode';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import type { DirType } from '@tdev-components/FileSystem/Dir';
 import writeFileHandle from '../helpers/writeFileHandle';
 import buildImageTree from '../helpers/buildImageTree';
-import requestFileHandle from '@tdev-components/util/localFS/requestFileHandle';
+import requestFileHandle from '@tdev-components/utils/localFS/requestFileHandle';
 
 const useRenameImage = (
     dirHandle: FileSystemDirectoryHandle | null,

@@ -16,7 +16,7 @@ import type {
     ExcalidrawImperativeAPI,
     ExcalidrawInitialDataState
 } from '@excalidraw/excalidraw/types';
-import fileToDataUrl from '@tdev-components/util/localFS/fileToDataUrl';
+import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
 import {
     type CustomData,
     EXCALIDRAW_BACKGROUND_FILE_ID,
@@ -25,7 +25,7 @@ import {
     EXCALIDRAW_MAX_WIDTH
 } from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
 import { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import getImageDimensions from '@tdev-components/util/localFS/getImageDimensions';
+import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import Alert from '@tdev-components/shared/Alert';
 import {

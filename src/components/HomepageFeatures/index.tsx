@@ -8,7 +8,7 @@ import { mdiCheckCircle, mdiCloseCircle, mdiConnection } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Card from '@tdev-components/shared/Card';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 const { BACKEND_URL, NO_AUTH, OFFLINE_API } = customFields;
 
 const HomepageFeatures = observer(() => {

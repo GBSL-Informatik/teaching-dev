@@ -11,12 +11,12 @@ import Icon from '@mdi/react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import Badge from '@tdev-components/shared/Badge';
 import { SIZE_M } from '@tdev-components/shared/iconSizes';
-import CodeThemeToggle from '@tdev-components/util/CodeThemeToggle';
+import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
 import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi';
-import customFields from '@tdev-components/util/customFields';
-import DbImport from './DbActions/DbImport';
-import DbExport from './DbActions/DbExport';
-import DbDestroy from './DbActions/DbDestroy';
+import customFields from '@tdev-components/utils/customFields';
+import DbImport from '@tdev-components/utils/DbActions/DbImport';
+import DbExport from '@tdev-components/utils/DbActions/DbExport';
+import DbDestroy from '@tdev-components/utils/DbActions/DbDestroy';
 import { IfmColors } from '@tdev-components/shared/Colors';
 
 const { OFFLINE_API, tdevConfig } = customFields;

@@ -3,7 +3,7 @@ import type Directory from '@tdev-models/documents/FileSystem/Directory';
 import type File from '@tdev-models/documents/FileSystem/File';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 interface Props {
     model: Directory | File;

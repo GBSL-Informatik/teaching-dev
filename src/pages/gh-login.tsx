@@ -11,7 +11,7 @@ import { Redirect } from '@docusaurus/router';
 import Card from '@tdev-components/shared/Card';
 import LoginProfileButton from '@tdev-components/Navbar/LoginProfileButton';
 import Loader from '@tdev-components/Loader';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 const { APP_URL, GH_OAUTH_CLIENT_ID } = customFields;
 
 const callback = `${APP_URL || 'http://localhost:3000'}/gh-callback`;

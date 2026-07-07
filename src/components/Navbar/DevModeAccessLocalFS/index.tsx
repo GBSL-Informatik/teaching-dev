@@ -5,12 +5,12 @@ import { observer } from 'mobx-react-lite';
 import { mdiFolderCancel, mdiFolderCancelOutline, mdiFolderEditOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
-import requestDocusaurusRootAcess from '@tdev-components/util/localFS/requestDocusaurusRootAcess';
+import requestDocusaurusRootAcess from '@tdev-components/utils/localFS/requestDocusaurusRootAcess';
 import clsx from 'clsx';
 import {
     FS_DocusaurusRootID,
     restoreAccess
-} from '@tdev-components/util/localFS/requestLocalDirectoryAccess';
+} from '@tdev-components/utils/localFS/requestLocalDirectoryAccess';
 import { localDb } from '@tdev-api/base';
 
 const IsDevMode = process.env.NODE_ENV === ('development' as const);

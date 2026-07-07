@@ -9,7 +9,7 @@ import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { mdiClose, mdiImageEditOutline } from '@mdi/js';
 import ImageMarkupEditor from '..';
-import requestDocusaurusRootAcess from '@tdev-components/util/localFS/requestDocusaurusRootAcess';
+import requestDocusaurusRootAcess from '@tdev-components/utils/localFS/requestDocusaurusRootAcess';
 import type { PopupActions } from 'reactjs-popup/dist/types';
 import useExcalidrawSource from '../hooks/useExcalidrawSource';
 

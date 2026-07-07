@@ -7,7 +7,7 @@ import AdminNavPopup from './AdminNavPopup';
 import ProfileButton from './ProfileButton';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import { authClient } from '@tdev/auth-client';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 const { NO_AUTH } = customFields;
 
 const LoginButton = () => {

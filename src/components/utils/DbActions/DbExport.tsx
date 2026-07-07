@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { mdiDatabaseExport } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
 import { localDb } from '@tdev-api/base';
-import customFields from '@tdev-components/util/customFields';
+import customFields from '@tdev-components/utils/customFields';
 import Button from '@tdev-components/shared/Button';
 
 const { tdevConfig } = customFields;

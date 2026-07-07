@@ -15,7 +15,7 @@ import { actionForNext, needsToFocusNext } from '../../helpers/lexical/select-ne
 import { actionForPrevious, needsToFocusPrevious } from '../../helpers/lexical/select-previous-helpers';
 import { selectEndOfDiv } from '../../helpers/lexical/select-end-of-div';
 import { $insertPlaceholderParagraph, $insertPlaceholderText } from '../focusHandler/keyDownHandler';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 const useSelectionHandler = (
     editor: LexicalEditor,

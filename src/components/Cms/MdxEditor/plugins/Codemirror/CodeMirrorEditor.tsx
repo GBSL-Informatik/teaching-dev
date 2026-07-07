@@ -26,7 +26,7 @@ import Popup from 'reactjs-popup';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import MyAttributes from '../../GenericAttributeEditor/MyAttributes';
 import { action } from 'mobx';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 export const COMMON_STATE_CONFIG_EXTENSIONS: Extension[] = [];
 

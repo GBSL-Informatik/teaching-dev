@@ -26,7 +26,7 @@ import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { v4 as uuidv4 } from 'uuid';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 /**
  * A toolbar dropdown button that allows the user to insert admonitions.

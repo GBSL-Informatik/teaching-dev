@@ -4,7 +4,7 @@ import { activeEditor$, currentSelection$, MultipleChoiceToggleGroup } from '@md
 import { useCellValues } from '@mdxeditor/gurx';
 import React from 'react';
 import { $isKbdNode, TOGGLE_KBD_COMMAND } from './KbdNode';
-import scheduleMicrotask from '@tdev-components/util/scheduleMicrotask';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 /**
  * A toolbar component that lets the user undo and redo changes in the editor.
