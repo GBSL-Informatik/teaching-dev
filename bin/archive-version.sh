@@ -36,10 +36,13 @@ yarn workspace @tdev/material-sync prepareArchive "$VERSIONS_CSV"
 git add .
 git commit -m "Prepare archive for versions: $VERSIONS_CSV"
 git tag -a "$VERSIONS_DASH" -m "Archive for versions: $VERSIONS_CSV"
+
+yarn run docusaurus build
+
+# only after a successful build, push the branch and tags to the remote repository
 git push origin $BRANCH --tags
 
 # call `docusaurus build` directly to avoid prebuild/postbuild hooks
-yarn run docusaurus build
 
 # exit if no REMOTE_URL is provided
 if [[ -z "$REMOTE_URL" ]]; then

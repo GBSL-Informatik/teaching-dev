@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { loadMaterialConfig, pathExists, REPO_ROOT, saveMaterialConfig } from './helpers.js';
+import { loadMaterialConfig, REPO_ROOT } from './helpers.js';
 import minimist from 'minimist';
 import { exit } from 'node:process';
 import crypto from 'node:crypto';
@@ -25,7 +25,7 @@ yarn run prepare_archive 30Ga,30Gx          // prepares archive for multiple cla
 const toArchive = (argv._[0] ?? '')
     .split(',')
     .map((k) => k.trim())
-    .filter((k) => k && !allKlasses.includes(k))
+    .filter((k) => k && allKlasses.includes(k))
     .sort();
 
 const DocsHome = `---
@@ -56,7 +56,7 @@ const main = async (): Promise<void> => {
     await fs.mkdir(DOCS_FOLDER, { recursive: true });
     await fs.writeFile(path.join(DOCS_FOLDER, 'home.mdx'), DocsHome);
 
-    console.log('✅ Created archive for:', toArchive.join(', '));
+    console.log('✅ Created archive for:', toArchive.join(', '), argv);
 };
 
 main().catch((e: Error) => {
