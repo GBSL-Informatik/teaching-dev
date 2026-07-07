@@ -3,7 +3,7 @@
 set -e
 
 
-usage="usage: ./archive-version.sh \"28Gj,28Gk,28Gl\" git@github.com:lebalz/ofi-blog-v26.gitpo>.git v28.domain.ch"
+usage="usage: ./archive-version.sh \"28Gj,28Gk,28Gl\" git@github.com:lebalz/ofi-blog-v28.gitpo>.git v28.domain.ch"
 
 # export env variable "BUILD_ARCHIVE" to indicate that we are building the archive version
 export BUILD_ARCHIVE=true
@@ -60,7 +60,7 @@ git commit -m "Prepare archive for versions: $VERSIONS_CSV"
 yarn run docusaurus build
 
 # only after a successful build, push the branch and tags to the remote repository
-git push origin $BRANCH
+git push origin $BRANCH --force
 
 # call `docusaurus build` directly to avoid prebuild/postbuild hooks
 
