@@ -40,7 +40,7 @@ const DbDestroy = observer((props: Props) => {
                         window.alert('Fehler beim Löschen der Lokalen Daten: ' + err.message);
                     });
             }}
-            color="orange"
+            color="red"
             confirmColor="red"
         />
     );

@@ -22,6 +22,7 @@ const DbExport = observer((props: Props) => {
     return (
         <Button
             icon={mdiDatabaseExport}
+            iconSide="left"
             text="Exportieren"
             color="blue"
             onClick={() => {

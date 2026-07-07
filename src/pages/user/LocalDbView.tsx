@@ -59,10 +59,10 @@ const LocalDbView = observer(() => {
                     <>
                         <dt>Userdaten</dt>
                         <dd>
-                            <DbExport />
+                            <DbImport />
                         </dd>
                         <dd>
-                            <DbImport />
+                            <DbExport />
                         </dd>
                     </>
                 )}
