@@ -14,15 +14,15 @@ import customFields from '@tdev-components/util/customFields';
 const { PERSONAL_SPACE_DOC_ROOT_ID } = customFields;
 
 const PersonalSpaceOverlay = observer(() => {
-    const { data: session } = authClient.useSession();
     const isBrowser = useIsBrowser();
+    const userStore = useStore('userStore');
     const sessionStore = useStore('sessionStore');
     const popupRef = React.useRef<PopupActions>(null);
     if (!isBrowser) {
         return null;
     }
 
-    if (sessionStore.apiMode === 'api' && !session?.user) {
+    if (sessionStore.apiMode === 'api' && !userStore.current) {
         return null;
     }
 
