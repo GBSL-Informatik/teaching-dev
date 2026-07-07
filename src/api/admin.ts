@@ -1,6 +1,7 @@
 import api from './base';
 import { AxiosPromise } from 'axios';
-import { DocumentType } from './document';
+import type { Document, DocumentType } from './document';
+import { User } from './user';
 
 export interface AllowedAction {
     id: string;
@@ -29,4 +30,17 @@ export function linkUserPassword(userId: string, userPW: string, signal: AbortSi
 
 export function revokeUserPassword(userId: string, signal: AbortSignal): AxiosPromise<void> {
     return api.post(`/admin/users/${userId}/revokeUserPassword`, { signal });
+}
+
+type ExportData = {
+    user: Omit<User, 'role' | 'authProviders' | 'banned' | 'banReason' | 'banExpires'>;
+    documents: Document<any>[];
+};
+
+export function exportUserData(
+    userIds: string[],
+    ignoredDocumentTypes: DocumentType[],
+    signal: AbortSignal
+): AxiosPromise<ExportData[]> {
+    return api.post(`/admin/export`, { userIds, ignoredDocumentTypes }, { signal });
 }

@@ -1,13 +1,14 @@
 import { IDBPDatabase, openDB } from 'idb';
 import { DbAdapter, DBSchema } from '.';
 import { Document, DocumentType } from '@tdev-api/document';
+import { OfflineUser } from '..';
 
 const withFallback = <T>(fn: () => Promise<T>, fallback: T = undefined as T) => {
     return fn().catch(() => fallback);
 };
 
-type InitStores = 'fsHandles' | 'documents' | 'studentGroups' | 'permissions';
-const DB_VERSION = 2 as const;
+type InitStores = 'fsHandles' | 'documents' | 'studentGroups' | 'permissions' | 'users';
+const DB_VERSION = 3 as const;
 
 class IndexedDbAdapter implements DbAdapter {
     private dbName: string;
@@ -35,6 +36,9 @@ class IndexedDbAdapter implements DbAdapter {
                     }
                     if (!db.objectStoreNames.contains('permissions')) {
                         db.createObjectStore('permissions', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('users')) {
+                        db.createObjectStore('users', { keyPath: 'id' });
                     }
                 }
             }
@@ -98,6 +102,50 @@ class IndexedDbAdapter implements DbAdapter {
             await db.close();
             // Optionally delete the database
             await indexedDB.deleteDatabase(this.dbName);
+        });
+    }
+    async exportDb(): Promise<{ [storeName: string]: any }> {
+        return withFallback(async () => {
+            const db = await this.dbPromise;
+            const exportData: { [storeName: string]: any } = {};
+            for (const storeName of ['documents', 'studentGroups', 'permissions']) {
+                exportData[storeName] = await db.getAll(storeName);
+            }
+            // Here you can handle the exportData, e.g., save it to a file or send it to a server
+            return exportData;
+        });
+    }
+    async importDb(data: { [storeName: string]: any }): Promise<void> {
+        const hasUser = data['user'];
+        let needsCleanup = false;
+        if (hasUser) {
+            const user = data['user'];
+            const current = OfflineUser.getUser();
+            if (!current || current.id !== user.id) {
+                needsCleanup = true;
+            }
+            OfflineUser.setUser(user);
+        }
+        return withFallback(async () => {
+            const db = await this.dbPromise;
+            if (needsCleanup) {
+                await db.clear('users');
+                await db.clear('documents');
+                await db.clear('studentGroups');
+                await db.clear('permissions');
+            }
+            for (const storeName of Object.keys(data)) {
+                if (storeName === 'user') {
+                    await db.put('users', data['user']);
+                }
+                if (!db.objectStoreNames.contains(storeName)) {
+                    continue;
+                }
+                const items = data[storeName];
+                for (const item of items) {
+                    await db.put(storeName, item);
+                }
+            }
         });
     }
 }

@@ -9,16 +9,16 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useHistory, useLocation } from '@docusaurus/router';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import { authClient } from '@tdev/auth-client';
-import { getOfflineUser } from '@tdev-api/OfflineApi';
+import { OfflineUser } from '@tdev-api/OfflineApi';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { Hashery } from 'hashery';
+import customFields from '@tdev-components/util/customFields';
+import { localDb } from '@tdev-api/base';
+import { User } from '@tdev-api/user';
 const hasher = new Hashery({ cache: { enabled: true, maxSize: 5 } });
-const { OFFLINE_API, SENTRY_DSN } = siteConfig.customFields as {
-    SENTRY_DSN?: string;
-    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
-};
+const { OFFLINE_API, SENTRY_DSN, APP_URL } = customFields;
 
 if (!ExecutionEnvironment.canUseDOM) {
     enableStaticRendering(true);
@@ -85,8 +85,28 @@ const OfflineApi = observer(() => {
             return;
         }
         console.log('Using Offline API mode:', OFFLINE_API);
-        const offlineUser = getOfflineUser();
-        rootStore.load(offlineUser.id);
+        const load = () => {
+            rootStore.load(OfflineUser.getUser().id);
+        };
+        if (OFFLINE_API !== 'indexedDB') {
+            return load();
+        }
+        localDb.getAll<User>('users').then(async (users) => {
+            if (users.length === 0) {
+                return load();
+            }
+            while (users.length > 1) {
+                const user = users.pop();
+                if (user) {
+                    await localDb.delete('users', user.id);
+                }
+            }
+            const user = users[0];
+            if (user) {
+                OfflineUser.setUser(user);
+                load();
+            }
+        });
     }, []);
     return null;
 });
@@ -251,10 +271,7 @@ function Root({ children }: { children: React.ReactNode }) {
         <>
             <Head>
                 <meta property="og:description" content={siteConfig.tagline} />
-                <meta
-                    property="og:image"
-                    content={`${siteConfig.customFields?.DOMAIN || ''}/img/og-preview.jpeg`}
-                />
+                <meta property="og:image" content={`${APP_URL || ''}/img/og-preview.jpeg`} />
             </Head>
             <StoresProvider value={rootStore}>
                 <ExposeRootStoreToWindow />

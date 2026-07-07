@@ -171,7 +171,8 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           mdxCrossCompilerCache: true,
           ssgWorkerThreads: true
         },
-        experimental_vcs: 'default-v2'
+        experimental_vcs: 'default-v2',
+        // experimental_router: 'hash'
       },
       webpack: {
         jsLoader: (isServer) => {

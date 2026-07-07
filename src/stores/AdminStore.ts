@@ -8,13 +8,16 @@ import {
     deleteAllowedAction as apiDeleteAllowedAction,
     createAllowedAction as apiCreateAllowedAction,
     linkUserPassword,
-    revokeUserPassword
+    revokeUserPassword,
+    exportUserData
 } from '@tdev-api/admin';
 import { DocumentType } from '@tdev-api/document';
 import { authClient } from '@tdev/auth-client';
 import { HttpStatusCode } from 'axios';
 
-export class AdminStore extends iStore<`set-user-pw-${string}` | `revoke-user-pw-${string}`> {
+export class AdminStore extends iStore<
+    `set-user-pw-${string}` | `revoke-user-pw-${string}` | `request-user-data-export-${string}`
+> {
     readonly root: RootStore;
     allowedActions = observable<AllowedAction>([]);
     constructor(root: RootStore) {
@@ -102,6 +105,13 @@ export class AdminStore extends iStore<`set-user-pw-${string}` | `revoke-user-pw
         }
         return this.withAbortController(`revoke-user-pw-${userId}`, async (ct) => {
             return revokeUserPassword(userId, ct.signal);
+        });
+    }
+
+    @action
+    requestUserDataExport(userIds: string[], ignoredDocumentTypes: DocumentType[] = ['script_version']) {
+        return this.withAbortController(`request-user-data-export-${userIds.join('-')}`, async (ct) => {
+            return exportUserData(userIds, ignoredDocumentTypes, ct.signal);
         });
     }
 }

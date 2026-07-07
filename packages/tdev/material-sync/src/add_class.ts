@@ -70,11 +70,11 @@ const main = async (): Promise<void> => {
               .readFile(path.join(REPO_ROOT, 'versions.json'), 'utf-8')
               .then((data) => JSON.parse(data) as string[])
         : Promise.resolve([]));
-    const newVersions = [...new Set([...currentVersions, ...newKlasses].sort())];
+    const newVersions = [...new Set([...currentVersions, ...newKlasses])].sort();
     await fs.writeFile(path.join(REPO_ROOT, 'versions.json'), JSON.stringify(newVersions, null, 2));
     saveMaterialConfig(configs);
 
-    console.log('✅ Added new classes:', newKlasses.join(', '), 'Edit your siteConfig.ts accordingly');
+    console.log('✅ Added new classes:', newKlasses.join(', '));
 };
 
 main().catch((e: Error) => {

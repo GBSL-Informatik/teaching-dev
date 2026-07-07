@@ -10,7 +10,7 @@ import { AuthProviderColor, AuthProviderIcons, RoleColors, RoleNames } from '@td
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Icon from '@mdi/react';
-import { mdiAccountCancel, mdiAccountEdit, mdiCloudQuestion } from '@mdi/js';
+import { mdiAccountCancel, mdiAccountEdit, mdiCloudQuestion, mdiDatabaseExport } from '@mdi/js';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import Button from '@tdev-components/shared/Button';
 import Popup from 'reactjs-popup';
@@ -19,6 +19,7 @@ import { PopupActions } from 'reactjs-popup/dist/types';
 import Badge from '@tdev-components/shared/Badge';
 import NavReloadRequest from '../ActionRequest/NavReloadRequest';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import ExportModal from '../ExportPanel/ExportModal';
 
 interface Props {
     user: UserModel;
@@ -27,6 +28,7 @@ interface Props {
 const UserTableRow = observer((props: Props) => {
     const { user } = props;
     const userStore = useStore('userStore');
+    const adminStore = useStore('adminStore');
     const { current } = userStore;
     const ref = React.useRef<PopupActions>(null);
     if (!current) {
@@ -62,6 +64,12 @@ const UserTableRow = observer((props: Props) => {
                     >
                         <EditUser user={user} close={() => ref.current?.close()} />
                     </Popup>
+                    <ExportModal
+                        userIds={[user.id]}
+                        name={user.firstName + ' ' + user.lastName}
+                        fileName={`${user.email.split('@')[0].replace('.', '_')}_${new Date().toISOString().slice(0, 10)}.json`}
+                        title={`Exportiere Daten von ${user.firstName} ${user.lastName}`}
+                    />
                     {user.connectedClients > 0 && <NavReloadRequest userIds={[user.id]} slim />}
                 </div>
             </td>

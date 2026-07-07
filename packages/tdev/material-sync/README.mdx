@@ -147,3 +147,32 @@ oder für mehrere Klassen gleichzeitig:
 ```bash
 yarn run addClass 30Ga,30Gb,30Gc
 ```
+
+## Archiv-Seite vorbereiten
+
+Um ein Archiv für Klassen zu erstellen (freeze der Inhalte), soll die Seite nur für die ausgewählten Klassen gebuildet werden.
+
+1. neuer Branch erstellen
+2. `yarn workspace @tdev/material-sync sync` ausführen
+3. `yarn workspace @tdev/material-sync prepareArchive "28Gb,28Gj"` aufrufen
+4. `yarn build` ausführen
+5. Build-Ordner hochladen (z.B. auf GitHub Pages)
+    ```bash
+    cd build
+    git init .
+    git remote add origin <remote-url>
+    git add .
+    git commit -m "initial commit"
+    git push -u origin main --force
+    cd ..
+    rm -rf build
+    ```
+6. Branch committen, taggen, hochladen inkl. tags, und so stehen lassen.
+    ```bash
+    git add .
+    git commit -m "prepare archive for 28Gb,28Gj"
+    # tag: archive-28Gb-28Gj
+    git tag archive-28Gb-28Gj
+    git push origin main --tags
+    git checkout main
+    ```

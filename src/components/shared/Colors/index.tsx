@@ -49,7 +49,8 @@ export const IfmColors = {
     gray: 'var(--ifm-color-gray-600)',
     lightBlue: 'var(--ifm-color-info)',
     info: 'var(--ifm-color-info)',
-    black: 'var(--ifm-color-black)'
+    black: 'var(--ifm-color-black)',
+    white: 'var(--ifm-color-white)'
 };
 
 export const getColorClass = (color: Color | string | undefined, defaultColor?: Color) => {

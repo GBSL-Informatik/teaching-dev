@@ -20,12 +20,12 @@ const api: AxiosInstance & { mode?: 'indexedDB' | 'memory'; destroyDb?: () => Pr
           headers: {}
       });
 
-const indexedDb =
+const localDb =
     OFFLINE_API === 'indexedDB'
-        ? ((api as unknown as OfflineApi).dbAdapter as IndexedDbAdapter)
+        ? (api as unknown as OfflineApi).dbAdapter
         : ExecutionEnvironment.canUseDOM
           ? new IndexedDbAdapter(DB_NAME, false)
           : new MemoryDbAdapter();
 
-export { indexedDb };
+export { localDb };
 export default api;

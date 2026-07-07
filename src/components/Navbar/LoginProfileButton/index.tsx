@@ -1,5 +1,4 @@
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import siteConfig from '@generated/docusaurus.config';
 import { mdiLogin } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
@@ -8,7 +7,8 @@ import AdminNavPopup from './AdminNavPopup';
 import ProfileButton from './ProfileButton';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import { authClient } from '@tdev/auth-client';
-const { NO_AUTH } = siteConfig.customFields as { NO_AUTH?: boolean };
+import customFields from '@tdev-components/util/customFields';
+const { NO_AUTH } = customFields;
 
 const LoginButton = () => {
     const loginUrl = useBaseUrl('/login');
@@ -16,25 +16,41 @@ const LoginButton = () => {
     return <Button href={loginUrl} text="Login" icon={mdiLogin} color="primary" iconSide="left" />;
 };
 
-const LoginProfileButton = observer(() => {
-    const isBrowser = useIsBrowser();
-
+const ApiButton = observer(() => {
     const { data: session } = authClient.useSession();
     const userStore = useStore('userStore');
-
-    if (!isBrowser) {
-        return null;
-    }
 
     if (!session?.user && !NO_AUTH) {
         return <LoginButton />;
     }
 
-    if (userStore.current?.isAdmin || userStore.current?.isTeacher) {
+    if (userStore.current?.hasElevatedAccess) {
         return <AdminNavPopup />;
     }
 
     return <ProfileButton />;
+});
+
+const OfflineButton = observer(() => {
+    const userStore = useStore('userStore');
+
+    if (userStore.current?.hasElevatedAccess) {
+        return <AdminNavPopup />;
+    }
+
+    return <ProfileButton />;
+});
+
+const LoginProfileButton = observer(() => {
+    const isBrowser = useIsBrowser();
+    const sessionStore = useStore('sessionStore');
+    if (!isBrowser) {
+        return <LoginButton />;
+    }
+    if (sessionStore.apiMode === 'api') {
+        return <ApiButton />;
+    }
+    return <OfflineButton />;
 });
 
 export default LoginProfileButton;

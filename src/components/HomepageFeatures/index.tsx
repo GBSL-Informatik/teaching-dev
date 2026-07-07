@@ -8,12 +8,8 @@ import { mdiCheckCircle, mdiCloseCircle, mdiConnection } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { useIsLive } from '@tdev-hooks/useIsLive';
 import Card from '@tdev-components/shared/Card';
-import siteConfig from '@generated/docusaurus.config';
-const { BACKEND_URL, NO_AUTH, OFFLINE_API } = siteConfig.customFields as {
-    BACKEND_URL: string;
-    NO_AUTH?: boolean;
-    OFFLINE_API?: boolean | 'memory' | 'indexedDB';
-};
+import customFields from '@tdev-components/util/customFields';
+const { BACKEND_URL, NO_AUTH, OFFLINE_API } = customFields;
 
 const HomepageFeatures = observer(() => {
     const socketStore = useStore('socketStore');

@@ -2,12 +2,12 @@ import React from 'react';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
-import siteConfig from '@generated/docusaurus.config';
 import { useStore } from '@tdev-hooks/useStore';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { observer } from 'mobx-react-lite';
-const { DOCS_ONLY } = siteConfig.customFields as { DOCS_ONLY?: boolean };
+const { DOCS_ONLY } = customFields;
 import { Course, useClassVersions } from './useClassVersions';
+import customFields from '@tdev-components/util/customFields';
 
 // add additional courses here, e.g. for workshops or alumni
 // CourseList.push();
