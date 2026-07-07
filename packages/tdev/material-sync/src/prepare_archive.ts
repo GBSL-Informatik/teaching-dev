@@ -58,7 +58,7 @@ const main = async (): Promise<void> => {
     await fs.writeFile(path.join(REPO_ROOT, 'CNAME'), argv.domain);
     await fs.writeFile(path.join(REPO_ROOT, 'static', 'CNAME'), argv.domain);
 
-    console.log('✅ Created archive for:', toArchive.join(', '), argv);
+    console.log('✅ Created archive for:', toArchive.join(', '));
 };
 
 main().catch((e: Error) => {
