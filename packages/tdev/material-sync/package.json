@@ -24,6 +24,6 @@
     "minimist": "^1.2.8",
     "rsync": "^0.6.1",
     "tsx": "^4.20.3",
-    "typescript": "^6.0.2"
+    "typescript": "^7.0.2"
   }
 }
