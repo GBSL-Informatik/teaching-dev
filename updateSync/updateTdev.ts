@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec as execCallback, execSync } from 'child_process';
 import { promisify } from 'util';
-import * as yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 import { Config, TrackedElementConfig } from './types';
 import { expandTilde } from './util';
 import micromatch from 'micromatch';
@@ -15,7 +15,7 @@ const CONFIG_FILENAME = 'updateTdev.config.yaml';
 const exec = promisify(execCallback);
 
 const rootPath = process.cwd();
-const config = yaml.load(fs.readFileSync(path.resolve(rootPath, CONFIG_FILENAME), 'utf8')) as Config;
+const config = yamlLoad(fs.readFileSync(path.resolve(rootPath, CONFIG_FILENAME), 'utf8')) as Config;
 const teachingDevPath = path.resolve(expandTilde(config.tdevPath.trim()));
 const reportDirPath = path.join(rootPath, 'build', 'updateTdev');
 

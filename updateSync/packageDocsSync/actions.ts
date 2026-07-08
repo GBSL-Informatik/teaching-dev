@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
-import yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 import { debounce } from 'es-toolkit/compat';
 
 interface TdevPackageConfig {
@@ -147,7 +147,7 @@ const getPackageDocsConfig = async (
     try {
         await fs.access(configYml);
         const raw = await fs.readFile(configYml, 'utf8');
-        const config: any = yaml.load(raw) || {};
+        const config: any = yamlLoad(raw) || {};
         return {
             path: packagePath,
             docs: {
