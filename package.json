@@ -112,7 +112,7 @@
         "@types/uuid": "^11.0.0",
         "@types/wicg-file-system-access": "^2023.10.7",
         "@vitest/coverage-v8": "^4.1.10",
-        "concurrently": "^9.2.1",
+        "concurrently": "^10.0.3",
         "fs-extra": "^11.3.6",
         "prettier": "^3.9.4",
         "remark": "^15.0.1",
