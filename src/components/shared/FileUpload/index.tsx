@@ -3,15 +3,15 @@ import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import { mdiCloudArrowUpOutline } from '@mdi/js';
 import clsx from 'clsx';
-import ImagePreview from '@tdev-components/Cms/Github/iFile/File/FilePreview/ImagePreview';
+import ImagePreview from '@tdev/github-cms/components/Github/iFile/File/FilePreview/ImagePreview';
 import Button from '../Button';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
+import { useCmsStore } from '@tdev/github-cms/hooks/useCmsStore';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
-import { default as CmsFile } from '@tdev-models/cms/File';
+import { default as CmsFile } from '@tdev/github-cms/models/File';
 import TextInput from '../TextInput';
 import Checkbox from '../Checkbox';
-import BinFile from '@tdev-models/cms/BinFile';
+import BinFile from '@tdev/github-cms/models/BinFile';
 
 const toMb = (bytes: number): number => {
     return Math.round((100 * bytes) / 1024 / 1024) / 100;
@@ -58,7 +58,7 @@ const FileUpload = observer((props: Props) => {
     const [files, setFiles] = useState<File[]>([]);
     const [isDragOver, setIsDragOver] = useState(false);
     const labelRef = React.useRef<HTMLLabelElement>(null);
-    const cmsStore = useStore('cmsStore');
+    const cmsStore = useCmsStore();
     const [uploadName, setUploadName] = React.useState('');
     const [compress, setCompress] = React.useState(true);
 

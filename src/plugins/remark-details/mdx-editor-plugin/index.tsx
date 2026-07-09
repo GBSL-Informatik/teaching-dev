@@ -13,7 +13,7 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import RemoveNode from '../../../components/Cms/MdxEditor/RemoveNode';
+import RemoveNode from '../../../../packages/tdev/github-cms/components/MdxEditor/RemoveNode';
 
 export const DetailsEditor: React.ComponentType<DirectiveEditorProps<Directives>> = () => {
     const [open, setOpen] = React.useState(false);

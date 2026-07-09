@@ -5,13 +5,13 @@ import clsx from 'clsx';
 import {
     DirectiveProperty,
     useDirectiveAttributeEditor
-} from '@tdev-components/Cms/MdxEditor/hooks/useDirectiveAttributeEditor';
+} from '@tdev/github-cms/components/MdxEditor/hooks/useDirectiveAttributeEditor';
 import { observer } from 'mobx-react-lite';
 import Card from '@tdev-components/shared/Card';
-import GenericAttributeEditor from '@tdev-components/Cms/MdxEditor/GenericAttributeEditor';
-import RemoveNode from '@tdev-components/Cms/MdxEditor/RemoveNode';
-import { isRelPath, useAssetFile } from '@tdev-components/Cms/MdxEditor/hooks/useAssetFile';
-import MyAttributes from '@tdev-components/Cms/MdxEditor/GenericAttributeEditor/MyAttributes';
+import GenericAttributeEditor from '@tdev/github-cms/components/MdxEditor/GenericAttributeEditor';
+import RemoveNode from '@tdev/github-cms/components/MdxEditor/RemoveNode';
+import { isRelPath, useAssetFile } from '@tdev/github-cms/components/MdxEditor/hooks/useAssetFile';
+import MyAttributes from '@tdev/github-cms/components/MdxEditor/GenericAttributeEditor/MyAttributes';
 import PdfViewer from '@tdev/remark-pdf/PdfViewer';
 import Loader from '@tdev-components/Loader';
 

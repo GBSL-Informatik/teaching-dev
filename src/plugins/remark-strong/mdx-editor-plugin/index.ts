@@ -17,8 +17,8 @@ import { LexicalBoxVisitor } from './LexicalBoxVisitor';
 import { Parent, PhrasingContent, Root } from 'mdast';
 import { transformer } from '../plugin';
 import { rootStore } from '@tdev/stores/rootStore';
-import handleFocusNextInline from '@tdev-components/Cms/MdxEditor/helpers/lexical/handle-focus-next-inline';
-import handleFocusPreviousInline from '@tdev-components/Cms/MdxEditor/helpers/lexical/handle-focus-previous-inline';
+import handleFocusNextInline from '@tdev/github-cms/components/MdxEditor/helpers/lexical/handle-focus-next-inline';
+import handleFocusPreviousInline from '@tdev/github-cms/components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
 
 export interface Box extends Parent {
     type: 'box';
@@ -44,7 +44,11 @@ export const strongPlugin = realmPlugin<{}>({
                     name: 'strong-plugin',
                     transforms: [
                         (ast: Root) => {
-                            const { cmsStore } = rootStore;
+                            const { viewStore } = rootStore;
+                            const cmsStore = viewStore.useStore('cmsStore');
+                            if (!cmsStore) {
+                                return;
+                            }
                             const content =
                                 cmsStore.activeEntry?.type === 'file' ? cmsStore.activeEntry.content : '';
                             transformer(ast, content, (children) => ({ type: 'box', children: children }));

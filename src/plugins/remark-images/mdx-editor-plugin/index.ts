@@ -333,7 +333,12 @@ export const imagePlugin = realmPlugin<{
                     name: 'images-plugin',
                     transforms: [
                         (ast: Root) => {
-                            const editedFile = rootStore.cmsStore.editedFile;
+                            const { viewStore } = rootStore;
+                            const cmsStore = viewStore.useStore('cmsStore');
+                            if (!cmsStore) {
+                                return;
+                            }
+                            const editedFile = cmsStore.editedFile;
                             transformer(ast, editedFile?.type === 'file' ? editedFile.content : '', {
                                 cleanAltText: false,
                                 caption: (rawCaption, options) => {
