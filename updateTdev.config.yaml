@@ -13,6 +13,8 @@ trackedElements:
       dst: tsconfig.json
     - src: tsconfig.package.json
       dst: tsconfig.package.json
+    - src: tsconfig.docusaurus.json
+      dst: tsconfig.docusaurus.json
     - src: .prettierrc
       dst: .prettierrc
     - src: .prettierignore

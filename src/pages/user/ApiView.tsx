@@ -51,129 +51,126 @@ const ApiView = observer(() => {
     const connectedClients = socketStore.connectedClients.get(viewedUser?.id || ' ');
 
     return (
-        <Layout>
-            <main className={clsx(styles.main)}>
-                <h2>User</h2>
-                <DefinitionList className={clsx(styles.userInfo)}>
-                    <dt>API-Modus</dt>
-                    <dd>
-                        <Badge
-                            color="blue"
-                            className={clsx(styles.badge)}
-                            title="Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten."
-                        >
-                            <Icon
-                                path={sessionStore.apiModeIcon}
-                                size={SIZE_M}
-                                color={'var(--ifm-color-white'}
-                                className={clsx(styles.icon)}
-                            />
-                            {sessionStore.apiMode}
-                        </Badge>
-                    </dd>
-                    <dt>{userStore.isUserSwitched ? 'Ansicht für' : 'Eingeloggt als'}</dt>
-                    <dd>
-                        {viewedUser?.firstName} {viewedUser?.lastName}
-                    </dd>
-                    <dt>Email</dt>
-                    <dd>{viewedUser?.email}</dd>
-                    <dt>Anmelden über</dt>
-                    <dd>
-                        {viewedUser?.authProviders?.map((auth, idx) => (
-                            <Icon
-                                path={AuthProviderIcons[auth] || mdiCloudQuestion}
-                                size={SIZE_XS}
-                                color={AuthProviderColor[auth]}
-                                key={idx}
-                                title={auth}
-                            />
-                        ))}
-                    </dd>
-                    <dt>Ist mein Gerät mit dem Server Verbunden?</dt>
-                    <dd>
+        <>
+            <h2>User</h2>
+            <DefinitionList className={clsx(styles.userInfo)}>
+                <dt>API-Modus</dt>
+                <dd>
+                    <Badge
+                        color="blue"
+                        className={clsx(styles.badge)}
+                        title="Alle Änderungen werden auf einem Server gespeichert und sind von jedem Gerät aus zugänglich. Die Daten bleiben auch nach dem Schliessen des Browsers erhalten."
+                    >
                         <Icon
-                            path={mdiCircle}
-                            size={0.7}
-                            color={isLive ? 'var(--ifm-color-success)' : 'var(--ifm-color-danger)'}
-                        />{' '}
-                        {isLive ? 'Ja' : 'Nein'}
-                    </dd>
-                    {viewedUser && (
-                        <>
-                            <dt>Aktuell Online</dt>
-                            <dd>
-                                <span className={clsx(styles.connectedClients, 'badge', 'badge--primary')}>
-                                    {userStore.isUserSwitched
-                                        ? (connectedClients || 1) - 1
-                                        : connectedClients}
-                                </span>
-                            </dd>
-                        </>
-                    )}
-                    {viewedUser && !userStore.isUserSwitched && (
-                        <>
-                            <dt>In Gruppen</dt>
-                            {groupStore.studentGroups.map((group) => {
-                                return (
-                                    <React.Fragment key={group.id}>
-                                        <dt className={clsx(styles.studentGroup)}>{group.name}</dt>
-                                        <dd className={clsx(styles.reloadAction)}>
-                                            <span
-                                                className={clsx(
-                                                    styles.connectedClients,
-                                                    'badge',
-                                                    'badge--primary'
-                                                )}
-                                            >
-                                                {socketStore.connectedClients.get(group.id)}
-                                            </span>
-                                            <NavReloadRequest roomIds={[group.id]} />
-                                        </dd>
-                                    </React.Fragment>
-                                );
-                            })}
-                        </>
-                    )}
-                </DefinitionList>
-                <h2>Account</h2>
-                <DefinitionList>
-                    <dt>Code Theme</dt>
-                    <dd>
-                        <CodeThemeToggle showText />
-                    </dd>
-                    {current?.hasElevatedAccess && (
-                        <>
-                            <dt>Admin</dt>
-                            <dd>
-                                <Button
-                                    href={'/admin'}
-                                    text="zum Adminbereich"
-                                    icon={mdiArrowRightThin}
-                                    iconSide="left"
-                                    color="primary"
-                                />
-                            </dd>
-                        </>
-                    )}
-                    <dt>Daten</dt>
-                    <dd>
-                        Während der Schulzeit werden alle ausgefüllten Textfelder, Codeblocks und Checkboxes
-                        auf einem Server der Schule gespeichert.
-                    </dd>
-                    <dd>
-                        Am Ende der Schulzeit erhalten die Lernenden einen Datenexport ihrer Daten (so dass
-                        die Webseite offline gebraucht werden kann). Zudem werden alle personenbezogenen Daten
-                        vom Server gelöscht.
-                    </dd>
-                    <dd>
-                        Bei einem Klassenwechsel oder einem Austritt kann die Datenlöschung auch vorgängig
-                        beantragt werden.
-                    </dd>
-                    <dt>Datenlöschung</dt>
-                    <dd>Alle personenbezogenen Daten löschen (Konto, Übungen, Notizen,...).</dd>
-                    <dd>
-                        <Button
-                            href={LeftAlign(`mailto:teachers.name@school.ch?subject=[${window.location.hostname}]: Datenlöschung für ${viewedUser?.email}&body=Guten Tag%0D%0A%0D%0A
+                            path={sessionStore.apiModeIcon}
+                            size={SIZE_M}
+                            color={'var(--ifm-color-white'}
+                            className={clsx(styles.icon)}
+                        />
+                        {sessionStore.apiMode}
+                    </Badge>
+                </dd>
+                <dt>{userStore.isUserSwitched ? 'Ansicht für' : 'Eingeloggt als'}</dt>
+                <dd>
+                    {viewedUser?.firstName} {viewedUser?.lastName}
+                </dd>
+                <dt>Email</dt>
+                <dd>{viewedUser?.email}</dd>
+                <dt>Anmelden über</dt>
+                <dd>
+                    {viewedUser?.authProviders?.map((auth, idx) => (
+                        <Icon
+                            path={AuthProviderIcons[auth] || mdiCloudQuestion}
+                            size={SIZE_XS}
+                            color={AuthProviderColor[auth]}
+                            key={idx}
+                            title={auth}
+                        />
+                    ))}
+                </dd>
+                <dt>Ist mein Gerät mit dem Server Verbunden?</dt>
+                <dd>
+                    <Icon
+                        path={mdiCircle}
+                        size={0.7}
+                        color={isLive ? 'var(--ifm-color-success)' : 'var(--ifm-color-danger)'}
+                    />{' '}
+                    {isLive ? 'Ja' : 'Nein'}
+                </dd>
+                {viewedUser && (
+                    <>
+                        <dt>Aktuell Online</dt>
+                        <dd>
+                            <span className={clsx(styles.connectedClients, 'badge', 'badge--primary')}>
+                                {userStore.isUserSwitched ? (connectedClients || 1) - 1 : connectedClients}
+                            </span>
+                        </dd>
+                    </>
+                )}
+                {viewedUser && !userStore.isUserSwitched && (
+                    <>
+                        <dt>In Gruppen</dt>
+                        {groupStore.studentGroups.map((group) => {
+                            return (
+                                <React.Fragment key={group.id}>
+                                    <dt className={clsx(styles.studentGroup)}>{group.name}</dt>
+                                    <dd className={clsx(styles.reloadAction)}>
+                                        <span
+                                            className={clsx(
+                                                styles.connectedClients,
+                                                'badge',
+                                                'badge--primary'
+                                            )}
+                                        >
+                                            {socketStore.connectedClients.get(group.id)}
+                                        </span>
+                                        <NavReloadRequest roomIds={[group.id]} />
+                                    </dd>
+                                </React.Fragment>
+                            );
+                        })}
+                    </>
+                )}
+            </DefinitionList>
+            <h2>Account</h2>
+            <DefinitionList>
+                <dt>Code Theme</dt>
+                <dd>
+                    <CodeThemeToggle showText />
+                </dd>
+                {current?.hasElevatedAccess && (
+                    <>
+                        <dt>Admin</dt>
+                        <dd>
+                            <Button
+                                href={'/admin'}
+                                text="zum Adminbereich"
+                                icon={mdiArrowRightThin}
+                                iconSide="left"
+                                color="primary"
+                            />
+                        </dd>
+                    </>
+                )}
+                <dt>Daten</dt>
+                <dd>
+                    Während der Schulzeit werden alle ausgefüllten Textfelder, Codeblocks und Checkboxes auf
+                    einem Server der Schule gespeichert.
+                </dd>
+                <dd>
+                    Am Ende der Schulzeit erhalten die Lernenden einen Datenexport ihrer Daten (so dass die
+                    Webseite offline gebraucht werden kann). Zudem werden alle personenbezogenen Daten vom
+                    Server gelöscht.
+                </dd>
+                <dd>
+                    Bei einem Klassenwechsel oder einem Austritt kann die Datenlöschung auch vorgängig
+                    beantragt werden.
+                </dd>
+                <dt>Datenlöschung</dt>
+                <dd>Alle personenbezogenen Daten löschen (Konto, Übungen, Notizen,...).</dd>
+                <dd>
+                    <Button
+                        href={LeftAlign(`mailto:teachers.name@school.ch?subject=[${window.location.hostname}]: Datenlöschung für ${viewedUser?.email}&body=Guten Tag%0D%0A%0D%0A
                                     Hiermit beantrage ich die vollständige und unwiderrufliche Löschung meiner Daten der Webseite ${window.location.hostname}.%0D%0A%0D%0A
                                     
                                     E-Mail: ${viewedUser?.email}%0D%0A
@@ -183,31 +180,30 @@ const ApiView = observer(() => {
                                     
                                     Freundliche Grüsse,%0D%0A
                                     ${viewedUser?.firstName} ${viewedUser?.lastName} &cc=${viewedUser?.email}`)}
-                            text="Jetzt Beantragen"
-                            icon={mdiDeleteEmptyOutline}
-                            iconSide="left"
-                        />
-                    </dd>
-                    <dt>Ausloggen</dt>
-                    <dd>
-                        <Button
-                            onClick={() => {
-                                authStore.signOut().then(() => {
-                                    window.location.reload();
-                                });
-                            }}
-                            text="Logout"
-                            title="User Abmelden"
-                            color="red"
-                            icon={mdiLogout}
-                            iconSide="left"
-                            noOutline
-                            className={clsx(styles.logout)}
-                        />
-                    </dd>
-                </DefinitionList>
-            </main>
-        </Layout>
+                        text="Jetzt Beantragen"
+                        icon={mdiDeleteEmptyOutline}
+                        iconSide="left"
+                    />
+                </dd>
+                <dt>Ausloggen</dt>
+                <dd>
+                    <Button
+                        onClick={() => {
+                            authStore.signOut().then(() => {
+                                window.location.reload();
+                            });
+                        }}
+                        text="Logout"
+                        title="User Abmelden"
+                        color="red"
+                        icon={mdiLogout}
+                        iconSide="left"
+                        noOutline
+                        className={clsx(styles.logout)}
+                    />
+                </dd>
+            </DefinitionList>
+        </>
     );
 });
 export default ApiView;

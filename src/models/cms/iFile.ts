@@ -20,7 +20,7 @@ export interface FileStubProps extends iEntryProps {
 }
 
 export interface BinFileProps extends FileStubProps {
-    binData: Uint8Array;
+    binData: Uint8Array<ArrayBuffer>;
 }
 export interface FileProps extends FileStubProps {
     content: string;

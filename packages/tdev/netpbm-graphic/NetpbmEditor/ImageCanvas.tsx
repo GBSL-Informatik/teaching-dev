@@ -7,7 +7,7 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { createDownloadCanvas } from './createDownloadCanvas';
 
 interface Props {
-    pixels?: Uint8ClampedArray;
+    pixels?: ImageDataArray;
     width: number;
     height: number;
     format: 'P1' | 'P2' | 'P3';

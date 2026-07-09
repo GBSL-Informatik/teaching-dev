@@ -1,6 +1,6 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxAttribute, MdxJsxTextElement, MdxjsEsm } from 'mdast-util-mdx';
+import type { MdxJsxTextElement, MdxjsEsm } from 'mdast-util-mdx';
 import { camelCased, captialize, Options, toJsxAttribute, transformAttributes } from '../helpers';
 import { Root, Text } from 'mdast';
 import _ from 'es-toolkit/compat';
@@ -62,7 +62,7 @@ import _ from 'es-toolkit/compat';
 //     }
 // ];
 
-const IMPORT_MDI_REACT_NODE = {
+const IMPORT_MDI_REACT_NODE: MdxjsEsm = {
     type: 'mdxjsEsm',
     value: "import Icon from '@mdi/react';",
     data: {
@@ -80,6 +80,7 @@ const IMPORT_MDI_REACT_NODE = {
                             }
                         }
                     ],
+                    attributes: [],
                     source: {
                         type: 'Literal',
                         value: '@mdi/react',
@@ -91,7 +92,7 @@ const IMPORT_MDI_REACT_NODE = {
             comments: []
         }
     }
-} as MdxjsEsm;
+};
 
 const IMPORT_MDI_ICONS = (icons: string[]): MdxjsEsm => {
     return {
@@ -114,6 +115,7 @@ const IMPORT_MDI_ICONS = (icons: string[]): MdxjsEsm => {
                                 name: icon
                             }
                         })),
+                        attributes: [],
                         source: {
                             type: 'Literal',
                             value: '@mdi/js',

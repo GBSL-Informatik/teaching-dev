@@ -5,7 +5,7 @@ import iFile, { BinFileProps } from './iFile';
 
 class BinFile extends iFile {
     readonly type = 'bin_file';
-    binData: Uint8Array;
+    binData: Uint8Array<ArrayBuffer>;
     src: string;
 
     @observable accessor apiState: ApiState = ApiState.IDLE;
@@ -25,7 +25,7 @@ class BinFile extends iFile {
      * @returns the binary data of the file, either as a Uint8Array or a string with the original,
      * non-encoded content
      */
-    get fileContent(): Uint8Array | string {
+    get fileContent(): Uint8Array<ArrayBuffer> | string {
         return this.binData;
     }
 
