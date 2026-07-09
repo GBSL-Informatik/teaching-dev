@@ -10,15 +10,12 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import { useLocation } from '@docusaurus/router';
-import type { EditThisPageOption, ShowEditThisPage } from '@tdev/siteConfig/siteConfig';
-const { organizationName, projectName, customFields } = siteConfig;
-const { showEditThisPage, showEditThisPageOptions, editThisPageCmsUrl } = customFields as {
-    showEditThisPage: ShowEditThisPage;
-    showEditThisPageOptions: EditThisPageOption[];
-    editThisPageCmsUrl: string;
-};
+import type { EditThisPageOption } from '@tdev/siteConfig/siteConfig';
+import customFields from '@tdev-components/utils/customFields';
+const { organizationName, projectName } = siteConfig;
+const { showEditThisPage, showEditThisPageOptions, editThisPageCmsUrl } = customFields;
 const DisplayBadgeFor = new Set<EditThisPageOption>(
-    showEditThisPageOptions.length === 0 ? ['github', 'github-dev', 'cms'] : showEditThisPageOptions
+    showEditThisPageOptions.length === 0 ? ['github', 'github-dev'] : showEditThisPageOptions
 );
 const GH_EDIT_URL = `https://github.com/${organizationName}/${projectName}/edit/main`;
 const GH_DEV_EDIT_URL = `https://github.dev/${organizationName}/${projectName}/blob/main`;

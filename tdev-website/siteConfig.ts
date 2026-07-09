@@ -50,6 +50,7 @@ const getSiteConfig: SiteConfigProvider = () => {
                 additionalLanguages: ['bash', 'typescript', 'json', 'python', 'ruby']
             }
         },
+        showEditThisPageOptions: ['github', 'github-dev', 'cms'],
         navbarItems: [
             gallery,
             blog,
