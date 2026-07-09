@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './login.module.scss';
+import styles from './styles.module.scss';
 import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Link from '@docusaurus/Link';
