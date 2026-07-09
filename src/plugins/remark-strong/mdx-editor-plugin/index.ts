@@ -17,8 +17,8 @@ import { LexicalBoxVisitor } from './LexicalBoxVisitor';
 import { Parent, PhrasingContent, Root } from 'mdast';
 import { transformer } from '../plugin';
 import { rootStore } from '@tdev/stores/rootStore';
-import handleFocusNextInline from '@tdev/github-cms/components/MdxEditor/helpers/lexical/handle-focus-next-inline';
-import handleFocusPreviousInline from '@tdev/github-cms/components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
+import handleFocusNextInline from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/handle-focus-next-inline';
+import handleFocusPreviousInline from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
 
 export interface Box extends Parent {
     type: 'box';

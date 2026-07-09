@@ -1,0 +1,26 @@
+{
+    "name": "@hfr/github-cms",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": {
+        "@lexical/clipboard": "^0.35.0",
+        "@lexical/link": "^0.35.0",
+        "@lexical/list": "^0.35.0",
+        "@lexical/markdown": "^0.35.0",
+        "@lexical/plain-text": "^0.35.0",
+        "@lexical/react": "^0.35.0",
+        "@lexical/rich-text": "^0.35.0",
+        "@lexical/selection": "^0.35.0",
+        "@lexical/utils": "^0.35.0",
+        "@mdxeditor/editor": "^3.54.0",
+        "@octokit/rest": "^21.1.0"
+    },
+    "devDependencies": {
+        "@docusaurus/core": "*",
+        "@docusaurus/module-type-aliases": "*"
+    },
+    "peerDependencies": {
+        "@tdev/core": "1.0.0"
+    }
+}

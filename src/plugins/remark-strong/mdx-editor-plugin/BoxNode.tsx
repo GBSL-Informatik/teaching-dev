@@ -27,8 +27,8 @@ import {
     ElementNode,
     Spread
 } from 'lexical';
-import { $getAncestor } from '@tdev/github-cms/components/MdxEditor/helpers/lexical/get-ancestors';
-import { $withSelectedNodes } from '@tdev/github-cms/components/MdxEditor/helpers/lexical/with-selected-nodes';
+import { $getAncestor } from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/get-ancestors';
+import { $withSelectedNodes } from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/with-selected-nodes';
 
 export type SerializedBoxNode = Spread<{}, SerializedElementNode>;
 

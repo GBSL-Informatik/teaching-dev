@@ -3,15 +3,15 @@ import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import { mdiCloudArrowUpOutline } from '@mdi/js';
 import clsx from 'clsx';
-import ImagePreview from '@tdev/github-cms/components/Github/iFile/File/FilePreview/ImagePreview';
+import ImagePreview from '@site/packages/hfr/github-cms/components/Github/iFile/File/FilePreview/ImagePreview';
 import Button from '../Button';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@tdev/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
-import { default as CmsFile } from '@tdev/github-cms/models/File';
+import { default as CmsFile } from '@site/packages/hfr/github-cms/models/File';
 import TextInput from '../TextInput';
 import Checkbox from '../Checkbox';
-import BinFile from '@tdev/github-cms/models/BinFile';
+import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
 
 const toMb = (bytes: number): number => {
     return Math.round((100 * bytes) / 1024 / 1024) / 100;

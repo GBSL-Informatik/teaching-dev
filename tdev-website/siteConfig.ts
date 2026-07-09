@@ -15,7 +15,7 @@ import {
 } from '../src/siteConfig/navbarItems';
 import { themes as prismThemes } from 'prism-react-renderer';
 import { brythonCodePluginConfig, yamlLoaderPluginConfig } from '../src/siteConfig/pluginConfigs';
-import githubCmsPlugin from '../packages/tdev/github-cms/plugin';
+import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
 import {
     recommendedBeforeDefaultRemarkPlugins,
     recommendedRehypePlugins,
@@ -122,7 +122,7 @@ const getSiteConfig: SiteConfigProvider = () => {
         dynamicRoutes: [
             {
                 path: '/cms/',
-                component: '@tdev/github-cms/components'
+                component: '@hfr/github-cms/components'
             }
         ],
         apiDocumentProviders: [
@@ -132,7 +132,7 @@ const getSiteConfig: SiteConfigProvider = () => {
             require.resolve('@tdev/brython-code/register'),
             require.resolve('@tdev/page-read-check/register'),
             require.resolve('@tdev/webserial/register'),
-            require.resolve('@tdev/github-cms/register')
+            require.resolve('@hfr/github-cms/register')
         ]
     };
 };
