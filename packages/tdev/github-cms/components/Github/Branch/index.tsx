@@ -6,14 +6,7 @@ import { useCmsStore } from '@tdev/github-cms/hooks/useCmsStore';
 import { Delete } from '@tdev-components/shared/Button/Delete';
 import Badge from '@tdev-components/shared/Badge';
 import Icon from '@mdi/react';
-import {
-    mdiGit,
-    mdiPlusCircleMultipleOutline,
-    mdiReload,
-    mdiSourceBranch,
-    mdiSourceCommit,
-    mdiSync
-} from '@mdi/js';
+import { mdiGit, mdiPlusCircleMultipleOutline, mdiSourceBranch, mdiSourceCommit, mdiSync } from '@mdi/js';
 import { default as BranchModel } from '@tdev/github-cms/models/Branch';
 import Button from '@tdev-components/shared/Button';
 import Popup from 'reactjs-popup';

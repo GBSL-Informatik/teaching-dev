@@ -1,6 +1,4 @@
 import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import type { FileType } from '@tdev/github-cms/models/FileStub';
 import Popup from 'reactjs-popup';

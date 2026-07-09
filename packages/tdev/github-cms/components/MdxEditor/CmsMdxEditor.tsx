@@ -26,7 +26,6 @@ import {
     MDXEditorMethods,
     quotePlugin,
     realmPlugin,
-    rootEditor$,
     tablePlugin,
     thematicBreakPlugin,
     toolbarPlugin,

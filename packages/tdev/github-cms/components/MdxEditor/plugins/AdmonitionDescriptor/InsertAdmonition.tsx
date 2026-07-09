@@ -10,7 +10,6 @@ import React from 'react';
 import _ from 'es-toolkit/compat';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import { ADMONITION_TYPES } from './AdmonitionTypeSelector/admonitionTypes';
 
 /**

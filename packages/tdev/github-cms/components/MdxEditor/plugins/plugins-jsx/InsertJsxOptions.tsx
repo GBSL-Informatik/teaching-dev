@@ -1,12 +1,4 @@
-import {
-    ButtonOrDropdownButton,
-    insertJsx$,
-    insertMarkdown$,
-    usePublisher,
-    insertDecoratorNode$,
-    useCellValue,
-    currentSelection$
-} from '@mdxeditor/editor';
+import { ButtonOrDropdownButton, insertJsx$, insertMarkdown$, usePublisher } from '@mdxeditor/editor';
 import React from 'react';
 import {
     mdiApplicationOutline,
@@ -15,12 +7,9 @@ import {
     mdiDotsVerticalCircleOutline,
     mdiFormatListCheckbox,
     mdiFormTextbox,
-    mdiInvoiceTextSendOutline,
     mdiMathIntegral,
     mdiMathIntegralBox,
-    mdiQrcode,
-    mdiQrcodeScan,
-    mdiTextBox
+    mdiQrcode
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';

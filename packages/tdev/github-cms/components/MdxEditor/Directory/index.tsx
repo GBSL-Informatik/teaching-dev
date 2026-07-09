@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { default as DirModel } from '@tdev/github-cms/models/Dir';
 import Card from '@tdev-components/shared/Card';
 import Dir from '@tdev/github-cms/components/Github/iFile/Dir';
-import { useStore } from '@tdev-hooks/useStore';
 import UserAvatar from '@tdev/github-cms/components/Github/AccountOptions/UserAvatar';
 
 interface Props {

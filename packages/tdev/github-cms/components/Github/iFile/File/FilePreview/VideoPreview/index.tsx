@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 import Card from '@tdev-components/shared/Card';
-import type { Property } from 'csstype';
 interface Props {
     src: string;
     fileName?: string;

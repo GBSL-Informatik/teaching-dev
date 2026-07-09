@@ -4,13 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '@tdev/github-cms/hooks/useCmsStore';
 import { default as PrModel } from '@tdev/github-cms/models/PR';
-import {
-    mdiChevronLeft,
-    mdiChevronRightBox,
-    mdiDotsHorizontalCircleOutline,
-    mdiDotsVerticalCircleOutline,
-    mdiRecordCircleOutline
-} from '@mdi/js';
+import { mdiDotsHorizontalCircleOutline, mdiDotsVerticalCircleOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import PR from '..';

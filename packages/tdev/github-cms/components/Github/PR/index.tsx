@@ -13,7 +13,6 @@ import {
     mdiEyeOff,
     mdiLoading,
     mdiRecordCircleOutline,
-    mdiReload,
     mdiSourceBranchSync,
     mdiSourceCommit,
     mdiSourceMerge,

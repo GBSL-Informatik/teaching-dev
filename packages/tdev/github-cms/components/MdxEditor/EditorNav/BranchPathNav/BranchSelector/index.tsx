@@ -1,11 +1,8 @@
 import React from 'react';
-import clsx from 'clsx';
-import shared from '../styles.module.scss';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '@tdev/github-cms/hooks/useCmsStore';
 import Loader from '@tdev-components/Loader';
-import Icon from '@mdi/react';
 import { mdiSourceBranch, mdiSourceBranchPlus } from '@mdi/js';
 import Popup from 'reactjs-popup';
 import NewBranch from '@tdev/github-cms/components/Github/Branch/NewBranch';

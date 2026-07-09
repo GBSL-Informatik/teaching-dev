@@ -1,9 +1,7 @@
-import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import {
     $createTextNode,
     $getSelection,
     $isRangeSelection,
-    COMMAND_PRIORITY_EDITOR,
     COMMAND_PRIORITY_LOW,
     ElementNode,
     KEY_DOWN_COMMAND,

@@ -1,8 +1,6 @@
 import React from 'react';
-import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import FileStub from '@tdev/github-cms/models/FileStub';
 import BinFile from '@tdev/github-cms/models/BinFile';
 import File from '@tdev/github-cms/models/File';

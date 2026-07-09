@@ -2,7 +2,6 @@ import { Cell, Signal, map } from '@mdxeditor/gurx';
 import { Extension } from '@codemirror/state';
 import {
     $isCodeBlockNode,
-    activeEditor$,
     appendCodeBlockEditorDescriptor$,
     CodeBlockEditorDescriptor,
     createRootEditorSubscription$,
@@ -13,7 +12,6 @@ import { CodeMirrorEditor } from './CodeMirrorEditor';
 import {
     $getSelection,
     $isElementNode,
-    $isParagraphNode,
     $isRangeSelection,
     COMMAND_PRIORITY_LOW,
     KEY_DOWN_COMMAND,

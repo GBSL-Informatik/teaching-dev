@@ -1,4 +1,3 @@
-import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import {
     $createTextNode,
     $getSelection,

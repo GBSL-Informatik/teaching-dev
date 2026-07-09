@@ -3,11 +3,10 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '@tdev/github-cms/hooks/useCmsStore';
-import Card from '@tdev-components/shared/Card';
 import iFile from '@tdev/github-cms/models/iFile';
 import Dir from '@tdev/github-cms/components/Github/iFile/Dir';
 import Button from '@tdev-components/shared/Button';
-import { mdiFolderArrowLeftOutline, mdiFolderArrowUpOutline } from '@mdi/js';
+import { mdiFolderArrowUpOutline } from '@mdi/js';
 
 interface Props<T extends iFile = iFile> {
     onSelect: (entry: T) => void;

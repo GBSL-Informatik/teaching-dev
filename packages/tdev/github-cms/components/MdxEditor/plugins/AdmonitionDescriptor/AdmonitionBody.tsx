@@ -15,9 +15,8 @@ interface Props {
     lexicalNode: LexicalNode;
 }
 
-const HandledKeys = new Set(['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Backspace']);
 const AdmonitionBody = observer((props: Props) => {
-    const { mdastNode, lexicalNode, parentEditor } = props;
+    const { lexicalNode, parentEditor } = props;
     const ref = React.useRef<HTMLDivElement>(null);
     useSelectionHandler(parentEditor, lexicalNode.getKey(), 'body', ref);
     return (

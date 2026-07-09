@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from 'react';
-import { $isDirectiveNode, NestedLexicalEditor, useMdastNodeUpdater } from '@mdxeditor/editor';
+import { NestedLexicalEditor, useMdastNodeUpdater } from '@mdxeditor/editor';
 import { ContainerDirective } from 'mdast-util-directive';
 import { Paragraph, PhrasingContent } from 'mdast';
 import styles from './styles.module.scss';
@@ -12,15 +12,7 @@ import Popup from 'reactjs-popup';
 import RemoveNode from '../../RemoveNode';
 import { observer } from 'mobx-react-lite';
 import AdmonitionTypeSelector from './AdmonitionTypeSelector';
-import {
-    $getSelection,
-    $isElementNode,
-    $isRangeSelection,
-    COMMAND_PRIORITY_LOW,
-    KEY_DOWN_COMMAND,
-    LexicalEditor,
-    LexicalNode
-} from 'lexical';
+import { LexicalEditor, LexicalNode } from 'lexical';
 import useSelectionHandler from './useSelectionHandler';
 
 interface Props {
