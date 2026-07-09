@@ -140,12 +140,12 @@ export interface ClientToServerEvents {
     [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDocument) => void;
 }
 
-export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore } = {
+export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore | `viewStore#${string}` } = {
     User: 'userStore',
     Document: 'documentRootStore',
     UserPermission: 'permissionStore',
     GroupPermission: 'permissionStore',
     DocumentRoot: 'documentRootStore',
-    CmsSettings: 'cmsStore',
+    CmsSettings: 'viewStore#cmsStore',
     StudentGroup: 'studentGroupStore'
 } as const;

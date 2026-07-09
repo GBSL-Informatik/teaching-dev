@@ -2,12 +2,13 @@ import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/pl
 import aliasConfigurationPlugin from '../plugins/plugin-alias-configuration';
 import type { PluginConfig } from '@docusaurus/types';
 import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
+import { SiteConfig } from './siteConfig';
 
 // TODO: Consider bundling default / recommended plugins.
 
 export const sassPluginConfig: PluginConfig = 'docusaurus-plugin-sass';
 
-export const dynamicRouterPluginConfig: PluginConfig = [
+export const dynamicRouterPluginConfig: (siteConfig: SiteConfig) => PluginConfig = (siteConfig) => [
     dynamicRouterPlugin,
     {
         routes: [
@@ -15,10 +16,7 @@ export const dynamicRouterPluginConfig: PluginConfig = [
                 path: '/rooms/',
                 component: '@tdev-components/Rooms'
             },
-            {
-                path: '/cms/',
-                component: '@tdev-components/Cms'
-            }
+            ...(siteConfig.dynamicRoutes || [])
         ]
     } satisfies DynamicRouteConfig
 ];

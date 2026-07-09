@@ -232,7 +232,12 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.CmsSettings:
                 const settings = record as CmsSettings;
-                this.root.cmsStore.handleSettingsChange(settings);
+                if (!this.root.viewStore.stores.has('cmsStore')) {
+                    console.log('cmsStore not registered yet, skipping settings update');
+                    return;
+                }
+                const cmsStore = this.root.viewStore.useStore('cmsStore');
+                cmsStore.handleSettingsChange(settings);
                 break;
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;
@@ -288,7 +293,12 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.root.documentStore.addToStore(record as Document<DocumentType>);
                 break;
             case RecordType.CmsSettings:
-                this.root.cmsStore.handleSettingsChange(record as CmsSettings);
+                if (!this.root.viewStore.stores.has('cmsStore')) {
+                    console.log('cmsStore not registered yet, skipping settings update');
+                    return;
+                }
+                const cmsStore = this.root.viewStore.useStore('cmsStore');
+                cmsStore.handleSettingsChange(record as CmsSettings);
                 break;
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;

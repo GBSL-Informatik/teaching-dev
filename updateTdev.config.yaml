@@ -5,8 +5,8 @@ trackedElements:
       dst: docusaurus.config.ts
     - src: src/
       dst: src
-    - src: packages/
-      dst: packages
+    - src: packages/tdev/
+      dst: packages/tdev
     - src: updateSync/
       dst: updateSync
     - src: tsconfig.tdev.json

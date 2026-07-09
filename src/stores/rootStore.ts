@@ -9,7 +9,6 @@ import PermissionStore from '@tdev-stores/PermissionStore';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { PageStore } from '@tdev-stores/PageStore';
 import { AdminStore } from '@tdev-stores/AdminStore';
-import { CmsStore } from '@tdev-stores/CmsStore';
 import SiteStore from '@tdev-stores/SiteStore';
 import { AuthStore } from './AuthStore';
 import ComponentStore from './ComponentStore';
@@ -25,7 +24,6 @@ export class RootStore {
     documentStore: DocumentStore;
     pageStore: PageStore;
     adminStore: AdminStore;
-    cmsStore: CmsStore;
     siteStore: SiteStore;
     viewStore: ViewStore;
     authStore: AuthStore;
@@ -43,7 +41,6 @@ export class RootStore {
         this.documentStore = new DocumentStore(this);
         this.pageStore = new PageStore(this);
         this.adminStore = new AdminStore(this);
-        this.cmsStore = new CmsStore(this);
         this.siteStore = new SiteStore(this);
         this.authStore = new AuthStore(this);
         this.componentStore = new ComponentStore(this);
@@ -64,7 +61,6 @@ export class RootStore {
 
                 this.userStore.load();
                 this.studentGroupStore.load();
-                this.cmsStore.initialize();
                 if (user.hasElevatedAccess) {
                     this.adminStore.load();
                 }

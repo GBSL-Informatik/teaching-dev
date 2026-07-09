@@ -8,10 +8,10 @@ import TextInput from '@tdev-components/shared/TextInput';
 import Button from '@tdev-components/shared/Button';
 import FileUpload from '@tdev-components/shared/FileUpload';
 import clsx from 'clsx';
-import { Asset } from '@tdev-models/cms/Dir';
-import BinFile from '@tdev-models/cms/BinFile';
-import AssetSelector from '@tdev-components/Cms/MdxEditor/AssetSelector';
-import { useStore } from '@tdev-hooks/useStore';
+import { Asset } from '@site/packages/hfr/github-cms/models/Dir';
+import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
+import AssetSelector from '@site/packages/hfr/github-cms/components/MdxEditor/AssetSelector';
+import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
 
 interface Props {
     onClose: () => void;
@@ -28,7 +28,7 @@ interface Props {
 }
 
 export const ImageDialog = observer((props: Props) => {
-    const cmsStore = useStore('cmsStore');
+    const cmsStore = useCmsStore();
     const [src, setSrc] = React.useState(props.src || '');
     const [file, setFile] = React.useState<BinFile | null>(props.binFile || null);
     const [isUploading, setIsUploading] = React.useState(false);

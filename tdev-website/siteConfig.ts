@@ -15,6 +15,12 @@ import {
 } from '../src/siteConfig/navbarItems';
 import { themes as prismThemes } from 'prism-react-renderer';
 import { brythonCodePluginConfig, yamlLoaderPluginConfig } from '../src/siteConfig/pluginConfigs';
+import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
+import {
+    recommendedBeforeDefaultRemarkPlugins,
+    recommendedRehypePlugins,
+    recommendedRemarkPlugins
+} from '../src/siteConfig/markdownPluginConfigs';
 
 const getSiteConfig: SiteConfigProvider = () => {
     return {
@@ -44,6 +50,7 @@ const getSiteConfig: SiteConfigProvider = () => {
                 additionalLanguages: ['bash', 'typescript', 'json', 'python', 'ruby']
             }
         },
+        showEditThisPageOptions: ['github', 'github-dev', 'cms'],
         navbarItems: [
             gallery,
             blog,
@@ -102,14 +109,30 @@ const getSiteConfig: SiteConfigProvider = () => {
                 disable: process.env.NODE_ENV !== 'production' || !!process.env.NETLIFY
             }
         },
-        plugins: [brythonCodePluginConfig(), yamlLoaderPluginConfig],
+        plugins: [
+            brythonCodePluginConfig(),
+            yamlLoaderPluginConfig,
+            githubCmsPlugin({
+                pages: {},
+                remarkPlugins: recommendedRemarkPlugins,
+                rehypePlugins: recommendedRehypePlugins,
+                beforeDefaultRemarkPlugins: recommendedBeforeDefaultRemarkPlugins
+            })
+        ],
+        dynamicRoutes: [
+            {
+                path: '/cms/',
+                component: '@hfr/github-cms/components'
+            }
+        ],
         apiDocumentProviders: [
             require.resolve('@tdev/netpbm-graphic/register'),
             require.resolve('@tdev/text-message/register'),
             require.resolve('@tdev/pyodide-code/register'),
             require.resolve('@tdev/brython-code/register'),
             require.resolve('@tdev/page-read-check/register'),
-            require.resolve('@tdev/webserial/register')
+            require.resolve('@tdev/webserial/register'),
+            require.resolve('@hfr/github-cms/register')
         ]
     };
 };
