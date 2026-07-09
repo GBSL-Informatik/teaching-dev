@@ -5,7 +5,8 @@ _node_modules
 **/node_modules
 # Production
 /build
-
+/tdevMigrations
+migrateTdev.config.yaml
 # Generated files
 .docusaurus
 .cache-loader
