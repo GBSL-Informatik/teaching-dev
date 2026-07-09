@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { JsValue } from '@tdev-components/shared/JsObject/toJsSchema';
+import { JsString, JsValue } from '@tdev-components/shared/JsObject/toJsSchema';
 import JsonArray from '@tdev-components/shared/JsObject/Viewer/JsArray';
 import JsObject from '@tdev-components/shared/JsObject/Viewer/JsObject';
 import GenericField from '@tdev-components/shared/JsObject/Viewer/GenericField';
@@ -25,7 +25,7 @@ const JsTypeSwitcher = observer((props: Props) => {
         case 'function':
             return <JsFunction {...props} js={js} />;
         default:
-            return <GenericField {...props} js={js} />;
+            return <GenericField {...props} js={js as JsString} />;
     }
 });
 

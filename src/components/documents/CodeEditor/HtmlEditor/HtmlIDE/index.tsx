@@ -69,7 +69,7 @@ const HtmlIDE = observer((props: Props) => {
             .map((f) => {
                 const meta = extractMetaProps({ metastring: f.meta || '' });
                 return {
-                    meta: meta as MetaProps,
+                    meta: meta as Partial<MetaProps>,
                     path: (meta as { path: string }).path,
                     id: (meta as { id?: string }).id,
                     lang: f.lang,

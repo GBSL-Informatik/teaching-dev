@@ -12,7 +12,7 @@ export interface RasterParserInput extends ParserConfig {
 export type ParserMessage = string | React.ReactElement;
 
 export interface ParserImageDataResult {
-    pixels: Uint8ClampedArray;
+    pixels: ImageDataArray;
     width: number;
     height: number;
 }

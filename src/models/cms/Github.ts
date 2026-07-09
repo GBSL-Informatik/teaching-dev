@@ -511,7 +511,11 @@ class Github {
             .then((res) => res.data);
     }
 
-    static NewFileModel(data: FileStubProps, content: string | Uint8Array | undefined, store: CmsStore) {
+    static NewFileModel(
+        data: FileStubProps,
+        content: string | Uint8Array<ArrayBuffer> | undefined,
+        store: CmsStore
+    ) {
         if (content === undefined || (content === '' && data.encoding === 'none')) {
             return new FileStub(data, store);
         }
@@ -532,7 +536,7 @@ class Github {
     @action
     createOrUpdateFile(
         path: string,
-        content: string | Uint8Array,
+        content: string | Uint8Array<ArrayBuffer>,
         branch: string,
         sha?: string,
         commitMessage?: string
@@ -752,7 +756,7 @@ class Github {
                         _: Date.now() // disable cache
                     })
                     .then((res) => {
-                        return res.data as any as Uint8Array;
+                        return res.data as any as Uint8Array<ArrayBuffer>;
                     })
                     .then(
                         action((binData) => {

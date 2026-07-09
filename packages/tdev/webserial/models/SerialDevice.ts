@@ -1,3 +1,5 @@
+/// <reference types="w3c-web-serial" />
+
 import { action, computed, observable } from 'mobx';
 import WebserialStore from '../stores/WebserialStore';
 import { Hashery } from 'hashery';

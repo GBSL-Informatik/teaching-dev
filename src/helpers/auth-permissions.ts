@@ -1,7 +1,7 @@
 // defined in the backend, @see https://github.com/GBSL-Informatik/teaching-api/blob/main/src/auth/permissions.ts
 import { adminAc, defaultAc } from 'better-auth/plugins/admin/access';
 
-const revokedTeacherPermissions: (typeof adminAc.statements)['user'] = [
+const revokedTeacherPermissions: (typeof adminAc.statements)['user'][number][] = [
     'ban',
     'delete',
     'set-role',

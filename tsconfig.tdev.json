@@ -1,6 +1,6 @@
 {
     // This file is not used in compilation. It is here just for a nice editor experience.
-    "extends": "@docusaurus/tsconfig",
+    "extends": "./tsconfig.docusaurus.json",
     "compilerOptions": {
         "experimentalDecorators": false,
         "types": [
@@ -13,24 +13,24 @@
         "target": "esnext",
         "strict": true,
         "paths": {
-            "@tdev-components/*": ["website/components/*", "src/components/*"],
-            "@tdev-hooks/*": ["website/hooks/*", "src/hooks/*"],
-            "@tdev-models/*": ["website/models/*", "src/models/*"],
-            "@tdev-stores/*": ["website/stores/*", "src/stores/*"],
-            "@tdev-plugins/*": ["website/plugins/*", "src/plugins/*"],
-            "@tdev-api/*": ["website/api/*", "src/api/*"],
-            "@tdev/*": ["website/*", "website/packages/*", "src/*", "packages/tdev/*"],
-            "@tdev-original/*": ["src/*", "packages/tdev/*"],
+            "@tdev-components/*": ["./website/components/*", "./src/components/*"],
+            "@tdev-hooks/*": ["./website/hooks/*", "./src/hooks/*"],
+            "@tdev-models/*": ["./website/models/*", "./src/models/*"],
+            "@tdev-stores/*": ["./website/stores/*", "./src/stores/*"],
+            "@tdev-plugins/*": ["./website/plugins/*", "./src/plugins/*"],
+            "@tdev-api/*": ["./website/api/*", "./src/api/*"],
+            "@tdev/*": ["./website/*", "./website/packages/*", "./src/*", "./packages/tdev/*"],
+            "@tdev-original/*": ["./src/*", "./packages/tdev/*"],
             "@site/*": ["./*"]
         }
     },
     "exclude": [
-        "src/plugins/**/*.test.ts",
-        "docs/tdev/packages",
-        "node_modules",
-        "_node_modules",
-        "dist",
-        "build"
+        "./src/plugins/**/*.test.ts",
+        "./docs/tdev/packages",
+        "./node_modules",
+        "./_node_modules",
+        "./dist",
+        "./build"
     ],
     "mdx": {
         "plugins": [["remark-frontmatter", ["toml", "yaml"]], "remark-directive", "remark-math"]
