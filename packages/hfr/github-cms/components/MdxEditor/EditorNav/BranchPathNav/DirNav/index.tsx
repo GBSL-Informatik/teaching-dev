@@ -2,15 +2,15 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
-import Dir from '@site/packages/hfr/github-cms/models/Dir';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
+import Dir from '../../../../../models/Dir';
 import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import Card from '@tdev-components/shared/Card';
 import Loader from '@tdev-components/Loader';
-import NavItem from '@site/packages/hfr/github-cms/components/MdxEditor/EditorNav/BranchPathNav/NavItem';
+import NavItem from '../../../../MdxEditor/EditorNav/BranchPathNav/NavItem';
 import { action } from 'mobx';
-import FileNav from '@site/packages/hfr/github-cms/components/MdxEditor/EditorNav/BranchPathNav/FileNav';
+import FileNav from '../../../../MdxEditor/EditorNav/BranchPathNav/FileNav';
 
 interface Props {
     dir: Dir;

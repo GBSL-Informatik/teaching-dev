@@ -2,9 +2,9 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import iEntry from '@site/packages/hfr/github-cms/models/iEntry';
+import iEntry from '../../../../models/iEntry';
 import BranchSelector from './BranchSelector';
-import FileNav from '@site/packages/hfr/github-cms/components/MdxEditor/EditorNav/BranchPathNav/FileNav';
+import FileNav from '../../../../components/MdxEditor/EditorNav/BranchPathNav/FileNav';
 import DirNav from './DirNav';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 

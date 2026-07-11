@@ -4,7 +4,7 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import _ from 'es-toolkit/compat';
 import CreatableSelect from 'react-select/creatable';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../hooks/useCmsStore';
 import Loader from '@tdev-components/Loader';
 
 interface Props {

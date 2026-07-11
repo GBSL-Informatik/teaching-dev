@@ -1,15 +1,13 @@
 import React from 'react';
 import { JsxComponentDescriptor, JsxPropertyDescriptor } from '@mdxeditor/editor';
-import RemoveNode from '@site/packages/hfr/github-cms/components/MdxEditor/RemoveNode';
+import RemoveNode from '../../../MdxEditor/RemoveNode';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { mdiCardTextOutline, mdiCheckboxOutline, mdiFormTextbox, mdiInvoiceTextSendOutline } from '@mdi/js';
-import GenericAttributeEditor, {
-    GenericPropery
-} from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor';
+import GenericAttributeEditor, { GenericPropery } from '../../../MdxEditor/GenericAttributeEditor';
 import Card from '@tdev-components/shared/Card';
 import { DocumentType } from '@tdev-api/document';
-import { useAttributeEditorInNestedEditor } from '@site/packages/hfr/github-cms/components/MdxEditor/hooks/useAttributeEditorInNestedEditor';
+import { useAttributeEditorInNestedEditor } from '../../../MdxEditor/hooks/useAttributeEditorInNestedEditor';
 import Answer from '@tdev-components/Answer';
 import { v4 as uuidv4 } from 'uuid';
 

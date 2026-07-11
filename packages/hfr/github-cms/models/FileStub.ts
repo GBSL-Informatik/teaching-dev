@@ -1,4 +1,4 @@
-import { type CmsStore } from '@site/packages/hfr/github-cms/stores/CmsStore';
+import { type CmsStore } from '../stores/CmsStore';
 import iFile, { FileStubProps } from './iFile';
 import { computed } from 'mobx';
 import type BinFile from './BinFile';

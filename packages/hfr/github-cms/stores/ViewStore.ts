@@ -1,6 +1,6 @@
-import { CmsStore } from '@site/packages/hfr/github-cms/stores/CmsStore';
+import { CmsStore } from '../stores/CmsStore';
 import { action, computed, observable } from 'mobx';
-import Dir from '@site/packages/hfr/github-cms/models/Dir';
+import Dir from '../models/Dir';
 import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 
 export default class ViewStore extends iViewStore<CmsStore> {

@@ -6,12 +6,12 @@ import { usePublisher } from '@mdxeditor/editor';
 import { insertImage$ } from '..';
 import TextInput from '@tdev-components/shared/TextInput';
 import Button from '@tdev-components/shared/Button';
-import FileUpload from '@tdev-components/shared/FileUpload';
+import FileUpload from '../../../components/FileUpload';
 import clsx from 'clsx';
-import { Asset } from '@site/packages/hfr/github-cms/models/Dir';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
-import AssetSelector from '@site/packages/hfr/github-cms/components/MdxEditor/AssetSelector';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { Asset } from '../../../models/Dir';
+import BinFile from '../../../models/BinFile';
+import AssetSelector from '../../../components/MdxEditor/AssetSelector';
+import { useCmsStore } from '../../../hooks/useCmsStore';
 
 interface Props {
     onClose: () => void;

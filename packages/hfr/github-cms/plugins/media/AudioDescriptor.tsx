@@ -5,14 +5,14 @@ import clsx from 'clsx';
 import {
     DirectiveProperty,
     useDirectiveAttributeEditor
-} from '@site/packages/hfr/github-cms/components/MdxEditor/hooks/useDirectiveAttributeEditor';
+} from '../../components/MdxEditor/hooks/useDirectiveAttributeEditor';
 import { observer } from 'mobx-react-lite';
 import Card from '@tdev-components/shared/Card';
-import GenericAttributeEditor from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor';
-import RemoveNode from '@site/packages/hfr/github-cms/components/MdxEditor/RemoveNode';
-import { useAssetFile } from '@site/packages/hfr/github-cms/components/MdxEditor/hooks/useAssetFile';
-import MyAttributes from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor/MyAttributes';
-import { LeafDirectiveName } from '../plugin';
+import GenericAttributeEditor from '../../components/MdxEditor/GenericAttributeEditor';
+import RemoveNode from '../../components/MdxEditor/RemoveNode';
+import { useAssetFile } from '../../components/MdxEditor/hooks/useAssetFile';
+import MyAttributes from '../../components/MdxEditor/GenericAttributeEditor/MyAttributes';
+import { LeafDirectiveName } from '@tdev-plugins/remark-media/plugin';
 
 const props: DirectiveProperty[] = [];
 export const AudioDescriptor: DirectiveDescriptor = {

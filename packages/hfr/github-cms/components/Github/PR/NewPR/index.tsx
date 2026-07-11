@@ -2,8 +2,8 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
-import Branch from '@site/packages/hfr/github-cms/models/Branch';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
+import Branch from '../../../../models/Branch';
 import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import Icon from '@mdi/react';
@@ -11,10 +11,10 @@ import { mdiClose, mdiFlashTriangle, mdiRecordCircleOutline, mdiSourceBranch } f
 import TextInput from '@tdev-components/shared/TextInput';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import Button from '@tdev-components/shared/Button';
-import PR from '@site/packages/hfr/github-cms/models/PR';
+import PR from '../../../../models/PR';
 import Alert from '@tdev-components/shared/Alert';
 import Checkbox from '@tdev-components/shared/Checkbox';
-import { withoutPreviewPRName, withPreviewPRName } from '@site/packages/hfr/github-cms/models/helpers';
+import { withoutPreviewPRName, withPreviewPRName } from '../../../../models/helpers';
 
 interface Props {
     branch: Branch;

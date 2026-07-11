@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import _ from 'es-toolkit/compat';
-import File from '@site/packages/hfr/github-cms/models/File';
+import File from '../../models/File';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import Loader from '@tdev-components/Loader';
 

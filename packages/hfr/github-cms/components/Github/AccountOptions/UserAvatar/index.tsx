@@ -9,7 +9,7 @@ import { mdiAccountCircle, mdiAlertDecagram, mdiCheckDecagram } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import AccountOptions from '..';
 import Popup from 'reactjs-popup';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
 
 interface Props {
     showOptions?: boolean;

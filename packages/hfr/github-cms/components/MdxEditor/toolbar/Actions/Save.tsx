@@ -1,12 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import _ from 'es-toolkit/compat';
-import File from '@site/packages/hfr/github-cms/models/File';
+import File from '../../../../models/File';
 import Button from '@tdev-components/shared/Button';
 import { mdiCircle, mdiContentSave } from '@mdi/js';
 import { Color } from '@tdev-components/shared/Colors';
 import Icon from '@mdi/react';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
 import { ApiState } from '@tdev-stores/iStore';
 import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
 

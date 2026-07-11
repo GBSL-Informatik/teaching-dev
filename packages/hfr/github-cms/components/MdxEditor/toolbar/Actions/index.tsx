@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import _ from 'es-toolkit/compat';
-import File from '@site/packages/hfr/github-cms/models/File';
+import File from '../../../../models/File';
 import Save from './Save';
 import Popup from 'reactjs-popup';
 import Button from '@tdev-components/shared/Button';
@@ -19,8 +19,8 @@ import { PopupActions } from 'reactjs-popup/dist/types';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { ApiState } from '@tdev-stores/iStore';
 import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
-import NewBranch from '@site/packages/hfr/github-cms/components/Github/Branch/NewBranch';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import NewBranch from '../../../Github/Branch/NewBranch';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
 
 export interface Props {
     file: File;

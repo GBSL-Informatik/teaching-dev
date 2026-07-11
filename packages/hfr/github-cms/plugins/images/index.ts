@@ -33,8 +33,8 @@ import { MdastImageCaptionVisitor, MdastImageFigureVisitor, MdastImageVisitor } 
 import React from 'react';
 import { rootStore } from '@tdev/stores/rootStore';
 import type { Parent, PhrasingContent, Root, Image } from 'mdast';
-import { transformer } from '../transformer';
 import { transformer as strongTransformer } from '@tdev-plugins/remark-strong/plugin';
+import { transformer } from '@tdev-plugins/remark-images/transformer';
 import { $createImageCaptionNode, $isImageCaptionNode, ImageCaptionNode } from './ImageCaptionNode';
 import { $createImageFigureNode, ImageFigureNode } from './ImageFigureNode';
 import { fromMarkdown } from 'mdast-util-from-markdown';

@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
-import File from '@site/packages/hfr/github-cms/models/File';
+import FileStub from '../../../../../models/FileStub';
+import BinFile from '../../../../../models/BinFile';
+import File from '../../../../../models/File';
 import Card from '@tdev-components/shared/Card';
-import { useLoadedFile } from '@site/packages/hfr/github-cms/components/MdxEditor/hooks/useLoadedFile';
+import { useLoadedFile } from '../../../../MdxEditor/hooks/useLoadedFile';
 import Loader from '@tdev-components/Loader';
 import ImagePreview from './ImagePreview';
 import TextPreview from './TextPreview';

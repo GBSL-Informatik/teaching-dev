@@ -2,14 +2,14 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
 import Popup from 'reactjs-popup';
 import AddOrUpdateFile from '.';
 import Button from '@tdev-components/shared/Button';
 import { mdiFilePlus } from '@mdi/js';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import { ApiState } from '@tdev-stores/iStore';
-import Dir from '@site/packages/hfr/github-cms/models/Dir';
+import Dir from '../../../../../models/Dir';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
 import { v4 as uuidv4 } from 'uuid';
 

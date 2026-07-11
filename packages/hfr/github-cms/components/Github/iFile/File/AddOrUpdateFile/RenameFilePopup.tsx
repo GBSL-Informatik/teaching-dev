@@ -1,16 +1,16 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
 import Popup from 'reactjs-popup';
 import AddOrUpdateFile from '.';
 import Button from '@tdev-components/shared/Button';
 import { mdiFileEdit } from '@mdi/js';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import { ApiState } from '@tdev-stores/iStore';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
-import File from '@site/packages/hfr/github-cms/models/File';
+import FileStub from '../../../../../models/FileStub';
+import File from '../../../../../models/File';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
+import BinFile from '../../../../../models/BinFile';
 import { action } from 'mobx';
 
 interface Props {

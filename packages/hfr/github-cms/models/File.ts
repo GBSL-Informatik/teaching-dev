@@ -1,4 +1,4 @@
-import { CmsStore } from '@site/packages/hfr/github-cms/stores/CmsStore';
+import { CmsStore } from '../stores/CmsStore';
 import { action, computed, observable } from 'mobx';
 import { ApiState } from '@tdev-stores/iStore';
 import { Position } from 'unist';

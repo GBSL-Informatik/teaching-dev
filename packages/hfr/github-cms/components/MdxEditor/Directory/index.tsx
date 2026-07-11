@@ -2,10 +2,10 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { default as DirModel } from '@site/packages/hfr/github-cms/models/Dir';
+import { default as DirModel } from '../../../models/Dir';
 import Card from '@tdev-components/shared/Card';
-import Dir from '@site/packages/hfr/github-cms/components/Github/iFile/Dir';
-import UserAvatar from '@site/packages/hfr/github-cms/components/Github/AccountOptions/UserAvatar';
+import Dir from '../../Github/iFile/Dir';
+import UserAvatar from '../../Github/AccountOptions/UserAvatar';
 
 interface Props {
     dir?: DirModel;

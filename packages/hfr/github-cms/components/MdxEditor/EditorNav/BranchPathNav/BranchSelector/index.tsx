@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
 import Loader from '@tdev-components/Loader';
 import { mdiSourceBranch, mdiSourceBranchPlus } from '@mdi/js';
 import Popup from 'reactjs-popup';
-import NewBranch from '@site/packages/hfr/github-cms/components/Github/Branch/NewBranch';
+import NewBranch from '../../../../Github/Branch/NewBranch';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import Card from '@tdev-components/shared/Card';
 import NavItem from '../NavItem';

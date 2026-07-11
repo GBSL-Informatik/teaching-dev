@@ -1,19 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React from 'react';
-import {
-    DirectiveDescriptor,
-    DirectiveEditorProps,
-    NestedLexicalEditor,
-    useMdastNodeUpdater
-} from '@mdxeditor/editor';
+import { DirectiveDescriptor, DirectiveEditorProps, NestedLexicalEditor } from '@mdxeditor/editor';
 import { ContainerDirective, Directives } from 'mdast-util-directive';
 import { BlockContent, Paragraph, PhrasingContent } from 'mdast';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import RemoveNode from '../../../../packages/hfr/github-cms/components/MdxEditor/RemoveNode';
+import RemoveNode from '../../components/MdxEditor/RemoveNode';
 
 export const DetailsEditor: React.ComponentType<DirectiveEditorProps<Directives>> = () => {
     const [open, setOpen] = React.useState(false);

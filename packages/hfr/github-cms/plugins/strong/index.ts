@@ -15,10 +15,10 @@ import { MdastBoxVisitor } from './MdastBoxVisitor';
 import { $isBoxNode, $toggleBoxed, BoxNode, TOGGLE_BOX_COMMAND } from './BoxNode';
 import { LexicalBoxVisitor } from './LexicalBoxVisitor';
 import { Parent, PhrasingContent, Root } from 'mdast';
-import { transformer } from '../plugin';
+import { transformer } from '@tdev-plugins/remark-strong/plugin';
 import { rootStore } from '@tdev/stores/rootStore';
-import handleFocusNextInline from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/handle-focus-next-inline';
-import handleFocusPreviousInline from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
+import handleFocusNextInline from '../../components/MdxEditor/helpers/lexical/handle-focus-next-inline';
+import handleFocusPreviousInline from '../../components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
 
 export interface Box extends Parent {
     type: 'box';

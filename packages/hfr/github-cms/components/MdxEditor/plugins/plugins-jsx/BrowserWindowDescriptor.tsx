@@ -1,9 +1,7 @@
 import { JsxComponentDescriptor, type JsxPropertyDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 import { MdxJsxFlowElement } from 'mdast-util-mdx';
-import GenericAttributeEditor, {
-    type GenericPropery
-} from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor';
+import GenericAttributeEditor, { type GenericPropery } from '../../../MdxEditor/GenericAttributeEditor';
 import RemoveNode from '../../RemoveNode';
 import styles from './styles.module.scss';
 import clsx from 'clsx';

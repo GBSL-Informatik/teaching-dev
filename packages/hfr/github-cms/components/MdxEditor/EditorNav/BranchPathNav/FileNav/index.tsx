@@ -1,11 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
-import File from '@site/packages/hfr/github-cms/models/File';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
-import NavItem from '@site/packages/hfr/github-cms/components/MdxEditor/EditorNav/BranchPathNav/NavItem';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
+import File from '../../../../../models/File';
+import BinFile from '../../../../../models/BinFile';
+import FileStub from '../../../../../models/FileStub';
+import NavItem from '../../../../MdxEditor/EditorNav/BranchPathNav/NavItem';
 
 interface Props {
     file: File | BinFile | FileStub;
