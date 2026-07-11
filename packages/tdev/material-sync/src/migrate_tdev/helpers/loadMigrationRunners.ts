@@ -2,7 +2,12 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { MIGRATION_PATH, MigrationRunner } from '../constants';
 
-export async function* loadMigrationRunners(): AsyncGenerator<MigrationRunner> {
+interface Migration {
+    path: string;
+    runner: MigrationRunner;
+}
+
+export async function* loadMigrationRunners(): AsyncGenerator<Migration> {
     const migrationFiles = await fs.readdir(MIGRATION_PATH);
     for (const file of migrationFiles) {
         const filePath = path.join(MIGRATION_PATH, file);
@@ -19,7 +24,10 @@ export async function* loadMigrationRunners(): AsyncGenerator<MigrationRunner> {
 
         const migrationModule = await import(filePath);
         if (typeof migrationModule.default === 'function') {
-            yield migrationModule.default as MigrationRunner;
+            yield {
+                path: filePath,
+                runner: migrationModule.default as MigrationRunner
+            };
             continue;
         }
 

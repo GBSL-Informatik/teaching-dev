@@ -13,8 +13,7 @@ process.chdir(REPO_ROOT);
 
 const main = async (): Promise<void> => {
     const config = await readOrCreateMigrationConfig();
-    console.log('Migrating...', MIGRATION_PATH);
-    for await (const runMigration of loadMigrationRunners()) {
+    for await (const { path: migrationPath, runner: runMigration } of loadMigrationRunners()) {
         for (const tdevPage of config.tdevPages) {
             try {
                 const projectRoot = path.join(REPO_ROOT, tdevPage.path);
@@ -25,6 +24,7 @@ const main = async (): Promise<void> => {
                 process.chdir(projectRoot);
                 await gitEnsureClean('main');
                 await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed);
+                await fs.rename(migrationPath, migrationPath.replace(/\.ts$/, '.done.ts'));
             } finally {
                 process.chdir(REPO_ROOT);
             }
