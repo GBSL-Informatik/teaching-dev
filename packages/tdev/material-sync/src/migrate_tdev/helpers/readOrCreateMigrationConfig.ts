@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
-import { pathExists } from '../helpers';
-import { MIGRATION_CONFIG_PATH, MIGRATION_DEFAULT_CONFIG_PATH } from './constants';
+import { pathExists } from '../../helpers';
+import { MIGRATION_CONFIG_PATH, MIGRATION_DEFAULT_CONFIG_PATH } from '../constants';
 import { load as yamlLoad } from 'js-yaml';
 
 export interface MigrationConfig {
@@ -11,7 +11,7 @@ export interface MigrationConfig {
     }[];
 }
 
-const readOrCreateConfig = async (): Promise<MigrationConfig> => {
+const readOrCreateMigrationConfig = async (): Promise<MigrationConfig> => {
     const configExists = await pathExists(MIGRATION_CONFIG_PATH);
     if (!configExists) {
         console.log('migrateTdev.config.yaml does not exist. Do you want to create it? [y/n]');
@@ -22,8 +22,8 @@ const readOrCreateConfig = async (): Promise<MigrationConfig> => {
         });
         if (answer.toLowerCase() === 'y') {
             console.log('Creating migrateTdev.config.yaml...');
-            await fs.copyFile(MIGRATION_DEFAULT_CONFIG_PATH, MIGRATION_CONFIG_PATH);
-            console.log('migrateTdev.config.yaml created.');
+            await fs.writeFile(MIGRATION_CONFIG_PATH, 'tdevPages: []\n', 'utf8');
+            console.log(`${MIGRATION_CONFIG_PATH} created.`);
         }
         process.exit(1);
     }
@@ -32,4 +32,4 @@ const readOrCreateConfig = async (): Promise<MigrationConfig> => {
     return config;
 };
 
-export default readOrCreateConfig;
+export default readOrCreateMigrationConfig;
