@@ -3,29 +3,32 @@ import path from 'node:path';
 import Rsync from 'rsync';
 import { REPO_ROOT, PACKAGE_ROOT, pathExistsSync } from '../helpers.js';
 import { fileURLToPath } from 'node:url';
+import readOrCreateConfig from './readOrCreateConfig.js';
+import { MIGRATION_PATH } from './constants.js';
+import { loadMigrationRunners } from './loadMigrationRunners.js';
+import { gitEnsureClean } from './helpers.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 process.chdir(REPO_ROOT);
 
 const main = async (): Promise<void> => {
-    console.log('Migrating...');
-
-    const migrateConfigPath = path.join(REPO_ROOT, 'migrateTdev.config.yaml');
-    const configExists = await pathExistsSync(migrateConfigPath);
-    if (!configExists) {
-        console.log('migrateTdev.config.yaml does not exist. Do you want to create it? [y/n]');
-        const answer = await new Promise<string>((resolve) => {
-            process.stdin.once('data', (data) => {
-                resolve(data.toString().trim());
-            });
-        });
-        if (answer.toLowerCase() === 'y') {
-            console.log('Creating migrateTdev.config.yaml...');
-            const defaultConfig = path.join(__dirname, 'migrateTdev.default.yaml');
-            await fs.copyFile(defaultConfig, migrateConfigPath);
-            console.log('migrateTdev.config.yaml created.');
+    const config = await readOrCreateConfig();
+    console.log('Migrating...', MIGRATION_PATH);
+    for await (const runMigration of loadMigrationRunners()) {
+        for (const tdevPage of config.tdevPages) {
+            try {
+                const projectRoot = path.join(REPO_ROOT, tdevPage.path);
+                if (!pathExistsSync(projectRoot)) {
+                    console.warn(`Project root does not exist: ${projectRoot}. Skipping migration.`);
+                    continue;
+                }
+                process.chdir(projectRoot);
+                await gitEnsureClean('main');
+                await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed);
+            } finally {
+                process.chdir(REPO_ROOT);
+            }
         }
-        console.log('Aborting migration.');
     }
 };
 
