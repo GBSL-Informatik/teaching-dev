@@ -77,6 +77,10 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
 
     await $`git add .`;
     await $`git commit -m ${'Migrate TDEV'}`;
+    await $`git checkout main`;
+    await $`git merge ${branchName}`;
+    await $`git branch -d ${branchName}`;
+    await $`git push`;
 };
 
 export default migrate;
