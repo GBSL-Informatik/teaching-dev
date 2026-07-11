@@ -16,7 +16,6 @@ import { DecoratorNode } from 'lexical';
 import { ImageComponent } from './ImageComponent';
 import { camelCased, ParsedOptions, parseOptions, serializeOptions } from '@tdev/plugins/helpers';
 import _ from 'es-toolkit/compat';
-import { voidEmitter } from '@mdxeditor/editor';
 
 /**
  * A serialized representation of an {@link ImageNode}.

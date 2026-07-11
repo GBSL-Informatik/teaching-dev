@@ -1,4 +1,4 @@
-import { CmsStore } from '@site/packages/hfr/github-cms/stores/CmsStore';
+import { CmsStore } from '../stores/CmsStore';
 import iEntry, { iEntryProps } from './iEntry';
 import { action, computed } from 'mobx';
 import {

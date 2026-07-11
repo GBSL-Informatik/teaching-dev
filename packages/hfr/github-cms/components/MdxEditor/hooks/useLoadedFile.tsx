@@ -1,8 +1,8 @@
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
-import Dir from '@site/packages/hfr/github-cms/models/Dir';
-import File from '@site/packages/hfr/github-cms/models/File';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
+import { useCmsStore } from '../../../hooks/useCmsStore';
+import BinFile from '../../../models/BinFile';
+import Dir from '../../../models/Dir';
+import File from '../../../models/File';
+import FileStub from '../../../models/FileStub';
 import { ApiState } from '@tdev-stores/iStore';
 import React from 'react';
 

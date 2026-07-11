@@ -17,7 +17,7 @@ import type {
     SerializedElementNode
 } from 'lexical';
 
-import { $findMatchingParent } from '@lexical/utils';
+import { $findMatchingParent, addClassNamesToElement } from '@lexical/utils';
 import {
     $applyNodeReplacement,
     $getSelection,
@@ -27,29 +27,30 @@ import {
     ElementNode,
     Spread
 } from 'lexical';
-import { $getAncestor } from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/get-ancestors';
-import { $withSelectedNodes } from '@site/packages/hfr/github-cms/components/MdxEditor/helpers/lexical/with-selected-nodes';
+import { $getAncestor } from '../../components/MdxEditor/helpers/lexical/get-ancestors';
+import { $withSelectedNodes } from '../../components/MdxEditor/helpers/lexical/with-selected-nodes';
 
-export type SerializedKbdNode = Spread<{}, SerializedElementNode>;
+export type SerializedBoxNode = Spread<{}, SerializedElementNode>;
 
-type KbdHTMLElementType = HTMLElement;
+type BoxHTMLElementType = HTMLElement | HTMLSpanElement;
 
 /** @noInheritDoc */
-export class KbdNode extends ElementNode {
+export class BoxNode extends ElementNode {
     static getType(): string {
-        return 'kbd';
+        return 'box';
     }
 
-    static clone(node: KbdNode): KbdNode {
-        return new KbdNode(node.__key);
+    static clone(node: BoxNode): BoxNode {
+        return new BoxNode(node.__key);
     }
 
     constructor(key?: NodeKey) {
         super(key);
     }
 
-    createDOM(config: EditorConfig): KbdHTMLElementType {
-        const element = document.createElement('kbd');
+    createDOM(config: EditorConfig): BoxHTMLElementType {
+        const element = document.createElement('strong');
+        addClassNamesToElement(element, 'boxed');
         return element;
     }
 
@@ -57,18 +58,19 @@ export class KbdNode extends ElementNode {
         return false;
     }
 
-    static importJSON(serializedNode: SerializedKbdNode): KbdNode {
-        return $createKbdNode().updateFromJSON(serializedNode);
+    static importJSON(serializedNode: SerializedBoxNode): BoxNode {
+        console.log(serializedNode);
+        return $createBoxNode().updateFromJSON(serializedNode);
     }
 
-    exportJSON(): SerializedKbdNode {
+    exportJSON(): SerializedBoxNode {
         return super.exportJSON();
     }
 
     insertNewAfter(_: RangeSelection, restoreSelection = true): null | ElementNode {
-        const kbdNode = $createKbdNode();
-        this.insertAfter(kbdNode, restoreSelection);
-        return kbdNode;
+        const boxNode = $createBoxNode();
+        this.insertAfter(boxNode, restoreSelection);
+        return boxNode;
     }
 
     canInsertTextBefore(): true {
@@ -91,7 +93,6 @@ export class KbdNode extends ElementNode {
         if (!$isRangeSelection(selection)) {
             return false;
         }
-
         const anchorNode = selection.anchor.getNode();
         const focusNode = selection.focus.getNode();
 
@@ -105,8 +106,8 @@ export class KbdNode extends ElementNode {
  * Creates a BoxNode.
  * @returns The BoxNode.
  */
-export function $createKbdNode(): KbdNode {
-    return $applyNodeReplacement(new KbdNode());
+export function $createBoxNode(): BoxNode {
+    return $applyNodeReplacement(new BoxNode());
 }
 
 /**
@@ -114,45 +115,45 @@ export function $createKbdNode(): KbdNode {
  * @param node - The node to be checked.
  * @returns true if node is a BoxNode, false otherwise.
  */
-export function $isKbdNode(node: LexicalNode | null | undefined): node is KbdNode {
-    return node instanceof KbdNode;
+export function $isBoxNode(node: LexicalNode | null | undefined): node is BoxNode {
+    return node instanceof BoxNode;
 }
 
-export const TOGGLE_KBD_COMMAND: LexicalCommand<boolean | null> = createCommand('TOGGLE_KBD_COMMAND');
+export const TOGGLE_BOX_COMMAND: LexicalCommand<boolean | null> = createCommand('TOGGLE_BOX_COMMAND');
 
 /**
  * Generates or updates a BoxNode. It can also delete a BoxNode if the URL is null,
  * but saves any children and brings them up to the parent node.
- * @param boxedOn - The URL the link directs to.
+ * @param boxOn - The URL the link directs to.
  * @param attributes - Optional HTML a tag attributes. \\{ target, rel, title \\}
  */
-export function $toggleKbd(boxedOn: boolean): void {
+export function $toggleBoxed(boxOn: boolean): void {
     const selection = $getSelection();
-
+    console.log('TOGGLE_BOX_COMMAND', boxOn, selection);
     if (!$isRangeSelection(selection)) {
         return;
     }
     const nodes = selection.extract();
 
-    if (boxedOn === false) {
+    if (boxOn === false) {
         // Remove BoxNodes
         nodes.forEach((node) => {
-            const parentKbd = $findMatchingParent(node, (parent): parent is KbdNode => $isKbdNode(parent));
+            const parentBox = $findMatchingParent(node, (parent): parent is BoxNode => $isBoxNode(parent));
 
-            if (parentKbd) {
-                const children = parentKbd.getChildren();
+            if (parentBox) {
+                const children = parentBox.getChildren();
 
                 for (let i = 0; i < children.length; i++) {
-                    parentKbd.insertBefore(children[i]);
+                    parentBox.insertBefore(children[i]);
                 }
 
-                parentKbd.remove();
+                parentBox.remove();
             }
         });
         return;
     }
     const updatedNodes = new Set<NodeKey>();
-    const updateKbdNode = (boxNode: KbdNode) => {
+    const updateBoxNode = (boxNode: BoxNode) => {
         if (updatedNodes.has(boxNode.getKey())) {
             return;
         }
@@ -163,35 +164,35 @@ export function $toggleKbd(boxedOn: boolean): void {
         const firstNode = nodes[0];
         // if the first node is a BoxNode or if its
         // parent is a BoxNode, we update the URL, target and rel.
-        const boxNode = $getAncestor(firstNode, $isKbdNode);
+        const boxNode = $getAncestor(firstNode, $isBoxNode);
         if (boxNode !== null) {
-            return updateKbdNode(boxNode);
+            return updateBoxNode(boxNode);
         }
     }
 
     $withSelectedNodes(() => {
-        let kbdNode: KbdNode | null = null;
+        let boxNode: BoxNode | null = null;
         for (const node of nodes) {
             if (!node.isAttached()) {
                 continue;
             }
-            const parentKbdNode = $getAncestor(node, $isKbdNode);
-            if (parentKbdNode) {
-                updateKbdNode(parentKbdNode);
+            const parentBoxNode = $getAncestor(node, $isBoxNode);
+            if (parentBoxNode) {
+                updateBoxNode(parentBoxNode);
                 continue;
             }
             if ($isElementNode(node)) {
                 if (!node.isInline()) {
                     // Ignore block nodes, if there are any children we will see them
-                    // later and wrap in a new KbdNode
+                    // later and wrap in a new BoxNode
                     continue;
                 }
-                if ($isKbdNode(node)) {
-                    // If we don't already have a KbdNode
+                if ($isBoxNode(node)) {
+                    // If it's not an autolink node and we don't already have a BoxNode
                     // in this block then we can update it and re-use it
-                    if (kbdNode === null || !kbdNode.getParentOrThrow().isParentOf(node)) {
-                        updateKbdNode(node);
-                        kbdNode = node;
+                    if (boxNode === null || !boxNode.getParentOrThrow().isParentOf(node)) {
+                        updateBoxNode(node);
+                        boxNode = node;
                         continue;
                     }
                     // Unwrap BoxNode
@@ -203,13 +204,13 @@ export function $toggleKbd(boxedOn: boolean): void {
                 }
             }
             const prevBoxNode = node.getPreviousSibling();
-            if ($isKbdNode(prevBoxNode) && prevBoxNode.is(kbdNode)) {
+            if ($isBoxNode(prevBoxNode) && prevBoxNode.is(boxNode)) {
                 prevBoxNode.append(node);
                 continue;
             }
-            kbdNode = $createKbdNode();
-            node.insertAfter(kbdNode);
-            kbdNode.append(node);
+            boxNode = $createBoxNode();
+            node.insertAfter(boxNode);
+            boxNode.append(node);
         }
     });
 }

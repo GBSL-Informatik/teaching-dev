@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import File from '@site/packages/hfr/github-cms/models/File';
+import File from '../../../../../../models/File';
 import CodeBlock from '@theme/CodeBlock';
 
 interface Props {

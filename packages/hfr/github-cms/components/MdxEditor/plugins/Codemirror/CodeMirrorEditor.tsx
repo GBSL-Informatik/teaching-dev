@@ -12,12 +12,12 @@ import { CodeBlockEditorProps, readOnly$, useCodeBlockEditorContext } from '@mdx
 import { useCodeMirrorRef } from './useCodeMirrorRef';
 import styles from './styles.module.scss';
 import Card from '@tdev-components/shared/Card';
-import RemoveNode from '@site/packages/hfr/github-cms/components/MdxEditor/RemoveNode';
+import RemoveNode from '../../../MdxEditor/RemoveNode';
 import clsx from 'clsx';
 import GenericAttributeEditor, {
     GenericPropery,
     GenericValueProperty
-} from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor';
+} from '../../../MdxEditor/GenericAttributeEditor';
 import { extractMetaProps, sanitizedTitle } from '@tdev/theme/CodeBlock';
 import { v4 } from 'uuid';
 import Badge from '@tdev-components/shared/Badge';

@@ -1,4 +1,4 @@
-import { CmsStore } from '@site/packages/hfr/github-cms/stores/CmsStore';
+import { CmsStore } from '../stores/CmsStore';
 import { action, computed, IObservableArray, observable } from 'mobx';
 import { Octokit, RestEndpointMethodTypes as GhTypes } from '@octokit/rest';
 import { FileStubProps, iFile } from './iFile';

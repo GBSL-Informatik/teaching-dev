@@ -10,20 +10,20 @@ import {
     FullCmsSettings
 } from '@tdev-api/cms';
 import siteConfig from '@generated/docusaurus.config';
-import Dir from '@site/packages/hfr/github-cms/models/Dir';
-import { default as FileModel } from '@site/packages/hfr/github-cms/models/File';
+import Dir from '../models/Dir';
+import { default as FileModel } from '../models/File';
 import { computedFn } from 'mobx-utils';
 import _ from 'es-toolkit/compat';
-import Settings from '@site/packages/hfr/github-cms/models/Settings';
-import Github from '@site/packages/hfr/github-cms/models/Github';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
-import iEntry from '@site/packages/hfr/github-cms/models/iEntry';
+import Settings from '../models/Settings';
+import Github from '../models/Github';
+import FileStub from '../models/FileStub';
+import iEntry from '../models/iEntry';
 import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
-import PartialSettings, { REFRESH_THRESHOLD } from '@site/packages/hfr/github-cms/models/PartialSettings';
+import PartialSettings, { REFRESH_THRESHOLD } from '../models/PartialSettings';
 import imageCompression from 'browser-image-compression';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
+import BinFile from '../models/BinFile';
 import { default as CmsViewStore } from './ViewStore';
-import iFile from '@site/packages/hfr/github-cms/models/iFile';
+import iFile from '../models/iFile';
 import ViewStore from '@tdev-stores/ViewStores';
 
 const { organizationName, projectName } = siteConfig;

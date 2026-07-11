@@ -5,13 +5,13 @@ import clsx from 'clsx';
 import {
     DirectiveProperty,
     useDirectiveAttributeEditor
-} from '@site/packages/hfr/github-cms/components/MdxEditor/hooks/useDirectiveAttributeEditor';
+} from '../../components/MdxEditor/hooks/useDirectiveAttributeEditor';
 import { observer } from 'mobx-react-lite';
 import Card from '@tdev-components/shared/Card';
-import GenericAttributeEditor from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor';
-import RemoveNode from '@site/packages/hfr/github-cms/components/MdxEditor/RemoveNode';
-import MyAttributes from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor/MyAttributes';
-import { LeafDirectiveName } from '../plugin';
+import GenericAttributeEditor from '../../components/MdxEditor/GenericAttributeEditor';
+import RemoveNode from '../../components/MdxEditor/RemoveNode';
+import MyAttributes from '../../components/MdxEditor/GenericAttributeEditor/MyAttributes';
+import { LeafDirectiveName } from '@tdev-plugins/remark-media/plugin';
 
 const props: DirectiveProperty[] = [
     {
@@ -29,12 +29,12 @@ const props: DirectiveProperty[] = [
         required: false
     }
 ];
-export const YoutubeDescriptor: DirectiveDescriptor = {
-    name: LeafDirectiveName.YOUTUBE,
+export const LearningDescriptor: DirectiveDescriptor = {
+    name: LeafDirectiveName.LEARNINGAPPS,
     attributes: [],
     hasChildren: true,
     testNode(node) {
-        return node.name === LeafDirectiveName.YOUTUBE && node.type === 'leafDirective';
+        return node.name === LeafDirectiveName.LEARNINGAPPS && node.type === 'leafDirective';
     },
     Editor: observer(({ mdastNode }) => {
         const { jsxAttributes, directiveAttributes, onUpdate } = useDirectiveAttributeEditor(
@@ -49,6 +49,8 @@ export const YoutubeDescriptor: DirectiveDescriptor = {
                   ? firstChild.url
                   : '';
         }, [mdastNode]);
+        const appId = new URL(src).pathname.split('/')[1];
+        const transformedSrc = `https://learningapps.org/watch?app=${appId}`;
 
         return (
             <Card>
@@ -64,16 +66,16 @@ export const YoutubeDescriptor: DirectiveDescriptor = {
                 </div>
                 <div className={clsx(styles.media)}>
                     <iframe
-                        src={src}
-                        width={`${jsxAttributes.style?.minWidth || '100%'}`}
-                        height={`${jsxAttributes.style?.height || '100%'}`}
-                        allow="accelerometer; fullscreen; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        src={transformedSrc}
+                        height={`${jsxAttributes.style?.height || '500px'}`}
+                        allow="fullscreen"
+                        title="Learningapps"
                         {...jsxAttributes.jsxAttributes}
                         style={{
                             width: jsxAttributes.style?.minWidth
                                 ? (jsxAttributes.style?.minWidth as string)
                                 : '100%',
-                            aspectRatio: jsxAttributes.style.height ? undefined : '16 / 9',
+                            maxWidth: '100%',
                             ...jsxAttributes.style
                         }}
                     />

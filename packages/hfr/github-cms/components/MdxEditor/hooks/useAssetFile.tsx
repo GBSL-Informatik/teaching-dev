@@ -1,5 +1,5 @@
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
+import { useCmsStore } from '../../../hooks/useCmsStore';
+import FileStub from '../../../models/FileStub';
 import React from 'react';
 export const isRelPath = (path?: string) => {
     if (!path) {

@@ -1,5 +1,5 @@
 import { FullCmsSettings } from '@tdev-api/cms';
-import { CmsStore } from '@site/packages/hfr/github-cms/stores/CmsStore';
+import { CmsStore } from '../stores/CmsStore';
 import _ from 'es-toolkit/compat';
 import { action, computed } from 'mobx';
 import File from './File';

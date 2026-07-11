@@ -7,7 +7,7 @@ import { useMdastNodeUpdater } from '@mdxeditor/editor';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeEditor from '@tdev-components/shared/CodeEditor';
-import RemoveNode from '@site/packages/hfr/github-cms/components/MdxEditor/RemoveNode';
+import RemoveNode from '../../../../MdxEditor/RemoveNode';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props {

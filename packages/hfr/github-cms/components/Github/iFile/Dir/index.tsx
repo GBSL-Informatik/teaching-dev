@@ -1,13 +1,13 @@
 import React from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { default as DirModel } from '@site/packages/hfr/github-cms/models/Dir';
+import { default as DirModel } from '../../../../models/Dir';
 import File from '../File';
 import shared from '../styles.module.scss';
 import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import AddFilePopup from '../File/AddOrUpdateFile/AddFilePopup';
-import iFile from '@site/packages/hfr/github-cms/models/iFile';
+import iFile from '../../../../models/iFile';
 import PreviewPopup from '../File/FilePreview/PreviewPopup';
 
 interface Props<T extends iFile = iFile> {

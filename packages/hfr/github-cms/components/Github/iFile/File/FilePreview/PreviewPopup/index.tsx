@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import type { FileType } from '@site/packages/hfr/github-cms/models/FileStub';
+import type { FileType } from '../../../../../../models/FileStub';
 import Popup from 'reactjs-popup';
 import FilePreview from '..';
 

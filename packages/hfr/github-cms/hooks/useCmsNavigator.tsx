@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../hooks/useCmsStore';
 import { useHistory } from 'react-router';
 import { useLocation } from '@docusaurus/router';
 

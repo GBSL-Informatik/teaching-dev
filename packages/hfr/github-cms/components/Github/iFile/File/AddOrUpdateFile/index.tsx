@@ -8,12 +8,12 @@ import Button from '@tdev-components/shared/Button';
 import { mdiClose, mdiFileEdit, mdiFileMove, mdiFilePlus, mdiLoading } from '@mdi/js';
 import { ApiState } from '@tdev-stores/iStore';
 import Alert from '@tdev-components/shared/Alert';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
-import File from '@site/packages/hfr/github-cms/models/File';
+import FileStub from '../../../../../models/FileStub';
+import File from '../../../../../models/File';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import BinFile from '../../../../../models/BinFile';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
 
 export type Response = { state: ApiState; message?: string };
 

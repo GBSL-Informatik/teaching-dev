@@ -5,11 +5,11 @@ import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { observer } from 'mobx-react-lite';
 import { Redirect, useHistory } from '@docusaurus/router';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../hooks/useCmsStore';
 import { useLocation } from '@docusaurus/router';
 import CodeBlock from '@theme/CodeBlock';
 import Link from '@docusaurus/Link';
-import { useGithubAccess } from '@site/packages/hfr/github-cms/hooks/useGithubAccess';
+import { useGithubAccess } from '../hooks/useGithubAccess';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();

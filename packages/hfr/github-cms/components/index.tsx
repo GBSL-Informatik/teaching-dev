@@ -7,21 +7,21 @@ import { observer } from 'mobx-react-lite';
 import Loader from '@tdev-components/Loader';
 import React from 'react';
 import { useStore } from '@tdev-hooks/useStore';
-import { useGithubAccess } from '@site/packages/hfr/github-cms/hooks/useGithubAccess';
+import { useGithubAccess } from '../hooks/useGithubAccess';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
-import Directory from '@site/packages/hfr/github-cms/components/MdxEditor/Directory';
+import Directory from './MdxEditor/Directory';
 import Details from '@theme/Details';
-import PR from '@site/packages/hfr/github-cms/components/Github/PR';
-import Branch from '@site/packages/hfr/github-cms/components/Github/Branch';
+import PR from './Github/PR';
+import Branch from './Github/Branch';
 import EditorNav from './MdxEditor/EditorNav';
 import { useLoadedFile } from './MdxEditor/hooks/useLoadedFile';
 import ShowFile from './ShowFile';
 import siteConfig from '@generated/docusaurus.config';
 import { reaction } from 'mobx';
-import { useCmsNavigator } from '@site/packages/hfr/github-cms/hooks/useCmsNavigator';
-import { FileNavigation } from '@site/packages/hfr/github-cms/stores/CmsStore';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsNavigator } from '../hooks/useCmsNavigator';
+import { FileNavigation } from '../stores/CmsStore';
+import { useCmsStore } from '../hooks/useCmsStore';
 const { organizationName, projectName } = siteConfig;
 
 const parseLocation = (location: Location): FileNavigation => {

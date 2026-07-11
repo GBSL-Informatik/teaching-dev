@@ -1,15 +1,13 @@
 import React from 'react';
 import { JsxComponentDescriptor, JsxPropertyDescriptor } from '@mdxeditor/editor';
-import RemoveNode from '@site/packages/hfr/github-cms/components/MdxEditor/RemoveNode';
+import RemoveNode from '../../../../MdxEditor/RemoveNode';
 import styles from './styles.module.scss';
-import GenericAttributeEditor, {
-    GenericPropery
-} from '@site/packages/hfr/github-cms/components/MdxEditor/GenericAttributeEditor';
+import GenericAttributeEditor, { GenericPropery } from '../../../../MdxEditor/GenericAttributeEditor';
 
 import Card from '@tdev-components/shared/Card';
-import { useAttributeEditorInNestedEditor } from '@site/packages/hfr/github-cms/components/MdxEditor/hooks/useAttributeEditorInNestedEditor';
+import { useAttributeEditorInNestedEditor } from '../../../../MdxEditor/hooks/useAttributeEditorInNestedEditor';
 import QrCode from '@tdev-components/shared/QrCode';
-import { toJsxAttributes } from '@site/packages/hfr/github-cms/components/MdxEditor/PropertyEditor/toJsxAttributes';
+import { toJsxAttributes } from '../../../../MdxEditor/PropertyEditor/toJsxAttributes';
 
 const ScannerProps: GenericPropery[] = [
     { name: 'text', required: true, type: 'text', description: 'Text im QR Code' },

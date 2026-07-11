@@ -1,18 +1,18 @@
 import React from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { default as FileModel } from '@site/packages/hfr/github-cms/models/File';
-import FileStub from '@site/packages/hfr/github-cms/models/FileStub';
+import { default as FileModel } from '../../../../models/File';
+import FileStub from '../../../../models/FileStub';
 import shared from '../styles.module.scss';
 import styles from './styles.module.scss';
 import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
 import { mdiContentSave, mdiEye, mdiLoading, mdiRestore, mdiStar } from '@mdi/js';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
 import Link from '@docusaurus/Link';
 import { Delete } from '@tdev-components/shared/Button/Delete';
 import RenameFilePopup from './AddOrUpdateFile/RenameFilePopup';
-import BinFile from '@site/packages/hfr/github-cms/models/BinFile';
+import BinFile from '../../../../models/BinFile';
 import PreviewPopup from './FilePreview/PreviewPopup';
 interface Props {
     file: FileModel | BinFile | FileStub;

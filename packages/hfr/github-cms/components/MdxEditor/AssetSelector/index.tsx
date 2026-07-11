@@ -2,9 +2,9 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '@site/packages/hfr/github-cms/hooks/useCmsStore';
-import iFile from '@site/packages/hfr/github-cms/models/iFile';
-import Dir from '@site/packages/hfr/github-cms/components/Github/iFile/Dir';
+import { useCmsStore } from '../../../hooks/useCmsStore';
+import iFile from '../../../models/iFile';
+import Dir from '../../../components/Github/iFile/Dir';
 import Button from '@tdev-components/shared/Button';
 import { mdiFolderArrowUpOutline } from '@mdi/js';
 

@@ -6,7 +6,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Link from '@docusaurus/Link';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import { useGithubAccess } from '@site/packages/hfr/github-cms/hooks/useGithubAccess';
+import { useGithubAccess } from '../hooks/useGithubAccess';
 import { Redirect } from '@docusaurus/router';
 import Card from '@tdev-components/shared/Card';
 import LoginProfileButton from '@tdev-components/Navbar/LoginProfileButton';
