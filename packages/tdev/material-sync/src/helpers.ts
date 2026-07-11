@@ -7,6 +7,7 @@ import { load as yamlLoad, dump as yamlDump } from 'js-yaml';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+export const PACKAGE_ROOT = path.resolve(__dirname, '..');
 export const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
 type RsyncInstance = InstanceType<typeof Rsync>;
