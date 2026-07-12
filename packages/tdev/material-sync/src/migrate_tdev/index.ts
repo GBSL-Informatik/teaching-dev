@@ -66,11 +66,11 @@ const main = async (): Promise<void> => {
                 process.chdir(projectRoot);
                 await gitEnsureClean('main');
                 await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed);
-                await fs.rename(migrationPath, migrationPath.replace(/\.ts$/, '.done.ts'));
             } finally {
                 process.chdir(REPO_ROOT);
             }
         }
+        await fs.rename(migrationPath, migrationPath.replace(/\.ts$/, '.done.ts'));
     }
 };
 

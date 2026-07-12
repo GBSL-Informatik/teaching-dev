@@ -31,3 +31,4 @@ static/katex/katex.min.css
 *.jpg
 *.png
 material.config.yaml
+updateTdev.config.yaml

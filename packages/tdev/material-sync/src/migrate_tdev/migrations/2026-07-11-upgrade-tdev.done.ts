@@ -12,35 +12,33 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await $`git checkout -b ${branchName}`;
 
     // updateTdev.config.yaml
-    if (managed === 'fully') {
-        const updateConfig = await updateTdevConfig(root);
-        await $`rm -f tsconfig.tdev.json`;
-        ensureTdevConfig(updateConfig, [
-            {
-                src: 'tsconfig.tdev.json',
-                dst: 'tsconfig.json'
-            },
-            {
-                src: 'tsconfig.docusaurus.json',
-                dst: 'tsconfig.docusaurus.json'
-            },
-            {
-                src: 'static/bry-libs/',
-                dst: 'static/bry-libs'
-            },
-            {
-                src: 'static/pyodide.sw.js',
-                dst: 'static/pyodide.sw.js'
-            },
-            {
-                src: 'static/tdev-artifacts/',
-                dst: 'static/tdev-artifacts/',
-                ignore: ['*/**']
-            }
-        ]);
-        await $`rm -f tsconfig.tdev.json`;
-        await writeUpdateTdevConfig(root, updateConfig);
-    }
+    const updateConfig = await updateTdevConfig(root);
+    await $`rm -f tsconfig.tdev.json`;
+    ensureTdevConfig(updateConfig, [
+        {
+            src: 'tsconfig.tdev.json',
+            dst: 'tsconfig.json'
+        },
+        {
+            src: 'tsconfig.docusaurus.json',
+            dst: 'tsconfig.docusaurus.json'
+        },
+        {
+            src: 'static/bry-libs/',
+            dst: 'static/bry-libs'
+        },
+        {
+            src: 'static/pyodide.sw.js',
+            dst: 'static/pyodide.sw.js'
+        },
+        {
+            src: 'static/tdev-artifacts/',
+            dst: 'static/tdev-artifacts/',
+            ignore: ['*/**']
+        }
+    ]);
+    await $`rm -f tsconfig.tdev.json`;
+    await writeUpdateTdevConfig(root, updateConfig);
     await $`yarn run updateTdev`;
 
     // package.json
@@ -74,6 +72,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await $`rm -rf node_modules`;
     await $`rm yarn.lock`;
     await $`yarn install`;
+    await $`yarn format`;
 
     await $`git add .`;
     await $`git commit -m ${'Migrate TDEV'}`;

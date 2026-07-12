@@ -21,7 +21,7 @@ async function writeFile<T>(filePath: string, data: T | string): Promise<void> {
                 break;
             case '.yaml':
             case '.yml':
-                fileData = yamlDump(data, { indent: 4, lineWidth: -1 });
+                fileData = yamlDump(data, { noRefs: true, lineWidth: -1, sortKeys: false });
                 break;
             default:
                 fileData = data as string;
