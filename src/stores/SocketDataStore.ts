@@ -18,7 +18,7 @@ import {
 } from '../api/IoEventTypes';
 import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
-import { Document, DocumentType } from '../api/document';
+import { Document, DocumentType, type ViewStoreTypeMapping } from '../api/document';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import { CmsSettings } from '@tdev-api/cms';
 import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
@@ -32,6 +32,7 @@ type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
 const RecordsToCreate: DocumentType[] = ['dir', 'file', 'mdx_comment', 'dynamic_document_roots'] as const;
+type PrimitiveCmsStore = { handleSettingsChange: (settings: CmsSettings) => void };
 
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
@@ -232,12 +233,12 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.CmsSettings:
                 const settings = record as CmsSettings;
-                if (!this.root.viewStore.stores.has('cmsStore')) {
+                if (!this.root.viewStore.stores.has('cmsStore' as keyof ViewStoreTypeMapping)) {
                     console.log('cmsStore not registered yet, skipping settings update');
                     return;
                 }
-                const cmsStore = this.root.viewStore.useStore('cmsStore');
-                cmsStore.handleSettingsChange(settings);
+                const cmsStore = this.root.viewStore.useStore('cmsStore' as keyof ViewStoreTypeMapping);
+                (cmsStore as unknown as PrimitiveCmsStore).handleSettingsChange(settings);
                 break;
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;
@@ -293,12 +294,12 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.root.documentStore.addToStore(record as Document<DocumentType>);
                 break;
             case RecordType.CmsSettings:
-                if (!this.root.viewStore.stores.has('cmsStore')) {
+                if (!this.root.viewStore.stores.has('cmsStore' as keyof ViewStoreTypeMapping)) {
                     console.log('cmsStore not registered yet, skipping settings update');
                     return;
                 }
-                const cmsStore = this.root.viewStore.useStore('cmsStore');
-                cmsStore.handleSettingsChange(record as CmsSettings);
+                const cmsStore = this.root.viewStore.useStore('cmsStore' as keyof ViewStoreTypeMapping);
+                (cmsStore as unknown as PrimitiveCmsStore).handleSettingsChange(record as CmsSettings);
                 break;
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;

@@ -55,6 +55,8 @@ const main = async (): Promise<void> => {
         `Migrating ${pagesToMigrate.length} tdev pages:`,
         pagesToMigrate.map((p) => p.path)
     );
+    const failedMigrationPaths: string[] = [];
+    const successfulMigrationPaths: string[] = [];
     for await (const { path: migrationPath, runner: runMigration } of loadMigrationRunners()) {
         for (const tdevPage of pagesToMigrate) {
             try {
@@ -66,12 +68,19 @@ const main = async (): Promise<void> => {
                 process.chdir(projectRoot);
                 await gitEnsureClean('main');
                 await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed);
+                successfulMigrationPaths.push(migrationPath);
+            } catch (error) {
+                console.error(`Failed to migrate ${migrationPath}:`, error);
+                failedMigrationPaths.push(migrationPath);
             } finally {
                 process.chdir(REPO_ROOT);
             }
         }
         await fs.rename(migrationPath, migrationPath.replace(/\.ts$/, '.done.ts'));
     }
+    console.log(`Migration completed.
+    ✅ Successful: ${successfulMigrationPaths.length}
+    ❌ Failed: ${failedMigrationPaths.length}: ${failedMigrationPaths.join(', ')}`);
 };
 
 main()
