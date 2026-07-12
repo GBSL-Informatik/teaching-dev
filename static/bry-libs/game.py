@@ -26,17 +26,23 @@ class Game():
     @staticmethod
     def stop():
         Game.stop_request = True
-        timer.clear_timeout(Game.timeout_id)
-        timer.cancel_animation_frame(Game.timeout_id)
-        del document[Config.BRYTHON_COMMUNICATOR].attrs['data--is-running']
+        try:
+            timer.clear_timeout(Game.timeout_id)
+            timer.cancel_animation_frame(Game.timeout_id)
+            del document[Config.BRYTHON_COMMUNICATOR].attrs['data--is-running']
+        except:
+            pass
         notify(Config.ID, {'type': 'done', 'time': time.time()})
 
     @staticmethod
     def is_running():
-        return not Game.stop_request and document[Config.BRYTHON_COMMUNICATOR].attrs.get('data--start-time') == Game.init_time # type: ignore
+        try:
+            return not Game.stop_request and document[Config.BRYTHON_COMMUNICATOR].attrs.get('data--start-time') == Game.init_time # type: ignore
+        except:
+            return False
 
-def sleep(ms):
-    Game.sleep(ms)
+def sleep(s):
+    Game.sleep(s * 1000)
 
 def stop():
     Game.stop()
@@ -79,12 +85,16 @@ def gameloop(func):
     
     def wrap(*args, **kwargs):
         Game.sleep_requested = False
-        if func.__code__.co_argcount > 0:
-            result = func(time.now() - t0) # type: ignore
-        else:
-            result = func()
+        try:
+            if func.__code__.co_argcount > 0:
+                result = func(time.now() - t0) # type: ignore
+            else:
+                result = func()
 
-        if not Game.sleep_requested and not Game.stop_request:
-            animation_frame()
+            if not Game.sleep_requested and not Game.stop_request:
+                animation_frame()
+        except:
+            Game.stop()
+            raise
         return Game
     return wrap
