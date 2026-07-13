@@ -1,0 +1,12 @@
+28Ga:
+    - from: docs/OF-BYOD-Basics/
+      to: versioned_docs/version-28Ga/01-BYOD
+    - from: docs/OF-Programmieren-1/
+      to: versioned_docs/version-28Ga/03-Programmieren
+      ignore:
+          - 12-rekursion
+28Wa:
+    - from: docs/WMS-WINF/
+      to: versioned_docs/version-28Wa/10-WINF
+      ignore:
+          - _category_.yml

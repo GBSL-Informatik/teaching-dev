@@ -35,7 +35,7 @@ import {
   aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
 import pageIndexPlugin from './packages/tdev/page-index/plugin';
-import { useTdevContentPath } from './src/siteConfig/helpers';
+import { resolveEditUrl, useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
 import {
   recommendedBeforeDefaultRemarkPlugins,
@@ -279,7 +279,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
                   sidebarPath: './sidebars.ts',
                   // Remove this to remove the "edit this page" links.
                   path: DOCS_PATH,
-                  editUrl: '/',
+                  editUrl: resolveEditUrl(),
                   remarkPlugins: REMARK_PLUGINS,
                   rehypePlugins: REHYPE_PLUGINS,
                   beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,
