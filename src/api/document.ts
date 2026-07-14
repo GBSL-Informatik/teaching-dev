@@ -133,7 +133,7 @@ export interface TaskableDocumentMapping {
 
 export interface TypeDataMapping extends TaskableDocumentMapping, ContainerTypeDataMapping {
     ['code']: CodeData;
-    // TODO: rename to `code_version`?
+    // TODO: rename to `code_version`
     ['script_version']: ScriptVersionData;
     ['string']: StringData;
     ['choice_answer']: ChoiceAnswerData;
