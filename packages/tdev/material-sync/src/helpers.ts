@@ -12,7 +12,6 @@ export const REPO_ROOT = process.env.MATERIAL_CONFIG_PATH
     ? path.dirname(path.resolve(process.cwd(), process.env.MATERIAL_CONFIG_PATH))
     : path.resolve(__dirname, '..', '..', '..', '..');
 
-console.log('REPO_ROOT', REPO_ROOT);
 type RsyncInstance = InstanceType<typeof Rsync>;
 
 type BaseConfig = {

@@ -43,15 +43,19 @@ export const useTdevContentPath = (siteConfig: SiteConfig, type: 'blog' | 'docs'
     return type;
 };
 
+const ensureLeadingSlash = (str: string) => {
+    return str.startsWith('/') ? str : `/${str}`;
+};
+
 export const resolveEditUrl = () => {
     const matrialConfig = normalizeMaterialConfig(loadMaterialConfig(true));
     const getEditUrl = (props: Omit<Parameters<EditUrlFunction>[0], 'locale' | 'permalink'>) => {
         const { version, docPath, versionDocsDirPath } = props;
         if (version === 'current') {
-            return `${versionDocsDirPath}/${docPath}`;
+            return ensureLeadingSlash(`${versionDocsDirPath}/${docPath}`);
         }
         if (!(version in matrialConfig)) {
-            return `${versionDocsDirPath}/${docPath}`;
+            return ensureLeadingSlash(`${versionDocsDirPath}/${docPath}`);
         }
         const config = matrialConfig[version as keyof typeof matrialConfig] ?? [];
         const docParts = docPath.split('/');
@@ -80,7 +84,7 @@ export const resolveEditUrl = () => {
             return resolveSourceFilePath(parts.slice(0, -1));
         };
         const sourceFilePath = resolveSourceFilePath(docParts);
-        return sourceFilePath;
+        return ensureLeadingSlash(sourceFilePath);
     };
     return getEditUrl;
 };
