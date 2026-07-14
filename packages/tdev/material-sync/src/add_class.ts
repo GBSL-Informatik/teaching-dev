@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { loadMaterialConfig, pathExists, REPO_ROOT, saveMaterialConfig } from './helpers.js';
+import { loadMaterialConfig, pathExists, REPO_ROOT, saveMaterialConfig } from './helpers/index.js';
 import minimist from 'minimist';
 import { exit } from 'node:process';
 import crypto from 'node:crypto';

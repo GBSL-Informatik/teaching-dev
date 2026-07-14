@@ -35,7 +35,7 @@ import {
   aliasConfigurationPlugin
 } from './src/siteConfig/pluginConfigs';
 import pageIndexPlugin from './packages/tdev/page-index/plugin';
-import { resolveEditUrl, useTdevContentPath } from './src/siteConfig/helpers';
+import { useTdevContentPath } from './src/siteConfig/helpers';
 import path from 'path';
 import {
   recommendedBeforeDefaultRemarkPlugins,
@@ -44,7 +44,8 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import { TdevCustomFields } from '@tdev/siteConfig/TdevCustomFields';
+import type { TdevCustomFields } from '@tdev/siteConfig/TdevCustomFields';
+import { resolveEditUrl } from '@tdev/material-sync/src/helpers/resolveEditUrl';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);

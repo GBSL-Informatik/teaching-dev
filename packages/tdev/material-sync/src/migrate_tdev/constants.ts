@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REPO_ROOT } from '../helpers.js';
+import { REPO_ROOT } from '../helpers/index.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const MIGRATION_CONFIG_NAME = 'migrateTdev.config.yaml';
 export const MIGRATION_CONFIG_PATH = path.join(REPO_ROOT, MIGRATION_CONFIG_NAME);

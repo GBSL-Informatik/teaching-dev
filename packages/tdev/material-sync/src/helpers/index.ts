@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const PACKAGE_ROOT = path.resolve(__dirname, '..');
 export const REPO_ROOT = process.env.MATERIAL_CONFIG_PATH
     ? path.dirname(path.resolve(process.cwd(), process.env.MATERIAL_CONFIG_PATH))
-    : path.resolve(__dirname, '..', '..', '..', '..');
+    : path.resolve(__dirname, '..', '..', '..', '..', '..');
 
 type RsyncInstance = InstanceType<typeof Rsync>;
 

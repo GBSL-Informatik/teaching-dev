@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import minimist from 'minimist';
-import { loadMaterialConfig, REPO_ROOT, resolveMaterialConfig } from './helpers.js';
+import { loadMaterialConfig, REPO_ROOT, resolveMaterialConfig } from './helpers/index.js';
 
 process.chdir(REPO_ROOT);
 
