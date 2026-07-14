@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { REPO_ROOT, PACKAGE_ROOT, pathExistsSync } from '../helpers.js';
+import { REPO_ROOT, PACKAGE_ROOT, pathExistsSync } from '../helpers/index.js';
 import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
 import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
 import { gitEnsureClean } from './helpers/actions.js';

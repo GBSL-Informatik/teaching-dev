@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import minimist from 'minimist';
-import { loadMaterialConfig, REPO_ROOT, resolveMaterialConfig } from './helpers.js';
+import { loadMaterialConfig, REPO_ROOT, resolveMaterialConfig } from './helpers/index.js';
 
 process.chdir(REPO_ROOT);
 
@@ -43,7 +43,11 @@ klassen.forEach((klass) => {
                 if (!fs.existsSync(path.dirname(bkpLocation))) {
                     fs.mkdirSync(path.dirname(bkpLocation), { recursive: true });
                 }
-                fs.copyFileSync(`${toPath}/${keep}`, `${tmp_dir}/${toPath}/${keep}`);
+                if (fs.lstatSync(`${toPath}/${keep}`).isDirectory()) {
+                    fs.cpSync(`${toPath}/${keep}`, `${tmp_dir}/${toPath}/${keep}`, { recursive: true });
+                } else {
+                    fs.copyFileSync(`${toPath}/${keep}`, `${tmp_dir}/${toPath}/${keep}`);
+                }
             }
             copyBack.push(`${toPath}/${keep}`);
         });
@@ -76,6 +80,10 @@ klassen.forEach((klass) => {
         }
         if (!fs.existsSync(path.dirname(f))) {
             fs.mkdirSync(path.dirname(f), { recursive: true });
+        }
+        if (fs.lstatSync(`${tmp_dir}/${f}`).isDirectory()) {
+            fs.cpSync(`${tmp_dir}/${f}`, f, { recursive: true });
+            return;
         }
         fs.copyFileSync(`${tmp_dir}/${f}`, f);
     });

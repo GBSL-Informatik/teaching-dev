@@ -8,7 +8,9 @@ import { load as yamlLoad, dump as yamlDump } from 'js-yaml';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const PACKAGE_ROOT = path.resolve(__dirname, '..');
-export const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
+export const REPO_ROOT = process.env.MATERIAL_CONFIG_PATH
+    ? path.dirname(path.resolve(process.cwd(), process.env.MATERIAL_CONFIG_PATH))
+    : path.resolve(__dirname, '..', '..', '..', '..', '..');
 
 type RsyncInstance = InstanceType<typeof Rsync>;
 
@@ -49,7 +51,17 @@ export interface ConfigType {
 
 export const CONFIG_NAME = 'material.config.yaml';
 
-const materialConfigPath = path.resolve(REPO_ROOT, CONFIG_NAME);
+const materialConfigPath = process.env.MATERIAL_CONFIG_PATH
+    ? path.resolve(process.cwd(), process.env.MATERIAL_CONFIG_PATH)
+    : path.resolve(REPO_ROOT, CONFIG_NAME);
+
+export const normalizeMaterialConfig = (config: ConfigType): Record<string, NormalizedConfig[]> => {
+    const normalized: Record<string, NormalizedConfig[]> = {};
+    for (const [klass, configs] of Object.entries(config)) {
+        normalized[klass] = configs.map((c) => resolveMaterialConfig(klass, c));
+    }
+    return normalized;
+};
 
 export const resolveMaterialConfig = (klass: string, config: SyncConfig): NormalizedConfig => {
     let from: string;
@@ -74,11 +86,14 @@ export const resolveMaterialConfig = (klass: string, config: SyncConfig): Normal
     return { from: from!, to: to!, ignore: config.ignore, open: config.open };
 };
 
-export const loadMaterialConfig = (): ConfigType => {
+export const loadMaterialConfig = (skipCreate?: boolean): ConfigType => {
     const hasFile = pathExistsSync(materialConfigPath);
     if (hasFile) {
         const source = fs.readFileSync(materialConfigPath, 'utf-8');
         return (yamlLoad(source) ?? {}) as ConfigType;
+    }
+    if (skipCreate) {
+        return { pages: [] };
     }
     fs.writeFileSync(
         materialConfigPath,

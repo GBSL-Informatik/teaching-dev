@@ -44,7 +44,8 @@ import {
 } from './src/siteConfig/markdownPluginConfigs';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import { GlobExcludeDefault } from '@docusaurus/utils';
-import { TdevCustomFields } from '@tdev/siteConfig/TdevCustomFields';
+import type { TdevCustomFields } from '@tdev/siteConfig/TdevCustomFields';
+import { resolveEditUrl } from '@tdev/material-sync/src/helpers/resolveEditUrl';
 
 const BUILD_LOCATION = __dirname;
 const GIT_COMMIT_SHA = process.env.GITHUB_SHA || Math.random().toString(36).substring(7);
@@ -279,7 +280,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
                   sidebarPath: './sidebars.ts',
                   // Remove this to remove the "edit this page" links.
                   path: DOCS_PATH,
-                  editUrl: '/',
+                  editUrl: resolveEditUrl(),
                   remarkPlugins: REMARK_PLUGINS,
                   rehypePlugins: REHYPE_PLUGINS,
                   beforeDefaultRemarkPlugins: BEFORE_DEFAULT_REMARK_PLUGINS,

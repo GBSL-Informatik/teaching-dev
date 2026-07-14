@@ -8,7 +8,7 @@ import {
     REPO_ROOT,
     resolveMaterialConfig,
     saveMaterialConfig
-} from './helpers.js';
+} from './helpers/index.js';
 
 process.chdir(REPO_ROOT);
 

@@ -10,7 +10,7 @@ import {
     pathExists,
     REPO_ROOT,
     resolveMaterialConfig
-} from './helpers.js';
+} from './helpers/index.js';
 process.chdir(REPO_ROOT);
 
 const typedConfig: ConfigType = loadMaterialConfig();

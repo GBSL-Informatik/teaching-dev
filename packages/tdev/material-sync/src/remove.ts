@@ -10,7 +10,7 @@ import {
     resolveMaterialConfig,
     saveMaterialConfig,
     SyncConfig
-} from './helpers.js';
+} from './helpers/index.js';
 
 process.chdir(REPO_ROOT);
 
