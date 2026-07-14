@@ -11,6 +11,6 @@
         "resolveJsonModule": true,
         "moduleResolution": "NodeNext"
     },
-    "include": ["src/*.ts", "src/helpers/resolveEditUrl.ts", "src/helpers/index.ts"],
+    "include": ["src/*.ts", "src/helpers/*.ts"],
     "exclude": ["node_modules", "dist"]
 }
