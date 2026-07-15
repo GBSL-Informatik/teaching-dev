@@ -13,5 +13,6 @@ export const MIGRATION_PATH = path.join(__dirname, 'migrations');
 export type MigrationRunner = (
     projectRoot: string,
     apiMode: 'api' | 'indexedDb' | 'memory',
-    managed: 'fully' | 'partially' | 'none'
+    managed: 'fully' | 'partially' | 'none',
+    timestamp: number
 ) => Promise<void>;

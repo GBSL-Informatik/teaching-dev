@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { REPO_ROOT, PACKAGE_ROOT, pathExistsSync } from '../helpers/index.js';
+import { REPO_ROOT, pathExistsSync } from '../helpers/index.js';
 import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
 import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
 import { gitEnsureClean } from './helpers/actions.js';
@@ -15,6 +15,7 @@ yarn workspace @tdev/material-sync migrateTdev [[--only="inf-abc,inf-ccd"]] [[--
 
     --only: Comma-separated list of tdev pages to migrate (pages including the specified name in the path)
     --skip: Comma-separated list of tdev pages to skip (pages *not* including the specified name in the path)
+    --done: force renames the migration file to .done.ts after successful migration (default: when no --only or --skip is specified)
 
 examples:
 
@@ -22,9 +23,12 @@ yarn workspace @tdev/material-sync migrateTdev                              # --
 yarn workspace @tdev/material-sync migrateTdev --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
 yarn workspace @tdev/material-sync migrateTdev --only="inf-"                # --> migrates only pages with "inf-" in the path
 yarn workspace @tdev/material-sync migrateTdev --skip="inf-abc,inf-ccd"     # --> migrates all except inf-abc and inf-ccd
+yarn workspace @tdev/material-sync migrateTdev --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
 `);
     process.exit(0);
 }
+
+const doneFlag = argv.done === true || argv.done === 'true' || argv.done === '1';
 
 const onlyPages: string[] = argv.only
     ? (argv.only as string)
@@ -57,6 +61,7 @@ const main = async (): Promise<void> => {
     );
     const failedMigrationPaths: string[] = [];
     const successfulMigrationPaths: string[] = [];
+    const now = Date.now();
     for await (const { path: migrationPath, runner: runMigration } of loadMigrationRunners()) {
         for (const tdevPage of pagesToMigrate) {
             try {
@@ -67,7 +72,7 @@ const main = async (): Promise<void> => {
                 }
                 process.chdir(projectRoot);
                 await gitEnsureClean('main');
-                await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed);
+                await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed, now);
                 successfulMigrationPaths.push(migrationPath);
             } catch (error) {
                 console.error(`Failed to migrate ${migrationPath}:`, error);
@@ -76,7 +81,9 @@ const main = async (): Promise<void> => {
                 process.chdir(REPO_ROOT);
             }
         }
-        await fs.rename(migrationPath, migrationPath.replace(/\.ts$/, '.done.ts'));
+        if (doneFlag || (onlyPages.length === 0 && skipPages.length === 0)) {
+            await fs.rename(migrationPath, migrationPath.replace(/\.ts$/, '.done.ts'));
+        }
     }
     console.log(`Migration completed.
     ✅ Successful: ${successfulMigrationPaths.length}

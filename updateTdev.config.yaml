@@ -7,6 +7,8 @@ trackedElements:
       dst: src
     - src: packages/tdev/
       dst: packages/tdev
+      ignore:
+        - material-sync/src/migrate_tdev/migrations
     - src: updateSync/
       dst: updateSync
     - src: tsconfig.tdev.json
