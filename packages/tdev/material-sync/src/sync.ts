@@ -80,7 +80,7 @@ const main = async (): Promise<void> => {
         const gitignore: string[] = [];
         const classDir =
             klass === 'pages'
-                ? 'src/pages/'
+                ? 'website/pages/'
                 : klass === 'docs'
                   ? undefined
                   : `versioned_docs/version-${klass}/`;
