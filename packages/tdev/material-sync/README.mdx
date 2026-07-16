@@ -160,12 +160,13 @@ Um ein Archiv für Klassen zu erstellen (freeze der Inhalte), soll die Seite nur
 
 1. neuer Branch erstellen
 2. `yarn workspace @tdev/material-sync sync` ausführen
-3. `yarn workspace @tdev/material-sync prepareArchive "28Gb,28Gj"` aufrufen
-4. `yarn build` ausführen
+3. `yarn workspace @tdev/material-sync prepareArchive "28Gb,28Gj" --domain="inf.28.gbsl.website` aufrufen
+4. `BUILD_ARCHIVE=true yarn run docusaurus build` ausführen
 5. Build-Ordner hochladen (z.B. auf GitHub Pages)
     ```bash
     cd build
     git init .
+    git branch -M main
     git remote add origin <remote-url>
     git add .
     git commit -m "initial commit"
