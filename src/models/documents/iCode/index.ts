@@ -1,30 +1,56 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, ScriptVersionData, CodeType } from '@tdev-api/document';
+import {
+    Document as DocumentProps,
+    TypeDataMapping,
+    ScriptVersionData,
+    CodeType,
+    iPresentable
+} from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { throttle } from 'es-toolkit/function';
 import iCodeMeta from './iCodeMeta';
-import File from '../FileSystem/File';
 import ScriptVersion from '../ScriptVersion';
 
 type Props<T extends CodeType> = DocumentProps<T>;
 
 interface Version {
     code: string;
+    present?: boolean;
     createdAt: Date;
     version: number;
     pasted?: boolean;
 }
 
-class iCode<T extends CodeType = CodeType> extends iDocument<T> {
+class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPresentable {
     @observable accessor code: string;
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
     @observable accessor isPasted: boolean = false;
+    @observable accessor _isPresenting: boolean = false;
+
     constructor(props: Props<T>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code ?? this.meta.initCode;
+        this._isPresenting = props.data?.isPresenting ?? false;
+    }
+
+    @computed
+    get isPresenting(): boolean {
+        return !!this._isPresenting;
+    }
+
+    @action
+    setPresenting(isPresenting?: boolean): void {
+        if (!this.store.root.userStore.current?.hasElevatedAccess) {
+            return;
+        }
+        if (this._isPresenting === isPresenting) {
+            return;
+        }
+        this._isPresenting = isPresenting ?? false;
+        this.save();
     }
 
     @computed
@@ -125,9 +151,19 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @action
     setData(data: Props<T>['data'], from: Source, updatedAt?: Date): void {
         if (from === Source.LOCAL) {
+            if (data.isPresenting) {
+                this.setPresenting(data.isPresenting);
+            } else if (this._isPresenting) {
+                this._isPresenting = false;
+            }
             this.setCode(data.code);
         } else {
             this.code = data.code;
+            if (data.isPresenting) {
+                this._isPresenting = data.isPresenting;
+            } else if (this._isPresenting) {
+                this._isPresenting = false;
+            }
         }
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
@@ -228,9 +264,13 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     }
 
     get data(): TypeDataMapping[T] {
-        return {
+        const data: TypeDataMapping[T] = {
             code: this.code
-        } as TypeDataMapping[T];
+        };
+        if (this.isPresenting) {
+            data.isPresenting = true;
+        }
+        return data;
     }
 
     @computed

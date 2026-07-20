@@ -32,6 +32,10 @@ export enum Access {
     None_User = 'None_User'
 }
 
+export interface Presentable {
+    isPresenting?: boolean;
+}
+
 export interface ScriptVersionData {
     code: string;
     pasted?: boolean;
@@ -45,7 +49,7 @@ export interface QuillV2Data {
     delta: Delta;
 }
 
-export interface CodeData {
+export interface CodeData extends Presentable {
     code: string;
 }
 
@@ -136,6 +140,12 @@ type KeysWithCode<T> = {
 
 export type CodeType = KeysWithCode<TypeDataMapping>;
 
+type PresentableKeys<T> = {
+    [K in keyof T]: 'isPresenting' extends keyof T[K] ? K : never;
+}[keyof T];
+
+export type PresentableType = PresentableKeys<TypeDataMapping>;
+
 export interface ContainerTypeModelMapping {
     ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
 }
@@ -174,6 +184,16 @@ export type TaskableModelType = TaskableTypeModelMapping[TaskableType];
 
 export type DocumentType = keyof TypeModelMapping;
 export type DocumentModelType = TypeModelMapping[DocumentType];
+export type PresentableModelType = TypeModelMapping[PresentableType];
+
+export interface iPresentable {
+    setPresenting(isPresenting?: boolean): void;
+    isPresenting: boolean;
+}
+
+// ensure all PresentableModelTypes implement `iPresentable`:
+type EnsureAllPresentable<T extends { [K in keyof T]: iPresentable }> = T;
+null as unknown as EnsureAllPresentable<Pick<TypeModelMapping, PresentableType>>;
 
 /**
  * Document types that can be edited by admins ON BEHALF OF other users.
@@ -203,7 +223,7 @@ export type Factory<Type extends DocumentType = DocumentType> = (
 export function find<Type extends DocumentType>(
     id: string,
     signal: AbortSignal
-): AxiosPromise<Document<Type>> {
+): AxiosPromise<{ document: Document<Type>; highestPermission: Access }> {
     return api.get(`/documents/${id}`, { signal });
 }
 

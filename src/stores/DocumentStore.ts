@@ -3,6 +3,7 @@ import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import {
     allDocuments as apiAllDocuments,
+    find as apiFind,
     create as apiCreate,
     Document as DocumentProps,
     DocumentType,
@@ -32,9 +33,9 @@ import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
-import Script from '@tdev-models/documents/Code';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
+import { throttle } from 'es-toolkit/function';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -177,7 +178,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
         /**
          * Adds a new model to the store. Existing models with the same id are replaced.
          */
-        if (!data || !data.data) {
+        if (!data) {
             return;
         }
         const factory = this.factories.get(data.type);
@@ -333,7 +334,57 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 return;
             }
             model.setData(change.data as any, Source.API, updatedAt);
+        } else if ('isPresenting' in change.data) {
+            // TODO: document in PR, that 'isPresenting' is a special property that is only used
+            //       for presentable documents.
+            // probably the document was not loaded yet - try to load it from the api
+            this.apiLoadDocument(change.id);
         }
+    }
+
+    /**
+     * load the document from the api, but throttle the requests to avoid flooding the api with requests.
+     * This is useful when the document is not yet loaded, but the user is trying to open it multiple times in a short time.
+     * The throttle will ensure that only one request is sent every 3 seconds.
+     */
+    apiLoadDocument = throttle(this._apiLoadDocument, 3000, {
+        edges: ['leading']
+    });
+
+    @action
+    _apiLoadDocument(id: string) {
+        return this.withAbortController(`load-${id}`, (sig) => {
+            return apiFind(id, sig.signal);
+        })
+            .then(({ data }) => {
+                const rs = this.root.documentRootStore;
+                if (!rs.find(data.document.documentRootId)) {
+                    rs.addApiResultToStore(
+                        {
+                            id: data.document.documentRootId,
+                            access: data.highestPermission,
+                            documents: [],
+                            groupPermissions: [],
+                            userPermissions: [],
+                            sharedAccess:
+                                data.document.authorId === this.root.userStore.current?.id
+                                    ? Access.None_DocumentRoot
+                                    : data.highestPermission
+                        },
+                        {
+                            load: {
+                                documentRoot: 'addIfMissing'
+                            },
+                            meta: rs.defaultMetas.find((m) => m.type === data.document.type)
+                        }
+                    );
+                }
+                const model = this.addToStore(data.document);
+                return model;
+            })
+            .catch((err) => {
+                return undefined;
+            });
     }
 
     @action
