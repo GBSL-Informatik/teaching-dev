@@ -14,6 +14,7 @@ import {
     StudentGroup as ApiStudentGroup
 } from '../api/studentGroup';
 import User from '../models/User';
+import { orderBy } from 'es-toolkit/array';
 
 export class StudentGroupStore extends iStore<`members-${string}`> {
     readonly root: RootStore;
@@ -40,9 +41,13 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
             return [];
         }
         if (this.root.userStore.current?.isAdmin) {
-            return this.studentGroups;
+            return orderBy(this.studentGroups, [(group) => group._pristine.name], ['asc']);
         }
-        return this.studentGroups.filter((group) => group.isGroupAdmin);
+        return orderBy(
+            this.studentGroups.filter((group) => group.isGroupAdmin),
+            [(group) => group._pristine.name],
+            ['asc']
+        );
     }
 
     findByName = computedFn(
@@ -93,9 +98,9 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
         if (!model) {
             return;
         }
-        const needsReplace = (['name', 'description'] as ('name' | 'description')[]).some(
-            (key) => data[key] !== undefined && data[key] !== model[key]
-        );
+        const needsReplace = (
+            ['name', 'description', 'canStreamUpdates'] as ('name' | 'description' | 'canStreamUpdates')[]
+        ).some((key) => data[key] !== undefined && data[key] !== model[key]);
         if (needsReplace) {
             return this.addToStore(new StudentGroup(data, this));
         }

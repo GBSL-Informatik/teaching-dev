@@ -84,6 +84,16 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPres
         if (this.isPasted) {
             this.isPasted = false;
         }
+        if (this.isPresenting && !this.isDummy) {
+            this.store.root.socketStore.streamUpdate(
+                this.store.root.studentGroupStore.managedStudentGroups[0]?.id,
+                {
+                    id: this.id,
+                    data: this.data,
+                    updatedAt: this.updatedAt.toISOString()
+                }
+            );
+        }
 
         /**
          * call the api to save the code...

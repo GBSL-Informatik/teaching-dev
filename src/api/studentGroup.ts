@@ -5,6 +5,7 @@ export interface StudentGroup {
     id: string;
     name: string;
     description: string;
+    canStreamUpdates: boolean;
     userIds: string[];
     adminIds: string[];
 

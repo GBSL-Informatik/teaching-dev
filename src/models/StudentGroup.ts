@@ -17,6 +17,7 @@ class StudentGroup {
 
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
+    @observable accessor canStreamUpdates: boolean;
 
     readonly _pristine: { name: string; description: string };
 
@@ -27,9 +28,13 @@ class StudentGroup {
         this.store = store;
         this.id = props.id;
 
-        this._pristine = { name: props.name, description: props.description };
+        this._pristine = {
+            name: props.name,
+            description: props.description
+        };
         this.name = props.name;
         this.description = props.description;
+        this.canStreamUpdates = props.canStreamUpdates;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -122,6 +127,15 @@ class StudentGroup {
     }
 
     @action
+    setCanStreamUpdates(canStreamUpdates: boolean) {
+        if (this.canStreamUpdates === canStreamUpdates) {
+            return;
+        }
+        this.canStreamUpdates = canStreamUpdates;
+        this.save();
+    }
+
+    @action
     save() {
         return this.store.save(this);
     }
@@ -132,7 +146,8 @@ class StudentGroup {
             id: this.id,
             name: this.name,
             description: this.description,
-            parentId: this.parentId
+            parentId: this.parentId,
+            canStreamUpdates: this.canStreamUpdates
         };
     }
 

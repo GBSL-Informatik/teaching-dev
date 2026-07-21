@@ -14,12 +14,12 @@ import {
     mdiCloseBox,
     mdiCloseCircleOutline,
     mdiContentSave,
-    mdiDatabaseExport,
     mdiDownloadLockOutline,
     mdiFileExcelOutline,
     mdiFormTextboxPassword,
     mdiLanguageHtml5,
-    mdiLoading,
+    mdiToggleSwitch,
+    mdiToggleSwitchOff,
     mdiTrashCanOutline
 } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
@@ -36,7 +36,6 @@ import AssignCredentials from './AssignCredentials';
 import Card from '@tdev-components/shared/Card';
 import Popup from 'reactjs-popup';
 import { exportNewPasswordList } from './services/excelNewPwExport';
-import { ApiState } from '@tdev-stores/iStore';
 import ExportModal from '@tdev-components/Admin/ExportPanel/ExportModal';
 
 interface Props {
@@ -153,6 +152,16 @@ const StudentGroup = observer((props: Props) => {
                     </dd>
                     {isAdmin && (
                         <>
+                            <dt>Stream Updates</dt>
+                            <dd>
+                                <Button
+                                    onClick={() => {
+                                        group.setCanStreamUpdates(!group.canStreamUpdates);
+                                    }}
+                                    color={group.canStreamUpdates ? 'green' : 'red'}
+                                    icon={group.canStreamUpdates ? mdiToggleSwitch : mdiToggleSwitchOff}
+                                />
+                            </dd>
                             <dt>Export</dt>
                             <dd>
                                 <div className={clsx(styles.exportButtons)}>

@@ -29,6 +29,9 @@ const RequestPresentationMode = observer((props: Props) => {
     if (props.adminOnly && !userStore.current?.hasElevatedAccess) {
         return null;
     }
+    if (document.isDummy) {
+        return null;
+    }
     return (
         <Button
             onClick={() => {

@@ -13,7 +13,6 @@ const PresentationModal = observer((props: Props) => {
 
     return (
         <Popup
-            trigger={<div>s</div>}
             modal
             overlayStyle={{ background: 'rgba(226, 222, 222, 0.84)' }}
             open={!!viewStore.presentedDocument}

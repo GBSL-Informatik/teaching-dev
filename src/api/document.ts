@@ -190,6 +190,7 @@ export interface iPresentable {
     id: string;
     setPresenting(isPresenting?: boolean): void;
     isPresenting: boolean;
+    isDummy: boolean;
 }
 
 // ensure all PresentableModelTypes implement `iPresentable`:
