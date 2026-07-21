@@ -171,6 +171,16 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
+    @computed
+    get presentedDocuments() {
+        return this.documents.filter((d) => (d.data as { isPresenting?: boolean }).isPresenting);
+    }
+
+    @computed
+    get hasPresentableDocument() {
+        return this.presentedDocuments.length > 0;
+    }
+
     @action
     addToStore<Type extends DocumentType>(
         data: DocumentProps<Type> | undefined | null

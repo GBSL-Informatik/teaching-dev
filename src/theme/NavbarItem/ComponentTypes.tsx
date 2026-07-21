@@ -15,6 +15,7 @@ import EditingOverview from '@tdev-components/EditingOverview';
 import RequestTarget from '@tdev-components/Navbar/RequestTarget';
 import PersonalSpaceOverlay from '@tdev-components/Navbar/PersonalSpaceOverlay';
 import DevModeAccessLocalFS from '@tdev-components/Navbar/DevModeAccessLocalFS';
+import PresentationModal from '@tdev-components/PresentationPanel/PresentationModal';
 
 const ComponentTypes: ComponentTypesObject = {
     default: DefaultNavbarItem,
@@ -31,7 +32,8 @@ const ComponentTypes: ComponentTypesObject = {
     ['custom-loginProfileButton']: LoginProfileButton,
     ['custom-taskStateOverview']: EditingOverview,
     ['custom-requestTarget']: RequestTarget,
-    ['custom-personalSpaceOverlay']: PersonalSpaceOverlay
+    ['custom-personalSpaceOverlay']: PersonalSpaceOverlay,
+    ['custom-presentationPanel']: PresentationModal
 };
 
 export default ComponentTypes;

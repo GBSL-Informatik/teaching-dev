@@ -32,7 +32,7 @@ const RequestPresentationMode = observer((props: Props) => {
     return (
         <Button
             onClick={() => {
-                console.log('sp', document.isPresenting);
+                console.log('sp', document.isPresenting, document.id);
                 document.setPresenting(!document.isPresenting);
             }}
             className={className}

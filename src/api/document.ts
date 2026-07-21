@@ -187,6 +187,7 @@ export type DocumentModelType = TypeModelMapping[DocumentType];
 export type PresentableModelType = TypeModelMapping[PresentableType];
 
 export interface iPresentable {
+    id: string;
     setPresenting(isPresenting?: boolean): void;
     isPresenting: boolean;
 }

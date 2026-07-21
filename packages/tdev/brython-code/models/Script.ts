@@ -78,13 +78,6 @@ export default class Script extends iCode<'script'> {
         return this.code.split('\n').length;
     }
 
-    @computed
-    get data(): TypeDataMapping['script'] {
-        return {
-            code: this.code
-        };
-    }
-
     @action
     toggleScriptExecution() {
         if (this.isExecuting) {

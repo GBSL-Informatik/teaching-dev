@@ -55,3 +55,8 @@ export const personalSpaceOverlay: NavbarItem = {
     type: 'custom-personalSpaceOverlay',
     position: 'right'
 };
+
+export const presentationPanel: NavbarItem = {
+    type: 'custom-presentationPanel',
+    position: 'right'
+};
