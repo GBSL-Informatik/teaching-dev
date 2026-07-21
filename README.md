@@ -40,6 +40,9 @@ To upgrade docusaurus, run:
 yarn upgrade @docusaurus/core@latest @docusaurus/faster@latest @docusaurus/preset-classic@latest @docusaurus/theme-classic@latest @docusaurus/theme-common@latest @docusaurus/module-type-aliases@latest @docusaurus/plugin-rsdoctor@latest @docusaurus/tsconfig@latest @docusaurus/types@latest @docusaurus/theme-mermaid@latest
 ```
 
+### VS-Code Setup
+- TODO-Tree: Install ripgrep (`sudo apt-get install ripgrep`) and specify the path (locate it with `which rg`, on ubuntu/wsl: `"todo-tree.ripgrep.ripgrep": "/usr/bin/rg"`)
+
 ## Upgrade tdev
 After detatching a fork of teaching-dev, it will be necessary to periodically update the core framework.
 
