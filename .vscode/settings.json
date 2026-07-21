@@ -11,6 +11,7 @@
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "todo-tree.ripgrep.ripgrep": "/usr/bin/rg",
     "editor.formatOnSave": true,
     "json.format.keepLines": true,
     "materialdesigniconsIntellisense.matchers": [
