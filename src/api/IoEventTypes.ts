@@ -45,13 +45,14 @@ export interface ChangedRecord<T extends RecordType> {
     record: TypeRecordMap[T];
 }
 
-export interface ChangedDocument {
+export interface ChangedDocument<T = any> {
     id: string;
-    data: Object;
-    updatedAt: string;
+    data: Record<string, any>;
+    updatedAt: Date;
+    meta?: T;
 }
 
-export interface StreamedDocument extends ChangedDocument {
+export interface StreamedDynamicDocument<T = any> extends ChangedDocument<T> {
     roomId: string;
 }
 
@@ -137,7 +138,7 @@ export interface ClientToServerEvents {
     [IoClientEvent.JOIN_ROOM]: (roomId: string, callback: (joined: boolean) => void) => void;
     [IoClientEvent.LEAVE_ROOM]: (roomId: string, callback: (left: boolean) => void) => void;
     [IoClientEvent.ACTION]: (action: Action, callback: (ok: boolean) => void) => void;
-    [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDocument) => void;
+    [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDynamicDocument) => void;
 }
 
 export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore | `viewStore#${string}` } = {

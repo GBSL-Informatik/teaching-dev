@@ -22,7 +22,7 @@ const StudentGroupPanel = observer(() => {
     if (!current?.hasElevatedAccess) {
         return null;
     }
-    const streamableGroups = groupStore.managedStudentGroups.filter((g) => g.canStreamUpdates);
+    const presentableGroups = groupStore.managedStudentGroups.filter((g) => g.canPresent);
     return (
         <div>
             <div className={clsx(styles.controls)}>
@@ -64,10 +64,10 @@ const StudentGroupPanel = observer(() => {
             </div>
             <div className={clsx(styles.streamableGroups)}>
                 <DefinitionList>
-                    <dt>Stream-Berechtigung</dt>
+                    <dt>Präsentationsberechtigte Gruppen</dt>
                     <dd>
-                        <Badge color={streamableGroups.length > 0 ? 'red' : 'lightBlue'}>
-                            {streamableGroups.length} Gruppen
+                        <Badge color={presentableGroups.length > 0 ? 'red' : 'lightBlue'}>
+                            {presentableGroups.length} Gruppen
                         </Badge>
                     </dd>
                     <dd>
@@ -80,12 +80,12 @@ const StudentGroupPanel = observer(() => {
                     <dd>
                         <Button
                             onClick={() => {
-                                streamableGroups.forEach((g) => g.setCanStreamUpdates(false));
+                                presentableGroups.forEach((g) => g.setCanPresent(false));
                             }}
                             icon={mdiRestore}
                             iconSide="left"
                             color="secondary"
-                            text="Alle Stream-Berechtigungen deaktivieren"
+                            text="Alle Berechtigungen deaktivieren"
                         />
                     </dd>
                 </DefinitionList>

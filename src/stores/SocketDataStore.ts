@@ -205,8 +205,8 @@ export class SocketDataStore extends iStore<'ping'> {
      * in the payload, which usually is a documentRootId)
      */
     @action
-    streamUpdate(roomId: string, payload: ChangedDocument) {
-        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId });
+    streamUpdate<T extends Record<string, unknown>>(roomId: string, payload: ChangedDocument, meta?: T) {
+        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId, meta });
     }
 
     @action

@@ -23,10 +23,12 @@ export interface MetaInit<Type extends ContainerType> {
 export class ModelMeta<Type extends ContainerType> extends TypeMeta<'dynamic_document_roots'> {
     readonly type = 'dynamic_document_roots';
     readonly containerType: Type;
+    readonly props: Partial<MetaInit<Type>>;
 
     constructor(props: MetaInit<Type>) {
         super('dynamic_document_roots', props.readonly ? Access.RO_User : undefined);
         this.containerType = props.type;
+        this.props = props;
     }
 
     get defaultData(): TypeDataMapping['dynamic_document_roots'] {
@@ -82,7 +84,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
     get defaultContainerMeta(): ContainerMeta<Type> {
         const component = this.store.root.componentStore.getComponent(this.containerType);
         if (!component) {
-            return new ContainerMeta(this.containerType);
+            return new ContainerMeta({ type: this.containerType });
         }
         return component.defaultMeta;
     }
@@ -97,7 +99,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
             return;
         }
         this.store.root.documentRootStore
-            .create(id, new ContainerMeta(this.containerType), {
+            .create(id, new ContainerMeta({ type: this.containerType }), {
                 access: Access.None_DocumentRoot,
                 sharedAccess: Access.RO_DocumentRoot
             })

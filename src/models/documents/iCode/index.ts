@@ -23,6 +23,10 @@ interface Version {
     pasted?: boolean;
 }
 
+export interface CodePostUpdateMeta {
+    action?: 'runCode';
+}
+
 class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPresentable {
     @observable accessor code: string;
     @observable accessor _initialVersionsLoaded: boolean = false;
@@ -50,7 +54,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPres
             return;
         }
         this._isPresenting = isPresenting ?? false;
-        this.save();
+        this.saveNow();
     }
 
     @computed
@@ -90,7 +94,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPres
                 {
                     id: this.id,
                     data: this.data,
-                    updatedAt: this.updatedAt.toISOString()
+                    updatedAt: this.updatedAt
                 }
             );
         }
@@ -166,9 +170,13 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPres
             } else if (this._isPresenting) {
                 this._isPresenting = false;
             }
-            this.setCode(data.code);
+            if ('code' in data) {
+                this.setCode(data.code);
+            }
         } else {
-            this.code = data.code;
+            if ('code' in data) {
+                this.code = data.code;
+            }
             if (data.isPresenting) {
                 this._isPresenting = data.isPresenting;
             } else if (this._isPresenting) {
@@ -178,6 +186,26 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPres
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @action
+    postUpdate(meta?: CodePostUpdateMeta) {
+        if (!meta) {
+            return;
+        }
+        if (meta.action === 'runCode') {
+            this.runCode();
+        }
+    }
+
+    @action
+    triggerRemoteAction(data: CodePostUpdateMeta) {
+        if (!this.isPresenting || !this.canEdit || !this.canExecute) {
+            return;
+        }
+        // this.store.root.socketStore.streamUpdate(
+
+        // )
     }
 
     @computed

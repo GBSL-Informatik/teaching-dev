@@ -344,11 +344,12 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 return;
             }
             model.setData(change.data as any, Source.API, updatedAt);
+            model.postUpdate(change.meta);
         } else if ('isPresenting' in change.data) {
             // TODO: document in PR, that 'isPresenting' is a special property that is only used
             //       for presentable documents.
             // probably the document was not loaded yet - try to load it from the api
-            this.apiLoadDocument(change.id);
+            this.apiLoadDocument(change.id, change.meta);
         }
     }
 
@@ -362,7 +363,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     });
 
     @action
-    _apiLoadDocument(id: string) {
+    _apiLoadDocument(id: string, meta?: Record<string, unknown>) {
         return this.withAbortController(`load-${id}`, (sig) => {
             return apiFind(id, sig.signal);
         })
@@ -390,6 +391,10 @@ class DocumentStore extends iStore<`delete-${string}`> {
                     );
                 }
                 const model = this.addToStore(data.document);
+                if (meta) {
+                    model?.postUpdate(meta);
+                }
+
                 return model;
             })
             .catch((err) => {

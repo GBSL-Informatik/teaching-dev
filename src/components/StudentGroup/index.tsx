@@ -152,16 +152,23 @@ const StudentGroup = observer((props: Props) => {
                     </dd>
                     {isAdmin && (
                         <>
-                            <dt>Stream Updates</dt>
+                            <dt>Präsentieren</dt>
                             <dd>
                                 <Button
                                     onClick={() => {
-                                        group.setCanStreamUpdates(!group.canStreamUpdates);
+                                        group.setCanPresent(!group.canPresent);
                                     }}
-                                    color={group.canStreamUpdates ? 'green' : 'red'}
-                                    icon={group.canStreamUpdates ? mdiToggleSwitch : mdiToggleSwitchOff}
+                                    color={group.canPresent ? 'green' : 'red'}
+                                    icon={group.canPresent ? mdiToggleSwitch : mdiToggleSwitchOff}
                                 />
                             </dd>
+                            {group.presentedDocument && (
+                                <dd>
+                                    <pre>
+                                        <code>{JSON.stringify(group.presentedDocument, null, 2)}</code>
+                                    </pre>
+                                </dd>
+                            )}
                             <dt>Export</dt>
                             <dd>
                                 <div className={clsx(styles.exportButtons)}>

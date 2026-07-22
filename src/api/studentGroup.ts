@@ -1,11 +1,19 @@
+import { Document, DocumentType } from '@tdev-api/document';
 import api from './base';
 import { AxiosPromise } from 'axios';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+
+export interface DocumentPresentation<Type extends DocumentType = DocumentType> {
+    document: Document<Type>;
+    meta: TypeMeta<Type>;
+}
 
 export interface StudentGroup {
     id: string;
     name: string;
     description: string;
-    canStreamUpdates: boolean;
+    canPresent: boolean;
+    presentedDocument: DocumentPresentation | null;
     userIds: string[];
     adminIds: string[];
 

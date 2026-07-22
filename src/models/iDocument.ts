@@ -121,6 +121,10 @@ abstract class iDocument<Type extends DocumentType> {
 
     abstract setData(data: TypeDataMapping[Type], from: Source, updatedAt?: Date): void;
 
+    postUpdate<T extends Record<string, unknown>>(meta?: T) {
+        // Implementation for post-update logic
+    }
+
     @computed
     get derivedData() {
         return this.sideEffects.reduce((acc, se) => {

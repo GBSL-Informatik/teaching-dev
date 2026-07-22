@@ -25,7 +25,10 @@ const RunCode = observer(<T extends CodeType>(props: Props<T>) => {
             className={clsx(styles.runCode, code.meta.slim && styles.slim)}
             iconSize={code.meta.slim ? '1.15em' : '1.6em'}
             onClick={() => {
-                props.onExecute?.();
+                if (props.onExecute) {
+                    code.triggerRemoteAction({ action: 'runCode' });
+                    props.onExecute();
+                }
             }}
             title={`${code.title} ausführen`}
         />

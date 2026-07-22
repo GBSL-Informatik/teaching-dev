@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
+import { DocumentPresentation, StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
 import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
@@ -17,7 +17,8 @@ class StudentGroup {
 
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
-    @observable accessor canStreamUpdates: boolean;
+    @observable accessor canPresent: boolean;
+    @observable.ref accessor presentedDocument: DocumentPresentation | null;
 
     readonly _pristine: { name: string; description: string };
 
@@ -34,7 +35,8 @@ class StudentGroup {
         };
         this.name = props.name;
         this.description = props.description;
-        this.canStreamUpdates = props.canStreamUpdates;
+        this.canPresent = !!props.canPresent;
+        this.presentedDocument = props.presentedDocument ?? null;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -127,11 +129,20 @@ class StudentGroup {
     }
 
     @action
-    setCanStreamUpdates(canStreamUpdates: boolean) {
-        if (this.canStreamUpdates === canStreamUpdates) {
+    setCanPresent(canPresent: boolean) {
+        if (this.canPresent === canPresent || !this.isGroupAdmin) {
             return;
         }
-        this.canStreamUpdates = canStreamUpdates;
+        this.canPresent = canPresent;
+        this.save();
+    }
+
+    @action
+    setPresentedDocument(presentedDocument: DocumentPresentation | null) {
+        if (this.presentedDocument === presentedDocument || !this.isGroupAdmin) {
+            return;
+        }
+        this.presentedDocument = presentedDocument;
         this.save();
     }
 
@@ -147,7 +158,8 @@ class StudentGroup {
             name: this.name,
             description: this.description,
             parentId: this.parentId,
-            canStreamUpdates: this.canStreamUpdates
+            canPresent: this.canPresent,
+            presentedDocument: this.presentedDocument
         };
     }
 

@@ -9,6 +9,7 @@ export class ModelMeta extends TypeMeta<'netpbm_graphic'> {
     readonly type = 'netpbm_graphic';
     readonly readonly?: boolean;
     readonly default?: string;
+    readonly props: Partial<MetaInit>;
 
     constructor(props: Partial<MetaInit>) {
         super('netpbm_graphic', props.readonly ? Access.RO_User : undefined);
@@ -32,6 +33,7 @@ export class ModelMeta extends TypeMeta<'netpbm_graphic'> {
          *   ```
          * </NetpbmGraphic>
          */
+        this.props = props;
         this.readonly = props.readonly;
         this.default = props.default;
     }

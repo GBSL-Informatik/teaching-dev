@@ -18,6 +18,7 @@ export abstract class TypeMeta<T extends DocumentType> {
         this.pagePosition = pagePosition || 0;
     }
     abstract get defaultData(): TypeDataMapping[T];
+    abstract get props(): Record<string, any>;
 }
 
 class DocumentRoot<T extends DocumentType> {
