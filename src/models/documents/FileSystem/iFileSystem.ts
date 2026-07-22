@@ -22,7 +22,7 @@ export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
     readonly readonly?: boolean;
     readonly name: string;
     constructor(type: T, props: Partial<MetaInit>) {
-        super(type, props.readonly ? Access.RO_User : undefined);
+        super(type, props);
         this.readonly = props.readonly;
         this.name = props.name || `${DefaultName[type]} ${formatDateTime(new Date())}`;
     }

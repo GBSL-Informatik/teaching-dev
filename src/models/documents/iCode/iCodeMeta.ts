@@ -32,8 +32,8 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
     readonly theme?: string;
     readonly versioned: boolean;
 
-    constructor(props: Partial<MetaInit>, type: T) {
-        super(type, props.readonly ? Access.RO_User : undefined);
+    constructor(type: T, props: Partial<MetaInit>) {
+        super(type, props);
         this.initCode = props.code || '';
         this.title = props.title || '';
         this.lang = props.lang || 'markdown';

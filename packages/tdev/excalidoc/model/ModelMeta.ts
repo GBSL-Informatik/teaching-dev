@@ -18,7 +18,7 @@ export class ModelMeta extends TypeMeta<'excalidoc'> {
     readonly defaultImage: string;
 
     constructor(props: Partial<MetaInit>) {
-        super('excalidoc', props.readonly ? Access.RO_User : undefined);
+        super('excalidoc', props);
         this.defaultElements = props.defaultElements || [];
         this.defaultFiles = props.defaultFiles || {};
         this.defaultImage = props.defaultImage || '';

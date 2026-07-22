@@ -139,13 +139,6 @@ type KeysWithCode<T> = {
 }[keyof Omit<T, 'script_version'>];
 
 export type CodeType = KeysWithCode<TypeDataMapping>;
-
-type PresentableKeys<T> = {
-    [K in keyof T]: 'isPresenting' extends keyof T[K] ? K : never;
-}[keyof T];
-
-export type PresentableType = PresentableKeys<TypeDataMapping>;
-
 export interface ContainerTypeModelMapping {
     ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
 }
@@ -184,18 +177,6 @@ export type TaskableModelType = TaskableTypeModelMapping[TaskableType];
 
 export type DocumentType = keyof TypeModelMapping;
 export type DocumentModelType = TypeModelMapping[DocumentType];
-export type PresentableModelType = TypeModelMapping[PresentableType];
-
-export interface iPresentable {
-    id: string;
-    setPresenting(isPresenting?: boolean): void;
-    isPresenting: boolean;
-    isDummy: boolean;
-}
-
-// ensure all PresentableModelTypes implement `iPresentable`:
-type EnsureAllPresentable<T extends { [K in keyof T]: iPresentable }> = T;
-null as unknown as EnsureAllPresentable<Pick<TypeModelMapping, PresentableType>>;
 
 /**
  * Document types that can be edited by admins ON BEHALF OF other users.

@@ -6,6 +6,6 @@ export interface MetaInit {
 
 export class ModelMeta extends iCodeMeta<'pyodide_code'> {
     constructor(props: Partial<MetaInit>) {
-        super({ lang: 'py', title: 'Python', ...props }, 'pyodide_code');
+        super('pyodide_code', { lang: 'py', title: 'Python', ...props });
     }
 }

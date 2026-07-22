@@ -6,7 +6,6 @@ import Button from '../Button';
 import { mdiPresentationPlay, mdiTelevisionStop } from '@mdi/js';
 import { Color } from '../Colors';
 import { useStore } from '@tdev-hooks/useStore';
-import { iPresentable, PresentableModelType } from '@tdev-api/document';
 import Popup from 'reactjs-popup';
 import Card from '../Card';
 import iDocument from '@tdev-models/iDocument';

@@ -8,17 +8,24 @@ import { orderBy } from 'es-toolkit/array';
 import { Hashery } from 'hashery';
 export const MetaHasher = new Hashery({ cache: { enabled: true, maxSize: 500 } });
 
+interface BaseMetaProps {
+    access?: Access;
+    readonly?: boolean;
+    pagePosition?: number;
+}
+
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
+    readonly props: BaseMetaProps;
     type: T;
     access?: Access;
-    constructor(type: T, access?: Access, pagePosition?: number) {
+    constructor(type: T, props: BaseMetaProps = {}) {
         this.type = type;
-        this.access = access;
-        this.pagePosition = pagePosition || 0;
+        this.props = props;
+        this.access = props.access ?? (props.readonly ? Access.RO_User : undefined);
+        this.pagePosition = props.pagePosition || 0;
     }
     abstract get defaultData(): TypeDataMapping[T];
-    abstract get props(): Record<string, any>;
 }
 
 class DocumentRoot<T extends DocumentType> {

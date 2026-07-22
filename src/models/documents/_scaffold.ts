@@ -20,7 +20,7 @@ export class ModelMeta extends TypeMeta<'task_state'> {
     readonly type = 'task_state';
 
     constructor(props: Partial<MetaInit>) {
-        super('task_state', props.readonly ? Access.RO_User : undefined);
+        super('task_state', props);
     }
 
     get defaultData(): TypeDataMapping['task_state'] {

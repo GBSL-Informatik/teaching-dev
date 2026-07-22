@@ -14,13 +14,11 @@ export interface MetaInit<Type extends ContainerType> {
 export class ContainerMeta<T extends ContainerType> extends TypeMeta<T> {
     readonly type: T;
     readonly description?: string;
-    readonly props: Partial<{ type: T; options: Options }>;
 
-    constructor(props: MetaInit<T>) {
-        super(props.type, props.options?.access);
-        this.type = props.type;
-        this.description = props.options?.description;
-        this.props = props;
+    constructor(type: T, options?: Options) {
+        super(type, options);
+        this.type = type;
+        this.description = options?.description;
     }
 
     get name(): string {

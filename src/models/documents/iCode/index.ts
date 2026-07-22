@@ -1,12 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    Document as DocumentProps,
-    TypeDataMapping,
-    ScriptVersionData,
-    CodeType,
-    iPresentable
-} from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping, ScriptVersionData, CodeType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { throttle } from 'es-toolkit/function';
@@ -27,7 +21,7 @@ export interface CodePostUpdateMeta {
     action?: 'runCode';
 }
 
-class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPresentable {
+class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor code: string;
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
@@ -316,7 +310,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> implements iPres
         if (this.root?.type === this.type) {
             return this.root.meta as iCodeMeta<T>;
         }
-        return new iCodeMeta({ code: '' }, this.type);
+        return new iCodeMeta(this.type, { code: '' });
     }
 }
 

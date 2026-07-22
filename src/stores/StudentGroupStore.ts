@@ -16,6 +16,9 @@ import {
 import User from '../models/User';
 import { orderBy } from 'es-toolkit/array';
 
+const NEEDED_REPLACEMENT_KEYS: (keyof ApiStudentGroup)[] = ['name', 'description'];
+const UPDATEABLE_KEYS: (keyof ApiStudentGroup)[] = ['canPresent', 'presentedDocument'];
+
 export class StudentGroupStore extends iStore<`members-${string}`> {
     readonly root: RootStore;
     studentGroups = observable.array<StudentGroup>([]);
@@ -98,15 +101,21 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
         if (!model) {
             return;
         }
-        const needsReplace = (
-            ['name', 'description', 'canStreamUpdates'] as ('name' | 'description' | 'canStreamUpdates')[]
-        ).some((key) => data[key] !== undefined && data[key] !== model[key]);
+        const needsReplace = NEEDED_REPLACEMENT_KEYS.some(
+            (key) => data[key] !== undefined && data[key] !== model[key]
+        );
         if (needsReplace) {
             return this.addToStore(new StudentGroup(data, this));
         }
         if (model && model.id) {
             if (data.parentId !== undefined && data.parentId !== model.parentId) {
                 model.setParentId(data.parentId);
+            }
+            if (data.canPresent !== undefined && data.canPresent !== model.canPresent) {
+                model.setCanPresent(data.canPresent);
+            }
+            if (data.presentedDocument !== undefined && data.presentedDocument !== model.presentedDocument) {
+                model.setPresentedDocument(data.presentedDocument);
             }
             if (Array.isArray(data.userIds)) {
                 model.userIds.replace(data.userIds);

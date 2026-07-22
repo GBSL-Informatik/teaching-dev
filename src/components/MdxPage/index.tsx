@@ -10,10 +10,8 @@ interface Props {
 }
 
 export class PageMeta extends TypeMeta<DocumentType> {
-    readonly props: Partial<{}>;
     constructor() {
         super('_page_' as DocumentType);
-        this.props = {};
     }
     get defaultData() {
         return {};
