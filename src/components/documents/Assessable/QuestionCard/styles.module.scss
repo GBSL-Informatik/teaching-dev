@@ -1,0 +1,71 @@
+.questionCard {
+    position: relative;
+    margin-bottom: 1em;
+    --tdev-box-shadow-defaults: 0 0 8px;
+
+    p {
+        margin: 0 0 0.5em 0;
+    }
+
+    &.correct {
+        box-shadow: var(--tdev-box-shadow-defaults) var(--ifm-color-success);
+
+        .header {
+            background-color: var(--ifm-color-success-contrast-background);
+        }
+    }
+
+    &.partially_correct {
+        box-shadow: var(--tdev-box-shadow-defaults) var(--ifm-color-warning);
+
+        .header {
+            background-color: var(--ifm-color-warning-contrast-background);
+        }
+    }
+
+    &.incorrect {
+        box-shadow: var(--tdev-box-shadow-defaults) var(--ifm-color-danger-lighter);
+
+        .header {
+            background-color: var(--ifm-color-danger-contrast-background);
+        }
+    }
+
+    .header {
+        background-color: var(--ifm-color-secondary-lightest);
+        padding: 0.7em 1em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        .questionTitle {
+            margin-bottom: 0;
+            font-size: 1.1em;
+            margin-right: 1em;
+            min-width: 2em;
+            flex-shrink: 1;
+            overflow: hidden;
+            text-wrap: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .syncStatus {
+            position: static;
+        }
+
+        .controlsAndFeedback {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5em;
+        }
+    }
+}
+[data-theme='dark'] {
+    .questionCard {
+        .header {
+            background-color: var(--ifm-color-secondary-contrast-background);
+        }
+    }
+}

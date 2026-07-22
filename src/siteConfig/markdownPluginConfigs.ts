@@ -21,7 +21,7 @@ import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import commentPlugin from '../plugins/remark-comments/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
-import transformChoiceAnswerPlugin from '../plugins/remark-transform-choice-answer/plugin';
+import transformAssessableComponentsPlugin from '../plugins/remark-transform-assessable-components/plugin';
 import { getAnswerDocumentType } from '../components/Answer/helper.answer';
 import fs from 'fs';
 import path from 'path';
@@ -223,6 +223,18 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
         {
             name: 'DynamicDocumentRoots',
             docTypeExtractor: () => 'dynamic_document_roots'
+        },
+        {
+            name: 'Quiz',
+            docTypeExtractor: () => 'quiz'
+        },
+        {
+            name: 'ChoiceAnswer',
+            docTypeExtractor: () => 'choice_answer'
+        },
+        {
+            name: 'TrueFalseAnswer',
+            docTypeExtractor: () => 'true_false_answer'
         }
     ],
     persistedCodeType: (node: Code) => {
@@ -252,7 +264,7 @@ export const commentPluginConfig = [
     commentPlugin,
     {
         commentableJsxFlowElements: ['DefHeading', 'figcaption', 'String'],
-        ignoreJsxFlowElements: ['summary', 'dt'],
+        ignoreJsxFlowElements: ['summary', 'dt', 'ChoiceAnswer.Options'],
         ignoreCodeBlocksWithMeta: /live_py/
     }
 ];
@@ -265,7 +277,21 @@ export const linkAnnotationPluginConfig = [
     }
 ];
 
-export const transformChoiceAnswerPluginConfig = transformChoiceAnswerPlugin;
+export const transformAssessablePluginConfig = [
+    transformAssessableComponentsPlugin,
+    {
+        QuizComponentName: 'Quiz',
+        AnswerComponents: {
+            ['ChoiceAnswer']: {
+                options: {
+                    component: 'ChoiceAnswer.Options',
+                    itemComponent: 'ChoiceAnswer.Option'
+                }
+            },
+            ['TrueFalseAnswer']: {}
+        }
+    }
+];
 
 export const rehypeKatexPluginConfig = rehypeKatex;
 
@@ -287,11 +313,11 @@ export const recommendedRemarkPlugins = [
     enumerateAnswersPluginConfig,
     pdfPluginConfig,
     pagePluginConfig,
+    transformAssessablePluginConfig,
     pageIndexPluginConfig,
     commentPluginConfig,
     linkAnnotationPluginConfig,
-    codeAsAttributePluginConfig,
-    transformChoiceAnswerPluginConfig
+    codeAsAttributePluginConfig
 ];
 
 export const recommendedRehypePlugins = [rehypeKatexPluginConfig];

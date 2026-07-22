@@ -12,6 +12,7 @@ export const createModel: Factory = (data, store) => {
 };
 
 class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableDocument<'page_read_check'> {
+    readonly hideFromOverview = false;
     @observable accessor readTime: number = 0;
     @observable accessor read: boolean = false;
     @observable accessor scrollTo: boolean = false;

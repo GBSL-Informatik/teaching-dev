@@ -204,13 +204,15 @@ export default class Page {
         if (!uid) {
             return [];
         }
-        return this.taskableDocumentRootIds.flatMap((rid) => {
-            return this.store.root.documentStore
-                .findByDocumentRoot(rid)
-                .filter(
-                    (doc) => doc.authorId === uid && this.TaskableDocuments.has(doc.type)
-                ) as iTaskableDocument[];
-        });
+        return this.taskableDocumentRootIds
+            .flatMap((rid) => {
+                return this.store.root.documentStore
+                    .findByDocumentRoot(rid)
+                    .filter(
+                        (doc) => doc.authorId === uid && this.TaskableDocuments.has(doc.type)
+                    ) as iTaskableDocument[];
+            })
+            .filter((doc) => !doc.hideFromOverview);
     }
 
     @computed
