@@ -1,0 +1,13 @@
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.5em;
+    gap: 0.5em;
+}

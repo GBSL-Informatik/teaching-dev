@@ -1,0 +1,28 @@
+---
+page_id: 16ecfeb9-15cf-40ff-9880-f130e99f6c53
+---
+
+# Transform Choice Answer
+
+Dieses Plugin ermöglicht die Verwendung spezifischer MDX Syntax innerhalb von [`<ChoiceAnswer>`](../../../gallery/persistable-documents/answer/choice-answer/index.mdx) Komponenten.
+
+## Installation
+
+:::info[Code]
+- `src/components/documents/ChoiceAnswer/**`
+- `src/plugins/remark-transform-choice-answer`
+- `src/models/documents/ChoiceAnswer.ts`
+:::
+
+
+:::info[`docusaurus.config.ts`]
+
+```ts
+import transformChoiceAnswerPlugin from '../plugins/remark-transform-choice-answer/plugin';
+
+const REMARK_PLUGINS = [
+    /* ... */
+    transformChoiceAnswerPlugin
+];
+```
+:::
