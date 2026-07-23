@@ -96,6 +96,7 @@ class DocumentRoot<T extends DocumentType> {
 
     @action
     setSharedAccess(access: Access) {
+        console.log('setSharedAccess', access, this._sharedAccess);
         if (this._sharedAccess === access) {
             return;
         }
@@ -137,6 +138,11 @@ class DocumentRoot<T extends DocumentType> {
     @computed
     get permission() {
         return highestAccess(new Set([...this.permissions.map((p) => p.access), this.access]));
+    }
+
+    @computed
+    get sharedPermission() {
+        return highestAccess(new Set([this.sharedAccess]), this.permission);
     }
 
     permissionsForUser(userId: string) {

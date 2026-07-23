@@ -86,7 +86,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     code.setCode(value, e.action);
                 }}
-                readOnly={code.meta.readonly || code.showRaw}
+                readOnly={!code.canEdit || code.showRaw}
                 value={code.showRaw ? code.pristineCode : code.code}
                 defaultValue={code?.code || '\n'}
                 name={code.codeId}

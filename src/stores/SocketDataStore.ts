@@ -290,6 +290,7 @@ export class SocketDataStore extends iStore<'ping'> {
     updateRecord({ type, record }: ChangedRecord<RecordType>) {
         switch (type) {
             case RecordType.DocumentRoot:
+                console.log('DocumentRoot update', record);
                 this.root.documentRootStore.handleUpdate(record as DocumentRootUpdate);
                 break;
             case RecordType.UserPermission:

@@ -3,7 +3,7 @@ import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _, { type DebouncedFunc } from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
-import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
+import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
 import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 
@@ -207,10 +207,14 @@ abstract class iDocument<Type extends DocumentType> {
         if (!this.root) {
             return true;
         }
-        if (!this.store.root.userStore.current) {
+        const userStore = this.store.root.userStore;
+        if (!userStore.current) {
+            return !NoneAccess.has(this.root._access);
+        }
+        if (this.authorId === userStore.current.id) {
             return !NoneAccess.has(this.root.permission);
         }
-        return this.root.hasReadAccess || this.root.hasAdminOrRWAccess;
+        return !NoneAccess.has(this.root.sharedAccess);
     }
 
     get author() {
@@ -233,17 +237,24 @@ abstract class iDocument<Type extends DocumentType> {
     @action
     save(onBeforeSave?: (() => Promise<void>) | undefined) {
         const res = this.saveFn(onBeforeSave);
-        if (this.isPresenting) {
-            const now = new Date();
-            this.presentingGroups.forEach((g) => {
-                this.store.root.socketStore.streamUpdate(g.id, {
-                    id: this.id,
-                    data: this.data,
-                    updatedAt: now
-                });
-            });
-        }
+        this.streamUpdate();
         return res;
+    }
+
+    @action
+    streamUpdate() {
+        if (!this.isPresenting) {
+            return;
+        }
+
+        const now = new Date();
+        this.presentingGroups.forEach((g) => {
+            this.store.root.socketStore.streamUpdate(g.id, {
+                id: this.id,
+                data: this.data,
+                updatedAt: now
+            });
+        });
     }
 
     @action

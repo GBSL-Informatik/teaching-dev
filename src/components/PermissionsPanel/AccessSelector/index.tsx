@@ -6,7 +6,7 @@ import { Access } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import { mdiCircleSmall } from '@mdi/js';
 
-const AccessNames: { [key in Access]: string } = {
+export const AccessNames: { [key in Access]: string } = {
     [Access.RO_User]: 'RO',
     [Access.RO_StudentGroup]: 'RO',
     [Access.RO_DocumentRoot]: 'RO',

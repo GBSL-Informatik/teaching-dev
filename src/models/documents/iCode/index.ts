@@ -48,6 +48,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @action
     setCode(code: string, action?: 'insert' | 'remove' | string) {
         if (this.isPasted && action === 'remove') {
+            this.streamUpdate();
             return;
         }
         this.code = code;

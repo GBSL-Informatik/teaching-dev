@@ -35,8 +35,6 @@ import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
-import { throttle } from 'es-toolkit/function';
-import type { TypeMeta } from '@tdev-models/DocumentRoot';
 import StudentGroup from '@tdev-models/StudentGroup';
 import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
 
@@ -350,28 +348,22 @@ class DocumentStore extends iStore<`delete-${string}`> {
             }
             model.setData(change.data as any, Source.API, updatedAt);
             model.postUpdate(change.meta);
-        } else if (this.root.studentGroupStore.presentedDocumentIds.has(change.id)) {
-            // probably the document was not loaded yet - try to load it from the api
-            const presentedGroup = this.root.studentGroupStore.presentingStudentGroups.find(
-                (g) => g.presentedDocumentId === change.id
-            );
-            this._addPresentedDocumentToStore(presentedGroup);
         }
     }
 
     @action
-    _addPresentedDocumentToStore(studentGroup?: StudentGroup) {
-        const presentedDoc = studentGroup?.presentedDocumentProps;
+    addPresentedDocumentToStore(studentGroup: StudentGroup) {
+        const presentedDoc = studentGroup.presentedDocumentProps;
         if (!presentedDoc) {
             return;
         }
         const rawDoc = presentedDoc.document;
         const rawMeta = presentedDoc.meta;
-        const model = this.find(presentedDoc.document.id);
+        const model = this.find(rawDoc.id);
         if (model) {
             return;
         }
-        const docRoot = this.root.documentRootStore.find(presentedDoc.document.documentRootId);
+        const docRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
         const metaHash = MetaHasher.toHashSync(rawMeta);
         if (!docRoot || !docRoot?.isDummy || docRoot._metaHash !== metaHash) {
             this.root.documentRootStore.addDocumentRoot(
@@ -387,6 +379,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 )
             );
         }
+        const documentRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
+        if (!documentRoot) {
+            return;
+        }
+
         this.addToStore(rawDoc);
     }
 

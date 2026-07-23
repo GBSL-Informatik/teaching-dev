@@ -18,7 +18,7 @@ class StudentGroup {
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
     @observable accessor canPresent: boolean;
-    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null;
+    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null = null;
 
     readonly _pristine: { name: string; description: string };
 
@@ -36,7 +36,6 @@ class StudentGroup {
         this.name = props.name;
         this.description = props.description;
         this.canPresent = !!props.canPresent;
-        this.presentedDocumentProps = props.presentedDocument ?? null;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -44,6 +43,7 @@ class StudentGroup {
 
         this.updatedAt = new Date(props.updatedAt);
         this.createdAt = new Date(props.createdAt);
+        this.setPresentedDocumentProps(props.presentedDocument ?? null, true);
     }
 
     get fCreatedAt() {
@@ -131,23 +131,32 @@ class StudentGroup {
     @action
     setCanPresent(canPresent: boolean, skipSave: boolean = false) {
         if (this.canPresent === canPresent || !this.isGroupAdmin) {
-            return;
+            return Promise.resolve(this);
         }
         this.canPresent = canPresent;
+        if (!skipSave) {
+            return this.save();
+        }
+        return Promise.resolve(this);
+    }
+
+    @action
+    setPresentedDocumentProps(props: DocumentPresentation | null, skipSave: boolean = false) {
+        if (!this.canPresent || this.presentedDocumentProps === props) {
+            return;
+        }
+        this.presentedDocumentProps = props;
+        if (props) {
+            this.store.root.documentStore.addPresentedDocumentToStore(this);
+        }
         if (!skipSave) {
             this.save();
         }
     }
 
-    @action
-    setPresentedDocumentProps(props: DocumentPresentation | null, skipSave: boolean = false) {
-        if (this.presentedDocumentProps === props || !this.isGroupAdmin) {
-            return;
-        }
-        this.presentedDocumentProps = props;
-        if (!skipSave) {
-            this.save();
-        }
+    @computed
+    get permissions() {
+        return this.store.root.permissionStore.groupPermissions.filter((p) => p.groupId === this.id);
     }
 
     @computed

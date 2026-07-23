@@ -9,6 +9,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import Popup from 'reactjs-popup';
 import Card from '../Card';
 import iDocument from '@tdev-models/iDocument';
+import { action } from 'mobx';
 
 interface Props {
     document: iDocument<any>;
@@ -81,6 +82,33 @@ const RequestPresentationMode = observer((props: Props) => {
                         {g.name}
                     </Button>
                 ))}
+                {groupStore.studentGroups
+                    .filter((g) => !g.canPresent)
+                    .map((g) => (
+                        <Button
+                            key={g.id}
+                            color="secondary"
+                            onClick={() => {
+                                const root = document.root;
+                                if (!root) {
+                                    return;
+                                }
+                                g.setCanPresent(true).then(
+                                    action((updated) => {
+                                        updated.setPresentedDocumentProps({
+                                            document: document.props,
+                                            meta: root.meta,
+                                            access: root._access,
+                                            sharedAccess: root._sharedAccess
+                                        });
+                                    })
+                                );
+                            }}
+                            title="Aktuell nicht berechtigt, Präsentationen zu starten - berechtigung wird gesetzt, sobald die Präsentation gestartet wird."
+                        >
+                            {g.name}
+                        </Button>
+                    ))}
             </Card>
         </Popup>
     );

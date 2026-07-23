@@ -124,25 +124,20 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
         if (needsReplace) {
             return this.addToStore(new StudentGroup(data, this));
         }
-        if (model && model.id) {
-            if (data.parentId !== undefined && data.parentId !== model.parentId) {
-                model.setParentId(data.parentId);
-            }
-            if (data.canPresent !== undefined && data.canPresent !== model.canPresent) {
-                model.setCanPresent(data.canPresent, true);
-            }
-            if (
-                data.presentedDocument !== undefined &&
-                data.presentedDocument !== model.presentedDocumentProps
-            ) {
-                model.setPresentedDocumentProps(data.presentedDocument, true);
-            }
-            if (Array.isArray(data.userIds)) {
-                model.userIds.replace(data.userIds);
-            }
-            if (Array.isArray(data.adminIds)) {
-                model.adminIds.replace(data.adminIds);
-            }
+        if (data.parentId !== undefined && data.parentId !== model.parentId) {
+            model.setParentId(data.parentId);
+        }
+        if (data.canPresent !== undefined && data.canPresent !== model.canPresent) {
+            model.setCanPresent(data.canPresent, true);
+        }
+        if (data.presentedDocument !== undefined && data.presentedDocument !== model.presentedDocumentProps) {
+            model.setPresentedDocumentProps(data.presentedDocument, true);
+        }
+        if (Array.isArray(data.userIds)) {
+            model.userIds.replace(data.userIds);
+        }
+        if (Array.isArray(data.adminIds)) {
+            model.adminIds.replace(data.adminIds);
         }
     }
 
