@@ -129,21 +129,25 @@ class StudentGroup {
     }
 
     @action
-    setCanPresent(canPresent: boolean) {
+    setCanPresent(canPresent: boolean, skipSave: boolean = false) {
         if (this.canPresent === canPresent || !this.isGroupAdmin) {
             return;
         }
         this.canPresent = canPresent;
-        this.save();
+        if (!skipSave) {
+            this.save();
+        }
     }
 
     @action
-    setPresentedDocumentProps(props: DocumentPresentation | null) {
+    setPresentedDocumentProps(props: DocumentPresentation | null, skipSave: boolean = false) {
         if (this.presentedDocumentProps === props || !this.isGroupAdmin) {
             return;
         }
         this.presentedDocumentProps = props;
-        this.save();
+        if (!skipSave) {
+            this.save();
+        }
     }
 
     @computed

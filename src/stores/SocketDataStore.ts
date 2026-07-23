@@ -14,7 +14,8 @@ import {
     IoEvent,
     NewRecord,
     RecordType,
-    ServerToClientEvents
+    ServerToClientEvents,
+    StreamedDynamicDocument
 } from '../api/IoEventTypes';
 import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
@@ -206,7 +207,14 @@ export class SocketDataStore extends iStore<'ping'> {
      */
     @action
     streamUpdate<T extends Record<string, unknown>>(roomId: string, payload: ChangedDocument, meta?: T) {
-        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId, meta });
+        const data: StreamedDynamicDocument<T> = {
+            ...payload,
+            roomId
+        };
+        if (meta) {
+            data.meta = meta;
+        }
+        this.socket?.emit(IoClientEvent.STREAM_UPDATE, data);
     }
 
     @action

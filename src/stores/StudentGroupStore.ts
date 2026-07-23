@@ -129,13 +129,13 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
                 model.setParentId(data.parentId);
             }
             if (data.canPresent !== undefined && data.canPresent !== model.canPresent) {
-                model.setCanPresent(data.canPresent);
+                model.setCanPresent(data.canPresent, true);
             }
             if (
                 data.presentedDocument !== undefined &&
                 data.presentedDocument !== model.presentedDocumentProps
             ) {
-                model.setPresentedDocumentProps(data.presentedDocument);
+                model.setPresentedDocumentProps(data.presentedDocument, true);
             }
             if (Array.isArray(data.userIds)) {
                 model.userIds.replace(data.userIds);

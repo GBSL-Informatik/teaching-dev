@@ -35,7 +35,7 @@ abstract class iDocument<Type extends DocumentType> {
      * Time [s] :    0        1        2        3        4        5        6        7
      * Edits    :    |||  |            |||   ||  |  |     ||  ||||  |||    ||  ||| |||||
      */
-    save: DebouncedFunc<typeof iDocument.prototype._save>;
+    saveFn: DebouncedFunc<typeof iDocument.prototype._save>;
 
     @observable accessor state: ApiState = ApiState.IDLE;
 
@@ -58,7 +58,7 @@ abstract class iDocument<Type extends DocumentType> {
 
         this.createdAt = new Date(props.createdAt);
         this.updatedAt = new Date(props.updatedAt);
-        this.save = _.debounce(action(this._save), saveDebounceTime, {
+        this.saveFn = _.debounce(action(this._save), saveDebounceTime, {
             leading: false,
             trailing: true,
             maxWait: 5 * saveDebounceTime
@@ -106,6 +106,13 @@ abstract class iDocument<Type extends DocumentType> {
     @computed
     get isPresenting() {
         return this.store.root.studentGroupStore.presentedDocumentIds.has(this.id);
+    }
+
+    @computed
+    get presentingGroups() {
+        return this.store.root.studentGroupStore.presentableStudentGroups.filter(
+            (g) => g.presentedDocumentId === this.id
+        );
     }
 
     @action
@@ -224,9 +231,25 @@ abstract class iDocument<Type extends DocumentType> {
     }
 
     @action
+    save(onBeforeSave?: (() => Promise<void>) | undefined) {
+        const res = this.saveFn(onBeforeSave);
+        if (this.isPresenting) {
+            const now = new Date();
+            this.presentingGroups.forEach((g) => {
+                this.store.root.socketStore.streamUpdate(g.id, {
+                    id: this.id,
+                    data: this.data,
+                    updatedAt: now
+                });
+            });
+        }
+        return res;
+    }
+
+    @action
     saveNow() {
         this.save();
-        return this.save.flush() ?? Promise.resolve();
+        return this.saveFn.flush() ?? Promise.resolve();
     }
 
     @action
