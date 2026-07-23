@@ -32,10 +32,6 @@ export enum Access {
     None_User = 'None_User'
 }
 
-export interface Presentable {
-    isPresenting?: boolean;
-}
-
 export interface ScriptVersionData {
     code: string;
     pasted?: boolean;
@@ -49,7 +45,7 @@ export interface QuillV2Data {
     delta: Delta;
 }
 
-export interface CodeData extends Presentable {
+export interface CodeData {
     code: string;
 }
 

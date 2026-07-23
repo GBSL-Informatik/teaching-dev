@@ -162,10 +162,10 @@ const StudentGroup = observer((props: Props) => {
                                     icon={group.canPresent ? mdiToggleSwitch : mdiToggleSwitchOff}
                                 />
                             </dd>
-                            {group.presentedDocument && (
+                            {group.presentedDocumentProps && (
                                 <dd>
                                     <pre>
-                                        <code>{JSON.stringify(group.presentedDocument, null, 2)}</code>
+                                        <code>{JSON.stringify(group.presentedDocumentProps, null, 2)}</code>
                                     </pre>
                                 </dd>
                             )}

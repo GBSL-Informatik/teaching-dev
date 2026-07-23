@@ -16,8 +16,7 @@ import {
 import User from '../models/User';
 import { orderBy } from 'es-toolkit/array';
 
-const NEEDED_REPLACEMENT_KEYS: (keyof ApiStudentGroup)[] = ['name', 'description'];
-const UPDATEABLE_KEYS: (keyof ApiStudentGroup)[] = ['canPresent', 'presentedDocument'];
+const NEEDS_REPLACEMENT_KEYS: (keyof ApiStudentGroup)[] = ['name', 'description'];
 
 export class StudentGroupStore extends iStore<`members-${string}`> {
     readonly root: RootStore;
@@ -51,6 +50,24 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
             [(group) => group._pristine.name],
             ['asc']
         );
+    }
+
+    @computed
+    get presentableStudentGroups() {
+        return this.studentGroups.filter((group) => group.canPresent);
+    }
+
+    @computed
+    get presentingStudentGroups() {
+        return this.presentableStudentGroups.filter((group) => group.presentedDocumentProps !== null);
+    }
+
+    @computed
+    get presentedDocumentIds() {
+        const ids = this.presentingStudentGroups
+            .map((group) => group.presentedDocumentId)
+            .filter(Boolean) as string[];
+        return new Set(ids);
     }
 
     findByName = computedFn(
@@ -101,7 +118,7 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
         if (!model) {
             return;
         }
-        const needsReplace = NEEDED_REPLACEMENT_KEYS.some(
+        const needsReplace = NEEDS_REPLACEMENT_KEYS.some(
             (key) => data[key] !== undefined && data[key] !== model[key]
         );
         if (needsReplace) {
@@ -114,8 +131,11 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
             if (data.canPresent !== undefined && data.canPresent !== model.canPresent) {
                 model.setCanPresent(data.canPresent);
             }
-            if (data.presentedDocument !== undefined && data.presentedDocument !== model.presentedDocument) {
-                model.setPresentedDocument(data.presentedDocument);
+            if (
+                data.presentedDocument !== undefined &&
+                data.presentedDocument !== model.presentedDocumentProps
+            ) {
+                model.setPresentedDocumentProps(data.presentedDocument);
             }
             if (Array.isArray(data.userIds)) {
                 model.userIds.replace(data.userIds);

@@ -11,32 +11,9 @@ export default class ViewStore {
     stores = new Map<ViewStoreType, ViewStores>();
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
-    @observable accessor _presentedDocumentId: string | null = null;
 
     constructor(store: RootStore) {
         this.root = store;
-    }
-
-    @action
-    setPresentedDocumentId(id: string | null) {
-        this._presentedDocumentId = id;
-    }
-
-    @computed
-    get presentedDocument() {
-        if (!this.root.documentStore.hasPresentableDocument) {
-            return null;
-        }
-        if (this._presentedDocumentId) {
-            const doc = this.root.documentStore.presentedDocuments.find(
-                (d) => d.id === this._presentedDocumentId
-            );
-            if (doc) {
-                return doc;
-            }
-            this.setPresentedDocumentId(null);
-        }
-        return this.root.documentStore.presentedDocuments[0] ?? null;
     }
 
     useStore<T extends ViewStoreType>(type: T): ViewStoreTypeMapping[T] {

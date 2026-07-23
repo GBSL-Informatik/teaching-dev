@@ -8,36 +8,26 @@ import type iCode from '@tdev-models/documents/iCode';
 import Button from '@tdev-components/shared/Button';
 import { mdiClose } from '@mdi/js';
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import DocumentPresentationView from './DocumentPresentationView';
 
 interface Props {}
 
 const PresentationPanel = observer((props: Props) => {
     const groupStore = useStore('studentGroupStore');
-    const documentStore = useStore('documentStore');
-    const viewStore = useStore('viewStore');
-    const componentStore = useStore('componentStore');
-    const doc = viewStore.presentedDocument as iCode<CodeType>;
-    const EC = doc ? componentStore.editorComponent(doc.type as CodeType) : null;
-    React.useEffect(() => {
-        const rid = groupStore.managedStudentGroups[0]?.id;
-        if (rid && doc?.isPresenting && !doc.isDummy) {
-            console.log('join room', doc.documentRootId);
-            documentStore.root.socketStore.joinRoom(rid);
-        }
-        return () => {
-            if (rid) {
-                documentStore.root.socketStore.leaveRoom(rid);
-            }
-        };
-    }, [doc?.id]);
-    if (!EC) {
-        return <div>Kein Editor für Dokumenttyp {doc?.type}</div>;
-    }
 
     return (
         <div className={clsx(styles.presentationMode)}>
-            <Button icon={mdiClose} onClick={() => doc.setPresenting(false)} />
-            <CodeEditorComponent code={doc} isPresentation />
+            <Tabs>
+                {groupStore.presentingStudentGroups.map((g, idx) => {
+                    return (
+                        <TabItem value={g.id} label={g.name} key={idx}>
+                            <DocumentPresentationView group={g} />
+                        </TabItem>
+                    );
+                })}
+            </Tabs>
         </div>
     );
 });

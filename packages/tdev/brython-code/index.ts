@@ -1,4 +1,3 @@
-import { Presentable } from '@tdev-api/document';
 import Script from './models/Script';
 /**
  * Notes
@@ -7,7 +6,7 @@ import Script from './models/Script';
  * - call brython with arguments: https://github.com/brython-dev/brython/issues/2421
  *
  */
-export interface ScriptData extends Presentable {
+export interface ScriptData {
     code: string;
 }
 

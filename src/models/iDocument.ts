@@ -103,6 +103,11 @@ abstract class iDocument<Type extends DocumentType> {
         };
     }
 
+    @computed
+    get isPresenting() {
+        return this.store.root.studentGroupStore.presentedDocumentIds.has(this.id);
+    }
+
     @action
     reset() {
         this.setData({ ...this._pristine }, Source.LOCAL);

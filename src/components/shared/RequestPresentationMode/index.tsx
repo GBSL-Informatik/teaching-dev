@@ -27,6 +27,25 @@ const RequestPresentationMode = observer((props: Props) => {
     if (groupStore.managedStudentGroups.length === 0 || !userStore.current) {
         return null;
     }
+    if (groupStore.presentedDocumentIds.has(document.id)) {
+        return (
+            <Button
+                className={className}
+                color={props.color || 'blue'}
+                size={props.size}
+                title={'Präsentation beenden'}
+                icon={mdiTelevisionStop}
+                onClick={() => {
+                    groupStore.presentingStudentGroups.forEach((g) => {
+                        if (g.presentedDocument?.id === document.id) {
+                            g.setPresentedDocumentProps(null);
+                        }
+                    });
+                }}
+            />
+        );
+    }
+
     return (
         <Popup
             trigger={
@@ -35,22 +54,27 @@ const RequestPresentationMode = observer((props: Props) => {
                         className={className}
                         color={props.color || 'blue'}
                         size={props.size}
-                        title={document.isPresenting ? 'Präsentation beenden' : 'Präsentatieren'}
-                        icon={document.isPresenting ? mdiTelevisionStop : mdiPresentationPlay}
+                        title={'Präsentatieren'}
+                        icon={mdiPresentationPlay}
                     />
                 </span>
             }
             on="click"
         >
             <Card>
-                {groupStore.managedStudentGroups.map((g) => (
+                {groupStore.presentableStudentGroups.map((g) => (
                     <Button
                         key={g.id}
                         color="blue"
                         onClick={() => {
-                            g.setPresentedDocument({
-                                document: document.data,
-                                meta: document.root?.meta
+                            if (!document.root) {
+                                return;
+                            }
+                            g.setPresentedDocumentProps({
+                                document: document.props,
+                                meta: document.root.meta,
+                                access: document.root._access,
+                                sharedAccess: document.root._sharedAccess
                             });
                         }}
                     >

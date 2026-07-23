@@ -36,6 +36,9 @@ import ProgressState from '@tdev-models/documents/ProgressState';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
 import { throttle } from 'es-toolkit/function';
+import type { TypeMeta } from '@tdev-models/DocumentRoot';
+import StudentGroup from '@tdev-models/StudentGroup';
+import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -173,11 +176,13 @@ class DocumentStore extends iStore<`delete-${string}`> {
 
     @computed
     get presentedDocuments() {
-        return this.documents.filter((d) => (d.data as { isPresenting?: boolean }).isPresenting);
+        return [...this.root.studentGroupStore.presentedDocumentIds]
+            .map((id) => this.find(id))
+            .filter((d) => !!d);
     }
 
     @computed
-    get hasPresentableDocument() {
+    get hasPresentingDocuments() {
         return this.presentedDocuments.length > 0;
     }
 
@@ -345,61 +350,44 @@ class DocumentStore extends iStore<`delete-${string}`> {
             }
             model.setData(change.data as any, Source.API, updatedAt);
             model.postUpdate(change.meta);
-        } else if ('isPresenting' in change.data) {
-            // TODO: document in PR, that 'isPresenting' is a special property that is only used
-            //       for presentable documents.
+        } else if (this.root.studentGroupStore.presentedDocumentIds.has(change.id)) {
             // probably the document was not loaded yet - try to load it from the api
-            this.apiLoadDocument(change.id, change.meta);
+            const presentedGroup = this.root.studentGroupStore.presentingStudentGroups.find(
+                (g) => g.presentedDocumentId === change.id
+            );
+            this._addPresentedDocumentToStore(presentedGroup);
         }
     }
 
-    /**
-     * load the document from the api, but throttle the requests to avoid flooding the api with requests.
-     * This is useful when the document is not yet loaded, but the user is trying to open it multiple times in a short time.
-     * The throttle will ensure that only one request is sent every 3 seconds.
-     */
-    apiLoadDocument = throttle(this._apiLoadDocument, 3000, {
-        edges: ['leading']
-    });
-
     @action
-    _apiLoadDocument(id: string, meta?: Record<string, unknown>) {
-        return this.withAbortController(`load-${id}`, (sig) => {
-            return apiFind(id, sig.signal);
-        })
-            .then(({ data }) => {
-                const rs = this.root.documentRootStore;
-                if (!rs.find(data.document.documentRootId)) {
-                    rs.addApiResultToStore(
-                        {
-                            id: data.document.documentRootId,
-                            access: data.highestPermission,
-                            documents: [],
-                            groupPermissions: [],
-                            userPermissions: [],
-                            sharedAccess:
-                                data.document.authorId === this.root.userStore.current?.id
-                                    ? Access.None_DocumentRoot
-                                    : data.highestPermission
-                        },
-                        {
-                            load: {
-                                documentRoot: 'addIfMissing'
-                            },
-                            meta: rs.defaultMetas.find((m) => m.type === data.document.type)
-                        }
-                    );
-                }
-                const model = this.addToStore(data.document);
-                if (meta) {
-                    model?.postUpdate(meta);
-                }
-
-                return model;
-            })
-            .catch((err) => {
-                return undefined;
-            });
+    _addPresentedDocumentToStore(studentGroup?: StudentGroup) {
+        const presentedDoc = studentGroup?.presentedDocumentProps;
+        if (!presentedDoc) {
+            return;
+        }
+        const rawDoc = presentedDoc.document;
+        const rawMeta = presentedDoc.meta;
+        const model = this.find(presentedDoc.document.id);
+        if (model) {
+            return;
+        }
+        const docRoot = this.root.documentRootStore.find(presentedDoc.document.documentRootId);
+        const metaHash = MetaHasher.toHashSync(rawMeta);
+        if (!docRoot || !docRoot?.isDummy || docRoot._metaHash !== metaHash) {
+            this.root.documentRootStore.addDocumentRoot(
+                new DocumentRoot(
+                    {
+                        id: rawDoc.documentRootId,
+                        access: presentedDoc.access,
+                        sharedAccess: presentedDoc.sharedAccess
+                    },
+                    rawMeta,
+                    this.root.documentRootStore,
+                    false
+                )
+            );
+        }
+        this.addToStore(rawDoc);
     }
 
     @action

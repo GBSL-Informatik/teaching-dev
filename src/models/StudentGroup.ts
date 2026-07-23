@@ -18,7 +18,7 @@ class StudentGroup {
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
     @observable accessor canPresent: boolean;
-    @observable.ref accessor presentedDocument: DocumentPresentation | null;
+    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null;
 
     readonly _pristine: { name: string; description: string };
 
@@ -36,7 +36,7 @@ class StudentGroup {
         this.name = props.name;
         this.description = props.description;
         this.canPresent = !!props.canPresent;
-        this.presentedDocument = props.presentedDocument ?? null;
+        this.presentedDocumentProps = props.presentedDocument ?? null;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -138,12 +138,22 @@ class StudentGroup {
     }
 
     @action
-    setPresentedDocument(presentedDocument: DocumentPresentation | null) {
-        if (this.presentedDocument === presentedDocument || !this.isGroupAdmin) {
+    setPresentedDocumentProps(props: DocumentPresentation | null) {
+        if (this.presentedDocumentProps === props || !this.isGroupAdmin) {
             return;
         }
-        this.presentedDocument = presentedDocument;
+        this.presentedDocumentProps = props;
         this.save();
+    }
+
+    @computed
+    get presentedDocumentId() {
+        return this.presentedDocumentProps?.document.id ?? null;
+    }
+
+    @computed
+    get presentedDocument() {
+        return this.store.root.documentStore.find(this.presentedDocumentId);
     }
 
     @action
@@ -159,7 +169,7 @@ class StudentGroup {
             description: this.description,
             parentId: this.parentId,
             canPresent: this.canPresent,
-            presentedDocument: this.presentedDocument
+            presentedDocument: this.presentedDocumentProps
         };
     }
 

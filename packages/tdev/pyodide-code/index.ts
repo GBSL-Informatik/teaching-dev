@@ -1,7 +1,6 @@
 import type PyodideStore from './stores/PyodideStore';
 import PyodideCode from './models/PyodideCode';
-import { Presentable } from '@tdev-api/document';
-export interface PyodideData extends Presentable {
+export interface PyodideData {
     code: string;
 }
 

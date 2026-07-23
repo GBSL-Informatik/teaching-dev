@@ -26,29 +26,10 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
     @observable accessor isPasted: boolean = false;
-    @observable accessor _isPresenting: boolean = false;
 
     constructor(props: Props<T>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code ?? this.meta.initCode;
-        this._isPresenting = props.data?.isPresenting ?? false;
-    }
-
-    @computed
-    get isPresenting(): boolean {
-        return !!this._isPresenting;
-    }
-
-    @action
-    setPresenting(isPresenting?: boolean): void {
-        if (!this.store.root.userStore.current?.hasElevatedAccess) {
-            return;
-        }
-        if (this._isPresenting === isPresenting) {
-            return;
-        }
-        this._isPresenting = isPresenting ?? false;
-        this.saveNow();
     }
 
     @computed
@@ -81,16 +62,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         }
         if (this.isPasted) {
             this.isPasted = false;
-        }
-        if (this.isPresenting && !this.isDummy) {
-            this.store.root.socketStore.streamUpdate(
-                this.store.root.studentGroupStore.managedStudentGroups[0]?.id,
-                {
-                    id: this.id,
-                    data: this.data,
-                    updatedAt: this.updatedAt
-                }
-            );
         }
 
         /**
@@ -158,23 +129,11 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
 
     @action
     setData(data: Props<T>['data'], from: Source, updatedAt?: Date): void {
-        if (from === Source.LOCAL) {
-            if (data.isPresenting) {
-                this.setPresenting(data.isPresenting);
-            } else if (this._isPresenting) {
-                this._isPresenting = false;
-            }
-            if ('code' in data) {
+        if ('code' in data) {
+            if (from === Source.LOCAL) {
                 this.setCode(data.code);
-            }
-        } else {
-            if ('code' in data) {
+            } else {
                 this.code = data.code;
-            }
-            if (data.isPresenting) {
-                this._isPresenting = data.isPresenting;
-            } else if (this._isPresenting) {
-                this._isPresenting = false;
             }
         }
         if (updatedAt) {
@@ -299,9 +258,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         const data: TypeDataMapping[T] = {
             code: this.code
         };
-        if (this.isPresenting) {
-            data.isPresenting = true;
-        }
         return data;
     }
 

@@ -9,13 +9,13 @@ import PresentationPanel from '..';
 interface Props {}
 
 const PresentationModal = observer((props: Props) => {
-    const viewStore = useStore('viewStore');
+    const documentStore = useStore('documentStore');
 
     return (
         <Popup
             modal
             overlayStyle={{ background: 'rgba(226, 222, 222, 0.84)' }}
-            open={!!viewStore.presentedDocument}
+            open={documentStore.presentedDocuments.length > 0}
             repositionOnResize
             closeOnDocumentClick={false}
             closeOnEscape={false}
