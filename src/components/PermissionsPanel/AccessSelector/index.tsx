@@ -18,39 +18,69 @@ export const AccessNames: { [key in Access]: string } = {
     [Access.None_DocumentRoot]: 'None'
 };
 
+export const AccessLevels = new Map<Access, number>([
+    [Access.None_DocumentRoot, 0],
+    [Access.RO_DocumentRoot, 1],
+    [Access.RW_DocumentRoot, 2],
+    [Access.None_StudentGroup, 0],
+    [Access.RO_StudentGroup, 1],
+    [Access.RW_StudentGroup, 2],
+    [Access.None_User, 0],
+    [Access.RO_User, 1],
+    [Access.RW_User, 2]
+]);
+
 interface Props {
     onChange: (access: Access) => void;
     accessTypes: Access[];
     access?: Access;
     className?: string;
+    maxAccess?: Access;
     mark?: Set<Access>;
 }
 
+const buttonColorClasses = (level: Access, access: Access, maxAccess?: Access) => {
+    const res = access === level ? ['button--primary'] : ['button--secondary'];
+    if (!maxAccess) {
+        return res;
+    }
+    const maxAccessLevel = maxAccess ? AccessLevels.get(maxAccess)! : 3;
+    const disabled = maxAccessLevel < AccessLevels.get(level)!;
+    if (disabled) {
+        res.push(styles.unaffected);
+    }
+    return res;
+};
+
 const AccessSelector = observer((props: Props) => {
+    const maxAccessLevel = props.maxAccess ? AccessLevels.get(props.maxAccess)! : 3;
+
     return (
         <div className={clsx(styles.selector, props.className, 'button-group')}>
-            {props.accessTypes.map((acc) => (
-                <button
-                    key={acc}
-                    className={clsx(
-                        'button',
-                        props.access === acc ? 'button--primary' : 'button--secondary',
-                        'button--sm',
-                        styles.button
-                    )}
-                    onClick={() => props.onChange(acc)}
-                >
-                    {props.mark?.has(acc) ? (
-                        <Icon
-                            path={mdiCircleSmall}
-                            className={clsx(styles.mark)}
-                            color="var(--ifm-color-warning)"
-                            size={1}
-                        />
-                    ) : null}
-                    {AccessNames[acc]}
-                </button>
-            ))}
+            {props.accessTypes.map((acc) => {
+                return (
+                    <button
+                        key={acc}
+                        className={clsx(
+                            'button',
+                            buttonColorClasses(acc, props.access!, props.maxAccess),
+                            'button--sm',
+                            styles.button
+                        )}
+                        onClick={() => props.onChange(acc)}
+                    >
+                        {props.mark?.has(acc) ? (
+                            <Icon
+                                path={mdiCircleSmall}
+                                className={clsx(styles.mark)}
+                                color="var(--ifm-color-warning)"
+                                size={1}
+                            />
+                        ) : null}
+                        {AccessNames[acc]}
+                    </button>
+                );
+            })}
         </div>
     );
 });

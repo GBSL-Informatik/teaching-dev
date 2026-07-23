@@ -9,6 +9,8 @@ import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
 import iCode from '@tdev-models/documents/iCode';
 import AccessSelector, { AccessNames } from '@tdev-components/PermissionsPanel/AccessSelector';
 import Badge from '@tdev-components/shared/Badge';
+import GroupAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/GroupAccessSelector';
+import SharedAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/SharedAccessSelector';
 
 interface Props {
     group: StudentGroup;
@@ -35,43 +37,17 @@ const DocumentPresentationView = observer((props: Props) => {
         <div className={clsx(styles.DocumentPresentationView)}>
             {userStore.current?.hasElevatedAccess && (
                 <div className={clsx(styles.presentationInfo)}>
-                    <AccessSelector
-                        accessTypes={[
-                            Access.RO_DocumentRoot,
-                            Access.RW_DocumentRoot,
-                            Access.None_DocumentRoot
-                        ]}
-                        access={group.presentedDocument.root?.sharedAccess}
-                        onChange={(access) => {
-                            group.presentedDocument!.root?.setSharedAccess(access);
-                            group.presentedDocument!.root?.save();
-                        }}
-                    />
-
-                    <AccessSelector
-                        accessTypes={[
-                            Access.RO_StudentGroup,
-                            Access.RW_StudentGroup,
-                            Access.None_StudentGroup
-                        ]}
-                        access={groupPermission}
-                        onChange={(access) => {
-                            const currentPermission = group.presentedDocument!.root!.groupPermissions.find(
-                                (gp) => gp.groupId === group.id
-                            );
-                            if (currentPermission) {
-                                currentPermission.setAccess(access);
-                            } else {
-                                permissionStore.createGroupPermission(
-                                    group.presentedDocument!.root!,
-                                    group,
-                                    access
-                                );
-                            }
-                        }}
-                    />
+                    group
+                    <GroupAccessSelector group={group} />
                 </div>
             )}
+            <div>
+                shared
+                <SharedAccessSelector
+                    documentRoot={group.presentedDocument.root!}
+                    maxAccess={groupPermission}
+                />
+            </div>
             <CodeEditorComponent code={group.presentedDocument as iCode<CodeType>} isPresentation />
         </div>
     );
