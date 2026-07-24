@@ -39,11 +39,11 @@ const Content = observer(<T extends CodeType>(props: Props<T>) => {
         <>
             <div className={clsx(styles.title)}>{code.title}</div>
             <div className={clsx(styles.spacer)} />
-            <RequestPresentationMode document={code} className={clsx(styles.fullscreenButton)} />
+            <RequestPresentationMode document={code} className={clsx(styles.hoverButton)} />
             <RequestFullscreen
                 targetId={targetId}
                 adminOnly={!showFullscreenButton}
-                className={clsx(styles.fullscreenButton)}
+                className={clsx(styles.hoverButton)}
             />
             {notifyUnpersisted && (
                 <Icon

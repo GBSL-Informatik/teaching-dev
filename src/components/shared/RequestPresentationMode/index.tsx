@@ -3,13 +3,14 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
-import { mdiPresentationPlay, mdiTelevisionStop } from '@mdi/js';
+import { mdiClose, mdiPresentationPlay, mdiTelevisionStop } from '@mdi/js';
 import { Color } from '../Colors';
 import { useStore } from '@tdev-hooks/useStore';
 import Popup from 'reactjs-popup';
 import Card from '../Card';
 import iDocument from '@tdev-models/iDocument';
 import { action } from 'mobx';
+import GroupSelector from './GroupSelector';
 
 interface Props {
     document: iDocument<any>;
@@ -20,8 +21,10 @@ interface Props {
 
 const RequestPresentationMode = observer((props: Props) => {
     const { document, className } = props;
+    const pageStore = useStore('pageStore');
     const userStore = useStore('userStore');
     const groupStore = useStore('studentGroupStore');
+    const [focus, setFocus] = React.useState(false);
     if (document.isDummy) {
         return null;
     }
@@ -52,7 +55,7 @@ const RequestPresentationMode = observer((props: Props) => {
             trigger={
                 <span>
                     <Button
-                        className={className}
+                        className={clsx(className, focus && 'focus')}
                         color={props.color || 'blue'}
                         size={props.size}
                         title={'Präsentatieren'}
@@ -60,54 +63,25 @@ const RequestPresentationMode = observer((props: Props) => {
                     />
                 </span>
             }
+            onOpen={() => setFocus(true)}
+            onClose={() => setFocus(false)}
             on="click"
         >
             <Card>
-                {groupStore.presentableStudentGroups.map((g) => (
-                    <Button
-                        key={g.id}
-                        color="blue"
-                        onClick={() => {
-                            if (!document.root) {
-                                return;
-                            }
-                            g.apiSetPresentedDocumentProps({
-                                document: document.props,
-                                meta: document.root.meta,
-                                access: document.root._access,
-                                sharedAccess: document.root._sharedAccess
-                            });
-                        }}
-                    >
-                        {g.name}
-                    </Button>
-                ))}
+                {groupStore.presentableStudentGroups
+                    .filter((g) => pageStore.current?.relevantStudentGroupIds.has(g.id) ?? false)
+                    .map((g) => (
+                        <GroupSelector group={g} document={document} color="blue" key={g.id} />
+                    ))}
+                {groupStore.presentableStudentGroups
+                    .filter((g) => !(pageStore.current?.relevantStudentGroupIds.has(g.id) ?? false))
+                    .map((g) => (
+                        <GroupSelector group={g} color="warning" document={document} key={g.id} />
+                    ))}
                 {groupStore.studentGroups
                     .filter((g) => !g.canPresent)
                     .map((g) => (
-                        <Button
-                            key={g.id}
-                            color="secondary"
-                            onClick={() => {
-                                const root = document.root;
-                                if (!root) {
-                                    return;
-                                }
-                                g.setCanPresent(true).then(
-                                    action((updated) => {
-                                        updated.apiSetPresentedDocumentProps({
-                                            document: document.props,
-                                            meta: root.meta,
-                                            access: root._access,
-                                            sharedAccess: root._sharedAccess
-                                        });
-                                    })
-                                );
-                            }}
-                            title="Aktuell nicht berechtigt, Präsentationen zu starten - berechtigung wird gesetzt, sobald die Präsentation gestartet wird."
-                        >
-                            {g.name}
-                        </Button>
+                        <GroupSelector group={g} document={document} noOutline key={g.id} />
                     ))}
             </Card>
         </Popup>
