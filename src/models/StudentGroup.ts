@@ -4,6 +4,7 @@ import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
+import { orderBy } from 'es-toolkit/array';
 
 class StudentGroup {
     readonly store: StudentGroupStore;
@@ -43,7 +44,7 @@ class StudentGroup {
 
         this.updatedAt = new Date(props.updatedAt);
         this.createdAt = new Date(props.createdAt);
-        this.setPresentedDocumentProps(props.presentedDocument ?? null, true);
+        this.setPresentedDocumentProps(props.presentedDocument ?? null);
     }
 
     get fCreatedAt() {
@@ -56,8 +57,10 @@ class StudentGroup {
 
     @computed
     get students() {
-        return this.store.root.userStore.users.filter(
-            (u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)
+        return orderBy(
+            this.store.root.userStore.users.filter((u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)),
+            ['firstName', 'lastName'],
+            ['asc', 'asc']
         );
     }
 
@@ -73,7 +76,7 @@ class StudentGroup {
 
     @computed
     get children() {
-        return _.orderBy(
+        return orderBy(
             this.store.studentGroups.filter((g) => g.parentId === this.id),
             ['name'],
             ['asc']
@@ -140,18 +143,40 @@ class StudentGroup {
         return Promise.resolve(this);
     }
 
+    /**
+     * sets the props only locally without saving to the server
+     */
     @action
-    setPresentedDocumentProps(props: DocumentPresentation | null, skipSave: boolean = false) {
+    setPresentedDocumentProps(props: DocumentPresentation | null) {
         if (!this.canPresent || this.presentedDocumentProps === props) {
             return;
         }
         this.presentedDocumentProps = props;
         if (props) {
             this.store.root.documentStore.addPresentedDocumentToStore(this);
+            this.store.root.permissionStore.loadPermissions(props.document.documentRootId);
         }
-        if (!skipSave) {
-            this.save();
+    }
+
+    @action
+    apiSetPresentedDocumentProps(props: DocumentPresentation | null) {
+        if (!this.canPresent || this.presentedDocumentProps === props) {
+            return;
         }
+        const current = this.presentedDocumentProps;
+        this.setPresentedDocumentProps(props);
+        if (current && !props) {
+            Promise.all(
+                this.store.root.permissionStore
+                    .userPermissionsByDocumentRoot(current.document.documentRootId)
+                    .map((p) => {
+                        return this.store.root.permissionStore.deleteUserPermission(p);
+                    })
+            ).catch((err) => {
+                console.error('Error deleting user permissions for presented document', err);
+            });
+        }
+        this.save();
     }
 
     @computed

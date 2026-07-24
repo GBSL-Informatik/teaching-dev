@@ -8,7 +8,7 @@ import StudentGroup from '@tdev-models/StudentGroup';
 
 interface Props {
     group: StudentGroup;
-    mark?: Set<Access>;
+    mark?: Access | Access[] | Set<Access>;
     className?: string;
 }
 

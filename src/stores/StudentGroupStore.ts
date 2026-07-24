@@ -131,7 +131,7 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
             model.setCanPresent(data.canPresent, true);
         }
         if (data.presentedDocument !== undefined && data.presentedDocument !== model.presentedDocumentProps) {
-            model.setPresentedDocumentProps(data.presentedDocument, true);
+            model.setPresentedDocumentProps(data.presentedDocument ?? null);
         }
         if (Array.isArray(data.userIds)) {
             model.userIds.replace(data.userIds);

@@ -36,7 +36,7 @@ interface Props {
     access?: Access;
     className?: string;
     maxAccess?: Access;
-    mark?: Set<Access>;
+    mark?: Access | Access[] | Set<Access>;
 }
 
 const buttonColorClasses = (level: Access, access: Access, maxAccess?: Access) => {
@@ -53,7 +53,15 @@ const buttonColorClasses = (level: Access, access: Access, maxAccess?: Access) =
 };
 
 const AccessSelector = observer((props: Props) => {
-    const maxAccessLevel = props.maxAccess ? AccessLevels.get(props.maxAccess)! : 3;
+    const marked = React.useMemo(() => {
+        if (Array.isArray(props.mark)) {
+            return new Set(props.mark);
+        }
+        if (props.mark instanceof Set) {
+            return props.mark;
+        }
+        return new Set([props.mark]);
+    }, [props.mark]);
 
     return (
         <div className={clsx(styles.selector, props.className, 'button-group')}>
@@ -69,7 +77,7 @@ const AccessSelector = observer((props: Props) => {
                         )}
                         onClick={() => props.onChange(acc)}
                     >
-                        {props.mark?.has(acc) ? (
+                        {marked.has(acc) ? (
                             <Icon
                                 path={mdiCircleSmall}
                                 className={clsx(styles.mark)}

@@ -19,7 +19,7 @@ const PresentationPanel = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.presentationMode)}>
-            <Tabs>
+            <Tabs className={clsx(styles.tabs)}>
                 {groupStore.presentingStudentGroups.map((g, idx) => {
                     return (
                         <TabItem value={g.id} label={g.name} key={idx}>

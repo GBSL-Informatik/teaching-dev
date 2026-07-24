@@ -39,7 +39,7 @@ const RequestPresentationMode = observer((props: Props) => {
                 onClick={() => {
                     groupStore.presentingStudentGroups.forEach((g) => {
                         if (g.presentedDocument?.id === document.id) {
-                            g.setPresentedDocumentProps(null);
+                            g.apiSetPresentedDocumentProps(null);
                         }
                     });
                 }}
@@ -71,7 +71,7 @@ const RequestPresentationMode = observer((props: Props) => {
                             if (!document.root) {
                                 return;
                             }
-                            g.setPresentedDocumentProps({
+                            g.apiSetPresentedDocumentProps({
                                 document: document.props,
                                 meta: document.root.meta,
                                 access: document.root._access,
@@ -95,7 +95,7 @@ const RequestPresentationMode = observer((props: Props) => {
                                 }
                                 g.setCanPresent(true).then(
                                     action((updated) => {
-                                        updated.setPresentedDocumentProps({
+                                        updated.apiSetPresentedDocumentProps({
                                             document: document.props,
                                             meta: root.meta,
                                             access: root._access,

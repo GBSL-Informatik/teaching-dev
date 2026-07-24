@@ -1,0 +1,22 @@
+.documentPresentationView {
+}
+.accessPanels {
+    display: flex;
+    justify-content: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    .panel {
+        display: flex;
+        gap: 0.5rem;
+    }
+}
+.studentSelector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tabs {
+    --ifm-tabs-padding-vertical: 0.2em;
+    --ifm-tabs-padding-horizontal: 0.4em;
+}

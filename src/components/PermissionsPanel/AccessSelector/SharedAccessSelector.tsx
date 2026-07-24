@@ -10,6 +10,7 @@ interface Props {
     documentRoot: DocumentRoot<DocumentType>;
     maxAccess?: Access;
     className?: string;
+    mark?: Access | Access[] | Set<Access>;
 }
 
 const SharedAccessSelector = observer((props: Props) => {
@@ -24,6 +25,7 @@ const SharedAccessSelector = observer((props: Props) => {
                 documentRoot.save();
             }}
             maxAccess={props.maxAccess}
+            mark={props.mark}
         />
     );
 });
