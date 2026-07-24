@@ -1,9 +1,10 @@
 import { action, computed, observable } from 'mobx';
-import { StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
+import { DocumentPresentation, StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
 import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
+import { orderBy } from 'es-toolkit/array';
 
 class StudentGroup {
     readonly store: StudentGroupStore;
@@ -17,6 +18,8 @@ class StudentGroup {
 
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
+    @observable accessor canPresent: boolean;
+    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null = null;
 
     readonly _pristine: { name: string; description: string };
 
@@ -27,9 +30,13 @@ class StudentGroup {
         this.store = store;
         this.id = props.id;
 
-        this._pristine = { name: props.name, description: props.description };
+        this._pristine = {
+            name: props.name,
+            description: props.description
+        };
         this.name = props.name;
         this.description = props.description;
+        this.canPresent = !!props.canPresent;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -37,6 +44,7 @@ class StudentGroup {
 
         this.updatedAt = new Date(props.updatedAt);
         this.createdAt = new Date(props.createdAt);
+        this.setPresentedDocumentProps(props.presentedDocument ?? null);
     }
 
     get fCreatedAt() {
@@ -49,8 +57,10 @@ class StudentGroup {
 
     @computed
     get students() {
-        return this.store.root.userStore.users.filter(
-            (u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)
+        return orderBy(
+            this.store.root.userStore.users.filter((u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)),
+            ['firstName', 'lastName'],
+            ['asc', 'asc']
         );
     }
 
@@ -66,7 +76,7 @@ class StudentGroup {
 
     @computed
     get children() {
-        return _.orderBy(
+        return orderBy(
             this.store.studentGroups.filter((g) => g.parentId === this.id),
             ['name'],
             ['asc']
@@ -122,6 +132,69 @@ class StudentGroup {
     }
 
     @action
+    setCanPresent(canPresent: boolean, skipSave: boolean = false) {
+        if (this.canPresent === canPresent || !this.isGroupAdmin) {
+            return Promise.resolve(this);
+        }
+        this.canPresent = canPresent;
+        if (!skipSave) {
+            return this.save();
+        }
+        return Promise.resolve(this);
+    }
+
+    /**
+     * sets the props only locally without saving to the server
+     */
+    @action
+    setPresentedDocumentProps(props: DocumentPresentation | null) {
+        if (!this.canPresent || this.presentedDocumentProps === props) {
+            return;
+        }
+        this.presentedDocumentProps = props;
+        if (props) {
+            this.store.root.documentStore.addPresentedDocumentToStore(this);
+            this.store.root.permissionStore.loadPermissions(props.document.documentRootId);
+        }
+    }
+
+    @action
+    apiSetPresentedDocumentProps(props: DocumentPresentation | null) {
+        if (!this.canPresent || this.presentedDocumentProps === props) {
+            return;
+        }
+        const current = this.presentedDocumentProps;
+        this.setPresentedDocumentProps(props);
+        if (current && !props) {
+            Promise.all(
+                this.store.root.permissionStore
+                    .userPermissionsByDocumentRoot(current.document.documentRootId)
+                    .map((p) => {
+                        return this.store.root.permissionStore.deleteUserPermission(p);
+                    })
+            ).catch((err) => {
+                console.error('Error deleting user permissions for presented document', err);
+            });
+        }
+        this.save();
+    }
+
+    @computed
+    get permissions() {
+        return this.store.root.permissionStore.groupPermissions.filter((p) => p.groupId === this.id);
+    }
+
+    @computed
+    get presentedDocumentId() {
+        return this.presentedDocumentProps?.document.id ?? null;
+    }
+
+    @computed
+    get presentedDocument() {
+        return this.store.root.documentStore.find(this.presentedDocumentId);
+    }
+
+    @action
     save() {
         return this.store.save(this);
     }
@@ -132,7 +205,9 @@ class StudentGroup {
             id: this.id,
             name: this.name,
             description: this.description,
-            parentId: this.parentId
+            parentId: this.parentId,
+            canPresent: this.canPresent,
+            presentedDocument: this.presentedDocumentProps
         };
     }
 

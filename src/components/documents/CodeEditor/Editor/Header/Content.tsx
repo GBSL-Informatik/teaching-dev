@@ -14,6 +14,7 @@ import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
 import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
 import { reaction } from 'mobx';
 import { useStore } from '@tdev-hooks/useStore';
+import RequestPresentationMode from '@tdev-components/shared/RequestPresentationMode';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
@@ -38,10 +39,11 @@ const Content = observer(<T extends CodeType>(props: Props<T>) => {
         <>
             <div className={clsx(styles.title)}>{code.title}</div>
             <div className={clsx(styles.spacer)} />
+            <RequestPresentationMode document={code} className={clsx(styles.hoverButton)} />
             <RequestFullscreen
                 targetId={targetId}
                 adminOnly={!showFullscreenButton}
-                className={clsx(styles.fullscreenButton)}
+                className={clsx(styles.hoverButton)}
             />
             {notifyUnpersisted && (
                 <Icon

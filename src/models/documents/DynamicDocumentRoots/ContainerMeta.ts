@@ -6,12 +6,17 @@ interface Options {
     description?: string;
 }
 
+export interface MetaInit<Type extends ContainerType> {
+    type: Type;
+    options?: Options;
+}
+
 export class ContainerMeta<T extends ContainerType> extends TypeMeta<T> {
     readonly type: T;
     readonly description?: string;
 
     constructor(type: T, options?: Options) {
-        super(type, options?.access);
+        super(type, options);
         this.type = type;
         this.description = options?.description;
     }

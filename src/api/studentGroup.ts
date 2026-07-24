@@ -1,10 +1,21 @@
+import { type Access, type Document, type DocumentType } from '@tdev-api/document';
 import api from './base';
 import { AxiosPromise } from 'axios';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+
+export interface DocumentPresentation<Type extends DocumentType = DocumentType> {
+    document: Document<Type>;
+    meta: TypeMeta<Type>;
+    access: Access;
+    sharedAccess: Access;
+}
 
 export interface StudentGroup {
     id: string;
     name: string;
     description: string;
+    canPresent: boolean;
+    presentedDocument: DocumentPresentation | null;
     userIds: string[];
     adminIds: string[];
 

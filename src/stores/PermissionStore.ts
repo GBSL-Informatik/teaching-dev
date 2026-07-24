@@ -239,12 +239,12 @@ class PermissionStore extends iStore<`update-${string}`> {
     }
 
     @action
-    loadPermissions(documentRoot: DocumentRoot<any>) {
-        if (this.permissionsLoadedForDocumentRootIds.has(documentRoot.id)) {
+    loadPermissions(documentRootId: string) {
+        if (this.permissionsLoadedForDocumentRootIds.has(documentRootId)) {
             return Promise.resolve();
         }
-        this.withAbortController(`load-permissions-${documentRoot.id}`, async (signal) => {
-            return permissionsFor(documentRoot.id, signal.signal).then(
+        this.withAbortController(`load-permissions-${documentRootId}`, async (signal) => {
+            return permissionsFor(documentRootId, signal.signal).then(
                 action(({ data }) => {
                     const docRootId = data.id;
                     data.userPermissions.forEach((p) => {
@@ -255,7 +255,7 @@ class PermissionStore extends iStore<`update-${string}`> {
                             new GroupPermission({ ...p, documentRootId: docRootId }, this)
                         );
                     });
-                    this.permissionsLoadedForDocumentRootIds.add(documentRoot.id);
+                    this.permissionsLoadedForDocumentRootIds.add(documentRootId);
                 })
             );
         });

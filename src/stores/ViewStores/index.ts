@@ -11,6 +11,7 @@ export default class ViewStore {
     stores = new Map<ViewStoreType, ViewStores>();
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
+
     constructor(store: RootStore) {
         this.root = store;
     }

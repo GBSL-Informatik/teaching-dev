@@ -12,7 +12,7 @@ export class ModelMeta extends TypeMeta<'page_read_check'> {
     readonly minReadTime: number;
 
     constructor(props: Partial<MetaInit>) {
-        super('page_read_check', props.readonly ? Access.RO_User : undefined);
+        super('page_read_check', props);
         this.minReadTime = props.minReadTime || 10;
     }
 

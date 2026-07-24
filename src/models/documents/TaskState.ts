@@ -28,7 +28,7 @@ export class TaskMeta extends TypeMeta<'task_state'> {
     readonly default: StateType;
 
     constructor(props: Partial<MetaInit>) {
-        super('task_state', props.readonly ? Access.RO_User : undefined, props.pagePosition);
+        super('task_state', props);
         this.default = props.states && props.states.length > 0 ? props.states[0] : DEFAULT_TASK_STATES[0];
         this.readonly = !!props.readonly;
     }

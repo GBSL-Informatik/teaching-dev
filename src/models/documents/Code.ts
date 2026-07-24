@@ -6,7 +6,7 @@ import iCode from './iCode';
 
 export class CodeMeta extends iScriptMeta<'code'> {
     constructor(props: Partial<Omit<CodeEditorProps, 'id' | 'className'>>) {
-        super(props, 'code');
+        super('code', props);
     }
 }
 

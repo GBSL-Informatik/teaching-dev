@@ -3,6 +3,7 @@ import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import {
     allDocuments as apiAllDocuments,
+    find as apiFind,
     create as apiCreate,
     Document as DocumentProps,
     DocumentType,
@@ -32,9 +33,10 @@ import Restricted from '@tdev-models/documents/Restricted';
 import CmsText from '@tdev-models/documents/CmsText';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
-import Script from '@tdev-models/documents/Code';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
+import StudentGroup from '@tdev-models/StudentGroup';
+import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -170,6 +172,18 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
+    @computed
+    get presentedDocuments() {
+        return [...this.root.studentGroupStore.presentedDocumentIds]
+            .map((id) => this.find(id))
+            .filter((d) => !!d);
+    }
+
+    @computed
+    get hasPresentingDocuments() {
+        return this.presentedDocuments.length > 0;
+    }
+
     @action
     addToStore<Type extends DocumentType>(
         data: DocumentProps<Type> | undefined | null
@@ -177,7 +191,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
         /**
          * Adds a new model to the store. Existing models with the same id are replaced.
          */
-        if (!data || !data.data) {
+        if (!data) {
             return;
         }
         const factory = this.factories.get(data.type);
@@ -333,7 +347,44 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 return;
             }
             model.setData(change.data as any, Source.API, updatedAt);
+            model.postUpdate(change.meta);
         }
+    }
+
+    @action
+    addPresentedDocumentToStore(studentGroup: StudentGroup) {
+        const presentedDoc = studentGroup.presentedDocumentProps;
+        if (!presentedDoc) {
+            return;
+        }
+        const rawDoc = presentedDoc.document;
+        const rawMeta = presentedDoc.meta;
+        const model = this.find(rawDoc.id);
+        if (model) {
+            return;
+        }
+        const docRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
+        const metaHash = MetaHasher.toHashSync(rawMeta);
+        if (!docRoot || !docRoot?.isDummy || docRoot._metaHash !== metaHash) {
+            this.root.documentRootStore.addDocumentRoot(
+                new DocumentRoot(
+                    {
+                        id: rawDoc.documentRootId,
+                        access: presentedDoc.access,
+                        sharedAccess: presentedDoc.sharedAccess
+                    },
+                    rawMeta,
+                    this.root.documentRootStore,
+                    false
+                )
+            );
+        }
+        const documentRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
+        if (!documentRoot) {
+            return;
+        }
+
+        this.addToStore(rawDoc);
     }
 
     @action

@@ -9,6 +9,8 @@ import { useStore } from '@tdev-hooks/useStore';
 import type { CodeType, TypeModelMapping } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 import Header from './Header';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import Alert from '@tdev-components/shared/Alert';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
@@ -17,7 +19,19 @@ interface Props<T extends CodeType> {
 const Editor = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const componentStore = useStore('componentStore');
+    const userStore = useStore('userStore');
     const EC = componentStore.editorComponent(code.type);
+    console.log('Editor Access', code.canDisplay, code.isDummy, userStore.isUserSwitched);
+    if (!code.canDisplay && !code.isDummy) {
+        if (!userStore.isUserSwitched) {
+            return (
+                <div>
+                    <Alert type="warning">Warte auf die Berechtigung, um den Editor anzuzeigen.</Alert>
+                    <PermissionsPanel documentRootId={code.documentRootId} />
+                </div>
+            );
+        }
+    }
     return (
         <>
             {EC?.Header ? (

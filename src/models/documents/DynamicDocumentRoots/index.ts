@@ -23,10 +23,12 @@ export interface MetaInit<Type extends ContainerType> {
 export class ModelMeta<Type extends ContainerType> extends TypeMeta<'dynamic_document_roots'> {
     readonly type = 'dynamic_document_roots';
     readonly containerType: Type;
+    readonly props: Partial<MetaInit<Type>>;
 
     constructor(props: MetaInit<Type>) {
-        super('dynamic_document_roots', props.readonly ? Access.RO_User : undefined);
+        super('dynamic_document_roots', props);
         this.containerType = props.type;
+        this.props = props;
     }
 
     get defaultData(): TypeDataMapping['dynamic_document_roots'] {

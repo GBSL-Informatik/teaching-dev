@@ -5,16 +5,20 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { throttle } from 'es-toolkit/function';
 import iCodeMeta from './iCodeMeta';
-import File from '../FileSystem/File';
 import ScriptVersion from '../ScriptVersion';
 
 type Props<T extends CodeType> = DocumentProps<T>;
 
 interface Version {
     code: string;
+    present?: boolean;
     createdAt: Date;
     version: number;
     pasted?: boolean;
+}
+
+export interface CodePostUpdateMeta {
+    action?: 'runCode';
 }
 
 class iCode<T extends CodeType = CodeType> extends iDocument<T> {
@@ -22,6 +26,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
     @observable accessor isPasted: boolean = false;
+
     constructor(props: Props<T>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code ?? this.meta.initCode;
@@ -43,6 +48,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @action
     setCode(code: string, action?: 'insert' | 'remove' | string) {
         if (this.isPasted && action === 'remove') {
+            this.streamUpdate();
             return;
         }
         this.code = code;
@@ -124,14 +130,36 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
 
     @action
     setData(data: Props<T>['data'], from: Source, updatedAt?: Date): void {
-        if (from === Source.LOCAL) {
-            this.setCode(data.code);
-        } else {
-            this.code = data.code;
+        if ('code' in data) {
+            if (from === Source.LOCAL) {
+                this.setCode(data.code);
+            } else {
+                this.code = data.code;
+            }
         }
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @action
+    postUpdate(meta?: CodePostUpdateMeta) {
+        if (!meta) {
+            return;
+        }
+        if (meta.action === 'runCode') {
+            this.runCode();
+        }
+    }
+
+    @action
+    triggerRemoteAction(data: CodePostUpdateMeta) {
+        if (!this.isPresenting || !this.canEdit || !this.canExecute) {
+            return;
+        }
+        // this.store.root.socketStore.streamUpdate(
+
+        // )
     }
 
     @computed
@@ -228,9 +256,10 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     }
 
     get data(): TypeDataMapping[T] {
-        return {
+        const data: TypeDataMapping[T] = {
             code: this.code
-        } as TypeDataMapping[T];
+        };
+        return data;
     }
 
     @computed
@@ -238,7 +267,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (this.root?.type === this.type) {
             return this.root.meta as iCodeMeta<T>;
         }
-        return new iCodeMeta({ code: '' }, this.type);
+        return new iCodeMeta(this.type, { code: '' });
     }
 }
 

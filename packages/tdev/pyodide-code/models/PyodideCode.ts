@@ -99,17 +99,6 @@ class PyodideCode extends iCode<'pyodide_code'> {
     }
 
     @action
-    setData(data: TypeDataMapping['pyodide_code'], from: Source, updatedAt?: Date): void {
-        this.code = data.code;
-        if (from === Source.LOCAL) {
-            this.save();
-        }
-        if (updatedAt) {
-            this.updatedAt = new Date(updatedAt);
-        }
-    }
-
-    @action
     runCode() {
         this.pyodideStore.run(this);
     }
@@ -117,12 +106,6 @@ class PyodideCode extends iCode<'pyodide_code'> {
     @action
     stopExecution() {
         this.pyodideStore.recreatePyWorker();
-    }
-
-    get data(): TypeDataMapping['pyodide_code'] {
-        return {
-            code: this.code
-        };
     }
 
     @computed

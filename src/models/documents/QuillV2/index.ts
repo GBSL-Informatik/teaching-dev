@@ -23,7 +23,7 @@ export class ModelMeta extends TypeMeta<'quill_v2'> {
     readonly default: string;
 
     constructor(props: Partial<MetaInit>) {
-        super('quill_v2', props.readonly ? Access.RO_User : undefined);
+        super('quill_v2', props);
         this.default = `${props.default || ''}\n` || '\n';
         this.toolbar = props.toolbar
             ? getToolbar(props.toolbar)

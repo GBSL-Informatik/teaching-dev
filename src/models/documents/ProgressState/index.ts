@@ -35,7 +35,7 @@ export class ModelMeta extends TypeMeta<'progress_state'> {
     readonly keepPreviousStepsOpen: boolean;
 
     constructor(props: Partial<MetaInit>) {
-        super('progress_state', props.readonly ? Access.RO_User : undefined, props.pagePosition);
+        super('progress_state', props);
         this.default = props.default ?? DEFAULT_PROGRESS;
         this.readonly = !!props.readonly;
         if (props.allOpen) {

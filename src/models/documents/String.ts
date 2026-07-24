@@ -22,7 +22,7 @@ export class ModelMeta extends TypeMeta<'string'> {
     readonly checker: (val: string | undefined) => boolean;
 
     constructor(props: Partial<MetaInit>) {
-        super('string', props.readonly ? Access.RO_User : undefined);
+        super('string', props);
         this.readonly = props.readonly;
         this.default = props.default;
         this.solution = props.solution;

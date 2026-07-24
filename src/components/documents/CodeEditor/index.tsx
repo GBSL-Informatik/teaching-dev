@@ -55,6 +55,7 @@ export const CodeEditor = observer((props: Props) => {
 export interface ScriptProps<T extends CodeType> {
     code: iCode<T>;
     className?: string;
+    isPresentation?: boolean;
 }
 
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
@@ -62,6 +63,9 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
     const { colorMode } = useCodeTheme();
     const viewStore = useStore('viewStore');
     const id = React.useId();
+    if (!props.isPresentation && code.isPresenting) {
+        return null;
+    }
     return (
         <FullscreenContext.Provider value={id}>
             <div

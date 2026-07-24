@@ -31,11 +31,14 @@
     &.unpersisted {
         background: var(--ifm-color-warning-lightest);
     }
-    .fullscreenButton {
+    .hoverButton {
         opacity: var(--tdev-code-editor-fullscreen-opacity);
+        &:global(.focus) {
+            --tdev-code-editor-fullscreen-opacity: 1;
+        }
     }
     &:hover {
-        .fullscreenButton {
+        .hoverButton {
             --tdev-code-editor-fullscreen-opacity: 1;
             &:hover {
                 --tdev-code-editor-fullscreen-opacity: 0.6;

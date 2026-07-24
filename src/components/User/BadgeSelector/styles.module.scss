@@ -1,0 +1,40 @@
+.badgeSelector {
+    position: relative;
+    --tdev-user-badge-border-color: var(--ifm-color-primary);
+    --tdev-user-badge-border-color-darker: var(--ifm-color-primary-dark);
+    --tdev-user-badge-background-color: var(--ifm-color-secondary);
+    --tdev-user-badge-background-color-darker: var(--ifm-color-secondary-dark);
+    aspect-ratio: 1 / 1;
+    width: 4rem;
+    font-weight: var(--ifm-font-weight-bold);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--tdev-user-badge-border-color);
+    background-color: var(--tdev-user-badge-background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    &:hover {
+        border-color: var(--tdev-user-badge-border-color-darker);
+        background-color: var(--tdev-user-badge-background-color-darker);
+    }
+    &.selected {
+        --tdev-user-badge-border-color: var(--ifm-color-warning);
+        --tdev-user-badge-border-color-darker: var(--ifm-color-warning-dark);
+        // --tdev-user-badge-background-color: var(--ifm-color-secondary);
+        // --tdev-user-badge-background-color-darker: var(--ifm-color-secondary-dark);
+    }
+    svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        text {
+            font-size: 16px;
+            font-weight: 600;
+            fill: var(--ifm-color-emphasis-700);
+        }
+    }
+}
