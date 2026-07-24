@@ -7,8 +7,6 @@ import StudentGroup from '@tdev-models/StudentGroup';
 import { Access, CodeType } from '@tdev-api/document';
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
 import iCode from '@tdev-models/documents/iCode';
-import AccessSelector, { AccessNames } from '@tdev-components/PermissionsPanel/AccessSelector';
-import Badge from '@tdev-components/shared/Badge';
 import GroupAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/GroupAccessSelector';
 import SharedAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/SharedAccessSelector';
 import { asStudentGroupAccess } from '@tdev-models/helpers/accessPolicy';
@@ -16,6 +14,9 @@ import BadgeSelector from '@tdev-components/User/BadgeSelector';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Card from '@tdev-components/shared/Card';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import { mdiClose } from '@mdi/js';
 
 interface Props {
     group: StudentGroup;
@@ -56,7 +57,22 @@ const DocumentPresentationView = observer((props: Props) => {
                 </div>
             </TabItem>
             <TabItem value="permissions" label="Berechtigungen">
-                <Card classNames={{ body: clsx(styles.admin) }}>
+                <Card
+                    classNames={{ card: clsx(styles.adminCard), body: clsx(styles.admin) }}
+                    header={
+                        <div className={clsx(styles.adminHeader)}>
+                            <Badge color="blue">{group.name}</Badge>
+                            <Button
+                                icon={mdiClose}
+                                text="Schliessen"
+                                onClick={() => {
+                                    group.setPresentedDocumentProps(null);
+                                }}
+                            />
+                        </div>
+                    }
+                >
+                    <h3>Berechtigungen</h3>
                     <div className={clsx(styles.accessPanels)}>
                         <div className={clsx(styles.panel)}>
                             <b>Gruppe</b>
@@ -73,6 +89,7 @@ const DocumentPresentationView = observer((props: Props) => {
                             />
                         </div>
                     </div>
+                    <h3>Fokus</h3>
                     <div className={clsx(styles.studentSelector)}>
                         {group.students.map((s) => (
                             <BadgeSelector

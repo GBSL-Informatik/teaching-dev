@@ -1,4 +1,18 @@
-.documentPresentationView {
+.adminCard {
+    max-height: 80vh;
+    overflow-y: hidden;
+    .admin {
+        overflow-y: auto;
+    }
+    .adminHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    // display: flex;
+    // flex-direction: column;
+    // align-items: flex-start;
+    // gap: 1rem;
 }
 .accessPanels {
     display: flex;
