@@ -154,7 +154,6 @@ class StudentGroup {
         this.presentedDocumentProps = props;
         if (props) {
             this.store.root.documentStore.addPresentedDocumentToStore(this);
-            this.store.root.permissionStore.loadPermissions(props.document.documentRootId);
         }
     }
 

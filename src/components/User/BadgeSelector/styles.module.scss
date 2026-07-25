@@ -2,8 +2,8 @@
     position: relative;
     --tdev-user-badge-border-color: var(--ifm-color-primary);
     --tdev-user-badge-border-color-darker: var(--ifm-color-primary-dark);
-    --tdev-user-badge-background-color: var(--ifm-color-secondary);
-    --tdev-user-badge-background-color-darker: var(--ifm-color-secondary-dark);
+    --tdev-user-badge-background-color: var(--ifm-background-surface-color);
+    --tdev-user-badge-background-color-darker: var(--ifm-background-color);
     aspect-ratio: 1 / 1;
     width: 4rem;
     font-weight: var(--ifm-font-weight-bold);
@@ -33,7 +33,7 @@
         overflow: visible;
         text {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 800;
             fill: var(--ifm-color-emphasis-700);
         }
     }
