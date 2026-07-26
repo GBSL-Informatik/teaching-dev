@@ -6,7 +6,25 @@ import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessP
 import { isDummyId } from '@tdev-hooks/useDummyId';
 import { orderBy } from 'es-toolkit/array';
 import { Hashery } from 'hashery';
-export const MetaHasher = new Hashery({ cache: { enabled: true, maxSize: 500 } });
+
+/**
+ * removes react specific props from the object:
+ * - children
+ * - props
+ * - ref
+ */
+const sanitizedProps = (props: any) => {
+    const { children, props: _p, ref, ...rest } = props;
+    return rest;
+};
+
+export const MetaHasher = new Hashery({
+    cache: { enabled: true, maxSize: 500 },
+    stringify: (obj) => {
+        const rest = sanitizedProps(obj);
+        return JSON.stringify(rest);
+    }
+});
 
 interface BaseMetaProps {
     access?: Access;
@@ -20,8 +38,8 @@ export abstract class TypeMeta<T extends DocumentType> {
     type: T;
     access?: Access;
     constructor(type: T, props: BaseMetaProps = {}) {
+        this.props = sanitizedProps(props);
         this.type = type;
-        this.props = props;
         this.access = props.access ?? (props.readonly ? Access.RO_User : undefined);
         this.pagePosition = props.pagePosition || 0;
     }
