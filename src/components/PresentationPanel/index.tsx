@@ -7,11 +7,17 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import DocumentPresentationView from './DocumentPresentationView';
 import Alert from '@tdev-components/shared/Alert';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 
 interface Props {}
 
 const PresentationPanel = observer((props: Props) => {
     const groupStore = useStore('studentGroupStore');
+
+    const isBrowser = useIsBrowser();
+    if (!isBrowser) {
+        return <Alert type="info">Aktuell nicht verfügbar</Alert>;
+    }
 
     if (groupStore.presentingStudentGroups.length === 0) {
         return <Alert type="info">Keine Präsentation aktiv</Alert>;
