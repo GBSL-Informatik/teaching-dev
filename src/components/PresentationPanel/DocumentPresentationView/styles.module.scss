@@ -4,15 +4,6 @@
     .admin {
         overflow-y: auto;
     }
-    .adminHeader {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    // display: flex;
-    // flex-direction: column;
-    // align-items: flex-start;
-    // gap: 1rem;
 }
 .accessPanels {
     display: flex;
@@ -33,4 +24,13 @@
 .tabs {
     --ifm-tabs-padding-vertical: 0.2em;
     --ifm-tabs-padding-horizontal: 0.4em;
+}
+
+.presentationView {
+    position: relative;
+    .closePresentationButton {
+        position: absolute;
+        top: 0.5rem;
+        right: 0;
+    }
 }

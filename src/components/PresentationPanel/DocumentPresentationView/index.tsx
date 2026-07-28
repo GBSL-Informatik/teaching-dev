@@ -16,7 +16,7 @@ import TabItem from '@theme/TabItem';
 import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
-import { mdiClose } from '@mdi/js';
+import { mdiClose, mdiProjectorScreenOffOutline } from '@mdi/js';
 
 interface Props {
     group: StudentGroup;
@@ -50,66 +50,70 @@ const DocumentPresentationView = observer((props: Props) => {
     }
 
     return (
-        <Tabs className={clsx(styles.tabs)}>
-            <TabItem value="presentation" label="Präsentation">
-                <div className={clsx(styles.documentPresentationView)}>
-                    <CodeEditorComponent code={group.presentedDocument as iCode<CodeType>} isPresentation />
-                </div>
-            </TabItem>
-            <TabItem value="permissions" label="Berechtigungen">
-                <Card
-                    classNames={{ card: clsx(styles.adminCard), body: clsx(styles.admin) }}
-                    header={
-                        <div className={clsx(styles.adminHeader)}>
-                            <Badge color="blue">{group.name}</Badge>
-                            <Button
-                                icon={mdiClose}
-                                text="Schliessen"
-                                onClick={() => {
-                                    group.setPresentedDocumentProps(null);
-                                }}
-                            />
-                        </div>
-                    }
-                >
-                    <h3>Berechtigungen</h3>
-                    <div className={clsx(styles.accessPanels)}>
-                        <div className={clsx(styles.panel)}>
-                            <b>Gruppe</b>
-                            <GroupAccessSelector
-                                group={group}
-                                mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
-                            />
-                        </div>
-                        <div className={clsx(styles.panel)}>
-                            <b>Geteilt</b>
-                            <SharedAccessSelector
-                                documentRoot={group.presentedDocument.root!}
-                                maxAccess={groupPermission}
-                            />
-                        </div>
+        <div className={clsx(styles.presentationView)}>
+            <Tabs className={clsx(styles.tabs)}>
+                <TabItem value="presentation" label="Präsentation">
+                    <div className={clsx(styles.documentPresentationView)}>
+                        <CodeEditorComponent
+                            code={group.presentedDocument as iCode<CodeType>}
+                            isPresentation
+                        />
                     </div>
-                    <h3>Fokus</h3>
-                    <div className={clsx(styles.studentSelector)}>
-                        {group.students.map((s) => (
-                            <BadgeSelector
-                                user={s}
-                                key={s.id}
-                                onClick={async (user) => {
-                                    const all = await Promise.all(
-                                        userPermissions.map((p) => {
-                                            return permissionStore.deleteUserPermission(p);
-                                        })
-                                    );
-                                    await permissionStore.createUserPermission(rootId, user, Access.RW_User);
-                                }}
-                                selected={userPermissions.some((p) => p.userId === s.id)}
-                            />
-                        ))}
-                    </div>
-                </Card>
-            </TabItem>
-        </Tabs>
+                </TabItem>
+                <TabItem value="permissions" label="Berechtigungen">
+                    <Card classNames={{ card: clsx(styles.adminCard), body: clsx(styles.admin) }}>
+                        <h3>
+                            Gruppe <Badge color="blue">{group.name}</Badge>
+                        </h3>
+                        <h3>Berechtigungen</h3>
+                        <div className={clsx(styles.accessPanels)}>
+                            <div className={clsx(styles.panel)}>
+                                <b>Gruppe</b>
+                                <GroupAccessSelector
+                                    group={group}
+                                    mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
+                                />
+                            </div>
+                            <div className={clsx(styles.panel)}>
+                                <b>Geteilt</b>
+                                <SharedAccessSelector
+                                    documentRoot={group.presentedDocument.root!}
+                                    maxAccess={groupPermission}
+                                />
+                            </div>
+                        </div>
+                        <h3>Fokus</h3>
+                        <div className={clsx(styles.studentSelector)}>
+                            {group.students.map((s) => (
+                                <BadgeSelector
+                                    user={s}
+                                    key={s.id}
+                                    onClick={async (user) => {
+                                        const all = await Promise.all(
+                                            userPermissions.map((p) => {
+                                                return permissionStore.deleteUserPermission(p);
+                                            })
+                                        );
+                                        await permissionStore.createUserPermission(
+                                            rootId,
+                                            user,
+                                            Access.RW_User
+                                        );
+                                    }}
+                                    selected={userPermissions.some((p) => p.userId === s.id)}
+                                />
+                            ))}
+                        </div>
+                    </Card>
+                </TabItem>
+            </Tabs>
+            <Button
+                className={clsx(styles.closePresentationButton)}
+                icon={mdiProjectorScreenOffOutline}
+                noOutline
+                onClick={() => group.setPresentedDocumentProps(null)}
+            />
+        </div>
     );
 });
 

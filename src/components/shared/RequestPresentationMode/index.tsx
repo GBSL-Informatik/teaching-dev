@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
-import { mdiClose, mdiPresentationPlay, mdiTelevisionStop } from '@mdi/js';
+import { mdiClose, mdiPresentationPlay, mdiProjectorScreenOffOutline, mdiTelevisionStop } from '@mdi/js';
 import { Color } from '../Colors';
 import { useStore } from '@tdev-hooks/useStore';
 import Popup from 'reactjs-popup';
@@ -38,7 +38,7 @@ const RequestPresentationMode = observer((props: Props) => {
                 color={props.color || 'blue'}
                 size={props.size}
                 title={'Präsentation beenden'}
-                icon={mdiTelevisionStop}
+                icon={mdiProjectorScreenOffOutline}
                 onClick={() => {
                     groupStore.presentingStudentGroups.forEach((g) => {
                         if (g.presentedDocument?.id === document.id) {

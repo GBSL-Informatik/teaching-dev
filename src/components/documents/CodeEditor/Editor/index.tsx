@@ -21,7 +21,6 @@ const Editor = observer(<T extends CodeType>(props: Props<T>) => {
     const componentStore = useStore('componentStore');
     const userStore = useStore('userStore');
     const EC = componentStore.editorComponent(code.type);
-    console.log('Editor Access', code.canDisplay, code.isDummy, userStore.isUserSwitched);
     if (!code.canDisplay && !code.isDummy) {
         if (!userStore.isUserSwitched) {
             return (

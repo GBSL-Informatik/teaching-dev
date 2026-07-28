@@ -5,6 +5,7 @@ import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
 import { orderBy } from 'es-toolkit/array';
+import { Access } from '@tdev-api/document';
 
 class StudentGroup {
     readonly store: StudentGroupStore;
@@ -164,14 +165,42 @@ class StudentGroup {
         }
         const current = this.presentedDocumentProps;
         this.setPresentedDocumentProps(props);
-        if (current && !props) {
-            Promise.all(
-                this.store.root.permissionStore
+        if (props) {
+            const permission = this.store.root.permissionStore
+                .groupPermissionsByDocumentRoot(props.document.documentRootId)
+                .find((p) => p.groupId === this.id);
+            const docRoot = this.store.root.documentRootStore.find(props.document.documentRootId);
+            if (!docRoot) {
+                console.error(
+                    'Document root not found for presented document',
+                    props.document.documentRootId
+                );
+                return;
+            }
+            docRoot.setSharedAccess(Access.RW_DocumentRoot);
+            docRoot.save();
+            if (permission) {
+                permission.setAccess(Access.RO_StudentGroup);
+            } else {
+                this.store.root.permissionStore.createGroupPermission(docRoot, this, Access.RO_StudentGroup);
+            }
+        } else if (current) {
+            const currentDocRoot = this.store.root.documentRootStore.find(current.document.documentRootId);
+            currentDocRoot?.setSharedAccess(Access.None_DocumentRoot);
+            Promise.all([
+                ...this.store.root.permissionStore
                     .userPermissionsByDocumentRoot(current.document.documentRootId)
                     .map((p) => {
                         return this.store.root.permissionStore.deleteUserPermission(p);
-                    })
-            ).catch((err) => {
+                    }),
+                ...this.store.root.permissionStore
+                    .groupPermissionsByDocumentRoot(current.document.documentRootId)
+                    .filter((p) => p.groupId === this.id)
+                    .map((p) => {
+                        return this.store.root.permissionStore.deleteGroupPermission(p);
+                    }),
+                currentDocRoot ? currentDocRoot.save() : Promise.resolve()
+            ]).catch((err) => {
                 console.error('Error deleting user permissions for presented document', err);
             });
         }
