@@ -12,7 +12,7 @@ export class ModelMeta extends TypeMeta<'restricted'> {
     readonly type = 'restricted';
 
     constructor(props: Partial<MetaInit>) {
-        super('restricted', props);
+        super('restricted', props, true);
     }
 
     get defaultData(): TypeDataMapping['restricted'] {

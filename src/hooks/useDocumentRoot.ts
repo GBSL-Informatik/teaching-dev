@@ -115,7 +115,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
         if (!rootDoc || !rootDoc.isLoaded) {
             return;
         }
-        const hash = MetaHasher.toHashSync(meta);
+        const hash = MetaHasher.toHashSync(meta.props);
         if (hash === rootDoc._metaHash) {
             return;
         }

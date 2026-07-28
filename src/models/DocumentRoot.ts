@@ -13,17 +13,25 @@ import { Hashery } from 'hashery';
  * - props
  * - ref
  */
-const sanitizedProps = (props: any) => {
-    const { children, props: _p, ref, ...rest } = props;
-    return rest;
-};
+// const sanitizedProps = (props: any) => {
+//     if (props.props) {
+//         console.log('sanitizedProps called with props:', props, props.props);
+//     }
+//     const {
+//         children,
+//         // ref,
+//         // className,
+//         // style,
+//         suppressContentEditableWarning,
+//         suppressHydrationWarning,
+//         dangerouslySetInnerHTML,
+//         ...rest
+//     } = props;
+//     return rest;
+// };
 
 export const MetaHasher = new Hashery({
-    cache: { enabled: true, maxSize: 500 },
-    stringify: (obj) => {
-        const rest = sanitizedProps(obj);
-        return JSON.stringify(rest);
-    }
+    cache: { enabled: true, maxSize: 500 }
 });
 
 interface BaseMetaProps {
@@ -37,11 +45,11 @@ export abstract class TypeMeta<T extends DocumentType> {
     readonly props: BaseMetaProps;
     type: T;
     access?: Access;
-    constructor(type: T, props: BaseMetaProps = {}) {
-        this.props = sanitizedProps(props);
+    constructor(type: T, props: BaseMetaProps = {}, useMinimalProps: boolean = false) {
         this.type = type;
         this.access = props.access ?? (props.readonly ? Access.RO_User : undefined);
         this.pagePosition = props.pagePosition || 0;
+        this.props = useMinimalProps ? { access: this.access, pagePosition: this.pagePosition } : props;
     }
     abstract get defaultData(): TypeDataMapping[T];
 }
@@ -67,7 +75,7 @@ class DocumentRoot<T extends DocumentType> {
     constructor(props: DocumentRootProps, meta: TypeMeta<T>, store: DocumentRootStore, isDummy?: boolean) {
         this.store = store;
         this.meta = meta;
-        this._metaHash = MetaHasher.toHashSync(meta);
+        this._metaHash = MetaHasher.toHashSync(meta.props);
         this.id = props.id;
         this._access = props.access;
         this._sharedAccess = props.sharedAccess;

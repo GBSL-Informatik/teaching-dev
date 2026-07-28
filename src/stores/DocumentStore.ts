@@ -364,7 +364,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
             return;
         }
         const docRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
-        const metaHash = MetaHasher.toHashSync(rawMeta);
+        const metaHash = MetaHasher.toHashSync(rawMeta.props);
         if (!docRoot || !docRoot?.isDummy || docRoot._metaHash !== metaHash) {
             this.root.documentRootStore.addDocumentRoot(
                 new DocumentRoot(
