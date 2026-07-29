@@ -70,6 +70,14 @@ class StudentGroup {
         return this.store.root.userStore.users.filter((u) => this.adminIds.has(u.id));
     }
 
+    /**
+     * all users - both students and admins - in the group
+     */
+    @computed
+    get users() {
+        return [...this.admins, ...this.students];
+    }
+
     @computed
     get searchTerm() {
         return `${this.name} ${this.description}`;
@@ -166,6 +174,7 @@ class StudentGroup {
         const current = this.presentedDocumentProps;
         this.setPresentedDocumentProps(props);
         if (props) {
+            const rootId = props.document.documentRootId;
             const permission = this.store.root.permissionStore
                 .groupPermissionsByDocumentRoot(props.document.documentRootId)
                 .find((p) => p.groupId === this.id);
@@ -178,18 +187,30 @@ class StudentGroup {
                 return;
             }
             docRoot.setSharedAccess(Access.RW_DocumentRoot);
-            docRoot.save();
-            if (permission) {
-                permission.setAccess(Access.RO_StudentGroup);
-            } else {
-                this.store.root.permissionStore.createGroupPermission(docRoot, this, Access.RO_StudentGroup);
-            }
+            this.store.root.permissionStore.createOrUpdateGroupPermission(
+                rootId,
+                this,
+                Access.RO_StudentGroup
+            );
+            const adminPermissions = Promise.all(
+                this.admins.map((admin) => {
+                    this.store.root.permissionStore.createOrUpdateUserPermission(
+                        rootId,
+                        admin,
+                        Access.RW_User
+                    );
+                })
+            ).catch((err) => {
+                console.error('Error creating admin permissions for presented document', err);
+            });
         } else if (current) {
             const currentDocRoot = this.store.root.documentRootStore.find(current.document.documentRootId);
-            currentDocRoot?.setSharedAccess(Access.None_DocumentRoot);
             Promise.all([
+                currentDocRoot?.setRootAccess(Access.RW_DocumentRoot),
+                currentDocRoot?.setSharedAccess(Access.None_DocumentRoot),
                 ...this.store.root.permissionStore
                     .userPermissionsByDocumentRoot(current.document.documentRootId)
+                    .filter((p) => p.userId && this.userIds.has(p.userId))
                     .map((p) => {
                         return this.store.root.permissionStore.deleteUserPermission(p);
                     }),
@@ -198,13 +219,11 @@ class StudentGroup {
                     .filter((p) => p.groupId === this.id)
                     .map((p) => {
                         return this.store.root.permissionStore.deleteGroupPermission(p);
-                    }),
-                currentDocRoot ? currentDocRoot.save() : Promise.resolve()
+                    })
             ]).catch((err) => {
                 console.error('Error deleting user permissions for presented document', err);
             });
         }
-        this.save();
     }
 
     @computed

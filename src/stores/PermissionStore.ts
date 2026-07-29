@@ -161,13 +161,37 @@ class PermissionStore extends iStore<`update-${string}`> {
     }
 
     @action
-    createGroupPermission(documentRoot: DocumentRoot<any>, group: StudentGroup, access: Access) {
-        this.withAbortController(`create-${documentRoot.id}-${group.id}`, async (signal) => {
+    createOrUpdateUserPermission(documentRootId: string, user: User, access: Access) {
+        const existingPermission = this.userPermissionsByDocumentRoot(documentRootId).find(
+            (p) => p.userId === user.id
+        );
+        if (existingPermission) {
+            return existingPermission.setAccess(access);
+        } else {
+            return this.createUserPermission(documentRootId, user, access);
+        }
+    }
+
+    @action
+    createOrUpdateGroupPermission(documentRootId: string, group: StudentGroup, access: Access) {
+        const existingPermission = this.groupPermissionsByDocumentRoot(documentRootId).find(
+            (p) => p.groupId === group.id
+        );
+        if (existingPermission) {
+            return existingPermission.setAccess(access);
+        } else {
+            return this.createGroupPermission(documentRootId, group, access);
+        }
+    }
+
+    @action
+    createGroupPermission(documentRootId: string, group: StudentGroup, access: Access) {
+        this.withAbortController(`create-${documentRootId}-${group.id}`, async (signal) => {
             return createGroupPermissionApi(
                 {
                     groupId: group.id,
                     access: access,
-                    documentRootId: documentRoot.id
+                    documentRootId: documentRootId
                 },
                 signal.signal
             ).then(({ data }) => {

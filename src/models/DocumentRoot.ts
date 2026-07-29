@@ -109,11 +109,15 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @action
-    setRootAccess(access: Access) {
+    setRootAccess(access: Access, skipSave: boolean = false) {
         if (this._access === access) {
-            return;
+            return Promise.resolve();
         }
         this._access = access;
+        if (skipSave) {
+            return Promise.resolve();
+        }
+        return this.save();
     }
 
     get sharedAccess() {
@@ -121,12 +125,15 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @action
-    setSharedAccess(access: Access) {
-        console.log('setSharedAccess', access, this._sharedAccess);
+    setSharedAccess(access: Access, skipSave: boolean = false) {
         if (this._sharedAccess === access) {
-            return;
+            return Promise.resolve();
         }
         this._sharedAccess = access;
+        if (skipSave) {
+            return Promise.resolve();
+        }
+        return this.save();
     }
 
     get loadStatus() {

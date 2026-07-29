@@ -151,7 +151,6 @@ const PermissionsPanel = observer((props: Props) => {
                                 onChange={(access) => {
                                     documentRoots.forEach((dr) => {
                                         dr.setRootAccess(access);
-                                        dr.save();
                                     });
                                 }}
                             />
@@ -172,7 +171,6 @@ const PermissionsPanel = observer((props: Props) => {
                                 onChange={(access) => {
                                     documentRoots.forEach((dr) => {
                                         dr.setSharedAccess(access);
-                                        dr.save();
                                     });
                                 }}
                             />

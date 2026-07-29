@@ -13,15 +13,15 @@ interface Props {
     mark?: Access | Access[] | Set<Access>;
 }
 
-const SharedAccessSelector = observer((props: Props) => {
+const RootAccessSelector = observer((props: Props) => {
     const { documentRoot } = props;
 
     return (
         <AccessSelector
             accessTypes={[Access.None_DocumentRoot, Access.RO_DocumentRoot, Access.RW_DocumentRoot]}
-            access={documentRoot.sharedAccess}
+            access={documentRoot.rootAccess}
             onChange={(access) => {
-                documentRoot.setSharedAccess(access);
+                documentRoot.setRootAccess(access);
             }}
             maxAccess={props.maxAccess}
             mark={props.mark}
@@ -29,4 +29,4 @@ const SharedAccessSelector = observer((props: Props) => {
     );
 });
 
-export default SharedAccessSelector;
+export default RootAccessSelector;

@@ -5,6 +5,9 @@
         overflow-y: auto;
     }
 }
+.focus {
+    box-shadow: 0 0 0 2px var(--ifm-color-primary);
+}
 .accessPanels {
     display: flex;
     justify-content: flex-start;

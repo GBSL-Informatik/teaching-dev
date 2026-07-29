@@ -31,7 +31,11 @@ const GroupAccessSelector = observer((props: Props) => {
                     if (currentPermission) {
                         currentPermission.setAccess(access);
                     } else {
-                        permissionStore.createGroupPermission(group.presentedDocument!.root!, group, access);
+                        permissionStore.createGroupPermission(
+                            group.presentedDocumentProps?.document.documentRootId!,
+                            group,
+                            access
+                        );
                     }
                 }}
                 mark={props.mark}

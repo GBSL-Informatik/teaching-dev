@@ -17,6 +17,7 @@ import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
 import { mdiClose, mdiProjectorScreenOffOutline } from '@mdi/js';
+import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
 
 interface Props {
     group: StudentGroup;
@@ -36,7 +37,6 @@ const DocumentPresentationView = observer((props: Props) => {
         return <div>Kein Editor für Dokumenttyp {docType}</div>;
     }
     const rootId = group.presentedDocument.documentRootId;
-    const userPermissions = permissionStore.userPermissionsByDocumentRoot(rootId);
     const groupPermission = permissionStore
         .groupPermissionsByDocumentRoot(rootId)
         .find((p) => p.groupId === group.id)?.access;
@@ -57,6 +57,7 @@ const DocumentPresentationView = observer((props: Props) => {
                         <CodeEditorComponent
                             code={group.presentedDocument as iCode<CodeType>}
                             isPresentation
+                            className={clsx(group.presentedDocument.canEdit && styles.focus)}
                         />
                     </div>
                 </TabItem>
@@ -74,33 +75,57 @@ const DocumentPresentationView = observer((props: Props) => {
                                     mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
                                 />
                             </div>
-                            <div className={clsx(styles.panel)}>
-                                <b>Geteilt</b>
-                                <SharedAccessSelector
-                                    documentRoot={group.presentedDocument.root!}
-                                    maxAccess={groupPermission}
-                                />
+                            <div>
+                                <div className={clsx(styles.panel)}>
+                                    <b style={{ width: '3.5em' }}>Root</b>
+                                    <RootAccessSelector documentRoot={group.presentedDocument.root!} />
+                                </div>
+                                <div className={clsx(styles.panel)}>
+                                    <b style={{ width: '3.5em' }}>Geteilt</b>
+                                    <SharedAccessSelector
+                                        documentRoot={group.presentedDocument.root!}
+                                        maxAccess={groupPermission}
+                                    />
+                                </div>
                             </div>
                         </div>
                         <h3>Fokus</h3>
                         <div className={clsx(styles.studentSelector)}>
-                            {group.students.map((s) => (
+                            {group.users.map((s) => (
                                 <BadgeSelector
                                     user={s}
                                     key={s.id}
-                                    onClick={async (user) => {
-                                        const all = await Promise.all(
-                                            userPermissions.map((p) => {
-                                                return permissionStore.deleteUserPermission(p);
-                                            })
-                                        );
-                                        await permissionStore.createUserPermission(
-                                            rootId,
-                                            user,
-                                            Access.RW_User
-                                        );
+                                    onClick={async (user, clearCurrent) => {
+                                        if (clearCurrent) {
+                                            await Promise.all(
+                                                permissionStore
+                                                    .userPermissionsByDocumentRoot(rootId)
+                                                    .filter(
+                                                        (u) =>
+                                                            group.userIds.has(u.userId) &&
+                                                            !group.adminIds.has(u.userId)
+                                                    )
+                                                    .map((p) => {
+                                                        return permissionStore.deleteUserPermission(p);
+                                                    })
+                                            );
+                                        }
+                                        const currentPermission = permissionStore
+                                            .userPermissionsByDocumentRoot(rootId)
+                                            .find((p) => p.userId === user.id);
+                                        if (currentPermission) {
+                                            await permissionStore.deleteUserPermission(currentPermission);
+                                        } else {
+                                            await permissionStore.createUserPermission(
+                                                rootId,
+                                                user,
+                                                Access.RW_User
+                                            );
+                                        }
                                     }}
-                                    selected={userPermissions.some((p) => p.userId === s.id)}
+                                    selected={permissionStore
+                                        .userPermissionsByDocumentRoot(rootId)
+                                        .some((p) => p.userId === s.id)}
                                 />
                             ))}
                         </div>
@@ -111,7 +136,7 @@ const DocumentPresentationView = observer((props: Props) => {
                 className={clsx(styles.closePresentationButton)}
                 icon={mdiProjectorScreenOffOutline}
                 noOutline
-                onClick={() => group.setPresentedDocumentProps(null)}
+                onClick={() => group.apiSetPresentedDocumentProps(null)}
             />
         </div>
     );
