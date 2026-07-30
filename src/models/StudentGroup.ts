@@ -224,6 +224,7 @@ class StudentGroup {
                 console.error('Error deleting user permissions for presented document', err);
             });
         }
+        this.save();
     }
 
     @computed
