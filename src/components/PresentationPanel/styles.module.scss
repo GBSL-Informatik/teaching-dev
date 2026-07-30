@@ -1,6 +1,13 @@
 .presentationMode {
-    width: 75vw;
+    width: 100vw;
+    padding: 2em;
     height: 100%;
+}
+
+@media screen and (max-width: 620px) {
+    .presentationMode {
+        padding: 0.3em;
+    }
 }
 
 .tabs {
