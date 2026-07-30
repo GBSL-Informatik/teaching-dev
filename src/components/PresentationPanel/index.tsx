@@ -8,8 +8,6 @@ import TabItem from '@theme/TabItem';
 import DocumentPresentationView from './DocumentPresentationView';
 import Alert from '@tdev-components/shared/Alert';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import Button from '@tdev-components/shared/Button';
-import { mdiProjectorScreenOffOutline } from '@mdi/js';
 
 interface Props {}
 
