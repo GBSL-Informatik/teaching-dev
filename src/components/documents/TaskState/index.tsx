@@ -24,6 +24,7 @@ import {
 } from '@tdev-models/documents/TaskState';
 import Loader from '@tdev-components/Loader';
 import { useStore } from '@tdev-hooks/useStore';
+import { useScrollTo } from '@tdev-hooks/useScrollTo';
 
 export const mdiIcon: { [key in StateType]: string } = {
     checked: mdiCheckboxMarkedOutline,
@@ -84,11 +85,10 @@ interface ComponentProps extends Props {
 }
 
 export const TaskStateComponent = observer((props: ComponentProps) => {
-    const ref = React.useRef<HTMLDivElement>(null);
     const [taskStates] = React.useState(props.states || DEFAULT_TASK_STATES);
     const pageStore = useStore('pageStore');
-    const [animate, setAnimate] = React.useState(false);
     const doc = props.taskState;
+    const [ref, animate] = useScrollTo(doc);
 
     const readonly = props.readonly || !doc.canEdit;
 
@@ -97,25 +97,6 @@ export const TaskStateComponent = observer((props: ComponentProps) => {
             pageStore.current.assertDocumentRoot(doc);
         }
     }, [doc, pageStore.current]);
-
-    React.useEffect(() => {
-        if (ref.current && doc.scrollTo) {
-            ref.current.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'start' });
-            doc.setScrollTo(false);
-            setAnimate(true);
-        }
-    }, [ref, doc.scrollTo]);
-
-    React.useEffect(() => {
-        if (animate) {
-            const timeout = setTimeout(() => {
-                setAnimate(false);
-            }, 2000);
-            return () => {
-                clearTimeout(timeout);
-            };
-        }
-    }, [animate]);
 
     return (
         <div

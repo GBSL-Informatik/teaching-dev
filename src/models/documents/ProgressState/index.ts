@@ -60,6 +60,7 @@ export class ModelMeta extends TypeMeta<'progress_state'> {
 }
 
 class ProgressState extends iDocument<'progress_state'> implements iTaskableDocument<'progress_state'> {
+    readonly hideFromOverview = false;
     @observable accessor _progress: number = 0;
     @observable accessor _totalSteps: number = 0;
     @observable accessor _viewedIndex: number | undefined = undefined;

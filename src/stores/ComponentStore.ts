@@ -15,6 +15,9 @@ import React from 'react';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
 import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
+import { ModelMeta as QuizMeta } from '@tdev-models/documents/Assessable/Quiz';
+import { ModelMeta as ChoiceMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import { ModelMeta as TrueFalseMeta } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 
 export type LiveCode = `live_${string}`;
 
@@ -56,7 +59,10 @@ class ComponentStore {
     editorComponents = new Map<CodeType, EditorComponent>();
     taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
         ['task_state', new TaskStateMeta({})],
-        ['progress_state', new ProgressStateMeta({})]
+        ['progress_state', new ProgressStateMeta({})],
+        ['quiz', new QuizMeta({})],
+        ['choice_answer', new ChoiceMeta({ optionsCount: 0 })],
+        ['true_false_answer', new TrueFalseMeta({})]
     ]);
 
     constructor(root: RootStore) {
@@ -87,6 +93,23 @@ class ComponentStore {
             ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({})),
             ...[...this.taskableDocumentsMeta.values()]
         ];
+    }
+
+    extractDefaultDocumentType(types: DocumentType[]): DocumentType | undefined {
+        if (types.length <= 1) {
+            return types[0];
+        }
+        const typesSet = new Set(types);
+        if (typesSet.size === 1) {
+            return types[0];
+        }
+        if (typesSet.has('quiz')) {
+            return 'quiz';
+        }
+        if (typesSet.has('script')) {
+            return 'script';
+        }
+        return types[0];
     }
 
     @computed

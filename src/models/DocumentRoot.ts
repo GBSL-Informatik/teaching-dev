@@ -236,12 +236,20 @@ class DocumentRoot<T extends DocumentType> {
         return this.hasRWAccess || !!this.store.root.userStore.current?.hasElevatedAccess;
     }
 
+    /**
+     * returns true if the document root is loaded and the current user has admin or RW access.
+     */
     @computed
-    get _needsInitialDocumentCreation() {
+    get _canInitializeDocuments() {
         if (!this.store.root.userStore.current || this.store.root.userStore.isUserSwitched) {
             return false;
         }
-        return this.isLoaded && !this.isDummy && !this.firstMainDocument && this.hasAdminOrRWAccess;
+        return this.isLoaded && !this.isDummy && this.hasAdminOrRWAccess;
+    }
+
+    @computed
+    get _needsInitialDocumentCreation() {
+        return this._canInitializeDocuments && !this.firstMainDocument;
     }
 
     @computed
