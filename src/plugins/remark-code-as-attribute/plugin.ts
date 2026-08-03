@@ -1,7 +1,7 @@
 import type { Plugin, Transformer } from 'unified';
 import type { Code, InlineCode, Root } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
-import { toJsxAttribute, toMdxJsxExpressionAttribute } from '../helpers';
+import { toJsxAttribute } from '../helpers';
 
 export interface CodeAttributes {
     meta?: string;

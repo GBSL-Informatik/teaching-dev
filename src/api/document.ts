@@ -19,11 +19,10 @@ import iDocumentContainer from '@tdev-models/iDocumentContainer';
 import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import Code from '@tdev-models/documents/Code';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import ChoiceAnswer, {
-    ChoiceAnswerChoices,
-    ChoiceAnswerOptionOrders,
-    ChoiceAnswerQuestionOrder
-} from '@tdev-models/documents/ChoiceAnswer';
+import type ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import type TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
+import type Quiz from '@tdev-models/documents/Assessable/Quiz';
+import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
 
 export enum Access {
     RO_DocumentRoot = 'RO_DocumentRoot',
@@ -46,11 +45,22 @@ export interface StringData {
     text: string;
 }
 
-export interface ChoiceAnswerData {
-    choices: ChoiceAnswerChoices;
-    optionOrders: ChoiceAnswerOptionOrders;
-    questionOrder: ChoiceAnswerQuestionOrder | null;
+interface AssessableData {
     assessed: boolean;
+    qid?: string;
+}
+
+export interface TrueFalseAnswerData extends AssessableData {
+    value: boolean | null;
+}
+
+export interface ChoiceAnswerData extends AssessableData {
+    choices: number[];
+    optionsOrder: number[];
+}
+
+export interface QuizData extends AssessableData {
+    questionOrder: number[];
 }
 
 export interface QuillV2Data {
@@ -122,11 +132,17 @@ export interface ViewStoreTypeMapping {
 export type ViewStoreType = keyof ViewStoreTypeMapping;
 export type ViewStore = ViewStoreTypeMapping[ViewStoreType];
 
+export interface AssessableDataMapping {
+    ['true_false_answer']: TrueFalseAnswerData;
+    ['choice_answer']: ChoiceAnswerData;
+    ['quiz']: QuizData;
+}
+
 export interface ContainerTypeDataMapping {
     ['_container_placeholder_']: { name: string }; // placeholder to avoid empty interface error
 }
 
-export interface TaskableDocumentMapping {
+export interface TaskableDocumentMapping extends AssessableDataMapping {
     ['task_state']: TaskStateData;
     ['progress_state']: ProgressStateData;
 }
@@ -136,7 +152,6 @@ export interface TypeDataMapping extends TaskableDocumentMapping, ContainerTypeD
     // TODO: rename to `code_version`
     ['script_version']: ScriptVersionData;
     ['string']: StringData;
-    ['choice_answer']: ChoiceAnswerData;
     ['quill_v2']: QuillV2Data;
     ['solution']: SolutionData;
     ['dir']: DirData;
@@ -149,6 +164,7 @@ export interface TypeDataMapping extends TaskableDocumentMapping, ContainerTypeD
 }
 export type ContainerType = keyof ContainerTypeDataMapping;
 export type TaskableType = keyof TaskableDocumentMapping;
+export type AssessableType = keyof AssessableDataMapping;
 
 type KeysWithCode<T> = {
     [K in keyof T]: 'code' extends keyof T[K] ? K : never;
@@ -160,7 +176,16 @@ export interface ContainerTypeModelMapping {
     ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
 }
 
-export interface TaskableTypeModelMapping {
+export interface AssessableTypeModelMapping {
+    ['true_false_answer']: TrueFalseAnswer;
+    ['choice_answer']: ChoiceAnswer;
+    ['quiz']: Quiz;
+}
+// enforce all AssessableTypeModels to extend iAssessable:
+type EnsureAllAssessable<T extends { [K in keyof T]: iAssessable<any> }> = T;
+null as unknown as EnsureAllAssessable<AssessableTypeModelMapping>;
+
+export interface TaskableTypeModelMapping extends AssessableTypeModelMapping {
     ['task_state']: TaskState;
     ['progress_state']: ProgressState;
 }
@@ -168,12 +193,12 @@ export interface TaskableTypeModelMapping {
 type EnsureAllTaskable<T extends { [K in keyof T]: iTaskableDocument<any> }> = T;
 null as unknown as EnsureAllTaskable<TaskableTypeModelMapping>;
 
-export interface TypeModelMapping extends TaskableTypeModelMapping, ContainerTypeModelMapping {
+export interface TypeModelMapping
+    extends TaskableTypeModelMapping, ContainerTypeModelMapping, AssessableTypeModelMapping {
     ['code']: Code;
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersion;
     ['string']: String;
-    ['choice_answer']: ChoiceAnswer;
     ['quill_v2']: QuillV2;
     ['solution']: Solution;
     ['dir']: Directory;
@@ -192,6 +217,7 @@ export interface TypeModelMapping extends TaskableTypeModelMapping, ContainerTyp
 
 export type ContainerModelType = ContainerTypeModelMapping[ContainerType];
 export type TaskableModelType = TaskableTypeModelMapping[TaskableType];
+export type AssessableModelType = AssessableTypeModelMapping[AssessableType];
 
 export type DocumentType = keyof TypeModelMapping;
 export type DocumentModelType = TypeModelMapping[DocumentType];
