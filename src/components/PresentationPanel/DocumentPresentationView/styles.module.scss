@@ -28,9 +28,11 @@
 
 .presentationView {
     position: relative;
-    .closePresentationButton {
+    .actions {
         position: absolute;
         top: 0.5rem;
         right: 0;
+        display: flex;
+        gap: 0.5rem;
     }
 }

@@ -11,9 +11,23 @@ export default class ViewStore {
     stores = new Map<ViewStoreType, ViewStores>();
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
+    @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
 
     constructor(store: RootStore) {
         this.root = store;
+    }
+
+    @action
+    setPresentationPanelState(state: 'open' | 'closed' | null) {
+        this._presentationPanelState = state;
+    }
+
+    @computed
+    get presentationPanelState() {
+        if (!this.root.userStore.current?.hasElevatedAccess) {
+            return 'open';
+        }
+        return this._presentationPanelState ?? ' open';
     }
 
     useStore<T extends ViewStoreType>(type: T): ViewStoreTypeMapping[T] {

@@ -6,11 +6,14 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Popup from 'reactjs-popup';
 import type { default as PresentationPanelLib } from '..';
+import Button from '@tdev-components/shared/Button';
+import { mdiPresentationPlay } from '@mdi/js';
 
 interface Props {}
 
 const PresentationModal = observer((props: Props) => {
     const documentStore = useStore('documentStore');
+    const viewStore = useStore('viewStore');
 
     const PresentationPanel = useClientLib<typeof PresentationPanelLib>(
         () => import('@tdev-components/PresentationPanel').then((d) => d.default),
@@ -19,12 +22,29 @@ const PresentationModal = observer((props: Props) => {
     if (!PresentationPanel) {
         return null;
     }
+    const hasDocs = documentStore.presentedDocuments.length > 0;
+    if (hasDocs && viewStore.presentationPanelState === 'closed') {
+        return (
+            <div className={clsx(styles.presentationModalClosed)}>
+                <Button
+                    icon={mdiPresentationPlay}
+                    onClick={() => {
+                        viewStore.setPresentationPanelState('open');
+                    }}
+                    text="Präsentation fortsetzen"
+                    iconSide="left"
+                    color="orange"
+                    noOutline
+                />
+            </div>
+        );
+    }
 
     return (
         <Popup
             modal
             overlayStyle={{ background: 'rgba(226, 222, 222, 0.84)' }}
-            open={documentStore.presentedDocuments.length > 0}
+            open={hasDocs}
             repositionOnResize
             closeOnDocumentClick={false}
             closeOnEscape={false}

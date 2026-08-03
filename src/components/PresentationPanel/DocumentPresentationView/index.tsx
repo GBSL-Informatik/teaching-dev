@@ -16,7 +16,7 @@ import TabItem from '@theme/TabItem';
 import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
-import { mdiEye, mdiMovieOpenPlay, mdiProjectorScreenOffOutline } from '@mdi/js';
+import { mdiClose, mdiCloseBox, mdiEye, mdiMovieOpenPlay, mdiProjectorScreenOffOutline } from '@mdi/js';
 import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
 import Icon from '@mdi/react';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
@@ -27,6 +27,7 @@ interface Props {
 
 const DocumentPresentationView = observer((props: Props) => {
     const componentStore = useStore('componentStore');
+    const viewStore = useStore('viewStore');
     const userStore = useStore('userStore');
     const permissionStore = useStore('permissionStore');
     const { group } = props;
@@ -142,12 +143,20 @@ const DocumentPresentationView = observer((props: Props) => {
                     </Card>
                 </TabItem>
             </Tabs>
-            <Button
-                className={clsx(styles.closePresentationButton)}
-                icon={mdiProjectorScreenOffOutline}
-                noOutline
-                onClick={() => group.apiSetPresentedDocumentProps(null)}
-            />
+            <div className={clsx(styles.actions)}>
+                <Button
+                    icon={mdiClose}
+                    title="Präsentationsmodus schliessen, ohne die Präsentation zu beenden"
+                    noOutline
+                    onClick={() => viewStore.setPresentationPanelState('closed')}
+                />
+                <Button
+                    icon={mdiProjectorScreenOffOutline}
+                    title="Präsentation beenden"
+                    noOutline
+                    onClick={() => group.apiSetPresentedDocumentProps(null)}
+                />
+            </div>
         </div>
     );
 });
