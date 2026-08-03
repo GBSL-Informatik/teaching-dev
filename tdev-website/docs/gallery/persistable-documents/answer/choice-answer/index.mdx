@@ -23,7 +23,7 @@ Das [remark-transform-choice-answer](../../../../app-architecture/remark-plugins
 Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
 
 ```tsx
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 
 <ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
     > Wer gilt als Erfinder des World Wide Web (WWW)?
@@ -53,7 +53,7 @@ Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `corr
 Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
 
 ```tsx
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 
 <ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
     > Wir gilt als Erfinder des World Wide Web (WWW)?
@@ -83,7 +83,7 @@ Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  g
 Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
 
 ```tsx
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 
 <ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
     Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
@@ -137,7 +137,7 @@ Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Au
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
 ```tsx
-import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
+import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 
 <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
     > Die Erde ist flach.
@@ -162,9 +162,9 @@ Bewertungsfunktionen können einen Bewertungshinweis bereitstellen. Bei den vord
 :::
 
 ```tsx
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
-import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
-import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
+import { points, multipleChoicePoints } from '@tdev-components/documents/Assessable/helpers/scoring';
 
 <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
     > Was ist die Hauptstadt von Frankreich?
@@ -221,10 +221,10 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/ChoiceA
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
 ```tsx
-import ChoiceAnswer from '@tdev-components/documents/ChoiceAnswer/Component';
-import TrueFalseAnswer from '@tdev-components/documents/ChoiceAnswer/TrueFalseAnswer';
-import Quiz from '@tdev-components/documents/ChoiceAnswer/Quiz';
-import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/ChoiceAnswer/helpers/scoring';
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
+import Quiz from '@tdev-components/documents/Assessable/Quiz';
+import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
 
 <Quiz scoring={points(1)} id="04d2153f-1ed3-41bd-835b-a8bebe2ca6e8" randomizeQuestions randomizeOptions>
   <ChoiceAnswer correct={[5]}>
