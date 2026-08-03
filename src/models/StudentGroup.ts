@@ -204,11 +204,18 @@ class StudentGroup {
                 Access.RO_StudentGroup
             );
             const adminPermissions = this.admins.map((admin) => {
-                this.store.root.permissionStore.createOrUpdateUserPermission(rootId, admin, Access.RW_User);
+                return this.store.root.permissionStore.createOrUpdateUserPermission(
+                    rootId,
+                    admin,
+                    Access.RW_User
+                );
             });
-            Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
+            await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
                 console.error('Error creating admin permissions for presented document', err);
             });
+        } else {
+            this.setPresentedDocumentProps(null);
+            await this.save();
         }
         if (current) {
             await this.cleanupPresentedDocument(current);

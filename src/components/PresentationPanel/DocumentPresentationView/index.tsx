@@ -44,7 +44,11 @@ const DocumentPresentationView = observer((props: Props) => {
     if (!group.adminIds.has(userStore.current?.id ?? ' ')) {
         return (
             <div className={clsx(styles.documentPresentationView)}>
-                <CodeEditorComponent code={group.presentedDocument as iCode<CodeType>} isPresentation />
+                <CodeEditorComponent
+                    code={group.presentedDocument as iCode<CodeType>}
+                    isPresentation
+                    className={clsx(group.presentedDocument.canEdit && styles.focus)}
+                />
             </div>
         );
     }
