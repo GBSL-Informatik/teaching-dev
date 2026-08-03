@@ -162,13 +162,6 @@ const StudentGroup = observer((props: Props) => {
                                     icon={group.canPresent ? mdiToggleSwitch : mdiToggleSwitchOff}
                                 />
                             </dd>
-                            {group.presentedDocumentProps && (
-                                <dd>
-                                    <pre>
-                                        <code>{JSON.stringify(group.presentedDocumentProps, null, 2)}</code>
-                                    </pre>
-                                </dd>
-                            )}
                             <dt>Export</dt>
                             <dd>
                                 <div className={clsx(styles.exportButtons)}>
