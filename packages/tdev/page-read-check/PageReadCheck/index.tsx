@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { mdiFlashTriangle } from '@mdi/js';
 import Icon from '@mdi/react';
 import PageReadChecker from '../model';
+import { useScrollTo } from '@tdev-hooks/useScrollTo';
 
 interface Props extends MetaInit {
     id: string;
@@ -28,11 +29,10 @@ const defaultDisabledReason = (doc: PageReadChecker) =>
 const PageReadCheck = observer((props: Props) => {
     const { text = defaultText, disabledReason = defaultDisabledReason } = props;
     const [meta] = React.useState(new ModelMeta(props));
-    const ref = React.useRef<HTMLDivElement>(null);
 
     const viewStore = useStore('viewStore');
     const doc = useFirstMainDocument(props.id, meta);
-    const [animate, setAnimate] = React.useState(false);
+    const [ref, animate] = useScrollTo(doc);
 
     React.useEffect(() => {
         if (!viewStore.isPageVisible || !doc) {
@@ -48,25 +48,6 @@ const PageReadCheck = observer((props: Props) => {
             clearInterval(id);
         };
     }, [doc, doc?.read, viewStore.isPageVisible, props.continueAfterUnlock]);
-
-    React.useEffect(() => {
-        if (ref.current && doc?.scrollTo) {
-            ref.current.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'start' });
-            doc.setScrollTo(false);
-            setAnimate(true);
-        }
-    }, [ref, doc?.scrollTo]);
-
-    React.useEffect(() => {
-        if (animate) {
-            const timeout = setTimeout(() => {
-                setAnimate(false);
-            }, 2000);
-            return () => {
-                clearTimeout(timeout);
-            };
-        }
-    }, [animate]);
 
     if (!doc) {
         return null;

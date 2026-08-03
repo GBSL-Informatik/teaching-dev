@@ -37,6 +37,9 @@ import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
 import StudentGroup from '@tdev-models/StudentGroup';
 import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
+import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
+import Quiz from '@tdev-models/documents/Assessable/Quiz';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -62,6 +65,12 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new ScriptVersion(data as DocumentProps<'script_version'>, store);
         case 'string':
             return new String(data as DocumentProps<'string'>, store);
+        case 'choice_answer':
+            return new ChoiceAnswer(data as DocumentProps<'choice_answer'>, store);
+        case 'true_false_answer':
+            return new TrueFalseAnswer(data as DocumentProps<'true_false_answer'>, store);
+        case 'quiz':
+            return new Quiz(data as DocumentProps<'quiz'>, store);
         case 'quill_v2':
             return new QuillV2(data as DocumentProps<'quill_v2'>, store);
         case 'solution':
@@ -89,6 +98,9 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['progress_state', CreateDocumentModel],
     ['script_version', CreateDocumentModel],
     ['string', CreateDocumentModel],
+    ['choice_answer', CreateDocumentModel],
+    ['quiz', CreateDocumentModel],
+    ['true_false_answer', CreateDocumentModel],
     ['quill_v2', CreateDocumentModel],
     ['solution', CreateDocumentModel],
     ['dir', CreateDocumentModel],
