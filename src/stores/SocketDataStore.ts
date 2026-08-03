@@ -206,7 +206,11 @@ export class SocketDataStore extends iStore<'ping'> {
      * in the payload, which usually is a documentRootId)
      */
     @action
-    streamUpdate<T extends Record<string, unknown>>(roomId: string, payload: ChangedDocument, meta?: T) {
+    streamUpdate<T extends Record<string, unknown>>(
+        roomId: string,
+        payload: Omit<ChangedDocument, 'updatedAt'>,
+        meta?: T
+    ) {
         const data: StreamedDynamicDocument<T> = {
             ...payload,
             roomId
@@ -290,7 +294,6 @@ export class SocketDataStore extends iStore<'ping'> {
     updateRecord({ type, record }: ChangedRecord<RecordType>) {
         switch (type) {
             case RecordType.DocumentRoot:
-                console.log('DocumentRoot update', record);
                 this.root.documentRootStore.handleUpdate(record as DocumentRootUpdate);
                 break;
             case RecordType.UserPermission:

@@ -16,8 +16,10 @@ import TabItem from '@theme/TabItem';
 import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
-import { mdiClose, mdiProjectorScreenOffOutline } from '@mdi/js';
+import { mdiEye, mdiMovieOpenPlay, mdiProjectorScreenOffOutline } from '@mdi/js';
 import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
+import Icon from '@mdi/react';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     group: StudentGroup;
@@ -44,11 +46,16 @@ const DocumentPresentationView = observer((props: Props) => {
     if (!group.adminIds.has(userStore.current?.id ?? ' ')) {
         return (
             <div className={clsx(styles.documentPresentationView)}>
-                <CodeEditorComponent
-                    code={group.presentedDocument as iCode<CodeType>}
-                    isPresentation
-                    className={clsx(group.presentedDocument.canEdit && styles.focus)}
-                />
+                {group.presentedDocument.canEdit ? (
+                    <Badge color="orange">
+                        Live <Icon path={mdiMovieOpenPlay} size={SIZE_XS} />
+                    </Badge>
+                ) : (
+                    <Badge color="lightBlue">
+                        <Icon path={mdiEye} size={SIZE_XS} />
+                    </Badge>
+                )}
+                <CodeEditorComponent code={group.presentedDocument as iCode<CodeType>} isPresentation />
             </div>
         );
     }
@@ -61,7 +68,6 @@ const DocumentPresentationView = observer((props: Props) => {
                         <CodeEditorComponent
                             code={group.presentedDocument as iCode<CodeType>}
                             isPresentation
-                            className={clsx(group.presentedDocument.canEdit && styles.focus)}
                         />
                     </div>
                 </TabItem>

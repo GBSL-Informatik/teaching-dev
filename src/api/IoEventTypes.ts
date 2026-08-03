@@ -52,7 +52,7 @@ export interface ChangedDocument<T = any> {
     meta?: T;
 }
 
-export interface StreamedDynamicDocument<T = any> extends ChangedDocument<T> {
+export interface StreamedDynamicDocument<T = any> extends Omit<ChangedDocument<T>, 'updatedAt'> {
     roomId: string;
 }
 

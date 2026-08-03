@@ -10,7 +10,6 @@ import {
     gitHub,
     loginProfileButton,
     personalSpaceOverlay,
-    presentationPanel,
     requestTarget,
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
@@ -62,7 +61,6 @@ const getSiteConfig: SiteConfigProvider = () => {
             devModeAccessLocalFS,
             requestTarget,
             personalSpaceOverlay,
-            presentationPanel,
             loginProfileButton
         ],
         footer: {

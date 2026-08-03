@@ -21,7 +21,6 @@ import {
   gitHub,
   loginProfileButton,
   personalSpaceOverlay,
-  presentationPanel,
   requestTarget,
   taskStateOverview
 } from './src/siteConfig/navbarItems';
@@ -339,7 +338,6 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
             devModeAccessLocalFS,
             requestTarget,
             personalSpaceOverlay,
-            presentationPanel,
             loginProfileButton
           ]
         },

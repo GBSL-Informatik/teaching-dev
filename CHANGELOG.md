@@ -1,5 +1,8 @@
 # TDEV Changelog
 
+## 4.8.2026
+- [💥 Breaking] Make sure to add swizzled `src/theme/AnnouncementBar/index.tsx` wrapper for the Presentationmode to work.
+
 ## 9.7.2026
 - [💥 Breaking] make sure the api uses `better-auth@^1.6.23`
 

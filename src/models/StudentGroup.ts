@@ -189,7 +189,7 @@ class StudentGroup {
             docRoot.setSharedAccess(Access.RW_DocumentRoot);
             this.setPresentedDocumentProps({
                 ...props,
-                access: Access.RW_DocumentRoot,
+                access: Access.RO_DocumentRoot, // make sure streamed access have by default RO_DocumentRoot access, so that the group can view the document
                 sharedAccess: Access.RW_DocumentRoot
             });
             const result = await this.save().catch((err) => {

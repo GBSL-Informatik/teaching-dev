@@ -1,12 +1,13 @@
 .presentationMode {
-    width: 100vw;
-    padding: 2em;
+    --tdev-presentation-panel-padding: 2em;
+    width: calc(100vw - 2 * var(--tdev-presentation-panel-padding));
+    padding: var(--tdev-presentation-panel-padding);
     height: 100%;
 }
 
 @media screen and (max-width: 620px) {
     .presentationMode {
-        padding: 0.3em;
+        --tdev-presentation-panel-padding: 0.3em;
     }
 }
 

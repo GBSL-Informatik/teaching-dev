@@ -247,12 +247,10 @@ abstract class iDocument<Type extends DocumentType> {
             return;
         }
 
-        const now = new Date();
         this.presentingGroups.forEach((g) => {
             this.store.root.socketStore.streamUpdate(g.id, {
                 id: this.id,
-                data: this.data,
-                updatedAt: now
+                data: this.data
             });
         });
     }
