@@ -178,7 +178,8 @@ class PermissionStore extends iStore<`update-${string}`> {
             (p) => p.groupId === group.id
         );
         if (existingPermission) {
-            return existingPermission.setAccess(access);
+            existingPermission.setAccess(access);
+            return Promise.resolve(existingPermission);
         } else {
             return this.createGroupPermission(documentRootId, group, access);
         }
@@ -186,7 +187,7 @@ class PermissionStore extends iStore<`update-${string}`> {
 
     @action
     createGroupPermission(documentRootId: string, group: StudentGroup, access: Access) {
-        this.withAbortController(`create-${documentRootId}-${group.id}`, async (signal) => {
+        return this.withAbortController(`create-${documentRootId}-${group.id}`, async (signal) => {
             return createGroupPermissionApi(
                 {
                     groupId: group.id,
@@ -195,7 +196,9 @@ class PermissionStore extends iStore<`update-${string}`> {
                 },
                 signal.signal
             ).then(({ data }) => {
-                this.addGroupPermission(new GroupPermission(data, this));
+                const permission = new GroupPermission(data, this);
+                this.addGroupPermission(permission);
+                return permission;
             });
         });
     }
@@ -264,10 +267,14 @@ class PermissionStore extends iStore<`update-${string}`> {
 
     @action
     loadPermissions(documentRootId: string) {
+        if (!this.root.userStore.current?.hasElevatedAccess) {
+            // API currently only allows elevated users to load permissions.
+            return Promise.resolve();
+        }
         if (this.permissionsLoadedForDocumentRootIds.has(documentRootId)) {
             return Promise.resolve();
         }
-        this.withAbortController(`load-permissions-${documentRootId}`, async (signal) => {
+        return this.withAbortController(`load-permissions-${documentRootId}`, async (signal) => {
             return permissionsFor(documentRootId, signal.signal).then(
                 action(({ data }) => {
                     const docRootId = data.id;

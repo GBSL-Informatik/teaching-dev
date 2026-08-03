@@ -163,21 +163,20 @@ class StudentGroup {
         this.presentedDocumentProps = props;
         if (props) {
             this.store.root.documentStore.addPresentedDocumentToStore(this);
+            this.store.root.permissionStore.loadPermissions(props.document.documentRootId).catch((err) => {
+                console.error('Error loading permissions for presented document', err);
+            });
         }
     }
 
     @action
-    apiSetPresentedDocumentProps(props: DocumentPresentation | null) {
+    async apiSetPresentedDocumentProps(props: DocumentPresentation | null) {
         if (!this.canPresent || this.presentedDocumentProps === props) {
             return;
         }
         const current = this.presentedDocumentProps;
-        this.setPresentedDocumentProps(props);
         if (props) {
             const rootId = props.document.documentRootId;
-            const permission = this.store.root.permissionStore
-                .groupPermissionsByDocumentRoot(props.document.documentRootId)
-                .find((p) => p.groupId === this.id);
             const docRoot = this.store.root.documentRootStore.find(props.document.documentRootId);
             if (!docRoot) {
                 console.error(
@@ -186,45 +185,60 @@ class StudentGroup {
                 );
                 return;
             }
+            docRoot.setRootAccess(Access.RW_DocumentRoot);
             docRoot.setSharedAccess(Access.RW_DocumentRoot);
-            this.store.root.permissionStore.createOrUpdateGroupPermission(
+            this.setPresentedDocumentProps({
+                ...props,
+                access: Access.RW_DocumentRoot,
+                sharedAccess: Access.RW_DocumentRoot
+            });
+            const result = await this.save().catch((err) => {
+                console.error('Error saving presented document props', err);
+            });
+            if (!result) {
+                return;
+            }
+            const groupPermission = this.store.root.permissionStore.createOrUpdateGroupPermission(
                 rootId,
                 this,
                 Access.RO_StudentGroup
             );
-            const adminPermissions = Promise.all(
-                this.admins.map((admin) => {
-                    this.store.root.permissionStore.createOrUpdateUserPermission(
-                        rootId,
-                        admin,
-                        Access.RW_User
-                    );
-                })
-            ).catch((err) => {
+            const adminPermissions = this.admins.map((admin) => {
+                this.store.root.permissionStore.createOrUpdateUserPermission(rootId, admin, Access.RW_User);
+            });
+            Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
                 console.error('Error creating admin permissions for presented document', err);
             });
-        } else if (current) {
-            const currentDocRoot = this.store.root.documentRootStore.find(current.document.documentRootId);
-            Promise.all([
-                currentDocRoot?.setRootAccess(Access.RW_DocumentRoot),
-                currentDocRoot?.setSharedAccess(Access.None_DocumentRoot),
-                ...this.store.root.permissionStore
-                    .userPermissionsByDocumentRoot(current.document.documentRootId)
-                    .filter((p) => p.userId && this.userIds.has(p.userId))
-                    .map((p) => {
-                        return this.store.root.permissionStore.deleteUserPermission(p);
-                    }),
-                ...this.store.root.permissionStore
-                    .groupPermissionsByDocumentRoot(current.document.documentRootId)
-                    .filter((p) => p.groupId === this.id)
-                    .map((p) => {
-                        return this.store.root.permissionStore.deleteGroupPermission(p);
-                    })
-            ]).catch((err) => {
-                console.error('Error deleting user permissions for presented document', err);
-            });
         }
-        this.save();
+        if (current) {
+            await this.cleanupPresentedDocument(current);
+        }
+    }
+
+    @action
+    cleanupPresentedDocument(docProps: DocumentPresentation | null) {
+        if (!docProps) {
+            return;
+        }
+        const currentDocRoot = this.store.root.documentRootStore.find(docProps.document.documentRootId);
+        return Promise.all([
+            currentDocRoot?.setRootAccess(Access.RW_DocumentRoot),
+            currentDocRoot?.setSharedAccess(Access.None_DocumentRoot),
+            ...this.store.root.permissionStore
+                .userPermissionsByDocumentRoot(docProps.document.documentRootId)
+                .filter((p) => p.userId && this.userIds.has(p.userId))
+                .map((p) => {
+                    return this.store.root.permissionStore.deleteUserPermission(p);
+                }),
+            ...this.store.root.permissionStore
+                .groupPermissionsByDocumentRoot(docProps.document.documentRootId)
+                .filter((p) => p.groupId === this.id)
+                .map((p) => {
+                    return this.store.root.permissionStore.deleteGroupPermission(p);
+                })
+        ]).catch((err) => {
+            console.error('Error deleting user permissions for presented document', err);
+        });
     }
 
     @computed
