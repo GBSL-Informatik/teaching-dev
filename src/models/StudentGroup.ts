@@ -270,8 +270,8 @@ class StudentGroup {
             return;
         }
         const currentDocRoot = this.store.root.documentRootStore.find(docProps.document.documentRootId);
+        currentDocRoot?.setRootAccess(Access.RW_DocumentRoot, true);
         return Promise.all([
-            currentDocRoot?.setRootAccess(Access.RW_DocumentRoot),
             currentDocRoot?.setSharedAccess(Access.None_DocumentRoot),
             ...this.store.root.permissionStore
                 .userPermissionsByDocumentRoot(docProps.document.documentRootId)
