@@ -1,16 +1,8 @@
 .presentationMode {
-    --tdev-presentation-panel-padding: 2em;
-    width: calc(100vw - 2 * var(--tdev-presentation-panel-padding));
-    padding: var(--tdev-presentation-panel-padding);
     height: 100%;
+    max-width: 1200px;
+    width: min(1200px, calc(95vw));
 }
-
-@media screen and (max-width: 620px) {
-    .presentationMode {
-        --tdev-presentation-panel-padding: 0.3em;
-    }
-}
-
 .tabs {
     --ifm-tabs-padding-vertical: 0.2em;
     --ifm-tabs-padding-horizontal: 0.4em;

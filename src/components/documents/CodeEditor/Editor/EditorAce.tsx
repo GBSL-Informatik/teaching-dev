@@ -15,8 +15,16 @@ const ALIAS_LANG_MAP_ACE = {
     py: 'python'
 };
 
+export interface Overrides {
+    minLines?: number;
+    maxLines?: number;
+    theme?: string;
+    showLineNumbers?: boolean;
+}
+
 interface Props<T extends CodeType> {
     code: iCode<T>;
+    overrides?: Overrides;
 }
 
 const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
@@ -78,11 +86,11 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 }}
                 focus={false}
                 navigateToFileEnd={false}
-                minLines={code.meta.minLines}
-                maxLines={code.meta.maxLines}
+                minLines={props.overrides?.minLines ?? code.meta.minLines}
+                maxLines={props.overrides?.maxLines ?? code.meta.maxLines}
                 ref={eRef}
                 mode={ALIAS_LANG_MAP_ACE[code.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.lang}
-                theme={code.meta.theme ?? aceTheme}
+                theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     code.setCode(value, e.action);
                 }}
@@ -101,7 +109,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 enableBasicAutocompletion
                 enableLiveAutocompletion={false}
                 enableSnippets={false}
-                showGutter={code.meta.showLineNumbers}
+                showGutter={props.overrides?.showLineNumbers ?? code.meta.showLineNumbers}
             />
         </div>
     );

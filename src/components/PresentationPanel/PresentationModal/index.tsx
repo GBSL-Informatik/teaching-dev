@@ -45,8 +45,16 @@ const PresentationModal = observer((props: Props) => {
     return (
         <Popup
             modal
-            overlayStyle={{ background: isDarkTheme ? 'rgba(0, 0, 0, 0.84)' : 'rgba(226, 222, 222, 0.84)' }}
+            overlayStyle={{
+                background: isDarkTheme ? 'rgba(0, 0, 0, 0.84)' : 'rgba(226, 222, 222, 0.84)',
+                maxWidth: '100vw'
+            }}
+            contentStyle={{
+                minHeight: 'min(700px, 90vh, 100%)',
+                maxHeight: 'calc(99vh - 40px)'
+            }}
             open={hasDocs}
+            lockScroll
             repositionOnResize
             closeOnDocumentClick={false}
             closeOnEscape={false}

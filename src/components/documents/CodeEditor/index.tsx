@@ -14,6 +14,7 @@ import { CodeType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
+import type { Overrides } from '@tdev-components/documents/CodeEditor/Editor/EditorAce';
 
 export interface Props extends Omit<MetaProps, 'live_jsx' | 'live_py'> {
     title: string;
@@ -56,6 +57,7 @@ export interface ScriptProps<T extends CodeType> {
     code: iCode<T>;
     className?: string;
     isPresentation?: boolean;
+    overrides?: Overrides;
 }
 
 const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>) => {
@@ -85,7 +87,7 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
                         'live-code-editor'
                     )}
                 >
-                    <Editor code={code} />
+                    <Editor code={code} overrides={props.overrides} />
                     {code.meta.hasHistory && <CodeHistory code={code} />}
                 </div>
             </div>

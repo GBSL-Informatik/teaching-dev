@@ -2,7 +2,7 @@ import * as React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import HiddenCode from './HiddenCode';
-import EditorAce from './EditorAce';
+import EditorAce, { type Overrides } from './EditorAce';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 
@@ -14,6 +14,7 @@ import Alert from '@tdev-components/shared/Alert';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
+    overrides?: Overrides;
 }
 
 const Editor = observer(<T extends CodeType>(props: Props<T>) => {
@@ -40,7 +41,7 @@ const Editor = observer(<T extends CodeType>(props: Props<T>) => {
             )}
             <div className={clsx(styles.editorContainer)}>
                 <HiddenCode type="pre" code={code} />
-                <EditorAce code={code} />
+                <EditorAce code={code} overrides={props.overrides} />
                 <HiddenCode type="post" code={code} />
             </div>
             {EC?.Footer && <EC.Footer code={code as unknown as TypeModelMapping[T]} />}

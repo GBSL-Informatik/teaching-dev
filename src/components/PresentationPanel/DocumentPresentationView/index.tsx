@@ -4,9 +4,6 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import StudentGroup from '@tdev-models/StudentGroup';
-import { CodeType } from '@tdev-api/document';
-import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
-import iCode from '@tdev-models/documents/iCode';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import AdminPanel from './AdminPanel';
@@ -24,23 +21,25 @@ const DocumentPresentationView = observer((props: Props) => {
     if (group.adminIds.has(userStore.current?.id ?? ' ')) {
         return (
             <div className={clsx(styles.presentationView)}>
-                <Tabs className={clsx(styles.tabs)} lazy>
-                    <TabItem value="presentation" label="Präsentation">
-                        <CodeEditor group={group} />
-                    </TabItem>
-                    <TabItem value="permissions" label="Admin">
-                        <AdminPanel group={group} />
-                    </TabItem>
-                </Tabs>
+                <div className={clsx(styles.content)}>
+                    <Tabs className={clsx(styles.tabs)} lazy>
+                        <TabItem value="presentation" label="Präsentation">
+                            <CodeEditor group={group} />
+                        </TabItem>
+                        <TabItem value="permissions" label="Admin">
+                            <AdminPanel group={group} />
+                        </TabItem>
+                    </Tabs>
+                </div>
                 <AdminActions group={group} />
             </div>
         );
     }
 
     return (
-        <div className={clsx(styles.documentPresentationView)}>
+        <div className={clsx(styles.content)}>
             <CanEditBadge group={group} />
-            <CodeEditorComponent code={group.presentedDocument as iCode<CodeType>} isPresentation />
+            <CodeEditor group={group} />
         </div>
     );
 });

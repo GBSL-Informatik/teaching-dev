@@ -15,6 +15,10 @@ interface Props {
     group: StudentGroup;
 }
 
+const EditorOverrides = {
+    maxLines: 45
+};
+
 const CodeEditor = observer((props: Props) => {
     const { group } = props;
     const componentStore = useStore('componentStore');
@@ -38,7 +42,11 @@ const CodeEditor = observer((props: Props) => {
     }
     return (
         <div className={clsx(styles.documentPresentationView)}>
-            <CodeEditorComponent code={group.presentedDocument as iCode<CodeType>} isPresentation />
+            <CodeEditorComponent
+                code={group.presentedDocument as iCode<CodeType>}
+                isPresentation
+                overrides={EditorOverrides}
+            />
         </div>
     );
 });
