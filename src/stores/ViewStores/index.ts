@@ -12,9 +12,15 @@ export default class ViewStore {
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
+    @observable accessor isPresentedEditorZoomed: boolean = false;
 
     constructor(store: RootStore) {
         this.root = store;
+    }
+
+    @action
+    setIsPresentedEditorZoomed(zoomed: boolean) {
+        this.isPresentedEditorZoomed = zoomed;
     }
 
     @action

@@ -20,6 +20,7 @@ export interface Overrides {
     maxLines?: number;
     theme?: string;
     showLineNumbers?: boolean;
+    fontSize?: string | number;
 }
 
 interface Props<T extends CodeType> {
@@ -72,10 +73,10 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 style={{
                     width: '100%',
                     lineHeight: 'var(--ifm-pre-line-height)',
-                    fontSize: 'var(--ifm-code-font-size)',
+                    fontSize: props.overrides?.fontSize ?? 'var(--ifm-code-font-size)',
                     fontFamily: 'var(--ifm-font-family-monospace)'
                 }}
-                fontSize={'var(--ifm-code-font-size)'}
+                fontSize={props.overrides?.fontSize ?? 'var(--ifm-code-font-size)'}
                 onPaste={() => {
                     if (code.meta.versioned) {
                         /**

@@ -10,18 +10,29 @@ import Alert from '@tdev-components/shared/Alert';
 import { useStore } from '@tdev-hooks/useStore';
 import CodeBlock from '@theme/CodeBlock';
 import Loader from '@tdev-components/Loader';
+import { type Overrides } from '@tdev-components/documents/CodeEditor/Editor/EditorAce';
 
 interface Props {
     group: StudentGroup;
 }
 
-const EditorOverrides = {
+const EditorOverrides: Overrides = {
     maxLines: 45
 };
 
 const CodeEditor = observer((props: Props) => {
     const { group } = props;
     const componentStore = useStore('componentStore');
+    const viewStore = useStore('viewStore');
+    const overrides: Overrides = React.useMemo(() => {
+        if (viewStore.isPresentedEditorZoomed) {
+            return {
+                ...EditorOverrides,
+                fontSize: '120%'
+            };
+        }
+        return EditorOverrides;
+    }, [viewStore.isPresentedEditorZoomed]);
     if (!group.presentedDocument) {
         return <Alert type="warning">{group.name} hat keine aktive Präsentation</Alert>;
     }
@@ -45,7 +56,7 @@ const CodeEditor = observer((props: Props) => {
             <CodeEditorComponent
                 code={group.presentedDocument as iCode<CodeType>}
                 isPresentation
-                overrides={EditorOverrides}
+                overrides={overrides}
             />
         </div>
     );

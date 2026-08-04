@@ -18,7 +18,9 @@ import {
     mdiCloudTags,
     mdiEye,
     mdiEyeLock,
-    mdiEyeLockOpen
+    mdiEyeLockOpen,
+    mdiMagnify,
+    mdiMagnifyScan
 } from '@mdi/js';
 import FocusSelector from './FocusSelector';
 import SpinningWheel from './SpinningWheel';
@@ -35,6 +37,7 @@ interface Props {
 
 const AdminPanel = observer((props: Props) => {
     const permissionStore = useStore('permissionStore');
+    const viewStore = useStore('viewStore');
     const isMobile = useIsMobileView(450);
     const { group } = props;
     if (!group.presentedDocument) {
@@ -105,6 +108,21 @@ const AdminPanel = observer((props: Props) => {
                             />
                         </dd>
                         <dd>Remote-Execution aktivieren?</dd>
+                        <dt>
+                            <Icon path={mdiMagnifyScan} size={SIZE_S} color="var(--ifm-color-primary)" />
+                        </dt>
+                        <dd>
+                            <Button
+                                onClick={() => {
+                                    viewStore.setIsPresentedEditorZoomed(!viewStore.isPresentedEditorZoomed);
+                                }}
+                                color={viewStore.isPresentedEditorZoomed ? 'green' : 'red'}
+                                text={viewStore.isPresentedEditorZoomed ? 'Ja' : 'Nein'}
+                                iconSide="left"
+                                icon={viewStore.isPresentedEditorZoomed ? mdiMagnifyScan : mdiMagnify}
+                            />
+                        </dd>
+                        <dd>Editor Schriftart vergrössern? (120%)</dd>
                     </DefinitionList>
                     <div className={clsx(styles.accessPanels)}>
                         <div className={clsx(styles.panel)}>
