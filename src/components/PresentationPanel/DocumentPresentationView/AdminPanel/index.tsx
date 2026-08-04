@@ -1,14 +1,12 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import styles from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import StudentGroup from '@tdev-models/StudentGroup';
-import { Access } from '@tdev-api/document';
 import GroupAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/GroupAccessSelector';
 import SharedAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/SharedAccessSelector';
 import { asStudentGroupAccess } from '@tdev-models/helpers/accessPolicy';
-import BadgeSelector from '@tdev-components/User/BadgeSelector';
 import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
@@ -16,6 +14,11 @@ import Alert from '@tdev-components/shared/Alert';
 import Button from '@tdev-components/shared/Button';
 import { mdiEyeLock, mdiEyeLockOpen } from '@mdi/js';
 import Details from '@theme/Details';
+import FocusSelector from './FocusSelector';
+import SpinningWheel from './SpinningWheel';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 interface Props {
     group: StudentGroup;
@@ -23,6 +26,7 @@ interface Props {
 
 const AdminPanel = observer((props: Props) => {
     const permissionStore = useStore('permissionStore');
+    const isMobile = useIsMobileView(450);
     const { group } = props;
     if (!group.presentedDocument) {
         return <Alert type="warning">{group.name} hat keine aktive Präsentation</Alert>;
@@ -41,41 +45,14 @@ const AdminPanel = observer((props: Props) => {
             }
             classNames={{ card: clsx(styles.adminCard), body: clsx(styles.admin) }}
         >
-            <h3>Fokus</h3>
-            <div className={clsx(styles.studentSelector)}>
-                {group.users.map((s) => (
-                    <BadgeSelector
-                        user={s}
-                        key={s.id}
-                        onClick={async (user, clearCurrent) => {
-                            if (clearCurrent) {
-                                await Promise.all(
-                                    permissionStore
-                                        .userPermissionsByDocumentRoot(rootId)
-                                        .filter(
-                                            (u) =>
-                                                group.userIds.has(u.userId) && !group.adminIds.has(u.userId)
-                                        )
-                                        .map((p) => {
-                                            return permissionStore.deleteUserPermission(p);
-                                        })
-                                );
-                            }
-                            const currentPermission = permissionStore
-                                .userPermissionsByDocumentRoot(rootId)
-                                .find((p) => p.userId === user.id);
-                            if (currentPermission) {
-                                await permissionStore.deleteUserPermission(currentPermission);
-                            } else {
-                                await permissionStore.createUserPermission(rootId, user, Access.RW_User);
-                            }
-                        }}
-                        selected={permissionStore
-                            .userPermissionsByDocumentRoot(rootId)
-                            .some((p) => p.userId === s.id)}
-                    />
-                ))}
-            </div>
+            <Tabs className={clsx(styles.tabs)} lazy>
+                <TabItem value="spinningWheel" label="Zufall" className={clsx(styles.centered)}>
+                    <SpinningWheel group={group} size={isMobile ? 200 : 380} />
+                </TabItem>
+                <TabItem value="focus" label="Fokus">
+                    <FocusSelector group={group} />
+                </TabItem>
+            </Tabs>
             <Details summary="Einstellungen">
                 <div className={clsx(styles.accessPanels)}>
                     <div className={clsx(styles.panel)}>

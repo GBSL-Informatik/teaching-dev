@@ -4,6 +4,10 @@
     .admin {
         overflow-y: auto;
     }
+    .centered {
+        display: flex;
+        justify-content: center;
+    }
 }
 .accessPanels {
     display: flex;

@@ -11,7 +11,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import AdminPanel from './AdminPanel';
 import CodeEditor from './CodeEditor';
-import AdminActions from './AdminActions';
+import AdminActions from './AdminPanel/AdminActions';
 import CanEditBadge from './CanEditBadge';
 
 interface Props {

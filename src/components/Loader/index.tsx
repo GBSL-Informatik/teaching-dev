@@ -13,6 +13,7 @@ interface Props {
     noLabel?: boolean;
     title?: string;
     align?: 'center' | 'left' | 'right';
+    spin?: number;
 }
 
 const Loader = (props: Props) => {
@@ -27,7 +28,12 @@ const Loader = (props: Props) => {
             )}
             title={props.title}
         >
-            <Icon path={mdiLoading} spin={isBrowser} size={props.size || 1} className={styles.icon} />
+            <Icon
+                path={mdiLoading}
+                spin={isBrowser ? (props.spin ?? true) : false}
+                size={props.size || 1}
+                className={styles.icon}
+            />
             {!props.noLabel && (
                 <span className={clsx('badge', styles.badge)}>{props.label || 'Laden...'}</span>
             )}

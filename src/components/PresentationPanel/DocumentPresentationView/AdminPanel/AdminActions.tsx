@@ -1,12 +1,12 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import styles from '../styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import StudentGroup from '@tdev-models/StudentGroup';
 import Button from '@tdev-components/shared/Button';
 import { mdiClose, mdiProjectorScreenOffOutline, mdiSync } from '@mdi/js';
-import CanEditBadge from './CanEditBadge';
+import CanEditBadge from '../CanEditBadge';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 
 interface Props {

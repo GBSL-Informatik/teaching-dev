@@ -1,0 +1,107 @@
+/**
+ * Generated with Sonnet 5 @ claude.ai 4-8-2026
+ */
+.swRoot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    .swStage {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .swPointer {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 5;
+        width: 34px;
+        height: 40px;
+        filter: drop-shadow(0 3px 4px rgba(27, 27, 58, 0.35));
+        transition: transform 0.15s ease;
+        &.bounce {
+            animation: swPointerBounce 0.5s ease;
+        }
+    }
+    @keyframes swPointerBounce {
+        0% {
+            transform: translateX(-50%) rotate(0deg);
+        }
+        30% {
+            transform: translateX(-50%) rotate(-14deg);
+        }
+        60% {
+            transform: translateX(-50%) rotate(8deg);
+        }
+        100% {
+            transform: translateX(-50%) rotate(0deg);
+        }
+    }
+    .swWheelWrap {
+        border-radius: 50%;
+        box-shadow:
+            0 18px 40px rgba(27, 27, 58, 0.25),
+            0 2px 0 rgba(255, 255, 255, 0.6) inset;
+    }
+    .swWheel {
+        display: block;
+        transition: transform 4.2s cubic-bezier(0.14, 0.67, 0.1, 1);
+    }
+    .swLabel {
+        font-weight: bold;
+        pointer-events: none;
+    }
+    .swPeg {
+        transition: opacity 0.3s ease;
+    }
+    .swCenterBtn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 22%;
+        height: 22%;
+        min-width: 64px;
+        min-height: 64px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        font-family: 'Baloo 2', system-ui, sans-serif;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        font-size: 15px;
+        color: #1b1b3a;
+        background: linear-gradient(180deg, #ffffff 0%, #fffcf7 60%, #f3e9d8 100%);
+        box-shadow:
+            0 6px 0 #e4d6be,
+            0 10px 16px rgba(27, 27, 58, 0.35),
+            0 0 0 6px rgba(255, 255, 255, 0.9);
+        transition:
+            transform 0.08s ease,
+            box-shadow 0.08s ease;
+        z-index: 4;
+    }
+    .swCenterBtn:hover:not(:disabled) {
+        filter: brightness(1.03);
+    }
+    .swCenterBtn:active:not(:disabled) {
+        transform: translate(-50%, -46%);
+        box-shadow:
+            0 2px 0 #e4d6be,
+            0 4px 8px rgba(27, 27, 58, 0.35),
+            0 0 0 6px rgba(255, 255, 255, 0.9);
+    }
+    .swCenterBtn:disabled {
+        cursor: default;
+        filter: saturate(0.7) brightness(0.97);
+    }
+    .swEmpty {
+        font-family: 'Inter', system-ui, sans-serif;
+        color: #6b6b85;
+        padding: 40px;
+        text-align: center;
+    }
+}
