@@ -13,6 +13,9 @@ import Card from '@tdev-components/shared/Card';
 import Badge from '@tdev-components/shared/Badge';
 import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
 import Alert from '@tdev-components/shared/Alert';
+import Button from '@tdev-components/shared/Button';
+import { mdiEyeLock, mdiEyeLockOpen } from '@mdi/js';
+import Details from '@theme/Details';
 
 interface Props {
     group: StudentGroup;
@@ -30,33 +33,14 @@ const AdminPanel = observer((props: Props) => {
         .find((p) => p.groupId === group.id)?.access;
 
     return (
-        <Card classNames={{ card: clsx(styles.adminCard), body: clsx(styles.admin) }}>
-            <h3>
-                Gruppe <Badge color="blue">{group.name}</Badge>
-            </h3>
-            <h3>Berechtigungen</h3>
-            <div className={clsx(styles.accessPanels)}>
-                <div className={clsx(styles.panel)}>
-                    <b>Gruppe</b>
-                    <GroupAccessSelector
-                        group={group}
-                        mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
-                    />
-                </div>
-                <div>
-                    <div className={clsx(styles.panel)}>
-                        <b style={{ width: '3.5em' }}>Root</b>
-                        <RootAccessSelector documentRoot={group.presentedDocument.root!} />
-                    </div>
-                    <div className={clsx(styles.panel)}>
-                        <b style={{ width: '3.5em' }}>Geteilt</b>
-                        <SharedAccessSelector
-                            documentRoot={group.presentedDocument.root!}
-                            maxAccess={groupPermission}
-                        />
-                    </div>
-                </div>
-            </div>
+        <Card
+            header={
+                <h2>
+                    <Badge color="blue">{group.name}</Badge>
+                </h2>
+            }
+            classNames={{ card: clsx(styles.adminCard), body: clsx(styles.admin) }}
+        >
             <h3>Fokus</h3>
             <div className={clsx(styles.studentSelector)}>
                 {group.users.map((s) => (
@@ -92,6 +76,48 @@ const AdminPanel = observer((props: Props) => {
                     />
                 ))}
             </div>
+            <Details summary="Einstellungen">
+                <div className={clsx(styles.accessPanels)}>
+                    <div className={clsx(styles.panel)}>
+                        <b>Namen der präsentierten Nutzer anzeigen?</b>
+                        <Button
+                            onClick={() => {
+                                group.setPresentingUsersVisibility(
+                                    !!group.presentedDocumentProps?.hidePresentingUsers
+                                );
+                            }}
+                            color={group.presentedDocumentProps?.hidePresentingUsers ? 'red' : 'green'}
+                            icon={
+                                group.presentedDocumentProps?.hidePresentingUsers
+                                    ? mdiEyeLock
+                                    : mdiEyeLockOpen
+                            }
+                        />
+                    </div>
+                </div>
+                <div className={clsx(styles.accessPanels)}>
+                    <div className={clsx(styles.panel)}>
+                        <b>Gruppe</b>
+                        <GroupAccessSelector
+                            group={group}
+                            mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
+                        />
+                    </div>
+                    <div>
+                        <div className={clsx(styles.panel)}>
+                            <b style={{ width: '3.5em' }}>Root</b>
+                            <RootAccessSelector documentRoot={group.presentedDocument.root!} />
+                        </div>
+                        <div className={clsx(styles.panel)}>
+                            <b style={{ width: '3.5em' }}>Geteilt</b>
+                            <SharedAccessSelector
+                                documentRoot={group.presentedDocument.root!}
+                                maxAccess={groupPermission}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </Details>
         </Card>
     );
 });

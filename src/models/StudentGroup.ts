@@ -153,6 +153,18 @@ class StudentGroup {
         return Promise.resolve(this);
     }
 
+    @action
+    setPresentingUsersVisibility(isVisible: boolean) {
+        if (!this.presentedDocumentProps) {
+            return;
+        }
+        this.presentedDocumentProps = {
+            ...this.presentedDocumentProps,
+            hidePresentingUsers: !isVisible
+        };
+        return this.save();
+    }
+
     /**
      * sets the props only locally without saving to the server
      */
@@ -200,8 +212,12 @@ class StudentGroup {
     ) {
         documentRoot.setRootAccess(Access.RW_DocumentRoot, true);
         documentRoot.setSharedAccess(Access.RW_DocumentRoot, true);
+        const minus1ms = new Date(new Date(props.document.updatedAt).getTime() - 1);
+        // ensure current document is not displayed as stale
+        const docProps = { ...props.document, updatedAt: minus1ms.toISOString() };
         this.setPresentedDocumentProps({
             ...props,
+            document: docProps,
             access: Access.RO_DocumentRoot, // make sure streamed access have by default RO_DocumentRoot access, so that the group can view the document
             sharedAccess: Access.RW_DocumentRoot
         });
@@ -226,6 +242,7 @@ class StudentGroup {
         await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
             console.error('Error creating admin permissions for presented document', err);
         });
+        this.presentedDocument?.streamUpdate();
     }
 
     @action

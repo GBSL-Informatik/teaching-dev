@@ -8,6 +8,7 @@ export interface DocumentPresentation<Type extends DocumentType = DocumentType> 
     meta: TypeMeta<Type>;
     access: Access;
     sharedAccess: Access;
+    hidePresentingUsers?: boolean;
 }
 
 export interface StudentGroup {
