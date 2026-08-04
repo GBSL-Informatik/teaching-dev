@@ -303,7 +303,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.root.permissionStore.handleGroupPermissionUpdate(record as GroupPermission);
                 break;
             case RecordType.Document:
-                this.root.documentStore.addToStore(record as Document<DocumentType>);
+                this.root.documentStore.addToStore(record as Document<DocumentType>, true);
                 break;
             case RecordType.CmsSettings:
                 if (!this.root.viewStore.stores.has('cmsStore' as keyof ViewStoreTypeMapping)) {

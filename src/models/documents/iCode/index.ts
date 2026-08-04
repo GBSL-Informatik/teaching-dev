@@ -52,11 +52,12 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             return;
         }
         this.code = code;
-        this.updatedAt = new Date();
+        const now = new Date();
+        this.updatedAt = now;
         if (this.isVersioned) {
             this.addVersion({
                 code: code,
-                createdAt: this.updatedAt,
+                createdAt: now,
                 version: this.versions.length + 1,
                 pasted: this.isPasted
             });

@@ -40,6 +40,7 @@ import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
 import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import Quiz from '@tdev-models/documents/Assessable/Quiz';
+import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -198,13 +199,21 @@ class DocumentStore extends iStore<`delete-${string}`> {
 
     @action
     addToStore<Type extends DocumentType>(
-        data: DocumentProps<Type> | undefined | null
+        data: DocumentProps<Type> | undefined | null,
+        checkStalledState: boolean = false
     ): TypeModelMapping[Type] | undefined {
         /**
          * Adds a new model to the store. Existing models with the same id are replaced.
          */
         if (!data) {
             return;
+        }
+        const old = this.find(data.id);
+        if (old && checkStalledState) {
+            if (isStalledUpdate(old, data)) {
+                // Ignore stale/equal payloads to avoid regressing already streamed data.
+                return old as TypeModelMapping[Type];
+            }
         }
         const factory = this.factories.get(data.type);
         if (!factory) {
@@ -222,7 +231,6 @@ class DocumentStore extends iStore<`delete-${string}`> {
         if (model.root.isDummy) {
             return;
         }
-        const old = this.find(model.id);
         this.removeFromStore(old);
         this.documents.push(model);
         return model as TypeModelMapping[Type];
@@ -353,11 +361,10 @@ class DocumentStore extends iStore<`delete-${string}`> {
     handleUpdate(change: ChangedDocument) {
         const model = this.find(change.id);
         if (model) {
-            const updatedAt = new Date(change.updatedAt);
-            if (model.updatedAt.getTime() >= updatedAt.getTime()) {
-                // ignore stalled updates
+            if (isStalledUpdate(model, change)) {
                 return;
             }
+            const updatedAt = new Date(change.updatedAt);
             model.setData(change.data as any, Source.API, updatedAt);
             setTimeout(() => {
                 model.postUpdate(change.meta);
@@ -398,7 +405,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
             return;
         }
 
-        this.addToStore(rawDoc);
+        this.addToStore(rawDoc, true);
     }
 
     @action

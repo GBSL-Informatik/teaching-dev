@@ -1,7 +1,7 @@
 import { action, computed, IReactionDisposer, observable, reaction } from 'mobx';
 import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import _, { type DebouncedFunc } from 'es-toolkit/compat';
+import { debounce, isEqual, type DebouncedFunc } from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
 import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
@@ -58,7 +58,7 @@ abstract class iDocument<Type extends DocumentType> {
 
         this.createdAt = new Date(props.createdAt);
         this.updatedAt = new Date(props.updatedAt);
-        this.saveFn = _.debounce(action(this._save), saveDebounceTime, {
+        this.saveFn = debounce(action(this._save), saveDebounceTime, {
             leading: false,
             trailing: true,
             maxWait: 5 * saveDebounceTime
@@ -146,7 +146,7 @@ abstract class iDocument<Type extends DocumentType> {
 
     @computed
     get isDirty() {
-        return !_.isEqual(this._pristine, this.data);
+        return !isEqual(this._pristine, this.data);
     }
 
     @computed

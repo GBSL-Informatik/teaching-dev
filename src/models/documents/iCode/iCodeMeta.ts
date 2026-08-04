@@ -1,4 +1,4 @@
-import { TypeDataMapping, Access, DocumentType, CodeType } from '@tdev-api/document';
+import { TypeDataMapping, CodeType } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 export interface MetaInit extends Omit<MetaProps, 'live_jsx' | 'live_py' | 'readonly' | 'title'> {
