@@ -1,15 +1,13 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
-import { mdiClose, mdiPresentationPlay, mdiProjectorScreenOffOutline, mdiTelevisionStop } from '@mdi/js';
+import { mdiPresentationPlay, mdiProjectorScreenOffOutline } from '@mdi/js';
 import { Color } from '../Colors';
 import { useStore } from '@tdev-hooks/useStore';
 import Popup from 'reactjs-popup';
 import Card from '../Card';
 import iDocument from '@tdev-models/iDocument';
-import { action } from 'mobx';
 import GroupSelector from './GroupSelector';
 
 interface Props {
@@ -21,10 +19,14 @@ interface Props {
 
 const RequestPresentationMode = observer((props: Props) => {
     const { document, className } = props;
+    const sessionStore = useStore('sessionStore');
     const pageStore = useStore('pageStore');
     const userStore = useStore('userStore');
     const groupStore = useStore('studentGroupStore');
     const [focus, setFocus] = React.useState(false);
+    if (sessionStore.apiMode !== 'api') {
+        return null;
+    }
     if (document.isDummy) {
         return null;
     }
