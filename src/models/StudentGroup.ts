@@ -228,7 +228,7 @@ class StudentGroup {
         props: DocumentPresentation
     ) {
         documentRoot.setRootAccess(Access.RW_DocumentRoot, true);
-        documentRoot.setSharedAccess(Access.RW_DocumentRoot, true);
+        documentRoot.setSharedAccess(Access.RW_DocumentRoot);
         const minus1ms = new Date(new Date(props.document.updatedAt).getTime() - 1);
         // ensure current document is not displayed as stale
         const docProps = { ...props.document, updatedAt: minus1ms.toISOString() };
@@ -244,13 +244,13 @@ class StudentGroup {
         if (!result) {
             return;
         }
-        // wait 500ms to ensure the document is distributed to all clients before setting up permissions
         await new Promise((resolve) => setTimeout(resolve, 500));
         const groupPermission = this.store.root.permissionStore.createOrUpdateGroupPermission(
             documentRoot.id,
             this,
             Access.RO_StudentGroup
         );
+        // wait 500ms to ensure the document is distributed to all clients before setting up permissions
         const adminPermissions = this.admins.map((admin) => {
             return this.store.root.permissionStore.createOrUpdateUserPermission(
                 documentRoot.id,
