@@ -165,6 +165,23 @@ class StudentGroup {
         return this.save();
     }
 
+    @action
+    setPresentedDocumentRemoteExecutionPolicy(canExecute: boolean) {
+        if (!this.presentedDocumentProps) {
+            return;
+        }
+        this.presentedDocumentProps = {
+            ...this.presentedDocumentProps,
+            allowRemoteExecution: canExecute
+        };
+        return this.save();
+    }
+
+    @computed
+    get isRemoteExecutionAllowed() {
+        return this.presentedDocumentProps?.allowRemoteExecution ?? false;
+    }
+
     /**
      * sets the props only locally without saving to the server
      */

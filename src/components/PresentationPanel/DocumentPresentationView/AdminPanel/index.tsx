@@ -12,13 +12,22 @@ import Badge from '@tdev-components/shared/Badge';
 import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
 import Alert from '@tdev-components/shared/Alert';
 import Button from '@tdev-components/shared/Button';
-import { mdiEyeLock, mdiEyeLockOpen } from '@mdi/js';
-import Details from '@theme/Details';
+import {
+    mdiCloudCheckVariantOutline,
+    mdiCloudOffOutline,
+    mdiCloudTags,
+    mdiEye,
+    mdiEyeLock,
+    mdiEyeLockOpen
+} from '@mdi/js';
 import FocusSelector from './FocusSelector';
 import SpinningWheel from './SpinningWheel';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import DefinitionList from '@tdev-components/DefinitionList';
+import Icon from '@mdi/react';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     group: StudentGroup;
@@ -52,51 +61,75 @@ const AdminPanel = observer((props: Props) => {
                 <TabItem value="focus" label="Fokus">
                     <FocusSelector group={group} />
                 </TabItem>
-            </Tabs>
-            <Details summary="Einstellungen">
-                <div className={clsx(styles.accessPanels)}>
-                    <div className={clsx(styles.panel)}>
-                        <b>Namen der präsentierten User anzeigen?</b>
-                        <Button
-                            onClick={() => {
-                                group.setPresentingUsersVisibility(
-                                    !!group.presentedDocumentProps?.hidePresentingUsers
-                                );
-                            }}
-                            color={group.presentedDocumentProps?.hidePresentingUsers ? 'red' : 'green'}
-                            text={group.presentedDocumentProps?.hidePresentingUsers ? 'Nein' : 'Ja'}
-                            iconSide="left"
-                            icon={
-                                group.presentedDocumentProps?.hidePresentingUsers
-                                    ? mdiEyeLock
-                                    : mdiEyeLockOpen
-                            }
-                        />
-                    </div>
-                </div>
-                <div className={clsx(styles.accessPanels)}>
-                    <div className={clsx(styles.panel)}>
-                        <b>Gruppe</b>
-                        <GroupAccessSelector
-                            group={group}
-                            mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
-                        />
-                    </div>
-                    <div>
+                <TabItem value="settings" label="Einstellungen">
+                    <DefinitionList>
+                        <dt>
+                            <Icon path={mdiEye} size={SIZE_S} color="var(--ifm-color-primary)" />
+                        </dt>
+                        <dd>
+                            <Button
+                                onClick={() => {
+                                    group.setPresentingUsersVisibility(
+                                        !!group.presentedDocumentProps?.hidePresentingUsers
+                                    );
+                                }}
+                                color={group.presentedDocumentProps?.hidePresentingUsers ? 'red' : 'green'}
+                                text={group.presentedDocumentProps?.hidePresentingUsers ? 'Nein' : 'Ja'}
+                                iconSide="left"
+                                icon={
+                                    group.presentedDocumentProps?.hidePresentingUsers
+                                        ? mdiEyeLock
+                                        : mdiEyeLockOpen
+                                }
+                            />
+                        </dd>
+                        <dd>Namen der präsentierten User anzeigen?</dd>
+                        <dt>
+                            <Icon path={mdiCloudTags} size={SIZE_S} color="var(--ifm-color-primary)" />
+                        </dt>
+                        <dd>
+                            <Button
+                                onClick={() => {
+                                    group.setPresentedDocumentRemoteExecutionPolicy(
+                                        !group.isRemoteExecutionAllowed
+                                    );
+                                }}
+                                color={group.isRemoteExecutionAllowed ? 'green' : 'red'}
+                                text={group.isRemoteExecutionAllowed ? 'Ja' : 'Nein'}
+                                iconSide="left"
+                                icon={
+                                    group.isRemoteExecutionAllowed
+                                        ? mdiCloudCheckVariantOutline
+                                        : mdiCloudOffOutline
+                                }
+                            />
+                        </dd>
+                        <dd>Remote-Execution aktivieren?</dd>
+                    </DefinitionList>
+                    <div className={clsx(styles.accessPanels)}>
                         <div className={clsx(styles.panel)}>
-                            <b style={{ width: '3.5em' }}>Root</b>
-                            <RootAccessSelector documentRoot={group.presentedDocument.root!} />
-                        </div>
-                        <div className={clsx(styles.panel)}>
-                            <b style={{ width: '3.5em' }}>Geteilt</b>
-                            <SharedAccessSelector
-                                documentRoot={group.presentedDocument.root!}
-                                maxAccess={groupPermission}
+                            <b>Gruppe</b>
+                            <GroupAccessSelector
+                                group={group}
+                                mark={asStudentGroupAccess(group.presentedDocument.root!.access)}
                             />
                         </div>
+                        <div>
+                            <div className={clsx(styles.panel)}>
+                                <b style={{ width: '3.5em' }}>Root</b>
+                                <RootAccessSelector documentRoot={group.presentedDocument.root!} />
+                            </div>
+                            <div className={clsx(styles.panel)}>
+                                <b style={{ width: '3.5em' }}>Geteilt</b>
+                                <SharedAccessSelector
+                                    documentRoot={group.presentedDocument.root!}
+                                    maxAccess={groupPermission}
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </Details>
+                </TabItem>
+            </Tabs>
         </Card>
     );
 });

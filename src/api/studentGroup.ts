@@ -9,6 +9,7 @@ export interface DocumentPresentation<Type extends DocumentType = DocumentType> 
     access: Access;
     sharedAccess: Access;
     hidePresentingUsers?: boolean;
+    allowRemoteExecution?: boolean;
 }
 
 export interface StudentGroup {

@@ -144,7 +144,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
 
     @action
     postUpdate(meta?: CodePostUpdateMeta) {
-        if (!meta) {
+        if (!meta || this.presentingGroups.some((g) => !g.isRemoteExecutionAllowed)) {
             return;
         }
         switch (meta.action) {
@@ -166,6 +166,9 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             (g) => g.presentedDocument?.id === this.id
         );
         if (!this.isPresenting || !this.canEdit || !this.canExecute || !group || !group.presentedDocument) {
+            return;
+        }
+        if (this.presentingGroups.some((g) => !g.isRemoteExecutionAllowed)) {
             return;
         }
         this.store.root.socketStore.streamUpdate(group.id, { id: this.id, data: this.data }, action);
