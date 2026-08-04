@@ -99,13 +99,19 @@ class PyodideCode extends iCode<'pyodide_code'> {
     }
 
     @action
-    runCode() {
+    runCode(skipRemoteTrigger: boolean = false) {
         this.pyodideStore.run(this);
+        if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
+            this.triggerRemoteAction({ action: 'runCode' });
+        }
     }
 
     @action
-    stopExecution() {
+    stopExecution(skipRemoteTrigger: boolean = false) {
         this.pyodideStore.recreatePyWorker();
+        if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
+            this.triggerRemoteAction({ action: 'stopExecution' });
+        }
     }
 
     @computed

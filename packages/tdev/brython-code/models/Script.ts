@@ -118,7 +118,7 @@ export default class Script extends iCode<'script'> {
     }
 
     @action
-    runCode() {
+    runCode(skipRemoteTrigger: boolean = false) {
         if (this.hasGraphicsOutput) {
             if (this.hasTurtleOutput) {
                 this.store.root.pageStore.setRunningTurtleScriptId(this.id);
@@ -134,6 +134,9 @@ export default class Script extends iCode<'script'> {
             libDir,
             siteConfig.future.experimental_router
         );
+        if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
+            this.triggerRemoteAction({ action: 'runCode' });
+        }
     }
 
     /**
@@ -179,10 +182,13 @@ export default class Script extends iCode<'script'> {
     }
 
     @action
-    stopExecution() {
+    stopExecution(skipRemoteTrigger: boolean = false) {
         this.stopScript();
         this.closeGraphicsModal();
         this.setExecuting(false);
+        if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
+            this.triggerRemoteAction({ action: 'stopExecution' });
+        }
     }
 
     get source() {

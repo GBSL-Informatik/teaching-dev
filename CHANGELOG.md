@@ -2,6 +2,8 @@
 
 ## 4.8.2026
 - [💥 Breaking] Make sure to add swizzled `src/theme/AnnouncementBar/index.tsx` wrapper for the Presentationmode to work.
+- [💥 Breaking] In `iCode.ts` the methods `runCode` and `stopExecution` were updated. This affects brython-code and pyodide-code.
+- [ℹ️ Info] `bryRunner.ts` was updated - ensure to update swizzled components accordingly.
 
 ## 9.7.2026
 - [💥 Breaking] make sure the api uses `better-auth@^1.6.23`
@@ -18,6 +20,7 @@
 
 
 ## Changelog Categories
+- [ℹ️ Info]
 - [🗾 Bugfix]
 - [💥 Breaking]
 - [💅 Polish]

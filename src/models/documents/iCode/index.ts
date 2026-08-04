@@ -17,8 +17,8 @@ interface Version {
     pasted?: boolean;
 }
 
-export interface CodePostUpdateMeta {
-    action?: 'runCode';
+export interface CodePostUpdateMeta extends Record<string, unknown> {
+    action?: 'runCode' | 'stopExecution';
 }
 
 class iCode<T extends CodeType = CodeType> extends iDocument<T> {
@@ -147,19 +147,28 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (!meta) {
             return;
         }
-        if (meta.action === 'runCode') {
-            this.runCode();
+        switch (meta.action) {
+            case 'runCode':
+                this.runCode(true);
+                break;
+            case 'stopExecution':
+                this.stopExecution(true);
+                break;
         }
     }
 
     @action
-    triggerRemoteAction(data: CodePostUpdateMeta) {
-        if (!this.isPresenting || !this.canEdit || !this.canExecute) {
+    triggerRemoteAction(action: CodePostUpdateMeta) {
+        if (!action.action) {
             return;
         }
-        // this.store.root.socketStore.streamUpdate(
-
-        // )
+        const group = this.store.root.studentGroupStore.presentingStudentGroups.find(
+            (g) => g.presentedDocument?.id === this.id
+        );
+        if (!this.isPresenting || !this.canEdit || !this.canExecute || !group || !group.presentedDocument) {
+            return;
+        }
+        this.store.root.socketStore.streamUpdate(group.id, { id: this.id, data: this.data }, action);
     }
 
     @computed
@@ -244,13 +253,13 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     }
 
     @action
-    runCode() {
+    runCode(skipRemoteTrigger: boolean = false) {
         // NOOP
         // to be implemented by subclasses
     }
 
     @action
-    stopExecution() {
+    stopExecution(skipRemoteTrigger: boolean = false) {
         // NOOP
         // to be implemented by subclasses
     }

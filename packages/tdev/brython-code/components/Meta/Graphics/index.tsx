@@ -34,8 +34,7 @@ const Graphics = observer((props: Props) => {
                         icon={mdiClose}
                         className={clsx(styles.closeButton)}
                         onClick={() => {
-                            code.stopScript();
-                            code.closeGraphicsModal();
+                            code.stopExecution();
                         }}
                         iconSize="12px"
                     />

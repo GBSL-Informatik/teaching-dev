@@ -359,7 +359,9 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 return;
             }
             model.setData(change.data as any, Source.API, updatedAt);
-            model.postUpdate(change.meta);
+            setTimeout(() => {
+                model.postUpdate(change.meta);
+            }, 0);
         }
     }
 

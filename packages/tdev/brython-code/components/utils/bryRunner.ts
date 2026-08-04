@@ -24,16 +24,18 @@ export const runCode = (
         return;
     }
     const active = document.getElementById(DOM_ELEMENT_IDS.communicator(codeId));
-    active!.setAttribute('data--start-time', `${Date.now()}`);
-    /**
-     * ensure that the script is executed after the current event loop.
-     * Otherwise, the brython script will not be able to access the graphics output.
-     */
-    setTimeout(() => {
-        (window as any).__BRYTHON__.runPythonSource(src, {
-            pythonpath: router === 'hash' ? [] : [libDir],
-            cache: cache
-        });
-    }, 0);
+    if (active) {
+        active.setAttribute('data--start-time', `${Date.now()}`);
+        /**
+         * ensure that the script is executed after the current event loop.
+         * Otherwise, the brython script will not be able to access the graphics output.
+         */
+        setTimeout(() => {
+            (window as any).__BRYTHON__.runPythonSource(src, {
+                pythonpath: router === 'hash' ? [] : [libDir],
+                cache: cache
+            });
+        }, 0);
+    }
     return src;
 };
