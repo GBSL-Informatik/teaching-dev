@@ -123,7 +123,8 @@ export default class Script extends iCode<'script'> {
             if (this.hasTurtleOutput) {
                 this.store.root.pageStore.setRunningTurtleScriptId(this.id);
             }
-            this.graphicsModalExecutionNr = this.graphicsModalExecutionNr + 1;
+            const rndShift = Math.round(Math.random() * 100) + 10;
+            this.graphicsModalExecutionNr = this.graphicsModalExecutionNr + rndShift;
         }
         this._isExecuting = true;
         runCode(
