@@ -163,6 +163,7 @@ class StudentGroup {
         this.presentedDocumentProps = props;
         if (props) {
             this.store.root.documentStore.addPresentedDocumentToStore(this);
+            // only admins will load permissions...
             this.store.root.permissionStore.loadPermissions(props.document.documentRootId).catch((err) => {
                 console.error('Error loading permissions for presented document', err);
             });
