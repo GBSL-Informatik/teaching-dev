@@ -261,7 +261,6 @@ class StudentGroup {
         await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
             console.error('Error creating admin permissions for presented document', err);
         });
-        this.presentedDocument?.streamUpdate();
     }
 
     @action
