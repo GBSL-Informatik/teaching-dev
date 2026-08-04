@@ -56,7 +56,7 @@ const AdminPanel = observer((props: Props) => {
             <Details summary="Einstellungen">
                 <div className={clsx(styles.accessPanels)}>
                     <div className={clsx(styles.panel)}>
-                        <b>Namen der präsentierten Nutzer anzeigen?</b>
+                        <b>Namen der präsentierten User anzeigen?</b>
                         <Button
                             onClick={() => {
                                 group.setPresentingUsersVisibility(
@@ -64,6 +64,8 @@ const AdminPanel = observer((props: Props) => {
                                 );
                             }}
                             color={group.presentedDocumentProps?.hidePresentingUsers ? 'red' : 'green'}
+                            text={group.presentedDocumentProps?.hidePresentingUsers ? 'Nein' : 'Ja'}
+                            iconSide="left"
                             icon={
                                 group.presentedDocumentProps?.hidePresentingUsers
                                     ? mdiEyeLock

@@ -28,7 +28,7 @@ const DocumentPresentationView = observer((props: Props) => {
                     <TabItem value="presentation" label="Präsentation">
                         <CodeEditor group={group} />
                     </TabItem>
-                    <TabItem value="permissions" label="Berechtigungen">
+                    <TabItem value="permissions" label="Admin">
                         <AdminPanel group={group} />
                     </TabItem>
                 </Tabs>

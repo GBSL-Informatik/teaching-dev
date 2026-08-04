@@ -8,12 +8,14 @@ import Popup from 'reactjs-popup';
 import type { default as PresentationPanelLib } from '..';
 import Button from '@tdev-components/shared/Button';
 import { mdiPresentationPlay } from '@mdi/js';
+import { useColorMode } from '@docusaurus/theme-common';
 
 interface Props {}
 
 const PresentationModal = observer((props: Props) => {
     const documentStore = useStore('documentStore');
     const viewStore = useStore('viewStore');
+    const { isDarkTheme } = useColorMode();
 
     const PresentationPanel = useClientLib<typeof PresentationPanelLib>(
         () => import('@tdev-components/PresentationPanel').then((d) => d.default),
@@ -43,7 +45,7 @@ const PresentationModal = observer((props: Props) => {
     return (
         <Popup
             modal
-            overlayStyle={{ background: 'rgba(226, 222, 222, 0.84)' }}
+            overlayStyle={{ background: isDarkTheme ? 'rgba(0, 0, 0, 0.84)' : 'rgba(226, 222, 222, 0.84)' }}
             open={hasDocs}
             repositionOnResize
             closeOnDocumentClick={false}
