@@ -212,18 +212,18 @@ class StudentGroup {
             if (!docRoot) {
                 return console.error('Document root not found for presented document', rootId);
             }
-            await this.setupPresentedDocumentPermissions(docRoot, props);
+            await this._setupPresentedDocument(docRoot, props);
         } else {
             this.setPresentedDocumentProps(null);
             await this.save();
         }
         if (current) {
-            await this.cleanupPresentedDocument(current);
+            await this._cleanupPresentedDocument(current);
         }
     }
 
     @action
-    async setupPresentedDocumentPermissions(
+    async _setupPresentedDocument(
         documentRoot: DocumentRoot<keyof TypeModelMapping>,
         props: DocumentPresentation
     ) {
@@ -244,6 +244,8 @@ class StudentGroup {
         if (!result) {
             return;
         }
+        // wait 500ms to ensure the document is distributed to all clients before setting up permissions
+        await new Promise((resolve) => setTimeout(resolve, 500));
         const groupPermission = this.store.root.permissionStore.createOrUpdateGroupPermission(
             documentRoot.id,
             this,
@@ -263,7 +265,7 @@ class StudentGroup {
     }
 
     @action
-    cleanupPresentedDocument(docProps: DocumentPresentation | null) {
+    _cleanupPresentedDocument(docProps: DocumentPresentation | null) {
         if (!docProps) {
             return;
         }

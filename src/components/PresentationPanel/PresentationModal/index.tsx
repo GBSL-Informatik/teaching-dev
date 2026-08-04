@@ -15,7 +15,7 @@ interface Props {}
 const PresentationModal = observer((props: Props) => {
     const documentStore = useStore('documentStore');
     const viewStore = useStore('viewStore');
-    const { isDarkTheme } = useColorMode();
+    const { colorMode } = useColorMode();
 
     const PresentationPanel = useClientLib<typeof PresentationPanelLib>(
         () => import('@tdev-components/PresentationPanel').then((d) => d.default),
@@ -46,7 +46,7 @@ const PresentationModal = observer((props: Props) => {
         <Popup
             modal
             overlayStyle={{
-                background: isDarkTheme ? 'rgba(0, 0, 0, 0.84)' : 'rgba(226, 222, 222, 0.84)',
+                background: colorMode === 'dark' ? 'rgba(0, 0, 0, 0.84)' : 'rgba(226, 222, 222, 0.84)',
                 maxWidth: '100vw'
             }}
             contentStyle={{
