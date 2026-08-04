@@ -228,7 +228,7 @@ class StudentGroup {
         props: DocumentPresentation
     ) {
         documentRoot.setRootAccess(Access.RW_DocumentRoot, true);
-        documentRoot.setSharedAccess(Access.RW_DocumentRoot);
+        await documentRoot.setSharedAccess(Access.RW_DocumentRoot);
         const minus1ms = new Date(new Date(props.document.updatedAt).getTime() - 1);
         // ensure current document is not displayed as stale
         const docProps = { ...props.document, updatedAt: minus1ms.toISOString() };
