@@ -34,5 +34,10 @@
         right: 0;
         display: flex;
         gap: 0.5rem;
+        flex-wrap: wrap;
+        &.actionsSmall {
+            top: -3ch;
+            left: calc(50vw - 25%);
+        }
     }
 }

@@ -8,6 +8,8 @@ import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
 import iCode from '@tdev-models/documents/iCode';
 import Alert from '@tdev-components/shared/Alert';
 import { useStore } from '@tdev-hooks/useStore';
+import CodeBlock from '@theme/CodeBlock';
+import Loader from '@tdev-components/Loader';
 
 interface Props {
     group: StudentGroup;
@@ -23,6 +25,16 @@ const CodeEditor = observer((props: Props) => {
     const EC = componentStore.editorComponent(docType as CodeType);
     if (!EC) {
         return <Alert type="warning">Kein Editor für Dokumenttyp {docType}</Alert>;
+    }
+    if (group.isPresentedDocumentStale) {
+        return (
+            <div className={clsx(styles.documentPresentationView)}>
+                <Loader label="Warten auf aktuelle Version..." />
+                <CodeBlock language={(group.presentedDocument as iCode<CodeType>).lang}>
+                    {(group.presentedDocument as iCode<CodeType>).code}
+                </CodeBlock>
+            </div>
+        );
     }
     return (
         <div className={clsx(styles.documentPresentationView)}>

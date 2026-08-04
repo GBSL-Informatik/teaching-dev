@@ -5,7 +5,8 @@ import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
 import { orderBy } from 'es-toolkit/array';
-import { Access } from '@tdev-api/document';
+import { Access, type TypeModelMapping } from '@tdev-api/document';
+import type DocumentRoot from './DocumentRoot';
 
 class StudentGroup {
     readonly store: StudentGroupStore;
@@ -178,42 +179,11 @@ class StudentGroup {
         const current = this.presentedDocumentProps;
         if (props) {
             const rootId = props.document.documentRootId;
-            const docRoot = this.store.root.documentRootStore.find(props.document.documentRootId);
+            const docRoot = this.store.root.documentRootStore.find(rootId);
             if (!docRoot) {
-                console.error(
-                    'Document root not found for presented document',
-                    props.document.documentRootId
-                );
-                return;
+                return console.error('Document root not found for presented document', rootId);
             }
-            docRoot.setRootAccess(Access.RW_DocumentRoot);
-            docRoot.setSharedAccess(Access.RW_DocumentRoot);
-            this.setPresentedDocumentProps({
-                ...props,
-                access: Access.RO_DocumentRoot, // make sure streamed access have by default RO_DocumentRoot access, so that the group can view the document
-                sharedAccess: Access.RW_DocumentRoot
-            });
-            const result = await this.save().catch((err) => {
-                console.error('Error saving presented document props', err);
-            });
-            if (!result) {
-                return;
-            }
-            const groupPermission = this.store.root.permissionStore.createOrUpdateGroupPermission(
-                rootId,
-                this,
-                Access.RO_StudentGroup
-            );
-            const adminPermissions = this.admins.map((admin) => {
-                return this.store.root.permissionStore.createOrUpdateUserPermission(
-                    rootId,
-                    admin,
-                    Access.RW_User
-                );
-            });
-            await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
-                console.error('Error creating admin permissions for presented document', err);
-            });
+            await this.setupPresentedDocumentPermissions(docRoot, props);
         } else {
             this.setPresentedDocumentProps(null);
             await this.save();
@@ -221,6 +191,41 @@ class StudentGroup {
         if (current) {
             await this.cleanupPresentedDocument(current);
         }
+    }
+
+    @action
+    async setupPresentedDocumentPermissions(
+        documentRoot: DocumentRoot<keyof TypeModelMapping>,
+        props: DocumentPresentation
+    ) {
+        documentRoot.setRootAccess(Access.RW_DocumentRoot, true);
+        documentRoot.setSharedAccess(Access.RW_DocumentRoot, true);
+        this.setPresentedDocumentProps({
+            ...props,
+            access: Access.RO_DocumentRoot, // make sure streamed access have by default RO_DocumentRoot access, so that the group can view the document
+            sharedAccess: Access.RW_DocumentRoot
+        });
+        const result = await this.save().catch((err) => {
+            console.error('Error saving presented document props', err);
+        });
+        if (!result) {
+            return;
+        }
+        const groupPermission = this.store.root.permissionStore.createOrUpdateGroupPermission(
+            documentRoot.id,
+            this,
+            Access.RO_StudentGroup
+        );
+        const adminPermissions = this.admins.map((admin) => {
+            return this.store.root.permissionStore.createOrUpdateUserPermission(
+                documentRoot.id,
+                admin,
+                Access.RW_User
+            );
+        });
+        await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
+            console.error('Error creating admin permissions for presented document', err);
+        });
     }
 
     @action
@@ -262,6 +267,16 @@ class StudentGroup {
     @computed
     get presentedDocument() {
         return this.store.root.documentStore.find(this.presentedDocumentId);
+    }
+
+    @computed
+    get isPresentedDocumentStale() {
+        if (!this.presentedDocumentProps || !this.presentedDocument) {
+            return true;
+        }
+        return (
+            this.presentedDocument.updatedAt.toISOString() === this.presentedDocumentProps.document.updatedAt
+        );
     }
 
     @action

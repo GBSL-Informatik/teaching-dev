@@ -8,6 +8,7 @@ import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     group: StudentGroup;
+    hideText?: boolean;
 }
 
 const CanEditBadge = observer((props: Props) => {
@@ -19,7 +20,7 @@ const CanEditBadge = observer((props: Props) => {
     if (group.presentedDocument.canEdit) {
         return (
             <Badge color="orange">
-                <Icon path={mdiMovieOpenPlay} size={SIZE_XS} /> Live
+                <Icon path={mdiMovieOpenPlay} size={SIZE_XS} /> {props.hideText ? null : 'Live'}
             </Badge>
         );
     }
