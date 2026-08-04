@@ -1,6 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
+import { Document as DocumentProps, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ModelMeta } from './ModelMeta';
 import iCode from '@tdev-models/documents/iCode';
