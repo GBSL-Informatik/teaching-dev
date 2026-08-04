@@ -21,7 +21,15 @@ export abstract class AssessableMeta<T extends AssessableType> extends TypeMeta<
     readonly scoring?: ScoringFunction<T>;
     @observable accessor title: string | undefined;
     constructor(type: T, props: Partial<AssessableComponentProps<T>>) {
-        super(type, props.readonly ? Access.RO_User : undefined);
+        const explicitProps: Partial<AssessableComponentProps<T>> = {
+            id: props.id,
+            qid: props.qid,
+            title: props.title,
+            correct: props.correct,
+            scoring: props.scoring,
+            readonly: props.readonly
+        };
+        super(type, explicitProps);
         this.qid = props.qid;
         this.correct = props.correct?.map((index) => index - 1); // convert to 0-based index
         this.scoring = props.scoring;

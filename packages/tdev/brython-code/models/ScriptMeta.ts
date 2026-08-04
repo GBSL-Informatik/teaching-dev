@@ -15,6 +15,6 @@ export const createModel: Factory = (data, store) => {
 
 export class ScriptMeta extends iScriptMeta<'script'> {
     constructor(props: Partial<Omit<CodeEditorProps, 'id' | 'className'>>) {
-        super(props, 'script');
+        super('script', props);
     }
 }

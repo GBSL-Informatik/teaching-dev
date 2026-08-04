@@ -1,9 +1,12 @@
 import { action, computed, observable } from 'mobx';
-import { StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
+import { DocumentPresentation, StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
 import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
+import { orderBy } from 'es-toolkit/array';
+import { Access, type TypeModelMapping } from '@tdev-api/document';
+import type DocumentRoot from './DocumentRoot';
 
 class StudentGroup {
     readonly store: StudentGroupStore;
@@ -17,6 +20,8 @@ class StudentGroup {
 
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
+    @observable accessor canPresent: boolean;
+    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null = null;
 
     readonly _pristine: { name: string; description: string };
 
@@ -27,9 +32,13 @@ class StudentGroup {
         this.store = store;
         this.id = props.id;
 
-        this._pristine = { name: props.name, description: props.description };
+        this._pristine = {
+            name: props.name,
+            description: props.description
+        };
         this.name = props.name;
         this.description = props.description;
+        this.canPresent = !!props.canPresent;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -37,6 +46,7 @@ class StudentGroup {
 
         this.updatedAt = new Date(props.updatedAt);
         this.createdAt = new Date(props.createdAt);
+        this.setPresentedDocumentProps(props.presentedDocument ?? null);
     }
 
     get fCreatedAt() {
@@ -49,14 +59,24 @@ class StudentGroup {
 
     @computed
     get students() {
-        return this.store.root.userStore.users.filter(
-            (u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)
+        return orderBy(
+            this.store.root.userStore.users.filter((u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)),
+            ['firstName', 'lastName'],
+            ['asc', 'asc']
         );
     }
 
     @computed
     get admins() {
         return this.store.root.userStore.users.filter((u) => this.adminIds.has(u.id));
+    }
+
+    /**
+     * all users - both students and admins - in the group
+     */
+    @computed
+    get users() {
+        return [...this.admins, ...this.students];
     }
 
     @computed
@@ -66,7 +86,7 @@ class StudentGroup {
 
     @computed
     get children() {
-        return _.orderBy(
+        return orderBy(
             this.store.studentGroups.filter((g) => g.parentId === this.id),
             ['name'],
             ['asc']
@@ -122,6 +142,180 @@ class StudentGroup {
     }
 
     @action
+    setCanPresent(canPresent: boolean, skipSave: boolean = false) {
+        if (this.canPresent === canPresent || !this.isGroupAdmin) {
+            return Promise.resolve(this);
+        }
+        this.canPresent = canPresent;
+        if (!skipSave) {
+            return this.save();
+        }
+        return Promise.resolve(this);
+    }
+
+    @action
+    setPresentingUsersVisibility(isVisible: boolean) {
+        if (!this.presentedDocumentProps) {
+            return;
+        }
+        this.presentedDocumentProps = {
+            ...this.presentedDocumentProps,
+            hidePresentingUsers: !isVisible
+        };
+        return this.save();
+    }
+
+    @action
+    setPresentedDocumentRemoteExecutionPolicy(canExecute: boolean) {
+        if (!this.presentedDocumentProps) {
+            return;
+        }
+        this.presentedDocumentProps = {
+            ...this.presentedDocumentProps,
+            allowRemoteExecution: canExecute
+        };
+        return this.save();
+    }
+
+    @computed
+    get isRemoteExecutionAllowed() {
+        return this.presentedDocumentProps?.allowRemoteExecution ?? false;
+    }
+
+    /**
+     * sets the props only locally without saving to the server
+     */
+    @action
+    setPresentedDocumentProps(props: DocumentPresentation | null) {
+        if (!this.canPresent || this.presentedDocumentProps === props) {
+            return;
+        }
+        this.presentedDocumentProps = props;
+        if (props) {
+            this.store.root.documentStore.addPresentedDocumentToStore(this);
+            // only admins will load permissions...
+            this.store.root.permissionStore.loadPermissions(props.document.documentRootId).catch((err) => {
+                console.error('Error loading permissions for presented document', err);
+            });
+        }
+    }
+
+    @action
+    async apiSetPresentedDocumentProps(props: DocumentPresentation | null) {
+        if (!this.canPresent || this.presentedDocumentProps === props) {
+            return;
+        }
+        const current = this.presentedDocumentProps;
+        if (props) {
+            const rootId = props.document.documentRootId;
+            const docRoot = this.store.root.documentRootStore.find(rootId);
+            if (!docRoot) {
+                return console.error('Document root not found for presented document', rootId);
+            }
+            await this._setupPresentedDocument(docRoot, props);
+        } else {
+            this.setPresentedDocumentProps(null);
+            await this.save();
+        }
+        if (current) {
+            await this._cleanupPresentedDocument(current);
+        }
+    }
+
+    @action
+    async _setupPresentedDocument(
+        documentRoot: DocumentRoot<keyof TypeModelMapping>,
+        props: DocumentPresentation
+    ) {
+        documentRoot.setRootAccess(Access.RW_DocumentRoot, true);
+        await documentRoot.setSharedAccess(Access.RW_DocumentRoot);
+        const minus1ms = new Date(new Date(props.document.updatedAt).getTime() - 1);
+        // ensure current document is not displayed as stale
+        const docProps = { ...props.document, updatedAt: minus1ms.toISOString() };
+        this.setPresentedDocumentProps({
+            ...props,
+            document: docProps,
+            access: Access.RO_DocumentRoot, // make sure streamed access have by default RO_DocumentRoot access, so that the group can view the document
+            sharedAccess: Access.RW_DocumentRoot
+        });
+        const result = await this.save().catch((err) => {
+            console.error('Error saving presented document props', err);
+        });
+        if (!result) {
+            return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const groupPermission = this.store.root.permissionStore.createOrUpdateGroupPermission(
+            documentRoot.id,
+            this,
+            Access.RO_StudentGroup
+        );
+        // wait 500ms to ensure the document is distributed to all clients before setting up permissions
+        const adminPermissions = this.admins.map((admin) => {
+            return this.store.root.permissionStore.createOrUpdateUserPermission(
+                documentRoot.id,
+                admin,
+                Access.RW_User
+            );
+        });
+        await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
+            console.error('Error creating admin permissions for presented document', err);
+        });
+        this.presentedDocument?.streamUpdate();
+    }
+
+    @action
+    _cleanupPresentedDocument(docProps: DocumentPresentation | null) {
+        if (!docProps) {
+            return;
+        }
+        const currentDocRoot = this.store.root.documentRootStore.find(docProps.document.documentRootId);
+        currentDocRoot?.setRootAccess(Access.RW_DocumentRoot, true);
+        return Promise.all([
+            currentDocRoot?.setSharedAccess(Access.None_DocumentRoot),
+            ...this.store.root.permissionStore
+                .userPermissionsByDocumentRoot(docProps.document.documentRootId)
+                .filter((p) => p.userId && this.userIds.has(p.userId))
+                .map((p) => {
+                    return this.store.root.permissionStore.deleteUserPermission(p);
+                }),
+            ...this.store.root.permissionStore
+                .groupPermissionsByDocumentRoot(docProps.document.documentRootId)
+                .filter((p) => p.groupId === this.id)
+                .map((p) => {
+                    return this.store.root.permissionStore.deleteGroupPermission(p);
+                })
+        ]).catch((err) => {
+            console.error('Error deleting user permissions for presented document', err);
+        });
+    }
+
+    @computed
+    get permissions() {
+        return this.store.root.permissionStore.groupPermissions.filter((p) => p.groupId === this.id);
+    }
+
+    @computed
+    get presentedDocumentId() {
+        return this.presentedDocumentProps?.document.id ?? null;
+    }
+
+    @computed
+    get presentedDocument() {
+        return this.store.root.documentStore.find(this.presentedDocumentId);
+    }
+
+    @computed
+    get isPresentedDocumentStale() {
+        if (!this.presentedDocumentProps || !this.presentedDocument) {
+            return true;
+        }
+        return (
+            this.presentedDocument.updatedAt.toISOString() === this.presentedDocumentProps.document.updatedAt
+        );
+    }
+
+    @action
     save() {
         return this.store.save(this);
     }
@@ -132,7 +326,9 @@ class StudentGroup {
             id: this.id,
             name: this.name,
             description: this.description,
-            parentId: this.parentId
+            parentId: this.parentId,
+            canPresent: this.canPresent,
+            presentedDocument: this.presentedDocumentProps
         };
     }
 

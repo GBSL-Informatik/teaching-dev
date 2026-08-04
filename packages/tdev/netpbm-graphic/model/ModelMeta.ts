@@ -11,7 +11,7 @@ export class ModelMeta extends TypeMeta<'netpbm_graphic'> {
     readonly default?: string;
 
     constructor(props: Partial<MetaInit>) {
-        super('netpbm_graphic', props.readonly ? Access.RO_User : undefined);
+        super('netpbm_graphic', props);
         /**
          * the default data can be either provided as a string or as a child element.
          * If it is provided as a child element, the relevant data is extracted by the

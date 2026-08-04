@@ -13,7 +13,7 @@ export class CmsTextMeta extends TypeMeta<'cms_text'> {
     readonly default: string;
 
     constructor(props: Partial<MetaInit>) {
-        super('cms_text', undefined);
+        super('cms_text');
         this.default = props.default ?? '';
     }
 

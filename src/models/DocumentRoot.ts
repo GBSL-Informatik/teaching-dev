@@ -6,16 +6,50 @@ import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessP
 import { isDummyId } from '@tdev-hooks/useDummyId';
 import { orderBy } from 'es-toolkit/array';
 import { Hashery } from 'hashery';
-export const MetaHasher = new Hashery({ cache: { enabled: true, maxSize: 500 } });
+
+/**
+ * removes react specific props from the object:
+ * - children
+ * - props
+ * - ref
+ */
+// const sanitizedProps = (props: any) => {
+//     if (props.props) {
+//         console.log('sanitizedProps called with props:', props, props.props);
+//     }
+//     const {
+//         children,
+//         // ref,
+//         // className,
+//         // style,
+//         suppressContentEditableWarning,
+//         suppressHydrationWarning,
+//         dangerouslySetInnerHTML,
+//         ...rest
+//     } = props;
+//     return rest;
+// };
+
+export const MetaHasher = new Hashery({
+    cache: { enabled: true, maxSize: 500 }
+});
+
+interface BaseMetaProps {
+    access?: Access;
+    readonly?: boolean;
+    pagePosition?: number;
+}
 
 export abstract class TypeMeta<T extends DocumentType> {
     readonly pagePosition: number;
+    readonly props: BaseMetaProps;
     type: T;
     access?: Access;
-    constructor(type: T, access?: Access, pagePosition?: number) {
+    constructor(type: T, props: BaseMetaProps = {}, useMinimalProps: boolean = false) {
         this.type = type;
-        this.access = access;
-        this.pagePosition = pagePosition || 0;
+        this.access = props.access ?? (props.readonly ? Access.RO_User : undefined);
+        this.pagePosition = props.pagePosition || 0;
+        this.props = useMinimalProps ? { access: this.access, pagePosition: this.pagePosition } : props;
     }
     abstract get defaultData(): TypeDataMapping[T];
 }
@@ -41,7 +75,7 @@ class DocumentRoot<T extends DocumentType> {
     constructor(props: DocumentRootProps, meta: TypeMeta<T>, store: DocumentRootStore, isDummy?: boolean) {
         this.store = store;
         this.meta = meta;
-        this._metaHash = MetaHasher.toHashSync(meta);
+        this._metaHash = MetaHasher.toHashSync(meta.props);
         this.id = props.id;
         this._access = props.access;
         this._sharedAccess = props.sharedAccess;
@@ -75,11 +109,15 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @action
-    setRootAccess(access: Access) {
+    setRootAccess(access: Access, skipSave: boolean = false) {
         if (this._access === access) {
-            return;
+            return Promise.resolve();
         }
         this._access = access;
+        if (skipSave) {
+            return Promise.resolve();
+        }
+        return this.save();
     }
 
     get sharedAccess() {
@@ -87,11 +125,15 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @action
-    setSharedAccess(access: Access) {
+    setSharedAccess(access: Access, skipSave: boolean = false) {
         if (this._sharedAccess === access) {
-            return;
+            return Promise.resolve();
         }
         this._sharedAccess = access;
+        if (skipSave) {
+            return Promise.resolve();
+        }
+        return this.save();
     }
 
     get loadStatus() {
@@ -129,6 +171,11 @@ class DocumentRoot<T extends DocumentType> {
     @computed
     get permission() {
         return highestAccess(new Set([...this.permissions.map((p) => p.access), this.access]));
+    }
+
+    @computed
+    get sharedPermission() {
+        return highestAccess(new Set([this.sharedAccess]), this.permission);
     }
 
     permissionsForUser(userId: string) {

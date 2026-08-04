@@ -1,0 +1,58 @@
+.adminCard {
+    max-height: 80vh;
+    overflow-y: hidden;
+    .admin {
+        overflow-y: auto;
+    }
+    .centered {
+        display: flex;
+        justify-content: center;
+    }
+}
+.accessPanels {
+    display: flex;
+    justify-content: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    .panel {
+        display: flex;
+        gap: 0.5rem;
+    }
+}
+.studentSelector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.tabs {
+    --ifm-tabs-padding-vertical: 0.2em;
+    --ifm-tabs-padding-horizontal: 0.4em;
+}
+
+.presentationView {
+    position: relative;
+    .actions {
+        position: absolute;
+        top: 0.5rem;
+        right: 0;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        &.actionsSmall {
+            top: -3ch;
+            left: calc(50vw - 25%);
+        }
+    }
+}
+.content {
+    overflow-y: auto;
+    max-height: 92vh;
+}
+@media screen and (max-width: 420px) {
+    .content {
+        margin-top: 3ch;
+        max-height: 85vh;
+    }
+}

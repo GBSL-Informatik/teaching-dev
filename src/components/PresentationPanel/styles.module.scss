@@ -1,0 +1,9 @@
+.presentationMode {
+    height: 100%;
+    max-width: 1200px;
+    width: min(1200px, calc(95vw));
+}
+.tabs {
+    --ifm-tabs-padding-vertical: 0.2em;
+    --ifm-tabs-padding-horizontal: 0.4em;
+}

@@ -78,13 +78,6 @@ export default class Script extends iCode<'script'> {
         return this.code.split('\n').length;
     }
 
-    @computed
-    get data(): TypeDataMapping['script'] {
-        return {
-            code: this.code
-        };
-    }
-
     @action
     toggleScriptExecution() {
         if (this.isExecuting) {
@@ -125,12 +118,13 @@ export default class Script extends iCode<'script'> {
     }
 
     @action
-    runCode() {
+    runCode(skipRemoteTrigger: boolean = false) {
         if (this.hasGraphicsOutput) {
             if (this.hasTurtleOutput) {
                 this.store.root.pageStore.setRunningTurtleScriptId(this.id);
             }
-            this.graphicsModalExecutionNr = this.graphicsModalExecutionNr + 1;
+            const rndShift = Math.round(Math.random() * 100) + 10;
+            this.graphicsModalExecutionNr = this.graphicsModalExecutionNr + rndShift;
         }
         this._isExecuting = true;
         runCode(
@@ -141,6 +135,9 @@ export default class Script extends iCode<'script'> {
             libDir,
             siteConfig.future.experimental_router
         );
+        if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
+            this.triggerRemoteAction({ action: 'runCode' });
+        }
     }
 
     /**
@@ -186,10 +183,13 @@ export default class Script extends iCode<'script'> {
     }
 
     @action
-    stopExecution() {
+    stopExecution(skipRemoteTrigger: boolean = false) {
         this.stopScript();
         this.closeGraphicsModal();
         this.setExecuting(false);
+        if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
+            this.triggerRemoteAction({ action: 'stopExecution' });
+        }
     }
 
     get source() {

@@ -161,17 +161,44 @@ class PermissionStore extends iStore<`update-${string}`> {
     }
 
     @action
-    createGroupPermission(documentRoot: DocumentRoot<any>, group: StudentGroup, access: Access) {
-        this.withAbortController(`create-${documentRoot.id}-${group.id}`, async (signal) => {
+    createOrUpdateUserPermission(documentRootId: string, user: User, access: Access) {
+        const existingPermission = this.userPermissionsByDocumentRoot(documentRootId).find(
+            (p) => p.userId === user.id
+        );
+        if (existingPermission) {
+            return existingPermission.setAccess(access);
+        } else {
+            return this.createUserPermission(documentRootId, user, access);
+        }
+    }
+
+    @action
+    createOrUpdateGroupPermission(documentRootId: string, group: StudentGroup, access: Access) {
+        const existingPermission = this.groupPermissionsByDocumentRoot(documentRootId).find(
+            (p) => p.groupId === group.id
+        );
+        if (existingPermission) {
+            existingPermission.setAccess(access);
+            return Promise.resolve(existingPermission);
+        } else {
+            return this.createGroupPermission(documentRootId, group, access);
+        }
+    }
+
+    @action
+    createGroupPermission(documentRootId: string, group: StudentGroup, access: Access) {
+        return this.withAbortController(`create-${documentRootId}-${group.id}`, async (signal) => {
             return createGroupPermissionApi(
                 {
                     groupId: group.id,
                     access: access,
-                    documentRootId: documentRoot.id
+                    documentRootId: documentRootId
                 },
                 signal.signal
             ).then(({ data }) => {
-                this.addGroupPermission(new GroupPermission(data, this));
+                const permission = new GroupPermission(data, this);
+                this.addGroupPermission(permission);
+                return permission;
             });
         });
     }
@@ -239,12 +266,16 @@ class PermissionStore extends iStore<`update-${string}`> {
     }
 
     @action
-    loadPermissions(documentRoot: DocumentRoot<any>) {
-        if (this.permissionsLoadedForDocumentRootIds.has(documentRoot.id)) {
+    loadPermissions(documentRootId: string) {
+        if (!this.root.userStore.current?.hasElevatedAccess) {
+            // API currently only allows elevated users to load permissions.
             return Promise.resolve();
         }
-        this.withAbortController(`load-permissions-${documentRoot.id}`, async (signal) => {
-            return permissionsFor(documentRoot.id, signal.signal).then(
+        if (this.permissionsLoadedForDocumentRootIds.has(documentRootId)) {
+            return Promise.resolve();
+        }
+        return this.withAbortController(`load-permissions-${documentRootId}`, async (signal) => {
+            return permissionsFor(documentRootId, signal.signal).then(
                 action(({ data }) => {
                     const docRootId = data.id;
                     data.userPermissions.forEach((p) => {
@@ -255,7 +286,7 @@ class PermissionStore extends iStore<`update-${string}`> {
                             new GroupPermission({ ...p, documentRootId: docRootId }, this)
                         );
                     });
-                    this.permissionsLoadedForDocumentRootIds.add(documentRoot.id);
+                    this.permissionsLoadedForDocumentRootIds.add(documentRootId);
                 })
             );
         });

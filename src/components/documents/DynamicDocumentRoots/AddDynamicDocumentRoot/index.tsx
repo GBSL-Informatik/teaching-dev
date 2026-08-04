@@ -20,7 +20,7 @@ const AddDynamicDocumentRoot = observer((props: Props) => {
         if (!dynamicDocumentRoot.root || !user?.hasElevatedAccess) {
             return;
         }
-        permissionStore.loadPermissions(dynamicDocumentRoot.root);
+        permissionStore.loadPermissions(dynamicDocumentRoot.documentRootId);
     }, [dynamicDocumentRoot?.root, user?.hasElevatedAccess]);
     if (!user || !user.hasElevatedAccess) {
         return null;

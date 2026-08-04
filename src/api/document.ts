@@ -164,7 +164,6 @@ type KeysWithCode<T> = {
 }[keyof Omit<T, 'script_version'>];
 
 export type CodeType = KeysWithCode<TypeDataMapping>;
-
 export interface ContainerTypeModelMapping {
     ['_container_placeholder_']: iDocumentContainer<ContainerType>; // placeholder to avoid empty interface error
 }
@@ -243,7 +242,7 @@ export type Factory<Type extends DocumentType = DocumentType> = (
 export function find<Type extends DocumentType>(
     id: string,
     signal: AbortSignal
-): AxiosPromise<Document<Type>> {
+): AxiosPromise<{ document: Document<Type>; highestPermission: Access }> {
     return api.get(`/documents/${id}`, { signal });
 }
 

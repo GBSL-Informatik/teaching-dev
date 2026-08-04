@@ -3,6 +3,7 @@ import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import {
     allDocuments as apiAllDocuments,
+    find as apiFind,
     create as apiCreate,
     Document as DocumentProps,
     DocumentType,
@@ -34,9 +35,12 @@ import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import TaskState from '@tdev-models/documents/TaskState';
 import Code from '@tdev-models/documents/Code';
+import StudentGroup from '@tdev-models/StudentGroup';
+import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
 import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import Quiz from '@tdev-models/documents/Assessable/Quiz';
+import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -181,15 +185,35 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
+    @computed
+    get presentedDocuments() {
+        return [...this.root.studentGroupStore.presentedDocumentIds]
+            .map((id) => this.find(id))
+            .filter((d) => !!d);
+    }
+
+    @computed
+    get hasPresentingDocuments() {
+        return this.presentedDocuments.length > 0;
+    }
+
     @action
     addToStore<Type extends DocumentType>(
-        data: DocumentProps<Type> | undefined | null
+        data: DocumentProps<Type> | undefined | null,
+        checkStalledState: boolean = false
     ): TypeModelMapping[Type] | undefined {
         /**
          * Adds a new model to the store. Existing models with the same id are replaced.
          */
-        if (!data || !data.data) {
+        if (!data) {
             return;
+        }
+        const old = this.find(data.id);
+        if (old && checkStalledState) {
+            if (isStalledUpdate(old, data)) {
+                // Ignore stale/equal payloads to avoid regressing already streamed data.
+                return old as TypeModelMapping[Type];
+            }
         }
         const factory = this.factories.get(data.type);
         if (!factory) {
@@ -207,7 +231,6 @@ class DocumentStore extends iStore<`delete-${string}`> {
         if (model.root.isDummy) {
             return;
         }
-        const old = this.find(model.id);
         this.removeFromStore(old);
         this.documents.push(model);
         return model as TypeModelMapping[Type];
@@ -338,13 +361,51 @@ class DocumentStore extends iStore<`delete-${string}`> {
     handleUpdate(change: ChangedDocument) {
         const model = this.find(change.id);
         if (model) {
-            const updatedAt = new Date(change.updatedAt);
-            if (model.updatedAt.getTime() >= updatedAt.getTime()) {
-                // ignore stalled updates
+            if (isStalledUpdate(model, change)) {
                 return;
             }
+            const updatedAt = new Date(change.updatedAt);
             model.setData(change.data as any, Source.API, updatedAt);
+            setTimeout(() => {
+                model.postUpdate(change.meta);
+            }, 0);
         }
+    }
+
+    @action
+    addPresentedDocumentToStore(studentGroup: StudentGroup) {
+        const presentedDoc = studentGroup.presentedDocumentProps;
+        if (!presentedDoc) {
+            return;
+        }
+        const rawDoc = presentedDoc.document;
+        const rawMeta = presentedDoc.meta;
+        const model = this.find(rawDoc.id);
+        if (model) {
+            return;
+        }
+        const docRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
+        const metaHash = MetaHasher.toHashSync(rawMeta.props);
+        if (!docRoot || !docRoot?.isDummy || docRoot._metaHash !== metaHash) {
+            this.root.documentRootStore.addDocumentRoot(
+                new DocumentRoot(
+                    {
+                        id: rawDoc.documentRootId,
+                        access: presentedDoc.access,
+                        sharedAccess: presentedDoc.sharedAccess
+                    },
+                    rawMeta,
+                    this.root.documentRootStore,
+                    false
+                )
+            );
+        }
+        const documentRoot = this.root.documentRootStore.find(rawDoc.documentRootId);
+        if (!documentRoot) {
+            return;
+        }
+
+        this.addToStore(rawDoc, true);
     }
 
     @action

@@ -9,7 +9,7 @@ export class ModelMeta extends TypeMeta<'text_message'> {
     readonly type = 'text_message';
 
     constructor(props: Partial<MetaInit>) {
-        super('text_message', props.readonly ? Access.RO_User : undefined);
+        super('text_message', props);
     }
 
     get defaultData(): TypeDataMapping['text_message'] {

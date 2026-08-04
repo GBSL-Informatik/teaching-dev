@@ -14,7 +14,8 @@ import {
     IoEvent,
     NewRecord,
     RecordType,
-    ServerToClientEvents
+    ServerToClientEvents,
+    StreamedDynamicDocument
 } from '../api/IoEventTypes';
 import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
@@ -205,8 +206,19 @@ export class SocketDataStore extends iStore<'ping'> {
      * in the payload, which usually is a documentRootId)
      */
     @action
-    streamUpdate(roomId: string, payload: ChangedDocument) {
-        this.socket?.emit(IoClientEvent.STREAM_UPDATE, { ...payload, roomId });
+    streamUpdate<T extends Record<string, unknown>>(
+        roomId: string,
+        payload: Omit<ChangedDocument, 'updatedAt'>,
+        meta?: T
+    ) {
+        const data: StreamedDynamicDocument<T> = {
+            ...payload,
+            roomId
+        };
+        if (meta) {
+            data.meta = meta;
+        }
+        this.socket?.emit(IoClientEvent.STREAM_UPDATE, data);
     }
 
     @action
@@ -291,7 +303,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.root.permissionStore.handleGroupPermissionUpdate(record as GroupPermission);
                 break;
             case RecordType.Document:
-                this.root.documentStore.addToStore(record as Document<DocumentType>);
+                this.root.documentStore.addToStore(record as Document<DocumentType>, true);
                 break;
             case RecordType.CmsSettings:
                 if (!this.root.viewStore.stores.has('cmsStore' as keyof ViewStoreTypeMapping)) {

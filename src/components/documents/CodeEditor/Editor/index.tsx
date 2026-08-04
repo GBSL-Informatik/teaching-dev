@@ -2,22 +2,36 @@ import * as React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
 import HiddenCode from './HiddenCode';
-import EditorAce from './EditorAce';
+import EditorAce, { type Overrides } from './EditorAce';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 
 import type { CodeType, TypeModelMapping } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 import Header from './Header';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import Alert from '@tdev-components/shared/Alert';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
+    overrides?: Overrides;
 }
 
 const Editor = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const componentStore = useStore('componentStore');
+    const userStore = useStore('userStore');
     const EC = componentStore.editorComponent(code.type);
+    if (!code.canDisplay && !code.isDummy) {
+        if (!userStore.isUserSwitched) {
+            return (
+                <div>
+                    <Alert type="warning">Warte auf die Berechtigung, um den Editor anzuzeigen.</Alert>
+                    <PermissionsPanel documentRootId={code.documentRootId} />
+                </div>
+            );
+        }
+    }
     return (
         <>
             {EC?.Header ? (
@@ -27,7 +41,7 @@ const Editor = observer(<T extends CodeType>(props: Props<T>) => {
             )}
             <div className={clsx(styles.editorContainer)}>
                 <HiddenCode type="pre" code={code} />
-                <EditorAce code={code} />
+                <EditorAce code={code} overrides={props.overrides} />
                 <HiddenCode type="post" code={code} />
             </div>
             {EC?.Footer && <EC.Footer code={code as unknown as TypeModelMapping[T]} />}

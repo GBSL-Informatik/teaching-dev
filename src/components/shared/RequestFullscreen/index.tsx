@@ -32,7 +32,7 @@ const RequestFullscreen = observer((props: Props) => {
                     viewStore.requestFullscreen(id);
                 }
             }}
-            className={props.className}
+            className={className}
             color={props.color || 'blue'}
             size={props.size}
             title={isFullscreen ? 'Vollbildmodus beenden' : 'Vollbildmodus'}

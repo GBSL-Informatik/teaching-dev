@@ -14,6 +14,9 @@ import {
     StudentGroup as ApiStudentGroup
 } from '../api/studentGroup';
 import User from '../models/User';
+import { orderBy } from 'es-toolkit/array';
+
+const NEEDS_REPLACEMENT_KEYS: (keyof ApiStudentGroup)[] = ['name', 'description'];
 
 export class StudentGroupStore extends iStore<`members-${string}`> {
     readonly root: RootStore;
@@ -40,9 +43,31 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
             return [];
         }
         if (this.root.userStore.current?.isAdmin) {
-            return this.studentGroups;
+            return orderBy(this.studentGroups, [(group) => group._pristine.name], ['asc']);
         }
-        return this.studentGroups.filter((group) => group.isGroupAdmin);
+        return orderBy(
+            this.studentGroups.filter((group) => group.isGroupAdmin),
+            [(group) => group._pristine.name],
+            ['asc']
+        );
+    }
+
+    @computed
+    get presentableStudentGroups() {
+        return this.studentGroups.filter((group) => group.canPresent);
+    }
+
+    @computed
+    get presentingStudentGroups() {
+        return this.presentableStudentGroups.filter((group) => group.presentedDocumentProps !== null);
+    }
+
+    @computed
+    get presentedDocumentIds() {
+        const ids = this.presentingStudentGroups
+            .map((group) => group.presentedDocumentId)
+            .filter(Boolean) as string[];
+        return new Set(ids);
     }
 
     findByName = computedFn(
@@ -93,22 +118,26 @@ export class StudentGroupStore extends iStore<`members-${string}`> {
         if (!model) {
             return;
         }
-        const needsReplace = (['name', 'description'] as ('name' | 'description')[]).some(
+        const needsReplace = NEEDS_REPLACEMENT_KEYS.some(
             (key) => data[key] !== undefined && data[key] !== model[key]
         );
         if (needsReplace) {
             return this.addToStore(new StudentGroup(data, this));
         }
-        if (model && model.id) {
-            if (data.parentId !== undefined && data.parentId !== model.parentId) {
-                model.setParentId(data.parentId);
-            }
-            if (Array.isArray(data.userIds)) {
-                model.userIds.replace(data.userIds);
-            }
-            if (Array.isArray(data.adminIds)) {
-                model.adminIds.replace(data.adminIds);
-            }
+        if (data.parentId !== undefined && data.parentId !== model.parentId) {
+            model.setParentId(data.parentId);
+        }
+        if (data.canPresent !== undefined && data.canPresent !== model.canPresent) {
+            model.setCanPresent(data.canPresent, true);
+        }
+        if (data.presentedDocument !== undefined && data.presentedDocument !== model.presentedDocumentProps) {
+            model.setPresentedDocumentProps(data.presentedDocument ?? null);
+        }
+        if (Array.isArray(data.userIds)) {
+            model.userIds.replace(data.userIds);
+        }
+        if (Array.isArray(data.adminIds)) {
+            model.adminIds.replace(data.adminIds);
         }
     }
 

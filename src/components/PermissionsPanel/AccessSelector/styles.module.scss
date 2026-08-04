@@ -1,6 +1,16 @@
 .selector {
     .button {
         position: relative;
+        &.unaffected {
+            &:global(.button--primary) {
+                --ifm-color-primary-dark: var(--ifm-color-primary-darkest);
+                --ifm-color-primary: var(--ifm-color-primary-darker);
+            }
+            &:global(.button--secondary) {
+                --ifm-color-secondary-dark: var(--ifm-color-secondary-darkest);
+                --ifm-color-secondary: var(--ifm-color-secondary-darker);
+            }
+        }
         .mark {
             position: absolute;
             top: -6px;

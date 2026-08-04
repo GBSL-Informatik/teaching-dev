@@ -12,15 +12,17 @@ export interface MetaInit {
 
 export class ModelMeta extends TypeMeta<'excalidoc'> {
     readonly type = 'excalidoc';
+    readonly props: Partial<MetaInit>;
     readonly defaultElements: readonly ExcalidrawElement[];
     readonly defaultFiles: BinaryFiles;
     readonly defaultImage: string;
 
     constructor(props: Partial<MetaInit>) {
-        super('excalidoc', props.readonly ? Access.RO_User : undefined);
+        super('excalidoc', props);
         this.defaultElements = props.defaultElements || [];
         this.defaultFiles = props.defaultFiles || {};
         this.defaultImage = props.defaultImage || '';
+        this.props = props;
     }
 
     get defaultData(): TypeDataMapping['excalidoc'] {

@@ -10,6 +10,8 @@ import _ from 'es-toolkit/compat';
 import { action } from 'mobx';
 import Icon from '@mdi/react';
 import TextInput from '@tdev-components/shared/TextInput';
+import DefinitionList from '@tdev-components/DefinitionList';
+import Badge from '@tdev-components/shared/Badge';
 
 const StudentGroupPanel = observer(() => {
     const userStore = useStore('userStore');
@@ -20,6 +22,7 @@ const StudentGroupPanel = observer(() => {
     if (!current?.hasElevatedAccess) {
         return null;
     }
+    const presentableGroups = groupStore.managedStudentGroups.filter((g) => g.canPresent);
     return (
         <div>
             <div className={clsx(styles.controls)}>
@@ -58,6 +61,34 @@ const StudentGroupPanel = observer(() => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className={clsx(styles.streamableGroups)}>
+                <DefinitionList>
+                    <dt>Präsentationsberechtigte Gruppen</dt>
+                    <dd>
+                        <Badge color={presentableGroups.length > 0 ? 'red' : 'lightBlue'}>
+                            {presentableGroups.length} Gruppen
+                        </Badge>
+                    </dd>
+                    <dd>
+                        <i>
+                            Während Prüfungen sollten diese Berechtigungen deaktiviert werden, da sonst
+                            potenziell sensible Informationen ausgetauscht werden können.
+                        </i>
+                    </dd>
+                    <dt>Aktionen</dt>
+                    <dd>
+                        <Button
+                            onClick={() => {
+                                presentableGroups.forEach((g) => g.setCanPresent(false));
+                            }}
+                            icon={mdiRestore}
+                            iconSide="left"
+                            color="secondary"
+                            text="Alle Berechtigungen deaktivieren"
+                        />
+                    </dd>
+                </DefinitionList>
             </div>
             <div className={clsx(styles.studentGroups)}>
                 {(() => {

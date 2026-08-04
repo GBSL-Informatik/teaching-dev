@@ -98,7 +98,11 @@ const AccessPanel = observer((props: Props) => {
                                                 if (currentPermission) {
                                                     currentPermission.setAccess(access);
                                                 } else {
-                                                    permissionStore.createGroupPermission(dr, group, access);
+                                                    permissionStore.createGroupPermission(
+                                                        dr.id,
+                                                        group,
+                                                        access
+                                                    );
                                                 }
                                             });
                                         }}

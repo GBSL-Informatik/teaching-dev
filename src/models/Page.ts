@@ -140,6 +140,36 @@ export default class Page {
         return this._primaryViewedStudentGroupName ?? this.store.currentStudentGroupName;
     }
 
+    @computed
+    get relevantStudentGroups() {
+        const group = this.store.root.studentGroupStore.findByName(this.store.currentStudentGroupName);
+        if (!group) {
+            return [];
+        }
+        const groups: StudentGroup[] = [];
+        const addGroupAndChildren = (g: StudentGroup) => {
+            groups.push(g);
+            g.children.forEach((child) => addGroupAndChildren(child));
+        };
+        addGroupAndChildren(group);
+        return groups;
+    }
+
+    @computed
+    get relevantStudentGroupIds(): Set<string> {
+        const group = this.store.root.studentGroupStore.findByName(this.store.currentStudentGroupName);
+        if (!group) {
+            return new Set();
+        }
+        const groups: StudentGroup[] = [];
+        const addGroupAndChildren = (g: StudentGroup) => {
+            groups.push(g);
+            g.children.forEach((child) => addGroupAndChildren(child));
+        };
+        addGroupAndChildren(group);
+        return new Set(groups.map((g) => g.id));
+    }
+
     @action
     setPrimaryViewedStudentGroupName(name?: string) {
         this._primaryViewedStudentGroupName = name;
