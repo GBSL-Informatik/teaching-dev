@@ -8,6 +8,7 @@ import Popup from 'reactjs-popup';
 import type { default as PresentationPanelLib } from '..';
 import Button from '@tdev-components/shared/Button';
 import { mdiPresentationPlay } from '@mdi/js';
+import PresentationPanel from '..';
 import { useColorMode } from '@docusaurus/theme-common';
 
 interface Props {}
@@ -17,13 +18,13 @@ const PresentationModal = observer((props: Props) => {
     const viewStore = useStore('viewStore');
     const { colorMode } = useColorMode();
 
-    const PresentationPanel = useClientLib<typeof PresentationPanelLib>(
-        () => import('@tdev-components/PresentationPanel').then((d) => d.default),
-        '@tdev-components/PresentationPanel'
-    );
-    if (!PresentationPanel) {
-        return null;
-    }
+    // const PresentationPanel = useClientLib<typeof PresentationPanelLib>(
+    //     () => import('@tdev-components/PresentationPanel').then((d) => d.default),
+    //     '@tdev-components/PresentationPanel'
+    // );
+    // if (!PresentationPanel) {
+    //     return null;
+    // }
     const hasDocs = documentStore.presentedDocuments.length > 0;
     if (hasDocs && viewStore.presentationPanelState === 'closed') {
         return (
