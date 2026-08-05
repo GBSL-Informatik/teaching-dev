@@ -23,7 +23,8 @@ const migrate: MigrationRunner = async (root, name): Promise<void> => {
     // register new package by installing
     await $`yarn install`;
 
-    await $`git commit -am ${'[tdev] move migration tools to package.'}`;
+    await $`git add .`;
+    await $`git commit -m ${'[tdev] move migration tools to package.'}`;
     await $`git checkout main`;
     await $`git merge ${branchName}`;
     await $`git branch -d ${branchName}`;
