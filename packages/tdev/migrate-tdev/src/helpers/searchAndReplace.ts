@@ -1,5 +1,4 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 
 type replaceFn = (match: string, args: any[]) => string;
 interface ReplaceWith {

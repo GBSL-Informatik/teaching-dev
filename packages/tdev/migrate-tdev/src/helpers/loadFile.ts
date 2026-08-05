@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { load as yamlLoad } from 'js-yaml';
-import { Config } from '@site/updateSync/types';
+import type { Config } from '@site/updateSync/types.js';
 
 // add overload signatures for loadFile function: `${string}.json` and `${string}.yaml` or `${string}.yml` should return a Promise<T extends Object> and any other string should return a Promise<string>
 

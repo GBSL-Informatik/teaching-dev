@@ -2,7 +2,7 @@
 page_id: 35817c9b-3336-4fd4-9749-1fd973851568
 ---
 
-# Migrate TDev
+# migrate-tdev
 
 Simples CLI tool, um mehrere Teaching-Dev Projekte zu migrieren.
 
@@ -33,7 +33,7 @@ tdevPages:
 Eine Migration kann mit folgendem Befehl gestartet werden. Alle Migrationen im Ordner `migrations`, die nicht mit `.done.ts` enden, werden in aufsteigender Reihenfolge ausgeführt. Nach erfolgreicher Migration wird die Migrationsdatei in `.done.ts` umbenannt, um zu verhindern, dass sie erneut ausgeführt werden.
 
 ```bash
-yarn workspace @tdev/material-sync migrateTdev [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--done]]
+yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--done]]
 ```
 
 `--only`
@@ -47,12 +47,12 @@ yarn workspace @tdev/material-sync migrateTdev [[--only="inf-abc,inf-ccd"]] [[--
 
 # examples:
 ```bash
-yarn workspace @tdev/material-sync migrateTdev                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
-yarn workspace @tdev/material-sync migrateTdev --only="inf-abc"             # --> migrates only inf-abc
-yarn workspace @tdev/material-sync migrateTdev --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
-yarn workspace @tdev/material-sync migrateTdev --only="inf-"                # --> migrates only pages with "inf-" in the path
-yarn workspace @tdev/material-sync migrateTdev --skip="inf-abc,inf-ccd"     # --> migrates all projects, except inf-abc and inf-ccd
-yarn workspace @tdev/material-sync migrateTdev --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
+yarn workspace @tdev/migrate-tdev migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
+yarn workspace @tdev/migrate-tdev migrate --only="inf-abc"             # --> migrates only inf-abc
+yarn workspace @tdev/migrate-tdev migrate --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
+yarn workspace @tdev/migrate-tdev migrate --only="inf-"                # --> migrates only pages with "inf-" in the path
+yarn workspace @tdev/migrate-tdev migrate --skip="inf-abc,inf-ccd"     # --> migrates all projects, except inf-abc and inf-ccd
+yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
 ```
 
 ## Migrationen
@@ -60,10 +60,10 @@ yarn workspace @tdev/material-sync migrateTdev --only="inf-" --done         # --
 Migrationen sind simple TypeScript-Dateien, wobei einige Hilfsfunktionen zur Verfügung stehen. Jede Migration muss einen Standard-Export der Funktion `migrate` aufweisen. Eine minimale Migration sieht wie folgt aus: 
 
 ```ts
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root, apiMode, managed);
+const migrate: MigrationRunner = async (root, name, timestamp, config): Promise<void> => {
+    console.log('Arguments: ', root, name, timestamp, config);
 };
 
 export default migrate;
@@ -76,15 +76,14 @@ Mit der Bibliothek `execa` können Shell-Befehle direkt ausgeführt werden und s
 Eine minimale Migration, die ein Projekt formatiert, alle Änderungen commited und pusht, sieht wie folgt aus:
 
 ```ts
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root, apiMode, managed);
+const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
     await $`yarn format`
     await $`git add .`;
-    await $`git commit -m ${'Migrate TDEV'}`;
+    await $`git commit -m ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
 };
 
@@ -98,14 +97,13 @@ Oft müssen Pakete in den Teaching-Dev Projekten aktualisiert werden. Mit der Fu
 Im Beispiel werden die Pakete `mobx` und `mobx-react-lite` aktualisiert, die `devDependencies` `prettier` installiert und das Paket `@mdxeditor/editor` entfernt. Es wird direkt das `package.json` modifiziert und nicht mit `yarn add/upgrade` die Pakete installiert, da es oftmals schneller ist und keine Konflikte im `yarn.lock` entstehen. 
 
 ```ts
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { packageJson } from '../helpers/loadFile';
 import { execa } from 'execa';
 import { writePackageJson } from '../helpers/writeFile';
 import { modifyPackages } from '../helpers/actions';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
     
     // package.json
@@ -128,7 +126,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await $`rm yarn.lock`;
     await $`yarn install`;
 
-    await $`git commit -am ${'Migrate TDEV'}`;
+    await $`git commit -am ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
 };
 
@@ -140,14 +138,13 @@ export default migrate;
 Es können auch explizite Änderungen an der `updateTdev.config.yaml` vorgenommen werden. Aktuell kann die Funktion `ensureTdevConfig` nur Keys aktualisieren oder hinzufügen, aber nicht entfernen. Sobald die Funktionalität benötigt wird, kann sie erweitert werden.
 
 ```ts
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { packageJson, updateTdevConfig } from '../helpers/loadFile';
 import { execa } from 'execa';
 import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
 import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
     
@@ -166,7 +163,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await writeUpdateTdevConfig(root, config);
     await $`yarn run updateTdev`;
 
-    await $`git commit -am ${'Migrate TDEV'}`;
+    await $`git commit -am ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
 };
 
@@ -176,13 +173,13 @@ export default migrate;
 ### Userinput während der Migration
 
 ```ts
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import shellInput from '../helpers/shellInput';
 
-const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
+const migrate: MigrationRunner = async (): Promise<void> => {
     const res = await shellInput(
         'Zusätzliche Änderungen notwendig? Durchführen, committen und danach mit Enter bestätigen.'
-    ); // wartet auf Enter, um fortzufahren
+    );
 };
 
 export default migrate;
@@ -191,12 +188,12 @@ export default migrate;
 ### Suchen und Ersetzen in Dateien
 
 ```ts
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { filesContainingMatch } from '../helpers/filesContainingMatch';
 import { applySearchAndReplace } from '../helpers/searchAndReplace';
 import { hasUncommittedChanges } from '../helpers/gitHelpers';
 
-const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
+const migrate: MigrationRunner = async (root): Promise<void> => {
     // alle Dateien im Projekt, die den String "@observable.ref" enthalten.
     const files = await filesContainingMatch(root, `@observable\\.ref`);
     await applySearchAndReplace(files, [
@@ -222,3 +219,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Prom
 
 export default migrate;
 ```
+
+## tdev-migrations
+
+See [@github](https://github.com/GBSL-Informatik/teaching-dev/tree/main/packages/tdev/migrate-tdev/migrations) for a list of all available migrations.

@@ -11,10 +11,9 @@
     "cleanup": "tsx src/cleanup.ts",
     "restore": "tsx src/restore.ts",
     "addClass": "tsx src/add_class.ts",
-    "prepareArchive": "tsx src/prepare_archive.ts",
-    "migrateTdev": "tsx src/migrate_tdev/index.ts"
+    "prepareArchive": "tsx src/prepare_archive.ts"
   },
-  "dependencies": {},
+  "dependencies": { },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/minimist": "^1.2.5",

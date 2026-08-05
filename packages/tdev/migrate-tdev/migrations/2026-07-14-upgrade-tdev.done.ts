@@ -1,11 +1,10 @@
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
-    const branchName = `migrate-${Date.now()}`;
+    const branchName = `migrate-${name}`;
     await $`git checkout -b ${branchName}`;
 
     await $`yarn run updateTdev`;

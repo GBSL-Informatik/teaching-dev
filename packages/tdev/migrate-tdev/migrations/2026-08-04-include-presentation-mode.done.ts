@@ -1,19 +1,18 @@
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
-import { packageJson, updateTdevConfig } from '../helpers/loadFile';
-import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
-import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
-import { filesContainingMatch } from '../helpers/filesContainingMatch';
-import { applySearchAndReplace } from '../helpers/searchAndReplace';
-import { hasUncommittedChanges } from '../helpers/gitHelpers';
+import { packageJson, updateTdevConfig } from '../src/helpers/loadFile';
+import { ensureTdevConfig, modifyPackages } from '../src/helpers/actions';
+import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
+import { filesContainingMatch } from '../src/helpers/filesContainingMatch';
+import { applySearchAndReplace } from '../src/helpers/searchAndReplace';
+import { hasUncommittedChanges } from '../src/helpers/gitHelpers';
 
-const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
     await $`git checkout main`;
     await $`git pull`;
 
-    const branchName = `migrate-${timestamp}`;
+    const branchName = `migrate-${name}`;
     await $`git checkout -b ${branchName}`;
 
     const config = await updateTdevConfig(root);
