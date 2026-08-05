@@ -172,3 +172,21 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
 
 export default migrate;
 ```
+
+### Userinput während der Migration
+
+```ts
+import { MigrationRunner } from '../constants';
+import { execa } from 'execa';
+import { packageJson, updateTdevConfig } from '../helpers/loadFile';
+import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
+import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
+
+const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
+    const $ = execa({ stdio: 'inherit', stdin: 'inherit' });
+
+    await $`read -p "Zusätzliche Änderungen notwendig? Durchführen, committen und danach mit Enter bestätigen."`;
+};
+
+export default migrate;
+```
