@@ -1,7 +1,7 @@
 import { AssessableType, Document as DocumentProps } from '@tdev-api/document';
 import iDocument from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, observableRef } from 'mobx';
 import React from 'react';
 import { AssessableMeta } from './AssessableMeta';
 import Quiz from './Quiz';
@@ -42,8 +42,8 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     readonly qid?: string;
     @observable accessor scrollTo: boolean = false;
     @observable accessor _assessed: boolean;
-    // @observable.ref accessor scoringFunction: ((self: this) => Assessement) | null = null;
-    @observable.ref accessor linkedMeta: AssessableMeta<T> | null = null;
+    // @observableRef accessor scoringFunction: ((self: this) => Assessement) | null = null;
+    @observableRef accessor linkedMeta: AssessableMeta<T> | null = null;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store, 50);

@@ -1,6 +1,6 @@
 import { RootStore } from '@tdev-stores/rootStore';
 import { io, Socket } from 'socket.io-client';
-import { action, observable, reaction } from 'mobx';
+import { action, observable, reaction, observableRef } from 'mobx';
 import { default as api } from '@tdev-api/base';
 import iStore from '@tdev-stores/iStore';
 import {
@@ -38,11 +38,11 @@ type PrimitiveCmsStore = { handleSettingsChange: (settings: CmsSettings) => void
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
 
-    @observable.ref accessor socket: TypedSocket | undefined = undefined;
+    @observableRef accessor socket: TypedSocket | undefined = undefined;
 
     @observable accessor isLive: boolean = false;
 
-    @observable.ref accessor actionRequest: Action['action'] | undefined = undefined;
+    @observableRef accessor actionRequest: Action['action'] | undefined = undefined;
 
     recordsToCreate = observable.set<DocumentType>(RecordsToCreate);
 

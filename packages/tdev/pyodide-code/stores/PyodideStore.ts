@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction } from 'mobx';
+import { action, computed, observable, runInAction, observableRef } from 'mobx';
 import * as Comlink from 'comlink';
 import ViewStore from '@tdev-stores/ViewStores';
 import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
@@ -28,8 +28,8 @@ export default class PyodideStore {
     viewStore: ViewStore;
     _worker: Worker | null = null;
     @observable accessor runtimeId = Date.now();
-    @observable.ref accessor pyWorker: Comlink.Remote<PyWorker> | null = null;
-    @observable.ref accessor _serviceWorkerRegistration: ServiceWorker | null = null;
+    @observableRef accessor pyWorker: Comlink.Remote<PyWorker> | null = null;
+    @observableRef accessor _serviceWorkerRegistration: ServiceWorker | null = null;
     awaitingInputPrompt = observable.map<string, string | null>();
     constructor(viewStore: ViewStore) {
         this.viewStore = viewStore;

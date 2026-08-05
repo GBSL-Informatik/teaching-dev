@@ -2,7 +2,7 @@
  * A Markdown or MDX Page
  */
 
-import { action, computed, observable, ObservableMap } from 'mobx';
+import { action, computed, observable, ObservableMap, observableRef } from 'mobx';
 import { AUTO_GENERATED_PAGE_PREFIX, PageStore } from '@tdev-stores/PageStore';
 import _ from 'es-toolkit/compat';
 import iDocument from '@tdev-models/iDocument';
@@ -22,8 +22,8 @@ export default class Page {
     readonly path: string;
     initialLoadComplete = false;
 
-    @observable.ref accessor _primaryViewedStudentGroupName: string | undefined = undefined;
-    @observable.ref accessor _viewedStudentGroup: StudentGroup | undefined = undefined;
+    @observableRef accessor _primaryViewedStudentGroupName: string | undefined = undefined;
+    @observableRef accessor _viewedStudentGroup: StudentGroup | undefined = undefined;
     documentRootConfigs: ObservableMap<string, PageConfig>;
 
     dynamicValues = observable.map<string, string>();

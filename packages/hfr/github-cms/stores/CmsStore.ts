@@ -1,4 +1,4 @@
-import { action, computed, observable, reaction } from 'mobx';
+import { action, computed, observable, reaction, observableRef } from 'mobx';
 import { RootStore } from '@tdev-stores/rootStore';
 import iStore from '@tdev-stores/iStore';
 import {
@@ -42,10 +42,10 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
     readonly rootViewStore: ViewStore;
     @observable accessor repoOwner: string = organizationName!;
     @observable accessor repoName: string = projectName!;
-    @observable.ref accessor settings: Settings | undefined;
-    @observable.ref accessor partialSettings: PartialSettings | undefined;
-    @observable.ref accessor github: Github | undefined;
-    @observable.ref accessor viewStore: CmsViewStore;
+    @observableRef accessor settings: Settings | undefined;
+    @observableRef accessor partialSettings: PartialSettings | undefined;
+    @observableRef accessor github: Github | undefined;
+    @observableRef accessor viewStore: CmsViewStore;
 
     @observable accessor initialized = false;
     @observable accessor requestedNavigation: FileNavigation | undefined = undefined;

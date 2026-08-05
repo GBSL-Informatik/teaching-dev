@@ -1,8 +1,8 @@
 import { Clock } from '@tdev/packages/pyodide-code/models/Clock';
-import { action, observable } from 'mobx';
+import { action, observable, observableRef } from 'mobx';
 
 class ClockStore {
-    @observable.ref accessor defaultClock = new Clock();
+    @observableRef accessor defaultClock = new Clock();
     clocks = observable.map<string, Clock>([], { deep: false });
 
     @action

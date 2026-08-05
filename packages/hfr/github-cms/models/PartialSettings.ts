@@ -1,7 +1,7 @@
 import { CmsSettings } from '@tdev-api/cms';
 import { CmsStore } from '../stores/CmsStore';
 import _ from 'es-toolkit/compat';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, observableRef } from 'mobx';
 
 export const REFRESH_THRESHOLD = 60 * 60;
 
@@ -13,8 +13,8 @@ class PartialSettings {
     readonly _tokenExpiresAt?: Date;
     readonly createdAt: Date;
 
-    @observable.ref accessor _pristine: CmsSettings;
-    @observable.ref accessor updatedAt: Date;
+    @observableRef accessor _pristine: CmsSettings;
+    @observableRef accessor updatedAt: Date;
 
     @observable accessor activeBranchName: string | undefined | null;
     @observable accessor activePath: string | undefined | null;

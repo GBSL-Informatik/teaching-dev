@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, observableRef } from 'mobx';
 import { DocumentPresentation, StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
 import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
@@ -21,7 +21,7 @@ class StudentGroup {
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
     @observable accessor canPresent: boolean;
-    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null = null;
+    @observableRef accessor presentedDocumentProps: DocumentPresentation | null = null;
 
     readonly _pristine: { name: string; description: string };
 

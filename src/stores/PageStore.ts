@@ -1,4 +1,4 @@
-import { action, computed, observable, reaction, transaction } from 'mobx';
+import { action, computed, observable, reaction, transaction, observableRef } from 'mobx';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import Page from '@tdev-models/Page';
@@ -59,7 +59,7 @@ export class PageStore extends iStore {
     @observable accessor currentPageId: string | undefined = undefined;
     @observable accessor runningTurtleScriptId: string | undefined = undefined;
 
-    @observable.ref accessor _pageIndex: PageIndex[] = [];
+    @observableRef accessor _pageIndex: PageIndex[] = [];
     @observable accessor currentPath: string | undefined = undefined;
     loadedPageIndices = new Set<string>();
 

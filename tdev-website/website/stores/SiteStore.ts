@@ -1,10 +1,10 @@
 import { RootStore } from '@tdev-stores/rootStore';
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
-import { action, observable } from 'mobx';
+import { action, observableRef } from 'mobx';
 import ClockStore from './ClockStore';
 
 export default class SiteStore {
-    @observable.ref accessor clockStore = new ClockStore();
+    @observableRef accessor clockStore = new ClockStore();
     constructor(root: RootStore) {}
 
     @action
