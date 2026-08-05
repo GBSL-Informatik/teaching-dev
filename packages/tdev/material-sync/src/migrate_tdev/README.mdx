@@ -187,3 +187,38 @@ const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Prom
 
 export default migrate;
 ```
+
+### Suchen und Ersetzen in Dateien
+
+```ts
+import { MigrationRunner } from '../constants';
+import { filesContainingMatch } from '../helpers/filesContainingMatch';
+import { applySearchAndReplace } from '../helpers/searchAndReplace';
+import { hasUncommittedChanges } from '../helpers/gitHelpers';
+
+const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
+    // alle Dateien im Projekt, die den String "@observable.ref" enthalten.
+    const files = await filesContainingMatch(root, `@observable\\.ref`);
+    await applySearchAndReplace(files, [
+        {
+            pattern: '@observable\\.ref',
+            replacement: '@observableRef'
+        },
+        {
+            // regex-pattern: `/b` erzeugt ein word-boundary, um sicherzustellen, dass nur `observable` und nicht `observableX` ersetzt wird.
+            pattern: /^import {.*\b(observable)\b.*} from 'mobx'/gm,
+            replacement: (match, args) => {
+                // fügt bei jedem observable zusätzlich noch observableRef hinzu.
+                return match.replace(/\b(observable)\b/g, 'observable, observableRef');
+            }
+        }
+    ]);
+
+    const hasChanges = await hasUncommittedChanges();
+    if (hasChanges) {
+        await $`git commit -am ${'[tdev] migrate imports to mobx@7 (using @observableRef instead of @observable.ref).'}`;
+    }
+};
+
+export default migrate;
+```

@@ -1,6 +1,7 @@
 import { Config } from '@site/updateSync/types';
 import { type PackageJson } from './loadFile';
 import { execa } from 'execa';
+import { hasUncommittedChanges } from './gitHelpers';
 
 export const ensureTdevConfig = (config: Config, ensure: Config['trackedElements']) => {
     for (const element of ensure) {
@@ -50,8 +51,8 @@ export const modifyPackages = (
 
 export const gitEnsureClean = async (ensureBranch?: string) => {
     // ensure qith execa that git has no tracked changes, otherwise migration will fail
-    const { stdout: gitStatusUnclean } = await execa`git status --porcelain`;
-    if (gitStatusUnclean) {
+    const hasChanges = await hasUncommittedChanges();
+    if (hasChanges) {
         const { stdout: pwd } = await execa`pwd`;
         throw new Error(
             `Git has uncommitted changes in ${pwd}. Please commit or stash them before running the migration.`

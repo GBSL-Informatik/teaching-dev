@@ -3,6 +3,9 @@ import { execa } from 'execa';
 import { packageJson, updateTdevConfig } from '../helpers/loadFile';
 import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
 import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
+import { filesContainingMatch } from '../helpers/filesContainingMatch';
+import { applySearchAndReplace } from '../helpers/searchAndReplace';
+import { hasUncommittedChanges } from '../helpers/gitHelpers';
 
 const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
     console.log('Starting TDEV migration: ', root);
@@ -21,8 +24,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Prom
     await writeUpdateTdevConfig(root, config);
     await $`yarn run updateTdev`;
 
-    await $`git add .`;
-    await $`git commit -m ${'[tdev] include presentation mode.'}`;
+    await $`git commit -am ${'[tdev] include presentation mode.'}`;
 
     // package.json
     const pkg = await packageJson(root);
@@ -43,6 +45,22 @@ const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Prom
 
     await $`git add .`;
     await $`git commit -m ${'[tdev] update dependencies with mobx@7.'}`;
+
+    const files = await filesContainingMatch(root, `@observable\\.ref`);
+    await applySearchAndReplace(files, [
+        { pattern: '@observable\\.ref', replacement: '@observableRef' },
+        {
+            pattern: /^import {.*\b(observable)\b.*} from 'mobx'/gm,
+            replacement: (match, args) => {
+                return match.replace(/\b(observable)\b/g, 'observable, observableRef');
+            }
+        }
+    ]);
+
+    const hasChanges = await hasUncommittedChanges();
+    if (hasChanges) {
+        await $`git commit -am ${'[tdev] migrate imports to mobx@7 (using @observableRef instead of @observable.ref).'}`;
+    }
 
     await $`git checkout main`;
     await $`git merge ${branchName}`;
