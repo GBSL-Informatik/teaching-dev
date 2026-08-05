@@ -177,15 +177,12 @@ export default migrate;
 
 ```ts
 import { MigrationRunner } from '../constants';
-import { execa } from 'execa';
-import { packageJson, updateTdevConfig } from '../helpers/loadFile';
-import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
-import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
+import shellInput from '../helpers/shellInput';
 
 const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
-    const $ = execa({ stdio: 'inherit', stdin: 'inherit' });
-
-    await $`read -p "Zusätzliche Änderungen notwendig? Durchführen, committen und danach mit Enter bestätigen."`;
+    const res = await shellInput(
+        'Zusätzliche Änderungen notwendig? Durchführen, committen und danach mit Enter bestätigen.'
+    ); // wartet auf Enter, um fortzufahren
 };
 
 export default migrate;
