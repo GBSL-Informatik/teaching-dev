@@ -213,6 +213,9 @@ class StudentGroup {
                 return console.error('Document root not found for presented document', rootId);
             }
             await this._setupPresentedDocument(docRoot, props);
+            if (!current || current.document.id !== props.document.id) {
+                this.presentedDocument?.streamUpdate();
+            }
         } else {
             this.setPresentedDocumentProps(null);
             await this.save();
@@ -261,7 +264,6 @@ class StudentGroup {
         await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
             console.error('Error creating admin permissions for presented document', err);
         });
-        this.presentedDocument?.streamUpdate();
     }
 
     @action
