@@ -17,8 +17,8 @@ const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Prom
     const config = await updateTdevConfig(root);
     ensureTdevConfig(config, [
         {
-            src: 'src/theme/AnnouncementBar',
-            dst: 'src/theme/AnnouncementBar'
+            src: 'src/theme/AnnouncementBar/',
+            dst: 'src/theme/AnnouncementBar/'
         }
     ]);
     await writeUpdateTdevConfig(root, config);
