@@ -1,8 +1,8 @@
-import { MigrationRunner } from '../constants';
-import { packageJson, updateTdevConfig } from '../helpers/loadFile';
+import { MigrationRunner } from '../src/constants';
+import { packageJson, updateTdevConfig } from '../src/helpers/loadFile';
 import { execa } from 'execa';
-import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
-import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
+import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
+import { ensureTdevConfig, modifyPackages } from '../src/helpers/actions';
 
 const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
     console.log('Starting TDEV migration: ', root);

@@ -1,17 +1,17 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { REPO_ROOT, pathExistsSync } from '../helpers/index.js';
 import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
 import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
 import { gitEnsureClean } from './helpers/actions.js';
 import minimist from 'minimist';
+import { pathExists, REPO_ROOT } from './helpers/base.js';
 
 process.chdir(REPO_ROOT);
 const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn workspace @tdev/material-sync migrateTdev [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]]
+yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]]
 
     --only: Comma-separated list of tdev pages to migrate (pages including the specified name in the path)
     --skip: Comma-separated list of tdev pages to skip (pages *not* including the specified name in the path)
@@ -19,11 +19,11 @@ yarn workspace @tdev/material-sync migrateTdev [[--only="inf-abc,inf-ccd"]] [[--
 
 examples:
 
-yarn workspace @tdev/material-sync migrateTdev                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
-yarn workspace @tdev/material-sync migrateTdev --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
-yarn workspace @tdev/material-sync migrateTdev --only="inf-"                # --> migrates only pages with "inf-" in the path
-yarn workspace @tdev/material-sync migrateTdev --skip="inf-abc,inf-ccd"     # --> migrates all except inf-abc and inf-ccd
-yarn workspace @tdev/material-sync migrateTdev --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
+yarn workspace @tdev/migrate-tdev migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
+yarn workspace @tdev/migrate-tdev migrate --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
+yarn workspace @tdev/migrate-tdev migrate --only="inf-"                # --> migrates only pages with "inf-" in the path
+yarn workspace @tdev/migrate-tdev migrate --skip="inf-abc,inf-ccd"     # --> migrates all except inf-abc and inf-ccd
+yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
 `);
     process.exit(0);
 }
@@ -66,7 +66,8 @@ const main = async (): Promise<void> => {
         for (const tdevPage of pagesToMigrate) {
             try {
                 const projectRoot = path.join(REPO_ROOT, tdevPage.path);
-                if (!pathExistsSync(projectRoot)) {
+                const hasProjectRoot = await pathExists(projectRoot);
+                if (!hasProjectRoot) {
                     console.warn(`Project root does not exist: ${projectRoot}. Skipping migration.`);
                     continue;
                 }
@@ -86,8 +87,10 @@ const main = async (): Promise<void> => {
         }
     }
     console.log(`Migration completed.
-    ✅ Successful: ${successfulMigrationPaths.length}
-    ❌ Failed: ${failedMigrationPaths.length}: ${failedMigrationPaths.join(', ')}`);
+    ✅ Successful: ${successfulMigrationPaths.length}`);
+    if (failedMigrationPaths.length > 0) {
+        console.log(`    ❌ Failed: ${failedMigrationPaths.length}: ${failedMigrationPaths.join(', ')}`);
+    }
 };
 
 main()

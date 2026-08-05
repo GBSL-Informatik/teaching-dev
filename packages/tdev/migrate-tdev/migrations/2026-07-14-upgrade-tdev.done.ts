@@ -1,4 +1,4 @@
-import { MigrationRunner } from '../constants';
+import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
 
 const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {

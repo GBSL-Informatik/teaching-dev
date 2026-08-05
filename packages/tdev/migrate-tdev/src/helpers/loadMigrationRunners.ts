@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { MIGRATION_PATH, MigrationRunner } from '../constants';
+import { MIGRATION_PATH, MigrationRunner } from '../constants.js';
 
 interface Migration {
     path: string;
