@@ -10,6 +10,8 @@ import { hasUncommittedChanges } from '../helpers/gitHelpers';
 const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
     console.log('Starting TDEV migration: ', root);
     const $ = execa({ stdio: 'inherit' });
+    await $`git checkout main`;
+    await $`git pull`;
 
     const branchName = `migrate-${timestamp}`;
     await $`git checkout -b ${branchName}`;
