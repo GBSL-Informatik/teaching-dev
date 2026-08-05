@@ -31,10 +31,21 @@ interface Props<T extends CodeType> {
 const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const eRef = React.useRef<AceEditor>(null);
+    const isComposingRef = React.useRef(false);
     const { aceTheme } = useCodeTheme();
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
+            const textInput = (node.editor as any)?.textInput?.getElement?.() as
+                HTMLTextAreaElement | undefined;
+            const onCompositionStart = () => {
+                isComposingRef.current = true;
+            };
+            const onCompositionEnd = () => {
+                isComposingRef.current = false;
+            };
+            textInput?.addEventListener('compositionstart', onCompositionStart);
+            textInput?.addEventListener('compositionend', onCompositionEnd);
             if (code.lang === 'python') {
                 node.editor.commands.addCommand({
                     // commands is array of key bindings.
@@ -62,6 +73,9 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                         node.editor.commands.removeCommand(save, true);
                     }
                 }
+                textInput?.removeEventListener('compositionstart', onCompositionStart);
+                textInput?.removeEventListener('compositionend', onCompositionEnd);
+                isComposingRef.current = false;
             };
         }
     }, [eRef, code]);
@@ -93,7 +107,8 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 mode={ALIAS_LANG_MAP_ACE[code.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.lang}
                 theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
-                    code.setCode(value, e.action);
+                    // Mobile/Touch Devices use IME and often emit transient remove deltas during composition.
+                    code.setCode(value, e.action, isComposingRef.current);
                 }}
                 readOnly={!code.canEdit || code.showRaw}
                 value={code.showRaw ? code.pristineCode : code.code}

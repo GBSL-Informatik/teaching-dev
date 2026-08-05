@@ -235,9 +235,11 @@ abstract class iDocument<Type extends DocumentType> {
     }
 
     @action
-    save(onBeforeSave?: (() => Promise<void>) | undefined) {
+    save(skipStreamUpdate: boolean = false, onBeforeSave?: (() => Promise<void>) | undefined) {
         const res = this.saveFn(onBeforeSave);
-        this.streamUpdate();
+        if (!skipStreamUpdate) {
+            this.streamUpdate();
+        }
         return res;
     }
 

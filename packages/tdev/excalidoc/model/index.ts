@@ -51,7 +51,7 @@ class Excalidoc extends iDocument<'excalidoc'> {
             });
             this.elements = updatedElements;
             this.files = updatedFiles;
-            this.save(async () => {
+            this.save(false, async () => {
                 if (!lib) {
                     return;
                 }
