@@ -1,9 +1,9 @@
-import { action, computed, IReactionDisposer, observable, reaction } from 'mobx';
+import { action, computed, IReactionDisposer, observable, observableRef, reaction } from 'mobx';
 import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { debounce, isEqual, type DebouncedFunc } from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
-import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
+import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
 import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 
@@ -23,7 +23,7 @@ abstract class iDocument<Type extends DocumentType> {
     readonly parentId: string | null | undefined;
     readonly documentRootId: string;
     readonly type: Type;
-    @observable.ref accessor _pristine: TypeDataMapping[Type];
+    @observableRef accessor _pristine: TypeDataMapping[Type];
 
     readonly createdAt: Date;
 
@@ -41,7 +41,7 @@ abstract class iDocument<Type extends DocumentType> {
 
     sideEffects = observable.array<iSideEffect<Type>>([], { deep: false });
 
-    @observable.ref accessor updatedAt: Date;
+    @observableRef accessor updatedAt: Date;
     readonly stateDisposer: IReactionDisposer;
     constructor(
         props: DocumentProps<Type>,
@@ -235,9 +235,11 @@ abstract class iDocument<Type extends DocumentType> {
     }
 
     @action
-    save(onBeforeSave?: (() => Promise<void>) | undefined) {
+    save(skipStreamUpdate: boolean = false, onBeforeSave?: (() => Promise<void>) | undefined) {
         const res = this.saveFn(onBeforeSave);
-        this.streamUpdate();
+        if (!skipStreamUpdate) {
+            this.streamUpdate();
+        }
         return res;
     }
 

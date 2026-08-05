@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, observableRef } from 'mobx';
 import { DocumentPresentation, StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
 import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
@@ -21,7 +21,7 @@ class StudentGroup {
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
     @observable accessor canPresent: boolean;
-    @observable.ref accessor presentedDocumentProps: DocumentPresentation | null = null;
+    @observableRef accessor presentedDocumentProps: DocumentPresentation | null = null;
 
     readonly _pristine: { name: string; description: string };
 
@@ -213,6 +213,9 @@ class StudentGroup {
                 return console.error('Document root not found for presented document', rootId);
             }
             await this._setupPresentedDocument(docRoot, props);
+            if (!current || current.document.id !== props.document.id) {
+                this.presentedDocument?.streamUpdate();
+            }
         } else {
             this.setPresentedDocumentProps(null);
             await this.save();
@@ -261,7 +264,6 @@ class StudentGroup {
         await Promise.all([groupPermission, ...adminPermissions]).catch((err) => {
             console.error('Error creating admin permissions for presented document', err);
         });
-        this.presentedDocument?.streamUpdate();
     }
 
     @action

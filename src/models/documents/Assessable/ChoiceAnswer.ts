@@ -1,7 +1,7 @@
 import { TypeDataMapping, Document as DocumentProps } from '@tdev-api/document';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, observableRef } from 'mobx';
 import iAssessable from './iAssessable';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
@@ -39,7 +39,7 @@ const DEFAULT_META = new ModelMeta({ optionsCount: 0 });
 
 class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'choice_answer'> {
     choices = observable.set<number>();
-    @observable.ref accessor optionOrders: number[];
+    @observableRef accessor optionOrders: number[];
 
     constructor(props: DocumentProps<'choice_answer'>, store: DocumentStore) {
         super(props, store);

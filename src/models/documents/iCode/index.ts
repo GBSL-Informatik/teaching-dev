@@ -46,7 +46,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     }
 
     @action
-    setCode(code: string, action?: 'insert' | 'remove' | string) {
+    setCode(code: string, action?: 'insert' | 'remove' | string, isComposing: boolean = false) {
         if (this.isPasted && action === 'remove') {
             return;
         }
@@ -68,7 +68,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         /**
          * call the api to save the code...
          */
-        this.save();
+        this.save(action === 'remove' && isComposing);
     }
 
     @action

@@ -60,7 +60,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
             <DocContext.Provider value={doc}>{props.children}</DocContext.Provider>
         </QuestionCard>
     );
-}) as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
+}) as unknown as React.FC<ChoiceAnswerProps> & ChoiceAnswerSubComponents;
 
 ChoiceAnswer.Options = Options;
 

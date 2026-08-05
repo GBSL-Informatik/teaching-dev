@@ -1,6 +1,6 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observableRef } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { getToolbar, TOOLBAR, ToolbarModule, ToolbarOptions } from './helpers/toolbar';
@@ -39,7 +39,7 @@ export class ModelMeta extends TypeMeta<'quill_v2'> {
 }
 
 class QuillV2 extends iDocument<'quill_v2'> {
-    @observable.ref accessor delta: Delta;
+    @observableRef accessor delta: Delta;
 
     constructor(props: DocumentProps<'quill_v2'>, store: DocumentStore) {
         super(props, store);

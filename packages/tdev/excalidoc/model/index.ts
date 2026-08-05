@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observableRef } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import { Document as DocumentProps, TypeDataMapping, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
@@ -16,9 +16,9 @@ export const createModel: Factory = (data, store) => {
 };
 
 class Excalidoc extends iDocument<'excalidoc'> {
-    @observable.ref accessor elements: readonly ExcalidrawElement[];
-    @observable.ref accessor files: BinaryFiles;
-    @observable.ref accessor image: string;
+    @observableRef accessor elements: readonly ExcalidrawElement[];
+    @observableRef accessor files: BinaryFiles;
+    @observableRef accessor image: string;
     constructor(props: DocumentProps<'excalidoc'>, store: DocumentStore) {
         super(props, store);
         this.elements = props.data.elements || [];
@@ -51,7 +51,7 @@ class Excalidoc extends iDocument<'excalidoc'> {
             });
             this.elements = updatedElements;
             this.files = updatedFiles;
-            this.save(async () => {
+            this.save(false, async () => {
                 if (!lib) {
                     return;
                 }

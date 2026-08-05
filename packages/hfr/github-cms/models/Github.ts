@@ -1,5 +1,5 @@
 import { CmsStore } from '../stores/CmsStore';
-import { action, computed, IObservableArray, observable } from 'mobx';
+import { action, computed, IObservableArray, observable, observableRef } from 'mobx';
 import { Octokit, RestEndpointMethodTypes as GhTypes } from '@octokit/rest';
 import { FileStubProps, iFile } from './iFile';
 import FileStub from './FileStub';
@@ -28,17 +28,17 @@ class Github {
     entries = observable.map<string, IObservableArray<Dir | FileModel | BinFile | FileStub>>([], {
         deep: false
     });
-    @observable.ref accessor octokit: Octokit;
+    @observableRef accessor octokit: Octokit;
 
     branches = observable.array<Branch>([]);
 
     PRs = observable.array<PR>([]);
 
-    @observable.ref accessor repo: GhRepo | undefined;
-    @observable.ref accessor repositories:
+    @observableRef accessor repo: GhRepo | undefined;
+    @observableRef accessor repositories:
         GhTypes['repos']['listForAuthenticatedUser']['response']['data'] | undefined;
-    @observable.ref accessor user: GhTypes['users']['getAuthenticated']['response']['data'] | undefined;
-    @observable.ref accessor permissions:
+    @observableRef accessor user: GhTypes['users']['getAuthenticated']['response']['data'] | undefined;
+    @observableRef accessor permissions:
         GhTypes['repos']['getCollaboratorPermissionLevel']['response']['data'] | undefined;
 
     apiStates = observable.map<string, ApiState>([], { deep: false });

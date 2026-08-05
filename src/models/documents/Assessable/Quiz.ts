@@ -1,7 +1,7 @@
 import { TypeDataMapping, Document as DocumentProps, AssessableType } from '@tdev-api/document';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observableRef } from 'mobx';
 import iAssessable, { Assessement, Correctness, CorrectnessColors } from './iAssessable';
 import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
@@ -39,7 +39,7 @@ export class ModelMeta extends AssessableMeta<AssessableType> implements Assessa
 const DEFAULT_META = new ModelMeta({});
 
 class Quiz extends iAssessable<AssessableType> implements iAssessable<AssessableType> {
-    @observable.ref accessor questionOrder: number[];
+    @observableRef accessor questionOrder: number[];
 
     constructor(props: DocumentProps<'quiz'>, store: DocumentStore) {
         super(props, store);
