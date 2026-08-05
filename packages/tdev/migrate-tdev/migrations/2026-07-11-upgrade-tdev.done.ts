@@ -4,11 +4,10 @@ import { execa } from 'execa';
 import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
 import { ensureTdevConfig, modifyPackages } from '../src/helpers/actions';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
-    const branchName = `migrate-${Date.now()}`;
+    const branchName = `migrate-${name}`;
     await $`git checkout -b ${branchName}`;
 
     // updateTdev.config.yaml
@@ -75,7 +74,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await $`yarn format`;
 
     await $`git add .`;
-    await $`git commit -m ${'Migrate TDEV'}`;
+    await $`git commit -m ${'[tdev] Migrate TDEV'}`;
     await $`git checkout main`;
     await $`git merge ${branchName}`;
     await $`git branch -d ${branchName}`;

@@ -5,6 +5,7 @@ import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
 import { gitEnsureClean } from './helpers/actions.js';
 import minimist from 'minimist';
 import { pathExists, REPO_ROOT } from './helpers/base.js';
+import { MIGRATION_PATH } from './constants.js';
 
 process.chdir(REPO_ROOT);
 const argv = minimist(process.argv.slice(2));
@@ -62,8 +63,10 @@ const main = async (): Promise<void> => {
     const failedMigrationPaths: string[] = [];
     const successfulMigrationPaths: string[] = [];
     const now = Date.now();
-    for await (const { path: migrationPath, runner: runMigration } of loadMigrationRunners()) {
+    for await (const { path: migrationPath, migrationName, runner: runMigration } of loadMigrationRunners()) {
         for (const tdevPage of pagesToMigrate) {
+            const migrationFileName = `${MIGRATION_PATH.replace(REPO_ROOT, '.')}/${migrationName}.ts`;
+            console.log(`@ ${tdevPage.path}: run  ${migrationFileName}`);
             try {
                 const projectRoot = path.join(REPO_ROOT, tdevPage.path);
                 const hasProjectRoot = await pathExists(projectRoot);
@@ -73,10 +76,10 @@ const main = async (): Promise<void> => {
                 }
                 process.chdir(projectRoot);
                 await gitEnsureClean('main');
-                await runMigration(projectRoot, tdevPage.apiMode, tdevPage.managed, now);
+                await runMigration(projectRoot, migrationName, now, tdevPage);
                 successfulMigrationPaths.push(migrationPath);
             } catch (error) {
-                console.error(`Failed to migrate ${migrationPath}:`, error);
+                console.error(`Failed to migrate ${migrationName}:`, error);
                 failedMigrationPaths.push(migrationPath);
             } finally {
                 process.chdir(REPO_ROOT);

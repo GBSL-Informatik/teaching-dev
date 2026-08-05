@@ -10,20 +10,20 @@ const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const branchName = `migrate-${name}`;
     await $`git checkout -b ${branchName}`;
 
-    await $`rm -rf packages/tdev/material-sync/src/migrate_tdev/migrations`;
     const updateConfig = await updateTdevConfig(root);
     ensureTdevConfig(updateConfig, [
         {
             src: 'packages/tdev/',
             dst: 'packages/tdev',
-            ignore: ['material-sync/src/migrate_tdev/migrations']
+            ignore: ['migrate-tdev/migrations']
         }
     ]);
     await writeUpdateTdevConfig(root, updateConfig);
     await $`yarn run updateTdev`;
+    // register new package by installing
+    await $`yarn install`;
 
-    await $`git add .`;
-    await $`git commit -m ${'[tdev] ensure common mdx components are synced.'}`;
+    await $`git commit -am ${'[tdev] move migration tools to package.'}`;
     await $`git checkout main`;
     await $`git merge ${branchName}`;
     await $`git branch -d ${branchName}`;

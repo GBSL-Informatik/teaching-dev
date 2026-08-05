@@ -62,8 +62,8 @@ Migrationen sind simple TypeScript-Dateien, wobei einige Hilfsfunktionen zur Ver
 ```ts
 import { MigrationRunner } from '../src/constants';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root, apiMode, managed);
+const migrate: MigrationRunner = async (root, name, timestamp, config): Promise<void> => {
+    console.log('Arguments: ', root, name, timestamp, config);
 };
 
 export default migrate;
@@ -79,12 +79,11 @@ Eine minimale Migration, die ein Projekt formatiert, alle Änderungen commited u
 import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root, apiMode, managed);
+const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
     await $`yarn format`
     await $`git add .`;
-    await $`git commit -m ${'Migrate TDEV'}`;
+    await $`git commit -m ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
 };
 
@@ -104,8 +103,7 @@ import { execa } from 'execa';
 import { writePackageJson } from '../helpers/writeFile';
 import { modifyPackages } from '../helpers/actions';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
     
     // package.json
@@ -128,7 +126,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await $`rm yarn.lock`;
     await $`yarn install`;
 
-    await $`git commit -am ${'Migrate TDEV'}`;
+    await $`git commit -am ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
 };
 
@@ -146,8 +144,7 @@ import { execa } from 'execa';
 import { writePackageJson, writeUpdateTdevConfig } from '../helpers/writeFile';
 import { ensureTdevConfig, modifyPackages } from '../helpers/actions';
 
-const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> => {
-    console.log('Starting TDEV migration: ', root);
+const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
     
@@ -166,7 +163,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed): Promise<void> =
     await writeUpdateTdevConfig(root, config);
     await $`yarn run updateTdev`;
 
-    await $`git commit -am ${'Migrate TDEV'}`;
+    await $`git commit -am ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
 };
 
@@ -179,10 +176,10 @@ export default migrate;
 import { MigrationRunner } from '../src/constants';
 import shellInput from '../helpers/shellInput';
 
-const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
+const migrate: MigrationRunner = async (): Promise<void> => {
     const res = await shellInput(
         'Zusätzliche Änderungen notwendig? Durchführen, committen und danach mit Enter bestätigen.'
-    ); // wartet auf Enter, um fortzufahren
+    );
 };
 
 export default migrate;
@@ -196,7 +193,7 @@ import { filesContainingMatch } from '../helpers/filesContainingMatch';
 import { applySearchAndReplace } from '../helpers/searchAndReplace';
 import { hasUncommittedChanges } from '../helpers/gitHelpers';
 
-const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Promise<void> => {
+const migrate: MigrationRunner = async (root): Promise<void> => {
     // alle Dateien im Projekt, die den String "@observable.ref" enthalten.
     const files = await filesContainingMatch(root, `@observable\\.ref`);
     await applySearchAndReplace(files, [
@@ -222,3 +219,7 @@ const migrate: MigrationRunner = async (root, apiMode, managed, timestamp): Prom
 
 export default migrate;
 ```
+
+## tdev-migrations
+
+See [@github](https://github.com/GBSL-Informatik/teaching-dev/tree/main/packages/tdev/migrate-tdev/migrations) for a list of all available migrations.

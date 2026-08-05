@@ -4,6 +4,7 @@ import { MIGRATION_PATH, MigrationRunner } from '../constants.js';
 
 interface Migration {
     path: string;
+    migrationName: string;
     runner: MigrationRunner;
 }
 
@@ -16,9 +17,10 @@ export async function* loadMigrationRunners(): AsyncGenerator<Migration> {
             continue;
         }
 
-        console.log(`Migrating file: ${filePath}`);
         if (!file.endsWith('.ts') || file.endsWith('.done.ts')) {
-            console.warn(`Skipping non-JS/TS file: ${filePath}`);
+            if (!file.endsWith('.ts')) {
+                console.warn(`Skipping non-TS file: ${filePath}`);
+            }
             continue;
         }
 
@@ -26,6 +28,7 @@ export async function* loadMigrationRunners(): AsyncGenerator<Migration> {
         if (typeof migrationModule.default === 'function') {
             yield {
                 path: filePath,
+                migrationName: path.basename(filePath, '.ts'),
                 runner: migrationModule.default as MigrationRunner
             };
             continue;
