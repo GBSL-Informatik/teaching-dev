@@ -1,10 +1,11 @@
-import { action } from 'mobx';
+import { action, observable } from 'mobx';
 import _ from 'es-toolkit/compat';
 import type { RootStore } from './rootStore';
 import { authClient } from '../auth-client';
 
 export class AuthStore {
     readonly root: RootStore;
+    @observable accessor authErrorMessage: string | null = null;
     constructor(root: RootStore) {
         this.root = root;
     }
@@ -23,11 +24,17 @@ export class AuthStore {
     }
 
     @action
+    setAuthErrorMessage(message: string | null) {
+        this.authErrorMessage = message;
+    }
+
+    @action
     async signInWithEmail(email: string, password: string) {
+        this.setAuthErrorMessage(null);
         const { data, error } = await authClient.signIn.email(
             {
-                email,
-                password
+                email: email.trim(),
+                password: password.trim()
             },
             {
                 onRequest: (ctx) => {
@@ -37,10 +44,11 @@ export class AuthStore {
                     console.log('sign up successful', ctx);
                     //redirect to the dashboard or sign in page
                 },
-                onError: (ctx) => {
+                onError: action((ctx) => {
                     // display the error message
+                    this.setAuthErrorMessage(ctx.error.message);
                     console.log('sign up failed', ctx.error.message);
-                }
+                })
             }
         );
     }

@@ -9,6 +9,8 @@ import TextInput from '@tdev-components/shared/TextInput';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
+import { action } from 'mobx';
+import Alert from '@tdev-components/shared/Alert';
 
 const SignIn = observer((): React.ReactNode => {
     const [email, setEmail] = React.useState('');
@@ -16,6 +18,11 @@ const SignIn = observer((): React.ReactNode => {
     const authStore = useStore('authStore');
 
     const { data: session } = authClient.useSession();
+    React.useEffect(() => {
+        return action(() => {
+            authStore.setAuthErrorMessage(null);
+        });
+    }, [session]);
 
     if (session?.user) {
         return <Redirect to={'/'} />;
@@ -25,6 +32,11 @@ const SignIn = observer((): React.ReactNode => {
         <Layout>
             <main>
                 <h2>Einloggen</h2>
+                {authStore.authErrorMessage && (
+                    <Alert type="danger" onDiscard={() => authStore.setAuthErrorMessage(null)}>
+                        {authStore.authErrorMessage}
+                    </Alert>
+                )}
                 <div className={clsx(styles.form)}>
                     <TextInput
                         type="email"
@@ -40,6 +52,7 @@ const SignIn = observer((): React.ReactNode => {
                     <TextInput
                         type="password"
                         label="Passwort"
+                        noAutoFocus
                         value={password}
                         onChange={(val) => setPassword(val)}
                         onEnter={() => {
@@ -54,6 +67,7 @@ const SignIn = observer((): React.ReactNode => {
                             // call the sign up method from the auth store
                             authStore.signInWithEmail(email, password);
                         }}
+                        color="blue"
                     >
                         Einloggen
                     </Button>
