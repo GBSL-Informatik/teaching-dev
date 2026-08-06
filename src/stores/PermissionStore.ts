@@ -13,19 +13,20 @@ import {
     updateUserPermission as updateUserPermissionApi,
     deleteUserPermission as deleteUserPermissionApi,
     deleteGroupPermission as deleteGroupPermissionApi,
+    documentRootPermissions as apiDocumentRootPermissions,
     permissionsFor
 } from '@tdev-api/permission';
-import DocumentRoot from '@tdev-models/DocumentRoot';
 import User from '@tdev-models/User';
-import { Access } from '@tdev-api/document';
+import { Access, DocumentType } from '@tdev-api/document';
 import StudentGroup from '@tdev-models/StudentGroup';
 import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import DocumentRoot, { TypeMeta, UnknownMeta } from '@tdev-models/DocumentRoot';
 
 class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
     userPermissions = observable.array<UserPermission>([]);
     groupPermissions = observable.array<GroupPermission>([]);
-    @observable accessor permissionsLoadedForDocumentRootIds = new Set<string>();
+    permissionsLoadedForDocumentRootIds = observable.set<string>();
 
     constructor(root: RootStore) {
         super();
@@ -266,30 +267,60 @@ class PermissionStore extends iStore<`update-${string}`> {
     }
 
     @action
-    loadPermissions(documentRootId: string) {
-        if (!this.root.userStore.current?.hasElevatedAccess) {
+    loadAllPermissions(documentRootIds: string[], forceReload: boolean = false) {
+        const { current } = this.root.userStore;
+        if (!current?.hasElevatedAccess) {
             // API currently only allows elevated users to load permissions.
             return Promise.resolve();
         }
-        if (this.permissionsLoadedForDocumentRootIds.has(documentRootId)) {
+        const idsToLoad = forceReload
+            ? documentRootIds
+            : documentRootIds.filter(
+                  (id) =>
+                      !this.root.documentRootStore.find(id) ||
+                      !this.permissionsLoadedForDocumentRootIds.has(id)
+              );
+        if (idsToLoad.length === 0) {
             return Promise.resolve();
         }
-        return this.withAbortController(`load-permissions-${documentRootId}`, async (signal) => {
-            return permissionsFor(documentRootId, signal.signal).then(
+        return this.withAbortController(`load-all-permissions`, async (signal) => {
+            return apiDocumentRootPermissions(idsToLoad, signal.signal).then(
                 action(({ data }) => {
-                    const docRootId = data.id;
-                    data.userPermissions.forEach((p) => {
-                        this.addUserPermission(new UserPermission({ ...p, documentRootId: docRootId }, this));
-                    });
-                    data.groupPermissions.forEach((p) => {
-                        this.addGroupPermission(
-                            new GroupPermission({ ...p, documentRootId: docRootId }, this)
+                    data.forEach((p) => {
+                        const docRoot = new DocumentRoot(
+                            { id: p.id, access: p.access, sharedAccess: p.sharedAccess },
+                            new UnknownMeta(),
+                            this.root.documentRootStore,
+                            true
                         );
+                        const current = this.root.documentRootStore.find(p.id);
+                        if (current && current.meta.type !== '_unknown_') {
+                            current.setRootAccess(p.access, true);
+                            current.setSharedAccess(p.sharedAccess, true);
+                        } else {
+                            this.root.documentRootStore.addDocumentRoot(docRoot);
+                        }
+
+                        p.userPermissions.forEach((up) => {
+                            this.addUserPermission(new UserPermission({ ...up, documentRootId: p.id }, this));
+                        });
+                        p.groupPermissions.forEach((gp) => {
+                            this.addGroupPermission(
+                                new GroupPermission({ ...gp, documentRootId: p.id }, this)
+                            );
+                        });
+                        this.permissionsLoadedForDocumentRootIds.add(p.id);
                     });
-                    this.permissionsLoadedForDocumentRootIds.add(documentRootId);
                 })
             );
         });
+    }
+
+    @action
+    cleanup() {
+        this.userPermissions.clear();
+        this.groupPermissions.clear();
+        this.permissionsLoadedForDocumentRootIds.clear();
     }
 }
 

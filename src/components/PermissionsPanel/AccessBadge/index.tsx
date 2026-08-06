@@ -7,7 +7,7 @@ import Icon from '@mdi/react';
 import { ROAccess, RWAccess } from '@tdev-models/helpers/accessPolicy';
 import { mdiEye, mdiEyeOff, mdiSquareEditOutline } from '@mdi/js';
 const SIZE = 0.8;
-const AccessIcon = (access: Access) => {
+export const AccessIcon = (access?: Access) => {
     if (RWAccess.has(access)) {
         return mdiSquareEditOutline;
     }

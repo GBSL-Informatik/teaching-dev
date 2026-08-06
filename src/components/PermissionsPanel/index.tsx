@@ -109,7 +109,7 @@ const PermissionsPanel = observer((props: Props) => {
             keepTooltipInside="#__docusaurus"
             modal={isMobileView}
             onOpen={action(() => {
-                documentRoots.forEach((dr) => permissionStore.loadPermissions(dr.id));
+                documentRoots.forEach((dr) => permissionStore.loadAllPermissions([dr.id]));
                 setIsOpen(true);
             })}
             onClose={() => setIsOpen(false)}

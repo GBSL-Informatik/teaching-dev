@@ -1,0 +1,19 @@
+.adminPermission {
+    .actions {
+        margin-bottom: 1em;
+        .typeFilter {
+            flex-wrap: wrap;
+            margin-bottom: 1em;
+            .docTypeButton {
+                flex-grow: 0;
+                flex-shrink: 1;
+                flex-basis: 10em;
+                font-family: var(--ifm-font-family-monospace);
+            }
+        }
+    }
+    .docsTree {
+        max-height: 75vh;
+        overflow-y: auto;
+    }
+}

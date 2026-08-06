@@ -141,6 +141,7 @@ export interface TaskableDocumentMapping extends AssessableDataMapping {
 }
 
 export interface TypeDataMapping extends TaskableDocumentMapping, ContainerTypeDataMapping {
+    ['_unknown_']: { name: string };
     ['code']: CodeData;
     // TODO: rename to `code_version`
     ['script_version']: ScriptVersionData;
@@ -187,6 +188,7 @@ null as unknown as EnsureAllTaskable<TaskableTypeModelMapping>;
 
 export interface TypeModelMapping
     extends TaskableTypeModelMapping, ContainerTypeModelMapping, AssessableTypeModelMapping {
+    ['_unknown_']: any;
     ['code']: Code;
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersion;

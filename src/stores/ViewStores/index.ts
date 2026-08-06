@@ -1,6 +1,7 @@
 import { ViewStoreType, ViewStore as ViewStores, ViewStoreTypeMapping } from '@tdev-api/document';
 import { RootStore } from '@tdev-stores/rootStore';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, observableRef } from 'mobx';
+import { PermissionsControlView } from './PermissionsControlView';
 
 export interface ViewStoreProps<T extends ViewStoreType = ViewStoreType> {
     store: ViewStoreTypeMapping[T];
@@ -9,6 +10,7 @@ export interface ViewStoreProps<T extends ViewStoreType = ViewStoreType> {
 export default class ViewStore {
     readonly root: RootStore;
     stores = new Map<ViewStoreType, ViewStores>();
+    @observableRef accessor permissionControl: PermissionsControlView = null as any;
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
@@ -16,6 +18,7 @@ export default class ViewStore {
 
     constructor(store: RootStore) {
         this.root = store;
+        this.permissionControl = new PermissionsControlView(store);
     }
 
     @action

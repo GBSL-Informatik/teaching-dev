@@ -24,6 +24,8 @@ export interface UserPermission extends UserPermissionBase {
 
 export type Permissions = {
     id: string;
+    access: Access;
+    sharedAccess: Access;
     userPermissions: UserPermissionBase[];
     groupPermissions: GroupPermissionBase[];
 };
@@ -68,4 +70,14 @@ export function deleteGroupPermission(id: string, signal: AbortSignal): AxiosPro
 
 export function permissionsFor(documentRootId: string, signal: AbortSignal): AxiosPromise<Permissions> {
     return api.get(`/documentRoots/${documentRootId}/permissions`, { signal });
+}
+
+export function documentRootPermissions(
+    documentRootIds: string[],
+    signal: AbortSignal
+): AxiosPromise<Permissions[]> {
+    const data = {
+        documentRootIds: documentRootIds
+    };
+    return api.post(`/documentRoots/permissions`, data, { signal });
 }

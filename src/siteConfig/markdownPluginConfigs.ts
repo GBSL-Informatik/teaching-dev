@@ -235,6 +235,10 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
         {
             name: 'TrueFalseAnswer',
             docTypeExtractor: () => 'true_false_answer'
+        },
+        {
+            name: 'Solution',
+            docTypeExtractor: () => 'solution'
         }
     ],
     persistedCodeType: (node: Code) => {
