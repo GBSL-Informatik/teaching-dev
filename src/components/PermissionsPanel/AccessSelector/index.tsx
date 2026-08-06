@@ -5,19 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { Access } from '@tdev-api/document';
 import Icon from '@mdi/react';
 import { mdiCircleSmall } from '@mdi/js';
-import { IfmColors } from '@tdev-components/shared/Colors';
-
-export const AccessColors: { [key in Access]: string } = {
-    [Access.RO_User]: IfmColors.info,
-    [Access.RO_StudentGroup]: IfmColors.info,
-    [Access.RO_DocumentRoot]: IfmColors.info,
-    [Access.RW_User]: IfmColors.success,
-    [Access.RW_StudentGroup]: IfmColors.success,
-    [Access.RW_DocumentRoot]: IfmColors.success,
-    [Access.None_User]: IfmColors.danger,
-    [Access.None_StudentGroup]: IfmColors.danger,
-    [Access.None_DocumentRoot]: IfmColors.danger
-};
 
 export const AccessNames: { [key in Access]: string } = {
     [Access.RO_User]: 'RO',

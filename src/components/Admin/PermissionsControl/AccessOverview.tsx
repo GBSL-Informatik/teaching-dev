@@ -22,13 +22,10 @@ const AccessOverview = observer((props: Props) => {
     const view = viewStore.permissionControl;
     const root = docRootStore.find(doc.id);
     return (
-        <div className={clsx(styles.permissions)}>
-            <Badge color={view.typeColors.get(doc.type)}>{doc.type}</Badge> -{' '}
-            <CopyBadge
-                label={`${doc.id.slice(0, 8)}...`}
-                title={`DocumentRoot ID: ${doc.id}`}
-                value={doc.id}
-            />
+        <div className={clsx(styles.accessOverview)}>
+            <Badge className={clsx(styles.typeBadge)} color={view.typeColors.get(doc.type)}>
+                {doc.type}
+            </Badge>
             <Badge type="secondary" title={`DocumentRoot Access: ${root?._access}`}>
                 <Icon path={mdiFileMultipleOutline} size={SIZE_XS} />
                 │
@@ -55,6 +52,11 @@ const AccessOverview = observer((props: Props) => {
             >
                 <Icon path={mdiAccount} size={SIZE_XS} /> {root?.userPermissions?.length}
             </Badge>
+            <CopyBadge
+                label={`${doc.id.slice(0, 8)}...`}
+                title={`DocumentRoot ID: ${doc.id}`}
+                value={doc.id}
+            />
         </div>
     );
 });

@@ -29,7 +29,6 @@ import AccessOverview from './AccessOverview';
 interface Props {}
 
 const PermissionsControl = observer((props: Props) => {
-    const docRootStore = useStore('documentRootStore');
     const permissionStore = useStore('permissionStore');
     const viewStore = useStore('viewStore');
     const view = viewStore.permissionControl;
@@ -79,24 +78,29 @@ const PermissionsControl = observer((props: Props) => {
             <Card header={<h3>Berechtigungen</h3>} classNames={{ card: clsx(styles.docsTree) }}>
                 <ul>
                     {Object.entries(view.docsTree).map(([path, docs]) => (
-                        <li key={path}>
-                            <div className={clsx(styles.pathHeader)}>
-                                <strong>
-                                    <Link to={path}>{path}</Link>
-                                </strong>
-                                <PermissionsPanel
-                                    documentRootIds={docs.map((doc) => doc.id)}
-                                    color="warning"
-                                />
+                        <li key={path} className={clsx(styles.pathItem)}>
+                            <div className={clsx(styles.page)}>
+                                <div className={clsx(styles.pathHeader)}>
+                                    <strong>
+                                        <Link to={path}>{path}</Link>
+                                    </strong>
+                                    <PermissionsPanel
+                                        documentRootIds={docs.map((doc) => doc.id)}
+                                        color="warning"
+                                    />
+                                </div>
+                                <PageActions docs={docs} />
                             </div>
-                            <PageActions docs={docs} />
                             <ul>
                                 {docs.map((doc) => {
                                     return (
                                         <li key={doc.id} className={clsx(styles.docItem)}>
                                             <div className={clsx(styles.docRoot)}>
                                                 <AccessOverview doc={doc} />
-                                                <PermissionsPanel documentRootId={doc.id} />
+                                                <PermissionsPanel
+                                                    documentRootId={doc.id}
+                                                    className={clsx(styles.permissionButton)}
+                                                />
                                             </div>
                                         </li>
                                     );

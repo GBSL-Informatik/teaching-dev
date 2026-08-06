@@ -15,37 +15,51 @@
     .docsTree {
         max-height: 75vh;
         overflow-y: auto;
-        .pathHeader {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: var(--ifm-global-radius);
-            &:hover {
-                background-color: var(--ifm-color-emphasis-200);
+        --ifm-list-left-padding: 1em;
+        .pathItem {
+            --ifm-list-left-padding: 2em;
+            .page {
+                border-radius: var(--ifm-global-radius);
+                &:hover {
+                    background-color: var(--ifm-color-emphasis-400);
+                }
+                .pathHeader {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
             }
-        }
-        .docItem {
-            border-radius: var(--ifm-global-radius);
-            &:hover {
-                background-color: var(--ifm-color-emphasis-100);
-            }
-        }
-        .docRoot {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            .permissions {
+            .docActions {
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
                 gap: 0.25em;
             }
-        }
-        .docActions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 0.25em;
+            .docItem {
+                border-radius: var(--ifm-global-radius);
+                &:hover {
+                    background-color: var(--ifm-color-emphasis-400);
+                }
+                .docRoot {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: space-between;
+                    .accessOverview {
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: center;
+                        justify-content: flex-start;
+                        gap: 0.25em;
+                        .typeBadge {
+                            margin-right: 0.5em;
+                        }
+                    }
+                    .permissionButton {
+                        margin-left: auto;
+                    }
+                }
+            }
         }
     }
 }
