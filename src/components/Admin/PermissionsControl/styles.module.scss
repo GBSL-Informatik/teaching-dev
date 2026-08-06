@@ -19,6 +19,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-radius: var(--ifm-global-radius);
+            &:hover {
+                background-color: var(--ifm-color-emphasis-200);
+            }
+        }
+        .docItem {
+            border-radius: var(--ifm-global-radius);
+            &:hover {
+                background-color: var(--ifm-color-emphasis-100);
+            }
         }
         .docRoot {
             display: flex;
@@ -30,6 +40,12 @@
                 justify-content: flex-start;
                 gap: 0.25em;
             }
+        }
+        .docActions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.25em;
         }
     }
 }

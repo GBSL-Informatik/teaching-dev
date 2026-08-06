@@ -24,6 +24,7 @@ interface Props {
     size?: number;
     className?: string;
     color?: Color;
+    title?: string;
 }
 
 const CopyBadge = (props: Props) => {
@@ -58,7 +59,7 @@ const CopyBadge = (props: Props) => {
                         setCopyState('error');
                     });
             }}
-            title={`Copy ${props.value}`}
+            title={props.title ?? `Copy ${props.value}`}
         >
             {props.label || props.value}
             <span className={clsx(styles.copyIcon)}>

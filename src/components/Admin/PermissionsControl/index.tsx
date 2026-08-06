@@ -8,24 +8,23 @@ import Badge from '@tdev-components/shared/Badge';
 import Link from '@docusaurus/Link';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { reaction } from 'mobx';
-import AccessBadge, { AccessIcon } from '@tdev-components/PermissionsPanel/AccessBadge';
+import { AccessColor, AccessIcon } from '@tdev-components/PermissionsPanel/AccessBadge';
 import Icon from '@mdi/react';
-import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import {
     mdiAccount,
-    mdiAccountCancel,
     mdiAccountGroup,
-    mdiAccountMultipleRemove,
-    mdiAccountRemove,
-    mdiSync,
-    mdiSyncCircle
+    mdiFileMultipleOutline,
+    mdiShareVariantOutline,
+    mdiSync
 } from '@mdi/js';
 import { ApiState } from '@tdev-stores/iStore';
 import Card from '@tdev-components/shared/Card';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import DocumentTypeSelector from './DocumentTypeSelector';
 import TextInput from '@tdev-components/shared/TextInput';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import PageActions from './PageActions';
+import AccessOverview from './AccessOverview';
 
 interface Props {}
 
@@ -85,98 +84,18 @@ const PermissionsControl = observer((props: Props) => {
                                 <strong>
                                     <Link to={path}>{path}</Link>
                                 </strong>
-                                <PermissionsPanel documentRootIds={docs.map((doc) => doc.id)} />
+                                <PermissionsPanel
+                                    documentRootIds={docs.map((doc) => doc.id)}
+                                    color="warning"
+                                />
                             </div>
-                            <div className={clsx(styles.docActions)}>
-                                {docs.some((doc) => docRootStore.find(doc.id)?.userPermissions?.length) && (
-                                    <Confirm
-                                        icon={mdiAccountRemove}
-                                        iconSide="left"
-                                        text="User"
-                                        confirmText="Userberechtigungen entfernen?"
-                                        title="Alle Benutzerberechtigungen entfernen"
-                                        color="red"
-                                        onConfirm={() => {
-                                            docs.forEach((doc) => {
-                                                const root = docRootStore.find(doc.id);
-                                                if (root) {
-                                                    root.userPermissions.forEach((userPermission) => {
-                                                        permissionStore.deleteUserPermission(userPermission);
-                                                    });
-                                                }
-                                            });
-                                        }}
-                                    />
-                                )}
-                                {docs.some((doc) => docRootStore.find(doc.id)?.groupPermissions?.length) && (
-                                    <Confirm
-                                        icon={mdiAccountMultipleRemove}
-                                        iconSide="left"
-                                        text="Gruppe"
-                                        title="Alle Gruppenberechtigungen entfernen"
-                                        confirmText="Gruppenberechtigungen entfernen?"
-                                        color="red"
-                                        onConfirm={() => {
-                                            docs.forEach((doc) => {
-                                                const root = docRootStore.find(doc.id);
-                                                if (root) {
-                                                    root.groupPermissions.forEach((groupPermission) => {
-                                                        permissionStore.deleteGroupPermission(
-                                                            groupPermission
-                                                        );
-                                                    });
-                                                }
-                                            });
-                                        }}
-                                    />
-                                )}
-                            </div>
+                            <PageActions docs={docs} />
                             <ul>
                                 {docs.map((doc) => {
-                                    const root = docRootStore.find(doc.id);
                                     return (
-                                        <li key={doc.id}>
+                                        <li key={doc.id} className={clsx(styles.docItem)}>
                                             <div className={clsx(styles.docRoot)}>
-                                                <div className={clsx(styles.permissions)}>
-                                                    <Badge color={view.typeColors.get(doc.type)}>
-                                                        {doc.type}
-                                                    </Badge>{' '}
-                                                    -{' '}
-                                                    <CopyBadge
-                                                        label={`DocumentRootId: ${doc.id.slice(0, 8)}...`}
-                                                        value={doc.id}
-                                                    />
-                                                    <Badge type="primary">
-                                                        Allgemein{' '}
-                                                        <Icon
-                                                            path={AccessIcon(root?._access)}
-                                                            size={SIZE_XS}
-                                                        />
-                                                    </Badge>
-                                                    <Badge type="secondary">
-                                                        Shared{' '}
-                                                        <Icon
-                                                            path={AccessIcon(root?._sharedAccess)}
-                                                            size={SIZE_XS}
-                                                        />
-                                                    </Badge>
-                                                    <Badge
-                                                        color={
-                                                            root?.groupPermissions?.length ? 'orange' : 'gray'
-                                                        }
-                                                    >
-                                                        <Icon path={mdiAccountGroup} size={SIZE_XS} />{' '}
-                                                        {root?.groupPermissions?.length}
-                                                    </Badge>
-                                                    <Badge
-                                                        color={
-                                                            root?.userPermissions?.length ? 'orange' : 'gray'
-                                                        }
-                                                    >
-                                                        <Icon path={mdiAccount} size={SIZE_XS} />{' '}
-                                                        {root?.userPermissions?.length}
-                                                    </Badge>
-                                                </div>
+                                                <AccessOverview doc={doc} />
                                                 <PermissionsPanel documentRootId={doc.id} />
                                             </div>
                                         </li>
