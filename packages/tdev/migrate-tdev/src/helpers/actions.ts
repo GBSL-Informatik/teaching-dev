@@ -50,7 +50,7 @@ export const modifyPackages = (
 };
 
 export const gitEnsureClean = async (ensureBranch?: string) => {
-    // ensure qith execa that git has no tracked changes, otherwise migration will fail
+    // ensure with execa that git has no tracked changes, otherwise migration will fail
     const hasChanges = await hasUncommittedChanges();
     if (hasChanges) {
         const { stdout: pwd } = await execa`pwd`;
