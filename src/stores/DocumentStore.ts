@@ -375,7 +375,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     @action
     addPresentedDocumentToStore(studentGroup: StudentGroup) {
         const presentedDoc = studentGroup.presentedDocumentProps;
-        if (!presentedDoc) {
+        if (!presentedDoc || !studentGroup.canPresent) {
             return;
         }
         const rawDoc = presentedDoc.document;
