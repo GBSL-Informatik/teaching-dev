@@ -1,18 +1,29 @@
 import { DocumentType } from '@tdev-api/document';
 import { RootStore } from '@tdev-stores/rootStore';
+import { orderBy } from 'es-toolkit/array';
 import { action, computed, observable } from 'mobx';
 
 export class PermissionsControlView {
     readonly root: RootStore;
-    _typeFilter = observable.set<DocumentType>(['solution']);
+    typeFilter = observable.set<DocumentType>(['solution']);
+    @observable accessor pathFilter = '';
 
     constructor(root: RootStore) {
         this.root = root;
     }
 
+    @action
+    setPathFilter(path: string) {
+        this.pathFilter = path;
+    }
+
     @computed
     get pageIndex() {
-        return this.root.pageStore._pageIndex;
+        if (!this.pathFilter) {
+            return this.root.pageStore._pageIndex;
+        }
+        const filter = new RegExp(this.pathFilter, 'i');
+        return this.root.pageStore._pageIndex.filter((p) => filter.test(p.path));
     }
 
     @computed
@@ -21,24 +32,34 @@ export class PermissionsControlView {
         for (const page of Object.values(this.root.pageStore._pageIndex)) {
             types.add(page.type);
         }
-        return Array.from(types).sort();
+        return Array.from(types);
     }
 
     @computed
-    get typeFilter() {
-        if (this._typeFilter.size === 0) {
-            return new Set(this.documentTypes);
-        }
-        return this._typeFilter;
+    get selectTypeOptions() {
+        return orderBy(
+            this.documentTypes.map((type, idx) => ({
+                value: type,
+                label: type,
+                hslDeg: (idx / this.documentTypes.length) * 360
+            })),
+            ['label'],
+            ['asc']
+        );
     }
 
     @action
     setTypeFilter(type: DocumentType, enabled: boolean) {
         if (enabled) {
-            this._typeFilter.add(type);
+            this.typeFilter.add(type);
         } else {
-            this._typeFilter.delete(type);
+            this.typeFilter.delete(type);
         }
+    }
+
+    @action
+    clearTypeFilter() {
+        this.typeFilter.clear();
     }
 
     @computed
@@ -51,8 +72,8 @@ export class PermissionsControlView {
     }
 
     @action
-    toggleTypeFilter(type: DocumentType) {
-        this.setTypeFilter(type, !this._typeFilter.has(type));
+    selectAllTypeFilters() {
+        this.typeFilter.replace(this.documentTypes);
     }
 
     @computed

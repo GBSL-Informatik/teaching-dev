@@ -23,6 +23,8 @@ import {
 import { ApiState } from '@tdev-stores/iStore';
 import Card from '@tdev-components/shared/Card';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import DocumentTypeSelector from './DocumentTypeSelector';
+import TextInput from '@tdev-components/shared/TextInput';
 
 interface Props {}
 
@@ -53,20 +55,7 @@ const PermissionsControl = observer((props: Props) => {
     return (
         <div className={clsx(styles.adminPermission)}>
             <Card header={<h3>Filter</h3>} classNames={{ card: clsx(styles.actions) }}>
-                <div className={clsx(styles.typeFilter, 'button-group', 'button-group--block')}>
-                    {view.documentTypes.map((docType, idx) => (
-                        <Button
-                            className={clsx(styles.docTypeButton)}
-                            onClick={() => {
-                                view.toggleTypeFilter(docType);
-                            }}
-                            text={docType}
-                            noOutline={view.typeFilter.has(docType)}
-                            color={view.typeFilter.has(docType) ? view.typeColors.get(docType) : 'secondary'}
-                            key={idx}
-                        />
-                    ))}
-                </div>
+                <DocumentTypeSelector />
                 <Button
                     icon={mdiSync}
                     color="orange"
@@ -80,6 +69,11 @@ const PermissionsControl = observer((props: Props) => {
                     }}
                     text="Berechtigungen neu laden"
                     spin={permissionStore.apiStateFor('load-all-permissions') === ApiState.SYNCING}
+                />
+                <TextInput
+                    label="Pfad filtern"
+                    value={view.pathFilter}
+                    onChange={(value) => view.setPathFilter(value)}
                 />
             </Card>
             <Card header={<h3>Berechtigungen</h3>} classNames={{ card: clsx(styles.docsTree) }}>
@@ -105,9 +99,6 @@ const PermissionsControl = observer((props: Props) => {
                                                     root.userPermissions.forEach((userPermission) => {
                                                         permissionStore.deleteUserPermission(userPermission);
                                                     });
-                                                    // root.groupPermissions.forEach((groupPermission) => {
-                                                    //     permissionStore.deleteGroupPermission(groupPermission);
-                                                    // });
                                                 }
                                             });
                                         }}
