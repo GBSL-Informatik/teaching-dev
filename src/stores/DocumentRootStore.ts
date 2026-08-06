@@ -1,7 +1,7 @@
 import { action, computed, observable, runInAction } from 'mobx';
 import { RootStore } from '@tdev-stores/rootStore';
 import { computedFn } from 'mobx-utils';
-import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
+import DocumentRoot, { TypeMeta, UnknownMeta } from '@tdev-models/DocumentRoot';
 import {
     Config,
     create as apiCreate,
@@ -40,9 +40,9 @@ type LoadConfig = {
     /**
      * @option 'replace': the document root will be created and when already exists,
      *                    it will replace the existing one.
-     * @option 'addIfMissing': when the document root does not exist in the mobx store, it will
+     * @option 'addIfMissing': when the document root does not exist in the mobx store (or has an _unknown_ type), it will
      *                         be added. But no new document root will be created on the api.
-     * @option false: the document root will not be loaded.
+     * @option false: the document root will not be loaded
      * @default 'replace'
      */
     documentRoot?: 'replace' | 'addIfMissing' | boolean;
@@ -71,6 +71,7 @@ type BatchedMeta = {
 };
 
 const DefaultMeta: TypeMeta<DocumentType>[] = [
+    new UnknownMeta({}),
     new CodeMeta({}),
     new MdxCommentMeta({}),
     new RestrictedMeta({}),
@@ -313,7 +314,7 @@ export class DocumentRootStore extends iStore {
         if (config.load.documentRoot) {
             if (config.load.documentRoot === 'addIfMissing') {
                 const current = this.find(data.id);
-                if (!current) {
+                if (!current || current.meta.type === '_unknown_') {
                     this.addDocumentRoot(documentRoot);
                 }
             } else {

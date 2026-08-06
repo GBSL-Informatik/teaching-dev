@@ -4,10 +4,11 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { Access } from '@tdev-api/document';
 import Icon from '@mdi/react';
-import { ROAccess, RWAccess } from '@tdev-models/helpers/accessPolicy';
+import { NoneAccess, ROAccess, RWAccess } from '@tdev-models/helpers/accessPolicy';
 import { mdiEye, mdiEyeOff, mdiSquareEditOutline } from '@mdi/js';
+import { IfmColors } from '@tdev-components/shared/Colors';
 const SIZE = 0.8;
-const AccessIcon = (access: Access) => {
+export const AccessIcon = (access?: Access) => {
     if (RWAccess.has(access)) {
         return mdiSquareEditOutline;
     }
@@ -15,6 +16,19 @@ const AccessIcon = (access: Access) => {
         return mdiEye;
     }
     return mdiEyeOff;
+};
+
+export const AccessColor = (access?: Access) => {
+    if (RWAccess.has(access)) {
+        return IfmColors.green;
+    }
+    if (ROAccess.has(access)) {
+        return IfmColors.lightBlue;
+    }
+    if (NoneAccess.has(access)) {
+        return IfmColors.danger;
+    }
+    return undefined;
 };
 
 interface Props {

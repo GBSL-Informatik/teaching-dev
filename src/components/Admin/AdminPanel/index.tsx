@@ -9,6 +9,7 @@ import StudentGroupPanel from '@tdev-components/Admin/StudentGroupPanel';
 import UserTable from '@tdev-components/Admin/UserTable';
 import AllowedActions from '../AllowedActions';
 import CreateUser from '../CreateUser';
+import PermissionsControl from '../PermissionsControl';
 
 const AdminPanel = observer(() => {
     const userStore = useStore('userStore');
@@ -24,12 +25,15 @@ const AdminPanel = observer(() => {
     }
     return (
         <div>
-            <Tabs queryString="panel">
+            <Tabs queryString="panel" lazy>
                 <TabItem value="studentGroups" label="Lerngruppen">
                     <StudentGroupPanel />
                 </TabItem>
                 <TabItem value="accounts" label="Accounts">
                     <UserTable />
+                </TabItem>
+                <TabItem value="permissions" label="Berechtigungen">
+                    <PermissionsControl />
                 </TabItem>
                 <TabItem value="createUser" label="Account erstellen">
                     <CreateUser />

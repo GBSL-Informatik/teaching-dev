@@ -5,7 +5,6 @@ import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
-import siteConfig from '@generated/docusaurus.config';
 import { authClient } from '@tdev/auth-client';
 import Button from '@tdev-components/shared/Button';
 import { mdiEmail, mdiGithub, mdiMicrosoft } from '@mdi/js';

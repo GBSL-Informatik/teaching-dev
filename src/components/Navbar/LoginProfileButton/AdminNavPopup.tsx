@@ -2,6 +2,7 @@ import {
     mdiAccountCircleOutline,
     mdiAccountDetailsOutline,
     mdiAccountSupervisorOutline,
+    mdiCogs,
     mdiShieldAccountOutline
 } from '@mdi/js';
 import clsx from 'clsx';
@@ -44,7 +45,7 @@ const AdminNavPopup = observer(() => {
         <Popup
             trigger={
                 <div>
-                    <ProfileButton preventClick={true} />
+                    <ProfileButton />
                 </div>
             }
             on={['hover']}
@@ -60,6 +61,11 @@ const AdminNavPopup = observer(() => {
                     icon={mdiAccountSupervisorOutline}
                 />
                 <AdminNavButton
+                    href={`${adminUrl}?panel=permissions`}
+                    text="Berechtigungen"
+                    icon={mdiShieldAccountOutline}
+                />
+                <AdminNavButton
                     href={`${adminUrl}?panel=accounts`}
                     text="Accounts"
                     icon={mdiAccountDetailsOutline}
@@ -67,7 +73,7 @@ const AdminNavPopup = observer(() => {
                 <AdminNavButton
                     href={`${adminUrl}?panel=allowedActions`}
                     text="Erlaubte Aktionen"
-                    icon={mdiShieldAccountOutline}
+                    icon={mdiCogs}
                 />
             </div>
         </Popup>

@@ -78,6 +78,7 @@ export class RootStore {
         this.userStore.cleanup();
         this.socketStore.cleanup();
         this.studentGroupStore.cleanup();
+        this.permissionStore.cleanup();
     }
 }
 

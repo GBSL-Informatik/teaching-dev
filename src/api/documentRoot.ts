@@ -43,6 +43,12 @@ export function find(id: string, signal: AbortSignal): AxiosPromise<DocumentRoot
     return api.get(`/documentRoots/${id}`, { signal });
 }
 
+interface FindManyForData {
+    documentRootIds: string[];
+    ignoreMissingRoots?: boolean;
+    type?: string;
+}
+
 export function findManyFor(
     userId: string,
     ids: string[],
@@ -50,19 +56,7 @@ export function findManyFor(
     documentType: DocumentType | undefined,
     signal: AbortSignal
 ): AxiosPromise<DocumentRoot[]> {
-    const params = new URLSearchParams();
-    if (ignoreMissingRoots) {
-        params.append('ignoreMissingRoots', '1');
-    }
-    ids.forEach((id) => params.append('ids', id));
-    if (documentType) {
-        params.append('type', documentType);
-    }
-    const data: {
-        documentRootIds: string[];
-        ignoreMissingRoots?: boolean;
-        type?: string;
-    } = {
+    const data: FindManyForData = {
         documentRootIds: ids
     };
     if (ignoreMissingRoots) {

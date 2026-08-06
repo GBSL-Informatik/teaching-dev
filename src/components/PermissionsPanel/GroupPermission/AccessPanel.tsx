@@ -27,7 +27,7 @@ const AccessPanel = observer((props: Props) => {
     if (documentRoots.length === 0) {
         return null;
     }
-    if (documentRoots.some((dr) => dr.isDummy)) {
+    if (documentRoots.some((dr) => dr.isDummy && dr.type !== '_unknown_')) {
         return <div>-</div>;
     }
     const firstRoot = documentRoots[0];

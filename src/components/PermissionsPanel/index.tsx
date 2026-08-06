@@ -19,6 +19,7 @@ import useIsMobileView from '@tdev-hooks/useIsMobileView';
 interface BaseProps {
     position?: PopupPosition | PopupPosition[];
     className?: string;
+    color?: string;
 }
 interface SingleDocRootProps extends BaseProps {
     documentRootId: string;
@@ -31,19 +32,8 @@ interface MultiDocRootProps extends BaseProps {
 
 type Props = SingleDocRootProps | MultiDocRootProps;
 
-const MissingPermissionsBadge = ({ available, total }: { available: number; total: number }) => {
-    if (available === total) {
-        return null;
-    }
-    return (
-        <span className={clsx('badge', 'badge--warning')}>
-            {`${available}/${total} Berechtiungen gefunden.`}
-        </span>
-    );
-};
-
 const PermissionsPanel = observer((props: Props) => {
-    const { documentRootId, documentRootIds, position } = props;
+    const { documentRootId, documentRootIds, position, color } = props;
     const docRootIds = documentRootIds || [documentRootId];
     const [isOpen, setIsOpen] = React.useState(false);
     const userStore = useStore('userStore');
@@ -86,7 +76,7 @@ const PermissionsPanel = observer((props: Props) => {
                         }}
                         icon={mdiShieldLockOutline}
                         noOutline={isOpen}
-                        color={isOpen ? 'primary' : 'secondary'}
+                        color={color ?? (isOpen ? 'primary' : 'secondary')}
                     />
                 </span>
             }
@@ -109,7 +99,7 @@ const PermissionsPanel = observer((props: Props) => {
             keepTooltipInside="#__docusaurus"
             modal={isMobileView}
             onOpen={action(() => {
-                documentRoots.forEach((dr) => permissionStore.loadPermissions(dr.id));
+                documentRoots.forEach((dr) => permissionStore.loadAllPermissions([dr.id]));
                 setIsOpen(true);
             })}
             onClose={() => setIsOpen(false)}
