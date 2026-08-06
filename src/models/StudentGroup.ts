@@ -20,7 +20,7 @@ class StudentGroup {
 
     @observable accessor parentId: string | null;
     @observable accessor isEditing: boolean = false;
-    @observable accessor canPresent: boolean;
+    @observable accessor _canPresent: boolean;
     @observableRef accessor presentedDocumentProps: DocumentPresentation | null = null;
 
     readonly _pristine: { name: string; description: string };
@@ -38,7 +38,7 @@ class StudentGroup {
         };
         this.name = props.name;
         this.description = props.description;
-        this.canPresent = !!props.canPresent;
+        this._canPresent = !!props.canPresent;
 
         this.userIds.replace(props.userIds);
         this.adminIds.replace(props.adminIds);
@@ -141,12 +141,24 @@ class StudentGroup {
         this.description = this._pristine.description;
     }
 
+    @computed
+    get canPresent() {
+        const user = this.store.root.userStore.current;
+        // admins can fetch every student group, but they can only present the groups they are a member of
+        if (user?.isAdmin) {
+            if (!this.userIds.has(user.id)) {
+                return false;
+            }
+        }
+        return this._canPresent;
+    }
+
     @action
     setCanPresent(canPresent: boolean, skipSave: boolean = false) {
-        if (this.canPresent === canPresent || !this.isGroupAdmin) {
+        if (this._canPresent === canPresent || !this.isGroupAdmin) {
             return Promise.resolve(this);
         }
-        this.canPresent = canPresent;
+        this._canPresent = canPresent;
         if (!skipSave) {
             return this.save();
         }
@@ -299,6 +311,9 @@ class StudentGroup {
 
     @computed
     get presentedDocumentId() {
+        if (!this.canPresent) {
+            return null;
+        }
         return this.presentedDocumentProps?.document.id ?? null;
     }
 
@@ -329,7 +344,7 @@ class StudentGroup {
             name: this.name,
             description: this.description,
             parentId: this.parentId,
-            canPresent: this.canPresent,
+            canPresent: this._canPresent,
             presentedDocument: this.presentedDocumentProps
         };
     }
