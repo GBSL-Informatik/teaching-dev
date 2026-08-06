@@ -22,7 +22,12 @@ const validClasses = versions.filter((v) => v.length === 4 && /^\d{2}([A-Z][a-z]
 validClasses.sort();
 
 export const useClassVersions = () => {
-    const isHS = new Date().getMonth() + 1 >= 7 && new Date().getDate() >= 12;
+    const currentMonth = new Date().getMonth() + 1;
+    const isHS =
+        currentMonth > 7 ||
+        (currentMonth === 7 && new Date().getDate() >= 12) ||
+        currentMonth < 2 ||
+        (currentMonth === 2 && new Date().getDate() <= 14);
     const gym1Year = `${new Date().getFullYear() + (isHS ? 4 : 3)}`.slice(2, 4);
     const gym1Next = `${parseInt(gym1Year) + 1}`;
     const gym2Year = `${parseInt(gym1Year) - 1}`;
