@@ -17,7 +17,7 @@ export async function* loadMigrationRunners(): AsyncGenerator<Migration> {
             continue;
         }
 
-        if (!file.endsWith('.ts') || file.endsWith('.done.ts')) {
+        if (!file.endsWith('.ts') || file.endsWith('.done.ts') || file.endsWith('.action.ts')) {
             if (!file.endsWith('.ts')) {
                 console.warn(`Skipping non-TS file: ${filePath}`);
             }

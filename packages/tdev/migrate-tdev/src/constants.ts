@@ -9,6 +9,7 @@ export const MIGRATION_DEFAULT_CONFIG_NAME = 'migrateTdev.default.yaml';
 export const MIGRATION_DEFAULT_CONFIG_PATH = path.join(__dirname, MIGRATION_DEFAULT_CONFIG_NAME);
 
 export const MIGRATION_PATH = path.join(__dirname, '..', 'migrations');
+export const ACTIONS_PATH = path.join(__dirname, '..', 'actions');
 
 export type MigrationRunner = (
     projectRoot: string,

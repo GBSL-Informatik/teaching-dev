@@ -30,10 +30,11 @@ tdevPages:
 
 ## CLI
 
+### Migrationen ausführen
 Eine Migration kann mit folgendem Befehl gestartet werden. Alle Migrationen im Ordner `migrations`, die nicht mit `.done.ts` enden, werden in aufsteigender Reihenfolge ausgeführt. Nach erfolgreicher Migration wird die Migrationsdatei in `.done.ts` umbenannt, um zu verhindern, dass sie erneut ausgeführt werden.
 
 ```bash
-yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--done]]
+yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--done]] [[--branch="branch-name"]]
 ```
 
 `--only`
@@ -42,7 +43,8 @@ yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip=
 : Kommaseparierte Liste von tdev Seiten, die übersprungen werden sollen (Seiten, die den angegebenen Namen *nicht* im Pfad enthalten)
 `--done`
 : erzwingt das Umbenennen der Migrationsdatei in .done.ts nach erfolgreicher Migration (Standard: wenn kein `--only` oder `--skip` angegeben ist)
-
+`--branch`
+: Gibt den Branch an, der im Remote-Projekt vor dem Ausführen der Aktion ausgecheckt werden soll (Standard: __main__). Der Branch muss existieren.
 
 
 # examples:
@@ -54,6 +56,25 @@ yarn workspace @tdev/migrate-tdev migrate --only="inf-"                # --> mig
 yarn workspace @tdev/migrate-tdev migrate --skip="inf-abc,inf-ccd"     # --> migrates all projects, except inf-abc and inf-ccd
 yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
 ```
+
+### Aktionen ausführen
+
+Eine Aktion ist wie eine Migration, aber sie kann beliebig oft ausgeführt werden und wird nicht in `.done.ts` umbenannt. Aktionen werden im Ordner `actions` abgelegt und können mit folgendem Befehl ausgeführt werden:
+
+```bash
+yarn workspace @tdev/migrate-tdev runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]]
+```
+
+Einige Aktionen sind bereits vorhanden:
+
+`format`
+: formatiert das Projekt mit `yarn format` und committet+pushed die Änderungen.
+`updateTdev`
+: führt `yarn run updateTdev` aus, installiert mögliche Package-Updates, formatiert die Codebasis und committet+pushed die Änderungen.
+`reinstall`
+: entfernt `node_modules` und `yarn.lock`, installiert alle Pakete neu und committet+pushed die Änderungen.
+`git.status`
+: zeigt den aktuellen Git-Status an.
 
 ## Migrationen
 

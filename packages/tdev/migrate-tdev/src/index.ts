@@ -17,6 +17,7 @@ yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip=
     --only: Comma-separated list of tdev pages to migrate (pages including the specified name in the path)
     --skip: Comma-separated list of tdev pages to skip (pages *not* including the specified name in the path)
     --done: force renames the migration file to .done.ts after successful migration (default: when no --only or --skip is specified)
+    --branch: Specify the branch to checkout on the migrated project before running the action (default: main). The branch must exist.
 
 examples:
 
@@ -43,6 +44,8 @@ const skipPages: string[] = argv.skip
           .map((s) => s.trim())
           .filter((s): s is string => !!s)
     : [];
+
+const branch: string = argv.branch ? (argv.branch as string) : 'main';
 
 const main = async (): Promise<void> => {
     const config = await readOrCreateMigrationConfig();
@@ -75,7 +78,7 @@ const main = async (): Promise<void> => {
                     continue;
                 }
                 process.chdir(projectRoot);
-                await gitEnsureClean('main');
+                await gitEnsureClean(branch);
                 await runMigration(projectRoot, migrationName, now, tdevPage);
                 successfulMigrationPaths.push(migrationPath);
             } catch (error) {
