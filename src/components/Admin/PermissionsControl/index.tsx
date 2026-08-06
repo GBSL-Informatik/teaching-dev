@@ -25,6 +25,7 @@ import Card from '@tdev-components/shared/Card';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import DocumentTypeSelector from './DocumentTypeSelector';
 import TextInput from '@tdev-components/shared/TextInput';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
 
 interface Props {}
 
@@ -80,9 +81,12 @@ const PermissionsControl = observer((props: Props) => {
                 <ul>
                     {Object.entries(view.docsTree).map(([path, docs]) => (
                         <li key={path}>
-                            <strong>
-                                <Link to={path}>{path}</Link>
-                            </strong>
+                            <div className={clsx(styles.pathHeader)}>
+                                <strong>
+                                    <Link to={path}>{path}</Link>
+                                </strong>
+                                <PermissionsPanel documentRootIds={docs.map((doc) => doc.id)} />
+                            </div>
                             <div className={clsx(styles.docActions)}>
                                 {docs.some((doc) => docRootStore.find(doc.id)?.userPermissions?.length) && (
                                     <Confirm
@@ -132,27 +136,49 @@ const PermissionsControl = observer((props: Props) => {
                                     const root = docRootStore.find(doc.id);
                                     return (
                                         <li key={doc.id}>
-                                            <Badge color={view.typeColors.get(doc.type)}>{doc.type}</Badge> -{' '}
-                                            <CopyBadge
-                                                label={`DocumentRootId: ${doc.id.slice(0, 8)}...`}
-                                                value={doc.id}
-                                            />
-                                            <Badge type="primary">
-                                                Allgemein{' '}
-                                                <Icon path={AccessIcon(root?._access)} size={SIZE_XS} />
-                                            </Badge>
-                                            <Badge type="secondary">
-                                                Shared{' '}
-                                                <Icon path={AccessIcon(root?._sharedAccess)} size={SIZE_XS} />
-                                            </Badge>
-                                            <Badge color={root?.groupPermissions?.length ? 'orange' : 'gray'}>
-                                                <Icon path={mdiAccountGroup} size={SIZE_XS} />{' '}
-                                                {root?.groupPermissions?.length}
-                                            </Badge>
-                                            <Badge color={root?.userPermissions?.length ? 'orange' : 'gray'}>
-                                                <Icon path={mdiAccount} size={SIZE_XS} />{' '}
-                                                {root?.userPermissions?.length}
-                                            </Badge>
+                                            <div className={clsx(styles.docRoot)}>
+                                                <div className={clsx(styles.permissions)}>
+                                                    <Badge color={view.typeColors.get(doc.type)}>
+                                                        {doc.type}
+                                                    </Badge>{' '}
+                                                    -{' '}
+                                                    <CopyBadge
+                                                        label={`DocumentRootId: ${doc.id.slice(0, 8)}...`}
+                                                        value={doc.id}
+                                                    />
+                                                    <Badge type="primary">
+                                                        Allgemein{' '}
+                                                        <Icon
+                                                            path={AccessIcon(root?._access)}
+                                                            size={SIZE_XS}
+                                                        />
+                                                    </Badge>
+                                                    <Badge type="secondary">
+                                                        Shared{' '}
+                                                        <Icon
+                                                            path={AccessIcon(root?._sharedAccess)}
+                                                            size={SIZE_XS}
+                                                        />
+                                                    </Badge>
+                                                    <Badge
+                                                        color={
+                                                            root?.groupPermissions?.length ? 'orange' : 'gray'
+                                                        }
+                                                    >
+                                                        <Icon path={mdiAccountGroup} size={SIZE_XS} />{' '}
+                                                        {root?.groupPermissions?.length}
+                                                    </Badge>
+                                                    <Badge
+                                                        color={
+                                                            root?.userPermissions?.length ? 'orange' : 'gray'
+                                                        }
+                                                    >
+                                                        <Icon path={mdiAccount} size={SIZE_XS} />{' '}
+                                                        {root?.userPermissions?.length}
+                                                    </Badge>
+                                                </div>
+                                                <PermissionsPanel documentRootId={doc.id} />
+                                            </div>
                                         </li>
                                     );
                                 })}
