@@ -103,6 +103,19 @@ export class DocumentRootStore extends iStore {
     }
 
     @action
+    cleanupUnknownDocumentRoots(removePermissions?: boolean) {
+        const knownRoots = this.documentRoots.filter((dr) => !dr.isUnknown);
+        if (removePermissions) {
+            const unknownRoots = this.documentRoots.filter((dr) => dr.isUnknown);
+            this.root.permissionStore.removeFromStoreByDocumentRootIds(unknownRoots.map((dr) => dr.id));
+        }
+        if (knownRoots.length === this.documentRoots.length) {
+            return;
+        }
+        this.documentRoots.replace(knownRoots);
+    }
+
+    @action
     addDocumentRoot(
         documentRoot: DocumentRoot<DocumentType>,
         config: { cleanup?: boolean; deep?: boolean } = {}
@@ -314,7 +327,7 @@ export class DocumentRootStore extends iStore {
         if (config.load.documentRoot) {
             if (config.load.documentRoot === 'addIfMissing') {
                 const current = this.find(data.id);
-                if (!current || current.meta.type === '_unknown_') {
+                if (!current || current.isUnknown) {
                     this.addDocumentRoot(documentRoot);
                 }
             } else {

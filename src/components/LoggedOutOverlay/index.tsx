@@ -143,7 +143,7 @@ const LoggedOutOverlay = observer((props: Props) => {
                 const now = Date.now();
                 // Check for stalled document roots
                 const stalled = documentRootStore.documentRoots.filter(
-                    (dr) => dr.isLoadable && dr.isDummy && now - dr.initializedAt > 5000
+                    (dr) => dr.isLoadable && dr.isDummy && !dr.isUnknown && now - dr.initializedAt > 5000
                 );
                 if (stalled.length > 0) {
                     setSyncIssue((r) => r ?? 'stalled');

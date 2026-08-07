@@ -4,20 +4,9 @@ import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
-import Badge from '@tdev-components/shared/Badge';
 import Link from '@docusaurus/Link';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { reaction } from 'mobx';
-import { AccessColor, AccessIcon } from '@tdev-components/PermissionsPanel/AccessBadge';
-import Icon from '@mdi/react';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import {
-    mdiAccount,
-    mdiAccountGroup,
-    mdiFileMultipleOutline,
-    mdiShareVariantOutline,
-    mdiSync
-} from '@mdi/js';
+import { mdiSync } from '@mdi/js';
 import { ApiState } from '@tdev-stores/iStore';
 import Card from '@tdev-components/shared/Card';
 import DocumentTypeSelector from './DocumentTypeSelector';
@@ -30,6 +19,7 @@ interface Props {}
 
 const PermissionsControl = observer((props: Props) => {
     const permissionStore = useStore('permissionStore');
+    const documentRootStore = useStore('documentRootStore');
     const viewStore = useStore('viewStore');
     const view = viewStore.permissionControl;
 
@@ -48,6 +38,8 @@ const PermissionsControl = observer((props: Props) => {
         );
         return () => {
             dispose();
+            documentRootStore.abortRequest('load-document-roots');
+            documentRootStore.cleanupUnknownDocumentRoots();
         };
     }, []);
 

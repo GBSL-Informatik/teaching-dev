@@ -21,11 +21,19 @@ abstract class iStore<Api = ''> {
     abortControllers = new Map<Api | ApiAction, AbortController>();
     apiState = observable.map<Api | ApiAction, ApiState>();
 
-    withAbortController<T>(sigId: Api | ApiAction, fn: (ct: AbortController) => Promise<T>) {
-        const sig = new AbortController();
+    abortRequest(sigId: Api | ApiAction, skipReset: boolean = false) {
         if (this.abortControllers.has(sigId)) {
             this.abortControllers.get(sigId)?.abort();
         }
+        this.abortControllers.delete(sigId);
+        if (!skipReset) {
+            this.apiState.delete(sigId);
+        }
+    }
+
+    withAbortController<T>(sigId: Api | ApiAction, fn: (ct: AbortController) => Promise<T>) {
+        const sig = new AbortController();
+        this.abortRequest(sigId, true);
         this.abortControllers.set(sigId, sig);
         this.apiState.set(sigId, ApiState.SYNCING);
         return fn(sig)

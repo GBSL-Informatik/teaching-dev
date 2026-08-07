@@ -13,14 +13,13 @@ import {
     updateUserPermission as updateUserPermissionApi,
     deleteUserPermission as deleteUserPermissionApi,
     deleteGroupPermission as deleteGroupPermissionApi,
-    documentRootPermissions as apiDocumentRootPermissions,
-    permissionsFor
+    documentRootPermissions as apiDocumentRootPermissions
 } from '@tdev-api/permission';
 import User from '@tdev-models/User';
-import { Access, DocumentType } from '@tdev-api/document';
+import { Access } from '@tdev-api/document';
 import StudentGroup from '@tdev-models/StudentGroup';
 import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import DocumentRoot, { TypeMeta, UnknownMeta } from '@tdev-models/DocumentRoot';
+import DocumentRoot, { UnknownMeta } from '@tdev-models/DocumentRoot';
 
 class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
@@ -236,6 +235,19 @@ class PermissionStore extends iStore<`update-${string}`> {
         } else {
             this.groupPermissions.remove(permission);
         }
+        this.permissionsLoadedForDocumentRootIds.delete(permission.documentRootId);
+    }
+
+    @action
+    removeFromStoreByDocumentRootIds(documentRootIds: string[]) {
+        const docIds = new Set(documentRootIds);
+        const filteredUserPermissions = this.userPermissions.filter((p) => !docIds.has(p.documentRootId));
+        const filteredGroupPermissions = this.groupPermissions.filter((p) => !docIds.has(p.documentRootId));
+        this.userPermissions.replace(filteredUserPermissions);
+        this.groupPermissions.replace(filteredGroupPermissions);
+        this.permissionsLoadedForDocumentRootIds.replace(
+            [...this.permissionsLoadedForDocumentRootIds].filter((id) => !docIds.has(id))
+        );
     }
 
     @action
@@ -283,7 +295,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         if (idsToLoad.length === 0) {
             return Promise.resolve();
         }
-        return this.withAbortController(`load-all-permissions`, async (signal) => {
+        return this.withAbortController('load-all-permissions', async (signal) => {
             return apiDocumentRootPermissions(idsToLoad, signal.signal).then(
                 action(({ data }) => {
                     data.forEach((p) => {
@@ -294,7 +306,7 @@ class PermissionStore extends iStore<`update-${string}`> {
                             true
                         );
                         const current = this.root.documentRootStore.find(p.id);
-                        if (current && current.meta.type !== '_unknown_') {
+                        if (current && !current.isUnknown) {
                             current.setRootAccess(p.access, true);
                             current.setSharedAccess(p.sharedAccess, true);
                         } else {

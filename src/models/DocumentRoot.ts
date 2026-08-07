@@ -109,6 +109,10 @@ class DocumentRoot<T extends DocumentType> {
         return this.meta.type;
     }
 
+    get isUnknown() {
+        return this.type === '_unknown_';
+    }
+
     get access() {
         return highestAccess(new Set([this._access]), this.meta.access);
     }
