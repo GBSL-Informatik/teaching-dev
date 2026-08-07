@@ -11,7 +11,7 @@ import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { action } from 'mobx';
 import Alert from '@tdev-components/shared/Alert';
-import { HomepageHeader } from '..';
+import { HomepageHeader } from '@site/src/pages';
 import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { mdiLoading, mdiLogin } from '@mdi/js';
 

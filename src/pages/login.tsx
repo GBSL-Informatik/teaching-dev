@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './login.module.scss';
 import Layout from '@theme/Layout';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
 import { authClient } from '@tdev/auth-client';
@@ -14,7 +13,7 @@ import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
 import customFields from '@tdev-components/utils/customFields';
 import { useStore } from '@tdev-hooks/useStore';
 import Alert from '@tdev-components/shared/Alert';
-import { HomepageHeader } from '.';
+import { HomepageHeader } from '@site/src/pages';
 const { NO_AUTH } = customFields;
 
 const LoginPage = observer(() => {
