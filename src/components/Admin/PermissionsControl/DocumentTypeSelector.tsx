@@ -52,7 +52,6 @@ const DocumentTypeSelector = observer((props: Props) => {
                 options={view.selectTypeOptions}
                 value={view.selectTypeOptions.filter((opt) => view.typeFilter.has(opt.value))}
                 onChange={(newVal, prop) => {
-                    console.log('DocumentTypeSelector onChange', newVal, prop);
                     switch (prop.action) {
                         case 'clear':
                             return view.clearTypeFilter();

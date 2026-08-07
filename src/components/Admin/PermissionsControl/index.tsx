@@ -14,6 +14,7 @@ import TextInput from '@tdev-components/shared/TextInput';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import PageActions from './PageActions';
 import AccessOverview from './AccessOverview';
+import Badge from '@tdev-components/shared/Badge';
 
 interface Props {}
 
@@ -66,6 +67,10 @@ const PermissionsControl = observer((props: Props) => {
                     value={view.pathFilter}
                     onChange={(value) => view.setPathFilter(value)}
                 />
+
+                <Badge color="blue">
+                    Angezeigte <i>DocumentRoots</i>: {view.filteredDocumentRoots} / {view.totalDocumentRoots}
+                </Badge>
             </Card>
             <Card header={<h3>Berechtigungen</h3>} classNames={{ card: clsx(styles.docsTree) }}>
                 <ul>
@@ -76,10 +81,13 @@ const PermissionsControl = observer((props: Props) => {
                                     <strong>
                                         <Link to={path}>{path}</Link>
                                     </strong>
-                                    <PermissionsPanel
-                                        documentRootIds={docs.map((doc) => doc.id)}
-                                        color="warning"
-                                    />
+                                    <div className={clsx(styles.pathActions)}>
+                                        <Badge color="blue">{docs.length}</Badge>
+                                        <PermissionsPanel
+                                            documentRootIds={docs.map((doc) => doc.id)}
+                                            color="warning"
+                                        />
+                                    </div>
                                 </div>
                                 <PageActions docs={docs} />
                             </div>

@@ -57,6 +57,17 @@ export class PermissionsControlView {
         }
     }
 
+    @computed
+    get filteredDocumentRoots() {
+        return this.relevantDocumentRootIds.length;
+    }
+
+    @computed
+    get totalDocumentRoots() {
+        const total = new Set<string>(this.root.pageStore._pageIndex.map((p) => p.id));
+        return total.size;
+    }
+
     @action
     clearTypeFilter() {
         this.typeFilter.clear();
