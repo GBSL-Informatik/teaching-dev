@@ -13,7 +13,7 @@ import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
 import customFields from '@tdev-components/utils/customFields';
 import { useStore } from '@tdev-hooks/useStore';
 import Alert from '@tdev-components/shared/Alert';
-import { HomepageHeader } from '@site/src/pages';
+import { HomepageHeader } from '@tdev-components/HomepageHeader';
 const { NO_AUTH } = customFields;
 
 const LoginPage = observer(() => {

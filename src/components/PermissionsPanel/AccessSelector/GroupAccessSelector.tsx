@@ -18,7 +18,6 @@ const GroupAccessSelector = observer((props: Props) => {
     const groupPermission = permissionStore
         .groupPermissionsByDocumentRoot(group.presentedDocument?.documentRootId)
         .find((p) => p.groupId === group.id)?.access;
-
     return (
         <div className={clsx(props.className)}>
             <AccessSelector

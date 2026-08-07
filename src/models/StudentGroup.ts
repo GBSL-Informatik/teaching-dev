@@ -5,7 +5,7 @@ import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
 import { orderBy } from 'es-toolkit/array';
-import { Access, type TypeModelMapping } from '@tdev-api/document';
+import { Access, type TypeModelMapping, type DocumentModelType } from '@tdev-api/document';
 import type DocumentRoot from './DocumentRoot';
 
 class StudentGroup {
@@ -320,7 +320,7 @@ class StudentGroup {
     }
 
     @computed
-    get presentedDocument() {
+    get presentedDocument(): DocumentModelType | undefined {
         return this.store.root.documentStore.find(this.presentedDocumentId);
     }
 

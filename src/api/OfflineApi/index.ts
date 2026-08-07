@@ -258,6 +258,20 @@ export default class OfflineApi {
                 );
                 return resolveResponse(document as unknown as T);
             case 'documentRoots':
+                if (id === 'permissions') {
+                    const permissions = (data as { documentRootIds: string[] }).documentRootIds.map(
+                        (id: string) => {
+                            return {
+                                id: id,
+                                access: Access.RW_DocumentRoot,
+                                sharedAccess: Access.None_DocumentRoot,
+                                userPermissions: [],
+                                groupPermissions: []
+                            } satisfies Permissions;
+                        }
+                    );
+                    return resolveResponse(permissions as unknown as T);
+                }
                 return resolveResponse({
                     access: (data as DocumentRoot).access ?? Access.RW_DocumentRoot,
                     sharedAccess: (data as DocumentRoot).sharedAccess ?? Access.RW_DocumentRoot,
@@ -333,6 +347,8 @@ export default class OfflineApi {
                 if (parts[0] === 'permissions') {
                     return resolveResponse({
                         id: id,
+                        access: Access.RW_DocumentRoot,
+                        sharedAccess: Access.None_DocumentRoot,
                         groupPermissions: [],
                         userPermissions: []
                     } satisfies Permissions as unknown as T);
