@@ -1,8 +1,19 @@
-.form {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    > input {
-        flex-basis: 20em;
+.main {
+    margin: 3em;
+
+    .form {
+        max-width: 30em;
+        margin: 0 auto;
+        .signInButton {
+            font-size: 110%;
+            margin-top: 1em;
+            margin-left: auto;
+        }
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .main {
+        margin: 1em;
     }
 }

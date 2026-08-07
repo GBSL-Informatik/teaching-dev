@@ -11,17 +11,18 @@ import { useClassVersions } from '@tdev-components/HomepageCourses/useClassVersi
 import HomepageCourses from '@tdev-components/HomepageCourses';
 
 interface HeaderProps {
-    hasCourses: boolean;
+    hasCourses?: boolean;
+    simple?: boolean;
 }
-const HomepageHeader = (props: HeaderProps) => {
+export const HomepageHeader = (props: HeaderProps) => {
     const { siteConfig } = useDocusaurusContext();
     const firstNavbarItem = (siteConfig.themeConfig?.navbar as Navbar | undefined)?.items?.[0];
-    if (props.hasCourses) {
+    if (props.hasCourses || props.simple) {
         return (
             <header className={clsx('hero hero--primary index-page', styles.heroBanner)}>
                 <div className="container index-page-title">
                     <h1 className="hero__title">{siteConfig.title}</h1>
-                    <p className="hero__subtitle">{siteConfig.tagline}</p>
+                    {!props.simple && <p className="hero__subtitle">{siteConfig.tagline}</p>}
                 </div>
             </header>
         );

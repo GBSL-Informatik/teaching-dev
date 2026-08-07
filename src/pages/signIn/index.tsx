@@ -11,6 +11,9 @@ import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
 import { action } from 'mobx';
 import Alert from '@tdev-components/shared/Alert';
+import { HomepageHeader } from '..';
+import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import { mdiLoading, mdiLogin } from '@mdi/js';
 
 const SignIn = observer((): React.ReactNode => {
     const [email, setEmail] = React.useState('');
@@ -30,14 +33,15 @@ const SignIn = observer((): React.ReactNode => {
 
     return (
         <Layout>
-            <main>
-                <h2>Einloggen</h2>
+            <HomepageHeader simple />
+            <main className={clsx(styles.main)}>
+                <h2>Passwort-Login mit E-Mail</h2>
                 {authStore.authErrorMessage && (
                     <Alert type="danger" onDiscard={() => authStore.setAuthErrorMessage(null)}>
                         {authStore.authErrorMessage}
                     </Alert>
                 )}
-                <div className={clsx(styles.form)}>
+                <form className={clsx(styles.form)}>
                     <TextInput
                         type="email"
                         label="Email"
@@ -64,14 +68,17 @@ const SignIn = observer((): React.ReactNode => {
                     <Button
                         disabled={!email || !password}
                         onClick={async () => {
-                            // call the sign up method from the auth store
                             authStore.signInWithEmail(email, password);
                         }}
+                        spin={authStore.isAuthenticating === 'email'}
+                        text="Einloggen"
+                        icon={authStore.isAuthenticating === 'email' ? mdiLoading : mdiLogin}
+                        iconSide="left"
                         color="blue"
-                    >
-                        Einloggen
-                    </Button>
-                </div>
+                        size={SIZE_M}
+                        className={clsx(styles.signInButton)}
+                    />
+                </form>
             </main>
         </Layout>
     );
