@@ -54,15 +54,6 @@ export abstract class TypeMeta<T extends DocumentType> {
     abstract get defaultData(): TypeDataMapping[T];
 }
 
-export class UnknownMeta extends TypeMeta<'_unknown_'> {
-    constructor(props: BaseMetaProps = {}) {
-        super('_unknown_', props, true);
-    }
-    get defaultData(): TypeDataMapping['_unknown_'] {
-        return { name: 'Unknown Document Type' };
-    }
-}
-
 class DocumentRoot<T extends DocumentType> {
     readonly store: DocumentRootStore;
     readonly id: string;

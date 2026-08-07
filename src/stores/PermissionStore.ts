@@ -19,7 +19,8 @@ import User from '@tdev-models/User';
 import { Access } from '@tdev-api/document';
 import StudentGroup from '@tdev-models/StudentGroup';
 import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import DocumentRoot, { UnknownMeta } from '@tdev-models/DocumentRoot';
+import DocumentRoot from '@tdev-models/DocumentRoot';
+import { UnknownMeta } from '@tdev-models/documents/Unknown';
 
 class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;

@@ -1,7 +1,7 @@
 import { action, computed, observable, runInAction } from 'mobx';
 import { RootStore } from '@tdev-stores/rootStore';
 import { computedFn } from 'mobx-utils';
-import DocumentRoot, { TypeMeta, UnknownMeta } from '@tdev-models/DocumentRoot';
+import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import {
     Config,
     create as apiCreate,
@@ -26,6 +26,7 @@ import { ModelMeta as StringMeta } from '@tdev-models/documents/String';
 import { ModelMeta as QuillV2Meta } from '@tdev-models/documents/QuillV2';
 
 import { CmsTextMeta } from '@tdev-models/documents/CmsText';
+import { UnknownMeta } from '@tdev-models/documents/Unknown';
 
 type LoadConfig = {
     /** if true, user permissions will be loaded

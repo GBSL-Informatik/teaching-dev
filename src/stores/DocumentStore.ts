@@ -41,6 +41,7 @@ import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import Quiz from '@tdev-models/documents/Assessable/Quiz';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
+import Unknown from '@tdev-models/documents/Unknown';
 
 const IsNotUniqueError = (error: any) => {
     try {
