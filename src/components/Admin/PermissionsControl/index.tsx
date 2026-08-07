@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
+import siteConfig from '@generated/docusaurus.config';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import Button from '@tdev-components/shared/Button';
@@ -15,6 +16,22 @@ import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import PageActions from './PageActions';
 import AccessOverview from './AccessOverview';
 import Badge from '@tdev-components/shared/Badge';
+import type * as Preset from '@docusaurus/preset-classic';
+
+const { presets } = siteConfig;
+const classicPreset = (
+    presets.find((p) => Array.isArray(p) && p[0] === 'classic') as [string, Preset.Options] | undefined
+)?.[1];
+const docsBasePath = classicPreset?.docs ? (classicPreset.docs.routeBasePath ?? '/docs/') : '/docs/';
+const extractDocsPath = (path: string) => {
+    if (docsBasePath !== '/') {
+        return path;
+    }
+    if (path.startsWith('/docs/')) {
+        return path.replace('/docs/', '/');
+    }
+    return path;
+};
 
 interface Props {}
 
@@ -79,7 +96,7 @@ const PermissionsControl = observer((props: Props) => {
                             <div className={clsx(styles.page)}>
                                 <div className={clsx(styles.pathHeader)}>
                                     <strong>
-                                        <Link to={path}>{path}</Link>
+                                        <Link to={extractDocsPath(path)}>{path}</Link>
                                     </strong>
                                     <div className={clsx(styles.pathActions)}>
                                         <Badge color="blue">{docs.length}</Badge>
