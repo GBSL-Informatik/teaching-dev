@@ -3,7 +3,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Heading from '@theme/Heading';
 
-import styles from './index.module.css';
+import styles from './styles.module.scss';
 import type { Navbar } from '@docusaurus/theme-common';
 
 interface HeaderProps {
