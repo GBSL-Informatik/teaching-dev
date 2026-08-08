@@ -10,6 +10,7 @@ export const filesContainingMatch = async (root: string, match: string): Promise
         return stdout
             .split('\n')
             .filter((file) => file.trim() !== '')
+            .filter((file) => !file.startsWith('packages/tdev/migrate-tdev'))
             .map((f) => path.join(root, f));
     } catch (error) {
         if (error instanceof Error && error.message.includes('exit code 1')) {
