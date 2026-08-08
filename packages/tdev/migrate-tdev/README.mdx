@@ -69,8 +69,9 @@ Einige Aktionen sind bereits vorhanden:
 
 `format`
 : formatiert das Projekt mit `yarn format` und committet+pushed die Änderungen.
-`updateTdev`
-: führt `yarn run updateTdev` aus, installiert mögliche Package-Updates, formatiert die Codebasis und committet+pushed die Änderungen.
+`updateTdev [[--format]]`
+: führt `yarn run updateTdev` aus, installiert mögliche Package-Updates und committet+pushed die Änderungen.
+: Optional kann `--format` angegeben werden, um das Projekt nach dem Update zu formatieren.
 `reinstall`
 : entfernt `node_modules` und `yarn.lock`, installiert alle Pakete neu und committet+pushed die Änderungen.
 `git.status`

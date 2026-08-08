@@ -79,7 +79,7 @@ const main = async (): Promise<void> => {
                 }
                 process.chdir(projectRoot);
                 await gitEnsureClean(branch);
-                await runMigration(projectRoot, migrationName, now, tdevPage);
+                await runMigration(projectRoot, migrationName, now, tdevPage, argv);
                 successfulMigrationPaths.push(migrationPath);
             } catch (error) {
                 console.error(`Failed to migrate ${migrationName}:`, error);

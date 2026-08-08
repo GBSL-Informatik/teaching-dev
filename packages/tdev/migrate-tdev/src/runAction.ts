@@ -1,11 +1,9 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
 import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
-import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
 import { gitEnsureClean } from './helpers/actions.js';
 import minimist from 'minimist';
 import { pathExists, REPO_ROOT } from './helpers/base.js';
-import { ACTIONS_PATH, MIGRATION_PATH } from './constants.js';
+import { ACTIONS_PATH } from './constants.js';
 import { loadActionRunner } from './helpers/loadActionRunner.js';
 const LINE = '----------------------------------------------------------------------------------';
 
@@ -85,7 +83,7 @@ const main = async (): Promise<void> => {
             }
             process.chdir(projectRoot);
             await gitEnsureClean(branch);
-            await runAction(projectRoot, actionName, now, tdevPage);
+            await runAction(projectRoot, actionName, now, tdevPage, argv);
             successfulActionsPaths.push(migrationPath);
             console.log(`\n    ✅ Action ${actionName} completed successfully for ${tdevPage.path}\n`);
         } catch (error) {

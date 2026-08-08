@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REPO_ROOT } from './helpers/base.js';
+import type { ParsedArgs } from 'minimist';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const MIGRATION_CONFIG_NAME = 'migrateTdev.config.yaml';
 export const MIGRATION_CONFIG_PATH = path.join(REPO_ROOT, MIGRATION_CONFIG_NAME);
@@ -18,5 +19,6 @@ export type MigrationRunner = (
     config: {
         apiMode: 'api' | 'indexedDb' | 'memory';
         managed: 'fully' | 'partially' | 'none';
-    }
+    },
+    argv: ParsedArgs
 ) => Promise<void>;
