@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import React from 'react';
 import styles from './styles.module.scss';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
@@ -10,14 +11,36 @@ import { useIsLive } from '@tdev-hooks/useIsLive';
 import Card from '@tdev-components/shared/Card';
 import customFields from '@tdev-components/utils/customFields';
 const { BACKEND_URL, NO_AUTH, OFFLINE_API } = customFields;
+import { prepareFileTreeInput } from '@pierre/trees';
+import { FileTree, useFileTree } from '@pierre/trees/react';
 
 const HomepageFeatures = observer(() => {
     const socketStore = useStore('socketStore');
     const sessionStore = useStore('sessionStore');
     const userStore = useStore('userStore');
     const isLive = useIsLive();
+    const fsTree = React.useMemo(
+        () =>
+            prepareFileTreeInput(
+                ['src/components', 'src/hooks/bla.py', 'src/hooks/bla.tsx', 'src/pages', 'src/utils'],
+                {
+                    flattenEmptyDirectories: true
+                }
+            ),
+        []
+    );
+    const { model } = useFileTree({
+        preparedInput: fsTree,
+        search: true,
+        icons: {
+            set: 'complete',
+            colored: false
+        },
+        initialExpandedPaths: ['src', 'src/hooks']
+    });
     return (
         <section className={styles.features}>
+            {fsTree && <FileTree model={model} className="rounded-lg border" style={{ height: '320px' }} />}
             {sessionStore.apiMode === 'api' ? (
                 <div className="container">
                     <h2>Socket.IO</h2>
