@@ -85,7 +85,7 @@ Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben 
 ```tsx
 import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 
-<ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
+<ChoiceAnswer correct={[1, 4]} id="9b1f6c58-42f2-40b1-8fb3-bc6914f0b886">
     Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
     
     1. TypeScript
@@ -95,6 +95,18 @@ import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
     5. Ruby
 </ChoiceAnswer>
 ```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[1, 4]} id="9b1f6c58-42f2-40b1-8fb3-bc6914f0b886">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
 
 ### Multiple-Choice
 Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
@@ -273,7 +285,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 ```
 
 <BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="fe81de29-3fad-4da9-82a5-a4af0050fdbe" >
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="8ff62462-ba6c-4c90-96bc-a50e177a67a8" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             
@@ -327,6 +339,13 @@ In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene
 Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten innerhalb jeder Frage randomisiert. Die Randomisierung funktioniert dabei genauso wie bei den Standalone-Fragen (siehe oben).
 
 ## Eigenschaften und Funktionen
+
+### Allgemeine Eigenschaften
+| Eigenschaft      | Typ               | Beschreibung                                      |
+|------------------|-------------------|---------------------------------------------------|
+| `title` | `string` | Titel der Frage. Wird im Header der Frage angezeigt. Standard: 'Frage' |
+| `keepExpanded` | `all | correct | selected | none` | Steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. Standard: `all`. |
+
 ### Eigenschaften der `ChoiceAnswer`
 | Eigenschaft      | Typ               | Beschreibung                                      |
 |------------------|-------------------|---------------------------------------------------|
