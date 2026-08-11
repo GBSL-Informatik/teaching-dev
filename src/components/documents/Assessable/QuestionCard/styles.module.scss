@@ -1,7 +1,15 @@
+:root {
+    --tdev-choice-answers-user-selection: none;
+}
 .questionCard {
     position: relative;
     margin-bottom: 1em;
     --tdev-box-shadow-defaults: 0 0 8px;
+    // prevent selection of text in the card when clicking on the card to select it
+    user-select: var(--tdev-choice-answers-user-selection);
+    &.allowSelection {
+        --tdev-choice-answers-user-selection: text;
+    }
 
     p {
         margin: 0 0 0.5em 0;

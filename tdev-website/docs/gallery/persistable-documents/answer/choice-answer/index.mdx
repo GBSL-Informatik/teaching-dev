@@ -299,6 +299,52 @@ Die `keepExpanded`-Property steuert, welche Antwortmöglichkeiten nach der Beant
 </BrowserWindow>
 :::
 
+### `allowSelection`
+
+Standardmässig kann der Fragetext nicht ausgewählt werden, so dass das "Copy & Paste" von Fragen in LLM-Tools zumindest erschwert wird.
+
+Mit der `allowSelection`-Property kann dies jedoch überschrieben werden, so dass der Fragetext wieder ausgewählt werden kann:
+
+```tsx
+<ChoiceAnswer allowSelection correct={[1, 4]} id="454c5183-c4ab-46a8-ba3f-efe1b59c7a7e">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+:::flex{minWidth="max(250px, 45%)"}
+`allowSelection`
+<BrowserWindow>
+    <ChoiceAnswer allowSelection correct={[1, 4]} id="454c5183-c4ab-46a8-ba3f-efe1b59c7a7e">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+::br
+`allowSelection={false}` (Standard)
+<BrowserWindow>
+    <ChoiceAnswer allowSelection={false} correct={[1, 4]} id="ab430bae-24b8-4654-ba0c-ba67a89555da">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+:::
+
 
 ## Quizzes
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
@@ -417,6 +463,9 @@ Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz 
 : *optional*, `all | correct | selected | none`.
 : Steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. 
 : Standard: `all`.
+`allowSelection`
+: *optional*, `boolean`.
+: Steuert, ob der Fragetext ausgewählt werden kann. Standardmässig ist dies deaktiviert, um das "Copy & Paste" von Fragen in LLM-Tools zumindest zu erschweren.
 
 ### Eigenschaften der `ChoiceAnswer`
 

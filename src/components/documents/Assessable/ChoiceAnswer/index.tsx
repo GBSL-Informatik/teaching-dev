@@ -18,6 +18,7 @@ interface SharedProps extends AssessableComponentProps<'choice_answer'> {
     multiple?: boolean;
     randomizeOptions?: boolean;
     optionsCount: number;
+    allowSelection?: boolean;
 }
 
 export interface StandaloneProps extends SharedProps {
@@ -56,7 +57,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     }
 
     return (
-        <QuestionCard doc={doc}>
+        <QuestionCard doc={doc} allowSelection={props.allowSelection}>
             <DocContext.Provider value={doc}>{props.children}</DocContext.Provider>
         </QuestionCard>
     );

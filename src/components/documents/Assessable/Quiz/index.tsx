@@ -24,6 +24,7 @@ export interface Props extends AssessableComponentProps<AssessableType> {
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
     minPoints?: number;
+    allowSelection?: boolean;
 }
 
 const Quiz = observer((props: Props) => {
@@ -41,6 +42,7 @@ const Quiz = observer((props: Props) => {
             className={clsx(
                 styles.quiz,
                 animate && styles.animate,
+                props.allowSelection && styles.allowSelection,
                 doc.isAssessed && doc.assessment && styles[doc.assessment?.correctness]
             )}
             ref={ref}
