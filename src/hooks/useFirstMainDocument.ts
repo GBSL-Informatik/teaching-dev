@@ -1,5 +1,5 @@
 import React from 'react';
-import { DocumentType } from '@tdev-api/document';
+import { DocumentType, TypeModelMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
@@ -65,6 +65,5 @@ export const useFirstMainDocument = <Type extends DocumentType>(
             { fireImmediately: true }
         );
     }, [userStore, createDocument, documentRoot]);
-
-    return documentRoot?.firstMainDocument || dummyDocument;
+    return (documentRoot?.documentsByType?.get(meta.type)?.[0] as TypeModelMapping[Type]) || dummyDocument;
 };

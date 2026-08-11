@@ -85,7 +85,7 @@ Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben 
 ```tsx
 import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 
-<ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
+<ChoiceAnswer correct={[1, 4]} id="9b1f6c58-42f2-40b1-8fb3-bc6914f0b886">
     Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
     
     1. TypeScript
@@ -95,6 +95,18 @@ import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
     5. Ruby
 </ChoiceAnswer>
 ```
+
+<BrowserWindow>
+    <ChoiceAnswer correct={[1, 4]} id="9b1f6c58-42f2-40b1-8fb3-bc6914f0b886">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
 
 ### Multiple-Choice
 Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
@@ -216,6 +228,123 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/Assessa
     </TrueFalseAnswer>
 </BrowserWindow>
 
+### `keepExpanded`
+Die `keepExpanded`-Property steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. Standardmässig werden alle Antwortmöglichkeiten angezeigt, es kann aber auch eingestellt werden, dass nur die korrekten Antworten, nur die ausgewählten Antworten oder gar keine Antworten angezeigt werden.
+
+```tsx
+<ChoiceAnswer keepExpanded="<all|correct|selected|none>" correct={[1, 4]} id="991d70c6-4142-4250-888a-e0ae8c2f19b8">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+:::flex{minWidth="max(250px, 45%)"}
+`keepExpanded="all"`
+<BrowserWindow>
+    <ChoiceAnswer correct={[1, 4]} id="940b7d43-58d6-48e1-8717-e72343c3ebdd">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+::br
+`keepExpanded="correct"`
+<BrowserWindow>
+    <ChoiceAnswer keepExpanded="correct" correct={[1, 4]} id="6054c4cb-dbe5-410c-b247-36dfa3b49c25">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+
+::br
+`keepExpanded="selected"`
+<BrowserWindow>
+    <ChoiceAnswer keepExpanded="selected" correct={[1, 4]} id="344ca093-4b6f-448e-b3be-ff517e133720">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+
+::br
+`keepExpanded="none"`
+<BrowserWindow>
+    <ChoiceAnswer keepExpanded="none" correct={[1, 4]} id="4bd76941-1075-4c5e-b970-92a6443bee9e">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+:::
+
+### `allowSelection`
+
+Standardmässig kann der Fragetext nicht ausgewählt werden, so dass das "Copy & Paste" von Fragen in LLM-Tools zumindest erschwert wird.
+
+Mit der `allowSelection`-Property kann dies jedoch überschrieben werden, so dass der Fragetext wieder ausgewählt werden kann:
+
+```tsx
+<ChoiceAnswer allowSelection correct={[1, 4]} id="454c5183-c4ab-46a8-ba3f-efe1b59c7a7e">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+:::flex{minWidth="max(250px, 45%)"}
+`allowSelection`
+<BrowserWindow>
+    <ChoiceAnswer allowSelection correct={[1, 4]} id="454c5183-c4ab-46a8-ba3f-efe1b59c7a7e">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+::br
+`allowSelection={false}` (Standard)
+<BrowserWindow>
+    <ChoiceAnswer allowSelection={false} correct={[1, 4]} id="ab430bae-24b8-4654-ba0c-ba67a89555da">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+:::
+
 
 ## Quizzes
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
@@ -273,7 +402,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 ```
 
 <BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="fe81de29-3fad-4da9-82a5-a4af0050fdbe" >
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="7bbb268b-79c2-4ac9-aa11-6f41a1d81dca" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             
@@ -327,22 +456,55 @@ In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene
 Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten innerhalb jeder Frage randomisiert. Die Randomisierung funktioniert dabei genauso wie bei den Standalone-Fragen (siehe oben).
 
 ## Eigenschaften und Funktionen
+
+### Allgemeine Eigenschaften
+
+`keepExpanded`
+: *optional*, `all | correct | selected | none`.
+: Steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. 
+: Standard: `all`.
+`allowSelection`
+: *optional*, `boolean`.
+: Steuert, ob der Fragetext ausgewählt werden kann. Standardmässig ist dies deaktiviert, um das "Copy & Paste" von Fragen in LLM-Tools zumindest zu erschweren.
+
 ### Eigenschaften der `ChoiceAnswer`
-| Eigenschaft      | Typ               | Beschreibung                                      |
-|------------------|-------------------|---------------------------------------------------|
-| `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
-| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
-| `scoring` | `ScoringFunction` | Übersteuert die `ScoringFunction` des übergeordneten Quizzes für diese spezifische Frage. |
-| `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
-| `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
+
+`title`
+: *optional*, `string`.
+: Titel der Frage. Wird im Header der Frage angezeigt.
+: Standard: `'Frage'`.
+`multiple`
+: *optional*, `boolean`.
+: Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice).
+: Standard: `false`.
+`correct`
+: *optional*, `number[]`.
+: Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist).
+`randomizeOptions`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.
+`scoring`
+: *optional*, `ScoringFunction`.
+: Falls innerhalb eines __Quizzes__ definiert, wird die übergeordneten `ScoringFunction` des Quizzes überschrieben.
+`hideQuestionNumbers`\*
+: *optional*, `boolean` - \* nur relevant innerhalb von Quizzes.
+: Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt.
+
 
 ### Eigenschaften des `Quiz`
-| Eigenschaft      | Typ               | Beschreibung                                      |
-|------------------|-------------------|---------------------------------------------------|
-| `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
-| `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
-| `scoring` | `ScoringFunction` | Eine vordefinierte oder benutzerdefinierte `ScoringFunction`. |
-| `minPoints` | `number` | Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird. Standard: `undefined`. |
+
+`randomizeQuestions`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt.
+`randomizeOptions`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen).
+`scoring`
+: *optional*, `ScoringFunction`.
+: Eine vordefinierte oder benutzerdefinierte `ScoringFunction`.
+`minPoints`
+: *optional*, `number`.
+: Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird.
 
 ### `ScoringFunction`
 Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Scoring-Funktionen sind:

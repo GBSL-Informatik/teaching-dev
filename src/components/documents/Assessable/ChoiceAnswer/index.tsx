@@ -4,7 +4,7 @@ import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentTy
 import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
-import { useFirstDocumentBy } from '@tdev-hooks/useFirstDocumentBy';
+import { useNestedAssessableDocumentBy } from '@tdev-hooks/useNestedAssessableDocumentBy';
 import { DocContext } from '@tdev-components/documents/DocumentContext';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
 import { type default as ChoiceAnswerModel, ModelMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
@@ -18,6 +18,7 @@ interface SharedProps extends AssessableComponentProps<'choice_answer'> {
     multiple?: boolean;
     randomizeOptions?: boolean;
     optionsCount: number;
+    allowSelection?: boolean;
 }
 
 export interface StandaloneProps extends SharedProps {
@@ -44,7 +45,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     const [meta] = React.useState(new ModelMeta(props));
     const docRootId = useDocumentRootId(props.id);
 
-    const doc = useFirstDocumentBy(docRootId, meta, props.qid);
+    const doc = useNestedAssessableDocumentBy(docRootId, meta, props.qid);
     const isBrowser = useIsBrowser();
 
     if (!doc) {
@@ -56,7 +57,7 @@ const ChoiceAnswer = observer((props: ChoiceAnswerProps) => {
     }
 
     return (
-        <QuestionCard doc={doc}>
+        <QuestionCard doc={doc} allowSelection={props.allowSelection}>
             <DocContext.Provider value={doc}>{props.children}</DocContext.Provider>
         </QuestionCard>
     );

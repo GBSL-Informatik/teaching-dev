@@ -1,10 +1,7 @@
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
-import Loader from '@tdev-components/Loader';
 import styles from './styles.module.scss';
-import useIsBrowser from '@docusaurus/useIsBrowser';
 import { DocumentRootIdContext } from '@tdev-hooks/useContextDocumentRootId';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
 import { ModelMeta } from '@tdev-models/documents/Assessable/Quiz';
@@ -24,6 +21,7 @@ export interface Props extends AssessableComponentProps<AssessableType> {
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
     minPoints?: number;
+    allowSelection?: boolean;
 }
 
 const Quiz = observer((props: Props) => {
@@ -41,6 +39,7 @@ const Quiz = observer((props: Props) => {
             className={clsx(
                 styles.quiz,
                 animate && styles.animate,
+                props.allowSelection && styles.allowSelection,
                 doc.isAssessed && doc.assessment && styles[doc.assessment?.correctness]
             )}
             ref={ref}

@@ -106,14 +106,6 @@ export default class Page {
     }
 
     @computed
-    get documents() {
-        return this.documentRoots
-            .flatMap((doc) => doc.firstMainDocument)
-            .filter((d) => d?.root?.meta.pagePosition)
-            .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
-    }
-
-    @computed
     get studentGroupName() {
         const pathParts = this.path.split('/').filter((p) => p.length > 0);
         const name = pathParts[0];

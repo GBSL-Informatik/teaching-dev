@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction } from 'mobx';
+import { action, computed, observable, runInAction, transaction } from 'mobx';
 import { RootStore } from '@tdev-stores/rootStore';
 import { computedFn } from 'mobx-utils';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
@@ -325,36 +325,44 @@ export class DocumentRootStore extends iStore {
         if (!documentRoot) {
             return;
         }
-        if (config.load.documentRoot) {
-            if (config.load.documentRoot === 'addIfMissing') {
-                const current = this.find(data.id);
-                if (!current || current.isUnknown) {
-                    this.addDocumentRoot(documentRoot);
+        return transaction(() => {
+            if (config.load.documentRoot) {
+                if (config.load.documentRoot === 'addIfMissing') {
+                    const current = this.find(data.id);
+                    if (!current || current.isUnknown) {
+                        this.addDocumentRoot(documentRoot);
+                    }
+                } else {
+                    this.addDocumentRoot(documentRoot, { cleanup: true, deep: false });
                 }
-            } else {
-                this.addDocumentRoot(documentRoot, { cleanup: true, deep: false });
             }
-        }
-        if (config.load.groupPermissions) {
-            data.groupPermissions.forEach((gp) => {
-                this.root.permissionStore.addGroupPermission(
-                    new GroupPermission({ ...gp, documentRootId: documentRoot.id }, this.root.permissionStore)
-                );
-            });
-        }
-        if (config.load.userPermissions) {
-            data.userPermissions.forEach((up) => {
-                this.root.permissionStore.addUserPermission(
-                    new UserPermission({ ...up, documentRootId: documentRoot.id }, this.root.permissionStore)
-                );
-            });
-        }
-        if (config.load.documents) {
-            data.documents.forEach((doc) => {
-                this.root.documentStore.addToStore(doc);
-            });
-        }
-        return documentRoot;
+            if (config.load.groupPermissions) {
+                data.groupPermissions.forEach((gp) => {
+                    this.root.permissionStore.addGroupPermission(
+                        new GroupPermission(
+                            { ...gp, documentRootId: documentRoot.id },
+                            this.root.permissionStore
+                        )
+                    );
+                });
+            }
+            if (config.load.userPermissions) {
+                data.userPermissions.forEach((up) => {
+                    this.root.permissionStore.addUserPermission(
+                        new UserPermission(
+                            { ...up, documentRootId: documentRoot.id },
+                            this.root.permissionStore
+                        )
+                    );
+                });
+            }
+            if (config.load.documents) {
+                data.documents.forEach((doc) => {
+                    this.root.documentStore.addToStore(doc);
+                });
+            }
+            return documentRoot;
+        });
     }
 
     @action

@@ -3,7 +3,7 @@ import iDocument from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import React from 'react';
-import { AssessableMeta } from './AssessableMeta';
+import { AssessableMeta, ExpandedOption } from './AssessableMeta';
 import Quiz from './Quiz';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import { mdiTooltipQuestionOutline } from '@mdi/js';
@@ -44,6 +44,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     @observable accessor _assessed: boolean;
     // @observableRef accessor scoringFunction: ((self: this) => Assessement) | null = null;
     @observableRef accessor linkedMeta: AssessableMeta<T> | null = null;
+    @observable accessor showAllOptions: boolean = false;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store, 50);
@@ -59,6 +60,37 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     onLinkedMetaChange() {
         // By default, do nothing. Only applicable for certain assessable document types (e.g. ChoiceAnswer).
+    }
+
+    @action
+    setShowAllOptions(value: boolean) {
+        this.showAllOptions = value;
+    }
+
+    /**
+     * returns wheter the
+     *  - the answer is correct
+     *  - the question is answered
+     *  - linked meta allows collapsing
+     */
+    @computed
+    get canCollapseOptions(): boolean {
+        if (!this.linkedMeta) {
+            return false;
+        }
+        if (!this.isAssessed || this.correctness !== Correctness.Correct) {
+            return false;
+        }
+        const opts = [this.linkedMeta.keepExpanded, this.quiz?.linkedMeta?.keepExpanded].filter((v) => !!v);
+        return opts.some((o) => o !== 'all');
+    }
+
+    @computed
+    get keepExpanded(): ExpandedOption {
+        if (this.showAllOptions || !this.canCollapseOptions) {
+            return 'all';
+        }
+        return this.linkedMeta?.keepExpanded ?? this.quiz?.linkedMeta?.keepExpanded ?? 'all';
     }
 
     @computed
@@ -98,13 +130,14 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @computed
     get quiz(): Quiz | undefined {
-        if (!this.inQuiz || this.root?.firstMainDocument?.type !== 'quiz') {
+        if (!this.inQuiz) {
             return undefined;
         }
-        if (this.root.firstMainDocument.id === this.id) {
+        const firstQuiz = this.root?.documents.find((d) => d.type === 'quiz') as Quiz | undefined;
+        if (!firstQuiz || firstQuiz.id === this.id) {
             return undefined;
         }
-        return this.root.firstMainDocument;
+        return firstQuiz;
     }
 
     @computed
@@ -115,7 +148,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (!this.inQuiz || this.type === 'quiz') {
             return null;
         }
-        const quiz = this.root?.firstMainDocument;
+        const quiz = this.root?.documentsByType?.get('quiz')?.[0] as Quiz | undefined;
         if (quiz?.type !== 'quiz') {
             return null;
         }

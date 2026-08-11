@@ -1,6 +1,18 @@
 .optionsBlock {
     --tdev-assessable-btn-remove-answer-transition-duration: 0.15s;
+    position: relative;
 
+    .btnExpandCollapseOptions {
+        position: absolute;
+        right: 0em;
+        bottom: 0em;
+    }
+    &:not(:hover) {
+        .btnExpandCollapseOptions {
+            opacity: 0.25;
+            transition: opacity var(--tdev-assessable-btn-remove-answer-transition-duration);
+        }
+    }
     &:not(:last-child) {
         margin-bottom: 1em;
     }
