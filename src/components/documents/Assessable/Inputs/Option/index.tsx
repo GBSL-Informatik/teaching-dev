@@ -5,8 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
-import { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
-import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 
 export interface Props<T extends AssessableType> {
     type?: T;

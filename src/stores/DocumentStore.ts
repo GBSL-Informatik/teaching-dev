@@ -3,7 +3,6 @@ import { RootStore } from './rootStore';
 import { computedFn } from 'mobx-utils';
 import {
     allDocuments as apiAllDocuments,
-    find as apiFind,
     create as apiCreate,
     Document as DocumentProps,
     DocumentType,
@@ -41,7 +40,6 @@ import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import Quiz from '@tdev-models/documents/Assessable/Quiz';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
-import Unknown from '@tdev-models/documents/Unknown';
 
 const IsNotUniqueError = (error: any) => {
     try {
@@ -347,7 +345,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
                 if (!axios.isCancel(err)) {
                     if (IsNotUniqueError(err)) {
                         const docRoot = this.root.documentRootStore.find(model.documentRootId);
-                        if ((docRoot?.mainDocuments?.length || 0) < 1) {
+                        if ((docRoot?.documentsByType?.get(model.type)?.length || 0) < 1) {
                             console.log('The main document must be unique - try to load it from the api.');
                             return this.root.documentRootStore.loadInNextBatch(model.documentRootId);
                         }

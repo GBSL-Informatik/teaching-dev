@@ -215,7 +215,11 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
     @computed
     get linkedDocumentContainers(): ContainerTypeModelMapping[Type][] {
         return this.linkedDynamicDocumentRoots
-            .flatMap((dr) => dr.firstMainDocument as ContainerTypeModelMapping[Type] | undefined)
+            .flatMap(
+                (dr) =>
+                    dr.documentsByType.get(this.containerType)?.[0] as
+                        ContainerTypeModelMapping[Type] | undefined
+            )
             .filter((d) => !!d);
     }
 
@@ -224,7 +228,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
         return new Map<string, ContainerTypeModelMapping[Type]>(
             this.linkedDynamicDocumentRoots.map((dr) => [
                 dr.id,
-                dr.firstMainDocument as ContainerTypeModelMapping[Type]
+                dr.documentsByType.get(this.containerType)?.[0] as ContainerTypeModelMapping[Type]
             ])
         );
     }
