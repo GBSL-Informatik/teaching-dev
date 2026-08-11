@@ -8,8 +8,11 @@ import { reaction } from 'mobx';
 import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
 import { AssessableMeta } from '@tdev-models/documents/Assessable/AssessableMeta';
 import useLinkedMetaModel from './useLinkedMetaModel';
+import _ from 'es-toolkit/compat';
 
 const access = {} as Config;
+
+const requested = new Set<string>();
 
 /**
  * This hook provides access to the first main document of the rootDocument.
@@ -19,7 +22,7 @@ const access = {} as Config;
  * For bridging the time until the first main document is loaded,
  * a dummy document is provided in the meantime.
  */
-export const useFirstDocumentBy = <Type extends AssessableType>(
+export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
     documentRootId: string | undefined,
     /** ensure to put meta in a React.useState */
     meta: AssessableMeta<Type>,
@@ -54,8 +57,21 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
             updatedAt: new Date().toISOString()
         }) as AssessableTypeModelMapping[Type]
     );
+    const [canRequest, setCanRequest] = React.useState(false);
     React.useEffect(() => {
         if (!documentRoot) {
+            return;
+        }
+        const timeoutId = setTimeout(() => {
+            setCanRequest(true);
+        }, 5);
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [documentRoot]);
+
+    React.useEffect(() => {
+        if (!documentRoot || !canRequest) {
             return;
         }
         return reaction(
@@ -64,16 +80,25 @@ export const useFirstDocumentBy = <Type extends AssessableType>(
                 if (!needsCreation) {
                     return;
                 }
-                documentStore.create({
-                    documentRootId: documentRoot.id,
-                    authorId: userStore.current!.id,
-                    type: meta.type,
-                    data: meta.defaultData
-                });
+                const key = `${documentRoot.id}::${userStore.current!.id}::${meta.type}::${qid}`;
+                if (requested.has(key)) {
+                    return;
+                }
+                requested.add(key);
+                documentStore
+                    .create({
+                        documentRootId: documentRoot.id,
+                        authorId: userStore.current!.id,
+                        type: meta.type,
+                        data: meta.defaultData
+                    })
+                    .then(() => {
+                        requested.delete(key);
+                    });
             },
             { fireImmediately: true }
         );
-    }, [userStore, documentRoot]);
+    }, [userStore, documentRoot, canRequest]);
 
     const firstDoc = documentRoot?.documents.find(selector) as AssessableTypeModelMapping[Type] | undefined;
     const doc = firstDoc || dummyDocument;

@@ -130,13 +130,14 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @computed
     get quiz(): Quiz | undefined {
-        if (!this.inQuiz || this.root?.firstMainDocument?.type !== 'quiz') {
+        if (!this.inQuiz) {
             return undefined;
         }
-        if (this.root.firstMainDocument.id === this.id) {
+        const firstQuiz = this.root?.documents.find((d) => d.type === 'quiz') as Quiz | undefined;
+        if (!firstQuiz || firstQuiz.id === this.id) {
             return undefined;
         }
-        return this.root.firstMainDocument;
+        return firstQuiz;
     }
 
     @computed
@@ -147,7 +148,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (!this.inQuiz || this.type === 'quiz') {
             return null;
         }
-        const quiz = this.root?.firstMainDocument;
+        const quiz = this.root?.documentsByType?.get('quiz')?.[0] as Quiz | undefined;
         if (quiz?.type !== 'quiz') {
             return null;
         }

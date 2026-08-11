@@ -24,7 +24,7 @@ class ScriptVersion extends iDocument<'script_version'> {
 
     @computed
     get version() {
-        const script = this.root?.firstMainDocument as Script;
+        const script = this.root?.documentsByType.get('script')?.[0] as Script;
         if (!script) {
             return 0;
         }

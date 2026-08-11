@@ -227,41 +227,16 @@ class DocumentRoot<T extends DocumentType> {
         return this.store.root.userStore.viewedUserId;
     }
 
-    /**
-     * All documents which
-     * - **don't have a parent**
-     * - having the **same type** as this document root
-     *
-     * @returns All main documents, **ordered by creation date**, oldest first.
-     */
     @computed
-    get mainDocuments(): TypeModelMapping[T][] {
-        const docs = orderBy(
-            this.documents.filter((d) => d.isMain),
-            ['createdAt', 'id'],
-            ['asc', 'asc']
-        ) as TypeModelMapping[T][];
-        if (this.isDummy) {
-            return docs;
-        }
-        const byUser = docs.filter((d) => d.authorId === this.viewedUserId);
-
-        if (
-            this.store.root.userStore.current?.hasElevatedAccess &&
-            this.store.root.userStore.isUserSwitched
-        ) {
-            return byUser;
-        }
-
-        if (NoneAccess.has(this.sharedAccess)) {
-            return byUser;
-        }
-        return [...byUser, ...docs.filter((d) => d.authorId !== this.viewedUserId)];
-    }
-
-    @computed
-    get firstMainDocument(): TypeModelMapping[T] | undefined {
-        return this.mainDocuments[0];
+    get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
+        return orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']).reduce((map, doc) => {
+            const docs = map.get(doc.type) || [];
+            if (docs.length === 0) {
+                map.set(doc.type, docs);
+            }
+            docs.push(doc);
+            return map;
+        }, new Map<DocumentType, TypeModelMapping[DocumentType][]>());
     }
 
     @action
@@ -300,12 +275,13 @@ class DocumentRoot<T extends DocumentType> {
 
     @computed
     get _needsInitialDocumentCreation() {
-        return this._canInitializeDocuments && !this.firstMainDocument;
+        return this._canInitializeDocuments && !this.documentsByType.has(this.meta.type);
     }
 
     @computed
     get _triggerDocumentReload() {
-        return `${this.firstMainDocument?.id}-${this.store.root.userStore.viewedUserId}`;
+        const firstMainDoc = this.documentsByType.get(this.meta.type)?.[0];
+        return `${firstMainDoc?.id}-${this.store.root.userStore.viewedUserId}`;
     }
 }
 

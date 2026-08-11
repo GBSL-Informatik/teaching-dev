@@ -89,7 +89,11 @@ export const useDocumentRoot = <Type extends DocumentType>(
         return reaction(
             () => documentRootStore.find(dummyDocumentRoot.id)?._triggerDocumentReload,
             () => {
-                const firstMainDoc = documentRootStore.find(dummyDocumentRoot.id)?.firstMainDocument;
+                const docRoot = documentRootStore.find(dummyDocumentRoot.id);
+                if (!docRoot) {
+                    return;
+                }
+                const firstMainDoc = docRoot.documentsByType.get(meta.type)?.[0];
                 if (firstMainDoc) {
                     return;
                 }
