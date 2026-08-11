@@ -14,12 +14,11 @@ const Options = observer(({ children }: { children: React.ReactNode }) => {
             <div className={styles.optionsContainer}>{children}</div>
             {doc.canCollapseOptions && (
                 <>
-                    <span className={styles.dots}>...</span>
                     <Button
                         icon={doc.showAllOptions ? mdiCollapseAll : mdiExpandAll}
                         onClick={() => doc.setShowAllOptions(!doc.showAllOptions)}
                         className={styles.btnExpandCollapseOptions}
-                        color="primary"
+                        color={doc.showAllOptions ? 'red' : 'primary'}
                         title={doc.showAllOptions ? 'Alle Optionen einklappen' : 'Alle Optionen ausklappen'}
                     />
                 </>

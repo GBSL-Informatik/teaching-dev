@@ -1,10 +1,7 @@
 .optionsBlock {
     --tdev-assessable-btn-remove-answer-transition-duration: 0.15s;
     position: relative;
-    .dots {
-        margin-left: 1.5em;
-        color: var(--ifm-color-gray-600);
-    }
+
     .btnExpandCollapseOptions {
         position: absolute;
         right: 0em;
