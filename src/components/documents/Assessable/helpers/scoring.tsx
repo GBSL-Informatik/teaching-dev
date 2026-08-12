@@ -38,9 +38,15 @@ export const points: (
         }
         const { hits: achievements, misses: mistakes, maxHits: maxPoints } = ca;
         if (achievements + mistakes > 1) {
-            throw new Error(
-                `The points() scoring function is not suitable for questions with multiple answers. Please use multipleChoicePoints() instead! ${ca.id}`
-            );
+            const msg = `The points() scoring function is not suitable for questions with multiple answers. Please use multipleChoicePoints() instead! documentId: ${ca.id}, rootId: ${ca.documentRootId}, type: ${ca.type}, hits: ${achievements}, misses: ${mistakes}, maxHits: ${maxPoints}`;
+            if (process.env.NODE_ENV === 'development') {
+                throw new Error(msg);
+            }
+            console.warn(msg);
+            return {
+                correctness: Correctness.NA,
+                scoring: template
+            };
         }
         const points = achievements === 1 ? forCorrect : mistakes === 1 ? forIncorrect : forUnanswered;
         const correctness =
