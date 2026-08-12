@@ -323,7 +323,11 @@ export default class Page {
                 .flatMap((rid) => {
                     return this.store.root.documentStore
                         .findByDocumentRoot(rid)
-                        .filter((doc) => this.TaskableDocuments.has(doc.type)) as iTaskableDocument[];
+                        .filter(
+                            (doc) =>
+                                this.TaskableDocuments.has(doc.type) &&
+                                !(doc as iTaskableDocument).hideFromOverview
+                        ) as iTaskableDocument[];
                 })
                 .filter((doc) =>
                     this.viewedStudentGroup ? this.viewedStudentGroup.userIds.has(doc.authorId) : true

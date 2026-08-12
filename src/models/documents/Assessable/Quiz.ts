@@ -115,6 +115,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
         const qids = new Set(this.meta.questionIds);
         return docs.filter(
             (doc) =>
+                doc.authorId === this.authorId &&
                 (doc as iAssessable<AssessableType>).qid &&
                 qids.has((doc as iAssessable<AssessableType>).qid!)
         ) as iAssessable<AssessableType>[];
