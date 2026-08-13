@@ -218,7 +218,8 @@ class DocumentRoot<T extends DocumentType> {
 
     /**
      * All documents which are related to this document root.
-     * This method should be used only for admin users.
+     * This method should be used only for admin users or when the author-filtering is
+     * applied afterwards.
      */
     get allDocuments() {
         if (!this.store.root.userStore.current?.hasElevatedAccess) {
