@@ -8,7 +8,8 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
-// TODO: replace all 'solution' values to your new models Type
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['solution']>({});
+
 export class ModelMeta extends TypeMeta<'solution'> {
     readonly type = 'solution';
 
@@ -17,7 +18,7 @@ export class ModelMeta extends TypeMeta<'solution'> {
     }
 
     get defaultData(): TypeDataMapping['solution'] {
-        return {};
+        return DEFAULT_DATA;
     }
 }
 
@@ -38,7 +39,7 @@ class Solution extends iDocument<'solution'> {
     }
 
     get data(): TypeDataMapping['solution'] {
-        return {};
+        return DEFAULT_DATA;
     }
 
     @computed

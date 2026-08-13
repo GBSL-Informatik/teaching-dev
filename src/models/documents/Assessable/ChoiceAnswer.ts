@@ -22,6 +22,7 @@ export class ModelMeta extends AssessableMeta<'choice_answer'> implements Assess
         this.optionsCount = props.optionsCount;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['choice_answer'] {
         const data: TypeDataMapping['choice_answer'] = {
             choices: [],

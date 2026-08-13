@@ -15,6 +15,11 @@ import { AssessableMeta } from './AssessableMeta';
 import { mdiTimelineQuestionOutline } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['quiz']>({
+    questionOrder: [],
+    assessed: false
+});
+
 export class ModelMeta extends AssessableMeta<AssessableType> implements AssessableMeta<AssessableType> {
     readonly type = 'quiz';
     readonly randomizeOptions?: boolean;
@@ -33,11 +38,7 @@ export class ModelMeta extends AssessableMeta<AssessableType> implements Assessa
     }
 
     get defaultData(): TypeDataMapping['quiz'] {
-        const data: TypeDataMapping['quiz'] = {
-            questionOrder: [],
-            assessed: false
-        };
-        return data;
+        return DEFAULT_DATA;
     }
 }
 

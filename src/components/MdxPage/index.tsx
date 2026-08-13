@@ -4,17 +4,21 @@ import { useStore } from '@tdev-hooks/useStore';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import type { DocumentType } from '@tdev-api/document';
+import { computed } from 'mobx';
 
 interface Props {
     pageId: string;
 }
 
+const DEFAULT_DATA = Object.freeze({});
+
 export class PageMeta extends TypeMeta<DocumentType> {
     constructor() {
         super('_page_' as DocumentType);
     }
+
     get defaultData() {
-        return {};
+        return DEFAULT_DATA;
     }
 }
 

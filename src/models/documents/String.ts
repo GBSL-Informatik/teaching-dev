@@ -32,6 +32,7 @@ export class ModelMeta extends TypeMeta<'string'> {
         this.checker = props.checker || ((val: string | undefined) => val === this.sanitizedSolution);
     }
 
+    @computed
     get defaultData(): TypeDataMapping['string'] {
         return {
             text: this.default || ''

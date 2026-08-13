@@ -23,6 +23,7 @@ export class ModelMeta
         }
     }
 
+    @computed
     get defaultData(): TypeDataMapping['true_false_answer'] {
         const data: TypeDataMapping['true_false_answer'] = {
             value: null,

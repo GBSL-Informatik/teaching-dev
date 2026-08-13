@@ -8,6 +8,8 @@ export interface MetaInit {
     readonly?: boolean;
 }
 
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['restricted']>({});
+
 export class ModelMeta extends TypeMeta<'restricted'> {
     readonly type = 'restricted';
 
@@ -16,7 +18,7 @@ export class ModelMeta extends TypeMeta<'restricted'> {
     }
 
     get defaultData(): TypeDataMapping['restricted'] {
-        return {};
+        return DEFAULT_DATA;
     }
 }
 
