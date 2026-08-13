@@ -29,6 +29,9 @@ const Quiz = observer((props: Props) => {
     const doc = useFirstRealMainDocument(props.id, meta);
     const [ref, animate] = useScrollTo(doc, 'end');
     useLinkedMetaModel(doc, meta);
+    React.useEffect(() => {
+        return doc?.setupIntegrityChecker?.();
+    }, [doc]);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
