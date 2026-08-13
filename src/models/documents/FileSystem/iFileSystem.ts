@@ -27,6 +27,7 @@ export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
         this.name = props.name || `${DefaultName[type]} ${formatDateTime(new Date())}`;
     }
 
+    @computed
     get defaultData(): TypeDataMapping[T] {
         return {
             name: this.name,

@@ -7,6 +7,11 @@ export interface MetaInit {
     minReadTime?: number;
 }
 
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['page_read_check']>({
+    readTime: 0,
+    read: false
+});
+
 export class ModelMeta extends TypeMeta<'page_read_check'> {
     readonly type = 'page_read_check';
     readonly minReadTime: number;
@@ -17,10 +22,7 @@ export class ModelMeta extends TypeMeta<'page_read_check'> {
     }
 
     get defaultData(): TypeDataMapping['page_read_check'] {
-        return {
-            readTime: 0,
-            read: false
-        };
+        return DEFAULT_DATA;
     }
 
     get fMinReadTime() {

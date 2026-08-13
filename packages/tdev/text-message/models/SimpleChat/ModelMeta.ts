@@ -1,5 +1,6 @@
 import { TypeDataMapping, Access } from '@tdev-api/document';
 import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
+import { computed } from 'mobx';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -17,6 +18,7 @@ export class ModelMeta extends ContainerMeta<'simple_chat'> {
         this.defaultName = props.name || 'Simple Chat';
     }
 
+    @computed
     get defaultData(): TypeDataMapping['simple_chat'] {
         return {
             name: this.defaultName

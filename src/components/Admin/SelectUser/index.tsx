@@ -42,13 +42,10 @@ interface Props {
 const SelectUser = observer((props: Props) => {
     const [filter, setFilter] = React.useState('');
     const [ids, setIds] = React.useState<string[]>([]);
-    const [searchRegex, setSearchRegex] = React.useState(new RegExp(filter, 'i'));
+    const searchRegex = React.useMemo(() => new RegExp(filter, 'i'), [filter]);
     const pageStore = useStore('pageStore');
     const userStore = useStore('userStore');
     const currentPage = pageStore.current;
-    React.useEffect(() => {
-        setSearchRegex(new RegExp(filter, 'i'));
-    }, [filter]);
 
     React.useEffect(() => {
         if (props.onChange) {

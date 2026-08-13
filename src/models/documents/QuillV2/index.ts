@@ -31,6 +31,7 @@ export class ModelMeta extends TypeMeta<'quill_v2'> {
         this.placeholder = props.placeholder || '✍️ Antwort...';
     }
 
+    @computed
     get defaultData(): TypeDataMapping['quill_v2'] {
         return {
             delta: { ops: [{ insert: this.default }] } as Delta

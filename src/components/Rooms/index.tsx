@@ -112,7 +112,7 @@ interface WithModelProps {
 
 const WithDocumentRoot = observer((props: WithModelProps): React.ReactNode => {
     const { rootId, docContainerId } = props;
-    const [meta] = React.useState(new ModelMeta({ type: 'dummy' as ContainerType }));
+    const meta = React.useMemo(() => new ModelMeta({ type: 'dummy' as ContainerType }), []);
     const dynDoc = useFirstMainDocument(rootId, meta, false) as DynamicDocumentRoots<ContainerType> | null;
 
     if (!rootId || !dynDoc) {

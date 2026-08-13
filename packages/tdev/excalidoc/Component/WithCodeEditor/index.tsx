@@ -12,7 +12,10 @@ import { Source } from '@tdev-models/iDocument';
 import { ModelMeta } from '@tdev/excalidoc/model/ModelMeta';
 
 const ExcalidocWithCodeEditor = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(
+        () => new ModelMeta(props),
+        [props.id, props.defaultElements, props.defaultFiles, props.defaultImage]
+    );
     const doc = useFirstRealMainDocument(props.id, meta);
     const [showEditor, setShowEditor] = React.useState(false);
     if (!doc) {

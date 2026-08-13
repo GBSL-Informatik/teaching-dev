@@ -1,14 +1,24 @@
-import { TypeDataMapping, Document as DocumentProps, AssessableType } from '@tdev-api/document';
+import {
+    TypeDataMapping,
+    Document as DocumentProps,
+    AssessableType,
+    DocumentModelType
+} from '@tdev-api/document';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { action, computed, observableRef } from 'mobx';
+import { action, computed, observableRef, reaction } from 'mobx';
 import iAssessable, { Assessement, Correctness, CorrectnessColors } from './iAssessable';
 import { range } from 'es-toolkit/math';
-import { shuffle } from 'es-toolkit/array';
+import { shuffle, sortBy } from 'es-toolkit/array';
 import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
 import { AssessableMeta } from './AssessableMeta';
 import { mdiTimelineQuestionOutline } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
+
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['quiz']>({
+    questionOrder: [],
+    assessed: false
+});
 
 export class ModelMeta extends AssessableMeta<AssessableType> implements AssessableMeta<AssessableType> {
     readonly type = 'quiz';
@@ -28,11 +38,7 @@ export class ModelMeta extends AssessableMeta<AssessableType> implements Assessa
     }
 
     get defaultData(): TypeDataMapping['quiz'] {
-        const data: TypeDataMapping['quiz'] = {
-            questionOrder: [],
-            assessed: false
-        };
-        return data;
+        return DEFAULT_DATA;
     }
 }
 
@@ -72,7 +78,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get questionCount(): number {
-        return this.meta.questionIds.length;
+        return this.questionIds.size;
     }
 
     @computed
@@ -110,14 +116,15 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
+    get questionIds(): Set<string> {
+        return new Set(this.meta.questionIds);
+    }
+
+    @computed
     get questions(): iAssessable<AssessableType>[] {
-        const docs = this.root?.documents ?? [];
-        const qids = new Set(this.meta.questionIds);
+        const docs = (this.root?.allDocuments ?? []) as iAssessable<AssessableType>[];
         return docs.filter(
-            (doc) =>
-                doc.authorId === this.authorId &&
-                (doc as iAssessable<AssessableType>).qid &&
-                qids.has((doc as iAssessable<AssessableType>).qid!)
+            (doc) => doc.authorId === this.authorId && doc.qid && this.questionIds.has(doc.qid)
         ) as iAssessable<AssessableType>[];
     }
     @computed
@@ -208,13 +215,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
-        }
-        if (this.root?.type === 'quiz') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
     }
 }
 

@@ -1,13 +1,6 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed } from 'mobx';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import {
-    DocumentType,
-    Document as DocumentProps,
-    TaskStateData,
-    StateType,
-    TypeDataMapping,
-    Access
-} from '@tdev-api/document';
+import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 

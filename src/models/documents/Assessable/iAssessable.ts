@@ -50,6 +50,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         super(props, store, 50);
         this._assessed = props.data?.assessed || false;
         this.qid = props.data.qid;
+        this._checkIntegrity();
     }
 
     @action
@@ -200,9 +201,8 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     /**
      * Returns the maximum achievable "hits" for this assessable item.
      */
-    @computed
     get maxHits(): number {
-        return this.linkedMeta?.correct?.length || 0;
+        return this._meta?.correct?.length || 0;
     }
 
     /**
@@ -258,6 +258,60 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
             return undefined;
         }
         return this.quiz.questionDisplayOrder(this.linkedMeta?.qid);
+    }
+
+    @computed
+    get _meta(): AssessableMeta<T> | undefined {
+        if (this.linkedMeta) {
+            return this.linkedMeta as AssessableMeta<T>;
+        }
+        if (this.root?.type === this.type) {
+            return this.root.meta as AssessableMeta<T>;
+        }
+    }
+
+    @action
+    _checkIntegrity() {
+        const user = this.store.root.userStore.current;
+        if (user && this.authorId !== user.id) {
+            return;
+        }
+        if (this.inQuiz && this.quiz) {
+            // ensure the current document is unique for the given qid and authorId
+            if (!this.quiz.questionIds.has(this.qid!)) {
+                this._destroy();
+            } else {
+                // check for duplicates
+                const duplicates = this.quiz.questions.filter(
+                    (q) => q.qid === this.qid && q.authorId === this.authorId
+                );
+                if (duplicates.length > 1) {
+                    // only keep the oldest one, delete the rest
+                    const sorted = duplicates.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+                    const toDelete = sorted.slice(1);
+                    toDelete.forEach((doc) => {
+                        doc._destroy();
+                    });
+                }
+            }
+        }
+    }
+
+    @action
+    _destroy() {
+        const user = this.store.root.userStore.current;
+        if (user && this.authorId !== user?.id) {
+            return;
+        }
+        // for now, only allow deletion of nested docs
+        if (!this.inQuiz) {
+            return;
+        }
+        if (user) {
+            this.store.apiDelete(this);
+        } else {
+            this.store.removeFromStore(this);
+        }
     }
 }
 

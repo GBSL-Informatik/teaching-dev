@@ -16,7 +16,7 @@ import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
  */
 
 export const QuillV2 = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const doc = useFirstRealMainDocument(props.id, meta);
     /**
      * if the user is logged in but the document is not loaded yet, show a loader.

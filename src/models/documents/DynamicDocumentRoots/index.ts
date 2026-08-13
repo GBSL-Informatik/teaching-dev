@@ -31,6 +31,7 @@ export class ModelMeta<Type extends ContainerType> extends TypeMeta<'dynamic_doc
         this.props = props;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['dynamic_document_roots'] {
         return {
             containerType: this.containerType,

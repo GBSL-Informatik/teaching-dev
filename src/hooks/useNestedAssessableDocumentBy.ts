@@ -45,18 +45,21 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, skipCreate);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
-    const [dummyDocument] = React.useState(
-        documentStore.createDocument({
-            id: defaultDocId,
-            type: meta.type,
-            data: meta.defaultData,
-            authorId: DUMMY_DOCUMENT_ID,
-            documentRootId: documentRoot.id,
-            parentId: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        }) as AssessableTypeModelMapping[Type]
+    const dummyDocument = React.useMemo(
+        () =>
+            documentStore.createDocument({
+                id: defaultDocId,
+                type: meta.type,
+                data: meta.defaultData,
+                authorId: DUMMY_DOCUMENT_ID,
+                documentRootId: documentRoot.id,
+                parentId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }) as AssessableTypeModelMapping[Type],
+        [meta.type, defaultDocId, documentRoot.id, meta.defaultData]
     );
+
     const [canRequest, setCanRequest] = React.useState(false);
     React.useEffect(() => {
         if (!documentRoot) {
@@ -64,7 +67,7 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
         }
         const timeoutId = setTimeout(() => {
             setCanRequest(true);
-        }, 5);
+        }, 25);
         return () => {
             clearTimeout(timeoutId);
         };

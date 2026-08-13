@@ -20,10 +20,7 @@ const AccessPanel = observer((props: Props) => {
     const studentGroupStore = useStore('studentGroupStore');
     const permissionStore = useStore('permissionStore');
     const [searchFilter, setSearchFilter] = React.useState('');
-    const [searchRegex, setSearchRegex] = React.useState(new RegExp(searchFilter, 'i'));
-    React.useEffect(() => {
-        setSearchRegex(new RegExp(searchFilter, 'i'));
-    }, [searchFilter]);
+    const searchRegex = React.useMemo(() => new RegExp(searchFilter, 'i'), [searchFilter]);
     if (documentRoots.length === 0) {
         return null;
     }

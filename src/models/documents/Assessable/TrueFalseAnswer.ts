@@ -16,6 +16,7 @@ export class ModelMeta
     constructor(props: Partial<TrueFalseProps>) {
         const isTruthy = (props.isTrue ?? props.correct) === true;
         const isFalsey = (props.isFalse ?? props.incorrect) === true;
+        // will be reduced by one when calling super
         const correct = isTruthy ? [1] : isFalsey ? [2] : [2];
         super('true_false_answer', { ...props, correct });
         if (isTruthy && isFalsey) {
@@ -23,6 +24,7 @@ export class ModelMeta
         }
     }
 
+    @computed
     get defaultData(): TypeDataMapping['true_false_answer'] {
         const data: TypeDataMapping['true_false_answer'] = {
             value: null,
@@ -106,13 +108,7 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
-        }
-        if (this.root?.type === 'true_false_answer') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
     }
 }
 

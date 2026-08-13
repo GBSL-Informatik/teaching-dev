@@ -38,7 +38,7 @@ interface Props extends MetaInit {
 }
 
 const NetpbmEditor = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.default]);
     const doc = useFirstMainDocument(props.id, meta);
     const ref = React.useRef<HTMLTextAreaElement>(null);
     React.useEffect(() => {

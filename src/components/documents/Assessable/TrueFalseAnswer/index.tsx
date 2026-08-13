@@ -35,7 +35,7 @@ const onUpdateSelection = action((doc: TrueFalseAnswerModel, optionIndex: number
     doc.setValue(optionIndex === 0);
 });
 const TrueFalseAnswer = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta({ ...props }));
+    const meta = React.useMemo(() => new ModelMeta({ ...props }), [props.id]);
     const docRootId = useDocumentRootId(props.id);
     const doc = useNestedAssessableDocumentBy(docRootId, meta, props.qid);
 
