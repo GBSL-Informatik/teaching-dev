@@ -7,6 +7,7 @@ import Icon from '@mdi/react';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { useStore } from '@tdev-hooks/useStore';
 import { Access } from '@tdev-api/document';
+import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 
 interface Props {
     group: StudentGroup;
@@ -22,7 +23,7 @@ const Text = observer((props: Props) => {
     }
     if (
         group.presentedDocumentProps.hidePresentingUsers ||
-        group.presentedDocument?.root?.sharedAccess !== Access.RW_DocumentRoot
+        !RWAccess.has(group.presentedDocument?.root?.sharedAccess)
     ) {
         return <span>Live</span>;
     }
