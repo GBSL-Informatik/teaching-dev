@@ -117,6 +117,9 @@ export const sharedAccess = (userPermission: Access, sharedAccess: Access, isAut
 };
 
 export const leveledAccess = (access: Access, refAccessLevel: Access): Access => {
+    if (RootAccessLevels.has(refAccessLevel)) {
+        return asDocumentRootAccess(access);
+    }
     if (StudentGroupAccessLevels.has(refAccessLevel)) {
         return asStudentGroupAccess(access);
     }

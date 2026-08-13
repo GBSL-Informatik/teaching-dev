@@ -193,18 +193,10 @@ class DocumentRoot<T extends DocumentType> {
         return leveledAccess(this.sharedAccess, this.permission);
     }
 
-    /**
-     * only! returns user permissions, the effective permission is not evaluated here!
-     */
     permissionsForUser(userId: string) {
         return [...this.store.usersPermissions(this.id, userId)];
     }
 
-    /**
-     * returns the effective, evaluated permission for a user, not taking group permissions into account!
-     *
-     * TODO: check if group permissions should be taken into account too.
-     */
     permissionForUser(userId: string) {
         return highestAccess(new Set([...this.permissionsForUser(userId).map((p) => p.access), this.access]));
     }
