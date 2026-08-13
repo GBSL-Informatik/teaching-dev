@@ -78,7 +78,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get questionCount(): number {
-        return this.meta.questionIds.length;
+        return this.questionIds.size;
     }
 
     @computed
@@ -92,35 +92,6 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
             this.shuffle();
             this.saveNow();
         }
-    }
-
-    @action
-    setupIntegrityChecker() {
-        const disposer = reaction(
-            () => this.questions,
-            (questions) => {
-                const qidSet = new Set(questions.map((q) => q.qid));
-                if (qidSet.size === questions.length) {
-                    return;
-                }
-                qidSet.clear();
-                const knownQids = new Set(this.meta.questionIds);
-                const sortedQuestions = sortBy(questions, ['createdAt']);
-                const userId = this.store.root.userStore.current?.id;
-                sortedQuestions.forEach((q) => {
-                    if (q.qid && !qidSet.has(q.qid) && knownQids.has(q.qid)) {
-                        return qidSet.add(q.qid);
-                    }
-                    if (userId && q.authorId === userId) {
-                        this.store.apiDelete(q as DocumentModelType);
-                    } else {
-                        this.store.removeFromStore(q as DocumentModelType);
-                    }
-                });
-            },
-            { fireImmediately: true, delay: 5 }
-        );
-        return disposer;
     }
 
     @action
@@ -145,11 +116,15 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
+    get questionIds(): Set<string> {
+        return new Set(this.meta.questionIds);
+    }
+
+    @computed
     get questions(): iAssessable<AssessableType>[] {
         const docs = (this.root?.documents ?? []) as iAssessable<AssessableType>[];
-        const qids = new Set(this.meta.questionIds);
         return docs.filter(
-            (doc) => doc.authorId === this.authorId && doc.qid && qids.has(doc.qid)
+            (doc) => doc.authorId === this.authorId && doc.qid && this.questionIds.has(doc.qid)
         ) as iAssessable<AssessableType>[];
     }
     @computed

@@ -236,12 +236,15 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    removeFromStore(document?: DocumentModelType, cleanupDeep?: boolean): DocumentModelType | undefined {
+    removeFromStore<T extends DocumentModelType | iDocument<any>>(
+        document?: T,
+        cleanupDeep?: boolean
+    ): T | undefined {
         /**
          * Removes the model to the store
          */
         if (document) {
-            this.documents.remove(document);
+            this.documents.remove(document as DocumentModelType);
             document.cleanup(cleanupDeep);
         }
         return document;
@@ -425,7 +428,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    apiDelete(document: DocumentModelType) {
+    apiDelete(document: DocumentModelType | iDocument<any>) {
         if (document.authorId !== this.root.userStore.current?.id) {
             return;
         }
