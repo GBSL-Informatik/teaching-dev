@@ -81,9 +81,9 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
         }
         const correct = new Set(this.meta.correct);
         if (this.value) {
-            return correct.has(0) ? 1 : 0;
+            return correct.has(1) ? 1 : 0;
         }
-        return correct.has(1) ? 1 : 0;
+        return correct.has(2) ? 1 : 0;
     }
 
     @computed
@@ -107,13 +107,7 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
-        }
-        if (this.root?.type === 'true_false_answer') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
     }
 }
 

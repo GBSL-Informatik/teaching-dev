@@ -215,13 +215,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
-        }
-        if (this.root?.type === 'quiz') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
     }
 }
 

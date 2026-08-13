@@ -201,9 +201,8 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     /**
      * Returns the maximum achievable "hits" for this assessable item.
      */
-    @computed
     get maxHits(): number {
-        return this.linkedMeta?.correct?.length || 0;
+        return this._meta?.correct?.length || 0;
     }
 
     /**
@@ -259,6 +258,16 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
             return undefined;
         }
         return this.quiz.questionDisplayOrder(this.linkedMeta?.qid);
+    }
+
+    @computed
+    get _meta(): AssessableMeta<T> | undefined {
+        if (this.linkedMeta) {
+            return this.linkedMeta as AssessableMeta<T>;
+        }
+        if (this.root?.type === this.type) {
+            return this.root.meta as AssessableMeta<T>;
+        }
     }
 
     @action

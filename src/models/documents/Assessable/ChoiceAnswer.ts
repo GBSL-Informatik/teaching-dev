@@ -116,9 +116,9 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     get maxHits(): number {
         if (this.multiple) {
-            return this.linkedMeta?.correct?.length || 0;
+            return this.meta?.correct?.length || 0;
         }
-        return !!this.linkedMeta?.correct ? 1 : 0;
+        return !!this.meta?.correct ? 1 : 0;
     }
 
     optionsDisplayOrder(optionIndex: number): number {
@@ -164,13 +164,7 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
-        }
-        if (this.root?.type === 'choice_answer') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
     }
 }
 
