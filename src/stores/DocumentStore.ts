@@ -219,6 +219,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
             return;
         }
         const model = factory(data, this);
+
         // TODO: should we try to load the root in this case?
         if (!model?.root) {
             return;
@@ -229,6 +230,16 @@ class DocumentStore extends iStore<`delete-${string}`> {
          */
         if (model.root.isDummy) {
             return;
+        }
+
+        // check if the model extends iAssessable
+        if ('inQuiz' in model && model.inQuiz) {
+            const oldAssessable = this.root.documentRootStore
+                .find(model.documentRootId)
+                ?.allDocuments.find(
+                    (d) => d.type === model.type && d.qid === model.qid && d.authorId === model.authorId
+                );
+            this.removeFromStore(oldAssessable);
         }
         this.removeFromStore(old);
         this.documents.push(model);
