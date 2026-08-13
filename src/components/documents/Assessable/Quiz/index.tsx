@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import LoginRequiredForDocumentType from '@tdev-components/shared/Alert/LoginRequiredForDocumentType';
 import styles from './styles.module.scss';
 import { DocumentRootIdContext } from '@tdev-hooks/useContextDocumentRootId';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
@@ -29,12 +29,9 @@ const Quiz = observer((props: Props) => {
     const doc = useFirstRealMainDocument(props.id, meta);
     const [ref, animate] = useScrollTo(doc, 'end');
     useLinkedMetaModel(doc, meta);
-    React.useEffect(() => {
-        return doc?.setupIntegrityChecker?.();
-    }, [doc]);
 
     if (!doc) {
-        return <UnknownDocumentType type={meta.type} />;
+        return <LoginRequiredForDocumentType type={meta.type} />;
     }
 
     return (
