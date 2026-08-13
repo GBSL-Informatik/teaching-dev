@@ -16,6 +16,7 @@ export class ModelMeta
     constructor(props: Partial<TrueFalseProps>) {
         const isTruthy = (props.isTrue ?? props.correct) === true;
         const isFalsey = (props.isFalse ?? props.incorrect) === true;
+        // will be reduced by one when calling super
         const correct = isTruthy ? [1] : isFalsey ? [2] : [2];
         super('true_false_answer', { ...props, correct });
         if (isTruthy && isFalsey) {
@@ -81,9 +82,9 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
         }
         const correct = new Set(this.meta.correct);
         if (this.value) {
-            return correct.has(1) ? 1 : 0;
+            return correct.has(0) ? 1 : 0;
         }
-        return correct.has(2) ? 1 : 0;
+        return correct.has(1) ? 1 : 0;
     }
 
     @computed
