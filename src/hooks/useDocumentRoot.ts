@@ -27,8 +27,8 @@ export const useDocumentRoot = <Type extends DocumentType>(
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
-    const [dummyDocumentRoot] = React.useState<DocumentRoot<Type>>(
-        new DocumentRoot(
+    const dummyDocumentRoot = React.useMemo(() => {
+        return new DocumentRoot(
             {
                 id: id || defaultRootDocId,
                 access: Access.RW_DocumentRoot,
@@ -37,8 +37,8 @@ export const useDocumentRoot = <Type extends DocumentType>(
             meta,
             documentRootStore,
             true
-        )
-    );
+        );
+    }, []);
 
     /** initial load */
     React.useEffect(() => {
@@ -80,7 +80,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
             disposer();
             documentRootStore.removeFromStore(defaultRootDocId, true);
         };
-    }, [documentRootStore, id, meta, loadOnlyType]);
+    }, [documentRootStore, id, loadOnlyType]);
 
     React.useEffect(() => {
         if (!id || !userStore.current?.hasElevatedAccess) {

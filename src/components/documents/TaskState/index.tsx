@@ -68,7 +68,7 @@ interface Props extends MetaInit {
 }
 
 const TaskState = observer((props: Props) => {
-    const [meta] = React.useState(new TaskMeta(props));
+    const meta = React.useMemo(() => new TaskMeta(props), [props.id]);
     const doc = useFirstMainDocument(props.id, meta);
     if (!doc) {
         return <Loader noLabel title="Laden" align="left" className={clsx(styles.state, styles.loader)} />;

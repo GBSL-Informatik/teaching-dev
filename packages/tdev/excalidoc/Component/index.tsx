@@ -37,7 +37,7 @@ interface ExcaliProps {
 export interface Props extends MetaInit, ExcaliProps {}
 
 const Excalidoc = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), []);
     const doc = useFirstRealMainDocument(props.id, meta);
 
     if (!doc) {

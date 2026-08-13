@@ -39,10 +39,7 @@ const UserTable = observer((props: Props) => {
     const [sortColumn, _setSortColumn] = React.useState<SortColumn>(props.defaultSortColumn || 'email');
     const userStore = useStore('userStore');
     const observerTarget = React.useRef(null);
-    const [searchRegex, setSearchRegex] = React.useState(new RegExp(filter, 'i'));
-    React.useEffect(() => {
-        setSearchRegex(new RegExp(filter, 'i'));
-    }, [filter]);
+    const searchRegex = React.useMemo(() => new RegExp(filter, 'i'), [filter]);
 
     React.useEffect(() => {
         const observer = new IntersectionObserver(

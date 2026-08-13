@@ -29,7 +29,7 @@ const MdxPage = observer((props: Props) => {
     const pageStore = useStore('pageStore');
     const userStore = useStore('userStore');
     const { pageId } = props;
-    const [meta] = React.useState(new PageMeta());
+    const meta = React.useMemo(() => new PageMeta(), []);
     useDocumentRoot(pageId, meta, false);
     React.useEffect(() => {
         if (pageId) {

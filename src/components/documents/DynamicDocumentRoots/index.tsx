@@ -20,7 +20,7 @@ interface Props<T extends ContainerType> extends MetaInit<T> {
 }
 
 const DynamicDocumentRoots = observer((props: Props<ContainerType>) => {
-    const [meta] = React.useState(new ModelMeta({ type: props.type }));
+    const meta = React.useMemo(() => new ModelMeta({ type: props.type }), [props.id]);
     const userStore = useStore('userStore');
     const user = userStore.current;
     const doc = useFirstRealMainDocument(props.id, meta, user?.hasElevatedAccess, {

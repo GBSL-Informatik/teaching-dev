@@ -30,7 +30,7 @@ const SelfCheckContent = observer(
             throw new Error('SelfCheckContent must be used within a SelfCheck');
         }
 
-        const [taskMeta] = React.useState(new TaskMeta({}));
+        const taskMeta = React.useMemo(() => new TaskMeta({}), []);
         const doc = useFirstMainDocument(context.taskStateId, taskMeta, false);
         const userStore = useStore('userStore');
 

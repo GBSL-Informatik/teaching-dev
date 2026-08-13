@@ -13,7 +13,7 @@ interface Props extends MetaInit {
 }
 
 const Directory = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const doc = useFirstMainDocument(props.id, meta);
     const DirectoryComponent = useClientLib<typeof DirectoryComponentType>(
         () => import('@tdev-components/documents/FileSystem/Directory/Directory').then((d) => d.default),

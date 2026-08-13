@@ -28,7 +28,7 @@ const defaultDisabledReason = (doc: PageReadChecker) =>
 
 const PageReadCheck = observer((props: Props) => {
     const { text = defaultText, disabledReason = defaultDisabledReason } = props;
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
 
     const viewStore = useStore('viewStore');
     const doc = useFirstMainDocument(props.id, meta);

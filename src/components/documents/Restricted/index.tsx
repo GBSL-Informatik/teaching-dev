@@ -18,7 +18,7 @@ interface Props extends MetaInit {
 }
 
 const Restricted = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const isBrowser = useIsBrowser();
     const userStore = useStore('userStore');
     const docRoot = useDocumentRoot(props.id, meta, false, {

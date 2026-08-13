@@ -13,7 +13,8 @@ interface Props extends MetaInit {
 
 const Component = observer((props: Props) => {
     // @ts-ignore
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
+
     const doc = useFirstMainDocument(props.id, meta);
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;
