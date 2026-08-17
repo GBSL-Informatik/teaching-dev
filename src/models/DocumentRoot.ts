@@ -241,7 +241,12 @@ class DocumentRoot<T extends DocumentType> {
 
     @computed
     get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
-        return orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']).reduce((map, doc) => {
+        const orderedDocuments = orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']);
+        const selectedDocuments = this.store.root.userStore.isUserSwitched
+            ? orderedDocuments.filter((doc) => doc.authorId === this.viewedUserId)
+            : orderedDocuments;
+
+        return selectedDocuments.reduce((map, doc) => {
             const docs = map.get(doc.type) || [];
             if (docs.length === 0) {
                 map.set(doc.type, docs);

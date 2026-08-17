@@ -103,7 +103,8 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
         );
     }, [userStore, documentRoot, canRequest]);
 
-    const firstDoc = documentRoot?.documents.find(selector) as AssessableTypeModelMapping[Type] | undefined;
+    const firstDoc = documentRoot?.documentsByType.get(meta.type)?.find(selector) as
+        AssessableTypeModelMapping[Type] | undefined;
     const doc = firstDoc || dummyDocument;
 
     useLinkedMetaModel(doc, meta);
