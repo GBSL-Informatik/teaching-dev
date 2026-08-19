@@ -209,7 +209,8 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     get editingIconState() {
         return {
             path: mdiTimelineQuestionOutline,
-            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray
+            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray,
+            title: this.isNA ? 'N/A' : `${this.hits}/${this.maxHits}`
         };
     }
 
