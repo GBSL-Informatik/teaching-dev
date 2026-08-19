@@ -26,12 +26,11 @@ export const QuizScore = observer(({ doc }: QuizScoreProps) => {
             </Badge>
         );
     }
-    const totalPointsAchieved = doc.assessment?.scoring?.pointsAchieved ?? 'N/A';
+    const totalPointsAchieved = doc.assessment?.scoring?.pointsAchieved;
+    const verdict = totalPointsAchieved ? `${totalPointsAchieved}/${maxPointsText}` : 'N/A';
     return (
         <Badge type="primary" className={styles.pointsBadge}>
-            {isMobileView
-                ? `${totalPointsAchieved}/${maxPointsText}`
-                : `Ergebnis: ${totalPointsAchieved}/${maxPointsText}`}
+            {isMobileView ? verdict : `Ergebnis: ${verdict}`}
         </Badge>
     );
 });

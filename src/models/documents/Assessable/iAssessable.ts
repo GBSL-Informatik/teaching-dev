@@ -108,7 +108,8 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     get editingIconState() {
         return {
             path: mdiTooltipQuestionOutline,
-            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray
+            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray,
+            title: this.isNA ? 'N/A' : `${this.hits}/${this.maxHits}`
         };
     }
 
@@ -117,11 +118,14 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (!this.isAssessed) {
             return 0;
         }
-        return this.assessment?.scoring?.pointsAchieved || 0;
+        return this.hits;
     }
 
     get totalSteps(): number {
-        return 1;
+        if (!this.isAssessed) {
+            return 1;
+        }
+        return this.maxHits;
     }
 
     @action
