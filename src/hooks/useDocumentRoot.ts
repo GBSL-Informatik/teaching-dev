@@ -27,6 +27,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
+    const componentStore = useStore('componentStore');
     const dummyDocumentRoot = React.useMemo(() => {
         return new DocumentRoot(
             {
@@ -122,6 +123,13 @@ export const useDocumentRoot = <Type extends DocumentType>(
         const hash = MetaHasher.toHashSync(meta.props);
         if (hash === rootDoc._metaHash) {
             return;
+        }
+        if (componentStore.taskableDocuments.has(meta.type)) {
+            const isNested =
+                !!(meta.props as { qid?: string }).qid && !(rootDoc.meta.props as { qid?: string }).qid;
+            if (isNested) {
+                return;
+            }
         }
         // update the metadata for this documentRoot, because it changed since the last load
         documentRootStore.addDocumentRoot(
