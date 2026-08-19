@@ -206,12 +206,9 @@ class DocumentRoot<T extends DocumentType> {
         if (!this.viewedUserId && !this.isDummy) {
             return [];
         }
-        const docs = this.store.root.documentStore.findByDocumentRoot(this.id).filter((d) => {
-            return (
-                this.isDummy ||
-                d.authorId === this.viewedUserId ||
-                (!NoneAccess.has(this.sharedAccess) && !NoneAccess.has(this.permission))
-            );
+        const all = this.store.root.documentStore.findByDocumentRoot(this.id);
+        const docs = all.filter((d) => {
+            return this.isDummy || d.authorId === this.viewedUserId || !NoneAccess.has(this.sharedPermission);
         });
         return docs;
     }
@@ -241,7 +238,8 @@ class DocumentRoot<T extends DocumentType> {
 
     @computed
     get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
-        return orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']).reduce((map, doc) => {
+        const sortedDocs = orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']);
+        return sortedDocs.reduce((map, doc) => {
             const docs = map.get(doc.type) || [];
             if (docs.length === 0) {
                 map.set(doc.type, docs);

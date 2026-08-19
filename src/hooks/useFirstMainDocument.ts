@@ -28,17 +28,19 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
-    const [dummyDocument] = React.useState(
-        documentStore.createDocument({
-            id: defaultDocId,
-            type: meta.type,
-            data: meta.defaultData,
-            authorId: DUMMY_DOCUMENT_ID,
-            documentRootId: documentRoot.id,
-            parentId: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        })
+    const dummyDocument = React.useMemo(
+        () =>
+            documentStore.createDocument({
+                id: defaultDocId,
+                type: meta.type,
+                data: meta.defaultData,
+                authorId: DUMMY_DOCUMENT_ID,
+                documentRootId: documentRoot.id,
+                parentId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }),
+        [documentRoot.id]
     );
     React.useEffect(() => {
         if (!documentRoot) {

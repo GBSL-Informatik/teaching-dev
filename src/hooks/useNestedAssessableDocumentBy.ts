@@ -78,7 +78,13 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
             return;
         }
         return reaction(
-            () => documentRoot?._canInitializeDocuments && !documentRoot.documents.some(selector),
+            () => {
+                if (!documentRoot?._canInitializeDocuments) {
+                    return false;
+                }
+                const byType = documentRoot.documentsByType.get(meta.type);
+                return !byType?.find(selector);
+            },
             (needsCreation) => {
                 if (!needsCreation) {
                     return;
@@ -102,8 +108,8 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
             { fireImmediately: true }
         );
     }, [userStore, documentRoot, canRequest]);
-
-    const firstDoc = documentRoot?.documents.find(selector) as AssessableTypeModelMapping[Type] | undefined;
+    const byType = documentRoot?.documentsByType.get(meta.type);
+    const firstDoc = byType?.find(selector) as AssessableTypeModelMapping[Type] | undefined;
     const doc = firstDoc || dummyDocument;
 
     useLinkedMetaModel(doc, meta);
