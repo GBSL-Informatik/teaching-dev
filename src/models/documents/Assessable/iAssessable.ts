@@ -43,7 +43,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
     @observable accessor scrollTo: boolean = false;
     @observable accessor _assessed: boolean;
     // @observableRef accessor scoringFunction: ((self: this) => Assessement) | null = null;
-    @observableRef accessor linkedMeta: AssessableMeta<T> | null = null;
+    @observableRef accessor _linkedMeta: AssessableMeta<T> | null = null;
     @observable accessor showAllOptions: boolean = false;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
@@ -53,9 +53,21 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         this._checkIntegrity();
     }
 
+    @computed
+    get linkedMeta() {
+        if (!this._linkedMeta && this.quiz) {
+            // try getting a linked meta from the quiz
+            const refMeta = this.root?.allDocuments.find(
+                (doc) => doc.type === this.type && !!doc._linkedMeta && doc.qid === this.qid
+            ) as iAssessable<T> | undefined;
+            return refMeta?._linkedMeta;
+        }
+        return this._linkedMeta;
+    }
+
     @action
     setLinkedMeta(metadata: AssessableMeta<T>) {
-        this.linkedMeta = metadata;
+        this._linkedMeta = metadata;
         this.onLinkedMetaChange();
     }
 
