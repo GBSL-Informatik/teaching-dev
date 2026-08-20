@@ -63,7 +63,6 @@ const RoomSwitcher = observer((props: RoomSwitcherProps) => {
     const socketStore = useStore('socketStore');
     React.useEffect(() => {
         socketStore.joinRoom(docContainerId);
-        console.log(dynamicRoot.data, !!dynamicRoot.linkedDocumentContainersMap.get(docContainerId));
         dynamicRoot.linkedDocumentContainersMap.get(docContainerId)?.loadDocuments();
         return () => {
             socketStore.leaveRoom(docContainerId);
