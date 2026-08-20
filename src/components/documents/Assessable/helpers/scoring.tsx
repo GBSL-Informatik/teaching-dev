@@ -7,12 +7,12 @@ export const points: (
     forCorrect?: number,
     forIncorrect?: number,
     forUnanswered?: number
-) => ScoringFunction<AssessableType> = (forCorrect = 1, forIncorrect = 0, forUnanswered = 0) => {
+) => ScoringFunction<AssessableType> = (maxPoints = 1, forIncorrect = 0, forUnanswered = 0) => {
     const scoringHint = () => (
         <ul>
             <li>
-                <span className={clsx('badge badge--success')}>{forCorrect}</span>{' '}
-                {forCorrect === 1 ? 'Punkt' : 'Punkte'} wenn richtig
+                <span className={clsx('badge badge--success')}>{maxPoints}</span>{' '}
+                {maxPoints === 1 ? 'Punkt' : 'Punkte'} wenn richtig
             </li>
             <li>
                 <span className={clsx('badge badge--danger')}>{forIncorrect}</span>{' '}
@@ -25,7 +25,7 @@ export const points: (
         </ul>
     );
     const template: Scoring = {
-        maxPoints: forCorrect,
+        maxPoints,
         pointsAchieved: 0,
         scoringHint
     };
@@ -36,9 +36,9 @@ export const points: (
                 scoring: template
             };
         }
-        const { hits: achievements, misses: mistakes, maxHits: maxPoints } = ca;
-        if (achievements + mistakes > 1) {
-            const msg = `The points() scoring function is not suitable for questions with multiple answers. Please use multipleChoicePoints() instead! documentId: ${ca.id}, rootId: ${ca.documentRootId}, type: ${ca.type}, hits: ${achievements}, misses: ${mistakes}, maxHits: ${maxPoints}`;
+        const { hits, misses, maxHits } = ca;
+        if (hits + misses > 1) {
+            const msg = `The points() scoring function is not suitable for questions with multiple answers. Please use multipleChoicePoints() instead! documentId: ${ca.id}, rootId: ${ca.documentRootId}, type: ${ca.type}, hits: ${hits}, misses: ${misses}, maxHits: ${maxHits}`;
             if (process.env.NODE_ENV === 'development') {
                 throw new Error(msg);
             }
@@ -48,13 +48,15 @@ export const points: (
                 scoring: template
             };
         }
-        const points = achievements === 1 ? forCorrect : mistakes === 1 ? forIncorrect : forUnanswered;
+        const points = hits === 1 ? maxPoints : misses === 1 ? forIncorrect : forUnanswered;
         const correctness =
-            points === forCorrect
+            points === maxPoints
                 ? Correctness.Correct
-                : points <= 0
-                  ? Correctness.Incorrect
-                  : Correctness.PartiallyCorrect;
+                : ca.isNA
+                  ? Correctness.NA
+                  : points <= 0
+                    ? Correctness.Incorrect
+                    : Correctness.PartiallyCorrect;
         return {
             correctness: correctness,
             scoring: { ...template, pointsAchieved: points }
@@ -110,9 +112,11 @@ export const multipleChoicePoints: (
         const correctness =
             points === maxPoints
                 ? Correctness.Correct
-                : points === 0
-                  ? Correctness.Incorrect
-                  : Correctness.PartiallyCorrect;
+                : model.isNA
+                  ? Correctness.NA
+                  : points === 0
+                    ? Correctness.Incorrect
+                    : Correctness.PartiallyCorrect;
         return {
             correctness: correctness,
             scoring: { maxPoints, pointsAchieved: finalPoints, scoringHint }

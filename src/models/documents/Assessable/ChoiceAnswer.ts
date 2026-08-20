@@ -7,6 +7,13 @@ import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import { AssessableMeta } from './AssessableMeta';
+import {
+    mdiCommentMultipleOutline,
+    mdiFrequentlyAskedQuestions,
+    mdiMessageQuestionOutline,
+    mdiOrderBoolAscending,
+    mdiOrderBoolAscendingVariant
+} from '@mdi/js';
 
 export class ModelMeta extends AssessableMeta<'choice_answer'> implements AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';
@@ -149,6 +156,11 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
     }
 
     @computed
+    get isNA(): boolean {
+        return this.choices.size === 0 && (this.meta.correct?.length ?? 0) > 0;
+    }
+
+    @computed
     get multiple(): boolean {
         return this.meta?.multiple ?? false;
     }
@@ -168,6 +180,14 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
     @computed
     get meta(): ModelMeta {
         return (this._meta as ModelMeta) ?? DEFAULT_META;
+    }
+
+    @computed
+    get icon(): string {
+        if (this.multiple) {
+            return mdiFrequentlyAskedQuestions;
+        }
+        return mdiMessageQuestionOutline;
     }
 }
 

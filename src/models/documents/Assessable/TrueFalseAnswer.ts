@@ -5,6 +5,12 @@ import { action, computed, observable } from 'mobx';
 import iAssessable from './iAssessable';
 import type { Props as TrueFalseProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import { AssessableMeta } from './AssessableMeta';
+import {
+    mdiCircleHalfFull,
+    mdiCommentAlertOutline,
+    mdiCommentCheckOutline,
+    mdiToggleSwitchVariantOff
+} from '@mdi/js';
 
 export class ModelMeta
     extends AssessableMeta<'true_false_answer'>
@@ -95,6 +101,11 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
         return 1 - this.hits;
     }
 
+    @computed
+    get isNA(): boolean {
+        return this.value === null;
+    }
+
     get data(): TypeDataMapping['true_false_answer'] {
         const raw: TypeDataMapping['true_false_answer'] = {
             value: this.value,
@@ -109,6 +120,11 @@ class TrueFalseAnswer extends iAssessable<'true_false_answer'> implements iAsses
     @computed
     get meta(): ModelMeta {
         return (this._meta as ModelMeta) ?? DEFAULT_META;
+    }
+
+    @computed
+    get icon(): string {
+        return mdiCommentAlertOutline;
     }
 }
 

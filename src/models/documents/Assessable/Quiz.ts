@@ -178,6 +178,11 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
+    get isNA(): boolean {
+        return this.naCount === this.questionCount;
+    }
+
+    @computed
     get naCount(): number {
         return this.questions.reduce((sum, q) => sum + (q.isNA ? 1 : 0), this.missingQuestionModelCount);
     }
@@ -212,7 +217,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     get editingIconState() {
         return {
-            path: mdiTimelineQuestionOutline,
+            path: this.icon,
             color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray,
             title: this.isAssessed
                 ? this.assessment?.scoring
@@ -225,6 +230,10 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     @computed
     get meta(): ModelMeta {
         return (this._meta as ModelMeta) ?? DEFAULT_META;
+    }
+
+    get icon(): string {
+        return mdiTimelineQuestionOutline;
     }
 }
 
