@@ -150,7 +150,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (this.type === 'quiz' || !this.inQuiz) {
             return undefined;
         }
-        const quiz = this.root?.documents.find(
+        const quiz = this.root?.allDocuments.find(
             (doc) => doc.authorId === this.authorId && doc.type === 'quiz'
         );
         return quiz as Quiz | undefined;
