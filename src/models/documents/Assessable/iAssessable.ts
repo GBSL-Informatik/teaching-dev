@@ -121,7 +121,11 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         return {
             path: mdiTooltipQuestionOutline,
             color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray,
-            title: this.isNA ? 'N/A' : `${this.hits}/${this.maxHits}`
+            title: this.isAssessed
+                ? this.assessment?.scoring
+                    ? `${this.assessment.scoring.pointsAchieved}/${this.assessment.scoring.maxPoints}`
+                    : `${this.hits}/${this.maxHits}`
+                : 'N/A'
         };
     }
 

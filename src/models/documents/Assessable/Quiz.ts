@@ -214,7 +214,11 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
         return {
             path: mdiTimelineQuestionOutline,
             color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray,
-            title: this.isAssessed ? `${this.hits}/${this.maxHits}` : 'N/A'
+            title: this.isAssessed
+                ? this.assessment?.scoring
+                    ? `${this.assessment.scoring.pointsAchieved}/${this.assessment.scoring.maxPoints}`
+                    : `${this.hits}/${this.maxHits}`
+                : 'N/A'
         };
     }
 
