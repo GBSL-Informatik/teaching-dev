@@ -189,7 +189,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @computed
     get correctness(): Correctness {
-        if (!this.isAssessed || this.isNA) {
+        if (!this.isAssessed) {
             return Correctness.NA;
         }
         if (this.assessment) {
@@ -206,7 +206,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
      * Returns the maximum achievable "hits" for this assessable item.
      */
     get maxHits(): number {
-        return this._meta?.correct?.length || 0;
+        return this._meta?.correct?.length ?? 1;
     }
 
     /**

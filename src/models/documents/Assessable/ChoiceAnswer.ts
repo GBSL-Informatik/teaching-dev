@@ -116,9 +116,9 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     get maxHits(): number {
         if (this.multiple) {
-            return this.meta?.correct?.length || 0;
+            return this.meta?.correct?.length ?? 1;
         }
-        return !!this.meta?.correct ? 1 : 0;
+        return 1;
     }
 
     optionsDisplayOrder(optionIndex: number): number {
@@ -128,13 +128,16 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     @computed
     get hits(): number {
+        if (this.choices.size === 0 && this.meta.correct?.length === 0) {
+            return 1;
+        }
         const correct = new Set(this.meta.correct);
         return this.choices.intersection(correct).size;
     }
 
     @computed
     get misses(): number {
-        if (this.choices.size === 0) {
+        if (this.choices.size === 0 && this.meta.correct?.length === 0) {
             return 0;
         }
         if (this.multiple) {
