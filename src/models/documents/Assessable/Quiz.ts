@@ -143,8 +143,9 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
                 scoring: { pointsAchieved: 0, maxPoints: this.missingQuestionModelCount }
             } as Assessement
         );
+        const allAnswered = this.missingQuestionModelCount === 0 && this.hits === this.maxHits;
         const isAllNA = correctness.every((c) => c === Correctness.NA);
-        const isAllCorrect = !isAllNA && correctness.every((c) => c === Correctness.Correct);
+        const isAllCorrect = allAnswered && !isAllNA && correctness.every((c) => c === Correctness.Correct);
         const isAllIncorrect =
             !isAllNA &&
             !isAllCorrect &&
