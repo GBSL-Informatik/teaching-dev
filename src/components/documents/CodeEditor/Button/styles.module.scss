@@ -9,4 +9,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    &:disabled {
+        pointer-events: auto;
+    }
+    &.disabled {
+        opacity: 0.5;
+    }
 }
