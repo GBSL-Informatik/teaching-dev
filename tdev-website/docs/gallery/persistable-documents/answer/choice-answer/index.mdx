@@ -355,7 +355,7 @@ import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnsw
 import Quiz from '@tdev-components/documents/Assessable/Quiz';
 import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
 
-<Quiz scoring={points(1)} id="04d2153f-1ed3-41bd-835b-a8bebe2ca6e8" randomizeQuestions randomizeOptions>
+<Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" id="04d2153f-1ed3-41bd-835b-a8bebe2ca6e8" >
   <ChoiceAnswer correct={[5]}>
       > In welchem Jahr war 2024?
       
@@ -402,7 +402,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
 ```
 
 <BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="7bbb268b-79c2-4ac9-aa11-6f41a1d81dca" >
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" shuffleOnReset id="7bbb268b-79c2-4ac9-aa11-6f41a1d81dca" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             
@@ -448,6 +448,7 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
         </ChoiceAnswer>
     </Quiz>
 </BrowserWindow>
+
 
 ### Bewertung
 In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene definiert werden. Sie gilt dann für alle Fragen innerhalb des Quizzes, sofern diese nicht durch die `scoring`-Property der einzelnen Fragen überschrieben wird. 
@@ -505,6 +506,16 @@ Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz 
 `minPoints`
 : *optional*, `number`.
 : Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird.
+`resetMode`
+: *optional*, `'all' | 'incorrect' | 'noReset'`.
+: Steuert, welche Fragen beim Zurücksetzen des Quizzes zurückgesetzt werden. 
+: Standard: `'all'` (alle Fragen werden zurückgesetzt).
+: Mit `'incorrect'` werden nur die Fragen zurückgesetzt, die falsch beantwortet wurden.
+: Mit `'noReset'` kann das Quiz nicht zurückgesetzt werden, was z.B. für Prüfungen sinnvoll sein kann.
+`shuffleOnReset`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Fragen und/oder Antwortmöglichkeiten beim Zurücksetzen des Quizzes erneut randomisiert.
+: Standard: `false`.
 
 ### `ScoringFunction`
 Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Scoring-Funktionen sind:
