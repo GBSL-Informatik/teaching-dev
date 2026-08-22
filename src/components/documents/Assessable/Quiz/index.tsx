@@ -20,8 +20,10 @@ export interface Props extends AssessableComponentProps<AssessableType> {
     hideQuestionNumbers?: boolean;
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
+    resetMode: 'all' | 'incorrect' | 'noReset';
     minPoints?: number;
     allowSelection?: boolean;
+    shuffleOnReset?: boolean;
 }
 
 const Quiz = observer((props: Props) => {
@@ -48,7 +50,11 @@ const Quiz = observer((props: Props) => {
                 <div className={styles.content}>{props.children}</div>
                 <div className={styles.footer}>
                     <QuizScore doc={doc} />
-                    <QuizControls doc={doc} />
+                    <QuizControls
+                        doc={doc}
+                        resetMode={props.resetMode ?? 'all'}
+                        shuffleOnReset={props.shuffleOnReset}
+                    />
                 </div>
             </DocumentRootIdContext>
         </div>

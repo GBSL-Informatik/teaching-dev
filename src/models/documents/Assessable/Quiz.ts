@@ -71,6 +71,26 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
         this.saveNow();
     }
 
+    @action
+    resetFaulty(): void {
+        const correctIds = new Set(
+            this.questions.filter((q) => q.correctness === Correctness.Correct).map((q) => q.id)
+        );
+        this.setAssessed(false);
+        this.questions.filter((q) => !correctIds.has(q.id)).forEach((q) => q.reset());
+        this.saveNow();
+    }
+
+    @action
+    reshuffle(): Promise<any> {
+        this.shuffle();
+        const questionShuffling = this.questions.map((q) => {
+            q.shuffle();
+            return q.saveNow();
+        });
+        return Promise.all([this.saveNow(), ...questionShuffling]);
+    }
+
     @computed
     get questionCount(): number {
         return this.questionIds.size;

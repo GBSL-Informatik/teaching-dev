@@ -7,13 +7,7 @@ import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import { AssessableMeta } from './AssessableMeta';
-import {
-    mdiCommentMultipleOutline,
-    mdiFrequentlyAskedQuestions,
-    mdiMessageQuestionOutline,
-    mdiOrderBoolAscending,
-    mdiOrderBoolAscendingVariant
-} from '@mdi/js';
+import { mdiFrequentlyAskedQuestions, mdiMessageQuestionOutline } from '@mdi/js';
 
 export class ModelMeta extends AssessableMeta<'choice_answer'> implements AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';

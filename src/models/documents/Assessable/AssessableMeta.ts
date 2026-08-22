@@ -1,4 +1,4 @@
-import { Access, type TypeDataMapping, type AssessableType } from '@tdev-api/document';
+import { type TypeDataMapping, type AssessableType } from '@tdev-api/document';
 import type { default as iAssessable, Assessement } from './iAssessable';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { observable } from 'mobx';
