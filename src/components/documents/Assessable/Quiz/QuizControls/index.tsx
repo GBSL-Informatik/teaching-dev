@@ -20,9 +20,11 @@ interface QuizControlsProps {
 
 export const QuizControls = observer(({ doc, resetMode, shuffleOnReset }: QuizControlsProps) => {
     const isMobileView = useIsMobileView();
-    const missingCount = doc.hasNA ? `trotz ${doc.naCount} fehlender Frage${doc.naCount > 1 ? 'n' : ''}` : '';
 
     if (!doc.isAssessed) {
+        const missingCount = doc.hasNA
+            ? `trotz ${doc.naCount} fehlender Frage${doc.naCount > 1 ? 'n' : ''}`
+            : '';
         return (
             <div className={clsx(styles.quizControlsContainer)}>
                 <Confirm
