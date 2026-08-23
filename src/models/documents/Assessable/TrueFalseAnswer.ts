@@ -5,12 +5,7 @@ import { action, computed, observable } from 'mobx';
 import iAssessable from './iAssessable';
 import type { Props as TrueFalseProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import { AssessableMeta } from './AssessableMeta';
-import {
-    mdiCircleHalfFull,
-    mdiCommentAlertOutline,
-    mdiCommentCheckOutline,
-    mdiToggleSwitchVariantOff
-} from '@mdi/js';
+import { mdiCommentAlertOutline } from '@mdi/js';
 
 export class ModelMeta
     extends AssessableMeta<'true_false_answer'>
