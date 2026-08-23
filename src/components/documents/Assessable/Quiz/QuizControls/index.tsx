@@ -26,7 +26,7 @@ export const QuizControls = observer(({ doc, resetMode, shuffleOnReset }: QuizCo
         return (
             <div className={clsx(styles.quizControlsContainer)}>
                 <Confirm
-                    text="Quiz beenden"
+                    text={isMobileView ? 'Beenden' : 'Quiz beenden'}
                     title={`Quiz ${missingCount}beenden und Antworten prüfen. Danach ist keine Bearbeitung der Antworten mehr möglich.`}
                     color={doc.hasNA ? 'warning' : 'success'}
                     icon={
@@ -49,14 +49,15 @@ export const QuizControls = observer(({ doc, resetMode, shuffleOnReset }: QuizCo
         <div className={clsx(styles.quizControlsContainer)}>
             {resetMode === 'incorrect' && doc.assessment?.correctness !== Correctness.Correct && (
                 <Confirm
-                    text="Korrigieren"
+                    text={isMobileView ? undefined : 'Korrigieren'}
                     title="Alle fehlerhaften Antworten zurücksetzen"
                     color="secondary"
                     icon={mdiEraser}
                     iconSide="left"
                     size={0.7}
                     className={clsx(styles.checkButton)}
-                    confirmText={isMobileView ? 'Sicher?' : 'Wirklich korrigieren?'}
+                    confirmText={'Wirklich korrigieren?'}
+                    confirmColor="orange"
                     onConfirm={() => {
                         doc.resetFaulty();
                         if (shuffleOnReset) {
@@ -66,14 +67,15 @@ export const QuizControls = observer(({ doc, resetMode, shuffleOnReset }: QuizCo
                 />
             )}
             <Confirm
-                text="Quiz zurücksetzen"
+                text={isMobileView ? undefined : 'Quiz zurücksetzen'}
                 title="Alle Antworten zurücksetzen und Quiz neu beginnen"
                 color="secondary"
                 icon={mdiRestore}
                 iconSide="left"
                 size={0.7}
                 className={clsx(styles.checkButton)}
-                confirmText={isMobileView ? 'Sicher?' : 'Wirklich zurücksetzen?'}
+                confirmText={'Wirklich zurücksetzen?'}
+                confirmColor="red"
                 onConfirm={() => {
                     doc.reset();
                     if (shuffleOnReset) {
