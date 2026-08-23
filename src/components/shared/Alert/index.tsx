@@ -3,12 +3,12 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 
-type BadgeType = 'primary' | 'secondary' | 'blue' | 'success' | 'info' | 'warning' | 'danger';
+export type AlertType = 'primary' | 'secondary' | 'blue' | 'success' | 'info' | 'warning' | 'danger';
 
 interface Props {
     className?: string;
     children: React.ReactNode;
-    type?: BadgeType;
+    type?: AlertType;
     title?: string;
     style?: React.CSSProperties;
     onDiscard?: React.MouseEventHandler<HTMLButtonElement>;
