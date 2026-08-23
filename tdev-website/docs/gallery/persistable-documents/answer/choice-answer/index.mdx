@@ -9,6 +9,7 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import Quiz from '@tdev-components/documents/Assessable/Quiz';
+import Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
 import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
 
 # Choice Answer
@@ -227,6 +228,74 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/Assessa
 
     </TrueFalseAnswer>
 </BrowserWindow>
+
+### Lösungshinweise
+
+Mit der `<Hints>`-Komponente können für jede Frage Lösungshinweise bereitgestellt werden. Diese werden nach der Beantwortung der Frage angezeigt, wobei die Anzeige der Hinweise von der Bewertung der Antwort abhängt. So können z.B. unterschiedliche Hinweise für richtige und falsche Antworten bereitgestellt werden.
+
+```tsx
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
+import Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
+import { noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
+
+<ChoiceAnswer correct={[2]} multiple scoring={noPoints()} id="5a5f2aab-eda6-4db2-bbf7-16edee1ae1d0">
+    > Wann ist der Sinn des Lebens?
+    
+    1. Immer im März
+    2. 42
+    3. Das Bundeshaus
+    4. Nein
+    5. Ja, aber nur manchmal
+
+    <Hint when={['incorrect', 'partially_correct']}>
+        Die Antwort versteckt sich im Roman [Per Anhalter durch die Galaxis](https://de.wikipedia.org/wiki/Per_Anhalter_durch_die_Galaxis) von Douglas Adams.
+    </Hint>
+    <Hint when="correct">
+        Genau! Dokumnetiert im Roman [Per Anhalter durch die Galaxis](https://de.wikipedia.org/wiki/Per_Anhalter_durch_die_Galaxis) von Douglas Adams.
+    </Hint>
+    <Hint when="not_answered">
+        Komm schon, wenigstens ein Lucky Guess 😉.
+    </Hint>
+    <Hint when="unassessed" noWrap>
+        :::tip[Hinweis]
+        Das sollte man wirklich wissen.
+        :::
+    </Hint>
+    <Hint when="assessed" not={['not_answered', 'correct']}>
+        Gewusst? Vermutlich gibt es $\infty$ richtige Antworten auf diese Frage 😉.
+    </Hint>
+</ChoiceAnswer>
+```
+<BrowserWindow>
+    <ChoiceAnswer correct={[2]} multiple scoring={noPoints()} id="5a5f2aab-eda6-4db2-bbf7-16edee1ae1d0">
+        > Wann ist der Sinn des Lebens?
+        
+        1. Immer im März
+        2. 42
+        3. Das Bundeshaus
+        4. Nein
+        5. Ja, aber nur manchmal
+
+        <Hint when={['incorrect', 'partially_correct']}>
+            Die Antwort versteckt sich im Roman [Per Anhalter durch die Galaxis](https://de.wikipedia.org/wiki/Per_Anhalter_durch_die_Galaxis) von Douglas Adams.
+        </Hint>
+        <Hint when="correct">
+            Genau! Dokumnetiert im Roman [Per Anhalter durch die Galaxis](https://de.wikipedia.org/wiki/Per_Anhalter_durch_die_Galaxis) von Douglas Adams.
+        </Hint>
+        <Hint when="not_answered">
+            Komm schon, wenigstens ein Lucky Guess 😉.
+        </Hint>
+        <Hint when="unassessed" noWrap>
+            :::tip[Hinweis]
+            Das sollte man wirklich wissen.
+            :::
+        </Hint>
+        <Hint when="assessed" not={['not_answered', 'correct']}>
+            Gewusst? Vermutlich gibt es $\infty$ richtige Antworten auf diese Frage 😉.
+        </Hint>
+    </ChoiceAnswer>
+</BrowserWindow>
+
 
 ### `keepExpanded`
 Die `keepExpanded`-Property steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. Standardmässig werden alle Antwortmöglichkeiten angezeigt, es kann aber auch eingestellt werden, dass nur die korrekten Antworten, nur die ausgewählten Antworten oder gar keine Antworten angezeigt werden.
