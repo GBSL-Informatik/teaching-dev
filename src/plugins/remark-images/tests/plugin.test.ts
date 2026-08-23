@@ -4,11 +4,11 @@ import { remark } from 'remark';
 import remarkMdx from 'remark-mdx';
 import remarkDirective from 'remark-directive';
 import { describe, expect, it } from 'vitest';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 import { CaptionVisitor } from '../plugin';
 import { VFile } from 'vfile';
 import { Parent } from 'mdast';
-import path from 'path';
+import path from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 

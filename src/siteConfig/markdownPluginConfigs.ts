@@ -78,6 +78,12 @@ export const codeAsAttributePluginConfig = [
                 name: 'Val',
                 attributeName: 'code'
             }
+        ],
+        rawCodeComponents: [
+            {
+                name: 'CodeShowcase',
+                attributeName: 'code'
+            }
         ]
     }
 ];
