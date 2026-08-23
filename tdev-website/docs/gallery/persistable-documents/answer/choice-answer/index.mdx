@@ -322,6 +322,35 @@ import { noPoints } from '@tdev-components/documents/Assessable/helpers/scoring'
     </ChoiceAnswer>
 </BrowserWindow>
 
+`when`
+: `correct | incorrect | partially_correct | not_answered | assessed | unassessed | WhenFunction`.
+: Mit dem `when` wird kontrolliert, unter welchen Bedingungen der Hinweis angezeigt wird. Es können auch mehrere Bedingungen als Array angegeben werden. Alternativ kann eine Funktion angegeben werden, die das Dokument entgegennimmt und ein Objekt zurückgibt, das die Anzeige des Hinweises steuert.
+:::dd
+```ts
+type WhenFunction<T extends AssessableType> = (
+    doc: TypeModelMapping[T]
+) => { show: boolean; color: AlertType; children?: React.ReactNode; className?: string } | null;
+```
+:::
+`not`
+: *optional*
+: `correct | incorrect | partially_correct | not_answered | assessed | unassessed` oder eine Liste davon.
+: Übersteuert die `when`-Bedingung - ohne `when` ist dieses Attribut aber inaktiv.
+`noWrap`
+: *optional*, default: `false`
+: beschreibt, ob der Hinweis in einem Alert-Container angezeigt werden soll oder nicht.
+`color`
+: *optional*
+: Überschreibt die Farbe des Alert-Containers. Standardmässig wird die Farbe von der Richtigkeit der Antwort abgeleitet.
+:::dd
+-  :mdi[circle]{.green} `correct`
+-  :mdi[circle]{.red} `incorrect`
+-  :mdi[circle]{.orange} `partially_correct`
+-  :mdi[circle]{color="var(--ifm-color-secondary)"} `not_answered`
+-  :mdi[circle]{color="var(--ifm-color-info)"} `assessed|unassessed`
+:::
+`className`
+: *optional*
 
 ### `keepExpanded`
 Die `keepExpanded`-Property steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. Standardmässig werden alle Antwortmöglichkeiten angezeigt, es kann aber auch eingestellt werden, dass nur die korrekten Antworten, nur die ausgewählten Antworten oder gar keine Antworten angezeigt werden.
