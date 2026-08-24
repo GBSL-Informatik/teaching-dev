@@ -7,17 +7,19 @@ export interface CodeAttributes {
     meta?: string;
     lang?: string;
 }
-
-interface ComponentConfig {
+interface BaseConfig {
     name: string;
     attributeName: string;
+}
+
+interface ComponentConfig extends BaseConfig {
     codeAttributesName?: string;
     processMultiple?: boolean;
 }
 
 export interface PluginOptions {
     components: ComponentConfig[];
-    rawCodeComponents?: Omit<ComponentConfig, 'codeAttributesName' | 'processMultiple'>[];
+    rawCodeComponents?: BaseConfig[];
 }
 
 export interface MultiCode extends CodeAttributes {
