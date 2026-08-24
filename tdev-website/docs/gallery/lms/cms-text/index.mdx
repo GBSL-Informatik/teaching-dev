@@ -7,13 +7,15 @@ import CmsCode from '@tdev-components/documents/CmsText/Code';
 import WithCmsText from '@tdev-components/documents/CmsText/WithCmsText';
 import CmsLink from '@tdev-components/documents/CmsText/Link';
 import DefinitionList from '@tdev-components/DefinitionList';
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 import { observer } from 'mobx-react-lite';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 import CodeEditor from '@tdev-components/shared/CodeEditor'
 
 # CMS Text
+
+export const IMP = `import CmsText from '@tdev-components/documents/CmsText';`
 
 Soll ein bestimmter Wert nicht fix im Markdown hinterlegt, sondern aus der Datenbank geladen werden, eignet sich die Komponente `<CmsText>`.
 
@@ -74,51 +76,32 @@ export const DocumentCreator = observer(() => {
 ::::
 
 ## Inline-Text aus dem CMS
-```md
-import CmsText from '@tdev-components/documents/CmsText';
 
-Der Text "<CmsText id="30918f4b-8400-42d9-8e1f-f19d27357494"/>" wurde aus der Datenbank geladen.
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md" imports={[IMP]}>
     Der Text "<CmsText id="30918f4b-8400-42d9-8e1f-f19d27357494"/>" wurde aus der Datenbank geladen.
-</BrowserWindow>
+</CodeShowcase>
 
 Besitzt der aktuelle User kein Document für die angegebene DocumentRoot-ID, dann bleibt der Text leer:
 
-```md
-Der Text "<CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3"/>" wurde aus der Datenbank geladen.
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
     Der Text "<CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3"/>" wurde aus der Datenbank geladen.
-</BrowserWindow>
+</CodeShowcase>
 
 ## CMS-Text mit Permissions Panel
 CMS Text kann auch nützlich sein, um bspw. Prüfungsinhalte erst zur gegebenen Zeit mit einer __Shared Permission__ anzuzeigen. Das Permissions Panel kann deshalb optional angezeigt werden:
 
-```md
-import CmsText from '@tdev-components/documents/CmsText';
-
-Diskutieren Sie das nachfolgende Zitat:
-
-> <CmsText id="30918f4b-8400-42d9-8e1f-f19d27357494" showActions/>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md" imports={[IMP]}>
 Diskutieren Sie das nachfolgende Zitat:
 
 > <CmsText id="30918f4b-8400-42d9-8e1f-f19d27357494" showActions/>
 
-</BrowserWindow>
+</CodeShowcase>
 
 
 ## CMS Code
 Es können auch Code-Blöcke aus dem CMS geladen werden:
 
-```md
-import CmsCode from '@tdev-components/documents/CmsText/Code';
-
+<CodeShowcase lang="md" imports={[`import CmsCode from '@tdev-components/documents/CmsText/Code';`]}>
 <CmsCode 
     id="f6b64809-e570-4a88-9a84-6c57e0240e38"
     codeBlockProps={{
@@ -142,57 +125,20 @@ import CmsCode from '@tdev-components/documents/CmsText/Code';
     }}
     showActions
 />
-```
-
-<BrowserWindow>
-<CmsCode 
-    id="f6b64809-e570-4a88-9a84-6c57e0240e38"
-    codeBlockProps={{
-        language: 'python'
-    }}
-/>
-<CmsCode 
-    id="f6b64809-e570-4a88-9a84-6c57e0240e38"
-    codeBlockProps={{
-        language: 'python'
-    }}
-    showActions
-/>
-`codeBlockProps` entspricht den Props der Komponente `@theme/CodeBlock`.
-<CmsCode 
-    id="f6b64809-e570-4a88-9a84-6c57e0240e38"
-    codeBlockProps={{
-        language: 'python',
-        showLineNumbers: true,
-        title: 'Hello World'
-    }}
-    showActions
-/>
-</BrowserWindow>
+</CodeShowcase>
 
 ## CMS-Link
 
 Es ist möglich, CMS-Texte als Links zu verwenden:
 
-```md
-import CmsLink from '@tdev-components/documents/CmsText/Link';
-
-Ohne Link-Text: <CmsLink id="a859498b-aab2-4ce8-baa2-1feb1d623571" />
-<CmsLink id="a859498b-aab2-4ce8-baa2-1feb1d623571">
-    👉 Hier gehts zur Prüfung
-</CmsLink>
-
-Mit Bedienelement: <CmsLink showActions id="a859498b-aab2-4ce8-baa2-1feb1d623571" inline />
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md" imports={[`import CmsLink from '@tdev-components/documents/CmsText/Link';`]}>
 Ohne Link-Text: <CmsLink id="a859498b-aab2-4ce8-baa2-1feb1d623571" />
 <CmsLink id="a859498b-aab2-4ce8-baa2-1feb1d623571">
     👉 Hier gehts zur Prüfung
 </CmsLink>
 
 Mit Bedienelement<CmsLink showActions id="a859498b-aab2-4ce8-baa2-1feb1d623571" inline />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Einfluss auf umliegende Elemente
 In vielen Fällen kann es nützlich sein, auch umliegende Elemente nur dann anzuzeigen, wenn ein bestimmter CMS-Text verfügbar ist. Dazu kann die Komponente `<WithCmsText>` verwendet werden.
@@ -203,24 +149,19 @@ In vielen Fällen kann es nützlich sein, auch umliegende Elemente nur dann anzu
 </WithCmsText>
 ```
 
-<BrowserWindow>
+<CodeShowcase lang="md" imports={[IMP]}>
     <WithCmsText entries={{demo: "30918f4b-8400-42d9-8e1f-f19d27357494"}}>
         Der Text "<CmsText name="demo" />" wurde aus der Datenbank geladen.
     </WithCmsText>
-</BrowserWindow>
+</CodeShowcase>
 
 Ist einer der in `entries` aufgeführten CMS-Texte nicht verfügbar, wird der gesamte Inhalt dieser Klammer ausgeblendet:
-```md
-<WithCmsText entries={{text: "2c0c085d-388a-48cd-9871-975bab0ffda3"}}>
-    Der Text "<CmsText name="demo" />" wurde aus der Datenbank geladen.
-</WithCmsText>
-```
 
-<BrowserWindow>
+<CodeShowcase lang="md" imports={[IMP, `import WithCmsText from '@tdev-components/documents/CmsText/WithCmsText';`]}>
     <WithCmsText entries={{text: "2c0c085d-388a-48cd-9871-975bab0ffda3"}}>
         Der Text "<CmsText name="demo" />" wurde aus der Datenbank geladen.
     </WithCmsText>
-</BrowserWindow>
+</CodeShowcase>
 :::tip[Beachte]
 Die Einträge `text` und `demo` stimmen nicht überein, deshalb wird der Inhalt **nie angezeigt**.
 :::
@@ -230,33 +171,7 @@ Im folgenden Beispiel wird die gesamte `<DefinitionList>` nur dann angezeigt, we
 
 Zusätzlich wird ein weiterer CMS-Text mit der ID `2c0c085d-388a-48cd-9871-975bab0ffda3` verwendet. Wenn dort das entsprechende Dokument fehlt, bleibt der Eintrag einfach leer.
 
-```md
-import WithCmsText from '@tdev-components/documents/CmsText/WithCmsText';
-import CmsText from '@tdev-components/documents/CmsText';
-import DefinitionList from "@tdev-components/DefinitionList";
-
-<WithCmsText 
-    entries={{
-        demo: "30918f4b-8400-42d9-8e1f-f19d27357494", 
-        code: "f6b64809-e570-4a88-9a84-6c57e0240e38"
-    }}
->
-    <DefinitionList>
-        <dt>Hallo</dt>
-        <dd>Das ist der erste Eintrag.</dd>
-        <dt>Welt</dt>
-        <dd>Das ist der zweite Eintrag.</dd>
-        <dt>CMS-Eintrag</dt>
-        <dd><CmsText name="demo" /></dd>
-        <dt>CMS-Code</dt>
-        <dd><CmsCode name="code" codeBlockProps={{language: 'py'}} showActions /></dd>
-        <dt>Anderer CMS-Eintrag</dt>
-        <dd><CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3" /></dd>
-    </DefinitionList>
-</WithCmsText>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md" imports={[IMP, `import WithCmsText from '@tdev-components/documents/CmsText/WithCmsText';`, `import DefinitionList from "@tdev-components/DefinitionList";`]}>
     <WithCmsText 
         entries={{
             demo: "30918f4b-8400-42d9-8e1f-f19d27357494", 
@@ -276,31 +191,11 @@ import DefinitionList from "@tdev-components/DefinitionList";
             <dd><CmsText id="2c0c085d-388a-48cd-9871-975bab0ffda3" /></dd>
         </DefinitionList>
     </WithCmsText>
-</BrowserWindow>
+</CodeShowcase>
 
 Bei mehreren Einträgen zeigt die `<WithCmsText>`-Klammer ihren Inhalt nur dann an, wenn alle entsprechenden Documents vorhanden sind:
 
-```md
-<WithCmsText 
-    entries={{
-        a: "30918f4b-8400-42d9-8e1f-f19d27357494",
-        b: "2c0c085d-388a-48cd-9871-975bab0ffda3"
-    }}
->
-    <DefinitionList>
-        <dt>Hallo</dt>
-        <dd>Das ist der erste Eintrag.</dd>
-        <dt>Welt</dt>
-        <dd>Das ist der zweite Eintrag.</dd>
-        <dt>CMS-Eintrag</dt>
-        <dd><CmsText name="a" /></dd>
-        <dt>Anderer CMS-Eintrag</dt>
-        <dd><CmsText name="b" /></dd>
-    </DefinitionList>
-</WithCmsText>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
     <WithCmsText
         entries={{
             a: '30918f4b-8400-42d9-8e1f-f19d27357494',
@@ -318,28 +213,11 @@ Bei mehreren Einträgen zeigt die `<WithCmsText>`-Klammer ihren Inhalt nur dann 
             <dd><CmsText name="b" /></dd>
         </DefinitionList>
     </WithCmsText>
-</BrowserWindow>
+</CodeShowcase>
 
 `<WithCmsText>`-Klammern können auch verschachtelt genutzt werden:
 
-```md
-<WithCmsText entries={{demo: "30918f4b-8400-42d9-8e1f-f19d27357494"}}>
-    <DefinitionList>
-        <dt>Hallo</dt>
-        <dd>Das ist der erste Eintrag.</dd>
-        <dt>Welt</dt>
-        <dd>Das ist der zweite Eintrag.</dd>
-        <dt>CMS-Eintrag</dt>
-        <dd><CmsText name="demo" /></dd>
-        <WithCmsText entries={{demo: "2c0c085d-388a-48cd-9871-975bab0ffda3"}}>
-            <dt>Anderer CMS-Eintrag</dt>
-            <dd><CmsText name="demo" /></dd>
-        </WithCmsText>
-    </DefinitionList>
-</WithCmsText>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
     <WithCmsText entries={{demo: "30918f4b-8400-42d9-8e1f-f19d27357494"}}>
         <DefinitionList>
             <dt>Hallo</dt>
@@ -354,7 +232,7 @@ Bei mehreren Einträgen zeigt die `<WithCmsText>`-Klammer ihren Inhalt nur dann 
             </WithCmsText>
         </DefinitionList>
     </WithCmsText>
-</BrowserWindow>
+</CodeShowcase>
 
 ## CMS-Texte hochladen
 
@@ -370,21 +248,7 @@ CMS-Texte sollten grundsätzlich als __Read Only__ hinterlegt werden, da sonst f
 
 Im Beispiel unten können die CMS-Texte `demo` und `code` hochgeladen werden und die Berechtigungen sowohl für alle CMS-Texte als auch für die einzelnen Texte angezeigt und verändert werden:
 
-```md
-<WithCmsText 
-    entries={{
-        demo: "30918f4b-8400-42d9-8e1f-f19d27357494", 
-        code: "f6b64809-e570-4a88-9a84-6c57e0240e38"
-    }}
->
-    CMS-Eintrag
-    : <CmsText name="demo" showActions/>
-    CMS-Code
-    : <CmsCode name="code" codeBlockProps={{language: 'py'}} showActions/>
-</WithCmsText>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
     <WithCmsText 
         entries={{
             demo: "30918f4b-8400-42d9-8e1f-f19d27357494", 
@@ -396,7 +260,7 @@ Im Beispiel unten können die CMS-Texte `demo` und `code` hochgeladen werden und
         CMS-Code
         : <CmsCode name="code" codeBlockProps={{language: 'py'}} showActions/>
     </WithCmsText>
-</BrowserWindow>
+</CodeShowcase>
 
 :::info[Anmerkung: `hideActions`]
 Das Berechtigungs- und Hochlade-Panel kann mit `hideActions` ausgeblendet werden.

@@ -5,7 +5,7 @@ page_id: a8063ab0-49e4-46e2-a032-f075dc3eb82b
 import React from 'react';
 import Button from '@tdev-components/shared/Button';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 import { TaskStateComponent } from '@tdev-components/documents/TaskState';
 import { TaskMeta, default as TaskStateModel } from '@tdev-models/documents/TaskState';
 import RandomState from '@tdev-models/SideEffects/RandomState';
@@ -59,34 +59,8 @@ Im obigen Beispiel wird der `transformer` immer dann neu berechnet, wenn sich di
 :::
 
 ## Beispiel
-```tsx
-const TransformedTaskState = observer(() => {
-    const doc = useFirstMainDocument('ff4e8ff4-8de8-48ea-aff8-77d198d32baf', new TaskMeta({}));
-    const userStore = useStore('userStore');
-    React.useEffect(() => {
-        if (doc) {
-            doc.registerSideEffect(
-                new RandomState(userStore)
-            );
-        }
-    }, [doc, userStore]);
-    return (
-        <>
-            <TaskStateComponent
-                taskState={doc}
-                states={['checked', 'question', 'unset', 'star', 'star-half', 'star-empty']}
-                label="Wenn sich die anzahl verbunden Clients ändert, ändert sich der State..."
-            />
-            <TaskStateComponent
-                taskState={new TaskStateModel(doc.props, doc.store)}
-                readonly
-                label="TaskState ohne Side Effect"
-            />
-        </>
-    )
-})
-```
 
+<CodeShowcase>
 export const TransformedTaskState = observer(() => {
     const doc = useFirstMainDocument('ff4e8ff4-8de8-48ea-aff8-77d198d32baf', new TaskMeta({}));
     const userStore = useStore('userStore');
@@ -113,6 +87,5 @@ export const TransformedTaskState = observer(() => {
     )
 })
 
-<BrowserWindow>
-    <TransformedTaskState />
-</BrowserWindow>
+<TransformedTaskState />
+</CodeShowcase>
