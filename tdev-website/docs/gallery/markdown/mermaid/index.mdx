@@ -2,8 +2,7 @@
 page_id: 105787ee-e4f3-4d3a-aeee-4183e914615a
 tags: [markdown, visualization, mermaid]
 ---
-
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Mermaid
 
@@ -16,7 +15,8 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 Beispiele von [https://docs.mermaidchart.com](https://docs.mermaidchart.com/mermaid-oss/syntax/flowchart.html)
 
 ### Graph
-````md
+
+<CodeShowcase lang="md">
 ```mermaid
 graph LR
     A[Square Rect] -- Link text --> B((Circle))
@@ -24,69 +24,22 @@ graph LR
     B --> D{Rhombus}
     C --> D
 ```
-````
-<BrowserWindow>
-```mermaid
-graph LR
-    A[Square Rect] -- Link text --> B((Circle))
-    A --> C(Round Rect)
-    B --> D{Rhombus}
-    C --> D
-```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Pie Chart
-````md
-```mermaid
-pie title NETFLIX
-    "Time spent looking for movie" : 90
-    "Time spent watching it" : 10
-```
-````
 
-<BrowserWindow>
+<CodeShowcase lang="md">
 ```mermaid
 pie title NETFLIX
     "Time spent looking for movie" : 90
     "Time spent watching it" : 10
 ```
-</BrowserWindow>
+</CodeShowcase>
 
 
 ### Sequence Diagram
-````md
-```mermaid
-sequenceDiagram
-    loop Daily query
-        Alice->>Bob: Hello Bob, how are you?
-        alt is sick
-            Bob->>Alice: Not so good :(
-        else is well
-            Bob->>Alice: Feeling fresh like a daisy
-        end
 
-        opt Extra response
-            Bob->>Alice: Thanks for asking
-        end
-    end
-```
-oder
-
-```mermaid
-sequenceDiagram
-    actor Alice
-    actor Bob
-    Alice->>Alice: private Farbe mischen
-    Bob->>Bob: private Farbe mischen
-    Alice->>Bob: Gemeinsame Farbe
-    Alice->>Bob: privat + gemeinsam
-    Bob->>Alice: privat + gemeinsam
-    Bob->>Bob: erhalten + privat
-    Alice->>Alice: erhalten + privat
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
 :::flex{flexBasis=220px}
 ```mermaid
 sequenceDiagram
@@ -103,7 +56,6 @@ sequenceDiagram
         end
     end
 ```
-
 ::br
 ```mermaid
 sequenceDiagram
@@ -118,10 +70,11 @@ sequenceDiagram
     Alice->>Alice: erhalten + privat
 ```
 :::
-</BrowserWindow>
+</CodeShowcase>
 
 ### Git Graph
-````md
+
+<CodeShowcase lang="md">
 ```mermaid
 gitGraph:
     commit "Ashish"
@@ -137,30 +90,11 @@ gitGraph:
     branch b2
     commit
 ```
-````
-
-<BrowserWindow>
-```mermaid
-gitGraph:
-    commit "Ashish"
-    branch newbranch
-    checkout newbranch
-    commit id:"1111"
-    commit tag:"test"
-    checkout main
-    commit type: HIGHLIGHT
-    commit
-    merge newbranch
-    commit
-    branch b2
-    commit
-```
-</BrowserWindow>
-
-````md
+</CodeShowcase>
 
 ### State Diagram
 
+<CodeShowcase lang="md">
 ```mermaid
 ---
 title: Simple sample
@@ -174,28 +108,11 @@ stateDiagram-v2
     Moving --> Crash
     Crash --> [*]
 ```
-````
-
-<BrowserWindow>
-```mermaid
----
-title: Simple sample
----
-stateDiagram-v2
-    [*] --> Still
-    Still --> [*]
-
-    Still --> Moving
-    Moving --> Still
-    Moving --> Crash
-    Crash --> [*]
-```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Gantt Chart
 
-````md
-
+<CodeShowcase lang="md">
 ```mermaid
 gantt
     title A Gantt Diagram
@@ -207,19 +124,4 @@ gantt
         Task in Another :2014-01-12, 12d
         another task    :24d
 ```
-```` 
-
-<BrowserWindow>
-
-```mermaid
-gantt
-    title A Gantt Diagram
-    dateFormat YYYY-MM-DD
-    section Section
-        A task          :a1, 2014-01-01, 30d
-        Another task    :after a1, 20d
-    section Another
-        Task in Another :2014-01-12, 12d
-        another task    :24d
-```
-</BrowserWindow>
+</CodeShowcase>

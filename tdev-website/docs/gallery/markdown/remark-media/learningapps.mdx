@@ -2,19 +2,15 @@
 page_id: 36af2cdd-3a39-4aaa-87ed-ae533f3cd350
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # ::learningapps
 
 Bindet eine [Learning-App](https://learningapps.org/) ein.
 
-```mdx
+<CodeShowcase lang="md">
 ::learningapps[https://learningapps.org/7863213]
-```
-
-<BrowserWindow>
-::learningapps[https://learningapps.org/7863213]
-</BrowserWindow>
+</CodeShowcase>
 
 ## Optionen
 `height`
@@ -28,10 +24,6 @@ Bindet eine [Learning-App](https://learningapps.org/) ein.
 css Eigenschaften
 : Es können beliebige css-Eigenschaften in Form `eigenschaft=wert` angegeben werden, die auf das iframe angewendet werden.
 
-```mdx
+<CodeShowcase lang="md">
 ::learningapps[https://learningapps.org/7863213]{width=300px height=200px border="2px solid red"}
-```
-
-<BrowserWindow>
-::learningapps[https://learningapps.org/7863213]{width=300px height=200px border="2px solid red"}
-</BrowserWindow>
+</CodeShowcase>

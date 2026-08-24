@@ -2,17 +2,13 @@
 page_id: a1037ea0-9b8c-4c32-b1cc-36e04fcdd6d8
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # PDF Viewer
 
-```md
+<CodeShowcase lang="md">
 ::pdf[./assets/lehrplan-ofi.pdf]{maxHeight=450px}
-```
-
-<BrowserWindow>
-::pdf[./assets/lehrplan-ofi.pdf]{maxHeight=450px}
-</BrowserWindow>
+</CodeShowcase>
 
 ## Optionen
 
@@ -40,47 +36,31 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 
 Es wird nur die angegebene Seite angezeigt.
 
-```md
+<CodeShowcase lang="md" windowProps={{maxHeight: '450px'}}>
 ::pdf[./assets/lehrplan-ofi.pdf]{page=3}
-```
-
-<BrowserWindow maxHeight={'450px'}>
-::pdf[./assets/lehrplan-ofi.pdf]{page=3}
-</BrowserWindow>
+</CodeShowcase>
 
 ### Fortlaufende Darstellung (`scroll`)
 Alle Seiten werden scrollbar untereinander angezeigt.
 
-```md
-::pdf[./assets/lehrplan-ofi.pdf]{scroll}
-```
 
-<BrowserWindow maxHeight={'450px'}>
+<CodeShowcase lang="md" windowProps={{maxHeight: '450px'}}>
 ::pdf[./assets/lehrplan-ofi.pdf]{scroll}
-</BrowserWindow>
+</CodeShowcase>
 
 ### Breite (`width`)
 Die Breite des Viewers, wobei die maximale Breite `100 %` beträgt.
 
-```md
+<CodeShowcase lang="md" windowProps={{maxHeight: '450px'}}>
 ::pdf[./assets/lehrplan-ofi.pdf]{width=200}
-```
-
-<BrowserWindow maxHeight={'450px'}>
-::pdf[./assets/lehrplan-ofi.pdf]{width=200}
-</BrowserWindow>
+</CodeShowcase>
 
 ### Minimale Breite (`minWidth`)
 Die minimale Breite des Viewers - falls diese Breite grösser als die Breite des Viewers ist, wird ein Scroll-Fenster angezeigt.
 
-
-```md
+<CodeShowcase lang="md" windowProps={{maxHeight: '400px'}}>
 ::pdf[./assets/lehrplan-ofi.pdf]{minWidth=2000}
-```
-
-<BrowserWindow maxHeight={'400px'}>
-::pdf[./assets/lehrplan-ofi.pdf]{minWidth=2000}
-</BrowserWindow>
+</CodeShowcase>
 
 :::warning[Abgeschnittene Inhalte]
 Bei einer grosse Mindestbreite kann es zu abgeschnittenen Inhalten kommen.
@@ -89,25 +69,17 @@ Bei einer grosse Mindestbreite kann es zu abgeschnittenen Inhalten kommen.
 ### Skalierung (`scale`)
 Ein Skalierungsfaktor der mit der aktuellen Breite multipliziert wird.
 
-```md
+<CodeShowcase lang="md" windowProps={{maxHeight: '450px'}}>
 ::pdf[./assets/lehrplan-ofi.pdf]{scale=0.5}
-```
-
-<BrowserWindow maxHeight={'450px'}>
-::pdf[./assets/lehrplan-ofi.pdf]{scale=0.5}
-</BrowserWindow>
+</CodeShowcase>
 
 
 ### Kein Download (`noDownload`)
 Das PDF kann nicht heruntergeladen werden - der Download-Button wird ausgeblendet.
 
-```md
+<CodeShowcase lang="md" windowProps={{maxHeight: '450px'}}>
 ::pdf[./assets/lehrplan-ofi.pdf]{noDownload}
-```
-
-<BrowserWindow maxHeight={'450px'}>
-::pdf[./assets/lehrplan-ofi.pdf]{noDownload}
-</BrowserWindow>
+</CodeShowcase>
 
 
 ## Installation
