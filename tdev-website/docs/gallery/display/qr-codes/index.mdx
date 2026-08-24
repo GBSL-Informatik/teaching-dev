@@ -5,50 +5,37 @@ tags:
   - editor
 ---
 
+import CodeShowcase from '@tdev-components/CodeShowcase';
 import { mdiEarth } from '@mdi/js'
 
 import QrCode from '@tdev-components/shared/QrCode'
 
-import BrowserWindow from '@tdev-components/BrowserWindow'
 
 # QR Codes
 
+export const IMP = `import QrCode from '@tdev-components/shared/QrCode';`;
+
 QR Codes sind praktisch um Inhalte wie URLs oder anderes schnell zu teilen.
 
-```mdx
-import QrCode from '@tdev-components/shared/QrCode';
-
-<QrCode text="Hello World" />
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
   <QrCode text="Hello World" />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Inhalt anzeigen
 
-```mdx
-<QrCode showText text="Hello World" />
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
   <QrCode showText text="Hello World" />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Mit Texteingabe
 
-```mdx
-<QrCode withInput size="20em" text="Hello World" />
-<QrCode withInput size="20em" text="https://teaching-dev.gbsl.website" isLink />
-```
-
-<BrowserWindow>
-  :::flex
+<CodeShowcase imports={[IMP]}>
+  :::flex{justifyContent="space-around"}
   <QrCode withInput size="20em" text="Hello World" download/>
   ::br
   <QrCode withInput size="20em" text="https://teaching-dev.gbsl.website" isLink download/>
   :::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Mit Icon
 
@@ -58,20 +45,13 @@ Es können auch MdiIcons im QR Code eingebettet werden.
 Da das Icon als SVG eingebettet wird, muss die Grösse als Zahl (in Pixel) und die Farbe als HTML-Farbe angegeben werden. CSS-Variablen oder -Grössen funktionieren nicht.
 :::
 
-```mdx
-<QrCode icon={mdiEarth} text="Hello World" />
-<QrCode icon={mdiEarth} iconSize="48" iconColor='#01f0bc' text="Hello World in Cyan" download/>
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
   :::flex{justifyContent="space-around"}
-    <QrCode icon={mdiEarth} text="Hello World" />
-
+  <QrCode icon={mdiEarth} text="Hello World" />
   ::br
-
-    <QrCode icon={mdiEarth} iconSize="48" iconColor="#01f0bc" text="Hello World in Cyan" download/>
+  <QrCode icon={mdiEarth} iconSize="48" iconColor="#01f0bc" text="Hello World in Cyan" download/>
   :::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Optionen
 

@@ -9,16 +9,19 @@ interface Props {
     children?: React.ReactNode;
     lang?: string;
     lineNumbers?: boolean;
+    noBrowserWindow?: boolean;
+    metastring?: string;
 }
 
 const CodeShowcase = observer((props: Props) => {
     const code = props.imports ? `${props.imports.join('\n')}\n\n${props.code}` : props.code;
+    const lang = props.lang === undefined ? 'tsx' : props.lang;
     return (
         <>
-            <CodeBlock language={props.lang} showLineNumbers={props.lineNumbers}>
+            <CodeBlock language={lang} showLineNumbers={props.lineNumbers} metastring={props.metastring}>
                 {code}
             </CodeBlock>
-            <BrowserWindow>{props.children}</BrowserWindow>
+            {props.noBrowserWindow ? <>{props.children}</> : <BrowserWindow>{props.children}</BrowserWindow>}
         </>
     );
 });
