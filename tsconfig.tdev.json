@@ -25,8 +25,8 @@
         }
     },
     "exclude": [
-        "./src/plugins/**/*.test.ts",
         "./docs/tdev/packages",
+        "./src/plugins/**/*.test.ts",
         "./node_modules",
         "./_node_modules",
         "./dist",

@@ -2,77 +2,53 @@
 page_id: 250b7597-b43c-4923-968b-f10fd099fc10
 ---
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Browser Window
 
-```tsx
-import BrowserWindow from '@tdev-components/BrowserWindow';
+export const IMP = `import BrowserWindow from '@tdev-components/BrowserWindow';`;
 
-<BrowserWindow>
-    Inhalte...
-</BrowserWindow>
-```
-
-<BrowserWindow>
-    Inhalte...
-</BrowserWindow>
+<CodeShowcase imports={[IMP]} noBrowserWindow>
+    <BrowserWindow>
+        Inhalte...
+    </BrowserWindow>
+</CodeShowcase>
 
 ## Optionen
 
 ### `url`
 
-```tsx
-<BrowserWindow url="https://example.com">
-    Auf der Seite [example.com](https://example.com) findet man...
-</BrowserWindow>
-```
-
-<BrowserWindow url="https://example.com">
-    Auf der Seite [example.com](https://example.com) findet man...
-</BrowserWindow>
+<CodeShowcase imports={[IMP]} noBrowserWindow>
+    <BrowserWindow url="https://example.com">
+        Auf der Seite [example.com](https://example.com) findet man...
+    </BrowserWindow>
+</CodeShowcase>
 
 ### `href`
 
 Die Adresse wird als Link dargestellt.
-
-```tsx
-<BrowserWindow href="https://example.com">
-    Auf der Seite example.com findet man...
-</BrowserWindow>
-<BrowserWindow href="https://example.com" url="👉 https://example.com">
-    Inhalte...
-</BrowserWindow>
-```
-
-<BrowserWindow href="https://example.com">
-    Auf der Seite example.com findet man...
-</BrowserWindow>
-<BrowserWindow href="https://example.com" url="👉 https://example.com">
-    Inhalte...
-</BrowserWindow>
+<CodeShowcase imports={[IMP]} noBrowserWindow>
+    <BrowserWindow href="https://example.com">
+        Auf der Seite example.com findet man...
+    </BrowserWindow>
+    <BrowserWindow href="https://example.com" url="👉 https://example.com">
+        Inhalte...
+    </BrowserWindow>
+</CodeShowcase>
 
 
 ### `minHeight` und `maxHeight`
 
-```tsx
-<BrowserWindow minHeight={200} maxHeight={400}>
-    Inhalte...
-</BrowserWindow>
-<BrowserWindow maxHeight={200}>
-    <div style={{ height: '800px', width: '70%', border: '2px solid red', borderRadius: '5px', padding: '10px' }}>
-        Vieeele Inhalte...
-    </div>
-</BrowserWindow>
-```
-
-<BrowserWindow minHeight={200} maxHeight={400}>
-    Inhalte...
-</BrowserWindow>
-<BrowserWindow maxHeight={200}>
-    <div style={{ height: '800px', width: '70%', border: '2px solid red', borderRadius: '5px', padding: '10px' }}>
-        Vieeele Inhalte...
-    </div>
-</BrowserWindow>
+<CodeShowcase imports={[IMP]} noBrowserWindow>
+    <BrowserWindow minHeight={200} maxHeight={400}>
+        Inhalte...
+    </BrowserWindow>
+    <BrowserWindow maxHeight={200}>
+        <div style={{ height: '800px', width: '70%', border: '2px solid red', borderRadius: '5px', padding: '10px' }}>
+            Vieeele Inhalte...
+        </div>
+    </BrowserWindow>
+</CodeShowcase>
 
 ### Weitere Attribute
 

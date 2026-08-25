@@ -2,57 +2,38 @@
 page_id: 9a0e84c3-778f-43e6-948c-79ea7f70a48f
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Details
 
 In Docusaurus werden html-details hübsch dargestellt. Hier ein Beispiel:
 
-```md
+<CodeShowcase lang="md">
 <details>
     <summary>
         Mehr zu meinen **Sommerferien** 🍹
     </summary>
     ☀️⛰️🏖️🏝️
 </details>
-```
-<BrowserWindow>
-<details>
-    <summary>
-        Mehr zu meinen **Sommerferien** 🍹
-    </summary>
-    ☀️⛰️🏖️🏝️
-</details>
-</BrowserWindow>
+</CodeShowcase>
 
 Um die Details mit weniger Aufwand zu erstellen, können auch `:::details`-Blöcke verwendet werden:
 
-```md
+<CodeShowcase lang="md">
 :::details[Mehr zu meinen **Sommerferien** 🍹]
 ☀️⛰️🏖️🏝️
 :::
-```
-mit demselben Resultat:
+</CodeShowcase>
 
-<BrowserWindow>
-:::details[Mehr zu meinen **Sommerferien** 🍹]
-☀️⛰️🏖️🏝️
-:::
-</BrowserWindow>
+...mit demselben Resultat.
 
 ## Optionen
 
-```md
+<CodeShowcase lang="md">
 :::details[Mehr zu meinen **Sommerferien** 🍹]{open}
 ☀️⛰️🏖️🏝️
 :::
-```
-
-<BrowserWindow>
-:::details[Mehr zu meinen **Sommerferien** 🍹]{open}
-☀️⛰️🏖️🏝️
-:::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Installation
 

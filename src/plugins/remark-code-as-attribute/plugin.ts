@@ -7,16 +7,19 @@ export interface CodeAttributes {
     meta?: string;
     lang?: string;
 }
-
-interface ComponentConfig {
+interface BaseConfig {
     name: string;
     attributeName: string;
+}
+
+interface ComponentConfig extends BaseConfig {
     codeAttributesName?: string;
     processMultiple?: boolean;
 }
 
 export interface PluginOptions {
     components: ComponentConfig[];
+    rawCodeComponents?: BaseConfig[];
 }
 
 export interface MultiCode extends CodeAttributes {
@@ -41,14 +44,16 @@ const extractCodeAttributes = (node: Code): CodeAttributes => {
 const plugin: Plugin<PluginOptions[], Root> = function plugin(
     options = { components: [] }
 ): Transformer<Root> {
-    const { components } = options;
+    const { components, rawCodeComponents } = options;
     const names = new Set(components.map((c) => c.name));
+    const rawNames = new Set(rawCodeComponents?.map((c) => c.name) ?? []);
     return async (root, file) => {
-        if (components.length < 1) {
+        if (components.length < 1 && rawNames?.size < 1) {
             return;
         }
         const { visit, SKIP, CONTINUE } = await import('unist-util-visit');
         const currentAttributes: MultiCode[] = [];
+        const rawLines = file.value.toString().split('\n');
         const transform = (
             node: InlineCode | Code,
             parent: MdxJsxFlowElement | MdxJsxTextElement,
@@ -122,6 +127,18 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(
                 currentParent = parent;
             }
             return transform(node, parent, index);
+        });
+        visit(root, 'mdxJsxFlowElement', (node) => {
+            if (rawNames.has(node.name as string)) {
+                const component = rawCodeComponents!.find((c) => c.name === node.name)!;
+                const { start, end } = node.position!;
+                const rawCodeLines = rawLines.slice(start.line, end.line - 1);
+                const indent = Math.min(
+                    ...rawCodeLines.filter((l) => l.trim()).map((line) => line.search(/\S|$/))
+                );
+                const trimmedCode = rawCodeLines.map((line) => line.slice(indent)).join('\n');
+                node.attributes.splice(0, 0, toJsxAttribute(component.attributeName, trimmedCode));
+            }
         });
     };
 };

@@ -2,13 +2,13 @@
 page_id: bab79a4c-17be-4ed3-aca9-bb4d7df92346
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Code Defbox
 
 Praktisch um Code Befehle zu definieren.
 
-````md
+<CodeShowcase lang="md">
 :::def[`forward(n)` `fd(n)`]{h=3}
 Bewegt die Turtle `n` Pixel nach vorne.
 
@@ -18,19 +18,7 @@ from turtle import forward
 forward(100)
 ```
 :::
-````
-
-<BrowserWindow>
-:::def[`forward(n)` `fd(n)`]{h=3}
-Bewegt die Turtle `n` Pixel nach vorne.
-
-```py live_py slim
-from turtle import forward
-### PRE
-forward(100)
-```
-:::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Installation
 

@@ -4,6 +4,7 @@ sidebar_position: 1
 tags: [remark]
 ---
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Bilder
 
@@ -25,53 +26,38 @@ mit einem gleichnamigen `.json`-File:
 }
 ```
 
-<BrowserWindow>
+<CodeShowcase lang="md">
 ![Streetfood Festival --width=450px](../images/street-food.jpg)
-</BrowserWindow>
+</CodeShowcase>
 
 ## Inlining der Quellenangabe
 Wenn keine Bildunterschrift angegeben wird, wird die Quellenangabe automatisch _inlined_ (also in das Bild hineinverschoben):
 
-```md
+<CodeShowcase lang="md">
 ![--width=450px](../images/street-food.jpg)
-```
-
-<BrowserWindow>
-![--width=450px](../images/street-food.jpg)
-</BrowserWindow>
+</CodeShowcase>
 
 Dieses Verhalten kann mit der Plugin-Option `inlineEmptyCaptions: false` deaktiviert werden ([siehe unten](#automatisches-inlining-deaktivieren)).
 
 Zudem kann das Inlining der Quellenangabe (und Bildunterschrift, falls vorhanden) mit der Option `--inlineCaption` auch für ein einzelnes Bild erzwingen oder verhindert werden:
 
- ```md
+<CodeShowcase lang="md">
 ![Schneebedeckte Strasse --width=450px --inlineCaption={true}](../images/snowy-street.jpg)
-```
-
-<BrowserWindow>
-![Schneebedeckte Strasse --width=450px --inlineCaption={true}](../images/snowy-street.jpg)
-</BrowserWindow>
+</CodeShowcase>
 
 ## Formatierung der Bildunterschrift
 Die Bildunterschrift kann mit gängigen Markdown-Formatierungen wie **Fett**, *Kursiv* oder `Code` versehen werden
 
-```md
-![**Fett**, *Kursiv*, :mdi[laptop]{.red}, __boxed__, `Code` und [Links](#) --width=450px](./images/fat-cursive-code.jpg)
-```
-<BrowserWindow>
+<CodeShowcase lang="md">
 ![**Fett**, *Kursiv*, :mdi[laptop]{.red}, __boxed__, `Code` und [Links](#formatierung-der-bildunterschrift) --width=450px](./images/fat-cursive-code.jpg)
-</BrowserWindow>
+</CodeShowcase>
 
 ## Markdown Inline-Bilder (`@inline`)
 Bilder mit Unterschriften (= HTML `<figure>`s mit `<figcaption>`s) dürfen nicht innerhalb von Paragraphen `<p>` vorkommen. Standardmässig werden Bilder deshalb immer in eigene Block-Elemente umgewandelt. Mit der Option `@inline` können Bilder jedoch auch als echte Inline-Elemente gerendert werden, dann aber ohne Bildunterschrift und Quellenangabe.
 
-```md
+<CodeShowcase lang="md">
 Hallo, das ist nun ein ![@inline](./images/logo.svg) Inline Bild.
-```
-
-<BrowserWindow>
-Hallo, das ist nun ein ![@inline](./images/logo.svg) Inline Bild.
-</BrowserWindow>
+</CodeShowcase>
 
 :::warning[Inline-Bilder]
 Inline-Bilder können nicht mit CSS-Styles, Bildunterschriften oder Quellenangaben versehen werden. Optionen wie `--width` oder `--height` werden zwar vom `alt` entfernt, haben jedoch keinen Einfluss auf die Ausgabe.

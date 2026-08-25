@@ -2,23 +2,17 @@
 page_id: 21531b3f-ea06-4a11-8d04-0670c4aa8e2c
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
-import MdiSelector from '@tdev-components/MdiSelector';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # MDI
 
 Das MDI-Plugin ermöglicht die Verwendung von Material Design Icons in Markdown-Dateien.
 
-```md
+<CodeShowcase lang="md">
 :mdi[skateboarding]{color=green}
 :mdi[skateboarding]{.red size=2em}
 :mdi[skateboarding]{.orange .xl}
-```
-<BrowserWindow>
-:mdi[skateboarding]{color=green}
-:mdi[skateboarding]{.red size=2em}
-:mdi[skateboarding]{.orange .xl}
-</BrowserWindow>
+</CodeShowcase>
 
 :::info
 Das MDI-Plugin importiert nur die benötigten Icons und fügt sie als `<Icon path={...} />`-Elemente in den Markdown-Code ein. Dadurch wird die Ladezeit der Seite optimiert und die Bundle-Grösse reduziert.
@@ -63,9 +57,11 @@ Das MDI-Plugin importiert nur die benötigten Icons und fügt sie als `<Icon pat
 
 [MDI Selektor](../../../mdi.mdx)
 
-<BrowserWindow maxHeight="400px" minHeight="400px">
+<CodeShowcase windowProps={{ maxHeight: '400px', minHeight: '400px' }}>
+import MdiSelector from '@tdev-components/MdiSelector';
+
 <MdiSelector filterBarTop="-1rem" />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Installation
 

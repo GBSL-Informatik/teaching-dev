@@ -2,19 +2,15 @@
 page_id: f580154f-e240-446c-bf69-491bb9e3eadb
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # ::video
 
 Fügt ein lokales Video ein.
 
-```mdx
+<CodeShowcase lang="md">
 ::video[./assets/yogi-bear.mp4]
-```
-
-<BrowserWindow>
-::video[./assets/yogi-bear.mp4]
-</BrowserWindow>
+</CodeShowcase>
 
 ## Optionen
 `autoplay`
@@ -44,10 +40,6 @@ css Eigenschaften
 : Es können beliebige css-Eigenschaften in Form `eigenschaft=wert` angegeben werden, die auf das Video angewendet werden.
 
 
-```mdx
-::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red" controls=false}
-```
-
-<BrowserWindow>
-::video[./assets/yogi-bear.mp4]{width=300px height=200px muted autoplay loop border="2px solid red" controls=false}
-</BrowserWindow>
+<CodeShowcase lang="md">
+::video[./assets/yogi-bear.mp4]{width="300px" height="200px" muted autoplay loop border="2px solid red" controls=false}
+</CodeShowcase>
