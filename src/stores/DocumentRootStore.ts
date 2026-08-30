@@ -313,6 +313,9 @@ export class DocumentRootStore extends iStore {
         if (config.load.documentRoot === 'replace' && !config.meta) {
             return;
         }
+        if (!data.documents) {
+            return;
+        }
         const defaultType = this.root.componentStore.extractDefaultDocumentType(
             data.documents.map((d) => d.type)
         );
