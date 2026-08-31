@@ -12,7 +12,7 @@ export default class ViewStore {
     readonly root: RootStore;
     stores = new Map<ViewStoreType, ViewStores>();
     @observableRef accessor permissionControl: PermissionsControlView = null as any;
-    @observableRef accessor admin: AdminView = null as any;
+    @observableRef accessor adminView: AdminView = null as any;
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
@@ -21,7 +21,7 @@ export default class ViewStore {
     constructor(store: RootStore) {
         this.root = store;
         this.permissionControl = new PermissionsControlView(store);
-        this.admin = new AdminView(store);
+        this.adminView = new AdminView(store);
     }
 
     @action

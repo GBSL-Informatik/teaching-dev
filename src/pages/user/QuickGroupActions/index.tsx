@@ -41,9 +41,9 @@ const GroupList = observer((props: Props) => {
                                 <Link
                                     to={url}
                                     onClick={action((e) => {
-                                        viewStore.admin.setGroupSearchFilter(group.name);
+                                        viewStore.adminView.setGroupSearchFilter(group.name);
                                         [...group.parentIds, group.id].forEach((id) => {
-                                            viewStore.admin.setGroupOpen(id, true);
+                                            viewStore.adminView.setGroupOpen(id, true);
                                         });
                                     })}
                                 >

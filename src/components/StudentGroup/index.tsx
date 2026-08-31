@@ -270,7 +270,7 @@ const StudentGroup = observer((props: Props) => {
                                     value={group.parentId || ''}
                                     onChange={(e) => {
                                         group.setParentId(e.target.value || null);
-                                        viewStore.admin.setGroupOpen(group.id, true);
+                                        viewStore.adminView.setGroupOpen(group.id, true);
                                     }}
                                 >
                                     <option value="">Keine</option>
@@ -493,7 +493,7 @@ const StudentGroup = observer((props: Props) => {
                                 <span className={clsx('badge badge--primary')}>{group.children.length}</span>
                             </summary>
                         }
-                        open={viewStore.admin.openGroupIds.has(group.id) ?? undefined}
+                        open={viewStore.adminView.openGroupIds.has(group.id) ?? undefined}
                     >
                         <div>
                             {group.children.map((child) => (
