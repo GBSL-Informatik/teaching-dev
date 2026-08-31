@@ -18,7 +18,7 @@ import DbImport from '@tdev-components/utils/DbActions/DbImport';
 import DbExport from '@tdev-components/utils/DbActions/DbExport';
 import DbDestroy from '@tdev-components/utils/DbActions/DbDestroy';
 import { IfmColors } from '@tdev-components/shared/Colors';
-import QuickGroupActions from './QuickGroupActions';
+import QuickGroupOverview from './QuickGroupOverview';
 
 const { OFFLINE_API, tdevConfig } = customFields;
 
@@ -90,7 +90,7 @@ const LocalDbView = observer(() => {
                             Debug-View: Nur in <code>development</code>-Angezeigt
                         </dd>
                         <dd>
-                            <QuickGroupActions />
+                            <QuickGroupOverview />
                         </dd>
                     </>
                 )}

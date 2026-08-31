@@ -62,7 +62,7 @@ const GroupList = observer((props: Props) => {
     );
 });
 
-const QuickGroupActions = observer(() => {
+const QuickGroupOverview = observer(() => {
     const [showHidden, setShowHidden] = React.useState(false);
     const groupStore = useStore('studentGroupStore');
     const hasHidden = groupStore.studentGroups.some((group) => !group.isActive);
@@ -85,4 +85,4 @@ const QuickGroupActions = observer(() => {
     );
 });
 
-export default QuickGroupActions;
+export default QuickGroupOverview;
