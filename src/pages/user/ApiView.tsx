@@ -111,7 +111,9 @@ const ApiView = observer(() => {
                 {viewedUser && !userStore.isUserSwitched && (
                     <>
                         <dt>In Gruppen</dt>
-                        <QuickGroupOverview />
+                        <dd>
+                            <QuickGroupOverview />
+                        </dd>
                     </>
                 )}
             </DefinitionList>
