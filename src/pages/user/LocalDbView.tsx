@@ -18,6 +18,7 @@ import DbImport from '@tdev-components/utils/DbActions/DbImport';
 import DbExport from '@tdev-components/utils/DbActions/DbExport';
 import DbDestroy from '@tdev-components/utils/DbActions/DbDestroy';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import QuickGroupOverview from './QuickGroupOverview';
 
 const { OFFLINE_API, tdevConfig } = customFields;
 
@@ -82,6 +83,17 @@ const LocalDbView = observer(() => {
                         {sessionStore.apiMode}
                     </Badge>
                 </dd>
+                {process.env.NODE_ENV === 'development' && (
+                    <>
+                        <dt>In Gruppen</dt>
+                        <dd>
+                            Debug-View: Nur in <code>development</code>-Angezeigt
+                        </dd>
+                        <dd>
+                            <QuickGroupOverview />
+                        </dd>
+                    </>
+                )}
             </DefinitionList>
             <h2>Account</h2>
             <DefinitionList>

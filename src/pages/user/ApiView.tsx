@@ -18,6 +18,7 @@ import { SIZE_M, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { authClient } from '@tdev/auth-client';
 import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
 import customFields from '@tdev-components/utils/customFields';
+import QuickGroupOverview from './QuickGroupOverview';
 
 const { OFFLINE_API } = customFields;
 
@@ -110,25 +111,9 @@ const ApiView = observer(() => {
                 {viewedUser && !userStore.isUserSwitched && (
                     <>
                         <dt>In Gruppen</dt>
-                        {groupStore.studentGroups.map((group) => {
-                            return (
-                                <React.Fragment key={group.id}>
-                                    <dt className={clsx(styles.studentGroup)}>{group.name}</dt>
-                                    <dd className={clsx(styles.reloadAction)}>
-                                        <span
-                                            className={clsx(
-                                                styles.connectedClients,
-                                                'badge',
-                                                'badge--primary'
-                                            )}
-                                        >
-                                            {socketStore.connectedClients.get(group.id)}
-                                        </span>
-                                        <NavReloadRequest roomIds={[group.id]} />
-                                    </dd>
-                                </React.Fragment>
-                            );
-                        })}
+                        <dd>
+                            <QuickGroupOverview />
+                        </dd>
                     </>
                 )}
             </DefinitionList>
