@@ -1,0 +1,22 @@
+.quickGroupActions {
+    --ifm-list-left-padding: 0.5em;
+    .item {
+        list-style: none;
+        position: relative;
+        padding-left: 2em;
+        .count {
+            position: absolute;
+            top: 0.25em;
+            left: -0.5em;
+            min-width: 32px;
+            line-height: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .name {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+    }
+}

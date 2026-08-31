@@ -54,6 +54,7 @@ const StudentGroup = observer((props: Props) => {
     const adminStore = useStore('adminStore');
     const userStore = useStore('userStore');
     const groupStore = useStore('studentGroupStore');
+    const viewStore = useStore('viewStore');
     const group = props.studentGroup;
     const isAdmin = group.isGroupAdmin;
     React.useEffect(() => {
@@ -269,6 +270,7 @@ const StudentGroup = observer((props: Props) => {
                                     value={group.parentId || ''}
                                     onChange={(e) => {
                                         group.setParentId(e.target.value || null);
+                                        viewStore.admin.setGroupOpen(group.id, true);
                                     }}
                                 >
                                     <option value="">Keine</option>
@@ -491,6 +493,7 @@ const StudentGroup = observer((props: Props) => {
                                 <span className={clsx('badge badge--primary')}>{group.children.length}</span>
                             </summary>
                         }
+                        open={viewStore.admin.openGroupIds.has(group.id) ?? undefined}
                     >
                         <div>
                             {group.children.map((child) => (
