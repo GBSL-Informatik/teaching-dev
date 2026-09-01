@@ -2,6 +2,7 @@ import { mdiEmailLock, mdiGithub, mdiMicrosoft } from '@mdi/js';
 import api from './base';
 import { AxiosPromise } from 'axios';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import { Session as BetterAuthSession } from 'better-auth';
 
 export enum Role {
     STUDENT = 'student',
@@ -45,6 +46,8 @@ export const AuthProviderColor = {
     [AuthProvider.GITHUB]: IfmColors.black
 };
 
+export type Session = Omit<BetterAuthSession, 'userId' | 'token'>;
+
 export type User = {
     id: string;
     email: string;
@@ -53,6 +56,7 @@ export type User = {
     lastName: string;
     role: Role;
     authProviders?: AuthProvider[];
+    sessions?: Session[];
     banned?: boolean;
     banReason?: string;
     banExpires?: Date;

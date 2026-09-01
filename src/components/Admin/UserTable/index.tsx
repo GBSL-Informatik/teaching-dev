@@ -19,7 +19,9 @@ type SortColumn =
     | 'linkedAccounts'
     | 'createdAt'
     | 'updatedAt'
-    | 'groups'
+    | 'authProviderNames'
+    | 'lastSeen'
+    | 'studentGroupNames'
     | 'id'
     | 'connectedClients';
 interface Props {
@@ -137,7 +139,15 @@ const UserTable = observer((props: Props) => {
                                     onClick={() => setSortColumn('lastName')}
                                 />
                             </th>
-                            <th>Auth Provider</th>
+                            <th>
+                                <Button
+                                    size={SIZE_S}
+                                    iconSide="left"
+                                    icon={sortColumn === 'authProviderNames' && icon}
+                                    text="Auth Provider"
+                                    onClick={() => setSortColumn('authProviderNames')}
+                                />
+                            </th>
                             <th>
                                 <Button
                                     size={SIZE_S}
@@ -160,9 +170,18 @@ const UserTable = observer((props: Props) => {
                                 <Button
                                     size={SIZE_S}
                                     iconSide="left"
-                                    icon={sortColumn === 'groups' && icon}
+                                    icon={sortColumn === 'lastSeen' && icon}
+                                    text="Letztes Login"
+                                    onClick={() => setSortColumn('lastSeen')}
+                                />
+                            </th>
+                            <th>
+                                <Button
+                                    size={SIZE_S}
+                                    iconSide="left"
+                                    icon={sortColumn === 'studentGroupNames' && icon}
                                     text="Lerngruppen"
-                                    onClick={() => setSortColumn('groups')}
+                                    onClick={() => setSortColumn('studentGroupNames')}
                                 />
                             </th>
                             <th>
@@ -177,7 +196,11 @@ const UserTable = observer((props: Props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {_.orderBy(userStore.managedUsers, [sortColumn], [sortDirection])
+                        {_.orderBy(
+                            userStore.managedUsers,
+                            [(user) => (user as any)[sortColumn] === undefined, sortColumn],
+                            ['asc', sortDirection]
+                        )
                             .filter((user) => searchRegex.test(user.searchTerm))
                             .slice(0, props.showAll ? userStore.managedUsers.length : itemsShown)
                             .map((user, idx) => {
