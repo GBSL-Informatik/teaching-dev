@@ -96,12 +96,20 @@ export default class User {
     }
 
     @computed
-    get lastSeen() {
+    get lastSession() {
         if (this.sessions.length === 0) {
             return undefined;
         }
         const sessions = orderBy(this.sessions, ['updatedAt'], ['desc']);
-        return new Date(sessions[0].updatedAt);
+        return sessions[0];
+    }
+
+    @computed
+    get lastSeen() {
+        if (!this.lastSession) {
+            return undefined;
+        }
+        return new Date(this.lastSession.updatedAt);
     }
 
     @computed
