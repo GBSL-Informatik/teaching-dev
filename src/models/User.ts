@@ -1,6 +1,7 @@
 import { action, computed, observable } from 'mobx';
-import { AuthProvider, Role, RoleAccessLevel, User as UserProps } from '@tdev-api/user';
+import { AuthProvider, Role, RoleAccessLevel, Session, User as UserProps } from '@tdev-api/user';
 import { UserStore } from '@tdev-stores/UserStore';
+import { orderBy } from 'es-toolkit/array';
 
 export default class User {
     readonly store: UserStore;
@@ -12,6 +13,8 @@ export default class User {
     readonly firstName: string;
     readonly lastName: string;
     readonly banned?: boolean;
+    readonly sessions: Session[];
+
     @observable accessor banReason: string | undefined;
     @observable accessor banExpires: Date | undefined;
 
@@ -31,6 +34,7 @@ export default class User {
         this.banned = props.banned;
         this.banReason = props.banReason;
         this.banExpires = props.banExpires ? new Date(props.banExpires) : undefined;
+        this.sessions = props.sessions || [];
         this.createdAt = new Date(props.createdAt);
         this.updatedAt = new Date(props.updatedAt);
     }
@@ -92,6 +96,23 @@ export default class User {
     }
 
     @computed
+    get lastSession() {
+        if (this.sessions.length === 0) {
+            return undefined;
+        }
+        const sessions = orderBy(this.sessions, ['updatedAt'], ['desc']);
+        return sessions[0];
+    }
+
+    @computed
+    get lastSeen() {
+        if (!this.lastSession) {
+            return undefined;
+        }
+        return new Date(this.lastSession.updatedAt);
+    }
+
+    @computed
     get searchTerm(): string {
         return `${this.firstName} ${this.lastName} ${this.email}`;
     }
@@ -123,5 +144,17 @@ export default class User {
     @computed
     get hasEmailPasswordAuth() {
         return this.authProviders.includes(AuthProvider.CREDENTIAL);
+    }
+
+    @computed
+    get authProviderNames() {
+        const names = [...this.authProviders].sort();
+        return names.join(', ');
+    }
+
+    @computed
+    get studentGroupNames() {
+        const names = this.studentGroups.map((group) => group.name).sort();
+        return names.join(', ');
     }
 }

@@ -10,7 +10,7 @@ import { AuthProviderColor, AuthProviderIcons, RoleColors, RoleNames } from '@td
 import { useStore } from '@tdev-hooks/useStore';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Icon from '@mdi/react';
-import { mdiAccountCancel, mdiAccountEdit, mdiCloudQuestion, mdiDatabaseExport } from '@mdi/js';
+import { mdiAccountCancel, mdiAccountEdit, mdiCloudQuestion } from '@mdi/js';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import Button from '@tdev-components/shared/Button';
 import Popup from 'reactjs-popup';
@@ -20,6 +20,8 @@ import Badge from '@tdev-components/shared/Badge';
 import NavReloadRequest from '../ActionRequest/NavReloadRequest';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import ExportModal from '../ExportPanel/ExportModal';
+import Card from '@tdev-components/shared/Card';
+import DefinitionList from '@tdev-components/DefinitionList';
 
 interface Props {
     user: UserModel;
@@ -28,7 +30,6 @@ interface Props {
 const UserTableRow = observer((props: Props) => {
     const { user } = props;
     const userStore = useStore('userStore');
-    const adminStore = useStore('adminStore');
     const { current } = userStore;
     const ref = React.useRef<PopupActions>(null);
     if (!current) {
@@ -86,8 +87,41 @@ const UserTableRow = observer((props: Props) => {
                     />
                 ))}
             </td>
-            <td>{formatDateTime(user.createdAt)}</td>
-            <td>{formatDateTime(user.updatedAt)}</td>
+            <td>{formatDateTime(user.createdAt, true)}</td>
+            <td>{formatDateTime(user.updatedAt, true)}</td>
+            <td>
+                {user.lastSeen ? (
+                    <Popup
+                        trigger={
+                            <span>
+                                <Badge>{formatDateTime(user.lastSeen, true)}</Badge>
+                            </span>
+                        }
+                        on="hover"
+                        position={['top left', 'left center']}
+                        keepTooltipInside="#__docusaurus"
+                        mouseEnterDelay={200}
+                        repositionOnResize
+                    >
+                        <Card>
+                            <DefinitionList small>
+                                <dt>Expires</dt>
+                                <dd>{formatDateTime(user.lastSession!.expiresAt, true)}</dd>
+                                <dt>IP</dt>
+                                <dd>{user.lastSession?.ipAddress ?? '-'}</dd>
+                                <dt>Client</dt>
+                                <dd>
+                                    <pre>
+                                        <code>
+                                            {(user.lastSession?.userAgent ?? '-').split(') ').join(')\n')}
+                                        </code>
+                                    </pre>
+                                </dd>
+                            </DefinitionList>
+                        </Card>
+                    </Popup>
+                ) : null}
+            </td>
             <td className={clsx(styles.limitWidth)}>
                 {user.studentGroups.map((group, idx) => (
                     <span className={clsx('badge badge--primary', styles.groupBadge)} key={idx}>
