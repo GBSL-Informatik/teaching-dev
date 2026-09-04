@@ -9,6 +9,7 @@
     "scripts": {
         "docusaurus": "docusaurus",
         "start": "concurrently --raw --kill-others 'PACKAGE_SRC=packages PACKAGE_DEST=docs/Packages docusaurus start' 'sleep 1s && tsx updateSync/packageDocsSync/watch.ts --src packages --dest tdev-website/docs/packages'",
+        "stackblitz": "YARN_IGNORE_ENGINES=true PACKAGE_SRC=packages PACKAGE_DEST=docs/Packages docusaurus start",
         "prebuild": "yarn workspace @tdev/material-sync sync && tsx updateSync/packageDocsSync/preBuild.ts --src packages --dest tdev-website/docs/packages",
         "build": "docusaurus build",
         "swizzle": "docusaurus swizzle",

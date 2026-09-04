@@ -1,4 +1,5 @@
 import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/plugin-dynamic-routes';
+import stackblitzRspackTarget from '../plugins/plugin-stackblitz-rspack-target';
 import aliasConfigurationPlugin from '../plugins/plugin-alias-configuration';
 import type { PluginConfig } from '@docusaurus/types';
 import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
@@ -20,6 +21,8 @@ export const dynamicRouterPluginConfig: (siteConfig: SiteConfig) => PluginConfig
         ]
     } satisfies DynamicRouteConfig
 ];
+
+export const stackblitzRspackTargetPluginConfig: () => PluginConfig = () => stackblitzRspackTarget;
 
 export const rsDoctorPluginConfig: PluginConfig = process.env.RSDOCTOR === 'true' && [
     'rsdoctor',
