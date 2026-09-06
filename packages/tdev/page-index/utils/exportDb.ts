@@ -7,8 +7,8 @@ const _cachedImport = {
     getDocumentRoots: null as Statement | null
 };
 const requireDb = async () => {
-    if (process.env.STACKBLITZ === 'true') {
-        // Stackblitz does not support better-sqlite3, so we skip the database export
+    if (process.env.SHELL === '/bin/jsh') {
+        // WebContainers/Stackblitz does not support better-sqlite3, so we skip the database export
         return Promise.resolve();
     }
     const db = (await import('./db')).default;

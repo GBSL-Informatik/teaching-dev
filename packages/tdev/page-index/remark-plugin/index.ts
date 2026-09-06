@@ -19,7 +19,7 @@ const _cachedImport: Partial<{
 }> = {};
 
 const requireDb = async (): Promise<typeof _cachedImport> => {
-    if (process.env.STACKBLITZ === 'true') {
+    if (process.env.SHELL === '/bin/jsh') {
         return Promise.resolve({});
     }
     if (_cachedImport.cleanupPage && _cachedImport.insertDocRoot) {

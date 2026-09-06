@@ -1,7 +1,7 @@
 import { PluginModule } from '@docusaurus/types';
 
 const stackblitzRspackTarget: PluginModule = (context, options) => {
-    if (process.env.STACKBLITZ === 'true') {
+    if (process.env.SHELL === '/bin/jsh') {
         return {
             name: 'webpack-target-fix-plugin',
             configureWebpack() {
