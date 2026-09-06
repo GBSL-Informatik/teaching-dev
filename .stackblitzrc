@@ -2,12 +2,12 @@
   "installDependencies": true,
   "startCommand": "yarn run docusaurus start",
   "env": {
-    "SITE_CONFIG_PATH": "tdev-website/siteConfig",
     "OFFLINE_API": "indexedDB",
     "NODE_ENV": "development",
     "STACKBLITZ": "true",
     "YARN_IGNORE_ENGINES": "true",
     "PACKAGE_SRC": "packages",
+    "SITE_CONFIG_PATH": "tdev-website/siteConfig",
     "PACKAGE_DEST": "docs/Packages"
   }
 }
