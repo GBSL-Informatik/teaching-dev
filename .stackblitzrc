@@ -1,9 +1,12 @@
 {
   "installDependencies": true,
-  "startCommand": "yarn run stackblitz",
+  "startCommand": "yarn run docusaurus start",
   "env": {
     "NODE_ENV": "development",
     "OFFLINE_API": "indexedDB",
-    "STACKBLITZ": "true"
+    "STACKBLITZ": "true",
+    "YARN_IGNORE_ENGINES": "true",
+    "PACKAGE_SRC": "packages",
+    "PACKAGE_DEST": "docs/Packages"
   }
 }
