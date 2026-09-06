@@ -1,6 +1,6 @@
 {
   "installDependencies": true,
-  "startCommand": "yarn run start",
+  "startCommand": "yarn run stackblitz",
   "env": {
     "NODE_ENV": "development",
     "OFFLINE_API": "indexedDB",

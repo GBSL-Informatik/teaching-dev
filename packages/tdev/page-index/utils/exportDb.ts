@@ -3,22 +3,21 @@ import { pageIndexPath } from './options';
 import { PageIndex } from '..';
 import type { Database, Statement } from 'better-sqlite3';
 
-let db: Database | null = null;
-let getDocumentRoots: Statement | null = null;
+const _cachedImport = {
+    getDocumentRoots: null as Statement | null
+};
 const requireDb = async () => {
     if (process.env.STACKBLITZ === 'true') {
         // Stackblitz does not support better-sqlite3, so we skip the database export
-        return;
+        return Promise.resolve();
     }
-    if (!db) {
-        db = (await import('./db')).default;
-    }
-    if (!getDocumentRoots) {
-        getDocumentRoots = db.prepare('SELECT * FROM document_roots ORDER BY path ASC, position ASC');
-    }
+    const db = (await import('./db')).default;
+    const getDocumentRoots = db.prepare('SELECT * FROM document_roots ORDER BY path ASC, position ASC');
+    _cachedImport.getDocumentRoots = getDocumentRoots;
 };
 
 export const getContent = () => {
+    const { getDocumentRoots } = _cachedImport;
     if (!getDocumentRoots) {
         return { documentRoots: [] as PageIndex[] };
     }
