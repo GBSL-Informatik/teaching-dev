@@ -1,6 +1,6 @@
 # Teaching Dev
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github/GBSL-Informatik/teaching-dev)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/GBSL-Informatik/teaching-dev)
 
 Diese Seite basiert auf [Docusaurus](https://docusaurus.io/), einem modernen statischen Website-Generator. Sie fügt viele hilfreiche Funktionalität für den Einsatz im Unterricht hinzu.
 

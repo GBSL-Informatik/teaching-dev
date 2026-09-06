@@ -2,8 +2,9 @@
   "installDependencies": true,
   "startCommand": "yarn run docusaurus start",
   "env": {
-    "NODE_ENV": "development",
+    "SITE_CONFIG_PATH": "tdev-website/siteConfig",
     "OFFLINE_API": "indexedDB",
+    "NODE_ENV": "development",
     "STACKBLITZ": "true",
     "YARN_IGNORE_ENGINES": "true",
     "PACKAGE_SRC": "packages",
