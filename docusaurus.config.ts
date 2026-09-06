@@ -29,6 +29,7 @@ import { withSiteConfig } from './src/siteConfig/withSiteConfig';
 import {
   sassPluginConfig,
   dynamicRouterPluginConfig,
+  stackblitzRspackTargetPluginConfig,
   rsDoctorPluginConfig,
   sentryPluginConfig,
   socketIoNoDepWarningsPluginConfig,
@@ -381,6 +382,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
       plugins: [
         sassPluginConfig,
         dynamicRouterPluginConfig(siteConfig),
+        stackblitzRspackTargetPluginConfig(),
         rsDoctorPluginConfig,
         [
           aliasConfigurationPlugin,

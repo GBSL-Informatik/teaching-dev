@@ -1,9 +1,8 @@
-# Website
+# Teaching Dev
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/GBSL-Informatik/teaching-dev)
 
-> [!NOTE]
-> Compatible with @docusaurus/faster (rspack and swc). 
+Diese Seite basiert auf [Docusaurus](https://docusaurus.io/), einem modernen statischen Website-Generator. Sie fügt viele hilfreiche Funktionalität für den Einsatz im Unterricht hinzu.
 
 ## TDEV-Website
 

@@ -2,37 +2,55 @@ import type { Plugin, Transformer } from 'unified';
 import type { Code, Root } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import path from 'path';
-import db from '../utils/db';
 import { exportDB } from '../utils/exportDb';
 import { debounce } from 'es-toolkit/function';
 import { tdevRoot } from '../utils/options';
 import { TypeModelMapping } from '@tdev-api/document';
+import type { Statement } from 'better-sqlite3';
 
 const TdevRoot = `${tdevRoot === '' ? '' : '/'}${tdevRoot}`;
 const TdevRootRegex = new RegExp(`^${TdevRoot}`);
 const projectRoot = process.cwd();
 const isDev = process.env.NODE_ENV !== 'production';
 
-const insertDocRoot = db.prepare(
-    `INSERT INTO document_roots (
-        id, 
-        type, 
-        page_id,
-        path,
-        position
-    ) VALUES (
-        @id,
-        @type,
-        @page_id,
-        @path,
-        @position
-    ) ON CONFLICT(id, path) DO NOTHING`
-);
+const _cachedImport: Partial<{
+    insertDocRoot: Statement;
+    cleanupPage: Statement;
+}> = {};
 
-const cleanupPage = db.prepare(
-    `DELETE FROM document_roots
-     WHERE path = ? AND page_id = ?;`
-);
+const requireDb = async (): Promise<typeof _cachedImport> => {
+    if (process.env.STACKBLITZ === 'true') {
+        return Promise.resolve({});
+    }
+    if (_cachedImport.cleanupPage && _cachedImport.insertDocRoot) {
+        return Promise.resolve(_cachedImport);
+    }
+    const db = (await import('../utils/db')).default;
+
+    const insertDocRoot = db.prepare(
+        `INSERT INTO document_roots (
+            id, 
+            type, 
+            page_id,
+            path,
+            position
+        ) VALUES (
+            @id,
+            @type,
+            @page_id,
+            @path,
+            @position
+        ) ON CONFLICT(id, path) DO NOTHING`
+    );
+
+    const cleanupPage = db.prepare(
+        `DELETE FROM document_roots
+         WHERE path = ? AND page_id = ?;`
+    );
+    _cachedImport.insertDocRoot = insertDocRoot;
+    _cachedImport.cleanupPage = cleanupPage;
+    return _cachedImport;
+};
 
 interface JsxConfig {
     /**
@@ -67,6 +85,10 @@ const remarkPlugin: Plugin<PluginOptions[], Root> = function plugin(
     const { components } = options;
     const mdxJsxComponents = new Map<string, JsxConfig>(components.map((c) => [c.name, c]));
     return async (root, file) => {
+        const { insertDocRoot, cleanupPage } = await requireDb();
+        if (!insertDocRoot || !cleanupPage) {
+            return;
+        }
         const { page_id } = (file.data?.frontMatter || {}) as { page_id?: string };
         if (components.length < 1 || !page_id) {
             return;
