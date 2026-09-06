@@ -22,7 +22,7 @@ const requireDb = async (): Promise<typeof _cachedImport> => {
     if (process.env.STACKBLITZ === 'true') {
         return Promise.resolve({});
     }
-    if (!_cachedImport.cleanupPage || !_cachedImport.insertDocRoot) {
+    if (_cachedImport.cleanupPage && _cachedImport.insertDocRoot) {
         return Promise.resolve(_cachedImport);
     }
     const db = (await import('../utils/db')).default;

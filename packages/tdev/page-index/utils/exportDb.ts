@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { pageIndexPath } from './options';
 import { PageIndex } from '..';
-import type { Database, Statement } from 'better-sqlite3';
+import type { Statement } from 'better-sqlite3';
 
 const _cachedImport = {
     getDocumentRoots: null as Statement | null
@@ -16,7 +16,7 @@ const requireDb = async () => {
     _cachedImport.getDocumentRoots = getDocumentRoots;
 };
 
-export const getContent = () => {
+const getContent = () => {
     const { getDocumentRoots } = _cachedImport;
     if (!getDocumentRoots) {
         return { documentRoots: [] as PageIndex[] };
