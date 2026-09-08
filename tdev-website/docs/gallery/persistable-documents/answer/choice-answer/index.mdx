@@ -481,3 +481,34 @@ Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder ein
 - [ ] Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
 - [ ] Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
 - [ ] Für Prüfungen könnte es nützlich sein, das Konzept des Quiz zu erweitern, um nicht nur `ChoiceAnswer`-Fragen zu unterstützen, sondern auch andere Fragetypen wie z.B. `TextAnswer` oder `CodeAnswer`. So könnte eine Prüfung aus einem einzigen Quiz bestehen, in dem auch Fragen vorkommen, die nicht automatisch korrigiert werden können. Der Vorteil dabei wäre, dass so auch diese Fragen in die Randomisierung der Reihenfolge mit einbezogen werden könnten. Zudem könnte ein Report (PDF, druckbar) generiert werden, der die Ergebnisse aller automatisch korrigierten Fragen enthält, und für das Feedback zu den manuell zu korrigierenden Fragen einen Platzhalter lässt.
+
+## Testing Only
+Dummy Quiz zum Test des Fixes.
+
+<Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" id="e4fd5d0b-f5b0-4722-8452-ca78f1de0aa1" >
+    <ChoiceAnswer correct={[1]}>
+        1. Diese Antwort ist richtig.
+        2. Diese Antwort ist falsch.
+        3. Diese Antwort ist Blödsinn.
+        4. Diese Antwort ist nicht korrekt.
+    </ChoiceAnswer>
+    <ChoiceAnswer correct={[2]}>
+        Wie macht die Kuh?
+
+        1. Wuff.
+        2. Muh.
+        3. Miau.
+        4. Roar.
+    </ChoiceAnswer>
+    <ChoiceAnswer correct={[2, 4]} multiple scoring={multipleChoicePoints(2, 1, false)}>
+        Wähle alle Farben an.
+
+        1. Hund
+        2. blau
+        3. Zwanzig
+        4. grün
+    </ChoiceAnswer>
+    <TrueFalseAnswer correct={false}>
+        Die Sonne ist ein Planet.
+    </TrueFalseAnswer>
+</Quiz>
