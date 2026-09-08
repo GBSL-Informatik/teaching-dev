@@ -300,6 +300,9 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (this.inQuiz && this.quiz) {
             // ensure the current document is unique for the given qid and authorId
             if (!this.quiz.questionIds.has(this.qid!)) {
+                console.log(
+                    `[iAssessable] Document with qid ${this.qid} is not registered in quiz ${this.quiz.id}. Destroying it.`
+                );
                 this._destroy();
             } else {
                 // check for duplicates
