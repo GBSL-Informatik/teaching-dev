@@ -69,12 +69,9 @@ export class RootStore {
     }
 
     @action
-    cleanup() {
-        /**
-         * could be probably ignored since the page gets reloaded on logout?
-         */
-        console.log('cleanup data stores');
-        this.sessionStore.setIsLoggedIn(false);
+    cleanup(sessionStatusArbitrary: boolean) {
+        console.log('cleanup data stores; session status arbitrary:', sessionStatusArbitrary);
+        this.sessionStore.cleanup(sessionStatusArbitrary);
         this.userStore.cleanup();
         this.socketStore.cleanup();
         this.studentGroupStore.cleanup();

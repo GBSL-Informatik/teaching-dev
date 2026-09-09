@@ -65,17 +65,19 @@ const ExposeRootStoreToWindow = observer(() => {
 });
 
 const Authentication = observer(() => {
-    const { data: session } = authClient.useSession();
+    const { data: session, isPending, error } = authClient.useSession();
     React.useEffect(() => {
         if (!rootStore) {
             return;
         }
+
         if (session?.user) {
             rootStore.load(session.user.id);
         } else {
-            rootStore.cleanup();
+            const sessionStatusArbitrary = isPending || !!error;
+            rootStore.cleanup(sessionStatusArbitrary);
         }
-    }, [session?.user, rootStore]);
+    }, [session?.user, isPending, error, rootStore]);
     return null;
 });
 

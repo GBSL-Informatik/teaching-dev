@@ -200,7 +200,11 @@ abstract class iDocument<Type extends DocumentType> {
      */
     @computed
     get isAuthoritative() {
-        // TODO: If dummy: Check verified logout.
+        if (this.isDummy) {
+            // Dummy documents are authoritative as long as we can guarantee that the user is not logged in.
+            const sessionStore = this.store.root.sessionStore;
+            return !sessionStore.isLoggedIn && !sessionStore.sessionStatusArbitrary;
+        }
         // TODO: Does the source remain API after local edits?
         // TODO: Can we guarantee that a source=local can only happen after API has confirmed non-existence?
         return true;
