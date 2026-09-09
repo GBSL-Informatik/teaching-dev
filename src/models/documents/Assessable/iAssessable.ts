@@ -298,7 +298,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
             return;
         }
         if (this.inQuiz && this.quiz) {
-            if (this.quiz.questionIds.size === 0) {
+            if (this.quiz.questionCount === 0) {
                 // A real quiz always has at least one questionId. If this is empty, the quiz hasn't loaded yet
                 // and we shouldn't delete anything.
                 return;
