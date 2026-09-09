@@ -6,7 +6,6 @@ import React from 'react';
 import { AssessableMeta, ExpandedOption } from './AssessableMeta';
 import Quiz from './Quiz';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import { mdiTooltipQuestionOutline } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 
 export enum Correctness {
@@ -154,7 +153,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (this.type === 'quiz' || !this.inQuiz) {
             return undefined;
         }
-        const quiz = this.root?.allDocuments.find(
+        const quiz = this.root?.allAuthoritativeDocuments.find(
             (doc) => doc.authorId === this.authorId && doc.type === 'quiz'
         );
         return quiz as Quiz | undefined;
@@ -298,9 +297,10 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
             return;
         }
         if (this.inQuiz && this.quiz) {
-            if (this.quiz.questionCount === 0) {
-                // A real quiz always has at least one questionId. If this is empty, the quiz hasn't loaded yet
-                // and we shouldn't delete anything.
+            if (!this.quiz.isAuthoritative) {
+                console.error(
+                    `iAssessable with documentRootId='${this.root?.id}' encountered a non-authoritative quiz (id='${this.quiz.id}'). This should not happen.`
+                );
                 return;
             }
             // ensure the current document is unique for the given qid and authorId

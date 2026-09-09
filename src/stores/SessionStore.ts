@@ -9,6 +9,7 @@ export class SessionStore extends iStore<'checkLogin'> {
 
     @observable accessor initialized = false;
     @observable accessor isLoggedIn = false;
+    @observable accessor sessionStatusArbitrary = true;
 
     @observable accessor currentUserId: string | undefined;
     @observable accessor storageSyncInitialized = false;
@@ -23,12 +24,29 @@ export class SessionStore extends iStore<'checkLogin'> {
 
     @action
     setCurrentUserId(userId: string | undefined) {
+        if (!userId) {
+            this.sessionStatusArbitrary = true;
+        } else {
+            this.sessionStatusArbitrary = false;
+        }
         this.currentUserId = userId;
     }
 
     @action
     setIsLoggedIn(loggedIn: boolean) {
         this.isLoggedIn = loggedIn;
+    }
+
+    @action
+    cleanup(sessionStatusArbitrary: boolean) {
+        this.sessionStatusArbitrary = sessionStatusArbitrary;
+        this.isLoggedIn = false;
+        this.currentUserId = undefined;
+    }
+
+    @action
+    markSessionStatusArbitrary() {
+        this.sessionStatusArbitrary = true;
     }
 
     get apiMode(): 'indexedDB' | 'memory' | 'api' {

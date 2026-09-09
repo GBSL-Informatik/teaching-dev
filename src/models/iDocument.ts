@@ -178,9 +178,44 @@ abstract class iDocument<Type extends DocumentType> {
         return !!this.root && this.root.isLoaded;
     }
 
+    /**
+     * Invariant. If true, this document represents the ground truth of what its persisted data should look like.
+     *
+     * A document is authoritative, if and only if one of the following are true:
+     * - This document represents the **data loaded from the API** + potential local changes yet to be committed.
+     * - This document represents an **initial creation** after the **API** has **explicitly confirmed** that **no document**
+     *   for this document root + user + document type exists yet.
+     * - This is a **dummy document** **AND** there is no active **or residual** login session available.
+     *
+     * Examples where a document is **NOT** authoritative:
+     * - It is a dummy document, there is no active login session or server connection, but a residual login session exists
+     *   (i.e. waiting for a possible reconnect)
+     * - It is a non-dummy document that has been created after the API failed to return an existing document e.g. due to a network error
+     *   (but hasn't explicitly confirmed that none exist).
+     *
+     * If a document is **NOT** authoritative:
+     * - it must **not be persisted** to the database.
+     * - it must **not be edited**.
+     * - it must **not be relied** upon as accurate (e.g. when deriving state or actions for another document).
+     */
+    @computed
+    get isAuthoritative() {
+        if (this.isDummy) {
+            // Dummy documents are authoritative as long as we can guarantee that the user is not logged in.
+            const sessionStore = this.store.root.sessionStore;
+            return !sessionStore.isLoggedIn && !sessionStore.sessionStatusArbitrary;
+        }
+        // TODO: Does the source remain API after local edits?
+        // TODO: Can we guarantee that a source=local can only happen after API has confirmed non-existence?
+        return true;
+    }
+
     @computed
     get canEdit() {
         if (!this.root) {
+            return false;
+        }
+        if (!this.isAuthoritative) {
             return false;
         }
         if (this.sideEffects.some((se) => !se.canEdit)) {
@@ -236,6 +271,10 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     save(skipStreamUpdate: boolean = false, onBeforeSave?: (() => Promise<void>) | undefined) {
+        if (!this.isAuthoritative) {
+            throw `Trying to save a non-authoritative document (id=${this.id}, documentRootId=${this.root?.id})`;
+        }
+
         const res = this.saveFn(onBeforeSave);
         if (!skipStreamUpdate) {
             this.streamUpdate();
@@ -245,6 +284,8 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     streamUpdate() {
+        // TODO: Authoritative invariant required?
+
         if (!this.isPresenting) {
             return;
         }
@@ -265,6 +306,10 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     _save(onBeforeSave: () => Promise<void> = () => Promise.resolve()) {
+        if (!this.isAuthoritative) {
+            throw `Trying to save a non-authoritative document (id=${this.id}, documentRootId=${this.root?.id})`;
+        }
+
         /**
          * call the api to save the code...
          */

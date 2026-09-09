@@ -219,10 +219,23 @@ class DocumentRoot<T extends DocumentType> {
      * applied afterwards.
      */
     get allDocuments() {
+        // TODO: Check usages, consider switching to allAuthoritativeDocuments.
         if (!this.store.root.userStore.current?.hasElevatedAccess) {
             return this.documents;
         }
         return this.store.root.documentStore.findByDocumentRoot(this.id);
+    }
+
+    /**
+     * All **authoritative** documents which are related to this document root.
+     * This method should be used only for admin users or when the author-filtering is
+     * applied afterwards.
+     *
+     * @see {@link iDocument#isAuthoritative}
+     */
+    @computed
+    get allAuthoritativeDocuments() {
+        return this.allDocuments.filter((doc) => doc.isAuthoritative);
     }
 
     /**
