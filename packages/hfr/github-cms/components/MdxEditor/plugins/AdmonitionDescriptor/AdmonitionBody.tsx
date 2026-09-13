@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react';
 import { NestedLexicalEditor } from '@mdxeditor/editor';
-import { ContainerDirective } from 'mdast-util-directive';
-import { BlockContent } from 'mdast';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { LexicalEditor, LexicalNode } from 'lexical';
+import { BlockContent } from 'mdast';
+import { ContainerDirective } from 'mdast-util-directive';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 import useSelectionHandler from './useSelectionHandler';
 
 interface Props {

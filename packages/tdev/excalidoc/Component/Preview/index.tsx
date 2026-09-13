@@ -1,8 +1,6 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import _ from 'es-toolkit/compat';
-import Image from './Image';
 import { useDocument } from '@tdev-hooks/useDocument';
+import { observer } from 'mobx-react-lite';
+import Image from './Image';
 
 export interface Props {
     documentId: string;

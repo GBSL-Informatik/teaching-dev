@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { observer } from 'mobx-react-lite';
 import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
+import { observer } from 'mobx-react-lite';
 import Container from './Container';
 import Content from './Content';
 

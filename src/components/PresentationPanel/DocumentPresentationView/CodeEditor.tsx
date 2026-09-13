@@ -1,16 +1,16 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import StudentGroup from '@tdev-models/StudentGroup';
 import { CodeType } from '@tdev-api/document';
+import Loader from '@tdev-components/Loader';
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
-import iCode from '@tdev-models/documents/iCode';
+import { type Overrides } from '@tdev-components/documents/CodeEditor/Editor/EditorAce';
 import Alert from '@tdev-components/shared/Alert';
 import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
+import iCode from '@tdev-models/documents/iCode';
 import CodeBlock from '@theme/CodeBlock';
-import Loader from '@tdev-components/Loader';
-import { type Overrides } from '@tdev-components/documents/CodeEditor/Editor/EditorAce';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     group: StudentGroup;

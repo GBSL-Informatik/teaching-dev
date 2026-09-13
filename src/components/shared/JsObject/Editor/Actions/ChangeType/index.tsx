@@ -1,14 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import type { JsTypeName } from '../../../toJsSchema';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { ColorMap } from '../../JsType';
+import clsx from 'clsx';
 import { action } from 'mobx';
-import { IconMap } from '../AddValue';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import type { JsTypeName } from '../../../toJsSchema';
+import { ColorMap } from '../../JsType';
 import type iJs from '../../models/iJs';
+import { IconMap } from '../AddValue';
+import styles from './styles.module.scss';
 
 interface Props {
     js: iJs;

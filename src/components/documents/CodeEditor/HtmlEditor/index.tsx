@@ -1,19 +1,19 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { CodeMeta } from '@tdev-models/documents/Code';
-import { MetaProps } from '@tdev/theme/CodeBlock';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import CodeEditorComponent from '..';
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
-import CodeBlock from '@theme/CodeBlock';
-import Button from '@tdev-components/shared/Button';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import BrowserWindow from '@tdev-components/BrowserWindow';
-import HtmlSandbox from './HtmlSandbox';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import Button from '@tdev-components/shared/Button';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { useStore } from '@tdev-hooks/useStore';
+import { CodeMeta } from '@tdev-models/documents/Code';
+import { MetaProps } from '@tdev/theme/CodeBlock';
+import CodeBlock from '@theme/CodeBlock';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import CodeEditorComponent from '..';
+import HtmlSandbox from './HtmlSandbox';
+import styles from './styles.module.scss';
 
 export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' | 'title'> {
     title?: string;

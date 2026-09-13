@@ -1,14 +1,12 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import _ from 'es-toolkit/compat';
-import File from '../../../../models/File';
-import Button from '@tdev-components/shared/Button';
 import { mdiCircle, mdiContentSave } from '@mdi/js';
-import { Color } from '@tdev-components/shared/Colors';
 import Icon from '@mdi/react';
-import { useCmsStore } from '../../../../hooks/useCmsStore';
-import { ApiState } from '@tdev-stores/iStore';
+import Button from '@tdev-components/shared/Button';
+import { Color } from '@tdev-components/shared/Colors';
 import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
+import { ApiState } from '@tdev-stores/iStore';
+import { observer } from 'mobx-react-lite';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
+import File from '../../../../models/File';
 
 export interface Props {
     file: File;

@@ -1,14 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import TextInput from '@tdev-components/shared/TextInput';
-import Button from '@tdev-components/shared/Button';
 import { mdiRestore, mdiSync } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import Page from '@tdev-models/Page';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
+import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import Page from '@tdev-models/Page';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     name: string;

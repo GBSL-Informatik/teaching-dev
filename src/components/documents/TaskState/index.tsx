@@ -1,8 +1,6 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import {
     mdiAccountQuestionOutline,
     mdiCheckboxBlankOutline,
@@ -13,18 +11,20 @@ import {
     mdiStarHalfFull,
     mdiStarOutline
 } from '@mdi/js';
-import { StateType } from '@tdev-api/document';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import Icon from '@mdi/react';
+import { StateType } from '@tdev-api/document';
+import Loader from '@tdev-components/Loader';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { useScrollTo } from '@tdev-hooks/useScrollTo';
+import { useStore } from '@tdev-hooks/useStore';
 import {
-    default as TaskStateModel,
+    DEFAULT_TASK_STATES,
     MetaInit,
     TaskMeta,
-    DEFAULT_TASK_STATES
+    default as TaskStateModel
 } from '@tdev-models/documents/TaskState';
-import Loader from '@tdev-components/Loader';
-import { useStore } from '@tdev-hooks/useStore';
-import { useScrollTo } from '@tdev-hooks/useScrollTo';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 export const mdiIcon: { [key in StateType]: string } = {
     checked: mdiCheckboxMarkedOutline,

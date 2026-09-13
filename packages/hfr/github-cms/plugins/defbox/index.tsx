@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react';
-import { DirectiveDescriptor, NestedLexicalEditor, useMdastNodeUpdater } from '@mdxeditor/editor';
-import { ContainerDirective } from 'mdast-util-directive';
-import { BlockContent, Paragraph, PhrasingContent } from 'mdast';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import { mdiChevronDown } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import Popup from 'reactjs-popup';
+import { DirectiveDescriptor, NestedLexicalEditor, useMdastNodeUpdater } from '@mdxeditor/editor';
 import DefBox from '@tdev-components/CodeDefBox';
-import DefHeading from '@tdev-components/CodeDefBox/DefHeading';
-import RemoveNode from '../../components/MdxEditor/RemoveNode';
 import DefContent from '@tdev-components/CodeDefBox/DefContent';
-import AdmonitionTypeSelector from '../../components/MdxEditor/plugins/AdmonitionDescriptor/AdmonitionTypeSelector';
+import DefHeading from '@tdev-components/CodeDefBox/DefHeading';
+import Button from '@tdev-components/shared/Button';
+import clsx from 'clsx';
+import { BlockContent, Paragraph, PhrasingContent } from 'mdast';
+import { ContainerDirective } from 'mdast-util-directive';
 import { observer } from 'mobx-react-lite';
+import Popup from 'reactjs-popup';
+import AdmonitionTypeSelector from '../../components/MdxEditor/plugins/AdmonitionDescriptor/AdmonitionTypeSelector';
+import RemoveNode from '../../components/MdxEditor/RemoveNode';
+import styles from './styles.module.scss';
 
 /**
  * Pass this descriptor to the `directivesPlugin` `directiveDescriptors` parameter to enable {@link https://docusaurus.io/docs/markdown-features/admonitions | markdown admonitions}.

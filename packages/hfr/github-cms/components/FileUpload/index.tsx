@@ -1,17 +1,17 @@
-import React, { useId, useState } from 'react';
-import styles from './styles.module.scss';
-import Icon from '@mdi/react';
 import { mdiCloudArrowUpOutline } from '@mdi/js';
-import clsx from 'clsx';
-import ImagePreview from '../Github/iFile/File/FilePreview/ImagePreview';
+import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../hooks/useCmsStore';
-import { resolvePath } from '@tdev-models/helpers/resolvePath';
-import { default as CmsFile } from '../../models/File';
-import TextInput from '@tdev-components/shared/TextInput';
 import Checkbox from '@tdev-components/shared/Checkbox';
+import TextInput from '@tdev-components/shared/TextInput';
+import { resolvePath } from '@tdev-models/helpers/resolvePath';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React, { useId, useState } from 'react';
+import { useCmsStore } from '../../hooks/useCmsStore';
 import BinFile from '../../models/BinFile';
+import { default as CmsFile } from '../../models/File';
+import ImagePreview from '../Github/iFile/File/FilePreview/ImagePreview';
+import styles from './styles.module.scss';
 
 const toMb = (bytes: number): number => {
     return Math.round((100 * bytes) / 1024 / 1024) / 100;

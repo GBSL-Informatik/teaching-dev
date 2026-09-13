@@ -1,7 +1,7 @@
-import React from 'react';
-import { useCmsStore } from '../hooks/useCmsStore';
-import { useHistory } from 'react-router';
 import { useLocation } from '@docusaurus/router';
+import React from 'react';
+import { useHistory } from 'react-router';
+import { useCmsStore } from '../hooks/useCmsStore';
 
 export const useCmsNavigator = () => {
     const cmsStore = useCmsStore();

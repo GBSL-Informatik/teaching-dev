@@ -1,9 +1,8 @@
-import React from 'react';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
-import onSaveCallback, { OnSave } from '../helpers/onSaveCallback';
 import { mdiContentSave, mdiImageMove, mdiRestoreAlert } from '@mdi/js';
 import Icon from '@mdi/react';
+import onSaveCallback, { OnSave } from '../helpers/onSaveCallback';
 
 interface Props {
     Lib: typeof ExcalidrawLib;

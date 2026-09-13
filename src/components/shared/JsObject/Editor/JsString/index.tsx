@@ -1,10 +1,9 @@
-import React from 'react';
+import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
 import type { default as JsStringModel } from '../models/JsString';
-import TextAreaInput from '@tdev-components/shared/TextAreaInput';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsStringModel;

@@ -1,13 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Icon from '@mdi/react';
 import * as Mdi from '@mdi/js';
-import _ from 'es-toolkit/compat';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
-import TextInput from '@tdev-components/shared/TextInput';
+import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
+import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import TextInput from '@tdev-components/shared/TextInput';
+import clsx from 'clsx';
+import _ from 'es-toolkit/compat';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     // Optional top margin for the filter bar

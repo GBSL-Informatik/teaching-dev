@@ -1,12 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
+import { mdiMinusCircleOutline, mdiPlusCircleOutline } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { useStore } from '@tdev-hooks/useStore';
 import User from '@tdev-models/User';
-import Button from '@tdev-components/shared/Button';
-import { mdiMinusCircleOutline, mdiPlusCircleOutline } from '@mdi/js';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     user: User;

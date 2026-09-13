@@ -1,11 +1,10 @@
-import React from 'react';
+import Button from '@tdev-components/shared/Button';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
 import type { default as JsNullishModel } from '../models/JsNullish';
-import { action } from 'mobx';
-import Button from '@tdev-components/shared/Button';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsNullishModel;

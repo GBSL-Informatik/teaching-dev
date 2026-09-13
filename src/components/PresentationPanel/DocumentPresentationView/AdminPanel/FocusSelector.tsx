@@ -1,11 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import StudentGroup from '@tdev-models/StudentGroup';
 import { Access } from '@tdev-api/document';
 import BadgeSelector from '@tdev-components/User/BadgeSelector';
+import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from '../styles.module.scss';
 
 interface Props {
     group: StudentGroup;

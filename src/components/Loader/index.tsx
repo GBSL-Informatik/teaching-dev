@@ -1,9 +1,8 @@
-import * as React from 'react';
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { mdiLoading } from '@mdi/js';
+import Icon from '@mdi/react';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import Icon from '@mdi/react';
-import { mdiLoading } from '@mdi/js';
-import useIsBrowser from '@docusaurus/useIsBrowser';
 
 interface Props {
     label?: string;

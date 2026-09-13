@@ -1,11 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Select, { StylesConfig } from 'react-select';
-import { DocumentType, TypeModelMapping } from '@tdev-api/document';
+import { DocumentType } from '@tdev-api/document';
 import Button from '@tdev-components/shared/Button';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import Select, { StylesConfig } from 'react-select';
+import styles from './styles.module.scss';
 
 interface Props {}
 const colourStyles: StylesConfig<{ value: DocumentType; hslDeg: number; label: DocumentType }, true> = {

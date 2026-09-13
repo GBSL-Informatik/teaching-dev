@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import { PopupActions } from 'reactjs-popup/dist/types';
-import Popup from 'reactjs-popup';
+import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { mdiFileReplace } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
+import clsx from 'clsx';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
 import ChangeSrc from './ChangeSrc';
 
 interface Props {

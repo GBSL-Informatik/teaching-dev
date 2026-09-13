@@ -2,7 +2,6 @@
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
 
-import React from 'react';
 import type {
     EditorConfig,
     LexicalEditor,
@@ -11,11 +10,11 @@ import type {
     SerializedLexicalNode,
     Spread
 } from 'lexical';
+import React from 'react';
 
+import { camelCased, ParsedOptions, parseOptions, serializeOptions } from '@tdev/plugins/helpers';
 import { DecoratorNode } from 'lexical';
 import { ImageComponent } from './ImageComponent';
-import { camelCased, ParsedOptions, parseOptions, serializeOptions } from '@tdev/plugins/helpers';
-import _ from 'es-toolkit/compat';
 
 /**
  * A serialized representation of an {@link ImageNode}.

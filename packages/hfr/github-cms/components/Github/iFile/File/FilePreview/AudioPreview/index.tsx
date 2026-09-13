@@ -1,8 +1,8 @@
-import React from 'react';
+import Card from '@tdev-components/shared/Card';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import styles from './styles.module.scss';
-import Card from '@tdev-components/shared/Card';
 interface Props {
     src: string;
     fileName?: string;

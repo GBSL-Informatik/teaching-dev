@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react';
-import { DirectiveDescriptor } from '@mdxeditor/editor';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import * as MdiIcons from '@mdi/js';
-import Popup from 'reactjs-popup';
 import Icon from '@mdi/react';
+import { DirectiveDescriptor } from '@mdxeditor/editor';
 import { camelCased, captialize } from '@tdev/plugins/helpers';
 import { transformMdiAttributes } from '@tdev/plugins/remark-mdi/plugin';
+import clsx from 'clsx';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import {
     DirectiveProperty,
     useDirectiveAttributeEditor
 } from '../../components/MdxEditor/hooks/useDirectiveAttributeEditor';
 import PropertyEditor from '../../components/MdxEditor/PropertyEditor';
+import styles from './styles.module.scss';
 
 export const DEFAULT_SIZE = '1.25em';
 

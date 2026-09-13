@@ -1,12 +1,4 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../hooks/useCmsStore';
-import { default as PrModel } from '../../../models/PR';
-import Badge from '@tdev-components/shared/Badge';
-import Icon from '@mdi/react';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import Link from '@docusaurus/Link';
 import {
     mdiCloseCircle,
     mdiEye,
@@ -18,10 +10,18 @@ import {
     mdiSourceMerge,
     mdiSync
 } from '@mdi/js';
+import Icon from '@mdi/react';
+import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
-import { ApiState } from '@tdev-stores/iStore';
-import Link from '@docusaurus/Link';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { ApiState } from '@tdev-stores/iStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { useCmsStore } from '../../../hooks/useCmsStore';
+import { default as PrModel } from '../../../models/PR';
+import styles from './styles.module.scss';
 
 type PRElements =
     | 'prName'

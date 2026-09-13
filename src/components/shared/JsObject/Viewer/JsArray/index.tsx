@@ -1,15 +1,14 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
-import { JsArray as JsonArray } from '@tdev-components/shared/JsObject/toJsSchema';
-import JsType from '@tdev-components/shared/JsObject/Viewer/JsType';
-import clsx from 'clsx';
-import JsTypeSwitcher from '@tdev-components/shared/JsObject/Viewer/JsType/Switcher';
-import { CollapseAtContext } from '..';
-import Button from '@tdev-components/shared/Button';
 import { mdiChevronDown, mdiChevronRight, mdiDotsHorizontal } from '@mdi/js';
 import Icon from '@mdi/react';
+import Button from '@tdev-components/shared/Button';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { JsArray as JsonArray } from '@tdev-components/shared/JsObject/toJsSchema';
+import JsType from '@tdev-components/shared/JsObject/Viewer/JsType';
+import JsTypeSwitcher from '@tdev-components/shared/JsObject/Viewer/JsType/Switcher';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsonArray;

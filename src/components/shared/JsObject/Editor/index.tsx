@@ -1,17 +1,16 @@
-import React from 'react';
-import { observer, useLocalObservable } from 'mobx-react-lite';
-import type { EditLevel, JsTypes } from '../toJsSchema';
+import { mdiContentSave } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { reaction } from 'mobx';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import React from 'react';
+import type { EditLevel, JsTypes } from '../toJsSchema';
+import AddValue from './Actions/AddValue';
 import JsSchemaEditor from './SchemaEditor';
 import JsRoot, { type EditorConfig } from './models/JsRoot';
-import { reaction } from 'mobx';
-import AddValue from './Actions/AddValue';
-import Button from '@tdev-components/shared/Button';
-import { mdiContentSave } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import _ from 'es-toolkit/compat';
 import type iParentable from './models/iParentable';
+import styles from './styles.module.scss';
 
 export type CustomAction = (js: iParentable, className: string, key: string | number) => React.ReactNode;
 

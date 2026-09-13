@@ -1,20 +1,20 @@
-import React from 'react';
-import Popup from 'reactjs-popup';
-import styles from './styles.module.scss';
-import Button from '@tdev-components/shared/Button';
 import { mdiShieldLockOutline } from '@mdi/js';
-import { observer } from 'mobx-react-lite';
 import { Access } from '@tdev-api/document';
+import UserPermission from '@tdev-components/PermissionsPanel/UserPermission';
+import Button from '@tdev-components/shared/Button';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
-import AccessSelector from './AccessSelector';
-import { default as UserAccessPanel } from './UserPermission/AccessPanel';
-import { default as GroupAccessPanel } from './GroupPermission/AccessPanel';
-import DefinitionList from '../DefinitionList';
 import { action } from 'mobx';
-import UserPermission from '@tdev-components/PermissionsPanel/UserPermission';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import { PopupPosition } from 'reactjs-popup/dist/types';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import DefinitionList from '../DefinitionList';
+import AccessSelector from './AccessSelector';
+import { default as GroupAccessPanel } from './GroupPermission/AccessPanel';
+import styles from './styles.module.scss';
+import { default as UserAccessPanel } from './UserPermission/AccessPanel';
 
 interface BaseProps {
     position?: PopupPosition | PopupPosition[];

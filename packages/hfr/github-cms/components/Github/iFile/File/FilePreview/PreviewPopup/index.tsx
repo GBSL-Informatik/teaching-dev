@@ -1,8 +1,8 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
-import type { FileType } from '../../../../../../models/FileStub';
+import React from 'react';
 import Popup from 'reactjs-popup';
 import FilePreview from '..';
+import type { FileType } from '../../../../../../models/FileStub';
 
 interface Props {
     file: FileType;

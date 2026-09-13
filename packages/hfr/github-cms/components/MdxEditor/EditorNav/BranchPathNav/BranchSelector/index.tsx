@@ -1,14 +1,14 @@
-import React from 'react';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../../../hooks/useCmsStore';
-import Loader from '@tdev-components/Loader';
 import { mdiSourceBranch, mdiSourceBranchPlus } from '@mdi/js';
-import Popup from 'reactjs-popup';
-import NewBranch from '../../../../Github/Branch/NewBranch';
-import { PopupActions } from 'reactjs-popup/dist/types';
+import Loader from '@tdev-components/Loader';
 import Card from '@tdev-components/shared/Card';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
+import NewBranch from '../../../../Github/Branch/NewBranch';
 import NavItem from '../NavItem';
+import styles from './styles.module.scss';
 
 interface Props {
     compact?: boolean;

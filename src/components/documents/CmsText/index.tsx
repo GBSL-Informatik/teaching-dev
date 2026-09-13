@@ -1,12 +1,12 @@
-import { observer } from 'mobx-react-lite';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 import { CmsTextContext, useFirstCmsTextDocumentIfExists } from '@tdev-components/documents/CmsText/shared';
-import React from 'react';
-import CmsActions from './CmsActions';
-import { CmsTextEntries } from './WithCmsText';
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import Popup from 'reactjs-popup';
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import CmsActions from './CmsActions';
+import { CmsTextEntries } from './WithCmsText';
 
 export interface Props {
     id?: string;

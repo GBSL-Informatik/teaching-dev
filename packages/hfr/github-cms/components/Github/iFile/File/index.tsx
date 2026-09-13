@@ -1,19 +1,18 @@
-import React from 'react';
+import Link from '@docusaurus/Link';
+import { mdiContentSave, mdiEye, mdiLoading, mdiRestore, mdiStar } from '@mdi/js';
+import Icon from '@mdi/react';
+import Button from '@tdev-components/shared/Button';
+import { Delete } from '@tdev-components/shared/Button/Delete';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
+import BinFile from '../../../../models/BinFile';
 import { default as FileModel } from '../../../../models/File';
 import FileStub from '../../../../models/FileStub';
 import shared from '../styles.module.scss';
-import styles from './styles.module.scss';
-import Icon from '@mdi/react';
-import Button from '@tdev-components/shared/Button';
-import { mdiContentSave, mdiEye, mdiLoading, mdiRestore, mdiStar } from '@mdi/js';
-import { useCmsStore } from '../../../../hooks/useCmsStore';
-import Link from '@docusaurus/Link';
-import { Delete } from '@tdev-components/shared/Button/Delete';
 import RenameFilePopup from './AddOrUpdateFile/RenameFilePopup';
-import BinFile from '../../../../models/BinFile';
 import PreviewPopup from './FilePreview/PreviewPopup';
+import styles from './styles.module.scss';
 interface Props {
     file: FileModel | BinFile | FileStub;
     showActions?: 'always' | 'hover' | 'never';

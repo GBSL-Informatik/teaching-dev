@@ -10,10 +10,10 @@ import type { JSX } from 'react';
 import styles from './styles.module.scss';
 
 import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin';
-import React, { useRef } from 'react';
-import clsx from 'clsx';
-import { contentEditableRef$, useCellValue } from '@mdxeditor/editor';
 import Icon from '@mdi/react';
+import { contentEditableRef$, useCellValue } from '@mdxeditor/editor';
+import clsx from 'clsx';
+import React, { useRef } from 'react';
 
 const DRAGGABLE_BLOCK_MENU_CLASSNAME = styles.draggableBlockMenu;
 const PATH =

@@ -1,11 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { MetaInit, ModelMeta } from '@tdev-models/documents/ProgressState';
-import Item from './Item';
 import { useStore } from '@tdev-hooks/useStore';
+import { MetaInit, ModelMeta } from '@tdev-models/documents/ProgressState';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Item from './Item';
+import styles from './styles.module.scss';
 
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 interface Props extends MetaInit {

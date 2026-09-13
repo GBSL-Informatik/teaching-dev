@@ -1,9 +1,9 @@
-import clsx from 'clsx';
-import * as React from 'react';
-import styles from './styles.module.scss';
 import { mdiCircle, mdiClipboardCheck, mdiClipboardText, mdiCloseCircle, mdiLoading } from '@mdi/js';
 import Icon, { Stack } from '@mdi/react';
+import clsx from 'clsx';
+import * as React from 'react';
 import { Color, getType } from '../Badge';
+import styles from './styles.module.scss';
 
 type CopyState = 'none' | 'spin' | 'copied' | 'error';
 const CopyIcon: { [key in CopyState]: string } = {

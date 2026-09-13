@@ -5,28 +5,28 @@ import React from 'react';
 import { languages } from '@codemirror/language-data';
 import { EditorState, Extension } from '@codemirror/state';
 import { EditorView, lineNumbers } from '@codemirror/view';
+import { CodeBlockEditorProps, readOnly$, useCodeBlockEditorContext } from '@mdxeditor/editor';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import { extractMetaProps, sanitizedTitle } from '@tdev/theme/CodeBlock';
+import clsx from 'clsx';
 import { basicLight } from 'cm6-theme-basic-light';
 import { basicSetup } from 'codemirror';
+import { action } from 'mobx';
+import Popup from 'reactjs-popup';
+import { v4 } from 'uuid';
 import { codeBlockLanguages$, codeMirrorAutoLoadLanguageSupport$, codeMirrorExtensions$ } from '.';
-import { CodeBlockEditorProps, readOnly$, useCodeBlockEditorContext } from '@mdxeditor/editor';
-import { useCodeMirrorRef } from './useCodeMirrorRef';
-import styles from './styles.module.scss';
-import Card from '@tdev-components/shared/Card';
-import RemoveNode from '../../../MdxEditor/RemoveNode';
-import clsx from 'clsx';
 import GenericAttributeEditor, {
     GenericPropery,
     GenericValueProperty
 } from '../../../MdxEditor/GenericAttributeEditor';
-import { extractMetaProps, sanitizedTitle } from '@tdev/theme/CodeBlock';
-import { v4 } from 'uuid';
-import Badge from '@tdev-components/shared/Badge';
-import Button from '@tdev-components/shared/Button';
-import Popup from 'reactjs-popup';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import RemoveNode from '../../../MdxEditor/RemoveNode';
 import MyAttributes from '../../GenericAttributeEditor/MyAttributes';
-import { action } from 'mobx';
-import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import styles from './styles.module.scss';
+import { useCodeMirrorRef } from './useCodeMirrorRef';
 
 export const COMMON_STATE_CONFIG_EXTENSIONS: Extension[] = [];
 

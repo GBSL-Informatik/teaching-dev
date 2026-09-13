@@ -1,10 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import type { CustomAction } from '..';
 import JsTypeSwitcher from '../JsType/Switcher';
 import type iParentable from '../models/iParentable';
-import type { CustomAction } from '..';
+import styles from './styles.module.scss';
 
 export interface Props {
     schema: iParentable;

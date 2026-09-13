@@ -1,12 +1,11 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import _ from 'es-toolkit/compat';
-import Button from '../Button';
 import { mdiCollapseAll, mdiExpandAll } from '@mdi/js';
+import { useStore } from '@tdev-hooks/useStore';
+import { observer } from 'mobx-react-lite';
+import Button from '../Button';
+import styles from './styles.module.scss';
 
 /**
  * Based on the current user and page, this component displays a list of

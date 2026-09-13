@@ -1,13 +1,11 @@
-import styles from './styles.module.scss';
+import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
-import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
-import React from 'react';
-import { DocumentType } from '@tdev-api/document';
-import DirTree from './DirTree';
-import { useStore } from '@tdev-hooks/useStore';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import DirTree from './DirTree';
+import styles from './styles.module.scss';
 
 interface Props {
     item: File | Directory;

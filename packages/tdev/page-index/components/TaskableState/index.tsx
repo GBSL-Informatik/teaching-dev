@@ -1,10 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Page from '@tdev-models/Page';
-import Icon from '@mdi/react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import Icon from '@mdi/react';
+import Page from '@tdev-models/Page';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     page?: Page;

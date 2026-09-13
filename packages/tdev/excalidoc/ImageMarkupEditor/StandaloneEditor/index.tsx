@@ -1,24 +1,24 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
-import ImageMarkupEditor from '..';
+import { localDb } from '@tdev-api/base';
+import type { DirType } from '@tdev-components/FileSystem/Dir';
+import Alert from '@tdev-components/shared/Alert';
 import requestLocalDirectoryAccess, {
     restoreAccess
 } from '@tdev-components/utils/localFS/requestLocalDirectoryAccess';
-import { localDb } from '@tdev-api/base';
-import type { DirType } from '@tdev-components/FileSystem/Dir';
 import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
-import { IMAGE_RE } from '../helpers/constants';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import ImageMarkupEditor from '..';
 import buildImageTree from '../helpers/buildImageTree';
+import { IMAGE_RE } from '../helpers/constants';
 import useCreateNewDrawing from '../hooks/useCreateNewDrawing';
-import useRenameImage from '../hooks/useRenameImage';
 import useExcalidrawSource from '../hooks/useExcalidrawSource';
-import Alert from '@tdev-components/shared/Alert';
+import useRenameImage from '../hooks/useRenameImage';
 import DesktopSidebar from './DesktopSidebar';
 import MobileSidebar from './MobileSidebar';
+import styles from './styles.module.scss';
 
 interface Props {
     className?: string;

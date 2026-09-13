@@ -1,11 +1,9 @@
-import React from 'react';
+import Loader from '@tdev-components/Loader';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import _ from 'es-toolkit/compat';
 import CreatableSelect from 'react-select/creatable';
 import { useCmsStore } from '../../../hooks/useCmsStore';
-import Loader from '@tdev-components/Loader';
+import styles from './styles.module.scss';
 
 interface Props {
     onSelect: (name: string) => void;

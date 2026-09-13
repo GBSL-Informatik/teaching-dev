@@ -1,19 +1,19 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
-import {
-    MetaInit,
-    ModelMeta,
-    default as DynamicDocumentRootsModel
-} from '@tdev-models/documents/DynamicDocumentRoots';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { Access, ContainerType } from '@tdev-api/document';
-import { useStore } from '@tdev-hooks/useStore';
-import AddDynamicDocumentRoot from './AddDynamicDocumentRoot';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import { NotCreated } from '@tdev-components/Rooms';
+import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
+import { useStore } from '@tdev-hooks/useStore';
+import {
+    default as DynamicDocumentRootsModel,
+    MetaInit,
+    ModelMeta
+} from '@tdev-models/documents/DynamicDocumentRoots';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import AddDynamicDocumentRoot from './AddDynamicDocumentRoot';
 import DocumentContainer from './DocumentContainer';
+import styles from './styles.module.scss';
 
 interface Props<T extends ContainerType> extends MetaInit<T> {
     id: string;

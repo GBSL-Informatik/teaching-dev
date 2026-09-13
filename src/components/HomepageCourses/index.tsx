@@ -1,13 +1,12 @@
-import React from 'react';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
-import { useStore } from '@tdev-hooks/useStore';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import { observer } from 'mobx-react-lite';
-const { DOCS_ONLY } = customFields;
-import { Course, useClassVersions } from './useClassVersions';
 import customFields from '@tdev-components/utils/customFields';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
+import { Course, useClassVersions } from './useClassVersions';
+const { DOCS_ONLY } = customFields;
 
 // add additional courses here, e.g. for workshops or alumni
 // CourseList.push();
