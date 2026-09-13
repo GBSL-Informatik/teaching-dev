@@ -1,8 +1,8 @@
-import { action, computed } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
 import { type Access, type Document as DocumentProps, type TypeDataMapping } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed } from 'mobx';
 
 interface BaseMetaProps {
     access?: Access;

@@ -1,11 +1,10 @@
-import { action, computed, observable, observableRef } from 'mobx';
+import { Access, type DocumentModelType, type TypeModelMapping } from '@tdev-api/document';
 import { DocumentPresentation, StudentGroup as StudentGroupProps } from '@tdev-api/studentGroup';
-import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import User from '@tdev-models/User';
-import _ from 'es-toolkit/compat';
+import { StudentGroupStore } from '@tdev-stores/StudentGroupStore';
 import { orderBy } from 'es-toolkit/array';
-import { Access, type TypeModelMapping, type DocumentModelType } from '@tdev-api/document';
+import { action, computed, observable, observableRef } from 'mobx';
 import type DocumentRoot from './DocumentRoot';
 
 class StudentGroup {

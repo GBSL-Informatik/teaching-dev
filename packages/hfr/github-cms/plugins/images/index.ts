@@ -2,7 +2,22 @@
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
 
+import { $isHeadingNode } from '@lexical/rich-text';
+import {
+    activeEditor$,
+    addExportVisitor$,
+    addImportVisitor$,
+    addLexicalNode$,
+    addMdastExtension$,
+    createActiveEditorSubscription$,
+    createRootEditorSubscription$,
+    realmPlugin
+} from '@mdxeditor/editor';
 import { Cell, Signal, withLatestFrom } from '@mdxeditor/gurx';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import { transformer } from '@tdev-plugins/remark-images/transformer';
+import { transformer as strongTransformer } from '@tdev-plugins/remark-strong/plugin';
+import { rootStore } from '@tdev/stores/rootStore';
 import {
     $createParagraphNode,
     $getSelection,
@@ -13,35 +28,20 @@ import {
     KEY_DOWN_COMMAND,
     LexicalEditor
 } from 'lexical';
+import type { Image, Parent, PhrasingContent, Root } from 'mdast';
+import { directiveFromMarkdown } from 'mdast-util-directive';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { directive } from 'micromark-extension-directive';
+import React from 'react';
+import { $createImageCaptionNode, $isImageCaptionNode, ImageCaptionNode } from './ImageCaptionNode';
+import { $createImageFigureNode, ImageFigureNode } from './ImageFigureNode';
+import { $createImageNode, ImageNode } from './ImageNode';
 import {
     LexicalImageCaptionVisitor,
     LexicalImageFigureVisitor,
     LexicalImageVisitor
 } from './LexicalImageVisitor';
-import {
-    activeEditor$,
-    addExportVisitor$,
-    addImportVisitor$,
-    addLexicalNode$,
-    addMdastExtension$,
-    createRootEditorSubscription$,
-    createActiveEditorSubscription$,
-    realmPlugin
-} from '@mdxeditor/editor';
-import { $createImageNode, ImageNode } from './ImageNode';
 import { MdastImageCaptionVisitor, MdastImageFigureVisitor, MdastImageVisitor } from './MdastImageVisitor';
-import React from 'react';
-import { rootStore } from '@tdev/stores/rootStore';
-import type { Parent, PhrasingContent, Root, Image } from 'mdast';
-import { transformer as strongTransformer } from '@tdev-plugins/remark-strong/plugin';
-import { transformer } from '@tdev-plugins/remark-images/transformer';
-import { $createImageCaptionNode, $isImageCaptionNode, ImageCaptionNode } from './ImageCaptionNode';
-import { $createImageFigureNode, ImageFigureNode } from './ImageFigureNode';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { directiveFromMarkdown } from 'mdast-util-directive';
-import { directive } from 'micromark-extension-directive';
-import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
-import { $isHeadingNode } from '@lexical/rich-text';
 export * from './ImageNode';
 
 export interface ImageCaption extends Parent {

@@ -1,6 +1,6 @@
 import { createFileSync, readdirSync } from 'fs-extra';
-import { SiteConfig } from './siteConfig';
 import path from 'path';
+import { SiteConfig } from './siteConfig';
 const CWD = process.cwd();
 export const DEFAULT_TDEV_NAME = 'tdev';
 const DEFAULT_FILE_NAME = {

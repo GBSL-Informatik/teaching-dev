@@ -1,6 +1,6 @@
+import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable } from 'mobx';
 import Github from './Github';
-import { ApiState } from '@tdev-stores/iStore';
 
 interface Props {
     name: string;

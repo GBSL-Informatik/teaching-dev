@@ -1,13 +1,13 @@
-import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
-import { EXCALIDRAW_BACKGROUND_FILE_ID, EXCALIDRAW_STANDALONE_DRAWING_ID } from './constants';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import { getImageElementFromScene, withoutMetaElements } from './getElementsFromScene';
 import type {
     ExcalidrawImageElement,
     NonDeletedExcalidrawElement,
     Ordered
 } from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
+import { EXCALIDRAW_BACKGROUND_FILE_ID, EXCALIDRAW_STANDALONE_DRAWING_ID } from './constants';
 import { getCustomProps } from './customProps';
+import { getImageElementFromScene, withoutMetaElements } from './getElementsFromScene';
 export type OnSave = (data: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => void;
 
 const withBackgroundImage = (

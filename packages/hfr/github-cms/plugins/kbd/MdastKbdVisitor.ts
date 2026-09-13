@@ -3,8 +3,8 @@
  */
 
 import { MdastImportVisitor } from '@mdxeditor/editor';
-import { $createKbdNode } from './KbdNode';
 import type { Kbd } from '.';
+import { $createKbdNode } from './KbdNode';
 
 export const MdastKbdVisitor: MdastImportVisitor<Kbd> = {
     testNode: 'kbd',

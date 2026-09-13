@@ -1,5 +1,3 @@
-import { action, computed, observable } from 'mobx';
-import ProgressState from '.';
 import {
     mdiCheckCircle,
     mdiCircleMedium,
@@ -9,6 +7,8 @@ import {
 } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 import _ from 'es-toolkit/compat';
+import { action, computed, observable } from 'mobx';
+import ProgressState from '.';
 export interface MetaInit {
     readonly?: boolean;
     pagePosition?: number;

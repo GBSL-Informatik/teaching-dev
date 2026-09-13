@@ -1,6 +1,6 @@
+import { Document, DocumentType } from '@tdev-api/document';
 import { IDBPDatabase, openDB } from 'idb';
 import { DbAdapter, DBSchema } from '.';
-import { Document, DocumentType } from '@tdev-api/document';
 import { OfflineUser } from '..';
 
 const withFallback = <T>(fn: () => Promise<T>, fallback: T = undefined as T) => {

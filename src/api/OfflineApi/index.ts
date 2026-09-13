@@ -1,16 +1,15 @@
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import { DB_NAME } from '@tdev-api/config';
 import { AxiosPromise } from 'axios';
-import { Role, User } from '../user';
-import { Access, Document, DocumentType } from '../document';
 import { v4 as uuidv4 } from 'uuid';
+import { Access, Document, DocumentType } from '../document';
 import { DocumentRoot } from '../documentRoot';
 import { GroupPermission, Permissions, UserPermission } from '../permission';
 import { StudentGroup } from '../studentGroup';
+import { Role, User } from '../user';
 import { DbAdapter } from './Adapter';
 import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
-import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import _ from 'es-toolkit/compat';
-import { DB_NAME } from '@tdev-api/config';
 
 const TIME_NOW = new Date().toISOString();
 const LOG_REQUESTS = false;

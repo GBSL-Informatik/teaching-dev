@@ -1,11 +1,11 @@
-import React from 'react';
 import { DocumentType } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { Config } from '@tdev-api/documentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
-import { Config } from '@tdev-api/documentRoot';
-import { v4 as uuidv4 } from 'uuid';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { runInAction } from 'mobx';
+import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 

@@ -1,5 +1,5 @@
-import path from 'path';
 import type { LoadContext, Plugin } from '@docusaurus/types';
+import path from 'path';
 const aliasConfigurationPlugin: Plugin = (context: LoadContext, options?: { websiteDir?: string }) => {
     const websiteDir = options?.websiteDir ? options.websiteDir : './website';
     return {

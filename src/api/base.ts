@@ -1,9 +1,9 @@
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import axios, { AxiosInstance } from 'axios';
 import OfflineApi from './OfflineApi';
 import IndexedDbAdapter from './OfflineApi/Adapter/IndexedDb';
-import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
-import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import MemoryDbAdapter from './OfflineApi/Adapter/MemoryDb';
+import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
 export namespace Api {
     export const BASE_API_URL = eventsApiUrl();
 

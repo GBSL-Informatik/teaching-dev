@@ -1,13 +1,12 @@
 import { AssessableType, Document as DocumentProps } from '@tdev-api/document';
+import { IfmColors } from '@tdev-components/shared/Colors';
 import iDocument from '@tdev-models/iDocument';
+import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import React from 'react';
 import { AssessableMeta, ExpandedOption } from './AssessableMeta';
 import Quiz from './Quiz';
-import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import { mdiTooltipQuestionOutline } from '@mdi/js';
-import { IfmColors } from '@tdev-components/shared/Colors';
 
 export enum Correctness {
     Correct = 'correct',

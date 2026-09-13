@@ -1,8 +1,8 @@
-import { type CmsStore } from '../stores/CmsStore';
-import iFile, { FileStubProps } from './iFile';
 import { computed } from 'mobx';
+import { type CmsStore } from '../stores/CmsStore';
 import type BinFile from './BinFile';
 import type File from './File';
+import iFile, { FileStubProps } from './iFile';
 
 export const DUMMY_PROPS: FileStubProps = {
     name: '',

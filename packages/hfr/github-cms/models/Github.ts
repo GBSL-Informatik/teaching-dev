@@ -1,15 +1,15 @@
-import { CmsStore } from '../stores/CmsStore';
+import { RestEndpointMethodTypes as GhTypes, Octokit } from '@octokit/rest';
+import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, IObservableArray, observable, observableRef } from 'mobx';
-import { Octokit, RestEndpointMethodTypes as GhTypes } from '@octokit/rest';
-import { FileStubProps, iFile } from './iFile';
-import FileStub from './FileStub';
+import { CmsStore } from '../stores/CmsStore';
+import BinFile from './BinFile';
+import Branch from './Branch';
 import Dir from './Dir';
 import { default as FileModel } from './File';
-import { ApiState } from '@tdev-stores/iStore';
-import Branch from './Branch';
+import FileStub from './FileStub';
 import PR from './PR';
 import { convertToBase64, isBinaryFile, withoutPreviewPRName } from './helpers';
-import BinFile from './BinFile';
+import { FileStubProps, iFile } from './iFile';
 
 export type GhRepo = GhTypes['repos']['get']['response']['data'];
 export type GhBranch = GhTypes['repos']['listBranches']['response']['data'][number];

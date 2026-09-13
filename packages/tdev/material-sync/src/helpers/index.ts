@@ -1,9 +1,9 @@
+import { dump as yamlDump, load as yamlLoad } from 'js-yaml';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Rsync from 'rsync';
-import { load as yamlLoad, dump as yamlDump } from 'js-yaml';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

@@ -1,13 +1,12 @@
 import { FullCmsSettings } from '@tdev-api/cms';
-import { CmsStore } from '../stores/CmsStore';
-import _ from 'es-toolkit/compat';
 import { action, computed } from 'mobx';
-import File from './File';
-import iEntry from './iEntry';
-import Dir from './Dir';
-import PartialSettings from './PartialSettings';
+import { CmsStore } from '../stores/CmsStore';
 import BinFile from './BinFile';
+import Dir from './Dir';
+import File from './File';
 import FileStub from './FileStub';
+import iEntry from './iEntry';
+import PartialSettings from './PartialSettings';
 
 class Settings extends PartialSettings {
     constructor(props: FullCmsSettings, store: CmsStore) {

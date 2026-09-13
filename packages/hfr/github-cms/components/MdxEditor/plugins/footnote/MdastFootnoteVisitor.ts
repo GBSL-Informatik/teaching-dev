@@ -1,11 +1,11 @@
 /**
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
-import { $createTextNode } from 'lexical';
 import { MdastImportVisitor } from '@mdxeditor/editor';
-import { $createFootnoteReferenceNode } from './FootnoteReference';
+import { $createTextNode } from 'lexical';
 import type { FootnoteDefinition, FootnoteReference } from 'mdast';
 import { $createFootnoteDefinitionNode } from './FootnoteDefinition';
+import { $createFootnoteReferenceNode } from './FootnoteReference';
 
 export const MdastFootnoteReferenceVisitor: MdastImportVisitor<FootnoteReference> = {
     testNode: 'footnoteReference',
