@@ -1,12 +1,11 @@
-import React from 'react';
-import { NestedLexicalEditor } from '@mdxeditor/editor';
-import { ContainerDirective, LeafDirective } from 'mdast-util-directive';
-import { BlockContent } from 'mdast';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import { mdiMinusBoxOutline, mdiPlusBoxOutline } from '@mdi/js';
+import { NestedLexicalEditor } from '@mdxeditor/editor';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { BlockContent } from 'mdast';
+import { ContainerDirective, LeafDirective } from 'mdast-util-directive';
+import styles from './styles.module.scss';
 
 const isBreak = (node?: BlockContent | any): node is LeafDirective => {
     if (!node) {

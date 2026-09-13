@@ -1,13 +1,3 @@
-import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
-import React from 'react';
-import clsx from 'clsx';
-import ImageCanvas from './ImageCanvas';
-import NetpbmGraphic from '@tdev/netpbm-graphic/model/index';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { Source } from '@tdev-models/iDocument';
-import SyncStatus from '@tdev-components/SyncStatus';
-import Icon from '@mdi/react';
 import {
     mdiAlertCircle,
     mdiAlertCircleOutline,
@@ -16,11 +6,21 @@ import {
     mdiFormatTextRotationAngleUp,
     mdiTextBoxCheckOutline
 } from '@mdi/js';
+import Icon from '@mdi/react';
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import SyncStatus from '@tdev-components/SyncStatus';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { Source } from '@tdev-models/iDocument';
 import { ApiState } from '@tdev-stores/iStore';
+import NetpbmGraphic from '@tdev/netpbm-graphic/model/index';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { MetaInit, ModelMeta } from '../model/ModelMeta';
-import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import ImageCanvas from './ImageCanvas';
+import styles from './styles.module.scss';
 
 const StateIcons = observer(({ doc }: { doc: NetpbmGraphic }) => (
     <span className={clsx(styles.stateIcons)}>

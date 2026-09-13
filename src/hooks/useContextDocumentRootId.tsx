@@ -1,6 +1,6 @@
-import React from 'react';
 import { ReactContextError } from '@docusaurus/theme-common';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 export const DocRootIdContext = React.createContext<string | null>(null);
 interface Props {

@@ -1,11 +1,11 @@
-import { action, computed, observable } from 'mobx';
+import { mdiBookCheck, mdiBookEducation, mdiBookOpenVariantOutline } from '@mdi/js';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
-import { Document as DocumentProps, TypeDataMapping, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { ModelMeta } from './ModelMeta';
-import { mdiBookCheck, mdiBookEducation, mdiBookOpenVariantOutline } from '@mdi/js';
+import { action, computed, observable } from 'mobx';
 import { fSeconds, fSecondsLong } from '../helpers/time';
+import { ModelMeta } from './ModelMeta';
 
 export const createModel: Factory = (data, store) => {
     return new PageReadChecker(data as DocumentProps<'page_read_check'>, store);

@@ -1,8 +1,8 @@
 import { mdiEmailLock, mdiGithub, mdiMicrosoft } from '@mdi/js';
-import api from './base';
-import { AxiosPromise } from 'axios';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import { AxiosPromise } from 'axios';
 import { Session as BetterAuthSession } from 'better-auth';
+import api from './base';
 
 export enum Role {
     STUDENT = 'student',

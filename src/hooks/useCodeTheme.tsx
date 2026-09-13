@@ -1,6 +1,6 @@
+import { useColorMode } from '@docusaurus/theme-common';
 import { StorageKey } from '@tdev-stores/utils/Storage';
 import useLocalStorage from './useLocalStorage';
-import { useColorMode } from '@docusaurus/theme-common';
 
 const AceThemeMap = {
     light: 'xcode',

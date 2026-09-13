@@ -1,5 +1,5 @@
-import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { EXCALIDRAW_STROKE_TYPES } from './constants';
 
 export const getSelectedStrokeElements = (api: ExcalidrawImperativeAPI): ExcalidrawElement[] => {

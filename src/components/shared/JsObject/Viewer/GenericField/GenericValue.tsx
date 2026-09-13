@@ -1,9 +1,8 @@
-import React from 'react';
+import Badge from '@tdev-components/shared/Badge';
+import { IfmColors } from '@tdev-components/shared/Colors';
+import { GenericValue as GenericValueType } from '@tdev-components/shared/JsObject/toJsSchema';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { GenericValue as GenericValueType } from '@tdev-components/shared/JsObject/toJsSchema';
-import { IfmColors } from '@tdev-components/shared/Colors';
-import Badge from '@tdev-components/shared/Badge';
 
 interface Props {
     js: Omit<GenericValueType, 'name'>;

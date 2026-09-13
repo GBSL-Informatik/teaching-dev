@@ -1,17 +1,3 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import StudentGroup from '@tdev-models/StudentGroup';
-import GroupAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/GroupAccessSelector';
-import SharedAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/SharedAccessSelector';
-import { asStudentGroupAccess } from '@tdev-models/helpers/accessPolicy';
-import Card from '@tdev-components/shared/Card';
-import Badge from '@tdev-components/shared/Badge';
-import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
-import Alert from '@tdev-components/shared/Alert';
-import Button from '@tdev-components/shared/Button';
 import {
     mdiCloudCheckVariantOutline,
     mdiCloudOffOutline,
@@ -22,14 +8,27 @@ import {
     mdiMagnify,
     mdiMagnifyScan
 } from '@mdi/js';
+import Icon from '@mdi/react';
+import DefinitionList from '@tdev-components/DefinitionList';
+import GroupAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/GroupAccessSelector';
+import RootAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/RootAccessSelector';
+import SharedAccessSelector from '@tdev-components/PermissionsPanel/AccessSelector/SharedAccessSelector';
+import Alert from '@tdev-components/shared/Alert';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import { useStore } from '@tdev-hooks/useStore';
+import { asStudentGroupAccess } from '@tdev-models/helpers/accessPolicy';
+import StudentGroup from '@tdev-models/StudentGroup';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from '../styles.module.scss';
 import FocusSelector from './FocusSelector';
 import SpinningWheel from './SpinningWheel';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
-import DefinitionList from '@tdev-components/DefinitionList';
-import Icon from '@mdi/react';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props {
     group: StudentGroup;

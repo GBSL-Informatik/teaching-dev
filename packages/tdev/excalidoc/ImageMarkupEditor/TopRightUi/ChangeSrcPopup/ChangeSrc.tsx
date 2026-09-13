@@ -1,6 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import type {
+    BinaryFileData,
+    ExcalidrawImperativeAPI,
+    ExcalidrawInitialDataState
+} from '@excalidraw/excalidraw/types';
 import {
     mdiButtonCursor,
     mdiClipboardFileOutline,
@@ -8,15 +11,13 @@ import {
     mdiCloudArrowUpOutline,
     mdiFileUploadOutline
 } from '@mdi/js';
-import Card from '@tdev-components/shared/Card';
-import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
-import type {
-    BinaryFileData,
-    ExcalidrawImperativeAPI,
-    ExcalidrawInitialDataState
-} from '@excalidraw/excalidraw/types';
+import Alert from '@tdev-components/shared/Alert';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
+import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
 import {
     type CustomData,
     EXCALIDRAW_BACKGROUND_FILE_ID,
@@ -24,15 +25,14 @@ import {
     EXCALIDRAW_IMAGE_RECTANGLE_ID,
     EXCALIDRAW_MAX_WIDTH
 } from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
-import { OrderedExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import Alert from '@tdev-components/shared/Alert';
 import {
     getImageElementFromScene,
     getImageFileFromScene,
     getRectangleElementFromScene
 } from '@tdev/excalidoc/ImageMarkupEditor/helpers/getElementsFromScene';
+import clsx from 'clsx';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     api: ExcalidrawImperativeAPI;

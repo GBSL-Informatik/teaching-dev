@@ -1,14 +1,14 @@
-import styles from './styles.module.scss';
 import { mdiAccountPlus, mdiAccountPlusOutline } from '@mdi/js';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
+import User from '@tdev-models/User';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import styles from './styles.module.scss';
 import { _AddMembersPopupPropsInternal } from './types';
-import Button from '@tdev-components/shared/Button';
-import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
-import User from '@tdev-models/User';
-import StudentGroup from '@tdev-models/StudentGroup';
 
 interface AddUserLineProps {
     idx: number;

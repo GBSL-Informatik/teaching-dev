@@ -1,9 +1,8 @@
-import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
-import React from 'react';
+import Badge from '@tdev-components/shared/Badge';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import Quiz from '@tdev-models/documents/Assessable/Quiz';
-import Badge from '@tdev-components/shared/Badge';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface QuizScoreProps {
     doc: Quiz;

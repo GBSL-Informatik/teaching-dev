@@ -1,12 +1,12 @@
-import clsx from 'clsx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
 import HomepageFeatures from '@tdev-components/HomepageFeatures';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
 
-import styles from './index.module.css';
-import { useClassVersions } from '@tdev-components/HomepageCourses/useClassVersions';
 import HomepageCourses from '@tdev-components/HomepageCourses';
+import { useClassVersions } from '@tdev-components/HomepageCourses/useClassVersions';
 import { HomepageHeader } from '@tdev-components/HomepageHeader';
+import styles from './index.module.css';
 
 const Home = (): React.ReactNode => {
     const { siteConfig } = useDocusaurusContext();

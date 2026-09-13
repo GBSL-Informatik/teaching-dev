@@ -1,8 +1,8 @@
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import Loader from '@tdev-components/Loader';
+import type { default as PdfViewerType } from '@tdev/remark-pdf/PdfViewer/PdfViewer';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
-import type { default as PdfViewerType } from '@tdev/remark-pdf/PdfViewer/PdfViewer';
-import Loader from '@tdev-components/Loader';
 
 /**
  * Lazy load PdfViewer component - this is a workaround for SSR

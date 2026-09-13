@@ -1,24 +1,23 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useClientLib } from '@tdev-hooks/useClientLib';
+import { useColorMode } from '@docusaurus/theme-common';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import Loader from '@tdev-components/Loader';
+import { ExcalidrawFreeDrawElement } from '@excalidraw/excalidraw/element/types';
 import type {
     ExcalidrawImperativeAPI,
     ExcalidrawInitialDataState,
     NormalizedZoomValue
 } from '@excalidraw/excalidraw/types';
-import { useColorMode } from '@docusaurus/theme-common';
-import _ from 'es-toolkit/compat';
+import Loader from '@tdev-components/Loader';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import { useClientLib } from '@tdev-hooks/useClientLib';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { EXCALIDRAW_RED } from './helpers/constants';
-import onSaveCallback, { OnSave } from './helpers/onSaveCallback';
+import { getImageElementFromScene } from './helpers/getElementsFromScene';
 import { getSelectedStrokeElements } from './helpers/getSelectedStrokeElements';
 import getSelectedTextElementId from './helpers/getSelectedTextElementId';
-import TopRightUi from './TopRightUi';
+import onSaveCallback, { OnSave } from './helpers/onSaveCallback';
 import MainMenu from './MainMenu';
-import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
-import { getImageElementFromScene } from './helpers/getElementsFromScene';
-import { ExcalidrawFreeDrawElement } from '@excalidraw/excalidraw/element/types';
+import TopRightUi from './TopRightUi';
 
 interface Props {
     mimeType: string;

@@ -1,19 +1,19 @@
-import React from 'react';
 import { DirectiveDescriptor } from '@mdxeditor/editor';
-import styles from './styles.module.scss';
+import Loader from '@tdev-components/Loader';
+import Card from '@tdev-components/shared/Card';
+import PdfViewer from '@tdev/remark-pdf/PdfViewer';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import GenericAttributeEditor from '../../components/MdxEditor/GenericAttributeEditor';
+import MyAttributes from '../../components/MdxEditor/GenericAttributeEditor/MyAttributes';
+import RemoveNode from '../../components/MdxEditor/RemoveNode';
+import { isRelPath, useAssetFile } from '../../components/MdxEditor/hooks/useAssetFile';
 import {
     DirectiveProperty,
     useDirectiveAttributeEditor
 } from '../../components/MdxEditor/hooks/useDirectiveAttributeEditor';
-import { observer } from 'mobx-react-lite';
-import Card from '@tdev-components/shared/Card';
-import GenericAttributeEditor from '../../components/MdxEditor/GenericAttributeEditor';
-import RemoveNode from '../../components/MdxEditor/RemoveNode';
-import { isRelPath, useAssetFile } from '../../components/MdxEditor/hooks/useAssetFile';
-import MyAttributes from '../../components/MdxEditor/GenericAttributeEditor/MyAttributes';
-import PdfViewer from '@tdev/remark-pdf/PdfViewer';
-import Loader from '@tdev-components/Loader';
+import styles from './styles.module.scss';
 
 const props: DirectiveProperty[] = [
     {

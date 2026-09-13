@@ -1,10 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import { mdiAccountMultipleRemove, mdiAccountRemove } from '@mdi/js';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     docs: { id: string; type: string }[];

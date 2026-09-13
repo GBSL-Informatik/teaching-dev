@@ -1,9 +1,9 @@
 import { NestedEditorsContext, VoidEmitter } from '@mdxeditor/editor';
 import type { EditorConfig, LexicalEditor } from 'lexical';
-import { MathNode } from '../MathNode';
 import { InlineMath, Math } from 'mdast-util-math';
-import InlineMathEditor from './InlineMathEditor';
+import { MathNode } from '../MathNode';
 import BlockMathEditor from './BlockMathEditor';
+import InlineMathEditor from './InlineMathEditor';
 
 interface Props {
     /** The Lexical editor that contains the node */

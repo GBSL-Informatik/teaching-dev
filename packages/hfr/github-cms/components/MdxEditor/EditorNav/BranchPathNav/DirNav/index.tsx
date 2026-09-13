@@ -1,16 +1,16 @@
-import React from 'react';
+import Loader from '@tdev-components/Loader';
+import Card from '@tdev-components/shared/Card';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../../../hooks/useCmsStore';
-import Dir from '../../../../../models/Dir';
+import React from 'react';
 import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
-import Card from '@tdev-components/shared/Card';
-import Loader from '@tdev-components/Loader';
-import NavItem from '../../../../MdxEditor/EditorNav/BranchPathNav/NavItem';
-import { action } from 'mobx';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
+import Dir from '../../../../../models/Dir';
 import FileNav from '../../../../MdxEditor/EditorNav/BranchPathNav/FileNav';
+import NavItem from '../../../../MdxEditor/EditorNav/BranchPathNav/NavItem';
+import styles from './styles.module.scss';
 
 interface Props {
     dir: Dir;

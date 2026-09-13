@@ -1,9 +1,3 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import Button from '@tdev-components/shared/Button';
 import {
     mdiCircleEditOutline,
     mdiCloseCircle,
@@ -12,9 +6,15 @@ import {
     mdiTrashCan
 } from '@mdi/js';
 import { ContainerType, ContainerTypeModelMapping } from '@tdev-api/document';
-import TextInput from '@tdev-components/shared/TextInput';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import Button from '@tdev-components/shared/Button';
 import { Delete } from '@tdev-components/shared/Button/Delete';
+import TextInput from '@tdev-components/shared/TextInput';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import EditDataProps from '../EditDataProps';
+import styles from './styles.module.scss';
 
 interface Props {
     docContainer: ContainerTypeModelMapping[ContainerType];

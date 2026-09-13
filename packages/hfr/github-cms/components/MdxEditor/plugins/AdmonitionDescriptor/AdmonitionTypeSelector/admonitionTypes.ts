@@ -1,6 +1,5 @@
-import siteConfig from '@generated/docusaurus.config';
-import _ from 'es-toolkit/compat';
 import type * as Preset from '@docusaurus/preset-classic';
+import siteConfig from '@generated/docusaurus.config';
 
 const { organizationName, projectName, presets } = siteConfig;
 if (!organizationName || !projectName) {

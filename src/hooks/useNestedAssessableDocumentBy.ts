@@ -1,14 +1,13 @@
-import React from 'react';
 import type { AssessableType, AssessableTypeModelMapping, DocumentModelType } from '@tdev-api/document';
+import { Config } from '@tdev-api/documentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
-import { Config } from '@tdev-api/documentRoot';
-import { useDummyId } from './useDummyId';
-import { reaction } from 'mobx';
-import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
 import { AssessableMeta } from '@tdev-models/documents/Assessable/AssessableMeta';
+import { reaction } from 'mobx';
+import React from 'react';
+import { useDummyId } from './useDummyId';
+import { DUMMY_DOCUMENT_ID } from './useFirstMainDocument';
 import useLinkedMetaModel from './useLinkedMetaModel';
-import _ from 'es-toolkit/compat';
 
 const access = {} as Config;
 

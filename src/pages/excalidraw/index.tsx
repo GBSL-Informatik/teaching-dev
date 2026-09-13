@@ -1,6 +1,6 @@
-import clsx from 'clsx';
-import Layout from '@theme/Layout';
 import StandaloneEditor from '@tdev/excalidoc/ImageMarkupEditor/StandaloneEditor';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
 

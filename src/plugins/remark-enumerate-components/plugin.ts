@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import type { Root } from 'mdast';
+import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
 import { toJsxAttribute } from '../helpers';
 
 export interface PluginOptions {

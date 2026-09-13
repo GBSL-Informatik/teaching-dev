@@ -1,13 +1,13 @@
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { ModelMeta } from '@tdev/text-message/models/SimpleChat/ModelMeta';
+import Button from '@tdev-components/shared/Button';
 import { useCreateDocument } from '@tdev-hooks/useCreateDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
 import { ApiState } from '@tdev-stores/iStore';
+import { ModelMeta } from '@tdev/text-message/models/SimpleChat/ModelMeta';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import ChatName from './ChatName';
+import styles from './styles.module.scss';
 
 interface Props {
     id: string;

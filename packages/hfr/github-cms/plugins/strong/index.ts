@@ -10,15 +10,15 @@ import {
     createRootEditorSubscription$,
     realmPlugin
 } from '@mdxeditor/editor';
-import { LexicalEditor, COMMAND_PRIORITY_LOW } from 'lexical';
-import { MdastBoxVisitor } from './MdastBoxVisitor';
-import { $isBoxNode, $toggleBoxed, BoxNode, TOGGLE_BOX_COMMAND } from './BoxNode';
-import { LexicalBoxVisitor } from './LexicalBoxVisitor';
-import { Parent, PhrasingContent, Root } from 'mdast';
 import { transformer } from '@tdev-plugins/remark-strong/plugin';
 import { rootStore } from '@tdev/stores/rootStore';
+import { COMMAND_PRIORITY_LOW, LexicalEditor } from 'lexical';
+import { Parent, PhrasingContent, Root } from 'mdast';
 import handleFocusNextInline from '../../components/MdxEditor/helpers/lexical/handle-focus-next-inline';
 import handleFocusPreviousInline from '../../components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
+import { $isBoxNode, $toggleBoxed, BoxNode, TOGGLE_BOX_COMMAND } from './BoxNode';
+import { LexicalBoxVisitor } from './LexicalBoxVisitor';
+import { MdastBoxVisitor } from './MdastBoxVisitor';
 
 export interface Box extends Parent {
     type: 'box';

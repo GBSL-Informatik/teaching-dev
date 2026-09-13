@@ -1,10 +1,10 @@
-import { visit, SKIP } from 'unist-util-visit';
-import { Node, BlockContent, Image, Paragraph, Parent, PhrasingContent, Root, RootContent } from 'mdast';
-import type { MdxJsxFlowElement } from 'mdast-util-mdx';
+import _ from 'es-toolkit/compat';
+import { BlockContent, Image, Node, Paragraph, Parent, PhrasingContent, Root, RootContent } from 'mdast';
 import { LeafDirective } from 'mdast-util-directive';
+import type { MdxJsxFlowElement } from 'mdast-util-mdx';
+import { SKIP, visit } from 'unist-util-visit';
 import { Options, toJsxAttribute, transformAttributes } from '../helpers';
 import { ContainerDirectiveName, DirectiveBreak, DirectiveCard, DirectiveFlex } from './plugin';
-import _ from 'es-toolkit/compat';
 const MIN_WIDTH = '50px';
 
 const configureFlexOptions = (options: Options, mergeWith?: Partial<Options>) => {

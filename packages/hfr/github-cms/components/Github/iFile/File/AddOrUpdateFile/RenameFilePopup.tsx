@@ -1,17 +1,17 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../../../hooks/useCmsStore';
-import Popup from 'reactjs-popup';
-import AddOrUpdateFile from '.';
-import Button from '@tdev-components/shared/Button';
 import { mdiFileEdit } from '@mdi/js';
-import { PopupActions } from 'reactjs-popup/dist/types';
-import { ApiState } from '@tdev-stores/iStore';
-import FileStub from '../../../../../models/FileStub';
-import File from '../../../../../models/File';
+import Button from '@tdev-components/shared/Button';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
-import BinFile from '../../../../../models/BinFile';
+import { ApiState } from '@tdev-stores/iStore';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import AddOrUpdateFile from '.';
+import { useCmsStore } from '../../../../../hooks/useCmsStore';
+import BinFile from '../../../../../models/BinFile';
+import File from '../../../../../models/File';
+import FileStub from '../../../../../models/FileStub';
 
 interface Props {
     file: File | BinFile | FileStub;

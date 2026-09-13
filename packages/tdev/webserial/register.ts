@@ -1,6 +1,6 @@
 import { rootStore } from '@tdev-stores/rootStore';
-import WebserialStore from './stores/WebserialStore';
 import ViewStore from '@tdev-stores/ViewStores';
+import WebserialStore from './stores/WebserialStore';
 
 const createStore = (viewStore: ViewStore) => {
     return new WebserialStore(viewStore);

@@ -1,10 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
 import type { DocumentType } from '@tdev-api/document';
-import { computed } from 'mobx';
+import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
+import { useStore } from '@tdev-hooks/useStore';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface Props {
     pageId: string;

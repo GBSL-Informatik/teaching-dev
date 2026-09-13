@@ -1,10 +1,10 @@
-import { computed } from 'mobx';
-import { DocumentType, Document as DocumentProps } from '@tdev-api/document';
+import { Document as DocumentProps } from '@tdev-api/document';
+import { formatDateTime } from '@tdev-models/helpers/date';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _ from 'es-toolkit/compat';
+import { computed } from 'mobx';
 import File from './File';
 import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
-import { formatDateTime } from '@tdev-models/helpers/date';
 
 export class ModelMeta extends iFSMeta<'dir'> {
     constructor(props: Partial<MetaInit>) {

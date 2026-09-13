@@ -1,8 +1,8 @@
-import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/plugin-dynamic-routes';
-import stackblitzRspackTarget from '../plugins/plugin-stackblitz-rspack-target';
-import aliasConfigurationPlugin from '../plugins/plugin-alias-configuration';
 import type { PluginConfig } from '@docusaurus/types';
 import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
+import aliasConfigurationPlugin from '../plugins/plugin-alias-configuration';
+import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/plugin-dynamic-routes';
+import stackblitzRspackTarget from '../plugins/plugin-stackblitz-rspack-target';
 import { SiteConfig } from './siteConfig';
 
 // TODO: Consider bundling default / recommended plugins.

@@ -6,16 +6,16 @@ import {
     addExportVisitor$,
     addImportVisitor$,
     addLexicalNode$,
-    addToMarkdownExtension$,
     addMdastExtension$,
-    realmPlugin,
-    addSyntaxExtension$
+    addSyntaxExtension$,
+    addToMarkdownExtension$,
+    realmPlugin
 } from '@mdxeditor/editor';
 import { gfmFootnoteFromMarkdown, gfmFootnoteToMarkdown } from 'mdast-util-gfm-footnote';
 import { gfmFootnote } from 'micromark-extension-gfm-footnote';
 import { FootnoteDefinitionNode } from './FootnoteDefinition';
-import { LexicalFootnoteDefinitionVisitor, LexicalFootnoteReferenceVisitor } from './LexicalFootnoteVisitor';
 import { FootnoteReferenceNode } from './FootnoteReference';
+import { LexicalFootnoteDefinitionVisitor, LexicalFootnoteReferenceVisitor } from './LexicalFootnoteVisitor';
 import { MdastFootnoteDefinitionVisitor, MdastFootnoteReferenceVisitor } from './MdastFootnoteVisitor';
 
 export const footnotePlugin = realmPlugin<{}>({

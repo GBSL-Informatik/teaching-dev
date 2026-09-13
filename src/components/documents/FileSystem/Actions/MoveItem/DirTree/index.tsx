@@ -8,16 +8,16 @@ import {
     mdiFolderOpen,
     mdiFolderOutline
 } from '@mdi/js';
-import styles from './styles.module.scss';
-import Button from '@tdev-components/shared/Button';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
-import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
-import React from 'react';
-import { DocumentType } from '@tdev-api/document';
 import Icon, { Stack } from '@mdi/react';
+import { DocumentType } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
 import { getNumericCircleIcon } from '@tdev-components/shared/numberIcons';
+import Directory from '@tdev-models/documents/FileSystem/Directory';
 import type iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface DirProps {
     item: iFileSystem<any>;

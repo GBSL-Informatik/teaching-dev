@@ -1,13 +1,13 @@
-import { TypeDataMapping, Document as DocumentProps } from '@tdev-api/document';
+import { mdiFrequentlyAskedQuestions, mdiMessageQuestionOutline } from '@mdi/js';
+import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
+import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { action, computed, observable, observableRef } from 'mobx';
-import iAssessable from './iAssessable';
-import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
-import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
+import { range } from 'es-toolkit/math';
+import { action, computed, observable, observableRef } from 'mobx';
 import { AssessableMeta } from './AssessableMeta';
-import { mdiFrequentlyAskedQuestions, mdiMessageQuestionOutline } from '@mdi/js';
+import iAssessable from './iAssessable';
 
 export class ModelMeta extends AssessableMeta<'choice_answer'> implements AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';

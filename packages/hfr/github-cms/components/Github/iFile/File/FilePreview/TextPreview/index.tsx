@@ -1,9 +1,8 @@
-import React from 'react';
+import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import File from '../../../../../../models/File';
-import CodeBlock from '@theme/CodeBlock';
+import styles from './styles.module.scss';
 
 interface Props {
     file: File;

@@ -1,11 +1,11 @@
-import { action, computed, IReactionDisposer, observable, observableRef, reaction } from 'mobx';
-import { Document as DocumentProps, TypeDataMapping, DocumentType } from '@tdev-api/document';
+import { Document as DocumentProps, DocumentType, TypeDataMapping } from '@tdev-api/document';
+import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { debounce, isEqual, type DebouncedFunc } from 'es-toolkit/compat';
 import { ApiState } from '@tdev-stores/iStore';
+import { debounce, isEqual, type DebouncedFunc } from 'es-toolkit/compat';
+import { action, computed, IReactionDisposer, observable, observableRef, reaction } from 'mobx';
 import { NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import type iSideEffect from './SideEffects/iSideEffect';
-import { isDummyId, isTempId } from '@tdev-hooks/useDummyId';
 
 /**
  * normally, save only once all 1000ms

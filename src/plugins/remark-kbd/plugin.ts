@@ -1,7 +1,7 @@
-import { visit, CONTINUE, SKIP } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxAttribute, MdxJsxTextElement } from 'mdast-util-mdx';
 import { Parent, PhrasingContent, Root, RootContent, Text } from 'mdast';
+import type { MdxJsxTextElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
+import { CONTINUE, SKIP, visit } from 'unist-util-visit';
 import { toJsxAttribute } from '../helpers';
 
 type ActionStates = 'SPLIT_BRACKETS' | 'CREATE_KBD';

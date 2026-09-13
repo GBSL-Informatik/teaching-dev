@@ -1,17 +1,17 @@
-import * as React from 'react';
+import Translate, { translate } from '@docusaurus/Translate';
+import { mdiSync } from '@mdi/js';
+import { CodeType } from '@tdev-api/document';
+import iCode from '@tdev-models/documents/iCode';
+import Details from '@theme/Details';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { observer } from 'mobx-react-lite';
 import { Prism } from 'prism-react-renderer';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import Translate, { translate } from '@docusaurus/Translate';
+import * as React from 'react';
 import DiffViewer from 'react-diff-viewer-continued';
-import Details from '@theme/Details';
-import { observer } from 'mobx-react-lite';
 import Button from '../Button';
-import { mdiSync } from '@mdi/js';
-import iCode from '@tdev-models/documents/iCode';
-import { CodeType } from '@tdev-api/document';
+import styles from './styles.module.scss';
 
 const highlightSyntax = (str: string) => {
     if (!str) {

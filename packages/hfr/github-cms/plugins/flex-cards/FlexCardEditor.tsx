@@ -1,15 +1,15 @@
-import React from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { DirectiveEditorProps, useMdastNodeUpdater } from '@mdxeditor/editor';
-import { LeafDirective, Directives } from 'mdast-util-directive';
-import { BlockContent, PhrasingContent } from 'mdast';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Popup from 'reactjs-popup';
-import Button from '@tdev-components/shared/Button';
 import { mdiChevronRight } from '@mdi/js';
+import { DirectiveEditorProps, useMdastNodeUpdater } from '@mdxeditor/editor';
+import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
+import clsx from 'clsx';
+import { BlockContent, PhrasingContent } from 'mdast';
+import { Directives, LeafDirective } from 'mdast-util-directive';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import ItemEditor from './ItemEditor';
+import styles from './styles.module.scss';
 
 const isBreak = (node?: BlockContent | any): node is LeafDirective => {
     if (!node) {

@@ -1,16 +1,16 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
+import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import NavReloadRequest from '@tdev-components/Admin/ActionRequest/NavReloadRequest';
 import Badge from '@tdev-components/shared/Badge';
-import { orderBy } from 'es-toolkit/array';
-import StudentGroup from '@tdev-models/StudentGroup';
 import Button from '@tdev-components/shared/Button';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import Link from '@docusaurus/Link';
+import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
+import clsx from 'clsx';
+import { orderBy } from 'es-toolkit/array';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     groups: StudentGroup[];

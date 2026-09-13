@@ -1,11 +1,10 @@
 import { inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
-import { adminClient } from 'better-auth/client/plugins';
-import { oneTimeTokenClient } from 'better-auth/client/plugins';
+import customFields from '@tdev-components/utils/customFields';
+import { adminClient, oneTimeTokenClient } from 'better-auth/client/plugins';
 import { adminAc, userAc } from 'better-auth/plugins/admin/access';
 import { teacher } from './helpers/auth-permissions';
-import customFields from '@tdev-components/utils/customFields';
 
 export const { BACKEND_URL } = customFields;
 

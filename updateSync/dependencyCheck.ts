@@ -1,6 +1,6 @@
-import * as path from 'path';
+import { difference, intersection } from 'es-toolkit';
 import * as fs from 'fs';
-import { intersection, difference } from 'es-toolkit';
+import * as path from 'path';
 import { ReportBuilder } from './report';
 
 interface PackageJson {

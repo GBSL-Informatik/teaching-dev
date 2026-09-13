@@ -1,18 +1,18 @@
-import { observer } from 'mobx-react-lite';
-import React from 'react';
-import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
-import Loader from '@tdev-components/Loader';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { DocContext } from '@tdev-components/documents/DocumentContext';
+import Loader from '@tdev-components/Loader';
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
 import { useNestedAssessableDocumentBy } from '@tdev-hooks/useNestedAssessableDocumentBy';
-import { DocContext } from '@tdev-components/documents/DocumentContext';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
 import { type default as ChoiceAnswerModel, ModelMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
-import Options from '../Inputs/Options';
-import Option, { Props as OptionProps } from '../Inputs/Option';
-import QuestionCard from '../QuestionCard';
 import { action } from 'mobx';
-import { useDocument } from '@tdev-hooks/useContextDocument';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Option, { Props as OptionProps } from '../Inputs/Option';
+import Options from '../Inputs/Options';
+import QuestionCard from '../QuestionCard';
 
 interface SharedProps extends AssessableComponentProps<'choice_answer'> {
     multiple?: boolean;

@@ -1,15 +1,15 @@
-import React from 'react';
-import clsx from 'clsx';
-import { PopupActions } from 'reactjs-popup/dist/types';
-import Popup from 'reactjs-popup';
+import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { mdiCog } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import JsObjectEditor from '@tdev-components/shared/JsObject/Editor';
-import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
-import { getMetaElementFromScene } from '../../helpers/getElementsFromScene';
-import { getCustomProps, CustomProps, updateCustomProps } from '../../helpers/customProps';
-import { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
 import Card from '@tdev-components/shared/Card';
+import JsObjectEditor from '@tdev-components/shared/JsObject/Editor';
+import { JsTypes } from '@tdev-components/shared/JsObject/toJsSchema';
+import clsx from 'clsx';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import { CustomProps, getCustomProps, updateCustomProps } from '../../helpers/customProps';
+import { getMetaElementFromScene } from '../../helpers/getElementsFromScene';
 
 interface Props {
     api: ExcalidrawImperativeAPI;

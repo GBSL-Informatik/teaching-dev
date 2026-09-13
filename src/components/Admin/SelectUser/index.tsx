@@ -1,25 +1,20 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import UserTableRow from '@tdev-components/Admin/UserTable/User';
-import Button from '@tdev-components/shared/Button';
 import {
-    mdiCheckboxBlank,
     mdiCheckboxBlankOutline,
     mdiCheckboxMarked,
     mdiCheckCircle,
-    mdiCheckCircleOutline,
     mdiCircleMultiple,
-    mdiCircleOutline,
-    mdiSortAscending,
-    mdiSortDescending
+    mdiCircleOutline
 } from '@mdi/js';
-import { useStore } from '@tdev-hooks/useStore';
-import _ from 'es-toolkit/compat';
+import Button from '@tdev-components/shared/Button';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import _ from 'es-toolkit/compat';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 const IconMap = {
     none: mdiCircleOutline,

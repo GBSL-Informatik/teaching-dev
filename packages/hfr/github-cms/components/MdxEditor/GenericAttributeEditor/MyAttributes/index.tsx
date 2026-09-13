@@ -1,9 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
 import Badge from '@tdev-components/shared/Badge';
+import CopyBadge from '@tdev-components/shared/CopyBadge';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     className?: string;

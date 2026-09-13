@@ -1,4 +1,4 @@
-import { parse, RootNode, Node } from 'svg-parser';
+import { Node, parse, RootNode } from 'svg-parser';
 
 const objToAttr = (obj: Object) => {
     return Object.entries(obj || {})

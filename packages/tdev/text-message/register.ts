@@ -1,8 +1,8 @@
 import { rootStore } from '@tdev-stores/rootStore';
-import { createModel as createTextMessage } from './models/TextMessage';
-import { createModel as createSimpleChat } from './models/SimpleChat';
 import SimpleChat from './components/SimpleChat/SimpleChat';
+import { createModel as createSimpleChat } from './models/SimpleChat';
 import { ModelMeta } from './models/SimpleChat/ModelMeta';
+import { createModel as createTextMessage } from './models/TextMessage';
 
 const register = () => {
     rootStore.documentStore.registerFactory('text_message', createTextMessage);

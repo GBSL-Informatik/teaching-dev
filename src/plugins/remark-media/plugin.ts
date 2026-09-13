@@ -1,8 +1,8 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxFlowElement } from 'mdast-util-mdx';
-import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '../helpers';
 import { Link, Root, Text } from 'mdast';
+import type { MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
+import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '../helpers';
 
 export enum LeafDirectiveName {
     VIDEO = 'video',

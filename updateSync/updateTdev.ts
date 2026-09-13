@@ -1,13 +1,13 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { exec as execCallback, execSync } from 'child_process';
-import { promisify } from 'util';
+import * as fs from 'fs';
 import { load as yamlLoad } from 'js-yaml';
-import { Config, TrackedElementConfig } from './types';
-import { expandTilde } from './util';
 import micromatch from 'micromatch';
+import * as path from 'path';
+import { promisify } from 'util';
 import { calculateDependenciesDiff as determineDependenciesDiff } from './dependencyCheck';
 import { ReportBuilder } from './report';
+import { Config, TrackedElementConfig } from './types';
+import { expandTilde } from './util';
 
 const SYNC_MARKER_FILENAME = '.updateTdev';
 const CONFIG_FILENAME = 'updateTdev.config.yaml';

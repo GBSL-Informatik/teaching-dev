@@ -1,10 +1,10 @@
-import React, { type ReactNode } from 'react';
-import AnnouncementBar from '@theme-original/AnnouncementBar';
-import type AnnouncementBarType from '@theme/AnnouncementBar';
 import type { WrapperProps } from '@docusaurus/types';
 import PresentationModal from '@tdev-components/PresentationPanel/PresentationModal';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
+import AnnouncementBar from '@theme-original/AnnouncementBar';
+import type AnnouncementBarType from '@theme/AnnouncementBar';
+import { observer } from 'mobx-react-lite';
+import { type ReactNode } from 'react';
 
 type Props = WrapperProps<typeof AnnouncementBarType>;
 

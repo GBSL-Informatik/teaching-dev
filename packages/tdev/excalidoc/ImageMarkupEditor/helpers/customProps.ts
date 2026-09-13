@@ -1,7 +1,7 @@
 import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { EXCALIDRAW_EXPORT_QUALITY, EXCALIDRAW_MAX_EXPORT_WIDTH } from './constants';
 import { getBoundingRect } from './getBoundingRect';
-import { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { getMetaElementFromScene } from './getElementsFromScene';
 import updateElementsWith from './updateElementsWith';
 

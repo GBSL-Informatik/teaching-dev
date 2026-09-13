@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import DocumentPresentationView from './DocumentPresentationView';
-import Alert from '@tdev-components/shared/Alert';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import Alert from '@tdev-components/shared/Alert';
+import { useStore } from '@tdev-hooks/useStore';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import DocumentPresentationView from './DocumentPresentationView';
+import styles from './styles.module.scss';
 
 interface Props {}
 

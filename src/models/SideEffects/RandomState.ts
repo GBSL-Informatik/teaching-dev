@@ -1,8 +1,7 @@
-import { DocumentType, StateType, TypeDataMapping } from '@tdev-api/document';
-import iSideEffect from './iSideEffect';
-import _ from 'es-toolkit/compat';
+import { StateType, TypeDataMapping } from '@tdev-api/document';
 import { UserStore } from '@tdev-stores/UserStore';
 import { computed } from 'mobx';
+import iSideEffect from './iSideEffect';
 
 const States: StateType[] = ['checked', 'question', 'unset', 'star', 'star-half', 'star-empty'] as const;
 

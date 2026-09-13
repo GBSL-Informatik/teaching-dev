@@ -1,11 +1,10 @@
-import React from 'react';
-import _ from 'es-toolkit/compat';
-import PropertyEditor from '../PropertyEditor';
-import Popup from 'reactjs-popup';
 import { mdiCog } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import { PopupActions } from 'reactjs-popup/dist/types';
 import type { FormField } from '@tdev-models/Form/Field';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import PropertyEditor from '../PropertyEditor';
 
 export type GenericPropery = FormField<string>;
 

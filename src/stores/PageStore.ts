@@ -1,14 +1,14 @@
-import { action, computed, observable, reaction, transaction, observableRef } from 'mobx';
-import iStore from '@tdev-stores/iStore';
-import { RootStore } from '@tdev-stores/rootStore';
-import Page from '@tdev-models/Page';
-import { computedFn } from 'mobx-utils';
-import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
 import type { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import siteConfig from '@generated/docusaurus.config';
+import globalData from '@generated/globalData';
+import { allDocuments as apiAllDocuments, DocumentType } from '@tdev-api/document';
+import Page from '@tdev-models/Page';
+import iStore from '@tdev-stores/iStore';
+import { RootStore } from '@tdev-stores/rootStore';
 import { PageIndex } from '@tdev/page-index';
 import { groupBy } from 'es-toolkit/array';
-import globalData from '@generated/globalData';
+import { action, computed, observable, observableRef, reaction, transaction } from 'mobx';
+import { computedFn } from 'mobx-utils';
 const ensureTrailingSlash = (str: string) => {
     return str.endsWith('/') ? str : `${str}/`;
 };

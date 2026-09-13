@@ -1,9 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
-import CodeBlock from '@theme/CodeBlock';
-import { templateReplacer } from '../templateReplacer';
 import { CodeAttributes } from '@tdev-plugins/remark-code-as-attribute/plugin';
+import CodeBlock from '@theme/CodeBlock';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { templateReplacer } from '../templateReplacer';
 
 interface Props {
     children?: React.ReactNode;

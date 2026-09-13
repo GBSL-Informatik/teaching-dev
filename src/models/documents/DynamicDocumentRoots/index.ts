@@ -1,14 +1,14 @@
-import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
 import {
-    Document as DocumentProps,
-    TypeDataMapping,
     Access,
     ContainerType,
-    ContainerTypeModelMapping
+    ContainerTypeModelMapping,
+    Document as DocumentProps,
+    TypeDataMapping
 } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observable } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
 import { ContainerMeta } from './ContainerMeta';
 

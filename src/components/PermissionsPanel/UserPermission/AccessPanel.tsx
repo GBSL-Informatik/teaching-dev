@@ -1,14 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../AccessPanel.module.scss';
-import { observer } from 'mobx-react-lite';
-import DocumentRoot from '@tdev-models/DocumentRoot';
-import { useStore } from '@tdev-hooks/useStore';
-import UserPermission from '.';
-import AccessSelector from '../AccessSelector';
-import Loader from '@tdev-components/Loader';
 import { Access } from '@tdev-api/document';
-import _ from 'es-toolkit/compat';
+import Loader from '@tdev-components/Loader';
+import { useStore } from '@tdev-hooks/useStore';
+import DocumentRoot from '@tdev-models/DocumentRoot';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import UserPermission from '.';
+import styles from '../AccessPanel.module.scss';
+import AccessSelector from '../AccessSelector';
 
 interface Props {
     documentRoots: DocumentRoot<any>[];

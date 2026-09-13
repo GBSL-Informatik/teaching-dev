@@ -1,10 +1,10 @@
 import React from 'react';
 // import styles from '../../../styles/ui.module.css';
-import Popup from 'reactjs-popup';
-import { ImageDialog } from './ImagesDialog';
-import Button from '@tdev-components/shared/Button';
 import { mdiImageOutline } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
+import { ImageDialog } from './ImagesDialog';
 
 /**
  * A toolbar button that allows the user to insert an image from an URL.

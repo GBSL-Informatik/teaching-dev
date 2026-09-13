@@ -1,5 +1,5 @@
-import { action, computed, observable } from 'mobx';
 import ViewStore from '@tdev-stores/ViewStores/index';
+import { action, computed, observable } from 'mobx';
 import SerialDevice, { Config } from '../models/SerialDevice';
 
 export default class WebserialStore {

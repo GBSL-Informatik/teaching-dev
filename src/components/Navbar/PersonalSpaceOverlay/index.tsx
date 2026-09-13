@@ -1,15 +1,15 @@
-import styles from './styles.module.scss';
-import Popup from 'reactjs-popup';
-import clsx from 'clsx';
-import { mdiFolderHomeOutline } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import Directory from '@tdev-components/documents/FileSystem/Directory';
-import React from 'react';
-import { PopupActions } from 'reactjs-popup/dist/types';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { mdiFolderHomeOutline } from '@mdi/js';
+import Directory from '@tdev-components/documents/FileSystem/Directory';
+import Button from '@tdev-components/shared/Button';
 import customFields from '@tdev-components/utils/customFields';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import styles from './styles.module.scss';
 const { PERSONAL_SPACE_DOC_ROOT_ID } = customFields;
 
 const PersonalSpaceOverlay = observer(() => {

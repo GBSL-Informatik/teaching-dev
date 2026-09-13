@@ -1,10 +1,3 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import _ from 'es-toolkit/compat';
-import File from '../../../../models/File';
-import Save from './Save';
-import Popup from 'reactjs-popup';
-import Button from '@tdev-components/shared/Button';
 import {
     mdiChevronDown,
     mdiCloseCircle,
@@ -12,15 +5,21 @@ import {
     mdiContentSaveAlert,
     mdiSourceBranchPlus
 } from '@mdi/js';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
-import Card from '@tdev-components/shared/Card';
-import { PopupActions } from 'reactjs-popup/dist/types';
+import Button from '@tdev-components/shared/Button';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import { ApiState } from '@tdev-stores/iStore';
+import Card from '@tdev-components/shared/Card';
 import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
-import NewBranch from '../../../Github/Branch/NewBranch';
+import { ApiState } from '@tdev-stores/iStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
+import File from '../../../../models/File';
+import NewBranch from '../../../Github/Branch/NewBranch';
+import Save from './Save';
+import styles from './styles.module.scss';
 
 export interface Props {
     file: File;

@@ -1,8 +1,8 @@
-import { MigrationRunner } from '../src/constants';
-import { packageJson } from '../src/helpers/loadFile';
 import { execa } from 'execa';
-import { writePackageJson } from '../src/helpers/writeFile';
+import { MigrationRunner } from '../src/constants';
 import { modifyPackages } from '../src/helpers/actions';
+import { packageJson } from '../src/helpers/loadFile';
+import { writePackageJson } from '../src/helpers/writeFile';
 
 const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });

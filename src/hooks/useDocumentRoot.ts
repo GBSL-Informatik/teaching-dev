@@ -1,10 +1,10 @@
-import React from 'react';
 import { Access, DocumentType } from '@tdev-api/document';
-import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
-import { useStore } from '@tdev-hooks/useStore';
 import { Config } from '@tdev-api/documentRoot';
-import { useDummyId } from './useDummyId';
+import { useStore } from '@tdev-hooks/useStore';
+import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
 import { reaction } from 'mobx';
+import React from 'react';
+import { useDummyId } from './useDummyId';
 
 /**
  * 1. create a dummy documentRoot with default (meta) data

@@ -1,14 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { useColorMode } from '@docusaurus/theme-common';
+import { mdiPresentationPlay } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import { useClientLib } from '@tdev-hooks/useClientLib';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
 import type { default as PresentationPanelLib } from '..';
-import Button from '@tdev-components/shared/Button';
-import { mdiPresentationPlay } from '@mdi/js';
-import { useColorMode } from '@docusaurus/theme-common';
+import styles from './styles.module.scss';
 
 interface Props {}
 

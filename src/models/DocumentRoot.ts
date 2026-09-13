@@ -1,11 +1,11 @@
-import { action, computed, observable } from 'mobx';
-import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
-import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
-import { highestAccess, leveledAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
+import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { isDummyId } from '@tdev-hooks/useDummyId';
+import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { orderBy } from 'es-toolkit/array';
 import { Hashery } from 'hashery';
+import { action, computed, observable } from 'mobx';
+import { highestAccess, leveledAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 
 /**
  * removes react specific props from the object:

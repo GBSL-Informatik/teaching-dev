@@ -1,12 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import Dir, { DirType } from '@tdev-components/FileSystem/Dir';
-import HtmlEditor from '..';
+import { resolvePath } from '@tdev-models/helpers/resolvePath';
 import { MultiCode } from '@tdev-plugins/remark-code-as-attribute/plugin';
 import { extractMetaProps } from '@tdev/theme/CodeBlock';
-import { resolvePath } from '@tdev-models/helpers/resolvePath';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import HtmlEditor from '..';
+import styles from './styles.module.scss';
 
 interface MetaProps {
     id?: string;

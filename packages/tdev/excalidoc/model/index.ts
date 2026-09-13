@@ -1,11 +1,11 @@
-import { action, computed, observableRef } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, Factory } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
 import type { exportToBlob } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types';
-import { ModelMeta, MetaInit } from './ModelMeta';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observableRef } from 'mobx';
+import { ModelMeta } from './ModelMeta';
 import { blobToBase64 } from './helpers';
 type ExportToBlobArgs = Parameters<typeof exportToBlob>[0];
 type ExportToBlobReturn = ReturnType<typeof exportToBlob>;

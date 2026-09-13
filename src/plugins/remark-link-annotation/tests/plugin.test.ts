@@ -1,6 +1,6 @@
 import { remark } from 'remark';
-import remarkMdx from 'remark-mdx';
 import remarkDirective from 'remark-directive';
+import remarkMdx from 'remark-mdx';
 import { describe, expect, it } from 'vitest';
 
 const process = async (content: string, config: { prefix?: string | null; postfix?: string | null } = {}) => {

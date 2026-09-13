@@ -1,11 +1,8 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
+import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import Button from '../Button';
-import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { Color } from '../Colors';
-import { useStore } from '@tdev-hooks/useStore';
 
 interface Props {
     targetId: string;

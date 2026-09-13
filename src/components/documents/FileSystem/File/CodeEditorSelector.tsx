@@ -1,9 +1,8 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
 import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
 import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
 import iCode from '@tdev-models/documents/iCode';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     code: iCode;

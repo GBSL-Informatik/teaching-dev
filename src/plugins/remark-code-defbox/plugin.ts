@@ -1,6 +1,6 @@
-import type { Plugin, Transformer } from 'unified';
 import { Paragraph, Root } from 'mdast';
 import { MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
 
 interface PluginOptions {
     tagNames?: {

@@ -1,20 +1,18 @@
-import React from 'react';
-import clsx from 'clsx';
-import sharedStyles from '../styles.module.scss';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { DocumentType } from '@tdev-api/document';
-import MdxComment from '@tdev-models/documents/MdxComment';
-import { QuillV2Component } from '@tdev-components/documents/QuillV2';
-import Icon, { Stack } from '@mdi/react';
 import {
     mdiCommentAccount,
     mdiCommentAccountOutline,
     mdiDotsHorizontalCircle,
     mdiDotsHorizontalCircleOutline
 } from '@mdi/js';
-import Options from './Options';
+import Icon, { Stack } from '@mdi/react';
+import { QuillV2Component } from '@tdev-components/documents/QuillV2';
 import { useStore } from '@tdev-hooks/useStore';
+import MdxComment from '@tdev-models/documents/MdxComment';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import sharedStyles from '../styles.module.scss';
+import Options from './Options';
+import styles from './styles.module.scss';
 
 interface Props {
     comment: MdxComment;

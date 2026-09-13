@@ -1,6 +1,6 @@
+import React from 'react';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 import FileStub from '../../../models/FileStub';
-import React from 'react';
 export const isRelPath = (path?: string) => {
     if (!path) {
         return false;

@@ -1,17 +1,16 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Layout from '@theme/Layout';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Link from '@docusaurus/Link';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import { useGithubAccess } from '../hooks/useGithubAccess';
 import { Redirect } from '@docusaurus/router';
-import Card from '@tdev-components/shared/Card';
-import LoginProfileButton from '@tdev-components/Navbar/LoginProfileButton';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Loader from '@tdev-components/Loader';
+import LoginProfileButton from '@tdev-components/Navbar/LoginProfileButton';
+import Card from '@tdev-components/shared/Card';
 import customFields from '@tdev-components/utils/customFields';
+import { useStore } from '@tdev-hooks/useStore';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import { useGithubAccess } from '../hooks/useGithubAccess';
+import styles from './styles.module.scss';
 const { APP_URL, GH_OAUTH_CLIENT_ID } = customFields;
 
 const callback = `${APP_URL || 'http://localhost:3000'}/gh-callback`;

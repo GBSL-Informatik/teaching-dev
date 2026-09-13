@@ -1,11 +1,11 @@
-import React, { useRef, type ComponentProps, type ReactElement } from 'react';
-import clsx from 'clsx';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import clsx from 'clsx';
+import React, { useRef, type ComponentProps, type ReactElement } from 'react';
 
 import { Collapsible } from '@docusaurus/theme-common';
 
-import styles from './styles.module.css';
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
+import styles from './styles.module.css';
 
 function isInSummary(node: HTMLElement | null): boolean {
     if (!node) {

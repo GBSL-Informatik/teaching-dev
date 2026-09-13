@@ -1,6 +1,6 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
 import { Root, Text } from 'mdast';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
 
 interface OptionsInput {
     prefix?: string | null;

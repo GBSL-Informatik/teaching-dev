@@ -1,7 +1,7 @@
-import { type TypeDataMapping, type AssessableType } from '@tdev-api/document';
-import type { default as iAssessable, Assessement } from './iAssessable';
+import { type AssessableType, type TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { observable } from 'mobx';
+import type { Assessement, default as iAssessable } from './iAssessable';
 
 export type ExpandedOption = 'all' | 'correct' | 'selected' | 'none';
 

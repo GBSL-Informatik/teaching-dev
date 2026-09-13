@@ -1,7 +1,7 @@
-import path from 'path';
+import { debounce } from 'es-toolkit/compat';
 import fs from 'fs/promises';
 import { load as yamlLoad } from 'js-yaml';
-import { debounce } from 'es-toolkit/compat';
+import path from 'path';
 
 interface TdevPackageConfig {
     path: string;
