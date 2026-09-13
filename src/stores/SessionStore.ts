@@ -4,7 +4,7 @@ import iStore from '@tdev-stores/iStore';
 import api from '@tdev-api/base';
 import { mdiContentSaveOffOutline, mdiDatabaseSyncOutline, mdiHarddisk } from '@mdi/js';
 
-export class SessionStore extends iStore<'checkLogin'> {
+export class SessionStore extends iStore {
     readonly root: RootStore;
 
     @observable accessor initialized = false;
