@@ -1,3 +1,6 @@
+// ace editor must be imported before ace-builds/*
+import AceEditor from 'react-ace';
+// rest
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
 import 'ace-builds/esm-resolver';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -11,7 +14,6 @@ import 'ace-builds/webpack-resolver';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
-import AceEditor from 'react-ace';
 import styles from './styles.module.scss';
 
 const ALIAS_LANG_MAP_ACE = {
