@@ -1,6 +1,6 @@
+import minimist from 'minimist';
 import fs from 'node:fs';
 import { exit } from 'node:process';
-import minimist from 'minimist';
 import {
     DOC_PATHS,
     loadMaterialConfig,

@@ -1,10 +1,10 @@
+import { fileURLToPath } from 'node:url';
 import { remark } from 'remark';
-import remarkMdx from 'remark-mdx';
 import remarkDirective from 'remark-directive';
+import remarkMdx from 'remark-mdx';
+import { VFile } from 'vfile';
 import { describe, expect, it } from 'vitest';
 import { PluginOptions } from '../plugin';
-import { VFile } from 'vfile';
-import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 
 const alignLeft = (content: string) => {

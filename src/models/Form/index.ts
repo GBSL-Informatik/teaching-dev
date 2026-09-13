@@ -1,4 +1,3 @@
-import _ from 'es-toolkit/compat';
 import { action, computed, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import Field, { FormField } from './Field';

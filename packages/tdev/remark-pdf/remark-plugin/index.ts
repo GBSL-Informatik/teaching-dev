@@ -1,9 +1,9 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxFlowElement, MdxjsEsm } from 'mdast-util-mdx';
 import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '@tdev/core/src/plugins/helpers';
 import { Root, Text } from 'mdast';
+import type { MdxJsxFlowElement, MdxjsEsm } from 'mdast-util-mdx';
 import path from 'path';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
 
 const IMPORT_PDF_REACT_NODE: MdxjsEsm = {
     type: 'mdxjsEsm',

@@ -1,5 +1,5 @@
-import iDocument from '@tdev-models/iDocument';
 import type { Document as DocumentProps, ScriptVersionData } from '@tdev-api/document';
+import iDocument from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { computed } from 'mobx';
 import type Script from './Code';

@@ -1,5 +1,5 @@
-import type { SiteConfig } from './siteConfig';
 import path from 'path';
+import type { SiteConfig } from './siteConfig';
 
 export const withSiteConfig = async (): Promise<SiteConfig> => {
     if (process.env.SITE_CONFIG_PATH) {

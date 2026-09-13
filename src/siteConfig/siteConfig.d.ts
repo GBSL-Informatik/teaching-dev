@@ -2,10 +2,10 @@ import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
 import type { PluginConfig, PluginOptions, RouteConfig } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
 
-import type { DeepPartial } from 'utility-types';
-import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
 import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-blog';
+import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
 import type { Options as PagesPluginOptions } from '@docusaurus/plugin-content-pages';
+import type { DeepPartial } from 'utility-types';
 export type ShowEditThisPage = 'always' | 'never' | 'loggedIn' | 'teachers' | 'admins';
 export type EditThisPageOption = 'github' | 'github-dev' | 'cms';
 

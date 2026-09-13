@@ -1,5 +1,5 @@
-import type PyodideStore from './stores/PyodideStore';
 import PyodideCode from './models/PyodideCode';
+import type PyodideStore from './stores/PyodideStore';
 export interface PyodideData {
     code: string;
 }

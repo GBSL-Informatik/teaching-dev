@@ -1,11 +1,10 @@
-import { action, computed, observable } from 'mobx';
-import { Document as DocumentProps, Access, ContainerType } from '@tdev-api/document';
+import { Access, ContainerType, Document as DocumentProps } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import _ from 'es-toolkit/compat';
+import { action, computed, observable } from 'mobx';
+import DynamicDocumentRoots from './documents/DynamicDocumentRoots';
+import { ContainerMeta } from './documents/DynamicDocumentRoots/ContainerMeta';
 import { NoneAccess, RWAccess, sharedAccess } from './helpers/accessPolicy';
 import iDocument from './iDocument';
-import { ContainerMeta } from './documents/DynamicDocumentRoots/ContainerMeta';
-import DynamicDocumentRoots from './documents/DynamicDocumentRoots';
 
 interface DocumentContainerData {
     name: string;

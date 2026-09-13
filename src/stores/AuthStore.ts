@@ -1,8 +1,7 @@
-import { action, observable } from 'mobx';
-import _ from 'es-toolkit/compat';
-import type { RootStore } from './rootStore';
-import { authClient } from '../auth-client';
 import customFields from '@tdev-components/utils/customFields';
+import { action, observable } from 'mobx';
+import { authClient } from '../auth-client';
+import type { RootStore } from './rootStore';
 const { APP_URL } = customFields;
 
 export class AuthStore {

@@ -1,4 +1,4 @@
-import { TypeDataMapping, Access } from '@tdev-api/document';
+import { TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { fSeconds } from '../helpers/time';
 

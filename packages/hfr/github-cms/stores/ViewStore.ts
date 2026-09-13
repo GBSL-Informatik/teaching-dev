@@ -1,7 +1,7 @@
-import { CmsStore } from '../stores/CmsStore';
+import iViewStore from '@tdev-stores/ViewStores/iViewStore';
 import { action, computed, observable } from 'mobx';
 import Dir from '../models/Dir';
-import iViewStore from '@tdev-stores/ViewStores/iViewStore';
+import { CmsStore } from '../stores/CmsStore';
 
 export default class ViewStore extends iViewStore<CmsStore> {
     @observable accessor showFileTree = false;

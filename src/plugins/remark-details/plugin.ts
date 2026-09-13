@@ -1,7 +1,7 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
 import type { BlockContent, Root, Text } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
 
 // TODO: How to type this?
 //       TS doesn't enforce that only keys of directiveNames can be used in

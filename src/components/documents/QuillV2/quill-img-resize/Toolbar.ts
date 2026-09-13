@@ -1,7 +1,7 @@
 import { mdiFormatAlignCenter, mdiFormatAlignLeft, mdiFormatAlignRight, mdiTrashCan } from '@mdi/js';
-import { BaseModule } from './BaseModule';
 import { Parchment } from 'quill';
 import styles from '../styles.module.scss';
+import { BaseModule } from './BaseModule';
 import { deleteSelectedImage } from './helper';
 
 // let Parchment: any = {};

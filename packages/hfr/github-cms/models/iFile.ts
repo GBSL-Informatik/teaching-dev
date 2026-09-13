@@ -1,6 +1,3 @@
-import { CmsStore } from '../stores/CmsStore';
-import iEntry, { iEntryProps } from './iEntry';
-import { action, computed } from 'mobx';
 import {
     mdiFileCode,
     mdiFileDocumentOutline,
@@ -10,8 +7,11 @@ import {
     mdiLoading
 } from '@mdi/js';
 import { keysOfInterface } from '@tdev-models/helpers/keysOfInterface';
-import { isApplication, isAudio, isImage, isVideo } from './helpers';
 import { ApiState } from '@tdev-stores/iStore';
+import { action, computed } from 'mobx';
+import { CmsStore } from '../stores/CmsStore';
+import { isApplication, isAudio, isImage, isVideo } from './helpers';
+import iEntry, { iEntryProps } from './iEntry';
 
 export interface FileStubProps extends iEntryProps {
     size: number;

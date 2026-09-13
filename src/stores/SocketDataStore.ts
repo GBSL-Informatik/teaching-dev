@@ -1,8 +1,18 @@
-import { RootStore } from '@tdev-stores/rootStore';
-import { io, Socket } from 'socket.io-client';
-import { action, observable, reaction, observableRef } from 'mobx';
 import { default as api } from '@tdev-api/base';
+import { CmsSettings } from '@tdev-api/cms';
+import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
+import { GroupPermission, UserPermission } from '@tdev-api/permission';
+import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
+import { User } from '@tdev-api/user';
+import customFields from '@tdev-components/utils/customFields';
+import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
+import { RootStore } from '@tdev-stores/rootStore';
+import { authClient } from '@tdev/auth-client';
+import { action, observable, observableRef, reaction } from 'mobx';
+import { io, Socket } from 'socket.io-client';
+import { Document, DocumentType, type ViewStoreTypeMapping } from '../api/document';
 import {
     Action,
     ChangedDocument,
@@ -17,16 +27,6 @@ import {
     ServerToClientEvents,
     StreamedDynamicDocument
 } from '../api/IoEventTypes';
-import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
-import { GroupPermission, UserPermission } from '@tdev-api/permission';
-import { Document, DocumentType, type ViewStoreTypeMapping } from '../api/document';
-import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import { CmsSettings } from '@tdev-api/cms';
-import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
-import StudentGroup from '@tdev-models/StudentGroup';
-import { authClient } from '@tdev/auth-client';
-import { User } from '@tdev-api/user';
-import customFields from '@tdev-components/utils/customFields';
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 /**

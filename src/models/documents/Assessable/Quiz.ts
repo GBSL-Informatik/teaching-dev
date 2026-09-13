@@ -1,14 +1,14 @@
-import { TypeDataMapping, Document as DocumentProps, AssessableType } from '@tdev-api/document';
+import { mdiTimelineQuestionOutline } from '@mdi/js';
+import { AssessableType, Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
+import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
+import { IfmColors } from '@tdev-components/shared/Colors';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { action, computed, observableRef } from 'mobx';
-import iAssessable, { Assessement, Correctness, CorrectnessColors } from './iAssessable';
-import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
-import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
+import { range } from 'es-toolkit/math';
+import { action, computed, observableRef } from 'mobx';
 import { AssessableMeta } from './AssessableMeta';
-import { mdiTimelineQuestionOutline } from '@mdi/js';
-import { IfmColors } from '@tdev-components/shared/Colors';
+import iAssessable, { Assessement, Correctness, CorrectnessColors } from './iAssessable';
 
 const DEFAULT_DATA = Object.freeze<TypeDataMapping['quiz']>({
     questionOrder: [],

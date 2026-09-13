@@ -1,10 +1,10 @@
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxAttribute, MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
-import { Image, Parent, PhrasingContent, Root } from 'mdast';
-import path from 'path';
-import { promises as fs } from 'fs';
-import { toJsxAttribute } from '../helpers';
 import clsx from 'clsx';
+import { promises as fs } from 'fs';
+import { Image, Parent, PhrasingContent, Root } from 'mdast';
+import type { MdxJsxAttribute, MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
+import path from 'path';
+import type { Plugin, Transformer } from 'unified';
+import { toJsxAttribute } from '../helpers';
 import { transformer } from './transformer';
 
 const DEFAULT_TAG_NAMES = {

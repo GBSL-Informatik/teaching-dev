@@ -1,7 +1,7 @@
 import { DocumentType } from '@tdev-api/document';
+import { Config } from '@tdev-api/documentRoot';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useFirstMainDocument } from './useFirstMainDocument';
-import { Config } from '@tdev-api/documentRoot';
 
 /**
  * This hook provides access to the first main document of the rootDocument.

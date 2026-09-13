@@ -1,7 +1,6 @@
 import { CmsSettings } from '@tdev-api/cms';
-import { CmsStore } from '../stores/CmsStore';
-import _ from 'es-toolkit/compat';
 import { action, computed, observable, observableRef } from 'mobx';
+import { CmsStore } from '../stores/CmsStore';
 
 export const REFRESH_THRESHOLD = 60 * 60;
 

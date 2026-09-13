@@ -1,11 +1,11 @@
-import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
-import { packageJson, updateTdevConfig } from '../src/helpers/loadFile';
+import { MigrationRunner } from '../src/constants';
 import { ensureTdevConfig, modifyPackages } from '../src/helpers/actions';
-import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
 import { filesContainingMatch } from '../src/helpers/filesContainingMatch';
-import { applySearchAndReplace } from '../src/helpers/searchAndReplace';
 import { hasUncommittedChanges } from '../src/helpers/gitHelpers';
+import { packageJson, updateTdevConfig } from '../src/helpers/loadFile';
+import { applySearchAndReplace } from '../src/helpers/searchAndReplace';
+import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
 
 const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });

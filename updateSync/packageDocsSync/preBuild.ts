@@ -1,5 +1,5 @@
-import path from 'path';
 import minimist from 'minimist';
+import path from 'path';
 import packageDocsSync from '.';
 const argv = minimist(process.argv.slice(2), {
     string: ['src', 'dest'],

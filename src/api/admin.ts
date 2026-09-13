@@ -1,5 +1,5 @@
-import api from './base';
 import { AxiosPromise } from 'axios';
+import api from './base';
 import type { Document, DocumentType } from './document';
 import { User } from './user';
 

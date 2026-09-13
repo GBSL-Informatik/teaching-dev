@@ -1,4 +1,4 @@
-import { ExcalidrawElement, ExcalidrawFreeDrawElement } from '@excalidraw/excalidraw/element/types';
+import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 
 interface Rect {
     x: number;

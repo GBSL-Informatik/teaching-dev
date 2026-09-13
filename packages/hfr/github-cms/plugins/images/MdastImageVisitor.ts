@@ -2,12 +2,12 @@
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
 
-import * as Mdast from 'mdast';
-import { $createImageNode } from './ImageNode';
 import { MdastImportVisitor } from '@mdxeditor/editor';
-import { $createImageCaptionNode } from './ImageCaptionNode';
+import * as Mdast from 'mdast';
 import { ImageCaption, ImageFigure } from '.';
+import { $createImageCaptionNode } from './ImageCaptionNode';
 import { $createImageFigureNode } from './ImageFigureNode';
+import { $createImageNode } from './ImageNode';
 
 export const MdastImageVisitor: MdastImportVisitor<Mdast.Image> = {
     testNode: 'image',

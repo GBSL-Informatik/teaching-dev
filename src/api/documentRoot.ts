@@ -1,5 +1,5 @@
-import api from './base';
 import { AxiosPromise } from 'axios';
+import api from './base';
 import { Access, Document, DocumentType } from './document';
 import { GroupPermissionBase, UserPermissionBase } from './permission';
 

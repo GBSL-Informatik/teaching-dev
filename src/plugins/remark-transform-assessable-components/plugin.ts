@@ -1,7 +1,7 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
-import type { Root, BlockContent, DefinitionContent } from 'mdast';
+import type { BlockContent, DefinitionContent, Root } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
 import { toJsxAttribute, toMdxJsxExpressionAttribute } from '../helpers';
 
 type FlowChildren = (BlockContent | DefinitionContent)[];

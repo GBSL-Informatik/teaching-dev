@@ -1,6 +1,6 @@
-import { visit, SKIP, CONTINUE } from 'unist-util-visit';
-import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import { BlockContent, Image, Parent, PhrasingContent, Root, RootContent } from 'mdast';
+import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
+import { CONTINUE, SKIP, visit } from 'unist-util-visit';
 import { cleanedText, ParsedOptions, parseOptions } from '../helpers';
 
 const trimText = (nodes: PhrasingContent[], location: 'start' | 'end') => {

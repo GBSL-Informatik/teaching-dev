@@ -1,13 +1,13 @@
 import _ from 'es-toolkit/compat';
-import type { JsModelType } from './iJs';
 import type { JsValue } from '../../toJsSchema';
 import JsArray from './JsArray';
-import JsNumber from './JsNumber';
-import JsString from './JsString';
 import JsBoolean from './JsBoolean';
-import JsObject from './JsObject';
-import JsNullish from './JsNullish';
 import JsFunction from './JsFunction';
+import JsNullish from './JsNullish';
+import JsNumber from './JsNumber';
+import JsObject from './JsObject';
+import JsString from './JsString';
+import type { JsModelType } from './iJs';
 import iParentable from './iParentable';
 
 export const toModel = (value: JsValue, parent: iParentable): JsModelType => {

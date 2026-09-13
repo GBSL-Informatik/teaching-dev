@@ -1,8 +1,8 @@
 /// <reference types="w3c-web-serial" />
 
+import { Hashery } from 'hashery';
 import { action, computed, observable } from 'mobx';
 import WebserialStore from '../stores/WebserialStore';
-import { Hashery } from 'hashery';
 const hasher = new Hashery({ cache: { enabled: false } });
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';

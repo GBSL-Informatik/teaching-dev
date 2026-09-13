@@ -1,20 +1,20 @@
-import { action, computed, observable } from 'mobx';
-import { RootStore } from '@tdev-stores/rootStore';
-import { computedFn } from 'mobx-utils';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
+import { RootStore } from '@tdev-stores/rootStore';
+import { orderBy } from 'es-toolkit/array';
+import { action, computed, observable } from 'mobx';
+import { computedFn } from 'mobx-utils';
 import {
-    create as apiCreate,
-    all as apiAll,
-    update as apiUpdate,
     addUser as apiAddUser,
-    removeUser as apiRemoveUser,
+    all as apiAll,
+    create as apiCreate,
     destroy as apiDestroy,
+    removeUser as apiRemoveUser,
     setAdminRole as apiSetAdminRole,
-    StudentGroup as ApiStudentGroup
+    StudentGroup as ApiStudentGroup,
+    update as apiUpdate
 } from '../api/studentGroup';
 import User from '../models/User';
-import { orderBy } from 'es-toolkit/array';
 
 const NEEDS_REPLACEMENT_KEYS: (keyof ApiStudentGroup)[] = ['name', 'description'];
 

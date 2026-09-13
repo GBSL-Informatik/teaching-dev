@@ -3,8 +3,8 @@
  */
 
 import { MdastImportVisitor } from '@mdxeditor/editor';
-import { $createBoxNode } from './BoxNode';
 import type { Box } from '.';
+import { $createBoxNode } from './BoxNode';
 
 export const MdastBoxVisitor: MdastImportVisitor<Box> = {
     testNode: 'box',

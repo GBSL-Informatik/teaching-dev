@@ -1,9 +1,9 @@
-import StudentGroup from '@tdev-models/StudentGroup';
-import ExcelJS from 'exceljs';
 import siteConfig from '@generated/docusaurus.config';
-import saveAs from '@tdev-components/utils/saveAs';
-import User from '@tdev-models/User';
 import generatePassword, { ALPHABET_SMALL } from '@tdev-components/utils/generatePassword';
+import saveAs from '@tdev-components/utils/saveAs';
+import StudentGroup from '@tdev-models/StudentGroup';
+import User from '@tdev-models/User';
+import ExcelJS from 'exceljs';
 
 export async function exportNewPasswordList(
     group: StudentGroup,

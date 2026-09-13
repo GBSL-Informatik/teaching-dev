@@ -1,5 +1,5 @@
-import siteConfig from '@generated/docusaurus.config';
 import type { VersionOptions } from '@docusaurus/plugin-content-docs';
+import siteConfig from '@generated/docusaurus.config';
 
 export interface Klass {
     label: string;

@@ -1,6 +1,13 @@
 // This file is used to configure the teaching-dev page.
 
 import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
+import { themes as prismThemes } from 'prism-react-renderer';
+import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
+import {
+    recommendedBeforeDefaultRemarkPlugins,
+    recommendedRehypePlugins,
+    recommendedRemarkPlugins
+} from '../src/siteConfig/markdownPluginConfigs';
 import {
     accountSwitcher,
     blog,
@@ -13,14 +20,7 @@ import {
     requestTarget,
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
-import { themes as prismThemes } from 'prism-react-renderer';
 import { brythonCodePluginConfig, yamlLoaderPluginConfig } from '../src/siteConfig/pluginConfigs';
-import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
-import {
-    recommendedBeforeDefaultRemarkPlugins,
-    recommendedRehypePlugins,
-    recommendedRemarkPlugins
-} from '../src/siteConfig/markdownPluginConfigs';
 
 const getSiteConfig: SiteConfigProvider = () => {
     return {

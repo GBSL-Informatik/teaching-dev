@@ -1,45 +1,45 @@
-import { action, computed, observable } from 'mobx';
-import { RootStore } from './rootStore';
-import { computedFn } from 'mobx-utils';
 import {
+    Access,
+    ADMIN_EDITABLE_DOCUMENTS,
     allDocuments as apiAllDocuments,
     create as apiCreate,
+    remove as apiDelete,
+    linkTo as apiLinkTo,
+    update as apiUpdate,
+    DocumentModelType,
     Document as DocumentProps,
     DocumentType,
-    DocumentModelType,
-    remove as apiDelete,
-    TypeModelMapping,
-    update as apiUpdate,
-    ADMIN_EDITABLE_DOCUMENTS,
-    linkTo as apiLinkTo,
     Factory,
-    Access
+    TypeModelMapping
 } from '@tdev-api/document';
-import iStore from '@tdev-stores/iStore';
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
-import iDocument, { Source } from '@tdev-models/iDocument';
-import ScriptVersion from '@tdev-models/documents/ScriptVersion';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
-import String from '@tdev-models/documents/String';
-import QuillV2 from '@tdev-models/documents/QuillV2';
-import Solution from '@tdev-models/documents/Solution';
-import { RWAccess } from '@tdev-models/helpers/accessPolicy';
+import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
+import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
+import Quiz from '@tdev-models/documents/Assessable/Quiz';
+import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
+import CmsText from '@tdev-models/documents/CmsText';
+import Code from '@tdev-models/documents/Code';
+import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
 import MdxComment from '@tdev-models/documents/MdxComment';
-import Restricted from '@tdev-models/documents/Restricted';
-import CmsText from '@tdev-models/documents/CmsText';
-import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import ProgressState from '@tdev-models/documents/ProgressState';
+import QuillV2 from '@tdev-models/documents/QuillV2';
+import Restricted from '@tdev-models/documents/Restricted';
+import ScriptVersion from '@tdev-models/documents/ScriptVersion';
+import Solution from '@tdev-models/documents/Solution';
+import String from '@tdev-models/documents/String';
 import TaskState from '@tdev-models/documents/TaskState';
-import Code from '@tdev-models/documents/Code';
+import { RWAccess } from '@tdev-models/helpers/accessPolicy';
+import iDocument, { Source } from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
-import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
-import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
-import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
-import Quiz from '@tdev-models/documents/Assessable/Quiz';
+import iStore from '@tdev-stores/iStore';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
+import axios from 'axios';
+import { action, computed, observable } from 'mobx';
+import { computedFn } from 'mobx-utils';
+import { v4 as uuidv4 } from 'uuid';
+import { RootStore } from './rootStore';
 
 const IsNotUniqueError = (error: any) => {
     try {
