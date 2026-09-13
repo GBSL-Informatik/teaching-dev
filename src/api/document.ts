@@ -242,6 +242,13 @@ export type Factory<Type extends DocumentType = DocumentType> = (
     store: DocumentStore
 ) => TypeModelMapping[Type];
 
+export function find<Type extends DocumentType>(
+    id: string,
+    signal: AbortSignal
+): AxiosPromise<{ document: Document<Type>; highestPermission: Access }> {
+    return api.get(`/documents/${id}`, { signal });
+}
+
 export function create<Type extends DocumentType>(
     data: Partial<Document<Type>>,
     onBehalfOf: boolean,
