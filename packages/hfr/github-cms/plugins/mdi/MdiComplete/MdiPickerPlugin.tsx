@@ -12,18 +12,17 @@ import {
     MenuOption,
     useBasicTypeaheadTriggerMatch
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
-import Icon from '@mdi/react';
-import Card from '@tdev-components/shared/Card';
-import { $createTextNode, $getSelection, $isRangeSelection, TextNode } from 'lexical';
-import _ from 'es-toolkit/compat';
 import * as Mdi from '@mdi/js';
+import { $createDirectiveNode } from '@mdxeditor/editor';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import clsx from 'clsx';
+import _ from 'es-toolkit/compat';
+import { $getSelection, $isRangeSelection, TextNode } from 'lexical';
 import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import * as ReactDOM from 'react-dom';
 import styles from './styles.module.scss';
-import clsx from 'clsx';
-import { $createDirectiveNode } from '@mdxeditor/editor';
-import Button from '@tdev-components/shared/Button';
 
 enum MdiColorClass {
     Black = 'black',

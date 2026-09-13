@@ -1,11 +1,11 @@
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { ModelMeta } from '@tdev/text-message/models/SimpleChat/ModelMeta';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { ModelMeta } from '@tdev/text-message/models/SimpleChat/ModelMeta';
-import { default as SimpleChatComponent } from './SimpleChat';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import CreateSimpleChat from './CreateSimpleChat';
+import { default as SimpleChatComponent } from './SimpleChat';
+import styles from './styles.module.scss';
 
 interface Props {
     id: string;

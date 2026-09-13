@@ -10,7 +10,6 @@
 import type {
     BaseSelection,
     EditorConfig,
-    LexicalCommand,
     LexicalNode,
     NodeKey,
     RangeSelection,

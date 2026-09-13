@@ -1,15 +1,15 @@
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { Access } from '@tdev-api/document';
+import Loader from '@tdev-components/Loader';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import AccessBadge from '@tdev-components/PermissionsPanel/AccessBadge';
+import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
+import { useStore } from '@tdev-hooks/useStore';
+import { MetaInit, ModelMeta } from '@tdev-models/documents/Restricted';
+import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Loader from '@tdev-components/Loader';
-import { MetaInit, ModelMeta } from '@tdev-models/documents/Restricted';
-import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
-import { Access } from '@tdev-api/document';
-import { useStore } from '@tdev-hooks/useStore';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import AccessBadge from '@tdev-components/PermissionsPanel/AccessBadge';
-import useIsBrowser from '@docusaurus/useIsBrowser';
 
 interface Props extends MetaInit {
     id: string;

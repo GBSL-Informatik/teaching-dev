@@ -1,10 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { JsString, JsValue } from '@tdev-components/shared/JsObject/toJsSchema';
-import JsonArray from '@tdev-components/shared/JsObject/Viewer/JsArray';
-import JsObject from '@tdev-components/shared/JsObject/Viewer/JsObject';
 import GenericField from '@tdev-components/shared/JsObject/Viewer/GenericField';
+import JsonArray from '@tdev-components/shared/JsObject/Viewer/JsArray';
 import JsFunction from '@tdev-components/shared/JsObject/Viewer/JsFunction';
+import JsObject from '@tdev-components/shared/JsObject/Viewer/JsObject';
+import { observer } from 'mobx-react-lite';
 
 export interface Props {
     js: JsValue;

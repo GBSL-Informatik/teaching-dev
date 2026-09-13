@@ -1,9 +1,9 @@
+import useIsBrowser from '@docusaurus/useIsBrowser';
 import { CmsTextContext, useFirstCmsTextDocumentIfExists } from '@tdev-components/documents/CmsText/shared';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import CmsActions from '../CmsActions';
 import styles from './styles.module.scss';
-import clsx from 'clsx';
-import useIsBrowser from '@docusaurus/useIsBrowser';
 
 export type Name = string & { __nameBrand: 'Name' };
 export type DocumentRootId = string & { __nameBrand: 'DocumentRootId' };

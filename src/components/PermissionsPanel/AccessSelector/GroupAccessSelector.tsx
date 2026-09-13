@@ -1,10 +1,9 @@
-import React from 'react';
+import { Access } from '@tdev-api/document';
+import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import AccessSelector from '.';
-import { Access } from '@tdev-api/document';
-import StudentGroup from '@tdev-models/StudentGroup';
 
 interface Props {
     group: StudentGroup;

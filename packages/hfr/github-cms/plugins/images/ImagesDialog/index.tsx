@@ -1,17 +1,17 @@
-import React from 'react';
-import Card from '@tdev-components/shared/Card';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { usePublisher } from '@mdxeditor/editor';
-import { insertImage$ } from '..';
-import TextInput from '@tdev-components/shared/TextInput';
 import Button from '@tdev-components/shared/Button';
-import FileUpload from '../../../components/FileUpload';
+import Card from '@tdev-components/shared/Card';
+import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
-import { Asset } from '../../../models/Dir';
-import BinFile from '../../../models/BinFile';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { insertImage$ } from '..';
+import FileUpload from '../../../components/FileUpload';
 import AssetSelector from '../../../components/MdxEditor/AssetSelector';
 import { useCmsStore } from '../../../hooks/useCmsStore';
+import BinFile from '../../../models/BinFile';
+import { Asset } from '../../../models/Dir';
+import styles from './styles.module.scss';
 
 interface Props {
     onClose: () => void;

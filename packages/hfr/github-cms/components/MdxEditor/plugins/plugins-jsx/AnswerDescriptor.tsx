@@ -1,15 +1,15 @@
-import React from 'react';
+import { mdiCardTextOutline, mdiCheckboxOutline, mdiFormTextbox, mdiInvoiceTextSendOutline } from '@mdi/js';
 import { JsxComponentDescriptor, JsxPropertyDescriptor } from '@mdxeditor/editor';
+import { DocumentType } from '@tdev-api/document';
+import Answer from '@tdev-components/Answer';
+import Card from '@tdev-components/shared/Card';
+import clsx from 'clsx';
+import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import GenericAttributeEditor, { GenericPropery } from '../../../MdxEditor/GenericAttributeEditor';
+import { useAttributeEditorInNestedEditor } from '../../../MdxEditor/hooks/useAttributeEditorInNestedEditor';
 import RemoveNode from '../../../MdxEditor/RemoveNode';
 import styles from './styles.module.scss';
-import clsx from 'clsx';
-import { mdiCardTextOutline, mdiCheckboxOutline, mdiFormTextbox, mdiInvoiceTextSendOutline } from '@mdi/js';
-import GenericAttributeEditor, { GenericPropery } from '../../../MdxEditor/GenericAttributeEditor';
-import Card from '@tdev-components/shared/Card';
-import { DocumentType } from '@tdev-api/document';
-import { useAttributeEditorInNestedEditor } from '../../../MdxEditor/hooks/useAttributeEditorInNestedEditor';
-import Answer from '@tdev-components/Answer';
-import { v4 as uuidv4 } from 'uuid';
 
 const BaseProps: GenericPropery[] = [
     { name: 'id', type: 'text', required: true, placeholder: 'id', generateNewValue: () => uuidv4() },

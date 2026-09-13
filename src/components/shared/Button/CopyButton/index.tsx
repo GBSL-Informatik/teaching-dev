@@ -1,8 +1,8 @@
+import { mdiCheck, mdiContentCopy } from '@mdi/js';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import React from 'react';
 import Button from '..';
-import { mdiCheck, mdiContentCopy } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 const useCopyButton = (value: string | undefined) => {
     const [isCopied, setIsCopied] = React.useState(false);

@@ -1,18 +1,18 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Button from '@tdev-components/shared/Button';
 import { mdiPlusCircle, mdiSortAscending, mdiSortDescending } from '@mdi/js';
-import { useStore } from '@tdev-hooks/useStore';
-import _ from 'es-toolkit/compat';
-import { Delete } from '@tdev-components/shared/Button/Delete';
-import { action } from 'mobx';
-import Details from '@theme/Details';
-import TextInput from '@tdev-components/shared/TextInput';
-import SelectInput from '@tdev-components/shared/SelectInput';
 import { DocumentType } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
+import { Delete } from '@tdev-components/shared/Button/Delete';
+import SelectInput from '@tdev-components/shared/SelectInput';
+import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import Details from '@theme/Details';
+import _ from 'es-toolkit/compat';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 const SIZE_S = 0.6;
 

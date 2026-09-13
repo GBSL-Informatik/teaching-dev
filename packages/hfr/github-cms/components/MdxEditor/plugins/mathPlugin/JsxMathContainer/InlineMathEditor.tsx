@@ -1,14 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { InlineMath as MdastNodeInlineMath } from 'mdast-util-math';
-import { InlineMath as KatexInline } from 'react-katex';
-import Popup from 'reactjs-popup';
+import { useMdastNodeUpdater } from '@mdxeditor/editor';
+import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
-import Button from '@tdev-components/shared/Button';
-import { useMdastNodeUpdater } from '@mdxeditor/editor';
+import clsx from 'clsx';
+import { InlineMath as MdastNodeInlineMath } from 'mdast-util-math';
+import React from 'react';
+import { InlineMath as KatexInline } from 'react-katex';
+import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
+import styles from './styles.module.scss';
 
 interface Props {
     mdastNode: MdastNodeInlineMath;

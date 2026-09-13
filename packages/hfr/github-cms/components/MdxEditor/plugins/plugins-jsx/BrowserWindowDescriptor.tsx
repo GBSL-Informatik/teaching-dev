@@ -1,12 +1,12 @@
 import { JsxComponentDescriptor, type JsxPropertyDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import clsx from 'clsx';
 import { MdxJsxFlowElement } from 'mdast-util-mdx';
 import GenericAttributeEditor, { type GenericPropery } from '../../../MdxEditor/GenericAttributeEditor';
-import RemoveNode from '../../RemoveNode';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import { useAttributeEditorInNestedEditor } from '../../hooks/useAttributeEditorInNestedEditor';
 import { parseExpression } from '../../PropertyEditor/parseExpression';
+import RemoveNode from '../../RemoveNode';
+import styles from './styles.module.scss';
 
 const props: GenericPropery[] = [
     { name: 'url', type: 'text', required: false, placeholder: 'http://localhost:3000' },

@@ -6,8 +6,8 @@
  * @see https://github.com/facebook/docusaurus/blob/main/website/src/components/BrowserWindow/index.tsx
  */
 
-import React, { type CSSProperties, type ReactNode } from 'react';
 import clsx from 'clsx';
+import React, { type CSSProperties, type ReactNode } from 'react';
 
 import styles from './styles.module.css';
 

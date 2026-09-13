@@ -1,18 +1,16 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
 import Loader from '@tdev-components/Loader';
-import AssignColumns from '@tdev-components/shared/AssignColumns';
-import { Hashery } from 'hashery';
-import _ from 'es-toolkit/compat';
-import FromXlsxClipboard from '@tdev-components/shared/FromXlsxClipboard';
-import StudentGroup from '@tdev-models/StudentGroup';
-import Badge from '@tdev-components/shared/Badge';
-import { authClient } from '@tdev/auth-client';
 import Alert from '@tdev-components/shared/Alert';
+import AssignColumns from '@tdev-components/shared/AssignColumns';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import FromXlsxClipboard from '@tdev-components/shared/FromXlsxClipboard';
+import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
+import clsx from 'clsx';
+import { Hashery } from 'hashery';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 const hashery = new Hashery({ cache: { enabled: false } });
 
 interface Props {

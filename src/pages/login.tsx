@@ -1,19 +1,18 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './login.module.scss';
-import Layout from '@theme/Layout';
-import { observer } from 'mobx-react-lite';
 import { Redirect } from '@docusaurus/router';
-import { authClient } from '@tdev/auth-client';
-import Button from '@tdev-components/shared/Button';
-import { mdiEmail, mdiGithub, mdiLoading, mdiMicrosoft } from '@mdi/js';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { mdiEmail, mdiGithub, mdiLoading, mdiMicrosoft } from '@mdi/js';
 import DefinitionList from '@tdev-components/DefinitionList';
+import { HomepageHeader } from '@tdev-components/HomepageHeader';
+import Alert from '@tdev-components/shared/Alert';
+import Button from '@tdev-components/shared/Button';
 import CodeThemeToggle from '@tdev-components/utils/CodeThemeToggle';
 import customFields from '@tdev-components/utils/customFields';
 import { useStore } from '@tdev-hooks/useStore';
-import Alert from '@tdev-components/shared/Alert';
-import { HomepageHeader } from '@tdev-components/HomepageHeader';
+import { authClient } from '@tdev/auth-client';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './login.module.scss';
 const { NO_AUTH } = customFields;
 
 const LoginPage = observer(() => {

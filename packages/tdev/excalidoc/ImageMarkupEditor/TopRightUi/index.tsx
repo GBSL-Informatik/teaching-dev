@@ -1,8 +1,6 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
-import { observer } from 'mobx-react-lite';
+import type { ExcalidrawFreeDrawElement, ExcalidrawTextElement } from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import {
     mdiContentSave,
     mdiDraw,
@@ -12,15 +10,16 @@ import {
     mdiMinus,
     mdiPlus
 } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import type { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
-import { getSelectedStrokeElements } from '../helpers/getSelectedStrokeElements';
-import updateElementsWith from '../helpers/updateElementsWith';
-import restoreElementsWith from '../helpers/restoreElementsWith';
-import type { ExcalidrawFreeDrawElement, ExcalidrawTextElement } from '@excalidraw/excalidraw/element/types';
-import ChangeSrcPopup from './ChangeSrcPopup';
 import Icon from '@mdi/react';
+import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import { getSelectedStrokeElements } from '../helpers/getSelectedStrokeElements';
+import restoreElementsWith from '../helpers/restoreElementsWith';
+import updateElementsWith from '../helpers/updateElementsWith';
+import ChangeSrcPopup from './ChangeSrcPopup';
+import styles from './styles.module.scss';
 import UpdateCustomProps from './UpdateCustomProps';
 
 interface Props {

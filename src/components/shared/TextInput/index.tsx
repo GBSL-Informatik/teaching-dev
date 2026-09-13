@@ -1,7 +1,7 @@
-import React, { HTMLInputTypeAttribute } from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
+import React, { HTMLInputTypeAttribute } from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     id?: string;

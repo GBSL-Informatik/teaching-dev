@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { observer } from 'mobx-react-lite';
+import { DocumentType } from '@tdev-api/document';
+import ProgressState from '@tdev-components/documents/ProgressState';
 import QuillV2 from '@tdev-components/documents/QuillV2';
 import String from '@tdev-components/documents/String';
 import TaskState from '@tdev-components/documents/TaskState';
-import ProgressState from '@tdev-components/documents/ProgressState';
-import { DocumentType } from '@tdev-api/document';
+import { observer } from 'mobx-react-lite';
+import * as React from 'react';
 import { getAnswerDocumentType } from './helper.answer';
 
 interface Props {

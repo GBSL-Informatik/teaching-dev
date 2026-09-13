@@ -1,9 +1,8 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { MdxCommentData } from '@tdev-api/document';
+import { useMdxComment } from '@tdev-hooks/useMdxComment';
+import { observer } from 'mobx-react-lite';
 import AddComment from './AddComment';
 import { default as CommentComponent } from './Comment';
-import { useMdxComment } from '@tdev-hooks/useMdxComment';
 
 interface Props extends MdxCommentData {
     pageId: string;

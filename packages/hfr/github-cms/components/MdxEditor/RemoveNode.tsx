@@ -1,9 +1,7 @@
-import React from 'react';
-import _ from 'es-toolkit/compat';
-import { useLexicalNodeRemove } from '@mdxeditor/editor';
 import { mdiClose, mdiCloseBox } from '@mdi/js';
-import clsx from 'clsx';
+import { useLexicalNodeRemove } from '@mdxeditor/editor';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import clsx from 'clsx';
 
 export interface Props {
     className?: string;

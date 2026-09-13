@@ -1,5 +1,5 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 export type Translation =
     Record<string, React.ReactNode | ((val: string) => React.ReactNode)> | ((val: string) => React.ReactNode);

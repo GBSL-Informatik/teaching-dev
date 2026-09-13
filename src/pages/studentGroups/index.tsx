@@ -1,10 +1,8 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Layout from '@theme/Layout';
-import { observer } from 'mobx-react-lite';
-import _ from 'es-toolkit/compat';
 import StudentGroupPanel from '@tdev-components/Admin/StudentGroupPanel';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 const StudentGroups = observer(() => {
     return (

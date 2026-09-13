@@ -1,15 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Avatar from '@tdev-components/shared/Avatar';
-import Icon from '@mdi/react';
-import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { mdiAccountCircle, mdiAlertDecagram, mdiCheckDecagram } from '@mdi/js';
+import Icon from '@mdi/react';
+import Avatar from '@tdev-components/shared/Avatar';
 import Button from '@tdev-components/shared/Button';
-import AccountOptions from '..';
+import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
+import AccountOptions from '..';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
+import styles from './styles.module.scss';
 
 interface Props {
     showOptions?: boolean;

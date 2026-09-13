@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { action } from 'mobx';
 import Icon from '@mdi/react';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import clsx from 'clsx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     path: string;

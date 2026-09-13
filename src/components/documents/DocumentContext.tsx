@@ -1,6 +1,6 @@
-import React from 'react';
-import { DocumentType, DocumentModelType, TypeModelMapping } from '@tdev-api/document';
+import { DocumentModelType, DocumentType, TypeModelMapping } from '@tdev-api/document';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 export const DocContext = React.createContext<DocumentModelType | undefined>(undefined);
 interface Props<T extends DocumentType> {

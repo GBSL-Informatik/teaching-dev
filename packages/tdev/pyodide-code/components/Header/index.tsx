@@ -1,11 +1,10 @@
-import * as React from 'react';
+import { mdiClose } from '@mdi/js';
 import RunCode from '@tdev-components/documents/CodeEditor/Actions/RunCode';
-import { observer } from 'mobx-react-lite';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Header/Container';
 import Content from '@tdev-components/documents/CodeEditor/Editor/Header/Content';
-import PyodideCode from '@tdev/pyodide-code/models/PyodideCode';
 import Button from '@tdev-components/shared/Button';
-import { mdiClose } from '@mdi/js';
+import PyodideCode from '@tdev/pyodide-code/models/PyodideCode';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     code: PyodideCode;

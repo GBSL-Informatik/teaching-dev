@@ -1,10 +1,9 @@
-import React from 'react';
+import { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
+import CodeBlock from '@theme/CodeBlock';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import CodeBlock from '@theme/CodeBlock';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
 
 const getPreview = (table: string[][], selectedColumn: number, docRootId: string) => {
     const preview = table

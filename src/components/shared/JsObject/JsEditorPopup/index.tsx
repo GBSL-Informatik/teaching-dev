@@ -1,13 +1,12 @@
-import React from 'react';
-import _ from 'es-toolkit/compat';
-import Popup from 'reactjs-popup';
 import { mdiCog } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import type { PopupActions } from 'reactjs-popup/dist/types';
 import type { Props as EditorProps } from '../Editor';
-import Card from '@tdev-components/shared/Card';
 import JsObjectEditor from '../Editor';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 
 interface Props extends EditorProps {
     title?: string;

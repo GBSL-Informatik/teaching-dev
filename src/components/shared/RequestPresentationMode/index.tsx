@@ -1,13 +1,13 @@
-import React from 'react';
+import { mdiPresentationPlay, mdiProjectorScreenOffOutline } from '@mdi/js';
+import { useStore } from '@tdev-hooks/useStore';
+import iDocument from '@tdev-models/iDocument';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import Button from '../Button';
-import { mdiPresentationPlay, mdiProjectorScreenOffOutline } from '@mdi/js';
-import { Color } from '../Colors';
-import { useStore } from '@tdev-hooks/useStore';
+import React from 'react';
 import Popup from 'reactjs-popup';
+import Button from '../Button';
 import Card from '../Card';
-import iDocument from '@tdev-models/iDocument';
+import { Color } from '../Colors';
 import GroupSelector from './GroupSelector';
 
 interface Props {

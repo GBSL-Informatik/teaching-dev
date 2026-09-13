@@ -1,9 +1,9 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import Icon from '@mdi/react';
 import { mdiFileEyeOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import styles from './styles.module.scss';
 
 interface Props {
     children: React.ReactNode | React.ReactNode[];

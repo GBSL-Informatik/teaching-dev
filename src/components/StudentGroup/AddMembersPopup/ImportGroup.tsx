@@ -1,11 +1,11 @@
-import styles from './styles.module.scss';
-import React from 'react';
-import { _AddMembersPopupPropsInternal } from './types';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import clsx from 'clsx';
 import { mdiAccountArrowLeft } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
+import { _AddMembersPopupPropsInternal } from './types';
 
 const ImportGroup = observer((props: _AddMembersPopupPropsInternal) => {
     const studentGroupStore = useStore('studentGroupStore');

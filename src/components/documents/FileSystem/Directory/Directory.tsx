@@ -1,17 +1,16 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import shared from '@tdev-components/documents/FileSystem/shared.module.scss';
-import { observer } from 'mobx-react-lite';
-import { default as DirctoryModel } from '@tdev-models/documents/FileSystem/Directory';
-import Icon from '@mdi/react';
 import { mdiFolder, mdiFolderOpen } from '@mdi/js';
+import Icon from '@mdi/react';
 import SyncStatus from '@tdev-components/SyncStatus';
-import NewItem from '@tdev-components/documents/FileSystem/Directory/NewItem';
 import File from '@tdev-components/documents/FileSystem//File';
 import Actions from '@tdev-components/documents/FileSystem/Actions';
-import Name from '@tdev-components/documents/FileSystem/Name';
+import NewItem from '@tdev-components/documents/FileSystem/Directory/NewItem';
 import FsDetails from '@tdev-components/documents/FileSystem/FsDetails';
+import Name from '@tdev-components/documents/FileSystem/Name';
+import shared from '@tdev-components/documents/FileSystem/shared.module.scss';
+import { default as DirctoryModel } from '@tdev-models/documents/FileSystem/Directory';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     dir: DirctoryModel;

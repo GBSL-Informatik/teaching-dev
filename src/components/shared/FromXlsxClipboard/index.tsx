@@ -1,12 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import TextAreaInput from '../TextAreaInput';
+import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import React from 'react';
+import Badge from '../Badge';
 import Button from '../Button';
 import Table from '../Table';
-import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
-import Badge from '../Badge';
+import TextAreaInput from '../TextAreaInput';
+import styles from './styles.module.scss';
 
 interface Props {
     matchUsers?: boolean;

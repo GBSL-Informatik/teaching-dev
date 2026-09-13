@@ -1,7 +1,7 @@
+import Icon from '@mdi/react';
+import clsx from 'clsx';
 import * as React from 'react';
 import styles from './styles.module.scss';
-import clsx from 'clsx';
-import Icon from '@mdi/react';
 
 export enum Color {
     Primary = 'button--primary',

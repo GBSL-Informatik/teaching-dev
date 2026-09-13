@@ -1,16 +1,16 @@
-import styles from './styles.module.scss';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import { observer } from 'mobx-react-lite';
 import {
     mdiCheckboxMarkedCircleAutoOutline,
     mdiCheckboxMarkedCircleMinusOutline,
     mdiEraser,
     mdiRestore
 } from '@mdi/js';
-import QuizDocument from '@tdev-models/documents/Assessable/Quiz';
-import clsx from 'clsx';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
+import QuizDocument from '@tdev-models/documents/Assessable/Quiz';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface QuizControlsProps {
     doc: QuizDocument;

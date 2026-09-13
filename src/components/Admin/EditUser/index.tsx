@@ -1,20 +1,20 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
-import Card from '@tdev-components/shared/Card';
-import TextInput from '@tdev-components/shared/TextInput';
-import Button from '@tdev-components/shared/Button';
-import { authClient } from '@tdev/auth-client';
-import { useStore } from '@tdev-hooks/useStore';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { mdiAccountCancel, mdiAccountCheck, mdiLink, mdiLinkOff, mdiLoading, mdiTrashCan } from '@mdi/js';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { action } from 'mobx';
+import { Role, RoleAccessLevel, RoleNames } from '@tdev-api/user';
 import Loader from '@tdev-components/Loader';
-import type User from '@tdev-models/User';
 import Alert from '@tdev-components/shared/Alert';
+import Button from '@tdev-components/shared/Button';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import type User from '@tdev-models/User';
+import { authClient } from '@tdev/auth-client';
+import clsx from 'clsx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     user: User;

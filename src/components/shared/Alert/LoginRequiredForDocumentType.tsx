@@ -1,8 +1,8 @@
+import { mdiAlert } from '@mdi/js';
 import Icon from '@mdi/react';
 import Alert from '.';
-import { mdiAlert } from '@mdi/js';
-import { SIZE_S } from '../iconSizes';
 import { IfmColors } from '../Colors';
+import { SIZE_S } from '../iconSizes';
 
 interface Props {
     type: string;

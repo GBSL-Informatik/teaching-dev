@@ -1,8 +1,8 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { JsTypes, toJsSchema } from '@tdev-components/shared/JsObject/toJsSchema';
 import JsSchemaViewer from '@tdev-components/shared/JsObject/Viewer/JsSchemaViewer';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import styles from './styles.module.scss';
 
 export interface Props {

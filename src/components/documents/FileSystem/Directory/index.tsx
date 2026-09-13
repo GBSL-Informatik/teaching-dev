@@ -1,11 +1,11 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { ModelMeta } from '@tdev-models/documents/FileSystem/Directory';
-import { MetaInit } from '@tdev-models/documents/FileSystem/iFileSystem';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import type { default as DirectoryComponentType } from '@tdev-components/documents/FileSystem/Directory/Directory';
 import Loader from '@tdev-components/Loader';
 import { useClientLib } from '@tdev-hooks/useClientLib';
-import type { default as DirectoryComponentType } from '@tdev-components/documents/FileSystem/Directory/Directory';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { ModelMeta } from '@tdev-models/documents/FileSystem/Directory';
+import { MetaInit } from '@tdev-models/documents/FileSystem/iFileSystem';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 interface Props extends MetaInit {

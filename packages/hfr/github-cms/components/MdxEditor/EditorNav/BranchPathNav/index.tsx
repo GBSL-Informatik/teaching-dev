@@ -1,12 +1,11 @@
-import React from 'react';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
+import FileNav from '../../../../components/MdxEditor/EditorNav/BranchPathNav/FileNav';
 import iEntry from '../../../../models/iEntry';
 import BranchSelector from './BranchSelector';
-import FileNav from '../../../../components/MdxEditor/EditorNav/BranchPathNav/FileNav';
 import DirNav from './DirNav';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import styles from './styles.module.scss';
 
 interface Props {
     item: iEntry;

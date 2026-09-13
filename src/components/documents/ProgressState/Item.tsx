@@ -1,14 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { MetaInit } from '@tdev-models/documents/ProgressState';
-import Icon from '@mdi/react';
-import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { mdiChevronDown, mdiChevronUp, mdiCloseCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 import IconButton from '@tdev-components/shared/Button/IconButton';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import { MetaInit } from '@tdev-models/documents/ProgressState';
 import Step from '@tdev-models/documents/ProgressState/Step';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props extends MetaInit {
     item: React.ReactNode;

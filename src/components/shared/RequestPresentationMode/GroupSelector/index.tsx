@@ -1,14 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
 import { mdiClose } from '@mdi/js';
+import { DocumentType } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iDocument from '@tdev-models/iDocument';
-import { DocumentType } from '@tdev-api/document';
+import clsx from 'clsx';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     group: StudentGroup;

@@ -1,17 +1,16 @@
-import React from 'react';
 import clsx from 'clsx';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { mdiAccountCircleOutline, mdiAccountSwitch, mdiHomeAccount, mdiShieldAccount } from '@mdi/js';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
-import useIsBrowser from '@docusaurus/useIsBrowser';
-import Popup from 'reactjs-popup';
-import _ from 'es-toolkit/compat';
 import { useLocation } from '@docusaurus/router';
-import User from '@tdev-models/User';
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import { mdiAccountCircleOutline, mdiAccountSwitch, mdiHomeAccount, mdiShieldAccount } from '@mdi/js';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import Button from '@tdev-components/shared/Button';
+import { useStore } from '@tdev-hooks/useStore';
+import User from '@tdev-models/User';
+import _ from 'es-toolkit/compat';
+import { observer } from 'mobx-react-lite';
+import Popup from 'reactjs-popup';
+import styles from './styles.module.scss';
 
 interface SwitchToUserButtonProps {
     user: User;

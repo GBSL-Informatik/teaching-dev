@@ -1,11 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import SimpleChat from '@tdev/text-message/models/SimpleChat';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import ClearHistory from './ClearHistory';
 import EditDataProps from '@tdev-components/documents/DynamicDocumentRoots/EditDataProps';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import SimpleChat from '@tdev/text-message/models/SimpleChat';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import ClearHistory from './ClearHistory';
+import styles from './styles.module.scss';
 
 interface Props {
     name: string;

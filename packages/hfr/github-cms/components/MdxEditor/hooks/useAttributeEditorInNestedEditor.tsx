@@ -1,11 +1,10 @@
-import React from 'react';
-import _ from 'es-toolkit/compat';
+import { useMdastNodeUpdater } from '@mdxeditor/editor';
 import {
     MdxJsxAttribute,
     MdxJsxAttributeValueExpression,
     MdxJsxExpressionAttribute
 } from 'mdast-util-mdx-jsx';
-import { useMdastNodeUpdater } from '@mdxeditor/editor';
+import React from 'react';
 
 import type { GenericPropery, GenericValueProperty } from '../GenericAttributeEditor';
 

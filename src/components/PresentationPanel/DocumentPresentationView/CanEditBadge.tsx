@@ -1,13 +1,12 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import StudentGroup from '@tdev-models/StudentGroup';
-import Badge from '@tdev-components/shared/Badge';
 import { mdiEye, mdiMovieOpenPlay } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Access } from '@tdev-api/document';
+import Badge from '@tdev-components/shared/Badge';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import { useStore } from '@tdev-hooks/useStore';
-import { Access } from '@tdev-api/document';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
+import StudentGroup from '@tdev-models/StudentGroup';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     group: StudentGroup;

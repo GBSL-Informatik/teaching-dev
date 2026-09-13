@@ -1,20 +1,20 @@
-import React from 'react';
+import { mdiClose, mdiFlashTriangle, mdiRecordCircleOutline, mdiSourceBranch } from '@mdi/js';
+import Icon from '@mdi/react';
+import Alert from '@tdev-components/shared/Alert';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import Checkbox from '@tdev-components/shared/Checkbox';
+import TextAreaInput from '@tdev-components/shared/TextAreaInput';
+import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
 import Branch from '../../../../models/Branch';
-import Card from '@tdev-components/shared/Card';
-import Badge from '@tdev-components/shared/Badge';
-import Icon from '@mdi/react';
-import { mdiClose, mdiFlashTriangle, mdiRecordCircleOutline, mdiSourceBranch } from '@mdi/js';
-import TextInput from '@tdev-components/shared/TextInput';
-import TextAreaInput from '@tdev-components/shared/TextAreaInput';
-import Button from '@tdev-components/shared/Button';
-import PR from '../../../../models/PR';
-import Alert from '@tdev-components/shared/Alert';
-import Checkbox from '@tdev-components/shared/Checkbox';
 import { withoutPreviewPRName, withPreviewPRName } from '../../../../models/helpers';
+import PR from '../../../../models/PR';
+import styles from './styles.module.scss';
 
 interface Props {
     branch: Branch;

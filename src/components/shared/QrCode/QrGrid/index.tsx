@@ -1,11 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import QrCode, { Props as DefaultProps } from '..';
 import { mdiDownload } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import QrCode, { Props as DefaultProps } from '..';
+import styles from './styles.module.scss';
 
 interface Props extends Omit<DefaultProps, 'text' | 'onCanvas'> {
     title: string;

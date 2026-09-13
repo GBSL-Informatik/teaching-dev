@@ -1,7 +1,7 @@
 import { ReactContextError } from '@docusaurus/theme-common';
-import { useContext } from 'react';
-import { DocContext } from '@tdev-components/documents/DocumentContext';
 import { DocumentType, TypeModelMapping } from '@tdev-api/document';
+import { DocContext } from '@tdev-components/documents/DocumentContext';
+import { useContext } from 'react';
 
 export function useDocument<T extends DocumentType>(): TypeModelMapping[T] {
     const context = useContext(DocContext);

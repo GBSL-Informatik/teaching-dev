@@ -1,8 +1,6 @@
-import React from 'react';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import styles from './styles.module.scss';
-import _ from 'es-toolkit/compat';
-import clsx from 'clsx';
 
 export interface Props {
     image?: string;
