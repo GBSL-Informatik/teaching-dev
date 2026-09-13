@@ -23,7 +23,6 @@ import type ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
 import type TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import type Quiz from '@tdev-models/documents/Assessable/Quiz';
 import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
-import iDocument from '@tdev-models/iDocument';
 import Unknown from '@tdev-models/documents/Unknown';
 
 export enum Access {
@@ -242,13 +241,6 @@ export type Factory<Type extends DocumentType = DocumentType> = (
     data: Document<Type>,
     store: DocumentStore
 ) => TypeModelMapping[Type];
-
-export function find<Type extends DocumentType>(
-    id: string,
-    signal: AbortSignal
-): AxiosPromise<{ document: Document<Type>; highestPermission: Access }> {
-    return api.get(`/documents/${id}`, { signal });
-}
 
 export function create<Type extends DocumentType>(
     data: Partial<Document<Type>>,

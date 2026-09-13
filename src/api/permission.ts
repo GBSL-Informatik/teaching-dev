@@ -68,10 +68,6 @@ export function deleteGroupPermission(id: string, signal: AbortSignal): AxiosPro
     return api.delete(`/permissions/group/${id}`, { signal });
 }
 
-export function permissionsFor(documentRootId: string, signal: AbortSignal): AxiosPromise<Permissions> {
-    return api.get(`/documentRoots/${documentRootId}/permissions`, { signal });
-}
-
 export function documentRootPermissions(
     documentRootIds: string[],
     signal: AbortSignal
