@@ -39,10 +39,6 @@ export interface DocumentRootUpdate {
     sharedAccess: Access;
 }
 
-export function find(id: string, signal: AbortSignal): AxiosPromise<DocumentRoot> {
-    return api.get(`/documentRoots/${id}`, { signal });
-}
-
 interface FindManyForData {
     documentRootIds: string[];
     ignoreMissingRoots?: boolean;
