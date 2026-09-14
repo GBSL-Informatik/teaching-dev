@@ -1,3 +1,6 @@
+'''
+Author: Balthasar Hofer
+'''
 from browser import window, alert
 
 def languages(print_langs=True):

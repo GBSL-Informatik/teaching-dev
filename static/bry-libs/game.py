@@ -1,3 +1,6 @@
+'''
+Author: Balthasar Hofer
+'''
 
 from browser import timer, document # type: ignore
 from config import Config           # type: ignore

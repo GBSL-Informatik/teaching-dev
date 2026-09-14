@@ -1,0 +1,175 @@
+---
+page_id: 6b4331c7-f282-4638-9c0d-bffebf60271e
+---
+
+
+# Grid
+
+Mit `Grid` kannst du eine Zeichnungsfläche in gleich grosse Rechtecke aufteilen. Jedes Rechteck hat eine Farbe und kann wie ein Element in einer zweidimensionalen Liste angesprochen werden.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid(10, 10)
+board[0][0] = 'black'
+board[9][9] = 'red'
+```
+
+## Erstellen und Verändern
+
+:::def[`Grid(rows, cols, color='')`]
+Erstellt ein Gitter mit `rows` Zeilen und `cols` Spalten. Optional erhalten alle Felder zu Beginn die Farbe `color`. Ohne Farbe sind die Felder durchsichtig.
+
+Mit `board[zeile][spalte]` greifst du auf ein Feld zu. Weise ihm einen Farbtext zu, um es einzufärben.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid(5, 8, 'skyblue')
+board[1][2] = 'yellow'
+board[3][6] = 'red'
+```
+:::
+
+:::def[`board[row][col]`]
+Liest oder ändert ein einzelnes Rechteck. Beim Lesen erhältst du ein `Rectangle`-Objekt. Seine Farbe steht in der Eigenschaft `color`.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid(4, 4)
+board[1][2] = 'green'
+
+if board[1][2].color == 'green':
+	board[2][2] = 'gold'
+```
+:::
+
+:::def[`rectangle.get(offset_x, offset_y)`]
+Gibt ein Feld relativ zu einem anderen Feld zurück. Die Ränder des Gitters sind verbunden: Rechts neben der letzten Spalte liegt die erste Spalte, unter der letzten Zeile die erste Zeile.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid(5, 5)
+snake_head = board[2][4]
+snake_head.color = 'green'
+
+# Ein Schritt nach rechts führt wieder in die erste Spalte.
+snake_head.get(1, 0).color = 'lime'
+```
+:::
+
+:::def[`board.fill(color='')`]
+Füllt alle Felder mit der angegebenen Farbe. Mit `''` werden alle Felder wieder durchsichtig.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid(8, 8)
+board.fill('navy')
+board[3][3] = 'white'
+```
+:::
+
+:::def[`board.size` `board.dim_x` `board.dim_y`]
+`size` liefert die Anzahl der Zeilen und Spalten als Tupel. Mit `dim_x` und `dim_y` kannst du die Spalten- beziehungsweise Zeilenzahl einzeln abfragen.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid(3, 7)
+print(board.size)  # (3, 7)
+print(board.dim_x) # 7
+print(board.dim_y) # 3
+```
+:::
+
+
+:::def[`Grid.setup(width, height)`]
+Legt die Grösse der Zeichenfläche in Pixeln fest. Rufe `setup` vor dem Erstellen eines Gitters auf. Die Felder werden danach so gross wie möglich gezeichnet.
+
+```py live_py slim
+from grid import Grid
+
+Grid.setup(300, 150)
+board = Grid(3, 6)
+board.fill('teal')
+board[1][2] = 'yellow'
+```
+:::
+
+## Text in Zellen
+
+Es kann simpler Text zu Zellen hinzugefügt werden:
+
+:::def[`Cell.text` `Cell.text_color` `Cell.text_scale`]
+```py live_py slim
+from grid import Grid
+board = Grid(3, 3, 'skyblue')
+board[1][1].text = 'X'
+board[1][2].color = 'red'
+board[1][2].text = 'O'
+board[1][2].text_color = 'white'
+board[2][1].text = '='
+board[2][1].text_scale = 0.5
+```
+:::
+
+## Gitter aus Text
+
+:::def[`Grid.from_text(text, colors)`]
+Erstellt ein Gitter aus einem Text. Jedes Zeichen steht für ein Feld. Im Dictionary `colors` wird festgelegt, welche Farbe ein Zeichen hat. Mit `bg` bestimmst du die Hintergrundfarbe für unbekannte Zeichen und Leerstellen.
+
+```py live_py slim
+from grid import Grid
+
+board = Grid.from_text('''
+..x..
+.xxx.
+xxxxx
+''')
+```
+
+oder mit festgelegten Farben
+```py live_py slim
+from grid import Grid
+
+board = Grid.from_text('''
+..x..
+.xxx.
+xxxxx
+''', {
+	'x': 'black',
+	'.': 'skyblue',
+	'bg': 'white'
+})
+```
+:::
+
+## Animationen
+
+Mit `@gameloop` wird eine Funktion immer wieder ausgeführt. Der Parameter `dt` enthält die vergangene Zeit in Millisekunden. `sleep(sekunden)` bestimmt, wie lange bis zum nächsten Durchlauf gewartet wird.
+
+:::def[`@gameloop` `sleep(sekunden)`]
+Kombiniere `Grid` mit `gameloop`, um Felder fortlaufend zu verändern. Jede Änderung an einem Feld wird sofort gezeichnet.
+
+```py live_py slim
+from grid import Grid
+from game import gameloop, sleep
+
+board = Grid(3, 3, 'white')
+board[1][1].text_color = 'white'
+
+@gameloop
+def update(dt):
+	board[1][1].text = f'{dt // 1000}s'
+	if board[1][1].color == 'black':
+		board[1][1].color = 'gray'
+	else:
+		board[1][1].color = 'black'
+	sleep(1)
+
+update()
+```
+:::
