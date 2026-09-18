@@ -1,9 +1,10 @@
 import { computed } from 'mobx';
-import { DocumentType, Document as DocumentProps } from '@tdev-api/document';
+import { Document as DocumentProps } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import _ from 'es-toolkit/compat';
+import { orderBy } from 'es-toolkit/array';
 import File from './File';
-import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
+import iFileSystem, { DefaultName, iFSMeta, isFileSystemType, MetaInit } from './iFileSystem';
 import { formatDateTime } from '@tdev-models/helpers/date';
 
 export class ModelMeta extends iFSMeta<'dir'> {
@@ -28,13 +29,21 @@ class Directory extends iFileSystem<'dir'> {
     }
 
     @computed
+    get allFiles(): iFileSystem[] {
+        const files = this.root?.documents.filter(
+            (d) => isFileSystemType(d) && d.filePath.startsWith(this.filePath)
+        ) as iFileSystem[];
+        return orderBy(files || [], ['filePath'], ['asc']);
+    }
+
+    @computed
     get files() {
         if (!this.root) {
             return [];
         }
-        return _.orderBy(
+        return orderBy(
             this.root.documents.filter((d) => d.parentId === this.id && d.type === 'file') as File[],
-            [(f) => `${f.name}`.replace(/\d+/g, (n) => n.padStart(10, '0'))],
+            [(f) => `${f.name}`],
             ['asc']
         );
     }
@@ -44,11 +53,26 @@ class Directory extends iFileSystem<'dir'> {
         if (!this.root) {
             return [];
         }
-        return _.orderBy(
+        return orderBy(
             this.root.documents.filter((d) => d.parentId === this.id && d.type === 'dir') as Directory[],
-            [(d) => `${d.name}`.replace(/\d+/g, (n) => n.padStart(10, '0'))],
+            [(d) => `${d.name}`],
             ['asc']
         );
+    }
+
+    @computed
+    get fileTree(): string[] {
+        // returns relative to self path all files having the current directory as parent.
+        const basePath = this.parentId ? `${this.name || this.id}/` : '';
+        const directoryTrees = this.directories.flatMap((d) => {
+            return d.fileTree.map((p) => `${basePath}${p}`);
+        });
+        const filePaths = this.files.map((f) => `${basePath}${f.name || f.id}`);
+        const n = directoryTrees.length + filePaths.length;
+        if (n === 0) {
+            return [basePath];
+        }
+        return [...directoryTrees, ...filePaths];
     }
 }
 

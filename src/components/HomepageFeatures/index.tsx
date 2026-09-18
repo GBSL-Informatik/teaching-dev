@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import React from 'react';
 import styles from './styles.module.scss';
 import { useStore } from '@tdev-hooks/useStore';
@@ -11,98 +10,102 @@ import { useIsLive } from '@tdev-hooks/useIsLive';
 import Card from '@tdev-components/shared/Card';
 import customFields from '@tdev-components/utils/customFields';
 const { BACKEND_URL, NO_AUTH, OFFLINE_API } = customFields;
-import { prepareFileTreeInput } from '@pierre/trees';
-import { FileTree, useFileTree } from '@pierre/trees/react';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { ModelMeta } from '@tdev-models/documents/FileSystem/Directory';
+import { MetaInit } from '@tdev-models/documents/FileSystem/iFileSystem';
+import DocumentFileTree from '@tdev-components/documents/FileSystem/DocumentFileTree';
 
 const HomepageFeatures = observer(() => {
     const socketStore = useStore('socketStore');
     const sessionStore = useStore('sessionStore');
     const userStore = useStore('userStore');
     const isLive = useIsLive();
-    const fsTree = React.useMemo(
-        () =>
-            prepareFileTreeInput(
-                ['src/components', 'src/hooks/bla.py', 'src/hooks/bla.tsx', 'src/pages', 'src/utils'],
-                {
-                    flattenEmptyDirectories: true
-                }
-            ),
-        []
+    const [meta] = React.useState(
+        new ModelMeta({ id: '2686fc4e-10e7-4288-bf41-e6175e489b8e', readonly: false } as MetaInit)
     );
-    const { model } = useFileTree({
-        preparedInput: fsTree,
-        search: true,
-        icons: {
-            set: 'complete',
-            colored: false
-        },
-        initialExpandedPaths: ['src', 'src/hooks']
-    });
+    const root = useFirstMainDocument('2686fc4e-10e7-4288-bf41-e6175e489b8e', meta);
+
     return (
-        <section className={styles.features}>
-            {fsTree && <FileTree model={model} className="rounded-lg border" style={{ height: '320px' }} />}
-            {sessionStore.apiMode === 'api' ? (
-                <div className="container">
-                    <h2>Socket.IO</h2>
-                    <DefinitionList>
-                        <dt>URL</dt>
-                        <dd>{BACKEND_URL}</dd>
-                        <dt>Connected?</dt>
-                        <dd>
-                            {isLive ? (
-                                <span>
-                                    <Icon path={mdiCheckCircle} size={0.8} color="var(--ifm-color-success)" />{' '}
-                                    Live
-                                </span>
-                            ) : (
-                                <span>
-                                    <Icon path={mdiCloseCircle} size={0.8} color="var(--ifm-color-danger)" />{' '}
-                                    Offline
-                                </span>
+        <>
+            <section className={styles.features}>
+                {root && <DocumentFileTree dir={root} />}
+                <pre>
+                    <code>{JSON.stringify(root?.fileTree, null, 2)}</code>
+                </pre>
+            </section>
+            <section className={styles.features}>
+                {sessionStore.apiMode === 'api' ? (
+                    <div className="container">
+                        <h2>Socket.IO</h2>
+                        <DefinitionList>
+                            <dt>URL</dt>
+                            <dd>{BACKEND_URL}</dd>
+                            <dt>Connected?</dt>
+                            <dd>
+                                {isLive ? (
+                                    <span>
+                                        <Icon
+                                            path={mdiCheckCircle}
+                                            size={0.8}
+                                            color="var(--ifm-color-success)"
+                                        />{' '}
+                                        Live
+                                    </span>
+                                ) : (
+                                    <span>
+                                        <Icon
+                                            path={mdiCloseCircle}
+                                            size={0.8}
+                                            color="var(--ifm-color-danger)"
+                                        />{' '}
+                                        Offline
+                                    </span>
+                                )}
+                            </dd>
+                            {isLive && (
+                                <>
+                                    <dt>Clients</dt>
+                                    <dd>
+                                        {socketStore.connectedClients.get(userStore.viewedUser?.id ?? '') ??
+                                            0}
+                                    </dd>
+                                </>
                             )}
-                        </dd>
-                        {isLive && (
-                            <>
-                                <dt>Clients</dt>
-                                <dd>
-                                    {socketStore.connectedClients.get(userStore.viewedUser?.id ?? '') ?? 0}
-                                </dd>
-                            </>
-                        )}
-                        <dt>Offline API</dt>
-                        <dd>{OFFLINE_API || '-'}</dd>
-                        <dt>No Auth</dt>
-                        <dd>{NO_AUTH ? 'Ja' : 'Nein'}</dd>
-                        <dt>Connection</dt>
-                        <dd>
-                            <Button
-                                icon={mdiConnection}
-                                text="Connect"
-                                onClick={() => {
-                                    socketStore.resetUserData();
-                                    socketStore.connect();
-                                }}
-                                disabled={isLive}
-                                color="blue"
-                            />
-                        </dd>
-                        <dd>
-                            <Button
-                                icon={mdiCloseCircle}
-                                text="Disconnect"
-                                onClick={() => socketStore.disconnect()}
-                                disabled={!isLive}
-                                color="red"
-                            />
-                        </dd>
-                    </DefinitionList>
-                </div>
-            ) : (
-                <Card classNames={{ card: 'container' }}>
-                    <h2>Willkommen 🥳</h2>
-                </Card>
-            )}
-        </section>
+                            <dt>Offline API</dt>
+                            <dd>{OFFLINE_API || '-'}</dd>
+                            <dt>No Auth</dt>
+                            <dd>{NO_AUTH ? 'Ja' : 'Nein'}</dd>
+                            <dt>Connection</dt>
+                            <dd>
+                                <Button
+                                    icon={mdiConnection}
+                                    text="Connect"
+                                    onClick={() => {
+                                        socketStore.resetUserData();
+                                        socketStore.connect();
+                                    }}
+                                    disabled={isLive}
+                                    color="blue"
+                                />
+                            </dd>
+                            <dd>
+                                <Button
+                                    icon={mdiCloseCircle}
+                                    text="Disconnect"
+                                    onClick={() => socketStore.disconnect()}
+                                    disabled={!isLive}
+                                    color="red"
+                                />
+                            </dd>
+                        </DefinitionList>
+                    </div>
+                ) : (
+                    <Card classNames={{ card: 'container' }}>
+                        <h2>Willkommen 🥳</h2>
+                    </Card>
+                )}
+            </section>
+        </>
     );
 });
 
