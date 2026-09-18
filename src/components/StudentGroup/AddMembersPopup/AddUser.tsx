@@ -53,11 +53,7 @@ const AddUserLine = observer(({ idx, user, group, showAsSecondary: showAsSeconda
 const AddUser = observer((props: _AddMembersPopupPropsInternal) => {
     const userStore = useStore('userStore');
     const [searchFilter, setSearchFilter] = React.useState('');
-    const [searchRegex, setSearchRegex] = React.useState(new RegExp(searchFilter, 'i'));
-
-    React.useEffect(() => {
-        setSearchRegex(new RegExp(searchFilter, 'i'));
-    }, [searchFilter]);
+    const searchRegex = React.useMemo(() => new RegExp(searchFilter, 'i'), [searchFilter]);
 
     const group = props.studentGroup;
     const users = userStore.users.filter((user) => searchRegex.test(user.searchTerm));

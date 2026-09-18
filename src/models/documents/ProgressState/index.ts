@@ -51,6 +51,7 @@ export class ModelMeta extends TypeMeta<'progress_state'> {
         this.needsConfirm = !this.canStepBack || !!props.confirm;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['progress_state'] {
         return {
             progress: this.default,

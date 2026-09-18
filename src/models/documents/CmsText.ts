@@ -17,6 +17,7 @@ export class CmsTextMeta extends TypeMeta<'cms_text'> {
         this.default = props.default ?? '';
     }
 
+    @computed
     get defaultData(): TypeDataMapping['cms_text'] {
         return {
             text: this.default

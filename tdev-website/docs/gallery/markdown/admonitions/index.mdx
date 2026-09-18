@@ -2,48 +2,13 @@
 page_id: 842447f0-70e2-464a-bc80-a8a4069f205f
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Admonitions
 
 Als Erweiterung der Standard-Markdown-Syntax werden sog. [Admonitions](https://docusaurus.io/docs/markdown-features/admonitions), also Hinweise, die durch das Einrahmen von Text mit drei Doppelpunkten und einem Label, das den Typ angibt, erstellt werden.
 
-```md
-:::note
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-
-:::aufgabe
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-
-:::info
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-
-:::tip
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-
-:::definition
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiternungen__.
-:::
-
-:::warning
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-
-:::danger
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-
-
-:::insight
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
 :::note
 Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
 :::
@@ -77,29 +42,23 @@ Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
 Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
 :::
 
-</BrowserWindow>
+</CodeShowcase>
 
 ## Titel anpassen
 
 Der Titel der Admonition kann durch Hinzufügen von Text nach dem Admonition-Typ angepasst werden:
 
-```md
+<CodeShowcase lang="md">
 :::info[Anpassung des `Titels`]
 Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
 :::
-```
-
-<BrowserWindow>
-:::info[Anpassung des `Titels`]
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Verschachtelte Admonitions
 
 Admonitions basieren auf dem [remark-directives](https://github.com/remarkjs/remark-directive). Der entsprechende Parser unterstützt Verschachtelungen wie folgt:
 
-```md
+<CodeShowcase lang="md">
 :::::warning[Wichtiger Hinweise]
 Wichtige Hinweise zu beachten:
 ::::info[Erster Hinweis]
@@ -112,43 +71,13 @@ Jede Verschachtelungsebene hat einen zusätzlichen Doppelpunkt `:`.
 Die Übersichtlichkeit leidet 😅🥸🫣.
 :::
 :::::
-```
-
-<BrowserWindow>
-:::::warning[Wichtiger Hinweise]
-Wichtige Hinweise zu beachten:
-::::info[Erster Hinweis]
-Dies ist der erste Hinweis.
-:::tip[Bemerke]
-Jede Verschachtelungsebene hat einen zusätzlichen Doppelpunkt `:`.
-:::
-::::
-:::danger[Zweiter Hinweis]
-Die Übersichtlichkeit leidet 😅🥸🫣.
-:::
-:::::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Admonitions in Listen
 
 Um Admonitions in Listen zu verwenden, muss die Einrückung korrekt sein.
 
-```md
-- Erster Punkt
-  :::info
-  Dies ist eine Admonition in einer Liste.
-  :::
-- Zweiter Punkt
-    1. Mit Unterliste
-    2. und Admonition
-       :::tip
-       Dies ist eine Admonition in einer Unterliste.
-       :::
-    3. Weiter im Text
-- Dritter Punkt
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
 - Erster Punkt
   :::info
   Dies ist eine Admonition in einer Liste.
@@ -162,7 +91,7 @@ Um Admonitions in Listen zu verwenden, muss die Einrückung korrekt sein.
     3. Weiter im Text
 - Dritter Punkt
 
-</BrowserWindow>
+</CodeShowcase>
 
 ## Weitere Admonition-Typen
 

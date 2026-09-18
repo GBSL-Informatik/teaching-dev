@@ -3,7 +3,7 @@ import iDocument from './iDocument';
 
 export interface iTaskableDocument<T extends TaskableType = TaskableType> extends iDocument<T> {
     isDone: boolean;
-    editingIconState: { path: string; color: string };
+    editingIconState: { path: string; color: string; title?: string };
     progress: number;
     totalSteps: number;
     scrollTo: boolean;

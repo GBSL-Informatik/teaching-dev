@@ -17,7 +17,7 @@ interface Props {
 
 const CreateSimpleChat = observer((props: Props) => {
     const userStore = useStore('userStore');
-    const [meta] = React.useState(new ModelMeta({ name: props.name }));
+    const meta = React.useMemo(() => new ModelMeta({ name: props.name }), [props.id, props.name]);
     const { create, apiState } = useCreateDocument(props.id, meta, true);
     if (!userStore.current?.hasElevatedAccess) {
         return null;

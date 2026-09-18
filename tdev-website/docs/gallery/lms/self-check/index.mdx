@@ -8,7 +8,7 @@ import SelfCheckContent from '@tdev-components/documents/SelfCheck/SelfCheckCont
 import SelfCheck from '@tdev-components/documents/SelfCheck';
 import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
 import Solution from '@tdev-components/documents/Solution';
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Selfcheck
 
@@ -18,7 +18,7 @@ Mit den drei Komponenten `<SelfCheck>`, `<SelfCheckTaskState>` und `<SelfCheckSo
 In jedem `<SelfCheck>`-Kontext müssen je genau ein `<SelfCheckTaskState>` und eine `<SelfCheckSolution>` verwendet werden. Zudem müssen auf dem `<SelfCheck>`-Element eine `taskStateId` und eine `solutionId` definiert werden.
 :::
 
-```md
+<CodeShowcase lang="md">
 <SelfCheck taskStateId="841c3390-17d5-42e5-bd9f-e50e46c97625" solutionId="71ed3d23-19d4-4575-9117-9cac09749223">
 :::note[Aufgabe 1]
 <SelfCheckTaskState />
@@ -30,21 +30,7 @@ Hallo Welt 🌍
 </SelfCheckSolution>
 :::
 </SelfCheck>
-```
-
-<BrowserWindow>
-<SelfCheck taskStateId="841c3390-17d5-42e5-bd9f-e50e46c97625" solutionId="71ed3d23-19d4-4575-9117-9cac09749223">
-:::note[Aufgabe 1]
-<SelfCheckTaskState />
-
-Erstelle eine Lösung für diese Aufgabe.
-
-<SelfCheckSolution>
-Hallo Welt 🌍
-</SelfCheckSolution>
-:::
-</SelfCheck>
-</BrowserWindow>
+</CodeShowcase>
 
 Die im Task State verfügbaren Zustände sind abhängig davon, ob die Lösung bereits verfügbar ist. Durch die Verwendung der `<SelfCheckSolution>` ist das Lösungselement zudem nur dann sichtbar, wenn sich der Task State im Status _Warten auf Musterlösung_ oder _Korrektur_ befindet (siehe auch [unten](#statusabhängige-sichtbarkeit)). 
 
@@ -75,7 +61,7 @@ Zudem zeigt sie ihren Inhalt für Lehrpersonen standardmässig immer an. Dieses 
 
 Folgendes Beispiel enthält ein Selfcheck-Szenario, in dem die Musterlösung (ausser für Lehrpersonen) nur in den Zuständen _Warten auf Musterlösung_ (als nicht-verfügbar) und _Korrektur_ angezeigt wird. Zudem wird den Zuständen _Frage_, _Warten auf Musterlösung_ und _Korrektur_ je ein spezifischer Hinweis angezeigt. Diese Hinweise sind auch für Lehrpersonen nur im entsprechenden Zustand sichtbar.
 
-```md
+<CodeShowcase lang="md">
 <SelfCheck taskStateId="df3313a5-c18f-4220-9dfe-cf4314c1b7b9" solutionId="e92b6f49-396e-48bc-8a6c-4ca94947210d">
 :::note[2. Aufgabe]
 <SelfCheckTaskState />
@@ -105,39 +91,7 @@ Lösung zur zweiten Aufgabe 🥳
     :::
 </SelfCheckContent>
 </SelfCheck>
-```
-
-<BrowserWindow>
-<SelfCheck taskStateId="df3313a5-c18f-4220-9dfe-cf4314c1b7b9" solutionId="e92b6f49-396e-48bc-8a6c-4ca94947210d">
-:::note[2. Aufgabe]
-<SelfCheckTaskState />
-
-Erstelle auch für diese Aufgabe eine Lösung.
-
-<SelfCheckSolution title="Lösung zur Aufgabe 2" open>
-Lösung zur zweiten Aufgabe 🥳
-</SelfCheckSolution>
-:::
-
-<SelfCheckContent alwaysVisibleForTeacher={false} visibleTo={SelfCheckStateType.WaitingForSolution}>
-    :::info[Auf Musterlösung warten]
-    Die Lehrperson wird dir die Musterlösung bald freischalten.
-    :::
-</SelfCheckContent>
-
-<SelfCheckContent alwaysVisibleForTeacher={false} visibleFrom={SelfCheckStateType.Reviewing}>
-    :::info[Selbstständig korrigieren]
-    Vergleiche deine Lösung nun mit der Musterlösung und korrigiere deine Antwort.
-    :::
-</SelfCheckContent>
-
-<SelfCheckContent alwaysVisibleForTeacher={false} visibleFrom={SelfCheckStateType.Question} visibleTo={SelfCheckStateType.Question}>
-    :::info[Frage?]
-    Wenn du während des Unterrichts eine Frage hast, dann kannst du jederzeit die Lehrperson rufen.
-    :::
-</SelfCheckContent>
-</SelfCheck>
-</BrowserWindow>
+</CodeShowcase>
 
 ## Erforderliche Konfiguration
 Damit für die Selfcheck TaskStates eine TaskState-Übersicht generiert wird, muss in `docusaurus.config.ts` bei der Konfiguration des `enumerateAnswersPlugin` der Komponententyp `SelfCheckTaskState` registriert werden:

@@ -2,19 +2,15 @@
 page_id: f9d808b6-4f46-48f3-8274-0e84c908944d
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # ::codepen
 
 Bindet ein [Codepen](https://codepen.io/) ein.
 
-```mdx
+<CodeShowcase lang="md">
 ::codepen[https://codepen.io/lebalz/pen/PwYoOBK]
-```
-
-<BrowserWindow>
-::codepen[https://codepen.io/lebalz/pen/PwYoOBK]
-</BrowserWindow>
+</CodeShowcase>
 
 :::note[URL]
 Es dürfen jeweils nur `codepen.io/user/embed/*` URLs verwendet werden, auf codepen.io wird allerdings die URL `codepen.io/<user>/pen/*` verwendet. Aus den __pen__ URLs wird automatisch die korrekte __embed__ URL generiert.
@@ -46,10 +42,6 @@ css Eigenschaften
 : Es können beliebige css-Eigenschaften in Form `eigenschaft=wert` angegeben werden, die auf das iframe angewendet werden.
 
 
-```mdx
-::codepen[https://codepen.io/lebalz/pen/PwYoOBK]{editable=false theme=light defaultTab=html,result height=300px}
-```
-
-<BrowserWindow>
-::codepen[https://codepen.io/lebalz/pen/PwYoOBK]{editable=false theme=light defaultTab=html,result height=300px}
-</BrowserWindow>
+<CodeShowcase lang="md">
+::codepen[https://codepen.io/lebalz/pen/PwYoOBK]{editable=false theme="light" defaultTab="html,result" height="300px"}
+</CodeShowcase>

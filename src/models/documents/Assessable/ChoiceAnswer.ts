@@ -7,6 +7,7 @@ import { range } from 'es-toolkit/math';
 import { shuffle } from 'es-toolkit/array';
 import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import { AssessableMeta } from './AssessableMeta';
+import { mdiFrequentlyAskedQuestions, mdiMessageQuestionOutline } from '@mdi/js';
 
 export class ModelMeta extends AssessableMeta<'choice_answer'> implements AssessableMeta<'choice_answer'> {
     readonly type = 'choice_answer';
@@ -22,6 +23,7 @@ export class ModelMeta extends AssessableMeta<'choice_answer'> implements Assess
         this.optionsCount = props.optionsCount;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['choice_answer'] {
         const data: TypeDataMapping['choice_answer'] = {
             choices: [],
@@ -115,9 +117,9 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     get maxHits(): number {
         if (this.multiple) {
-            return this.linkedMeta?.correct?.length || 0;
+            return this.meta?.correct?.length ?? 1;
         }
-        return !!this.linkedMeta?.correct ? 1 : 0;
+        return 1;
     }
 
     optionsDisplayOrder(optionIndex: number): number {
@@ -127,13 +129,16 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     @computed
     get hits(): number {
+        if (this.choices.size === 0 && this.meta.correct?.length === 0) {
+            return 1;
+        }
         const correct = new Set(this.meta.correct);
         return this.choices.intersection(correct).size;
     }
 
     @computed
     get misses(): number {
-        if (this.choices.size === 0) {
+        if (this.choices.size === 0 && this.meta.correct?.length === 0) {
             return 0;
         }
         if (this.multiple) {
@@ -142,6 +147,11 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
             return missedCorrect + incorrectSelections;
         }
         return 1 - this.hits;
+    }
+
+    @computed
+    get isNA(): boolean {
+        return this.choices.size === 0 && (this.meta.correct?.length ?? 0) > 0;
     }
 
     @computed
@@ -163,13 +173,15 @@ class ChoiceAnswer extends iAssessable<'choice_answer'> implements iAssessable<'
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
+    }
+
+    @computed
+    get icon(): string {
+        if (this.multiple) {
+            return mdiFrequentlyAskedQuestions;
         }
-        if (this.root?.type === 'choice_answer') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return mdiMessageQuestionOutline;
     }
 }
 

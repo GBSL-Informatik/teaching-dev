@@ -106,14 +106,6 @@ export default class Page {
     }
 
     @computed
-    get documents() {
-        return this.documentRoots
-            .flatMap((doc) => doc.firstMainDocument)
-            .filter((d) => d?.root?.meta.pagePosition)
-            .sort((a, b) => a!.root!.meta!.pagePosition - b!.root!.meta.pagePosition);
-    }
-
-    @computed
     get studentGroupName() {
         const pathParts = this.path.split('/').filter((p) => p.length > 0);
         const name = pathParts[0];
@@ -331,7 +323,11 @@ export default class Page {
                 .flatMap((rid) => {
                     return this.store.root.documentStore
                         .findByDocumentRoot(rid)
-                        .filter((doc) => this.TaskableDocuments.has(doc.type)) as iTaskableDocument[];
+                        .filter(
+                            (doc) =>
+                                this.TaskableDocuments.has(doc.type) &&
+                                !(doc as iTaskableDocument).hideFromOverview
+                        ) as iTaskableDocument[];
                 })
                 .filter((doc) =>
                     this.viewedStudentGroup ? this.viewedStudentGroup.userIds.has(doc.authorId) : true

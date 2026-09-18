@@ -59,6 +59,20 @@ const DocumentRootAccessLevels = new Map<
     [Access.RO_User, Access.RO_DocumentRoot]
 ]);
 
+const RootAccessLevels = new Set<Access>([
+    Access.RO_DocumentRoot,
+    Access.RW_DocumentRoot,
+    Access.None_DocumentRoot
+]);
+
+const StudentGroupAccessLevels = new Set<Access>([
+    Access.RO_StudentGroup,
+    Access.RW_StudentGroup,
+    Access.None_StudentGroup
+]);
+
+const UserAccessLevels = new Set<Access>([Access.RO_User, Access.RW_User, Access.None_User]);
+
 export const asDocumentRootAccess = (access?: Access) => {
     if (!access) {
         return Access.RW_DocumentRoot;
@@ -100,4 +114,18 @@ export const sharedAccess = (userPermission: Access, sharedAccess: Access, isAut
         new Set([DocumentRootAccessLevels.get(sharedAccess)!]),
         DocumentRootAccessLevels.get(userPermission)
     );
+};
+
+export const leveledAccess = (access: Access, refAccessLevel: Access): Access => {
+    if (RootAccessLevels.has(refAccessLevel)) {
+        return asDocumentRootAccess(access);
+    }
+    if (StudentGroupAccessLevels.has(refAccessLevel)) {
+        return asStudentGroupAccess(access);
+    }
+    if (UserAccessLevels.has(refAccessLevel)) {
+        return asUserAccess(access);
+    }
+    // return root access level by default
+    return asDocumentRootAccess(access);
 };

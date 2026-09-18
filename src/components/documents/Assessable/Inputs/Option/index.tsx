@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
-import { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
+import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 
 export interface Props<T extends AssessableType> {
     type?: T;
@@ -22,7 +22,18 @@ const Option = observer(<T extends AssessableType>(props: Props<T>) => {
     const doc = useDocument<T>();
     const optionId = React.useId();
     const { children, optionIndex, optionOrder, onChange, isChecked } = props;
-
+    if (doc.keepExpanded === 'none') {
+        return null;
+    }
+    if (doc.keepExpanded === 'selected' && !isChecked) {
+        return null;
+    }
+    const correct = doc.linkedMeta?.correct ?? [];
+    if (doc.keepExpanded === 'correct' && correct.length > 0) {
+        if (!correct.includes(optionIndex)) {
+            return null;
+        }
+    }
     return (
         <div
             key={optionId}

@@ -1,5 +1,6 @@
 import { Access, ContainerType, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { computed } from 'mobx';
 
 interface Options {
     access?: Access;
@@ -25,6 +26,7 @@ export class ContainerMeta<T extends ContainerType> extends TypeMeta<T> {
         return this.defaultData.name;
     }
 
+    @computed
     get defaultData(): TypeDataMapping[T] {
         return {
             name: this.type

@@ -2,7 +2,7 @@
 page_id: ebe2c231-95d4-4c9d-aab7-2d90138601c2
 tags: [remark]
 ---
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 import DefinitionList from "@tdev-components/DefinitionList";
 
 # Deflist
@@ -17,45 +17,28 @@ Mit Definitionslisten ist es einfach, Wort-Definitionen oder ähnliche Inhalte z
     <dd>Our planet</dd>
 </dl>
 ```
-<BrowserWindow>
+<CodeShowcase lang="md" noCode>
 <Dl>
     <dt>Hello World</dt>
     <dd>The simplest example</dd>
     <dt>World</dt>
     <dd>Our planet</dd>
 </Dl>
-</BrowserWindow>
+</CodeShowcase>
 
 Um dies im Markdown mit weniger Aufwand zu erstellen, kann eine an [pandoc](https://pandoc.org/MANUAL.html#definition-lists) angelehnte Syntax verwendet werden:
 
-```md
+<CodeShowcase lang="md">
 Hello World
 : The simplest example
 World
 : Our planet
-```
-mit demselben Resultat:
-
-<BrowserWindow>
-Hello World
-: The simplest example
-World
-: Our planet
-</BrowserWindow>
+</CodeShowcase>
 
 ## Mehrzeilige Definitionen
 
-```md
-Streetfood
-: Auf der Strasse zubereitete Speisen, die oft in mobilen Verkaufsständen oder -wagen verkauft werden.
-: ![--width=350px --margin=0](../images/street-food.jpg)
-Schnee auf der Strasse
-: In der Regel ein Zeichen für Winter :mdi[snowflake]{.blue}.
-: In __Bern__ zuletzt gesehen am 10. Januar 2024.
-: ![--width=350px --margin=0](../images/snowy-street.jpg)
-```
 
-<BrowserWindow>
+<CodeShowcase lang="md">
 Streetfood
 : Auf der Strasse zubereitete Speisen, die oft in mobilen Verkaufsständen oder -wagen verkauft werden.
 : ![--width=350px --margin=0](../images/street-food.jpg)
@@ -63,13 +46,14 @@ Schnee auf der Strasse
 : In der Regel ein Zeichen für Winter :mdi[snowflake]{.blue}.
 : In __Bern__ zuletzt gesehen am 10. Januar 2024.
 : ![--width=350px --margin=0](../images/snowy-street.jpg)
-</BrowserWindow>
+</CodeShowcase>
 
 ## Block-Elemente
 
 Es können auch Block-Elemente eingefügt werden. Dazu muss allerdings eine Blockdirective `:::dd` verwendet werden.
 
-````md
+
+<CodeShowcase lang="md">
 Hallo Welt
 : In Python
 :::dd
@@ -88,58 +72,13 @@ Hallo Welt in Live
     print('Ich bin ein Block!')
     ```
 :::
-````
-<BrowserWindow>
-Hallo Welt
-: In Python
-:::dd
-
-    ```python
-    print("Hello World")
-    print('Ich bin ein Block!')
-    ```
-:::
-Hallo Welt in Live
-: In Brython
-:::dd
-
-    ```py live_py
-    print("Hello World")
-    print('Ich bin ein Block!')
-    ```
-:::
-</BrowserWindow>
+</CodeShowcase>
 
 ## Kontext durch Eltern-Klassen
 
 Die Definitionen können auch durch Eltern-Klassen kontextualisiert werden. Dies ermöglicht eine bessere Organisation und Strukturierung der Inhalte.
 
-```md
-`default`
-: The simplest example
-World
-: Our planet
-
----
-
-<div className="compactDeflist">
-`compactDeflist`
-: The simplest example
-World
-: Our planet
-</div>
-
----
-
-<div className="smallDeflist">
-`smallDeflist`
-: The simplest example
-World
-: Our planet
-</div>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
 
 `default`
 : The simplest example
@@ -163,31 +102,20 @@ World
 World
 : Our planet
 </div>
-</BrowserWindow>
+</CodeShowcase>
 
 ## Manuelle Verwendung
 
 Es kann auch direkt die entsprechende React-Komponente verwendet werden:
 
-```md
-import DefinitionList from "@tdev-components/DefinitionList";
-
+<CodeShowcase>
 <DefinitionList>
     <dt>Hello World</dt>
     <dd>The simplest example</dd>
     <dt>World</dt>
     <dd>Our planet</dd>
 </DefinitionList>
-```
-
-<BrowserWindow>
-<DefinitionList>
-    <dt>Hello World</dt>
-    <dd>The simplest example</dd>
-    <dt>World</dt>
-    <dd>Our planet</dd>
-</DefinitionList>
-</BrowserWindow>
+</CodeShowcase>
 
 ### Attribute
 

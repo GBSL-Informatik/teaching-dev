@@ -426,7 +426,10 @@ export default class OfflineApi {
                 return rejectResponse({} as T, 400, 'Not implemented');
             case 'studentGroups':
                 return resolveResponse(
-                    (await this.upsertStudentGroupRecord(data as Partial<StudentGroup>, id)) as unknown as T
+                    (await this.upsertStudentGroupRecord(
+                        (data as unknown as { data: Partial<StudentGroup> }).data,
+                        id
+                    )) as unknown as T
                 );
             case 'users':
                 return resolveResponse(data as unknown as T);

@@ -1,10 +1,7 @@
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
-import Loader from '@tdev-components/Loader';
+import LoginRequiredForDocumentType from '@tdev-components/shared/Alert/LoginRequiredForDocumentType';
 import styles from './styles.module.scss';
-import useIsBrowser from '@docusaurus/useIsBrowser';
 import { DocumentRootIdContext } from '@tdev-hooks/useContextDocumentRootId';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
 import { ModelMeta } from '@tdev-models/documents/Assessable/Quiz';
@@ -23,17 +20,20 @@ export interface Props extends AssessableComponentProps<AssessableType> {
     hideQuestionNumbers?: boolean;
     randomizeOptions?: boolean;
     randomizeQuestions?: boolean;
+    resetMode: 'all' | 'incorrect' | 'noReset';
     minPoints?: number;
+    allowSelection?: boolean;
+    shuffleOnReset?: boolean;
 }
 
 const Quiz = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const doc = useFirstRealMainDocument(props.id, meta);
     const [ref, animate] = useScrollTo(doc, 'end');
     useLinkedMetaModel(doc, meta);
 
     if (!doc) {
-        return <UnknownDocumentType type={meta.type} />;
+        return <LoginRequiredForDocumentType type={meta.type} />;
     }
 
     return (
@@ -41,6 +41,7 @@ const Quiz = observer((props: Props) => {
             className={clsx(
                 styles.quiz,
                 animate && styles.animate,
+                props.allowSelection && styles.allowSelection,
                 doc.isAssessed && doc.assessment && styles[doc.assessment?.correctness]
             )}
             ref={ref}
@@ -49,7 +50,11 @@ const Quiz = observer((props: Props) => {
                 <div className={styles.content}>{props.children}</div>
                 <div className={styles.footer}>
                     <QuizScore doc={doc} />
-                    <QuizControls doc={doc} />
+                    <QuizControls
+                        doc={doc}
+                        resetMode={props.resetMode ?? 'all'}
+                        shuffleOnReset={props.shuffleOnReset}
+                    />
                 </div>
             </DocumentRootIdContext>
         </div>

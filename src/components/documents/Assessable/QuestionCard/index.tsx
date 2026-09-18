@@ -10,6 +10,7 @@ import QuestionControls from './Controls';
 
 interface Props<T extends AssessableType> {
     doc: TypeModelMapping[T];
+    allowSelection?: boolean;
     children: React.ReactNode;
 }
 
@@ -19,7 +20,11 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
     return (
         <Card
             classNames={{
-                card: clsx(styles.questionCard, styles[doc.correctness]),
+                card: clsx(
+                    styles.questionCard,
+                    styles[doc.correctness],
+                    props.allowSelection && styles.allowSelection
+                ),
                 header: clsx(styles.header, styles[doc.correctness])
             }}
             style={{

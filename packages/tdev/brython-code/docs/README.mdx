@@ -7,58 +7,49 @@ tags:
 sidebar_position: 50
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # brython-code
 
-
+<CodeShowcase lang="md">
 ```py live_py id=7cf4fb1c-8495-4600-bf67-23fb7bd29deb
 print('hello world')
 ```
+</CodeShowcase>
 
 ### Title (`title`)
 
 Mit dem `title`-Parameter kann ein Titel für den Code-Block hinzugefügt werden.
 
+<CodeShowcase lang="md">
+```py live_py title=example.py
+```
+</CodeShowcase>
+
 :::warning[Spaces]
 Ein Leerschlag wird nicht unterstützt, da er als Trennzeichen im Meta-String eines Code-Blocks verwendet wird. Stattdessen können Unterstriche `_` oder Bindestriche `-` verwendet werden.
 :::
 
-````md
-```py live_py title=example.py
-```
-````
 
 :::tip[Use `_` in the title]
 Um einen Unterstrich zu verwenden, kann folgende Syntax verwendet werden:
 
-````md
-```py live_py title=example__file.py
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py title=example__file.py id=8ba96031-71e6-47dd-be6e-9164761653ee
   print('Hello Title')
   ```
-</BrowserWindow>
+</CodeShowcase>
 :::
 
 ### Slim Mode (`slim`)
 
 Manchmal ist ein Editor mit einem Header visuell zu gross. Für kleine Code-Schnipsel kann der `slim`-Modus verwendet werden, um die Grösse des Editors zu reduzieren. Dies entfernt den Header und blendet die Zeilennummern aus.
 
-````md
-```py live_py slim
-print('Hello Slim Mode')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py slim
   print('Hello Slim Mode')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 :::warning[API-Speicherung]
 Bei der Verwendung des `slim`-Modus wird der `id`-Parameter ignoriert.
@@ -68,17 +59,11 @@ Bei der Verwendung des `slim`-Modus wird der `id`-Parameter ignoriert.
 
 Ein Editor kann auch im Read-Only-Modus angezeigt werden, indem der `readonly`-Parameter hinzugefügt wird.
 
-````md
-```py live_py readonly
-print('Hello Read-Only Mode')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py readonly hideWarning
   print('Hello Read-Only Mode')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ::::tip[Works with Persisted Code]
 Auch wenn der Code von der API geladen wird, wird der Read-Only-Modus beibehalten.
@@ -92,70 +77,43 @@ Dies ist besonders nützlich im Schulunterricht, wenn einige Übungen/Prüfungen
 
 Der Download-Button ermöglicht es, den Code als Datei herunterzuladen. Mit dem `noDownload`-Meta-String kann der Download-Button ausgeblendet werden.
 
-````md
-```py live_py noDownload
-print('Hello No Download Button')
-```
-````
 
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py noDownload hideWarning
   print('Hello No Download Button')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Vergleich-Button ausblenden (`noCompare`)
 
 Wenn Änderungen am Code vorgenommen wurden, können diese mit dem Originalcode verglichen werden. Der Vergleichsbutton kann über den `noCompare`-Meta-String ausgeblendet werden.
 
-````md
-```py live_py noCompare hideWarning
-print('Hello No Compare Button')
-```
-````
 
-<BrowserWindow>
+<CodeShowcase lang="md">
   Ändere den Code und beachte, dass kein Vergleichsbutton angezeigt wird.
 
   ```py live_py noCompare hideWarning
   print('Hello No Compare Button')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Reset-Button ausblenden (`noReset`)
 
 Der Reset-Button ermöglicht es, den Code auf den ursprünglichen Code zurückzusetzen. Der Reset-Button kann über den `noReset`-Meta-String ausgeblendet werden.
 
-````md
-```py live_py noReset
-print('Hello No Reset Button')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   Ändere den Code und beachte, dass der Reset-Button ausgeblendet ist.
 
   ```py live_py noReset hideWarning
   print('Hello No Reset Button')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Max Line Number bevor gescrollt wird (`maxLines`)
 
 Es kann die maximale Anzahl von Zeilen angegeben werden, bevor der Editor scrollt. Dies ist nützlich für lange Code-Schnipsel. Der Standardwert ist `25`.
 
-````md
-```py live_py maxLines=5
-print('Line 1')
-print('Line 2')
-print('Line 3')
-print('Line 4')
-print('Line 5')
-print('Line 6 - scrolled')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py maxLines=5 hideWarning
   print('Line 1')
   print('Line 2')
@@ -164,7 +122,7 @@ print('Line 6 - scrolled')
   print('Line 5')
   print('Line 6 - scrolled')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 
 ### Minimale Anzahl Zeilen (`minLines`)
@@ -172,19 +130,12 @@ print('Line 6 - scrolled')
 Es kann die minimale Anzahl von Zeilen angegeben werden, die der Editor mindestens anzeigen soll.
 Dies ist nützlich falls Code-Blöcke miteinander verglichen werden sollen.
 
-````md
-```py live_py minLines=5
-print('Line 1')
-print('Line 2')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py minLines=5 hideWarning
   print('Line 1')
   print('Line 2')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 
 ### Imports
@@ -461,7 +412,7 @@ class Grid():
 ```
 :::
 
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py title=grid__example.py hideWarning
   from grid import Grid
   Grid.clear_canvas()
@@ -477,23 +428,17 @@ class Grid():
   ''')
   smile.draw()
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Änderungen abspeichern (`id`=uuid)
 
 Änderungen im Code-Editor können durch Hinzufügen einer `id` zum Code-Block persistiert werden. Die Änderungen werden über die `teaching-api` gespeicher und der Inhalt wird beim Neuladen der Seite wiederhergestellt.
 
-````md
-```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
-# Änderungen in diesem Code-Block werden für angemeldete User im Backend persistiert.
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py id=50fa8065-0d3b-4cb1-b03f-8244a6582d60
   # Änderungen in diesem Code-Block werden für angemeldete User im Backend persistiert.
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 :::warning[Eindeutige IDs]
 Stelle sicher dass die IDs auf der gesamten Website (nicht nur auf dieser Seite) eindeutig sind, ansonsten kann das Verhalten für deine Benutzer unerwartet sein. (Der Code wird durch den zuletzt geänderten Code-Block mit derselben ID überschrieben).
@@ -507,19 +452,13 @@ Ein guter Weg, um eindeutige IDs zu gewährleisten, ist die Verwendung einer UUI
 
 Es können Versionen des Codes gespeichert werden, indem der `versioned`-Meta-String hinzugefügt wird. Dies fügt eine Versionshistorie zum Editor hinzu. Jede Änderung wird als neue Version gespeichert, aber nicht öfter als einmal alle 1 Sekunde.
 
-````md
-```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
-print('Hello Versioned Mode')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   Probiere es aus, indem du den Code mehrmals (min. 2x) änderst und speicherst und dann auf die Versionshistorie-Details klickst.
 
   ```py live_py versioned id=b8ab041e-ce58-4803-b504-6b1011524370
   print('Hello Versioned Mode')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 :::warning[Only in Persisted Mode]
 Der `versioned`-Modus funktioniert nur in Kombination mit dem `id`-Attribut. Das `id`-Attribut wird verwendet, um die Versionen im backend zu persistieren.
@@ -529,17 +468,11 @@ Der `versioned`-Modus funktioniert nur in Kombination mit dem `id`-Attribut. Das
 
 Die Versionen des Codes werden standardmässig angezeigt. Mit dem `noHistory`-Meta-String kann die Versionshistorie ausgeblendet werden.
 
-````md
-```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
-print('Hello No History')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py versioned noHistory id=07300009-a743-4adc-bdc5-cacbfdf5230a
   print('Hello Versioned Mode')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Pre- und Post-Code
 
@@ -550,22 +483,7 @@ Mit Kommentaren lassen sich Code-Teile zu Beginn oder am Ende verstecken und auf
 `### POST`
 : Die Code-Sequenz **nach** dem `### POST`-Kommentar ist standardmässig eingeklappt und wird nicht angezeigt.
 
-````md
-```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
-# This is a pre code block
-from time import time
-t0 = time.time()
-PI = 3.14159265359
-### PRE
-radius = 10
-print(f'Der Umfang eines Kreises mit Radius {radius} beträgt {2 * PI * radius}')
-### POST
-print('--------------------------')
-print(f'Die Berechnung dauerte {time.time() - t0} Sekunden')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   Codeblock mit eingeklapptem Pre- und Post-Code. Die Ausklapp-Knöpfe werden angezeigt, wenn mit der Maus über den Code gefahren wird.
 
   ```py live_py id=5ecb46e8-4ab5-428b-bb3f-467aa0d47d01
@@ -579,40 +497,28 @@ print(f'Die Berechnung dauerte {time.time() - t0} Sekunden')
   print('----------------------------------------------------------')
   print(f'Die Berechnung dauerte {(time() - t0) * 1000} Millisekunden')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Nicht abgespeicherte Code Blocks
 
 Wenn keine `id` angegeben ist, wird der Code nicht gespeichert, was mit einem :mdi[flash-triangle-outline]{.orange} und einem orangen Header signalisiert wird.
 Dies ist nützlich, wenn Code-Beispiele nicht gespeichert werden sollen.
 
-````md
-```py live_py
-print('Hello Unpersisted Code Block')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py
   print('Hello Unpersisted Code Block')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 #### Hide the Warning (`hideWarning`)
 
 Soll die Warnung ausgeblendet werden, kann der `hideWarning`-Parameter hinzugefügt werden.
 
-````md
-```py live_py hideWarning
-print('Hello Unpersisted Code Block')
-```
-````
-
-<BrowserWindow>
+<CodeShowcase lang="md">
   ```py live_py hideWarning
   print('Hello Unpersisted Code Block')
   ```
-</BrowserWindow>
+</CodeShowcase>
 
 
 

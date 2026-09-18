@@ -14,11 +14,15 @@ interface Props {
 }
 
 const AdminActions = observer((props: Props) => {
+    const userStore = useStore('userStore');
     const viewStore = useStore('viewStore');
     const isMobile = useIsMobileView(450);
     const isSmallDevice = useIsMobileView(420);
     const { group } = props;
-
+    const { current } = userStore;
+    if (!current?.id || !group.adminIds.has(current.id)) {
+        return null;
+    }
     return (
         <div className={clsx(styles.actions, isSmallDevice && styles.actionsSmall)}>
             <CanEditBadge group={group} hideText={isMobile} />

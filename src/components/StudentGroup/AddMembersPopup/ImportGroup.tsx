@@ -10,11 +10,7 @@ import Button from '@tdev-components/shared/Button';
 const ImportGroup = observer((props: _AddMembersPopupPropsInternal) => {
     const studentGroupStore = useStore('studentGroupStore');
     const [searchFilter, setSearchFilter] = React.useState('');
-    const [searchRegex, setSearchRegex] = React.useState(new RegExp(searchFilter, 'i'));
-
-    React.useEffect(() => {
-        setSearchRegex(new RegExp(searchFilter, 'i'));
-    }, [searchFilter]);
+    const searchRegex = React.useMemo(() => new RegExp(searchFilter, 'i'), [searchFilter]);
 
     return (
         <>

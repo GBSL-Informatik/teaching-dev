@@ -3,32 +3,13 @@ page_id: dffc80f0-de84-4e3c-9696-c01dd82409bc
 ---
 
 import Steps from '@tdev-components/Steps';
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Steps
 
 Formatierung für Anleitungen im Schritt-für-Schritt-Stil.
 
-```md
-import Steps from '@tdev-components/Steps';
-
-<Steps>
-   1. Miuch u Zucker ine Topf gheie u erhitzä, bis dr Zucker ufglöst isch.  
-      Sofort wägnä vom Herd.
-   2. Eigäub ire Schüssle verrührä u när d Miuch-Zucker-Mischig derzuegheie.
-      ![So söus usgseh --width=400](https://rezepte.lemenu.ch/images/promo_images/posts/000/000/575/promo/Eier_r_C3_BChren.jpg)
-   3. Aues uf 80 ° erhitze - geng rührä dasses nid ahhockt!
-   4. Wäg vom Herd u die ghackti Schoggi drigheie und dr Vanilleextrakt drungerzieh.  
-      Rührä bis d Schoggi gschmutzä isch
-      ![--width=350](https://cdn.pixabay.com/photo/2017/05/06/16/44/chocolate-2290244_1280.jpg)
-   5. Ab id Ismaschinä tue bises schön crémig isch.
-   6. No für min. 2 Stung id gfrüüri 🥶
-   7. Umpfertig 🧁🍧🍨🍦
-      ![--width=500](https://cdn.gutekueche.ch/media/recipe/23234/resp/selbstgemachtes-schokoeis___webp_1160_774.webp)
-</Steps>
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[`import Steps from '@tdev-components/Steps';`]}>
   <Steps>
       1. Miuch u Zucker ine Topf gheie u erhitzä, bis dr Zucker ufglöst isch.  
          Sofort wägnä vom Herd.
@@ -43,7 +24,7 @@ import Steps from '@tdev-components/Steps';
       7. Umpfertig 🧁🍧🍨🍦
          ![--width=500](https://cdn.gutekueche.ch/media/recipe/23234/resp/selbstgemachtes-schokoeis___webp_1160_774.webp)
   </Steps>
-</BrowserWindow>
+</CodeShowcase>
 
 ## Installation
 

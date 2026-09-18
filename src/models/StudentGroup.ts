@@ -58,6 +58,11 @@ class StudentGroup {
     }
 
     @computed
+    get isActive() {
+        return !this.name.trim().startsWith('_');
+    }
+
+    @computed
     get students() {
         return orderBy(
             this.store.root.userStore.users.filter((u) => this.userIds.has(u.id) && !this.adminIds.has(u.id)),

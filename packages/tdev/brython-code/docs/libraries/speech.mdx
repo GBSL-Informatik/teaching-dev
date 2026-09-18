@@ -1,0 +1,49 @@
+---
+page_id: 3fa81b72-640a-4d5c-b975-08e5f433610e
+---
+
+# Speech
+
+Mit der Bibliothek `speech` kann ein Text vom Browser gesprochen werden.
+
+::::def[`speak(text, lang='de-CH', volume=1, rate=1, pitch=1, voice=None)`]
+```py live_py slim
+from speech import speak
+
+speak('Hallo, es ist Winter!')
+```
+
+Die Sprachausgabe kann angepasst werden:
+```py live_py slim
+from speech import speak
+### PRE
+speak('Hi there, i speak english now.', lang='en-US')
+speak('Jetzt doppelt so schnell', lang='de-DE', rate=2)
+speak('Jetzt halb so schnell', lang='de-DE', rate=0.5)
+speak('Jetzt höher', lang='de-DE', pitch=2) # max 2
+speak('Jetzt tiefer', lang='de-DE', pitch=0.1) # min 0.1
+speak('Jetzt leiser', lang='de-DE', volume=0.5) # Werte zwischen 0 und 1, Standard ist 1
+```
+
+:::warning[Browser-Feature]
+Nicht jeder Browser unterstützt das Sprechen von Texten in allen Sprachen.
+:::
+
+::::
+
+:::def[`voices`]
+Es kann auch die __Stimme__ verändert werden, wobei nicht jede Stimme in jedem Browser verfügbar ist.
+```py live_py slim
+from speech import speak, voices
+voices('de-DE') # gibt die verfügbaren Stimmen aus
+speak('Hallo, es ist Winter!', lang='de-DE', voice='Microsoft Katja - German (Germany)')
+```
+:::
+
+:::def[`languages`]
+Die __verfügbaren Sprachen__ können mit `languages()` ausgegeben werden.
+```py live_py slim
+from speech import languages
+languages()
+```
+:::

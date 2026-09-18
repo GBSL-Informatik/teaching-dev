@@ -2,19 +2,15 @@
 page_id: f6f7a1a7-faf2-4f95-8901-de6df01788f2
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # ::circuitverse
 
 Bindet einen [Circuitverse](https://circuitverse.org/) Schaltkreis ein.
 
-```mdx
+<CodeShowcase lang="md">
 ::circuitverse[https://circuitverse.org/simulator/embed/rothe-inverter]
-```
-
-<BrowserWindow>
-::circuitverse[https://circuitverse.org/simulator/embed/rothe-inverter]
-</BrowserWindow>
+</CodeShowcase>
 
 ## Optionen
 
@@ -28,11 +24,6 @@ Bindet einen [Circuitverse](https://circuitverse.org/) Schaltkreis ein.
 css Eigenschaften
 : Es können beliebige css-Eigenschaften in Form `eigenschaft=wert` angegeben werden, die auf das iframe angewendet werden.
 
-
-```mdx
-::circuitverse[https://circui...]{width=300px height=200px border="2px solid red"}
-```
-
-<BrowserWindow>
+<CodeShowcase lang="md">
 ::circuitverse[https://circuitverse.org/simulator/embed/rothe-inverter]{width=300px height=200px border="2px solid red"}
-</BrowserWindow>
+</CodeShowcase>

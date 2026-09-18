@@ -199,7 +199,7 @@ abstract class iDocument<Type extends DocumentType> {
         if (this.authorId === userId) {
             return RWAccess.has(this.root.permission);
         }
-        return RWAccess.has(this.root.sharedAccess) && RWAccess.has(this.root.permission);
+        return RWAccess.has(this.root.sharedPermission);
     }
 
     @computed
@@ -214,7 +214,7 @@ abstract class iDocument<Type extends DocumentType> {
         if (this.authorId === userStore.current.id) {
             return !NoneAccess.has(this.root.permission);
         }
-        return !NoneAccess.has(this.root.sharedAccess);
+        return !NoneAccess.has(this.root.sharedPermission);
     }
 
     get author() {

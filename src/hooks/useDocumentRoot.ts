@@ -27,8 +27,9 @@ export const useDocumentRoot = <Type extends DocumentType>(
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
-    const [dummyDocumentRoot] = React.useState<DocumentRoot<Type>>(
-        new DocumentRoot(
+    const componentStore = useStore('componentStore');
+    const dummyDocumentRoot = React.useMemo(() => {
+        return new DocumentRoot(
             {
                 id: id || defaultRootDocId,
                 access: Access.RW_DocumentRoot,
@@ -37,8 +38,8 @@ export const useDocumentRoot = <Type extends DocumentType>(
             meta,
             documentRootStore,
             true
-        )
-    );
+        );
+    }, []);
 
     /** initial load */
     React.useEffect(() => {
@@ -80,7 +81,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
             disposer();
             documentRootStore.removeFromStore(defaultRootDocId, true);
         };
-    }, [documentRootStore, id, meta, loadOnlyType]);
+    }, [documentRootStore, id, loadOnlyType]);
 
     React.useEffect(() => {
         if (!id || !userStore.current?.hasElevatedAccess) {
@@ -89,7 +90,11 @@ export const useDocumentRoot = <Type extends DocumentType>(
         return reaction(
             () => documentRootStore.find(dummyDocumentRoot.id)?._triggerDocumentReload,
             () => {
-                const firstMainDoc = documentRootStore.find(dummyDocumentRoot.id)?.firstMainDocument;
+                const docRoot = documentRootStore.find(dummyDocumentRoot.id);
+                if (!docRoot) {
+                    return;
+                }
+                const firstMainDoc = docRoot.documentsByType.get(meta.type)?.[0];
                 if (firstMainDoc) {
                     return;
                 }
@@ -118,6 +123,13 @@ export const useDocumentRoot = <Type extends DocumentType>(
         const hash = MetaHasher.toHashSync(meta.props);
         if (hash === rootDoc._metaHash) {
             return;
+        }
+        if (componentStore.taskableDocuments.has(meta.type)) {
+            const isNested =
+                !!(meta.props as { qid?: string }).qid && !(rootDoc.meta.props as { qid?: string }).qid;
+            if (isNested) {
+                return;
+            }
         }
         // update the metadata for this documentRoot, because it changed since the last load
         documentRootStore.addDocumentRoot(

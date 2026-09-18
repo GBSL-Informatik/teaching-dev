@@ -1,7 +1,11 @@
+'''
+Author: Balthasar Hofer
+'''
+
 from browser import document # type: ignore
 from config import Config # type: ignore
 
-class Rectangle():
+class Cell():
     col: int
     row: int
     ctx = None
@@ -12,6 +16,9 @@ class Rectangle():
         self.row = row
         self.grid = grid
         self.init_draw = False
+        self._text_scale = 0.8
+        self._text = ''
+        self._text_color = 'black'
         try:
             canvas = document[Config.CANVAS_ID]
             self.ctx = canvas.getContext('2d')
@@ -23,6 +30,40 @@ class Rectangle():
         y = (self.row + offset_y) % len(self.grid) # type: ignore
         x = (self.col + offset_x) % len(self.grid[y]) # type: ignore
         return self.grid[y][x] # type: ignore
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text: str):
+        if self._text == text:
+            return
+        self._text = text
+        self.draw()
+
+
+    @property
+    def text_color(self):
+        return self._text_color
+
+    @text_color.setter
+    def text_color(self, color: str):
+        if self._text_color == color:
+            return
+        self._text_color = color
+        self.draw()
+
+    @property
+    def text_scale(self):
+        return self._text_scale
+
+    @text_scale.setter
+    def text_scale(self, scale: float):
+        if self._text_scale == scale:
+            return
+        self._text_scale = scale
+        self.draw()
 
     @property
     def color(self):
@@ -48,16 +89,44 @@ class Rectangle():
             self.ctx.lineWidth = 0 # type: ignore
             self.ctx.fillStyle = self.color # type: ignore
             self.ctx.fillRect(x, y, scale, scale) # type: ignore
+            self.draw_text()
         except:
             pass
 
+    def draw_text(self):
+        if self.text == '':
+            return
+
+        scale = self.grid.scale # type: ignore
+        x = self.col * scale
+        y = self.row * scale
+        self.ctx.fillStyle = self.text_color  # type: ignore
+        self.ctx.textAlign = 'center'  # type: ignore
+        self.ctx.textBaseline = 'middle'  # type: ignore
+        padding = scale * 0.05  # 5% padding on each side
+        max_width = scale - padding * 2
+        max_height = scale - padding * 2
+
+        font_size = max_height * self._text_scale
+        min_font_size = 6  # don't go below this, or just hide text
+
+        while font_size > min_font_size:
+            self.ctx.font = f'{font_size}px Arial'  # type: ignore
+            text_width = self.ctx.measureText(self.text).width  # type: ignore
+            if text_width <= max_width:
+                break
+            font_size -= 1
+
+        self.ctx.font = f'{font_size}px Arial'  # type: ignore
+        self.ctx.fillText(self.text, x + scale / 2, y + scale / 2)  # type: ignore
+
     def copy(self, grid):
-        return Rectangle(grid, self.col, self.row, self.color)
+        return Cell(grid, self.col, self.row, self.color)
 
     def __repr__(self):
         return self.color
 
-class RectLine():
+class Line():
     line: list = []
     n = 0
     max = 0
@@ -66,7 +135,7 @@ class RectLine():
         if type(cols) == list:
             self.line = cols # type: ignore
         else:
-            self.line = [Rectangle(grid, col, row, color) for col in range(cols)] # type: ignore
+            self.line = [Cell(grid, col, row, color) for col in range(cols)] # type: ignore
         self.max = len(self.line) # type: ignore
     
     def __getitem__(self, key):
@@ -98,7 +167,7 @@ class RectLine():
             rect.draw()
     
     def copy(self, grid):
-        return RectLine(grid, self.line[0].row, [l.copy(grid) for l in self.line]) # type: ignore
+        return Line(grid, self.line[0].row, [l.copy(grid) for l in self.line]) # type: ignore
 
 class Grid():
     lines = []
@@ -118,8 +187,10 @@ class Grid():
             else:
                 scale = 10
         self.scale = scale
-        self.lines = [RectLine(self, row, cols, color) for row in range(rows)]
+        self.lines = [Line(self, row, cols, color) for row in range(rows)]
         self.max = rows
+        if color != '':
+            self.draw()
     
     @staticmethod
     def setup(width: int, height: int, record_gif: bool = False):
@@ -159,10 +230,10 @@ class Grid():
             raw_line = []
             for x in range(size_x):
                 if x < len(line):
-                    raw_line.append(Rectangle(grid, x, len(raw_grid), colors.get(line[x], colors['bg'])))
+                    raw_line.append(Cell(grid, x, len(raw_grid), colors.get(line[x], colors['bg'])))
                 else:
-                    raw_line.append(Rectangle(grid, x, len(raw_grid), colors['bg']))
-            raw_grid.append(RectLine(grid, len(raw_grid), raw_line))
+                    raw_line.append(Cell(grid, x, len(raw_grid), colors['bg']))
+            raw_grid.append(Line(grid, len(raw_grid), raw_line))
         grid.set_lines(raw_grid)
         grid.draw()
         return grid

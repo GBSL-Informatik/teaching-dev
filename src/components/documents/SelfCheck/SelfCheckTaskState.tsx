@@ -23,8 +23,8 @@ const SelfCheckTaskState = observer(({ includeQuestion = true, pagePosition }: P
         throw new Error('SelfCheckTaskState must be used within a SelfCheck');
     }
 
-    const [taskMeta] = React.useState(new TaskMeta({ pagePosition }));
-    const [solutionMeta] = React.useState(new SolutionModelMeta({}));
+    const taskMeta = React.useMemo(() => new TaskMeta({ pagePosition }), [pagePosition]);
+    const solutionMeta = React.useMemo(() => new SolutionModelMeta({}), []);
     const taskDoc = useFirstMainDocument(context.taskStateId, taskMeta, false);
     const taskDocRoot = useDocumentRoot(context.taskStateId, taskMeta, false);
     const solutionDoc = useFirstMainDocument(context.solutionId, solutionMeta, false);

@@ -11,16 +11,27 @@ interface Props<T extends CodeType> {
 
 const Reset = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
-    const onReset = React.useEffectEvent(() => {
+    const onReset = () => {
+        if (!code.canEdit) {
+            return;
+        }
         const shouldReset = window.confirm(
             'Änderungen wirklich verwerfen? Dies kann nicht rückgängig gemacht werden.'
         );
         if (shouldReset) {
             code.setCode(code.meta.initCode);
         }
-    });
+    };
+    if (!code.canEdit) {
+        return null;
+    }
     return (
-        <Button onClick={onReset} title={'Code auf ursprünglichen Zustand zurücksetzen'} icon={mdiRestore} />
+        <Button
+            onClick={onReset}
+            disabled={!code.canEdit}
+            title={'Code auf ursprünglichen Zustand zurücksetzen'}
+            icon={mdiRestore}
+        />
     );
 });
 

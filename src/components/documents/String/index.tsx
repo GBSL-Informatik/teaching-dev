@@ -101,7 +101,7 @@ const InputWrapper = observer(
 );
 
 const String = observer((props: Props & { monospace?: boolean; disabled?: boolean }) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const doc = useFirstMainDocument(props.id, meta);
     const inputId = useId();
     const inputType = props.type || 'text';

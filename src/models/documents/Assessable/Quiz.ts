@@ -10,6 +10,11 @@ import { AssessableMeta } from './AssessableMeta';
 import { mdiTimelineQuestionOutline } from '@mdi/js';
 import { IfmColors } from '@tdev-components/shared/Colors';
 
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['quiz']>({
+    questionOrder: [],
+    assessed: false
+});
+
 export class ModelMeta extends AssessableMeta<AssessableType> implements AssessableMeta<AssessableType> {
     readonly type = 'quiz';
     readonly randomizeOptions?: boolean;
@@ -28,11 +33,7 @@ export class ModelMeta extends AssessableMeta<AssessableType> implements Assessa
     }
 
     get defaultData(): TypeDataMapping['quiz'] {
-        const data: TypeDataMapping['quiz'] = {
-            questionOrder: [],
-            assessed: false
-        };
-        return data;
+        return DEFAULT_DATA;
     }
 }
 
@@ -70,9 +71,29 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
         this.saveNow();
     }
 
+    @action
+    resetFaulty(): void {
+        const correctIds = new Set(
+            this.questions.filter((q) => q.correctness === Correctness.Correct).map((q) => q.id)
+        );
+        this.setAssessed(false);
+        this.questions.filter((q) => !correctIds.has(q.id)).forEach((q) => q.reset());
+        this.saveNow();
+    }
+
+    @action
+    reshuffle(): Promise<any> {
+        this.shuffle();
+        const questionShuffling = this.questions.map((q) => {
+            q.shuffle();
+            return q.saveNow();
+        });
+        return Promise.all([this.saveNow(), ...questionShuffling]);
+    }
+
     @computed
     get questionCount(): number {
-        return this.meta.questionIds.length;
+        return this.questionIds.size;
     }
 
     @computed
@@ -110,13 +131,15 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
+    get questionIds(): Set<string> {
+        return new Set(this.meta.questionIds);
+    }
+
+    @computed
     get questions(): iAssessable<AssessableType>[] {
-        const docs = this.root?.documents ?? [];
-        const qids = new Set(this.meta.questionIds);
+        const docs = (this.root?.allDocuments ?? []) as iAssessable<AssessableType>[];
         return docs.filter(
-            (doc) =>
-                (doc as iAssessable<AssessableType>).qid &&
-                qids.has((doc as iAssessable<AssessableType>).qid!)
+            (doc) => doc.authorId === this.authorId && doc.qid && this.questionIds.has(doc.qid)
         ) as iAssessable<AssessableType>[];
     }
     @computed
@@ -135,10 +158,14 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
                 return summary;
             },
-            { correctness: Correctness.NA, scoring: { pointsAchieved: 0, maxPoints: 0 } } as Assessement
+            {
+                correctness: Correctness.NA,
+                scoring: { pointsAchieved: 0, maxPoints: this.missingQuestionModelCount }
+            } as Assessement
         );
+        const allAnswered = this.missingQuestionModelCount === 0 && this.hits === this.maxHits;
         const isAllNA = correctness.every((c) => c === Correctness.NA);
-        const isAllCorrect = !isAllNA && correctness.every((c) => c === Correctness.Correct);
+        const isAllCorrect = allAnswered && !isAllNA && correctness.every((c) => c === Correctness.Correct);
         const isAllIncorrect =
             !isAllNA &&
             !isAllCorrect &&
@@ -166,8 +193,18 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
     }
 
     @computed
+    get missingQuestionModelCount(): number {
+        return this.questionIds.size - this.questions.length;
+    }
+
+    @computed
+    get isNA(): boolean {
+        return this.naCount === this.questionCount;
+    }
+
+    @computed
     get naCount(): number {
-        return this.questions.reduce((sum, q) => sum + (q.isNA ? 1 : 0), 0);
+        return this.questions.reduce((sum, q) => sum + (q.isNA ? 1 : 0), this.missingQuestionModelCount);
     }
 
     @computed
@@ -177,7 +214,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get maxHits(): number {
-        return this.questions.reduce((sum, q) => sum + q.maxHits, 0);
+        return this.questions.reduce((sum, q) => sum + q.maxHits, this.missingQuestionModelCount);
     }
 
     @computed
@@ -187,7 +224,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get misses(): number {
-        return this.questions.reduce((sum, q) => sum + (q.misses ?? 0), 0);
+        return this.questions.reduce((sum, q) => sum + (q.misses ?? 0), this.missingQuestionModelCount);
     }
 
     get data(): TypeDataMapping['quiz'] {
@@ -200,20 +237,23 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     get editingIconState() {
         return {
-            path: mdiTimelineQuestionOutline,
-            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray
+            path: this.icon,
+            color: this.isAssessed ? CorrectnessColors[this.correctness] : IfmColors.gray,
+            title: this.isAssessed
+                ? this.assessment?.scoring
+                    ? `${this.assessment.scoring.pointsAchieved}/${this.assessment.scoring.maxPoints}`
+                    : `${this.hits}/${this.maxHits}`
+                : 'N/A'
         };
     }
 
     @computed
     get meta(): ModelMeta {
-        if (this.linkedMeta) {
-            return this.linkedMeta as ModelMeta;
-        }
-        if (this.root?.type === 'quiz') {
-            return this.root.meta as ModelMeta;
-        }
-        return DEFAULT_META;
+        return (this._meta as ModelMeta) ?? DEFAULT_META;
+    }
+
+    get icon(): string {
+        return mdiTimelineQuestionOutline;
     }
 }
 

@@ -15,7 +15,7 @@ interface Props {
 
 const SimpleChat = observer((props: Props): React.ReactNode => {
     const { id, name } = props;
-    const [meta] = React.useState(new ModelMeta({ name }));
+    const meta = React.useMemo(() => new ModelMeta({ name }), [id, name]);
     const simpleChat = useFirstMainDocument(id, meta, false);
     if (!simpleChat || simpleChat.isDummy) {
         return <CreateSimpleChat id={id} name={name} />;

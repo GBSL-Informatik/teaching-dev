@@ -1,5 +1,6 @@
 import { TypeDataMapping, Access } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import { computed } from 'mobx';
 export interface MetaInit {
     readonly?: boolean;
     default?: string;
@@ -36,6 +37,7 @@ export class ModelMeta extends TypeMeta<'netpbm_graphic'> {
         this.default = props.default;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['netpbm_graphic'] {
         return {
             imageData: this.default || ''

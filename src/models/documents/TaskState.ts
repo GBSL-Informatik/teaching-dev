@@ -33,6 +33,7 @@ export class TaskMeta extends TypeMeta<'task_state'> {
         this.readonly = !!props.readonly;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['task_state'] {
         return {
             state: this.default

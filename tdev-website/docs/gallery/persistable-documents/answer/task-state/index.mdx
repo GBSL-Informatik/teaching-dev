@@ -4,40 +4,28 @@ tags:
   - persistable
 ---
 import TaskState from '@tdev-components/documents/TaskState';
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Task State
 
-```md
+<CodeShowcase>
 <TaskState id="69fdccb4-9d57-424a-9849-b762f2f48613" />
-```
-<BrowserWindow>
-<TaskState id="69fdccb4-9d57-424a-9849-b762f2f48613" />
-</BrowserWindow>
+</CodeShowcase>
 
 ## TaskState Optionen
 ### Label
 
-```md
+<CodeShowcase>
 <TaskState label="Ein Label" id="c599706c-8422-453d-af02-c23e00686504" />
-```
-<BrowserWindow>
-<TaskState label="Ein Label" id="c599706c-8422-453d-af02-c23e00686504" />
-</BrowserWindow>
+</CodeShowcase>
 
 ### Label selber stylen
 
-```md
+<CodeShowcase>
 <TaskState id="f72001d0-71ea-4cb7-a044-61fe09b1fd28">
     Aufgabe auf :mdi[checkbox-marked]{.green} setzen.
 </TaskState>
-```
-
-<BrowserWindow>
-<TaskState id="f72001d0-71ea-4cb7-a044-61fe09b1fd28">
-    Aufgabe auf :mdi[checkbox-marked]{.green} setzen.
-</TaskState>
-</BrowserWindow>
+</CodeShowcase>
 
 ### Zustände selber setzen
 
@@ -55,30 +43,16 @@ Zustände können in beliebiger Reihenfolge und Kombination gesetzt werden. Der 
 : `star-half`
 :mdi[star]{color=gold}
 : `star`
-```md
+
+<CodeShowcase>
 <TaskState states={['unset', 'checked']} id="2586e204-29d0-4cb7-b5f8-c786579eb8df"/>
-```
-<BrowserWindow>
-<TaskState states={['unset', 'checked']} id="2586e204-29d0-4cb7-b5f8-c786579eb8df"/>
-</BrowserWindow>
+</CodeShowcase>
 
 ### Readonly
 
 TaskState kann nicht verändert werden, wenn `readonly` gesetzt wurde.
 
-```md
-<TaskState 
-    readonly 
-    label="ID nirgends sonst gebraucht" 
-    id="f0ebe357-ee78-4b5c-b64d-70faf6c2f80b"
-/>
-<TaskState 
-    readonly
-    label="Gleiche ID wie oben"
-    id="2586e204-29d0-4cb7-b5f8-c786579eb8df"
-/>
-```
-<BrowserWindow>
+<CodeShowcase>
     <TaskState 
         readonly
         label="ID nirgends sonst gebraucht"
@@ -89,7 +63,7 @@ TaskState kann nicht verändert werden, wenn `readonly` gesetzt wurde.
         label="Gleiche ID wie oben"
         id="2586e204-29d0-4cb7-b5f8-c786579eb8df"
     />
-</BrowserWindow>
+</CodeShowcase>
 
 
 :::info[Gleiche ID]
@@ -99,56 +73,35 @@ Wenn [oberhalb](#zustände-selber-setzen) der Zustand verändert wird, wird er a
 ### In einer Admonition
 Wird innerhalb einer Admonition als erstes Element eine TaskState-Komponente verwendet, wird diese als "Icon" des Admonition-Titels gesetzt.
 
-```md
+<CodeShowcase>
 :::note[Admonition]
 <TaskState id="d936a45b-8c22-42b6-abe4-4df6c3be9406" />
 Hello aus einer Admonition.
 :::
-```
-<BrowserWindow>
+</CodeShowcase>
 
-:::note[Admonition]
-<TaskState id="d936a45b-8c22-42b6-abe4-4df6c3be9406" />
-Hello aus einer Admonition.
-:::
-</BrowserWindow>
-
-
-```md
+<CodeShowcase>
 :::note[So Nicht...]
 Hello aus einer Admonition.
-<TaskState id="d936a45b-8c22-42b6-abe4-4df6c3be9406" />
+<TaskState id="049a7ed8-283a-4f1d-9d72-827c9bf91d96" />
 :::
-```
-<BrowserWindow>
-:::note[So Nicht...]
-Hello aus einer Admonition.
-<TaskState id="d936a45b-8c22-42b6-abe4-4df6c3be9406" />
-:::
-</BrowserWindow>
+</CodeShowcase>
 
 
 ### Temporäre Komponente (nicht persistiert)
 
 Ohne `id` wird der Zustand nicht gespeichert, was mit einem roten Rand markiert.
 
-```md
+<CodeShowcase>
 <TaskState />
-```
-<BrowserWindow>
-<TaskState />
-</BrowserWindow>
+</CodeShowcase>
 
 ### Inline-TaskState
 Es ist auch möglich, die TaskState-Komponente inline zu verwenden, bspw. in einer Überschrift
 
-```md
-## <TaskState inline /> Inline-TaskState
-```
-
-<BrowserWindow>
-<h2><TaskState inline id="a9a14ffa-3e6e-4288-b2c5-73499d85f4c6" /> Inline-TaskState</h2>
-</BrowserWindow>
+<CodeShowcase lang="md">
+## <TaskState inline hideWarning /> Inline-TaskState
+</CodeShowcase>
 
 ## Installation
 

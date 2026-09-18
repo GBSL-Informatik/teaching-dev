@@ -5,65 +5,40 @@ sidebar_custom_props:
 ---
 
 import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 import { action } from 'mobx';
 
 # page-read-check
 
 Mit der Komponente `PageReadCheck` kann der Bearbeitungs- und Lesezustand einer Seite als "gelesen" oder "ungelesen" markiert werden.
 
-```tsx
-import PageReadCheck from '@tdev/page-read-check/PageReadCheck';
+export const IMP = `import PageReadCheck from '@tdev/page-read-check/PageReadCheck';`
 
-<PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
-```
-
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
     <PageReadCheck id="2cf38080-4b13-4b0f-a589-94e78cce585c" />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Mit Mindestlesezeit
 
 Über die `minReadTime` kann eine Mindestlesezeit vorgegeben werden, bevor die Seite als "gelesen" markiert werden kann. Der Timer startet und stoppt automatisch, wenn die Seite sichtbar bzw. unsichtbar wird. Der Standardwert beträgt 10 Sekunden.
 
-```tsx
-<PageReadCheck minReadTime={15} />
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
     <PageReadCheck minReadTime={15}/>
-</BrowserWindow>
+</CodeShowcase>
 
 ## Lesezeit nach Freischaltung fortsetzen
 
 Standardmässig wird die Lesezeit nicht weiter gezählt, wenn die Seite freigeschaltet wurde. Mit der Option `continueAfterUnlock` kann dieses Verhalten geändert werden, sodass die Lesezeit auch nach Freischaltung weiter gezählt wird.
 
-```tsx
-<PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
     <PageReadCheck continueAfterUnlock id="4a84e4a2-dee6-4575-bcd3-9682af03a17d" />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Anpassung der Texte
 
 Die angezeigten Texte und Tooltipps können angepasst werden:
 
-```tsx
-<PageReadCheck
-    text={(unlocked, doc) => {
-        if (unlocked || doc.canUnlock) {
-            return `Gelesen ${doc.fReadTime}`;
-        }
-        return `Noch ${doc.meta.minReadTime - doc.readTime}s übrig`;
-    }}
-    disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
-/>
-```
-
-<BrowserWindow>
+<CodeShowcase imports={[IMP]}>
     <PageReadCheck
         text={(unlocked, doc) => {
             if (unlocked || doc.canUnlock) {
@@ -73,7 +48,7 @@ Die angezeigten Texte und Tooltipps können angepasst werden:
         }}
         disabledReason={(doc) => `Erst ${doc.fReadTime} bearbeitet, das ist zu wenig!`}
     />
-</BrowserWindow>
+</CodeShowcase>
 
 ## Installation
 

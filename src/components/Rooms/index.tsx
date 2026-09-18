@@ -63,7 +63,6 @@ const RoomSwitcher = observer((props: RoomSwitcherProps) => {
     const socketStore = useStore('socketStore');
     React.useEffect(() => {
         socketStore.joinRoom(docContainerId);
-        console.log(dynamicRoot.data, !!dynamicRoot.linkedDocumentContainersMap.get(docContainerId));
         dynamicRoot.linkedDocumentContainersMap.get(docContainerId)?.loadDocuments();
         return () => {
             socketStore.leaveRoom(docContainerId);
@@ -112,7 +111,7 @@ interface WithModelProps {
 
 const WithDocumentRoot = observer((props: WithModelProps): React.ReactNode => {
     const { rootId, docContainerId } = props;
-    const [meta] = React.useState(new ModelMeta({ type: 'dummy' as ContainerType }));
+    const meta = React.useMemo(() => new ModelMeta({ type: 'dummy' as ContainerType }), []);
     const dynDoc = useFirstMainDocument(rootId, meta, false) as DynamicDocumentRoots<ContainerType> | null;
 
     if (!rootId || !dynDoc) {

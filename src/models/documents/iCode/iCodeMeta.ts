@@ -1,6 +1,7 @@
 import { TypeDataMapping, CodeType } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { MetaProps } from '@tdev/theme/CodeBlock';
+import { computed } from 'mobx';
 export interface MetaInit extends Omit<MetaProps, 'live_jsx' | 'live_py' | 'readonly' | 'title'> {
     code: string;
     lang: string;
@@ -53,6 +54,7 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
         this.theme = props.theme;
     }
 
+    @computed
     get defaultData(): TypeDataMapping[T] {
         return {
             code: this.initCode

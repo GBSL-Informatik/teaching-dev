@@ -2,7 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
-import { highestAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
+import { highestAccess, leveledAccess, NoneAccess, ROAccess, RWAccess } from './helpers/accessPolicy';
 import { isDummyId } from '@tdev-hooks/useDummyId';
 import { orderBy } from 'es-toolkit/array';
 import { Hashery } from 'hashery';
@@ -177,9 +177,20 @@ class DocumentRoot<T extends DocumentType> {
         return highestAccess(new Set([...this.permissions.map((p) => p.access), this.access]));
     }
 
+    /**
+     * use this when you want current user's shared permission. It handles correct leveling
+     * of access between the document root's access and the shared access.
+     */
     @computed
     get sharedPermission() {
-        return highestAccess(new Set([this.sharedAccess]), this.permission);
+        if (NoneAccess.has(this.permission) || NoneAccess.has(this.sharedAccess)) {
+            return leveledAccess(Access.None_DocumentRoot, this.permission);
+        }
+
+        if (ROAccess.has(this.permission) || ROAccess.has(this.sharedAccess)) {
+            return leveledAccess(Access.RO_DocumentRoot, this.permission);
+        }
+        return leveledAccess(this.sharedAccess, this.permission);
     }
 
     permissionsForUser(userId: string) {
@@ -195,19 +206,17 @@ class DocumentRoot<T extends DocumentType> {
         if (!this.viewedUserId && !this.isDummy) {
             return [];
         }
-        const docs = this.store.root.documentStore.findByDocumentRoot(this.id).filter((d) => {
-            return (
-                this.isDummy ||
-                d.authorId === this.viewedUserId ||
-                !NoneAccess.has(highestAccess(new Set([this.permission]), this.sharedAccess))
-            );
+        const all = this.store.root.documentStore.findByDocumentRoot(this.id);
+        const docs = all.filter((d) => {
+            return this.isDummy || d.authorId === this.viewedUserId || !NoneAccess.has(this.sharedPermission);
         });
         return docs;
     }
 
     /**
      * All documents which are related to this document root.
-     * This method should be used only for admin users.
+     * This method should be used only for admin users or when the author-filtering is
+     * applied afterwards.
      */
     get allDocuments() {
         if (!this.store.root.userStore.current?.hasElevatedAccess) {
@@ -227,41 +236,17 @@ class DocumentRoot<T extends DocumentType> {
         return this.store.root.userStore.viewedUserId;
     }
 
-    /**
-     * All documents which
-     * - **don't have a parent**
-     * - having the **same type** as this document root
-     *
-     * @returns All main documents, **ordered by creation date**, oldest first.
-     */
     @computed
-    get mainDocuments(): TypeModelMapping[T][] {
-        const docs = orderBy(
-            this.documents.filter((d) => d.isMain),
-            ['createdAt', 'id'],
-            ['asc', 'asc']
-        ) as TypeModelMapping[T][];
-        if (this.isDummy) {
-            return docs;
-        }
-        const byUser = docs.filter((d) => d.authorId === this.viewedUserId);
-
-        if (
-            this.store.root.userStore.current?.hasElevatedAccess &&
-            this.store.root.userStore.isUserSwitched
-        ) {
-            return byUser;
-        }
-
-        if (NoneAccess.has(this.sharedAccess)) {
-            return byUser;
-        }
-        return [...byUser, ...docs.filter((d) => d.authorId !== this.viewedUserId)];
-    }
-
-    @computed
-    get firstMainDocument(): TypeModelMapping[T] | undefined {
-        return this.mainDocuments[0];
+    get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
+        const sortedDocs = orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']);
+        return sortedDocs.reduce((map, doc) => {
+            const docs = map.get(doc.type) || [];
+            if (docs.length === 0) {
+                map.set(doc.type, docs);
+            }
+            docs.push(doc);
+            return map;
+        }, new Map<DocumentType, TypeModelMapping[DocumentType][]>());
     }
 
     @action
@@ -300,12 +285,13 @@ class DocumentRoot<T extends DocumentType> {
 
     @computed
     get _needsInitialDocumentCreation() {
-        return this._canInitializeDocuments && !this.firstMainDocument;
+        return this._canInitializeDocuments && !this.documentsByType.has(this.meta.type);
     }
 
     @computed
     get _triggerDocumentReload() {
-        return `${this.firstMainDocument?.id}-${this.store.root.userStore.viewedUserId}`;
+        const firstMainDoc = this.documentsByType.get(this.meta.type)?.[0];
+        return `${firstMainDoc?.id}-${this.store.root.userStore.viewedUserId}`;
     }
 }
 

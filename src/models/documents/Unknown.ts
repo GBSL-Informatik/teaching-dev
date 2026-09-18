@@ -9,12 +9,16 @@ interface BaseMetaProps {
     readonly?: boolean;
     pagePosition?: number;
 }
+
+const DEFAULT_DATA = Object.freeze<TypeDataMapping['_unknown_']>({ name: 'Unknown Document Type' });
+
 export class UnknownMeta extends TypeMeta<'_unknown_'> {
     constructor(props: BaseMetaProps = {}) {
         super('_unknown_', props, true);
     }
+
     get defaultData(): TypeDataMapping['_unknown_'] {
-        return { name: 'Unknown Document Type' };
+        return DEFAULT_DATA;
     }
 }
 

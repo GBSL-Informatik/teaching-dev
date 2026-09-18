@@ -7,23 +7,17 @@ tags:
 sidebar_position: 50
 ---
 
-import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 import CodeBlock from '@theme/CodeBlock';
 import Clock from '@tdev/packages/pyodide-code/components/Clock';
 
 # pyodide-code
 
-````md
+<CodeShowcase lang="md">
 ```py live_pyo id=b26cde2c-5b0b-4acb-814e-9f2b3bdd29a9
 print("Hello from Pyodide!")
 ```
-````
-
-<BrowserWindow>
-```py live_pyo id=b26cde2c-5b0b-4acb-814e-9f2b3bdd29a9
-print("Hello from Pyodide!")
-```
-</BrowserWindow>
+</CodeShowcase>
 
 ## Sleep
 
@@ -89,22 +83,9 @@ Das `pyodide-code`-Package kann erweitert werden - sowohl mit neuen, lokalen Pyt
 
 ### Interaktive Uhr
 
-````md
+<CodeShowcase lang="md" imports={[`import Clock from '@tdev/packages/pyodide-code/components/Clock';`]}>
 <Clock clockId="sbb-uhr" />
 
-```py live_pyo id=d5240fb9-2aab-4e02-8e88-770a117b2068 title=Interaktive_Uhr
-from clock import use_clock
-from time import sleep
-uhr = use_clock("sbb-uhr")
-
-while True:
-    uhr.set_seconds(uhr.seconds + 1)
-    sleep(0.01)
-```
-````
-
-<BrowserWindow>
-<Clock clockId="sbb-uhr" />
 ```py live_pyo id=e63340b1-3821-4b70-99af-602272a48d8d title=Interaktive_Uhr
 from clock import use_clock
 from time import sleep
@@ -119,7 +100,7 @@ while True:
             uhr.set_hours(uhr.hours + 30)
     sleep(0.01)
 ```
-</BrowserWindow>
+</CodeShowcase>
 
 ### Implementations-Details
 

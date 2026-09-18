@@ -9,9 +9,20 @@ import BrowserWindow from '@tdev-components/BrowserWindow';
 import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import Quiz from '@tdev-components/documents/Assessable/Quiz';
+import Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
 import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
+import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Choice Answer
+
+export const Imports = {
+    Quiz: `import Quiz from '@tdev-components/documents/Assessable/Quiz';`,
+    ChoiceAnswer: `import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';`,
+    TrueFalseAnswer: `import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';`,
+    ScoringFn: (fn = 'points, multipleChoicePoints') => `import { ${fn} } from '@tdev-components/documents/Assessable/helpers/scoring';`,
+    Hints: `import Hint from '@tdev-components/documents/Assessable/Feedback/Hint';`,
+}
+
 Choice-Antwort für Multiple-Choice, Single-Choice und Wahr/Falsch-Fragen. Geeignet für Aufgaben, Quizzes und Prüfungen.
 
 :::warning[Voraussetzung]
@@ -22,21 +33,7 @@ Das [remark-transform-choice-answer](../../../../app-architecture/remark-plugins
 ### Single-Choice
 Eine einfache Single-Choice-Frage kann wie folgt erstellt werden: 
 
-```tsx
-import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
-
-<ChoiceAnswer correct={[2]} id="9c86f782-39bc-4a2d-bdb5-53a6dad884aa">
-    > Wer gilt als Erfinder des World Wide Web (WWW)?
-
-    1. Steve **Jobs**
-    2. Tim Berners-Lee
-    3. Ada __Lovelace__
-    4. Alain Berset :mdi[cheese]
-    5. Charles Bartowski
-</ChoiceAnswer>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer]}>
     <ChoiceAnswer correct={[2]} id="1ac8b1b2-a14a-44b3-986c-273754d3d9f6">
         > Wer gilt als Erfinder des World Wide Web (WWW)?
 
@@ -46,27 +43,14 @@ import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
         4. Alain Berset :mdi[cheese]
         5. Charles Bartowski
     </ChoiceAnswer>
-</BrowserWindow>
+</CodeShowcase>
 
 Die Antwortmöglichkeiten werden als (nummerierte) Liste angegeben. In der `correct`-Liste kann festgelegt werden, welche Antwortmöglichkeit(en) als korrekt gilt/gelten. Dabei ist `1` die erste Antwortmöglichkeit, und so weiter. Im obigen Beispiel ist also nur die zweite Antwort (Tim Berners-Lee) korrekt. Die Verwendung eines Blockzitats (`>`) für die Frage dient lediglich der optischen Gestaltung und ist nicht zwingend notwendig.
 
 Mit dem `randomizeOptions`-Flag können die Antwortmöglichkeiten in zufälliger Reihenfolge dargestellt werden (wobei sich die `correct`-Liste immer auf die explizit im Markdown angegebene Reihenfolge bezieht; es ist also nach wie vor Tim Berners-Lee korrekt, auch wenn er z.B. an dritter Stelle angezeigt wird):
 
-```tsx
-import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
 
-<ChoiceAnswer correct={[2]} randomizeOptions id="7d252766-d96e-495d-9e61-52fe0cc6c083">
-    > Wir gilt als Erfinder des World Wide Web (WWW)?
-
-    1. Steve **Jobs**
-    2. Tim Berners-Lee
-    3. Ada __Lovelace__
-    4. Alain Berset :mdi[cheese]
-    5. Charles Bartowski
-</ChoiceAnswer>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer]}>
     <ChoiceAnswer correct={[2]} randomizeOptions id="8cedd0b5-a44a-4359-a017-e5a3a7e8891c">
         > Wir gilt als Erfinder des World Wide Web (WWW)?!
 
@@ -76,44 +60,29 @@ import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
         4. Alain Berset :mdi[cheese]
         5. Charles Bartowski
     </ChoiceAnswer>
-</BrowserWindow>
+</CodeShowcase>
+
 
 Die Randomisierung wird beim ersten Aufruf generiert und im dahinterliegenden  gespeichert. Dadurch bleibt die Reihenfolge der Antwortmöglichkeiten auch bei einem erneuten Laden der Seite gleich. Wird das Flag temporär entfernt, gehen die Antworten wieder zurück in die ursprüngliche Reihenfolge. Die persistierte Reihenfolge bleibt im Hintergrund aber erhalten und wird wiederhergestellt, sobald das Flag erneut gesetzt wird.
 
 Bei Single-Choice-Aufgaben dürfen auch mehrere Antworten als korrekt angegeben werden. Wird eine davon ausgewählt, gilt die Antwort als richtig:
 
-```tsx
-import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
-
-<ChoiceAnswer correct={[1, 4]} id="5f3a2c5a-0d39-4572-8245-5232a9066b9d">
-    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
-    
-    1. TypeScript
-    2. Python
-    3. JavaScript
-    4. Java
-    5. Ruby
-</ChoiceAnswer>
-```
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer]}>
+    <ChoiceAnswer correct={[1, 4]} id="9b1f6c58-42f2-40b1-8fb3-bc6914f0b886">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</CodeShowcase>
 
 ### Multiple-Choice
 Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werden. In diesem Fall müssen alle der in der `correct`-Liste angegebenen Antworten ausgewählt werden, damit die Frage als richtig bewertet wird:
 
-```tsx
-<ChoiceAnswer correct={[1, 4, 5]} multiple title="Eine Frage zu den Primzahlen" id="7b97dd5d-d304-46db-823f-68237814fee5">
-    > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
-    
-    1. 2 ist die einzige gerade Primzahl.
-    2. Jede Primzahl ist ungerade.
-    3. 1 ist eine Primzahl.
-    4. 5 ist eine Primzahl.
-    5. Primzahlen sind nur durch 1 und sich selbst teilbar.
-
-    **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
-</ChoiceAnswer>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer]}>
     <ChoiceAnswer correct={[1, 4, 5]} multiple  title="Eine Frage zu den Primzahlen" id="5e2ed74e-df3c-4e67-a7f0-4d27236294dc">
         > Welche der folgenden Aussagen zu Primzahlen sind korrekt? Es sind **mehrere** Antworten möglich.
         
@@ -125,7 +94,8 @@ Für eine Multiple-Choice-Frage muss lediglich das `multiple`-Flag gesetzt werde
 
         **Gewusst?** **Prim**zahlen haben nichts mit **Prim**aten zu tun!
     </ChoiceAnswer>
-</BrowserWindow>
+</CodeShowcase>
+
 
 Hier wird zusätzlich die `title`-Property verwendet, um der Frage einen Titel zu geben. Zudem wird ein Infoblock mit einer Bewertungsinformation eingeblendet.
 
@@ -136,19 +106,11 @@ Die Randomisierung der Antwortmöglichkeiten funktioniert bei Multiple-Choice-Au
 ### Wahr/Falsch
 Für Wahr/Falsch-Fragen steht eine spezielle Komponente zur Verfügung:
 
-```tsx
-import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
-
-<TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="89c97b84-0d7a-4d58-8dc7-c8a72569a7e4">
-    > Die Erde ist flach.
-</TrueFalseAnswer>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="tsx" imports={[Imports.TrueFalseAnswer]}>
     <TrueFalseAnswer correct={false} title="Das sollte man wissen…" id="5ec01175-fc94-42fd-90ad-a2bbc54eb7d2">
         Die Erde ist flach.
     </TrueFalseAnswer>
-</BrowserWindow>
+</CodeShowcase>
 
 :::info[Randomisierung]
 Bei Wahr/Falsch-Fragen gibt es keine Randomisierung der Antwortmöglichkeiten, da es nur zwei fixe Optionen gibt. Dies gilt sowohl bei Standalone-Fragen, als auch bei Wahr/Falsch-Fragen innerhalb eines Quizzes.
@@ -161,36 +123,8 @@ Fragen können mit Punkten bewertet werden. Dazu wird die `scoring`-Property ver
 Bewertungsfunktionen können einen Bewertungshinweis bereitstellen. Bei den vordefinierten Bewertungsfunktionen wird dieser automatisch aus den entsprechenden Parametern generiert. Angezeigt wird der Bewertungshinweis mit einem Klick auf den Punktezahl-Badge im Header der Frage.
 :::
 
-```tsx
-import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
-import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
-import { points, multipleChoicePoints } from '@tdev-components/documents/Assessable/helpers/scoring';
 
-<ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="4ba1d040-2065-4d1b-aff9-c2df66dd1ea3">
-    > Was ist die Hauptstadt von Frankreich?
-    
-    1. Berlin
-    2. Paris
-    3. Rom
-    4. Madrid
-</ChoiceAnswer>
-
-<ChoiceAnswer title="Primzahlen" multiple correct={[2, 3, 5]} scoring={multipleChoicePoints(2, 1)} id="c1f5b5e5-13b9-4d09-831d-215d4c04ada5">
-    > Wählen Sie alle Primzahlen aus.
-
-    1. 1
-    2. 2
-    3. 3
-    4. 4
-    5. 5
-</ChoiceAnswer>
-
-<TrueFalseAnswer correct={true} scoring={points(0.5, -0.25, 0)} id="75fac390-8846-47b5-8028-52c4258919fc">
-    > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
-</TrueFalseAnswer>
-```
-
-<BrowserWindow>
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer, Imports.TrueFalseAnswer, Imports.ScoringFn()]}>
     <ChoiceAnswer title="Geo-Wissen" correct={[2]} scoring={points(1)} id="f8ebc37e-b9cb-46bc-9e96-f34ccbd7f83e">
         > Was ist die Hauptstadt von Frankreich?
         
@@ -214,66 +148,208 @@ import { points, multipleChoicePoints } from '@tdev-components/documents/Assessa
         > Das Protokoll `HTTP` gehört zur Anwendungsschicht des TCP/IP-Stacks.
 
     </TrueFalseAnswer>
+</CodeShowcase>
+
+### Lösungshinweise
+
+Mit der `<Hint>`-Komponente können für jede Frage Lösungshinweise bereitgestellt werden. Diese werden nach der Beantwortung der Frage angezeigt, wobei die Anzeige der Hinweise von der Bewertung der Antwort abhängt. So können z.B. unterschiedliche Hinweise für richtige und falsche Antworten bereitgestellt werden.
+
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer, Imports.Hint, Imports.ScoringFn('noPoints')]}>
+    <ChoiceAnswer correct={[2]} multiple scoring={noPoints()} id="5a5f2aab-eda6-4db2-bbf7-16edee1ae1d0">
+        > Wann ist der Sinn des Lebens?
+        
+        1. Immer im März
+        2. 42
+        3. Das Bundeshaus
+        4. Nein
+        5. Ja, aber nur manchmal
+
+        <Hint when={['incorrect', 'partially_correct']}>
+            Die Antwort versteckt sich im Roman [Per Anhalter durch die Galaxis](https://de.wikipedia.org/wiki/Per_Anhalter_durch_die_Galaxis) von Douglas Adams.
+        </Hint>
+        <Hint when="correct">
+            Genau! Dokumnetiert im Roman [Per Anhalter durch die Galaxis](https://de.wikipedia.org/wiki/Per_Anhalter_durch_die_Galaxis) von Douglas Adams.
+        </Hint>
+        <Hint when="not_answered">
+            Komm schon, wenigstens ein Lucky Guess 😉.
+        </Hint>
+        <Hint when="unassessed" noWrap>
+            :::tip[Hinweis]
+            Das sollte man wirklich wissen.
+            :::
+        </Hint>
+        <Hint when="assessed" not={['not_answered', 'correct']}>
+            Gewusst? Vermutlich gibt es $\infty$ richtige Antworten auf diese Frage 😉.
+        </Hint>
+        <Hint
+            noWrap
+            when={(doc) => {
+                return {
+                    show: doc.isAssessed,
+                    color: 'secondary',
+                    children: (<>
+                        <h4>Debug Information</h4>
+                        <code>{JSON.stringify(doc.data, null, 2)}</code>
+                    </>)
+                }
+            }}
+        />
+    </ChoiceAnswer>
+</CodeShowcase>
+
+`when`
+: `correct | incorrect | partially_correct | not_answered | assessed | unassessed | WhenFunction`.
+: Mit dem `when` wird kontrolliert, unter welchen Bedingungen der Hinweis angezeigt wird. Es können auch mehrere Bedingungen als Array angegeben werden. Alternativ kann eine Funktion angegeben werden, die das Dokument entgegennimmt und ein Objekt zurückgibt, das die Anzeige des Hinweises steuert.
+:::dd
+```ts
+type WhenFunction<T extends AssessableType> = (
+    doc: TypeModelMapping[T]
+) => { show: boolean; color: AlertType; children?: React.ReactNode; className?: string } | null;
+```
+:::
+`not`
+: *optional*
+: `correct | incorrect | partially_correct | not_answered | assessed | unassessed` oder eine Liste davon.
+: Übersteuert die `when`-Bedingung - ohne `when` ist dieses Attribut aber inaktiv.
+`noWrap`
+: *optional*, default: `false`
+: beschreibt, ob der Hinweis in einem Alert-Container angezeigt werden soll oder nicht.
+`color`
+: *optional*
+: Überschreibt die Farbe des Alert-Containers. Standardmässig wird die Farbe von der Richtigkeit der Antwort abgeleitet.
+:::dd
+-  :mdi[circle]{.green} `correct`
+-  :mdi[circle]{.red} `incorrect`
+-  :mdi[circle]{.orange} `partially_correct`
+-  :mdi[circle]{color="var(--ifm-color-secondary)"} `not_answered`
+-  :mdi[circle]{color="var(--ifm-color-info)"} `assessed|unassessed`
+:::
+`className`
+: *optional*
+
+### `keepExpanded`
+Die `keepExpanded`-Property steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. Standardmässig werden alle Antwortmöglichkeiten angezeigt, es kann aber auch eingestellt werden, dass nur die korrekten Antworten, nur die ausgewählten Antworten oder gar keine Antworten angezeigt werden.
+
+```tsx
+<ChoiceAnswer keepExpanded="<all|correct|selected|none>" correct={[1, 4]} id="991d70c6-4142-4250-888a-e0ae8c2f19b8">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+:::flex{minWidth="max(250px, 45%)"}
+`keepExpanded="all"`
+<BrowserWindow>
+    <ChoiceAnswer correct={[1, 4]} id="940b7d43-58d6-48e1-8717-e72343c3ebdd">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
 </BrowserWindow>
+::br
+`keepExpanded="correct"`
+<BrowserWindow>
+    <ChoiceAnswer keepExpanded="correct" correct={[1, 4]} id="6054c4cb-dbe5-410c-b247-36dfa3b49c25">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+
+::br
+`keepExpanded="selected"`
+<BrowserWindow>
+    <ChoiceAnswer keepExpanded="selected" correct={[1, 4]} id="344ca093-4b6f-448e-b3be-ff517e133720">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+
+::br
+`keepExpanded="none"`
+<BrowserWindow>
+    <ChoiceAnswer keepExpanded="none" correct={[1, 4]} id="4bd76941-1075-4c5e-b970-92a6443bee9e">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+:::
+
+### `allowSelection`
+
+Standardmässig kann der Fragetext nicht ausgewählt werden, so dass das "Copy & Paste" von Fragen in LLM-Tools zumindest erschwert wird.
+
+Mit der `allowSelection`-Property kann dies jedoch überschrieben werden, so dass der Fragetext wieder ausgewählt werden kann:
+
+```tsx
+<ChoiceAnswer allowSelection correct={[1, 4]} id="454c5183-c4ab-46a8-ba3f-efe1b59c7a7e">
+    Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+    
+    1. TypeScript
+    2. Python
+    3. JavaScript
+    4. Java
+    5. Ruby
+</ChoiceAnswer>
+```
+
+:::flex{minWidth="max(250px, 45%)"}
+`allowSelection`
+<BrowserWindow>
+    <ChoiceAnswer allowSelection correct={[1, 4]} id="454c5183-c4ab-46a8-ba3f-efe1b59c7a7e">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+::br
+`allowSelection={false}` (Standard)
+<BrowserWindow>
+    <ChoiceAnswer allowSelection={false} correct={[1, 4]} id="ab430bae-24b8-4654-ba0c-ba67a89555da">
+        Welche der folgenden Programmiersprachen sind statisch typisiert? **Hinweis:** Es kann mehr als eine Antwort korrekt sein.
+        
+        1. TypeScript
+        2. Python
+        3. JavaScript
+        4. Java
+        5. Ruby
+    </ChoiceAnswer>
+</BrowserWindow>
+:::
 
 
 ## Quizzes
 Bei Abschluss-Quizzes und Prüfungen werden in der Regel mehrere Multiple-Choice-, Single-Choice- und Wahr/Falsch-Fragen zusammengefasst. Dies kann mit der `<Quiz>`-Komponente erreicht werden:
 
-```tsx
-import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
-import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
-import Quiz from '@tdev-components/documents/Assessable/Quiz';
-import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
-
-<Quiz scoring={points(1)} id="04d2153f-1ed3-41bd-835b-a8bebe2ca6e8" randomizeQuestions randomizeOptions>
-  <ChoiceAnswer correct={[5]}>
-      > In welchem Jahr war 2024?
-      
-      1. 1965
-      2. 1983
-      3. 1991
-      4. 2000
-      5. 2024
-  </ChoiceAnswer>
-
-  <ChoiceAnswer correct={[2, 3]} scoring={points(2)}>
-      > Wählen Sie eine korrekte Aussage aus.
-
-      1. Wenn Daten in der Cloud (z.B. OneDrive) gespeichert werden, ist kein Backup mehr nötig.
-      2. Cloud-Dienste wie OneDrive erlauben es uns, Dateien mit anderen Personen zu teilen.
-      3. Cloud-Dienste machen es einfacher, Dateien zwischen verschiedenen Geräten zu synchronisieren.
-      4. Das Abspeichern sensibler Daten auf Cloud-Diensten ist immer unproblematisch, da diese ja sicher sind.
-      5. Alle der oben genannten Aussagen sind korrekt.
-  </ChoiceAnswer>
-
-  <TrueFalseAnswer correct={false} scoring={points(0.5, -0.25, 0)} title="Kann man das so sagen?">
-      > HTML ist eine Programmiersprache.
-  </TrueFalseAnswer>
-  
-  <ChoiceAnswer correct={[1, 3]} scoring={multipleChoicePoints(2, 1)} multiple>
-      > Welche der folgenden Protokolle werden für die Übertragung von E-Mails verwendet?
-      
-      1. SMTP
-      2. FTP
-      3. IMAP
-      4. HTTP
-  </ChoiceAnswer>
-
-  <ChoiceAnswer correct={[1, 2, 3, 4, 5]} scoring={noPoints()}>
-      > Wann ist der Sinn des Lebens?
-      
-      1. Immer im März
-      2. 42
-      3. Das Bundeshaus
-      4. Nein
-      5. Ja, aber nur manchmal
-  </ChoiceAnswer>
-</Quiz>
-```
-
-<BrowserWindow>
-    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions id="fe81de29-3fad-4da9-82a5-a4af0050fdbe" >
+<CodeShowcase lang="tsx" imports={[Imports.ChoiceAnswer, Imports.TrueFalseAnswer, Imports.Quiz, Imports.ScoringFn('points, multipleChoicePoints, noPoints')]}>
+    <Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" shuffleOnReset id="7bbb268b-79c2-4ac9-aa11-6f41a1d81dca" >
         <ChoiceAnswer correct={[5]}>
             > In welchem Jahr war 2024?
             
@@ -318,7 +394,8 @@ import { points, multipleChoicePoints, noPoints } from '@tdev-components/documen
             5. Ja, aber nur manchmal
         </ChoiceAnswer>
     </Quiz>
-</BrowserWindow>
+</CodeShowcase>
+
 
 ### Bewertung
 In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene definiert werden. Sie gilt dann für alle Fragen innerhalb des Quizzes, sofern diese nicht durch die `scoring`-Property der einzelnen Fragen überschrieben wird. 
@@ -327,22 +404,65 @@ In einem Quiz kann die [`ScoringFunction`](#scoringfunction) auch auf Quiz-Ebene
 Mit den Flags `randomizeQuestions` und `randomizeOptions` werden im obigen Quiz sowohl die Reihenfolge der Fragen als auch die Reihenfolge der Antwortmöglichkeiten innerhalb jeder Frage randomisiert. Die Randomisierung funktioniert dabei genauso wie bei den Standalone-Fragen (siehe oben).
 
 ## Eigenschaften und Funktionen
+
+### Allgemeine Eigenschaften
+
+`keepExpanded`
+: *optional*, `all | correct | selected | none`.
+: Steuert, welche Antwortmöglichkeiten nach der Beantwortung der Frage angezeigt werden. 
+: Standard: `all`.
+`allowSelection`
+: *optional*, `boolean`.
+: Steuert, ob der Fragetext ausgewählt werden kann. Standardmässig ist dies deaktiviert, um das "Copy & Paste" von Fragen in LLM-Tools zumindest zu erschweren.
+
 ### Eigenschaften der `ChoiceAnswer`
-| Eigenschaft      | Typ               | Beschreibung                                      |
-|------------------|-------------------|---------------------------------------------------|
-| `multiple` | Flag | Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice). Standard: Single-Choice. |
-| `correct` | `number[]` | Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist). |
-| `scoring` | `ScoringFunction` | Übersteuert die `ScoringFunction` des übergeordneten Quizzes für diese spezifische Frage. |
-| `randomizeOptions` | Flag | Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.  |
-| `hideQuestionNumbers` | Flag         | Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt  |
+
+`title`
+: *optional*, `string`.
+: Titel der Frage. Wird im Header der Frage angezeigt.
+: Standard: `'Frage'`.
+`multiple`
+: *optional*, `boolean`.
+: Wenn gesetzt, können mehrere Antworten ausgewählt werden (Multiple-Choice).
+: Standard: `false`.
+`correct`
+: *optional*, `number[]`.
+: Liste mit den Nummern der korrekten Antwortoptionen (wobei `1` die erste Antwortoption ist).
+`randomizeOptions`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Antwortmöglichkeiten in zufälliger Reihenfolge angezeigt. Die zufällige Darstellungsreihenfolge hat keinen Einfluss auf die `correct`-Liste.
+`scoring`
+: *optional*, `ScoringFunction`.
+: Falls innerhalb eines __Quizzes__ definiert, wird die übergeordneten `ScoringFunction` des Quizzes überschrieben.
+`hideQuestionNumbers`\*
+: *optional*, `boolean` - \* nur relevant innerhalb von Quizzes.
+: Wenn gesetzt, wird den Fragen innerhalb des Quiz kein Titel mit der Fragenummer hinzugefügt.
+
 
 ### Eigenschaften des `Quiz`
-| Eigenschaft      | Typ               | Beschreibung                                      |
-|------------------|-------------------|---------------------------------------------------|
-| `randomizeQuestions` | Flag | Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt. |
-| `randomizeOptions` | Flag | Wenn gesetzt , werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen). |
-| `scoring` | `ScoringFunction` | Eine vordefinierte oder benutzerdefinierte `ScoringFunction`. |
-| `minPoints` | `number` | Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird. Standard: `undefined`. |
+
+`randomizeQuestions`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Fragen in zufälliger Reihenfolge angezeigt.
+`randomizeOptions`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Antwortmöglichkeiten jeder Frage in zufälliger Reihenfolge angezeigt (analog zu `ChoiceAnswer.randomizeOptions` für einzelne Fragen).
+`scoring`
+: *optional*, `ScoringFunction`.
+: Eine vordefinierte oder benutzerdefinierte `ScoringFunction`.
+`minPoints`
+: *optional*, `number`.
+: Die minimale Punktzahl, die für das Quiz erreicht werden kann. Kann z.B. genutzt werden, um bei Fragen mit Minuspunkten sicherzustellen, dass das gesamte Quiz nicht mit einer negativen Punktzahl bewertet wird.
+`resetMode`
+: *optional*, `'all' | 'incorrect' | 'noReset'`.
+: Steuert, welche Fragen beim Zurücksetzen des Quizzes zurückgesetzt werden. 
+: Standard: `'all'` (alle Fragen werden zurückgesetzt).
+: Mit `'incorrect'` werden nur die Fragen zurückgesetzt, die falsch beantwortet wurden.
+: Mit `'noReset'` kann das Quiz nicht zurückgesetzt werden, was z.B. für Prüfungen sinnvoll sein kann.
+`shuffleOnReset`
+: *optional*, `boolean`.
+: Wenn gesetzt, werden die Fragen und/oder Antwortmöglichkeiten beim Zurücksetzen des Quizzes erneut randomisiert.
+: Standard: `false`.
 
 ### `ScoringFunction`
 Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder eines Quizzes übernimmt. Vordefinierte Scoring-Funktionen sind:
@@ -354,10 +474,41 @@ Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder ein
 | `noPoints()` | No-Op-Bewertungsfunktion. Kann verwendet werden, wenn für das übergeordnete Quiz eine Bewertungsfunktion definiert ist, für eine spezifische Frage jedoch keine Punkte vergeben werden sollen. |
 
 ## Future Work
-- Ein Quiz soll auf ein Karussell reduziert werden können, um Platz zu sparen.
-- Der Korrektur-Knopf sollte mit einer Permission geschützt werden können. Weiter könnte es nützlich sein, auch das Zurücksetzen eines abgeschlossenen Quiz mit einer Permission zu schützen. In diese Fall sollte statt der Confirmation vermutlich ein Popup angezeigt werden, um Missverständnisse zu vermeiden.
-- Die `correct`-Logik von MC-Fragen könnte so ausgeweitet werden, dass mehrere Korrekt-Sets möglich sind. Das könnte für Fragen der Art `Wählen Sie aus den folgenden 12 Protokollen zwei aus, die zur selben Schicht des TCP/IP-Stacks gehören` nützlich sein. In dem Zusammenhang könnte es auch sinnvoll sein, eine maximale Anzahl an auswählbaren Antworten zu definieren (z.B. `maxSelectable={2}`), um die Schüler:innen darauf hinzuweisen, dass sie nur zwei Antworten auswählen dürfen.
-- Bei jeder Frage kann eine Funktion angegeben werden, die anhand der Bewertung einen entsprechenden Antworthinweis liefert. Bei einer richtigen Antwort könnte so z.B. eine vertiefende Erklärung geliefert, bei einer falschen Antwort ein Lösungshinweis angeboten werden. Dieser Funktion sollten möglichst viele Bewertungsinformationen zur Verfügung stehen (wobei zu berücksichtigen ist, dass es in Zukunft nicht unbedingt möglich sein wird, auf Ebene der einzelnen Antwortoption zu entscheiden, ob diese korrekt ist oder nicht). Es sollen zudem sinnvolle Default-Funktionen bereitgestellt werden, wie dies beispielsweise bei der `ScoringFunction` der Fall ist.
-- Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
-- Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
-- Für Prüfungen könnte es nützlich sein, das Konzept des Quiz zu erweitern, um nicht nur `ChoiceAnswer`-Fragen zu unterstützen, sondern auch andere Fragetypen wie z.B. `TextAnswer` oder `CodeAnswer`. So könnte eine Prüfung aus einem einzigen Quiz bestehen, in dem auch Fragen vorkommen, die nicht automatisch korrigiert werden können. Der Vorteil dabei wäre, dass so auch diese Fragen in die Randomisierung der Reihenfolge mit einbezogen werden könnten. Zudem könnte ein Report (PDF, druckbar) generiert werden, der die Ergebnisse aller automatisch korrigierten Fragen enthält, und für das Feedback zu den manuell zu korrigierenden Fragen einen Platzhalter lässt.
+- [ ] Ein Quiz soll auf ein Karussell reduziert werden können, um Platz zu sparen.
+- [ ] Der Korrektur-Knopf sollte mit einer Permission geschützt werden können. Weiter könnte es nützlich sein, auch das Zurücksetzen eines abgeschlossenen Quiz mit einer Permission zu schützen. In diese Fall sollte statt der Confirmation vermutlich ein Popup angezeigt werden, um Missverständnisse zu vermeiden.
+- [ ] Die `correct`-Logik von MC-Fragen könnte so ausgeweitet werden, dass mehrere Korrekt-Sets möglich sind. Das könnte für Fragen der Art `Wählen Sie aus den folgenden 12 Protokollen zwei aus, die zur selben Schicht des TCP/IP-Stacks gehören` nützlich sein. In dem Zusammenhang könnte es auch sinnvoll sein, eine maximale Anzahl an auswählbaren Antworten zu definieren (z.B. `maxSelectable={2}`), um die Schüler:innen darauf hinzuweisen, dass sie nur zwei Antworten auswählen dürfen.
+- [x] Bei jeder Frage kann eine Funktion angegeben werden, die anhand der Bewertung einen entsprechenden Antworthinweis liefert. Bei einer richtigen Antwort könnte so z.B. eine vertiefende Erklärung geliefert, bei einer falschen Antwort ein Lösungshinweis angeboten werden. Dieser Funktion sollten möglichst viele Bewertungsinformationen zur Verfügung stehen (wobei zu berücksichtigen ist, dass es in Zukunft nicht unbedingt möglich sein wird, auf Ebene der einzelnen Antwortoption zu entscheiden, ob diese korrekt ist oder nicht). Es sollen zudem sinnvolle Default-Funktionen bereitgestellt werden, wie dies beispielsweise bei der `ScoringFunction` der Fall ist.  **Update**: Mit der `<Hint>`-Komponente umgesetzt.
+- [ ] Statt die korrekten Antworten direkt in der Komponente zu markieren, soll bei einem Quiz auch angegeben werden können, dass die Lösung extern abgespeichert ist. In diesem Fall verfügt die Gruppe über ein Upload-Feld, über welches das entsprechende Lösungs-File hochgeladen werden kann. Die Lösungen werden nach erfolgreichem Upload im LocalStore gespeichert, damit z.B. bei Prüfungen mehrere Schüler:innen korrigiert werden können. Für Admins steht zudem ein Download-Button bereit, mit dem sie ein Template für die Lösungen einer spezifischen Gruppe herunterladen können.
+- [ ] Allgemeine Überlegung: Im Sinne einer Autokorrektur für Prüfungen soll das `Quiz` eine Funktion anbieten, die ein Lösungsdokument (z.B. als Teil eines Lösungsdokuments für die gesamte Prüfung) entgegennimmt und als Antwort eine Punktzahl und z.B. einen Report in Form `4 richtig | 1 falsch | 0 nicht beantwortet` zurückgibt. Dies könnte dann als Korrektur für diese Aufgabe in Korrektur-Document des entsprechenden Schülers eingetragen werden (während z.B. bei Textaufgaben eine manuelle Feedback- und Punkteeingabe durch die Lehrperson erfolgt).
+- [ ] Für Prüfungen könnte es nützlich sein, das Konzept des Quiz zu erweitern, um nicht nur `ChoiceAnswer`-Fragen zu unterstützen, sondern auch andere Fragetypen wie z.B. `TextAnswer` oder `CodeAnswer`. So könnte eine Prüfung aus einem einzigen Quiz bestehen, in dem auch Fragen vorkommen, die nicht automatisch korrigiert werden können. Der Vorteil dabei wäre, dass so auch diese Fragen in die Randomisierung der Reihenfolge mit einbezogen werden könnten. Zudem könnte ein Report (PDF, druckbar) generiert werden, der die Ergebnisse aller automatisch korrigierten Fragen enthält, und für das Feedback zu den manuell zu korrigierenden Fragen einen Platzhalter lässt.
+
+## Testing Only
+Dummy Quiz zum Test des Fixes.
+
+<Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" id="e4fd5d0b-f5b0-4722-8452-ca78f1de0aa1" >
+    <ChoiceAnswer correct={[1]}>
+        1. Diese Antwort ist richtig.
+        2. Diese Antwort ist falsch.
+        3. Diese Antwort ist Blödsinn.
+        4. Diese Antwort ist nicht korrekt.
+    </ChoiceAnswer>
+    <ChoiceAnswer correct={[2]}>
+        Wie macht die Kuh?
+
+        1. Wuff.
+        2. Muh.
+        3. Miau.
+        4. Roar.
+    </ChoiceAnswer>
+    <ChoiceAnswer correct={[2, 4]} multiple scoring={multipleChoicePoints(2, 1, false)}>
+        Wähle alle Farben an.
+
+        1. Hund
+        2. blau
+        3. Zwanzig
+        4. grün
+    </ChoiceAnswer>
+    <TrueFalseAnswer correct={false}>
+        Die Sonne ist ein Planet.
+    </TrueFalseAnswer>
+</Quiz>

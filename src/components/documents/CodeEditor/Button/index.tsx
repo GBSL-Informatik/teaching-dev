@@ -26,6 +26,7 @@ export interface Props {
     spin?: boolean;
     color?: Color;
     className?: string;
+    disabled?: boolean;
 }
 
 const Button = (props: Props) => {
@@ -36,10 +37,12 @@ const Button = (props: Props) => {
                 props.color || Color.Secondary,
                 props.size || Size.Small,
                 styles.button,
-                props.className
+                props.className,
+                props.disabled && styles.disabled
             )}
             onClick={props.onClick}
             title={props.title}
+            disabled={props.disabled}
         >
             <Icon
                 path={props.icon}

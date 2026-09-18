@@ -25,6 +25,7 @@ export class ModelMeta extends TypeMeta<'mdx_comment'> {
         this.nodeType = props.type || '';
     }
 
+    @computed
     get defaultData(): TypeDataMapping['mdx_comment'] {
         return {
             type: this.nodeType,

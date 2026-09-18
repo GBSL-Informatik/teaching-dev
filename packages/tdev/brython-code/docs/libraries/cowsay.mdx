@@ -1,0 +1,37 @@
+---
+page_id: 1fd06ec8-acf6-496a-bf95-f430039d20d9
+---
+
+# Cowsay
+
+```py live_py slim
+from cowsay import beavis
+
+beavis('Hanafallonofo Pythonofon')
+```
+
+Anstelle von `cow()` können auch andere Figuren verwendet werden. Diese muss dann aber auch aus der Bibliothek `cowsay` importiert werden.
+
+- `beavis`
+- `cheese`
+- `daemon`
+- `cow`
+- `dragon`
+- `ghostbusters`
+- `kitty`
+- `meow`
+- `milk`
+- `stegosaurus`
+- `stimpy`
+- `turkey`
+- `turtle`
+- `tux`
+
+```py live_py slim
+from cowsay import *
+
+for figure in char_names:
+    print('-' * 80)
+    print(figure)
+    globals()[figure]('Hello World!')
+```

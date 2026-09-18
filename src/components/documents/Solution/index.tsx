@@ -25,7 +25,7 @@ interface Props extends MetaInit {
 }
 
 const Solution = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta(props));
+    const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const docRoot = useDocumentRoot(props.id, meta, false, { access: Access.None_DocumentRoot });
     const userStore = useStore('userStore');
     if (!docRoot || docRoot.isDummy) {

@@ -6,7 +6,7 @@ import {
     ModelMeta
 } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
-import { useFirstDocumentBy } from '@tdev-hooks/useFirstDocumentBy';
+import { useNestedAssessableDocumentBy } from '@tdev-hooks/useNestedAssessableDocumentBy';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import QuestionCard from '../QuestionCard';
 import { DocContext } from '@tdev-components/documents/DocumentContext';
@@ -35,9 +35,9 @@ const onUpdateSelection = action((doc: TrueFalseAnswerModel, optionIndex: number
     doc.setValue(optionIndex === 0);
 });
 const TrueFalseAnswer = observer((props: Props) => {
-    const [meta] = React.useState(new ModelMeta({ ...props }));
+    const meta = React.useMemo(() => new ModelMeta({ ...props }), [props.id]);
     const docRootId = useDocumentRootId(props.id);
-    const doc = useFirstDocumentBy(docRootId, meta, props.qid);
+    const doc = useNestedAssessableDocumentBy(docRootId, meta, props.qid);
 
     if (!doc) {
         return <UnknownDocumentType type={meta.type} />;

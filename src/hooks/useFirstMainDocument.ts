@@ -1,5 +1,5 @@
 import React from 'react';
-import { DocumentType } from '@tdev-api/document';
+import { DocumentType, TypeModelMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
@@ -28,17 +28,19 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
-    const [dummyDocument] = React.useState(
-        documentStore.createDocument({
-            id: defaultDocId,
-            type: meta.type,
-            data: meta.defaultData,
-            authorId: DUMMY_DOCUMENT_ID,
-            documentRootId: documentRoot.id,
-            parentId: null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        })
+    const dummyDocument = React.useMemo(
+        () =>
+            documentStore.createDocument({
+                id: defaultDocId,
+                type: meta.type,
+                data: meta.defaultData,
+                authorId: DUMMY_DOCUMENT_ID,
+                documentRootId: documentRoot.id,
+                parentId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }),
+        [documentRoot.id]
     );
     React.useEffect(() => {
         if (!documentRoot) {
@@ -65,6 +67,5 @@ export const useFirstMainDocument = <Type extends DocumentType>(
             { fireImmediately: true }
         );
     }, [userStore, createDocument, documentRoot]);
-
-    return documentRoot?.firstMainDocument || dummyDocument;
+    return (documentRoot?.documentsByType?.get(meta.type)?.[0] as TypeModelMapping[Type]) || dummyDocument;
 };

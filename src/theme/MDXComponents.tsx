@@ -7,6 +7,7 @@ import DefBox from '@tdev-components/CodeDefBox';
 import DefHeading from '@tdev-components/CodeDefBox/DefHeading';
 import DefContent from '@tdev-components/CodeDefBox/DefContent';
 import Figure from '@tdev-components/Figure';
+import String from '@tdev-components/documents/String';
 import SourceRef from '@tdev-components/Figure/SourceRef';
 import Answer from '@tdev-components/Answer';
 import Solution from '@tdev-components/documents/Solution';

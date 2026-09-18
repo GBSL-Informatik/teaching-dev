@@ -2,6 +2,7 @@ import { TypeDataMapping, Access } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types';
+import { computed } from 'mobx';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -25,6 +26,7 @@ export class ModelMeta extends TypeMeta<'excalidoc'> {
         this.props = props;
     }
 
+    @computed
     get defaultData(): TypeDataMapping['excalidoc'] {
         return {
             elements: this.defaultElements,
