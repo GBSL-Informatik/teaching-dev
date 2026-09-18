@@ -1,0 +1,16 @@
+.tree {
+    --trees-search-bg: var(--ifm-background-surface-color);
+    --trees-bg: var(--ifm-background-color);
+    // --trees-search-fg
+    // --trees-border-color
+    // --trees-accent
+    // --trees-fg-muted
+    // --trees-bg-muted
+    color-scheme: light;
+}
+
+[data-theme='dark'] {
+    .tree {
+        color-scheme: dark;
+    }
+}

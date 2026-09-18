@@ -6,6 +6,8 @@ import { FileTree, useFileTree } from '@pierre/trees/react';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { preparePresortedFileTreeInput } from '@pierre/trees';
 import { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
+import styles from './styles.module.scss';
+import clsx from 'clsx';
 
 interface Props {
     dir: Directory;
@@ -112,7 +114,7 @@ const DocumentFileTree = observer((props: Props) => {
     return (
         <FileTree
             model={model}
-            className="rounded-lg border"
+            className={clsx(styles.tree, 'rounded-lg border')}
             style={{ height: '320px' }}
             renderContextMenu={(item, context) => (
                 <div className="rounded-md border bg-background p-2 shadow">
