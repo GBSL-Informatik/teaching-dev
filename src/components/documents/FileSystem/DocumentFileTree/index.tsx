@@ -8,6 +8,8 @@ import { preparePresortedFileTreeInput } from '@pierre/trees';
 import { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
+import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
+import File from '../File';
 
 interface Props {
     dir: Directory;
@@ -17,6 +19,7 @@ const DocumentFileTree = observer((props: Props) => {
     const rootId = dir.documentRootId;
     const documentStore = useStore('documentStore');
     const docRootStore = useStore('documentRootStore');
+    const [selected, setSelected] = React.useState<FileModel | null>(null);
     const { model } = useFileTree({
         preparedInput: preparePresortedFileTreeInput(dir?.fileTree ?? []),
         search: true,
@@ -88,6 +91,9 @@ const DocumentFileTree = observer((props: Props) => {
                 .filter((d) => isFileSystemType(d))
                 .filter((d) => selectedPaths.includes(d.filePath));
             if (selected.length === 1) {
+                if (selected[0].type === 'file') {
+                    setSelected(selected[0]);
+                }
                 selected[0].setIsOpen(true);
                 console.log('Selected document:', selected[0].name, selected[0].filePath);
             }
@@ -112,24 +118,27 @@ const DocumentFileTree = observer((props: Props) => {
     }, [model, dir.fileTree]);
 
     return (
-        <FileTree
-            model={model}
-            className={clsx(styles.tree, 'rounded-lg border')}
-            style={{ height: '320px' }}
-            renderContextMenu={(item, context) => (
-                <div className="rounded-md border bg-background p-2 shadow">
-                    <button
-                        onClick={() => {
-                            context.close({ restoreFocus: false });
-                            model.startRenaming(item.path);
-                        }}
-                        type="button"
-                    >
-                        Rename
-                    </button>
-                </div>
-            )}
-        />
+        <div>
+            <FileTree
+                model={model}
+                className={clsx(styles.tree, 'rounded-lg border')}
+                style={{ height: '320px' }}
+                renderContextMenu={(item, context) => (
+                    <div className="rounded-md border bg-background p-2 shadow">
+                        <button
+                            onClick={() => {
+                                context.close({ restoreFocus: false });
+                                model.startRenaming(item.path);
+                            }}
+                            type="button"
+                        >
+                            Rename
+                        </button>
+                    </div>
+                )}
+            />
+            {selected && <File file={selected} />}
+        </div>
     );
 });
 
