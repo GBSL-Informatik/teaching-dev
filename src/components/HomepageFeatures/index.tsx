@@ -27,12 +27,11 @@ const HomepageFeatures = observer(() => {
 
     return (
         <>
-            <section className={styles.features}>
-                {root && <DocumentFileTree dir={root} />}
-                <pre>
-                    <code>{JSON.stringify(root?.fileTree, null, 2)}</code>
-                </pre>
-            </section>
+            {root && (
+                <section className={styles.features}>
+                    <DocumentFileTree dir={root} />
+                </section>
+            )}
             <section className={styles.features}>
                 {sessionStore.apiMode === 'api' ? (
                     <div className="container">

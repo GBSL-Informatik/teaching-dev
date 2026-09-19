@@ -30,6 +30,7 @@ import iCode from '@tdev-models/documents/iCode';
 
 interface Props {
     file: FileModel;
+    className?: string;
 }
 
 const getColor = (type?: DocumentType) => {
@@ -72,11 +73,11 @@ const getOpenIcon = (type?: DocumentType) => {
 };
 
 const File = observer((props: Props) => {
-    const { file } = props;
+    const { file, className } = props;
     return (
         <FsDetails
             model={file}
-            className={clsx(shared.fsItem, styles.file)}
+            className={clsx(shared.fsItem, styles.file, className)}
             summary={
                 <summary className={clsx(shared.summary, styles.summary)}>
                     <Icon

@@ -95,7 +95,6 @@ const DocumentFileTree = observer((props: Props) => {
                     setSelected(selected[0]);
                 }
                 selected[0].setIsOpen(true);
-                console.log('Selected document:', selected[0].name, selected[0].filePath);
             }
         }
     });
@@ -118,7 +117,7 @@ const DocumentFileTree = observer((props: Props) => {
     }, [model, dir.fileTree]);
 
     return (
-        <div>
+        <div className={clsx(styles.container)}>
             <FileTree
                 model={model}
                 className={clsx(styles.tree, 'rounded-lg border')}
@@ -137,7 +136,7 @@ const DocumentFileTree = observer((props: Props) => {
                     </div>
                 )}
             />
-            {selected && <File file={selected} />}
+            <div className={clsx(styles.selectedFile)}>{selected && <File file={selected} />}</div>
         </div>
     );
 });

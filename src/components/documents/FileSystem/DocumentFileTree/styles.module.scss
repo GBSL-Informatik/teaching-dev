@@ -1,16 +1,31 @@
-.tree {
-    --trees-search-bg: var(--ifm-background-surface-color);
-    --trees-bg: var(--ifm-background-color);
-    // --trees-search-fg
-    // --trees-border-color
-    // --trees-accent
-    // --trees-fg-muted
-    // --trees-bg-muted
-    color-scheme: light;
+.container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    .tree {
+        --trees-search-bg: var(--ifm-background-surface-color);
+        --trees-bg: var(--ifm-background-color);
+        // --trees-search-fg
+        // --trees-border-color
+        // --trees-accent
+        // --trees-fg-muted
+        // --trees-bg-muted
+        color-scheme: light;
+    }
+    .selectedFile {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 300px;
+        max-width: 80vw;
+    }
 }
 
 [data-theme='dark'] {
-    .tree {
-        color-scheme: dark;
+    .container {
+        .tree {
+            color-scheme: dark;
+        }
     }
 }
