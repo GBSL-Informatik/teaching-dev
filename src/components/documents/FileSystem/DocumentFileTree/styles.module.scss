@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    flex-wrap: wrap;
+    .tree {
+        --trees-search-bg: var(--ifm-background-surface-color);
+        --trees-bg: var(--ifm-background-color);
+        // --trees-search-fg
+        // --trees-border-color
+        // --trees-accent
+        // --trees-fg-muted
+        // --trees-bg-muted
+        color-scheme: light;
+    }
+    .selectedFile {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 300px;
+        max-width: 1200px;
+    }
+}
+
+[data-theme='dark'] {
+    .container {
+        .tree {
+            color-scheme: dark;
+        }
+    }
+}
