@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import File from '../File';
 import DocumentView from '../DocumentView';
+import { mdiExcalidraw } from '@tdev/excalidoc/Component';
 
 interface Props {
     dir: Directory;
@@ -28,7 +29,17 @@ const DocumentFileTree = observer((props: Props) => {
         initialVisibleRowCount: 11,
         icons: {
             set: 'complete',
-            colored: false
+            colored: true,
+            spriteSheet: `
+                <svg aria-hidden="true" width="0" height="0">
+                    <symbol id="mdi-excalidraw" viewBox="0 0 24 24">
+                        <path d="${mdiExcalidraw}" style="fill: #6965db;" />
+                    </symbol>
+                </svg>
+                `,
+            byFileExtension: {
+                excalidraw: 'mdi-excalidraw'
+            }
         },
         renaming: {
             canRename: (item) => item.path !== 'package.json',
