@@ -1,7 +1,6 @@
 import React from 'react';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
-import customFields from '@tdev-components/utils/customFields';
 import { FileTree, useFileTree } from '@pierre/trees/react';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { preparePresortedFileTreeInput } from '@pierre/trees';
@@ -10,12 +9,14 @@ import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import File from '../File';
+import DocumentView from '../DocumentView';
 
 interface Props {
     dir: Directory;
 }
 const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
+    const dirId = dir.id;
     const rootId = dir.documentRootId;
     const documentStore = useStore('documentStore');
     const docRootStore = useStore('documentRootStore');
@@ -32,6 +33,7 @@ const DocumentFileTree = observer((props: Props) => {
         renaming: {
             canRename: (item) => item.path !== 'package.json',
             onRename: ({ sourcePath, destinationPath }) => {
+                const dir = documentStore.find(dirId) as Directory;
                 const file = dir.allFiles.find((d) => d.filePath === sourcePath);
                 const hasConflict = dir.allFiles.some((d) => d.filePath === destinationPath);
                 if (!file) {
@@ -57,13 +59,11 @@ const DocumentFileTree = observer((props: Props) => {
             canDrag: (draggedPaths) => true,
             canDrop: ({ target }) => true,
             onDropComplete: ({ draggedPaths, target }) => {
-                const targetDoc = dir.allFiles.find((d) => d.filePath === target.directoryPath);
+                const targetDoc =
+                    target.kind === 'root'
+                        ? dir
+                        : dir.allFiles.find((d) => d.filePath === target.directoryPath);
                 const files = dir.allFiles.filter((d) => draggedPaths.includes(d.filePath));
-                console.log(
-                    files.map((f) => f.filePath),
-                    'dropped on',
-                    targetDoc?.filePath
-                );
                 if (targetDoc && files.length > 0) {
                     files.forEach((f) => {
                         documentStore.relinkParent(f, targetDoc);
@@ -136,7 +136,7 @@ const DocumentFileTree = observer((props: Props) => {
                     </div>
                 )}
             />
-            <div className={clsx(styles.selectedFile)}>{selected && <File file={selected} />}</div>
+            <div className={clsx(styles.selectedFile)}>{<DocumentView document={selected?.document} />}</div>
         </div>
     );
 });

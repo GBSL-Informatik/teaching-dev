@@ -15,18 +15,11 @@ import {
 } from '@mdi/js';
 import SyncStatus from '../../../SyncStatus';
 import { DocumentType } from '@tdev-api/document';
-import { QuillV2Component } from '../../QuillV2';
 import Actions from '../Actions';
 import Name from '../Name';
 import FsDetails from '../FsDetails';
-import {
-    ExcalidocComponent,
-    ExcalidrawColor,
-    mdiExcalidraw,
-    mdiExcalidrawOutline
-} from '@tdev/excalidoc/Component';
-import CodeEditorSelector from './CodeEditorSelector';
-import iCode from '@tdev-models/documents/iCode';
+import { ExcalidrawColor, mdiExcalidraw, mdiExcalidrawOutline } from '@tdev/excalidoc/Component';
+import DocumentView from '../DocumentView';
 
 interface Props {
     file: FileModel;
@@ -97,23 +90,7 @@ const File = observer((props: Props) => {
             }
         >
             <div className={clsx(shared.content, styles.content)}>
-                {file.document && file.isOpen && (
-                    <>
-                        {file.document.type === 'script' && (
-                            <CodeEditorSelector code={file.document as iCode} />
-                        )}
-                        {file.document.type === 'quill_v2' && (
-                            <QuillV2Component quillDoc={file.document} className={styles.quill} />
-                        )}
-                        {file.document.type === 'excalidoc' && (
-                            <ExcalidocComponent
-                                documentId={file.document.id}
-                                height="80vh"
-                                allowImageInsertion
-                            />
-                        )}
-                    </>
-                )}
+                {file.isOpen && <DocumentView document={file.document} />}
             </div>
         </FsDetails>
     );
