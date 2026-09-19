@@ -1,10 +1,10 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import Button from '..';
 import { mdiClose } from '@mdi/js';
 import { Color } from '@tdev-components/shared/Colors';
+import Button from '..';
+import styles from './styles.module.scss';
 
 interface Props {
     className?: string;

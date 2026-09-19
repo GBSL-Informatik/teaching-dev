@@ -1,9 +1,8 @@
-import * as React from 'react';
-import Button from '@tdev-components/documents/CodeEditor/Button';
-import { observer } from 'mobx-react-lite';
 import { mdiDownload } from '@mdi/js';
-import type iCode from '@tdev-models/documents/iCode';
 import type { CodeType } from '@tdev-api/document';
+import Button from '@tdev-components/documents/CodeEditor/Button';
+import type iCode from '@tdev-models/documents/iCode';
+import { observer } from 'mobx-react-lite';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;

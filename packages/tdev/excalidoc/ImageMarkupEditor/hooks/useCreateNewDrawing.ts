@@ -1,9 +1,9 @@
-import React from 'react';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import type { DirType } from '@tdev-components/FileSystem/Dir';
+import React from 'react';
+import buildImageTree from '../helpers/buildImageTree';
 import { NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from '../helpers/constants';
 import writeFileHandle from '../helpers/writeFileHandle';
-import buildImageTree from '../helpers/buildImageTree';
 
 const DEFAULT_IMAGES: Record<string, string> = {
     '.png': require('../../Component/Preview/images/excalidraw-logo.png').default,

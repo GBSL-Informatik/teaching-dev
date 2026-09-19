@@ -2,8 +2,8 @@
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
 import { MdastImportVisitor } from '@mdxeditor/editor';
-import { $createMathNode } from './MathNode';
 import { InlineMath, Math } from 'mdast-util-math';
+import { $createMathNode } from './MathNode';
 
 export const MdastMathVisitor: MdastImportVisitor<Math> = {
     testNode: 'math',

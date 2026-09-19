@@ -1,7 +1,7 @@
+import { mdiAccountReactivateOutline } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import clsx from 'clsx';
 import styles from './styles.module.scss';
-import Button from '@tdev-components/shared/Button';
-import { mdiAccountReactivateOutline } from '@mdi/js';
 
 interface Props {
     message: string | React.ReactElement;

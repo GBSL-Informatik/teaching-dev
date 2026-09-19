@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { JsxComponentDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
+import CodeBlock from '@theme/CodeBlock';
+import clsx from 'clsx';
 import { PhrasingContent } from 'mdast';
 import { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx-jsx';
 import React from 'react';
-import styles from './styles.module.scss';
-import { JsxComponentDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
-import { useAttributeEditorInNestedEditor } from '../../hooks/useAttributeEditorInNestedEditor';
-import clsx from 'clsx';
 import GenericAttributeEditor from '../../GenericAttributeEditor';
-import RemoveNode from '../../RemoveNode';
 import MyAttributes from '../../GenericAttributeEditor/MyAttributes';
-import CodeBlock from '@theme/CodeBlock';
+import { useAttributeEditorInNestedEditor } from '../../hooks/useAttributeEditorInNestedEditor';
+import RemoveNode from '../../RemoveNode';
+import styles from './styles.module.scss';
 
 /**
  * A generic editor that can be used as an universal UI for any JSX element.

@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
+import { mdiClose, mdiProjectorScreenOffOutline, mdiSync } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { useStore } from '@tdev-hooks/useStore';
 import StudentGroup from '@tdev-models/StudentGroup';
-import Button from '@tdev-components/shared/Button';
-import { mdiClose, mdiProjectorScreenOffOutline, mdiSync } from '@mdi/js';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import CanEditBadge from '../CanEditBadge';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import styles from '../styles.module.scss';
 
 interface Props {
     group: StudentGroup;

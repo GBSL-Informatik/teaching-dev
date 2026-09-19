@@ -1,5 +1,5 @@
-import api from './base';
 import { AxiosPromise } from 'axios';
+import api from './base';
 import { Access } from './document';
 
 export interface GroupPermissionBase {
@@ -66,10 +66,6 @@ export function updateGroupPermission(
 
 export function deleteGroupPermission(id: string, signal: AbortSignal): AxiosPromise {
     return api.delete(`/permissions/group/${id}`, { signal });
-}
-
-export function permissionsFor(documentRootId: string, signal: AbortSignal): AxiosPromise<Permissions> {
-    return api.get(`/documentRoots/${documentRootId}/permissions`, { signal });
 }
 
 export function documentRootPermissions(

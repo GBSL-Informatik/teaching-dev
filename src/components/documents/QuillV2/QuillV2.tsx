@@ -1,25 +1,25 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import Loader from '@tdev-components/Loader';
-import { MetaInit } from '@tdev-models/documents/QuillV2';
-import { useQuill } from 'react-quilljs';
-import { ToolbarOptions } from '@tdev-models/documents/QuillV2/helpers/toolbar';
-import 'quill/dist/quill.snow.css'; // Add css for snow theme
-import 'quill/dist/quill.bubble.css'; // Add css for snow theme
-import BaseImageFormat from 'quill/formats/image';
-import { downscaleImage } from './quill-img-compress/downscaleImage';
-import ImageResize from './quill-img-resize';
-import { file2b64 } from './quill-img-compress/file2b64';
-import dropImage from './quill-img-compress/dropImage';
-import pasteImage from './quill-img-compress/pasteImage';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
-import SyncStatus from '@tdev-components/SyncStatus';
-import { action } from 'mobx';
-import Icon from '@mdi/react';
 import { mdiFlashTriangle } from '@mdi/js';
+import Icon from '@mdi/react';
+import Loader from '@tdev-components/Loader';
+import SyncStatus from '@tdev-components/SyncStatus';
 import { useDocument } from '@tdev-hooks/useContextDocument';
+import { MetaInit } from '@tdev-models/documents/QuillV2';
+import { ToolbarOptions } from '@tdev-models/documents/QuillV2/helpers/toolbar';
+import clsx from 'clsx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import { Delta } from 'quill/core';
+import 'quill/dist/quill.bubble.css'; // Add css for snow theme
+import 'quill/dist/quill.snow.css'; // Add css for snow theme
+import BaseImageFormat from 'quill/formats/image';
+import React from 'react';
+import { useQuill } from 'react-quilljs';
+import { downscaleImage } from './quill-img-compress/downscaleImage';
+import dropImage from './quill-img-compress/dropImage';
+import { file2b64 } from './quill-img-compress/file2b64';
+import pasteImage from './quill-img-compress/pasteImage';
+import ImageResize from './quill-img-resize';
+import styles from './styles.module.scss';
 
 const FORMATS = [
     'bold',

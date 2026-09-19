@@ -1,12 +1,12 @@
-import type { Plugin, Transformer } from 'unified';
+import { TypeModelMapping } from '@tdev-api/document';
+import type { Statement } from 'better-sqlite3';
+import { debounce } from 'es-toolkit/function';
 import type { Code, Root } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
 import path from 'path';
+import type { Plugin, Transformer } from 'unified';
 import { exportDB } from '../utils/exportDb';
-import { debounce } from 'es-toolkit/function';
 import { tdevRoot } from '../utils/options';
-import { TypeModelMapping } from '@tdev-api/document';
-import type { Statement } from 'better-sqlite3';
 
 const TdevRoot = `${tdevRoot === '' ? '' : '/'}${tdevRoot}`;
 const TdevRootRegex = new RegExp(`^${TdevRoot}`);

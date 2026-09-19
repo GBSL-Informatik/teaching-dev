@@ -1,13 +1,13 @@
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { mdiAccountCircleOutline } from '@mdi/js';
+import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Button from '@tdev-components/shared/Button';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 import { observer } from 'mobx-react-lite';
-import { DEFAULT_OFFLINE_USER, OfflineUser } from '@tdev-api/OfflineApi';
+import styles from './styles.module.scss';
 
 interface Props {
     preventClick?: boolean;

@@ -1,21 +1,21 @@
-import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
-import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { BinaryFileData, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
+import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
+import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
 import {
-    EXCALIDRAW_BACKGROUND_FILE_ID,
-    EXCALIDRAW_BACKGROUND_IMAGE_ID,
-    EXCALIDRAW_IMAGE_RECTANGLE_ID,
-    EXCALIDRAW_IMAGE_RECTANGLE,
-    EXCALIDRAW_BACKGROUND_FILE,
-    EXCALIDRAW_BACKGROUND_IMAGE,
-    EXCALIDRAW_MAX_WIDTH,
     CustomData,
+    EXCALIDRAW_BACKGROUND_FILE,
+    EXCALIDRAW_BACKGROUND_FILE_ID,
+    EXCALIDRAW_BACKGROUND_IMAGE,
+    EXCALIDRAW_BACKGROUND_IMAGE_ID,
+    EXCALIDRAW_IMAGE_RECTANGLE,
+    EXCALIDRAW_IMAGE_RECTANGLE_ID,
+    EXCALIDRAW_MAX_WIDTH,
     EXCALIDRAW_STANDALONE_DRAWING_ID,
     EXCALIDRAW_STANDALONE_DRAWING_RECTANGLE
 } from './constants';
-import { withoutMetaElements } from './getElementsFromScene';
 import { getBoundingRect } from './getBoundingRect';
+import { withoutMetaElements } from './getElementsFromScene';
 
 export const createExcalidrawMarkup = async (
     imgFileHandle: FileSystemFileHandle

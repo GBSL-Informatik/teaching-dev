@@ -1,8 +1,8 @@
-import { User } from '../api/user';
 import { Document, DocumentType } from '../api/document';
-import { rootStore } from '../stores/rootStore';
-import { GroupPermission, UserPermission } from '../api/permission';
 import { DocumentRootUpdate } from '../api/documentRoot';
+import { GroupPermission, UserPermission } from '../api/permission';
+import { User } from '../api/user';
+import { rootStore } from '../stores/rootStore';
 import { CmsSettings } from './cms';
 import { StudentGroup } from './studentGroup';
 

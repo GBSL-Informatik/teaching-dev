@@ -1,22 +1,21 @@
-import React from 'react';
 import clsx from 'clsx';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 import { mdiAccountSyncOutline, mdiCheckboxMultipleMarkedCircle } from '@mdi/js';
-import { StateType } from '@tdev-api/document';
 import Icon from '@mdi/react';
-import Popup from 'reactjs-popup';
-import EditingStateList from './EditingStateList';
+import { StateType } from '@tdev-api/document';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
+import customFields from '@tdev-components/utils/customFields';
+import { useStore } from '@tdev-hooks/useStore';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import _ from 'es-toolkit/compat';
-import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
-import useIsBrowser from '@docusaurus/useIsBrowser';
-import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import customFields from '@tdev-components/utils/customFields';
+import { observer } from 'mobx-react-lite';
+import Popup from 'reactjs-popup';
+import EditingStateList from './EditingStateList';
+import styles from './styles.module.scss';
 const { tdevConfig } = customFields;
 
 export const mdiColor: { [key in StateType]: string } = {

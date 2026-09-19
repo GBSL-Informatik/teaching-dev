@@ -1,8 +1,7 @@
-import React from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
 import Bit from '../Bit';
+import styles from './styles.module.scss';
 
 interface Props {
     byteString: string;

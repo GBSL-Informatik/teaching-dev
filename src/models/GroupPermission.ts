@@ -1,8 +1,8 @@
-import { action, computed, observable } from 'mobx';
 import { Access } from '@tdev-api/document';
-import PermissionStore from '@tdev-stores/PermissionStore';
 import { GroupPermission as GroupPermissionProps } from '@tdev-api/permission';
 import User from '@tdev-models/User';
+import PermissionStore from '@tdev-stores/PermissionStore';
+import { action, computed, observable } from 'mobx';
 
 class GroupPermission {
     readonly store: PermissionStore;

@@ -1,11 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import { mdiLoading, mdiTarget } from '@mdi/js';
-import StudentGroup from '@tdev-models/StudentGroup';
 import Button from '@tdev-components/shared/Button';
+import { useStore } from '@tdev-hooks/useStore';
+import StudentGroup from '@tdev-models/StudentGroup';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     studentGroup: StudentGroup;

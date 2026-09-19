@@ -1,18 +1,18 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Details from '@theme/Details';
-import Loader from '@tdev-components/Loader';
-import { MetaInit, ModelMeta } from '@tdev-models/documents/Solution';
-import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
-import { Access } from '@tdev-api/document';
-import { useStore } from '@tdev-hooks/useStore';
-import Icon from '@mdi/react';
 import { mdiCheckAll } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Access } from '@tdev-api/document';
+import Loader from '@tdev-components/Loader';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import AccessBadge from '@tdev-components/PermissionsPanel/AccessBadge';
+import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
+import { useStore } from '@tdev-hooks/useStore';
+import { MetaInit, ModelMeta } from '@tdev-models/documents/Solution';
+import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import Details from '@theme/Details';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props extends MetaInit {
     id: string;

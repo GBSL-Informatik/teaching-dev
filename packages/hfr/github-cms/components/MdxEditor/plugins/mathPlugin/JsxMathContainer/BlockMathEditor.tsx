@@ -1,14 +1,13 @@
-import React from 'react';
+import { useMdastNodeUpdater } from '@mdxeditor/editor';
+import CodeEditor from '@tdev-components/shared/CodeEditor';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { Math } from 'mdast-util-math';
 import { BlockMath } from 'react-katex';
-import { useMdastNodeUpdater } from '@mdxeditor/editor';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import CodeEditor from '@tdev-components/shared/CodeEditor';
 import RemoveNode from '../../../../MdxEditor/RemoveNode';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import styles from './styles.module.scss';
 
 interface Props {
     mdastNode: Math;

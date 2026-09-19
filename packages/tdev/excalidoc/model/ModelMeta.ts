@@ -1,7 +1,7 @@
-import { TypeDataMapping, Access } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { BinaryFiles } from '@excalidraw/excalidraw/types';
+import { TypeDataMapping } from '@tdev-api/document';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { computed } from 'mobx';
 
 export interface MetaInit {

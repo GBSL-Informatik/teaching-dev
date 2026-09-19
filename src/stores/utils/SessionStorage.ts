@@ -1,7 +1,7 @@
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import siteConfig from '@generated/docusaurus.config';
 import _ from 'es-toolkit/compat';
 import MemoryStorage from './MemoryStorage';
-import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 
 const getStorageKey = (key: string) => {
     return _.upperFirst(_.camelCase(`${key}${siteConfig.projectName || ''}`));

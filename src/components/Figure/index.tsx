@@ -1,8 +1,8 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import EditorPopup from '@tdev/excalidoc/ImageMarkupEditor/EditorPopup';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 const defaultUnit = (value: string | number, unit: string = 'px') => {
     // when only a number is given, add the default unit

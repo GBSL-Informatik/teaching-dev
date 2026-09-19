@@ -1,11 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
+import { mdiCollapseAll, mdiExpandAll } from '@mdi/js';
 import { AssessableType } from '@tdev-api/document';
 import Button from '@tdev-components/shared/Button';
-import { mdiCollapseAll, mdiExpandAll } from '@mdi/js';
+import { useDocument } from '@tdev-hooks/useContextDocument';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from '../styles.module.scss';
 
 const Options = observer(({ children }: { children: React.ReactNode }) => {
     const doc = useDocument<AssessableType>();

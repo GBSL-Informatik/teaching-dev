@@ -1,10 +1,7 @@
-import React from 'react';
-import clsx from 'clsx';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import AccessSelector from '.';
 import { Access, DocumentType } from '@tdev-api/document';
 import DocumentRoot from '@tdev-models/DocumentRoot';
+import { observer } from 'mobx-react-lite';
+import AccessSelector from '.';
 
 interface Props {
     documentRoot: DocumentRoot<DocumentType>;

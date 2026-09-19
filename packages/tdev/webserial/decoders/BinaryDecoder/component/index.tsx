@@ -1,14 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import byteStyles from './Byte/styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import { useDeviceId } from '@tdev/webserial/hooks/useDeviceId';
-import Decoder from '../model/Decoder';
-import Byte from './Byte';
 import Card from '@tdev-components/shared/Card';
 import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
+import { useStore } from '@tdev-hooks/useStore';
+import { useDeviceId } from '@tdev/webserial/hooks/useDeviceId';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Decoder from '../model/Decoder';
+import Byte from './Byte';
+import byteStyles from './Byte/styles.module.scss';
+import styles from './styles.module.scss';
 
 interface Props {
     bitDimension?: { width: string; height: string };

@@ -1,8 +1,8 @@
 import { remark } from 'remark';
-import remarkMdx from 'remark-mdx';
 import remarkDirective from 'remark-directive';
-import { describe, expect, it } from 'vitest';
+import remarkMdx from 'remark-mdx';
 import { VFile } from 'vfile';
+import { describe, expect, it } from 'vitest';
 
 const alignLeft = (content: string) => {
     return content

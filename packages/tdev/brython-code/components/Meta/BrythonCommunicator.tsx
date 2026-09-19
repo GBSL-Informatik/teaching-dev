@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { observer } from 'mobx-react-lite';
 import { BRYTHON_NOTIFICATION_EVENT, DOM_ELEMENT_IDS } from '@tdev/brython-code';
 import Script, { LogMessage } from '@tdev/brython-code/models/Script';
+import { observer } from 'mobx-react-lite';
+import * as React from 'react';
 
 interface Props {
     code: Script;

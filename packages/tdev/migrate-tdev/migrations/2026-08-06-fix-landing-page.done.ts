@@ -1,7 +1,7 @@
-import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
-import { updateTdevConfig } from '../src/helpers/loadFile';
+import { MigrationRunner } from '../src/constants';
 import { ensureTdevConfig } from '../src/helpers/actions';
+import { updateTdevConfig } from '../src/helpers/loadFile';
 import { writeUpdateTdevConfig } from '../src/helpers/writeFile';
 
 const migrate: MigrationRunner = async (root, name): Promise<void> => {

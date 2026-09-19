@@ -1,11 +1,11 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { MetaInit } from '@tdev-models/documents/TaskState';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
-import { SelfCheckContext } from '@tdev-components/documents/SelfCheck/shared';
-import SelfCheckContent from '@tdev-components/documents/SelfCheck/SelfCheckContent';
-import Solution from '@tdev-components/documents/Solution';
 import { Access } from '@tdev-api/document';
+import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
+import SelfCheckContent from '@tdev-components/documents/SelfCheck/SelfCheckContent';
+import { SelfCheckContext } from '@tdev-components/documents/SelfCheck/shared';
+import Solution from '@tdev-components/documents/Solution';
+import { MetaInit } from '@tdev-models/documents/TaskState';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface Props extends MetaInit {
     visibleFrom?: SelfCheckStateType;

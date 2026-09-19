@@ -1,11 +1,10 @@
-import { observer } from 'mobx-react-lite';
-import React from 'react';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import CmsImporter from '../CmsImporter';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
-import { CmsTextEntries } from '../WithCmsText';
 import DivSpanWrapper from '@tdev-components/shared/DivSpanWrapper';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import CmsImporter from '../CmsImporter';
+import { CmsTextEntries } from '../WithCmsText';
+import styles from './styles.module.scss';
 
 interface Props {
     entries: CmsTextEntries;

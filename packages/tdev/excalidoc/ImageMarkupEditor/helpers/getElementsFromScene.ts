@@ -6,13 +6,13 @@ import type {
     Ordered,
     OrderedExcalidrawElement
 } from '@excalidraw/excalidraw/element/types';
+import type { BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types';
 import {
     EXCALIDRAW_BACKGROUND_FILE_ID,
     EXCALIDRAW_BACKGROUND_IMAGE_ID,
     EXCALIDRAW_IMAGE_RECTANGLE_ID,
     EXCALIDRAW_STANDALONE_DRAWING_ID
 } from './constants';
-import type { BinaryFileData, BinaryFiles } from '@excalidraw/excalidraw/types';
 
 export const getImageElementFromScene = (
     elements: readonly (OrderedExcalidrawElement | ExcalidrawElement)[]

@@ -1,10 +1,10 @@
-import React from 'react';
 import DefaultAdmonitionTypes from '@theme-original/Admonition/Types';
-import AdmonitionLayout from '@theme/Admonition/Layout';
+import IconInfo from '@theme/Admonition/Icon/Info';
 import IconNote from '@theme/Admonition/Icon/Note';
 import IconTip from '@theme/Admonition/Icon/Tip';
-import IconInfo from '@theme/Admonition/Icon/Info';
+import AdmonitionLayout from '@theme/Admonition/Layout';
 import clsx from 'clsx';
+import React from 'react';
 import styles from './types.module.scss';
 
 // function FindingIcon() {

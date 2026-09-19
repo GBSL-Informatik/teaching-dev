@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../../hooks/useCmsStore';
-import { default as PrModel } from '../../../../models/PR';
 import { mdiDotsHorizontalCircleOutline, mdiDotsVerticalCircleOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import PR from '..';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
+import { default as PrModel } from '../../../../models/PR';
+import styles from './styles.module.scss';
 
 interface Props {
     pr: PrModel;

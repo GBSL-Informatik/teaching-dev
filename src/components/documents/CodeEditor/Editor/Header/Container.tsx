@@ -1,9 +1,9 @@
-import * as React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import * as React from 'react';
+import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;

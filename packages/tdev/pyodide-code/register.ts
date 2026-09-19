@@ -1,11 +1,11 @@
-import { rootStore } from '@tdev-stores/rootStore';
-import PyodideStore from './stores/PyodideStore';
-import ViewStore from '@tdev-stores/ViewStores';
-import { createModel } from './models/PyodideCode';
-import { ModelMeta } from './models/ModelMeta';
 import { LiveCode } from '@tdev-stores/ComponentStore';
-import Header from './components/Header';
+import { rootStore } from '@tdev-stores/rootStore';
+import ViewStore from '@tdev-stores/ViewStores';
 import Footer from './components/Footer';
+import Header from './components/Header';
+import { ModelMeta } from './models/ModelMeta';
+import { createModel } from './models/PyodideCode';
+import PyodideStore from './stores/PyodideStore';
 
 const createStore = (viewStore: ViewStore) => {
     return new PyodideStore(viewStore);

@@ -1,11 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { default as DirModel } from '../../../models/Dir';
 import Card from '@tdev-components/shared/Card';
-import Dir from '../../Github/iFile/Dir';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { default as DirModel } from '../../../models/Dir';
 import UserAvatar from '../../Github/AccountOptions/UserAvatar';
+import Dir from '../../Github/iFile/Dir';
+import styles from './styles.module.scss';
 
 interface Props {
     dir?: DirModel;

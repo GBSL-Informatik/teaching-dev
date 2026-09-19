@@ -1,4 +1,3 @@
-import styles from './styles.module.scss';
 import { mdiAccountMultiple, mdiAccountPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import TabItem from '@theme/TabItem';
@@ -12,6 +11,7 @@ import Button from '../../shared/Button';
 import AddUser from './AddUser';
 import ImportFromList from './ImportFromList';
 import ImportGroup from './ImportGroup';
+import styles from './styles.module.scss';
 import { AddMembersPopupProps } from './types';
 
 const AddUserPopup = observer((props: AddMembersPopupProps) => {

@@ -1,27 +1,27 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { default as UserModel } from '@tdev-models/User';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
-import { formatDateTime } from '@tdev-models/helpers/date';
-import { AuthProviderColor, AuthProviderIcons, RoleColors, RoleNames } from '@tdev-api/user';
-import { useStore } from '@tdev-hooks/useStore';
-import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
-import Icon from '@mdi/react';
 import { mdiAccountCancel, mdiAccountEdit, mdiCloudQuestion } from '@mdi/js';
-import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
-import Button from '@tdev-components/shared/Button';
-import Popup from 'reactjs-popup';
-import EditUser from '../EditUser';
-import { PopupActions } from 'reactjs-popup/dist/types';
-import Badge from '@tdev-components/shared/Badge';
-import NavReloadRequest from '../ActionRequest/NavReloadRequest';
-import { IfmColors } from '@tdev-components/shared/Colors';
-import ExportModal from '../ExportPanel/ExportModal';
-import Card from '@tdev-components/shared/Card';
+import Icon from '@mdi/react';
+import { AuthProviderColor, AuthProviderIcons, RoleColors, RoleNames } from '@tdev-api/user';
 import DefinitionList from '@tdev-components/DefinitionList';
+import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { IfmColors } from '@tdev-components/shared/Colors';
+import CopyBadge from '@tdev-components/shared/CopyBadge';
+import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import { useStore } from '@tdev-hooks/useStore';
+import { formatDateTime } from '@tdev-models/helpers/date';
+import { default as UserModel } from '@tdev-models/User';
+import { observer } from 'mobx-react-lite';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import NavReloadRequest from '../ActionRequest/NavReloadRequest';
+import EditUser from '../EditUser';
+import ExportModal from '../ExportPanel/ExportModal';
+import styles from './styles.module.scss';
 
 interface Props {
     user: UserModel;

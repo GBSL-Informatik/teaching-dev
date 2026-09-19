@@ -1,9 +1,8 @@
-import React from 'react';
 import clsx from 'clsx';
 
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     label?: string;

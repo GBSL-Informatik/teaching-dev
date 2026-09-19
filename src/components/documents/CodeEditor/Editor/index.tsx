@@ -1,16 +1,15 @@
-import * as React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import HiddenCode from './HiddenCode';
-import EditorAce, { type Overrides } from './EditorAce';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import EditorAce, { type Overrides } from './EditorAce';
+import HiddenCode from './HiddenCode';
+import styles from './styles.module.scss';
 
 import type { CodeType, TypeModelMapping } from '@tdev-api/document';
-import type iCode from '@tdev-models/documents/iCode';
-import Header from './Header';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import Alert from '@tdev-components/shared/Alert';
+import type iCode from '@tdev-models/documents/iCode';
+import Header from './Header';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;

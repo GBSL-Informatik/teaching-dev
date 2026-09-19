@@ -1,11 +1,11 @@
 import { JsxComponentDescriptor, type JsxPropertyDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
+import Steps from '@tdev-components/Steps';
+import Card from '@tdev-components/shared/Card';
+import clsx from 'clsx';
 import { MdxJsxFlowElement } from 'mdast-util-mdx';
 import { type GenericPropery } from '../../../MdxEditor/GenericAttributeEditor';
 import RemoveNode from '../../RemoveNode';
 import styles from './styles.module.scss';
-import clsx from 'clsx';
-import Steps from '@tdev-components/Steps';
-import Card from '@tdev-components/shared/Card';
 
 const props: GenericPropery[] = [];
 

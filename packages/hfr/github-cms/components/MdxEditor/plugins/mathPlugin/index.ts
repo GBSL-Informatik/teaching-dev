@@ -13,9 +13,9 @@ import {
 } from '@mdxeditor/editor';
 import { mathFromMarkdown, mathToMarkdown } from 'mdast-util-math';
 import { math } from 'micromark-extension-math';
-import { MdastInlineMathVisitor, MdastMathVisitor } from './MdastMathVisitor';
-import { MathNode } from './MathNode';
 import { LexicalMathVisitor } from './LexicalMathVisitor';
+import { MathNode } from './MathNode';
+import { MdastInlineMathVisitor, MdastMathVisitor } from './MdastMathVisitor';
 
 export const mathPlugin = realmPlugin<{}>({
     init(realm, params) {

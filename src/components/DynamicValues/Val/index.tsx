@@ -1,6 +1,5 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
+import { observer } from 'mobx-react-lite';
 import { templateReplacer } from '../templateReplacer';
 
 interface BaseProps {

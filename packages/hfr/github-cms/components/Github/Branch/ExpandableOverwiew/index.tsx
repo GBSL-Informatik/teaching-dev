@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../../hooks/useCmsStore';
-import { default as BranchModel } from '../../../../models/Branch';
 import { mdiDotsHorizontalCircleOutline, mdiDotsVerticalCircleOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import Branch from '..';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
+import { default as BranchModel } from '../../../../models/Branch';
+import styles from './styles.module.scss';
 
 interface Props {
     branch: BranchModel;

@@ -1,9 +1,9 @@
-import { JsxComponentDescriptor } from '@mdxeditor/editor';
-import RemoveNode from '../../RemoveNode';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import { mdiFormatListCheckbox } from '@mdi/js';
 import Icon from '@mdi/react';
+import { JsxComponentDescriptor } from '@mdxeditor/editor';
+import clsx from 'clsx';
+import RemoveNode from '../../RemoveNode';
+import styles from './styles.module.scss';
 
 const DocCardListDescriptor: JsxComponentDescriptor = {
     name: 'DocCardList',

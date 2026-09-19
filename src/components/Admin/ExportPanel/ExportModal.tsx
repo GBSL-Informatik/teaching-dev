@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import ExportPanel, { Props as ExportProps } from '.';
-import type { PopupActions } from 'reactjs-popup/dist/types';
-import Popup from 'reactjs-popup';
 import { mdiDatabaseExport } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import type { PopupActions } from 'reactjs-popup/dist/types';
+import ExportPanel, { Props as ExportProps } from '.';
 
 interface Props extends Omit<ExportProps, 'onClose'> {
     className?: string;

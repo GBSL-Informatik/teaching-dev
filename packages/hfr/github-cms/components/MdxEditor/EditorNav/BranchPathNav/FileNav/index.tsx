@@ -1,9 +1,8 @@
-import React from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '../../../../../hooks/useCmsStore';
-import File from '../../../../../models/File';
 import BinFile from '../../../../../models/BinFile';
+import File from '../../../../../models/File';
 import FileStub from '../../../../../models/FileStub';
 import NavItem from '../../../../MdxEditor/EditorNav/BranchPathNav/NavItem';
 

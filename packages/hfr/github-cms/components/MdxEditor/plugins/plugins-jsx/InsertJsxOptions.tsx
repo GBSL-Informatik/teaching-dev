@@ -1,5 +1,4 @@
-import { ButtonOrDropdownButton, insertJsx$, insertMarkdown$, usePublisher } from '@mdxeditor/editor';
-import React from 'react';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
     mdiApplicationOutline,
     mdiCardTextOutline,
@@ -11,11 +10,11 @@ import {
     mdiMathIntegralBox,
     mdiQrcode
 } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
 import Icon from '@mdi/react';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { v4 as uuidv4 } from 'uuid';
+import { ButtonOrDropdownButton, insertJsx$, insertMarkdown$, usePublisher } from '@mdxeditor/editor';
+import Button from '@tdev-components/shared/Button';
 import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * A toolbar dropdown button that allows the user to insert admonitions.

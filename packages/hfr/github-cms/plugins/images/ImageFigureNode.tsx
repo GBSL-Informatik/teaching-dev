@@ -10,8 +10,8 @@
 import type { BaseSelection, EditorConfig, LexicalNode, NodeKey, SerializedElementNode } from 'lexical';
 
 import { $applyNodeReplacement, $isRangeSelection, ElementNode, Spread } from 'lexical';
-import styles from './styles.module.scss';
 import { $isImageNode, ImageNode } from './ImageNode';
+import styles from './styles.module.scss';
 
 export type SerializedImageFigureNode = Spread<{}, SerializedElementNode>;
 

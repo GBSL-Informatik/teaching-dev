@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises';
 import { load as yamlLoad } from 'js-yaml';
-import { pathExists } from './base.js';
+import fs from 'node:fs/promises';
 import { MIGRATION_CONFIG_PATH } from '../constants.js';
+import { pathExists } from './base.js';
 import shellInput from './shellInput.js';
 
 export interface MigrationConfig {

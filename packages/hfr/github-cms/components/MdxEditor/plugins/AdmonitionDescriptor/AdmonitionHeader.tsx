@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react';
-import { NestedLexicalEditor, useMdastNodeUpdater } from '@mdxeditor/editor';
-import { ContainerDirective } from 'mdast-util-directive';
-import { Paragraph, PhrasingContent } from 'mdast';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import { mdiChevronDown } from '@mdi/js';
+import { NestedLexicalEditor, useMdastNodeUpdater } from '@mdxeditor/editor';
 import Button from '@tdev-components/shared/Button';
+import clsx from 'clsx';
+import { LexicalEditor, LexicalNode } from 'lexical';
+import { Paragraph, PhrasingContent } from 'mdast';
+import { ContainerDirective } from 'mdast-util-directive';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import Popup from 'reactjs-popup';
 import RemoveNode from '../../RemoveNode';
-import { observer } from 'mobx-react-lite';
 import AdmonitionTypeSelector from './AdmonitionTypeSelector';
-import { LexicalEditor, LexicalNode } from 'lexical';
+import styles from './styles.module.scss';
 import useSelectionHandler from './useSelectionHandler';
 
 interface Props {

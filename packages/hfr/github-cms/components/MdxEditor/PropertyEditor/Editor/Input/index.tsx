@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import CodeEditor from '@tdev-components/shared/CodeEditor';
 import Checkbox from '@tdev-components/shared/Checkbox';
+import CodeEditor from '@tdev-components/shared/CodeEditor';
 import TextInput from '@tdev-components/shared/TextInput';
 import Field from '@tdev-models/Form/Field';
+import clsx from 'clsx';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import Select from 'react-select';
+import styles from './styles.module.scss';
 
 interface Props {
     field: Field<string>;

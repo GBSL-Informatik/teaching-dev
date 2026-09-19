@@ -1,17 +1,17 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Card from '@tdev-components/shared/Card';
-import Popup from 'reactjs-popup';
-import Button from '@tdev-components/shared/Button';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { mdiClose, mdiImageEditOutline } from '@mdi/js';
-import ImageMarkupEditor from '..';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import requestDocusaurusRootAcess from '@tdev-components/utils/localFS/requestDocusaurusRootAcess';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import type { PopupActions } from 'reactjs-popup/dist/types';
+import ImageMarkupEditor from '..';
 import useExcalidrawSource from '../hooks/useExcalidrawSource';
+import styles from './styles.module.scss';
 
 interface Props {
     src: string;

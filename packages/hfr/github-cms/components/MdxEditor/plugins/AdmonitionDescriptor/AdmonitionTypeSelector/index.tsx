@@ -1,10 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import Button from '@tdev-components/shared/Button';
+import clsx from 'clsx';
 import _ from 'es-toolkit/compat';
+import { observer } from 'mobx-react-lite';
 import { ADMONITION_TYPES } from './admonitionTypes';
+import styles from './styles.module.scss';
 
 interface Props {
     currentName: string;

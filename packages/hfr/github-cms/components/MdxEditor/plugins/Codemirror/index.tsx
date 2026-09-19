@@ -1,4 +1,3 @@
-import { Cell, Signal, map } from '@mdxeditor/gurx';
 import { Extension } from '@codemirror/state';
 import {
     $isCodeBlockNode,
@@ -8,7 +7,7 @@ import {
     insertCodeBlock$,
     realmPlugin
 } from '@mdxeditor/editor';
-import { CodeMirrorEditor } from './CodeMirrorEditor';
+import { Cell, map, Signal } from '@mdxeditor/gurx';
 import {
     $getSelection,
     $isElementNode,
@@ -17,6 +16,7 @@ import {
     KEY_DOWN_COMMAND,
     LexicalEditor
 } from 'lexical';
+import { CodeMirrorEditor } from './CodeMirrorEditor';
 
 /**
  * The codemirror code block languages.

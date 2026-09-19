@@ -1,8 +1,3 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Popup from 'reactjs-popup';
 import {
     mdiFileCode,
     mdiFileDocument,
@@ -11,16 +6,20 @@ import {
     mdiLanguagePython,
     mdiPlusCircleOutline
 } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import { useStore } from '@tdev-hooks/useStore';
-import { DocumentType } from '@tdev-api/document';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
-import { Delta } from 'quill/core';
-import DocumentStore from '@tdev-stores/DocumentStore';
 import Icon from '@mdi/react';
+import Button from '@tdev-components/shared/Button';
 import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import Directory from '@tdev-models/documents/FileSystem/Directory';
+import DocumentStore from '@tdev-stores/DocumentStore';
 import { ExcalidrawColor, mdiExcalidraw } from '@tdev/excalidoc/Component';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import { Delta } from 'quill/core';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
+import styles from './styles.module.scss';
 
 interface Props {
     directory: Directory;

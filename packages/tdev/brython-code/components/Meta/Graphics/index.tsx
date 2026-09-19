@@ -1,13 +1,13 @@
-import * as React from 'react';
-import styles from './styles.module.scss';
-import Draggable from 'react-draggable';
-import { checkForButtonClick } from '../../utils/checkForButtonClick';
+import { mdiClose } from '@mdi/js';
 import Button from '@tdev-components/documents/CodeEditor/Button';
+import type Script from '@tdev/brython-code/models/Script';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { mdiClose } from '@mdi/js';
-import type Script from '@tdev/brython-code/models/Script';
+import * as React from 'react';
+import Draggable from 'react-draggable';
 import { DOM_ELEMENT_IDS } from '../../..';
+import { checkForButtonClick } from '../../utils/checkForButtonClick';
+import styles from './styles.module.scss';
 
 export interface Props {
     code: Script;

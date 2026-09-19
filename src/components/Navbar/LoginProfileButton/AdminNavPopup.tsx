@@ -1,3 +1,5 @@
+import { useLocation } from '@docusaurus/router';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {
     mdiAccountCircleOutline,
     mdiAccountDetailsOutline,
@@ -5,14 +7,12 @@ import {
     mdiCogs,
     mdiShieldAccountOutline
 } from '@mdi/js';
-import clsx from 'clsx';
-import Popup from 'reactjs-popup';
-import styles from './styles.module.scss';
-import ProfileButton from './ProfileButton';
 import Button from '@tdev-components/shared/Button';
-import { useLocation } from '@docusaurus/router';
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import Popup from 'reactjs-popup';
+import ProfileButton from './ProfileButton';
+import styles from './styles.module.scss';
 
 interface AdminNavButtonProps {
     href: string;

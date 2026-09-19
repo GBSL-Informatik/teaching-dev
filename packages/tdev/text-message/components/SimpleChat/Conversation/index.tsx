@@ -1,9 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import TextMessage from '../../TextMessage';
 import { default as SimpleChatModel } from '@tdev/text-message/models/SimpleChat';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import TextMessage from '../../TextMessage';
+import styles from './styles.module.scss';
 
 interface Props {
     simpleChat: SimpleChatModel;

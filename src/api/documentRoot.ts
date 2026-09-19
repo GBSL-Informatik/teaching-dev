@@ -1,5 +1,5 @@
-import api from './base';
 import { AxiosPromise } from 'axios';
+import api from './base';
 import { Access, Document, DocumentType } from './document';
 import { GroupPermissionBase, UserPermissionBase } from './permission';
 
@@ -37,10 +37,6 @@ export interface DocumentRootUpdate {
     id: string;
     access: Access;
     sharedAccess: Access;
-}
-
-export function find(id: string, signal: AbortSignal): AxiosPromise<DocumentRoot> {
-    return api.get(`/documentRoots/${id}`, { signal });
 }
 
 interface FindManyForData {

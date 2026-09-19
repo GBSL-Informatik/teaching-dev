@@ -1,8 +1,8 @@
-import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
+import { type ReactNode } from 'react';
 
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     children: ReactNode;

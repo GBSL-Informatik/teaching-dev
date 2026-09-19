@@ -1,10 +1,7 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import Loader from '@tdev-components/Loader';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 // @ts-ignore
 interface Props extends MetaInit {

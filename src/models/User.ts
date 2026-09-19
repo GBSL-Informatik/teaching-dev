@@ -1,7 +1,7 @@
-import { action, computed, observable } from 'mobx';
 import { AuthProvider, Role, RoleAccessLevel, Session, User as UserProps } from '@tdev-api/user';
 import { UserStore } from '@tdev-stores/UserStore';
 import { orderBy } from 'es-toolkit/array';
+import { action, computed, observable } from 'mobx';
 
 export default class User {
     readonly store: UserStore;

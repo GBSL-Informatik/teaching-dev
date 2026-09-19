@@ -1,12 +1,11 @@
-import React from 'react';
 import { JsxComponentDescriptor, JsxPropertyDescriptor } from '@mdxeditor/editor';
+import GenericAttributeEditor, { GenericPropery } from '../../../../MdxEditor/GenericAttributeEditor';
 import RemoveNode from '../../../../MdxEditor/RemoveNode';
 import styles from './styles.module.scss';
-import GenericAttributeEditor, { GenericPropery } from '../../../../MdxEditor/GenericAttributeEditor';
 
 import Card from '@tdev-components/shared/Card';
-import { useAttributeEditorInNestedEditor } from '../../../../MdxEditor/hooks/useAttributeEditorInNestedEditor';
 import QrCode from '@tdev-components/shared/QrCode';
+import { useAttributeEditorInNestedEditor } from '../../../../MdxEditor/hooks/useAttributeEditorInNestedEditor';
 import { toJsxAttributes } from '../../../../MdxEditor/PropertyEditor/toJsxAttributes';
 
 const ScannerProps: GenericPropery[] = [

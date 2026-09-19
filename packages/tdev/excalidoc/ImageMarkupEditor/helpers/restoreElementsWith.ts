@@ -1,6 +1,6 @@
-import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import type * as ExcalidrawLib from '@excalidraw/excalidraw';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 
 const restoreElementsWith = (
     restoreFn: typeof ExcalidrawLib.restoreElements,

@@ -1,8 +1,8 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Table from '@tdev-components/shared/Table';
 import Button from '@tdev-components/shared/Button';
+import Table from '@tdev-components/shared/Table';
+import clsx from 'clsx';
+import React from 'react';
+import styles from './styles.module.scss';
 
 const COLORS = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'] as const;
 const IFM_COLORS = [...COLORS.map((c) => `var(--ifm-color-${c}-lightest)`)] as const;

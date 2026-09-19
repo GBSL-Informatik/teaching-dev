@@ -1,14 +1,14 @@
-import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
 import {
+    DocumentModelType,
     Document as DocumentProps,
-    TypeDataMapping,
     MdxCommentData,
-    DocumentModelType
+    TypeDataMapping
 } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { Color } from '@tdev-components/shared/Colors';
+import { TypeMeta } from '@tdev-models/DocumentRoot';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observable } from 'mobx';
 
 export interface MetaInit extends MdxCommentData {}
 

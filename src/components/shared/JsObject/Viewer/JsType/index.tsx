@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import shared from '@tdev-components/shared/JsObject/Viewer/styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useTranslation } from '@tdev-hooks/useTranslation';
 import { JsValue } from '@tdev-components/shared/JsObject/toJsSchema';
+import shared from '@tdev-components/shared/JsObject/Viewer/styles.module.scss';
+import { useTranslation } from '@tdev-hooks/useTranslation';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsValue;

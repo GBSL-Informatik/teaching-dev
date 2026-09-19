@@ -1,11 +1,10 @@
-import * as React from 'react';
+import { mdiLoading } from '@mdi/js';
+import { CodeType } from '@tdev-api/document';
 import Button, { Color } from '@tdev-components/documents/CodeEditor/Button';
-import styles from './styles.module.scss';
+import iCode from '@tdev-models/documents/iCode';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { mdiLoading } from '@mdi/js';
-import iCode from '@tdev-models/documents/iCode';
-import { CodeType } from '@tdev-api/document';
+import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;

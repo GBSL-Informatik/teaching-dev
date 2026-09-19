@@ -1,11 +1,11 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { TaskMeta } from '@tdev-models/documents/TaskState';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import { useStore } from '@tdev-hooks/useStore';
 import Loader from '@tdev-components/Loader';
 import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
 import { SelfCheckContext } from '@tdev-components/documents/SelfCheck/shared';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { useStore } from '@tdev-hooks/useStore';
+import { TaskMeta } from '@tdev-models/documents/TaskState';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface StateDependentProps {
     visibleFrom?: SelfCheckStateType;

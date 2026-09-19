@@ -1,9 +1,9 @@
+import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
-import Header from './components/Header';
 import Footer from './components/Footer';
+import Header from './components/Header';
 import Meta from './components/Meta';
 import { createModel } from './models/Script';
-import { LiveCode } from '@tdev-stores/ComponentStore';
 import { ScriptMeta } from './models/ScriptMeta';
 
 const register = () => {
