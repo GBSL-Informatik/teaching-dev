@@ -1,11 +1,11 @@
-import { action, computed, observable } from 'mobx';
+import { CodeType, Document as DocumentProps, ScriptVersionData, TypeDataMapping } from '@tdev-api/document';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, ScriptVersionData, CodeType } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { throttle } from 'es-toolkit/function';
-import iCodeMeta from './iCodeMeta';
+import { action, computed, observable } from 'mobx';
 import ScriptVersion from '../ScriptVersion';
+import iCodeMeta from './iCodeMeta';
 
 type Props<T extends CodeType> = DocumentProps<T>;
 

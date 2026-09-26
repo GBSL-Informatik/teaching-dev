@@ -1,6 +1,6 @@
 import { LexicalExportVisitor } from '@mdxeditor/editor';
-import { $isMathNode, MathNode } from './MathNode';
 import { InlineMath, Math } from 'mdast-util-math';
+import { $isMathNode, MathNode } from './MathNode';
 
 export const LexicalMathVisitor: LexicalExportVisitor<MathNode, Math | InlineMath> = {
     testLexicalNode: $isMathNode,

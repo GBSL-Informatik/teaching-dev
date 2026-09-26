@@ -1,7 +1,7 @@
-import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
 import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
+import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observable } from 'mobx';
 import { ModelMeta } from './ModelMeta';
 
 export const createModel: Factory = (data, store) => {

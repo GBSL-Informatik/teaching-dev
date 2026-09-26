@@ -1,19 +1,19 @@
-import React from 'react';
-import clsx from 'clsx';
 import Layout from '@theme/Layout';
+import clsx from 'clsx';
+import React from 'react';
 
-import styles from './styles.module.scss';
-import { authClient } from '@site/src/auth-client';
 import { Redirect } from '@docusaurus/router';
-import TextInput from '@tdev-components/shared/TextInput';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
-import { action } from 'mobx';
-import Alert from '@tdev-components/shared/Alert';
-import { SIZE_M } from '@tdev-components/shared/iconSizes';
 import { mdiLoading, mdiLogin } from '@mdi/js';
+import { authClient } from '@site/src/auth-client';
 import { HomepageHeader } from '@tdev-components/HomepageHeader';
+import Alert from '@tdev-components/shared/Alert';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_M } from '@tdev-components/shared/iconSizes';
+import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 const SignIn = observer((): React.ReactNode => {
     const [email, setEmail] = React.useState('');

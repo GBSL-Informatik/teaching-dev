@@ -1,22 +1,22 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Popup from 'reactjs-popup';
+import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel } from '@mdi/js';
+import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
+import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
-import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiFileExcelOutline } from '@mdi/js';
 import { useStore } from '@tdev-hooks/useStore';
-import { CmsTextEntries } from '../WithCmsText';
-import DocumentStore from '@tdev-stores/DocumentStore';
 import CmsText from '@tdev-models/documents/CmsText';
 import { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
-import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
-import ImportPreview from './ImportPreview';
-import XlsxImport from './XlsxImport';
-import CodeImport from './CodeImport';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
-import Badge from '@tdev-components/shared/Badge';
+import { CmsTextEntries } from '../WithCmsText';
+import CodeImport from './CodeImport';
+import ImportPreview from './ImportPreview';
+import styles from './styles.module.scss';
+import XlsxImport from './XlsxImport';
 
 interface Props {
     className?: string;

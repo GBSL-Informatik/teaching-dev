@@ -6,9 +6,9 @@
  * @see https://github.com/facebook/docusaurus/blob/main/website/src/components/BrowserWindow/index.tsx
  */
 
-import React from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface Props {
     classNames?: {

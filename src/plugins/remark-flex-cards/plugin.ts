@@ -1,8 +1,8 @@
-import type { Plugin, Transformer } from 'unified';
 import { Node, Root } from 'mdast';
-import { transformer } from './transformer';
 import { MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
+import type { Plugin, Transformer } from 'unified';
 import { toJsxAttribute } from '../helpers';
+import { transformer } from './transformer';
 
 export type ContainerDirectiveName = 'cards' | 'flex';
 export const DirectiveCard = 'cards' as const;

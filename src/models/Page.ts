@@ -2,15 +2,15 @@
  * A Markdown or MDX Page
  */
 
-import { action, computed, observable, ObservableMap, observableRef } from 'mobx';
-import { AUTO_GENERATED_PAGE_PREFIX, PageStore } from '@tdev-stores/PageStore';
-import _ from 'es-toolkit/compat';
+import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
+import { DocumentType } from '@tdev-api/document';
+import { IfmColors } from '@tdev-components/shared/Colors';
 import iDocument from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
-import { DocumentType } from '@tdev-api/document';
+import { AUTO_GENERATED_PAGE_PREFIX, PageStore } from '@tdev-stores/PageStore';
+import _ from 'es-toolkit/compat';
+import { action, computed, observable, ObservableMap, observableRef } from 'mobx';
 import { iTaskableDocument } from './iTaskableDocument';
-import { mdiCheckCircleOutline, mdiSpeedometer, mdiSpeedometerMedium, mdiSpeedometerSlow } from '@mdi/js';
-import { IfmColors } from '@tdev-components/shared/Colors';
 interface PageConfig {
     type: DocumentType;
     position: number;

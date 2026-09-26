@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
-import styles from './styles.module.scss';
-import Icon from '@mdi/react';
 import { mdiArrowRightBoldBox, mdiCheckCircle, mdiCloseCircle, mdiTimerSand } from '@mdi/js';
+import Icon from '@mdi/react';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React, { useRef, useState } from 'react';
+import styles from './styles.module.scss';
 
 const SLIDER_WIDTH = 320; // px
 const HANDLE_SIZE = 32; // px

@@ -1,5 +1,5 @@
-import Val from './Val';
 import DynamicInput from './Input';
 import TemplateCode from './TemplateCode';
+import Val from './Val';
 
-export { Val, DynamicInput, TemplateCode };
+export { DynamicInput, TemplateCode, Val };

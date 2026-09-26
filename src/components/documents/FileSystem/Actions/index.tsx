@@ -7,16 +7,15 @@ import {
     mdiTrashCan,
     mdiTrashCanOutline
 } from '@mdi/js';
-import styles from './styles.module.scss';
 import Button from '@tdev-components/shared/Button';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
-import { observer } from 'mobx-react-lite';
-import Popup from 'reactjs-popup';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { DocumentType } from '@tdev-api/document';
+import Popup from 'reactjs-popup';
 import MoveItem from './MoveItem';
+import styles from './styles.module.scss';
 
 interface Props {
     item: File | Directory;

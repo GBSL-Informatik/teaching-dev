@@ -1,6 +1,6 @@
-import path from 'path';
 import Database from 'better-sqlite3';
 import { accessSync, mkdirSync } from 'fs';
+import path from 'path';
 import { dbPath } from './options';
 
 try {

@@ -1,12 +1,11 @@
-import React from 'react';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_XS } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
 import type { default as JsBooleanModel } from '../models/JsBoolean';
-import { action } from 'mobx';
-import Button from '@tdev-components/shared/Button';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsBooleanModel;

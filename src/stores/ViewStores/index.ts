@@ -1,8 +1,8 @@
-import { ViewStoreType, ViewStore as ViewStores, ViewStoreTypeMapping } from '@tdev-api/document';
+import { ViewStore as ViewStores, ViewStoreType, ViewStoreTypeMapping } from '@tdev-api/document';
 import { RootStore } from '@tdev-stores/rootStore';
 import { action, computed, observable, observableRef } from 'mobx';
-import { PermissionsControlView } from './PermissionsControlView';
 import { AdminView } from './AdminView';
+import { PermissionsControlView } from './PermissionsControlView';
 
 export interface ViewStoreProps<T extends ViewStoreType = ViewStoreType> {
     store: ViewStoreTypeMapping[T];

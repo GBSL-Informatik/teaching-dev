@@ -1,14 +1,14 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 import styles from './styles.module.scss';
 
-import { QRCodeCanvas } from 'qrcode.react';
 import Link from '@docusaurus/Link';
-import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import Button from '@tdev-components/shared/Button';
 import { mdiDownload } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import TextAreaInput from '@tdev-components/shared/TextAreaInput';
+import { QRCodeCanvas } from 'qrcode.react';
 import { createDownloadCanvas } from './createDownloadCanvas';
 
 const MdiPathToBase64 = (path: string, color: string = '#306cce') => {

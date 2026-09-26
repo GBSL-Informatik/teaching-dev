@@ -1,11 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
-import Button from '@tdev-components/shared/Button';
 import { mdiTrashCanOutline } from '@mdi/js';
 import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
+import { useDocument } from '@tdev-hooks/useContextDocument';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from '../styles.module.scss';
 
 export interface Props<T extends AssessableType> {
     type?: T;

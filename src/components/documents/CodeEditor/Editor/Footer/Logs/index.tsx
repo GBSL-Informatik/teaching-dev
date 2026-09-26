@@ -1,13 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Button from '@tdev-components/shared/Button';
 import { mdiCardRemoveOutline } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import Button from '@tdev-components/shared/Button';
 import CopyButton from '@tdev-components/shared/Button/CopyButton';
-import { useStore } from '@tdev-hooks/useStore';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 export type LogMessage = { type: 'log' | 'error'; message: string };
 

@@ -1,7 +1,7 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxTextElement } from 'mdast-util-mdx';
 import type { Parent, PhrasingContent, Root, RootContent } from 'mdast';
+import type { MdxJsxTextElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
 
 interface OptionsInput {
     tagName?: string;

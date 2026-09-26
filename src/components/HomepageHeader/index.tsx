@@ -1,10 +1,10 @@
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Heading from '@theme/Heading';
+import clsx from 'clsx';
 
-import styles from './styles.module.scss';
 import type { Navbar } from '@docusaurus/theme-common';
+import styles from './styles.module.scss';
 
 interface HeaderProps {
     hasCourses?: boolean;

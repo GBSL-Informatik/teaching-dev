@@ -1,6 +1,6 @@
-import type { Plugin, Transformer } from 'unified';
 import type { Root } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
 import { toJsxAttribute } from '../helpers';
 
 const COMMENTABLE_BLOCK_TYPES = [

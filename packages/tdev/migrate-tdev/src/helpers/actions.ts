@@ -1,7 +1,7 @@
 import type { Config } from '@site/updateSync/types.js';
-import { type PackageJson } from './loadFile.js';
 import { execa } from 'execa';
 import { hasUncommittedChanges } from './gitHelpers.js';
+import { type PackageJson } from './loadFile.js';
 
 export const ensureTdevConfig = (config: Config, ensure: Config['trackedElements']) => {
     for (const element of ensure) {

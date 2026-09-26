@@ -1,20 +1,20 @@
-import React from 'react';
+import Loader from '@tdev-components/Loader';
+import Card from '@tdev-components/shared/Card';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { observer } from 'mobx-react-lite';
-import FileStub from '../../models/FileStub';
+import React from 'react';
+import BinFile from '../../models/BinFile';
 import Dir from '../../models/Dir';
 import File from '../../models/File';
-import BinFile from '../../models/BinFile';
-import { useLoadedFile } from '../MdxEditor/hooks/useLoadedFile';
-import Loader from '@tdev-components/Loader';
-import Directory from '../MdxEditor/Directory';
+import FileStub from '../../models/FileStub';
+import DefaultEditor from '../Github/DefaultEditor';
+import AudioPreview from '../Github/iFile/File/FilePreview/AudioPreview';
 import ImagePreview from '../Github/iFile/File/FilePreview/ImagePreview';
 import VideoPreview from '../Github/iFile/File/FilePreview/VideoPreview';
 import MdxEditor from '../MdxEditor';
-import DefaultEditor from '../Github/DefaultEditor';
-import Card from '@tdev-components/shared/Card';
-import AudioPreview from '../Github/iFile/File/FilePreview/AudioPreview';
+import Directory from '../MdxEditor/Directory';
+import { useLoadedFile } from '../MdxEditor/hooks/useLoadedFile';
+import styles from './styles.module.scss';
 
 interface Props {
     file: FileStub | Dir | File | BinFile;

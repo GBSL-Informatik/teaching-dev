@@ -1,15 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import TextInput from '@tdev-components/shared/TextInput';
-import { action } from 'mobx';
-import _ from 'es-toolkit/compat';
 import type { IfmColors } from '@tdev-components/shared/Colors';
-import type iJs from '../models/iJs';
+import TextInput from '@tdev-components/shared/TextInput';
+import clsx from 'clsx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import type { JsTypeName } from '../../toJsSchema';
 import ChangeType from '../Actions/ChangeType';
 import RemoveProp from '../Actions/RemoveProp';
+import type iJs from '../models/iJs';
+import styles from './styles.module.scss';
 
 interface Props {
     js: iJs;

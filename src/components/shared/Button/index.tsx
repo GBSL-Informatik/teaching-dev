@@ -1,11 +1,11 @@
-import React, { MouseEventHandler, type ReactNode } from 'react';
 import clsx from 'clsx';
+import React, { MouseEventHandler, type ReactNode } from 'react';
 
-import styles from './styles.module.scss';
 import Link from '@docusaurus/Link';
-import { Color, getButtonColorClass } from '../Colors';
-import Icon from '@mdi/react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import Icon from '@mdi/react';
+import { Color, getButtonColorClass } from '../Colors';
+import styles from './styles.module.scss';
 
 export const POPUP_BUTTON_STYLE = clsx(
     styles.button,

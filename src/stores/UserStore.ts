@@ -1,12 +1,12 @@
-import { action, computed, observable } from 'mobx';
-import { User as UserProps, all as apiAll, currentUser, update as apiUpdate, Role } from '@tdev-api/user';
-import { RootStore } from '@tdev-stores/rootStore';
-import User from '@tdev-models/User';
-import _ from 'es-toolkit/compat';
-import Storage, { PersistedData } from '@tdev-stores/utils/Storage';
-import { computedFn } from 'mobx-utils';
-import iStore from '@tdev-stores/iStore';
+import { all as apiAll, update as apiUpdate, currentUser, User as UserProps } from '@tdev-api/user';
 import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import User from '@tdev-models/User';
+import iStore from '@tdev-stores/iStore';
+import { RootStore } from '@tdev-stores/rootStore';
+import Storage, { PersistedData } from '@tdev-stores/utils/Storage';
+import _ from 'es-toolkit/compat';
+import { action, computed, observable } from 'mobx';
+import { computedFn } from 'mobx-utils';
 
 export class UserStore extends iStore<`update-${string}`> {
     readonly root: RootStore;

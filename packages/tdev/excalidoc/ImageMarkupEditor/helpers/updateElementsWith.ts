@@ -1,5 +1,5 @@
-import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 
 const updateElementsWith = <T extends ExcalidrawElement>(
     api: ExcalidrawImperativeAPI,

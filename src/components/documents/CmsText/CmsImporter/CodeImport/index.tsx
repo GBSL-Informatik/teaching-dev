@@ -1,11 +1,10 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
-import CodeEditor from '@tdev-components/shared/CodeEditor';
-import UserTable from '@tdev-components/Admin/UserTable';
-import Button from '@tdev-components/shared/Button';
 import SelectUser from '@tdev-components/Admin/SelectUser';
+import Button from '@tdev-components/shared/Button';
+import CodeEditor from '@tdev-components/shared/CodeEditor';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     onDone: (data: string[][]) => void;

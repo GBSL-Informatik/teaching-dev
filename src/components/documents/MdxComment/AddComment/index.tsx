@@ -1,12 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Icon, { Stack } from '@mdi/react';
 import { mdiCommentPlus, mdiCommentPlusOutline } from '@mdi/js';
-import { DocumentType, MdxCommentData } from '@tdev-api/document';
+import Icon, { Stack } from '@mdi/react';
+import { MdxCommentData } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import { Delta } from 'quill/core';
+import styles from '../styles.module.scss';
 
 interface Props extends MdxCommentData {
     pageId: string;

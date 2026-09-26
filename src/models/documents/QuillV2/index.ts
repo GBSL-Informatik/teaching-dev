@@ -1,12 +1,12 @@
-import { action, computed, observableRef } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
+import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { getToolbar, TOOLBAR, ToolbarModule, ToolbarOptions } from './helpers/toolbar';
-import { Delta } from 'quill/core';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
 import _ from 'es-toolkit/compat';
+import { action, computed, observableRef } from 'mobx';
+import { Delta } from 'quill/core';
+import { getToolbar, TOOLBAR, ToolbarModule, ToolbarOptions } from './helpers/toolbar';
 
 export interface MetaInit {
     readonly?: boolean;

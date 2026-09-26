@@ -1,6 +1,6 @@
+import _ from 'es-toolkit/compat';
 import type { PyodideAPI } from 'pyodide';
 import { type Context, pyodideJsModules } from '../pyodideJsModules';
-import _ from 'es-toolkit/compat';
 const siteModules = new Set(Object.keys(pyodideJsModules));
 const StandardPythonNamespaces = new Set([
     'xml',

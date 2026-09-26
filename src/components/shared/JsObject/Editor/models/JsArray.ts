@@ -1,7 +1,6 @@
-import type { JsArray as JsArrayType, JsParents, JsTypes } from '../../toJsSchema';
-import _ from 'es-toolkit/compat';
-import iParentable from './iParentable';
 import { computed } from 'mobx';
+import type { JsArray as JsArrayType, JsParents, JsTypes } from '../../toJsSchema';
+import iParentable from './iParentable';
 
 class JsArray extends iParentable<JsArrayType> {
     readonly type = 'array';

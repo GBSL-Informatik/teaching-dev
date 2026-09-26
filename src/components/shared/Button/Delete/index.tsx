@@ -1,9 +1,6 @@
-import React from 'react';
-import clsx from 'clsx';
-
 import { mdiClose, mdiTrashCan, mdiTrashCanOutline } from '@mdi/js';
-import { Color } from '@tdev-components/shared/Colors';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import { Color } from '@tdev-components/shared/Colors';
 
 interface Props {
     className?: string;

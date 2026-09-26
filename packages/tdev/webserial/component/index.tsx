@@ -1,16 +1,3 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
-import Alert from '@tdev-components/shared/Alert';
-import Admonition from '@theme-original/Admonition';
-import CodeBlock from '@theme-original/CodeBlock';
-import { ConnectionState } from '../models/SerialDevice';
-import Badge from '@tdev-components/shared/Badge';
-import Card from '@tdev-components/shared/Card';
-import Button from '@tdev-components/shared/Button';
 import {
     mdiCardRemoveOutline,
     mdiCheckCircle,
@@ -23,13 +10,26 @@ import {
     mdiSync
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
+import Alert from '@tdev-components/shared/Alert';
+import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
+import { useStore } from '@tdev-hooks/useStore';
+import Admonition from '@theme-original/Admonition';
+import CodeBlock from '@theme-original/CodeBlock';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { ConnectionState } from '../models/SerialDevice';
+import styles from './styles.module.scss';
 // @ts-ignore
+import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
+import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
 import Details from '@theme/Details';
 import { DeviceContext } from '../hooks/useDeviceId';
 import ReplayControl from './ReplayControl';
-import { FullscreenContext } from '@tdev-hooks/useFullscreenTargetId';
-import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
 
 interface Props {
     /** Override default baud rate (default: 115200) */

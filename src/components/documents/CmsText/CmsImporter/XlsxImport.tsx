@@ -1,7 +1,6 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import FromXlsxClipboard from '@tdev-components/shared/FromXlsxClipboard';
 import { mdiClose } from '@mdi/js';
+import FromXlsxClipboard from '@tdev-components/shared/FromXlsxClipboard';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     onDone: (data: string[][]) => void;

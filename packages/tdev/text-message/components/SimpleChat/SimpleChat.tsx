@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 
+import { default as SimpleChatModel } from '@tdev/text-message/models/SimpleChat';
 import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
 import React from 'react';
+import ChatName from './ChatName';
 import Conversation from './Conversation';
 import NewMessage from './NewMessage';
-import { default as SimpleChatModel } from '@tdev/text-message/models/SimpleChat';
-import ChatName from './ChatName';
+import styles from './styles.module.scss';
 
 interface Props {
     documentContainer: SimpleChatModel;

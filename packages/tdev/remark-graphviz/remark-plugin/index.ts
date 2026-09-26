@@ -1,9 +1,9 @@
-import { CONTINUE, SKIP } from 'unist-util-visit';
+import { Graphviz } from '@hpcc-js/wasm-graphviz';
+import { promises as fs } from 'fs';
+import { Root } from 'mdast';
 import path from 'path';
 import type { Plugin, Transformer } from 'unified';
-import { Root } from 'mdast';
-import { promises as fs } from 'fs';
-import { Graphviz } from '@hpcc-js/wasm-graphviz';
+import { CONTINUE, SKIP } from 'unist-util-visit';
 
 interface OptionsInput {
     dotFileRootDir?: string;

@@ -1,4 +1,5 @@
-import React from 'react';
+import { $isDirectiveNode } from '@mdxeditor/editor';
+import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 import {
     $getNodeByKey,
     $getSelection,
@@ -9,13 +10,12 @@ import {
     KEY_DOWN_COMMAND,
     LexicalEditor
 } from 'lexical';
-import { $isDirectiveNode } from '@mdxeditor/editor';
-import { GO_DOWN_KEYS, GO_UP_KEYS, HandledKeys } from '../../helpers/lexical/selectAction';
+import React from 'react';
+import { selectEndOfDiv } from '../../helpers/lexical/select-end-of-div';
 import { actionForNext, needsToFocusNext } from '../../helpers/lexical/select-next-helpers';
 import { actionForPrevious, needsToFocusPrevious } from '../../helpers/lexical/select-previous-helpers';
-import { selectEndOfDiv } from '../../helpers/lexical/select-end-of-div';
+import { GO_DOWN_KEYS, GO_UP_KEYS, HandledKeys } from '../../helpers/lexical/selectAction';
 import { $insertPlaceholderParagraph, $insertPlaceholderText } from '../focusHandler/keyDownHandler';
-import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
 
 const useSelectionHandler = (
     editor: LexicalEditor,

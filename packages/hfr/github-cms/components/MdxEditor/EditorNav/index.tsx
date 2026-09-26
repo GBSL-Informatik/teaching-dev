@@ -1,16 +1,16 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../hooks/useCmsStore';
-import Button from '@tdev-components/shared/Button';
 import { mdiFileTree, mdiFileTreeOutline } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import BranchPathNav from './BranchPathNav';
 import Loader from '@tdev-components/Loader';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
-import { default as PrOverview } from '../../Github/PR/ExpandableOverwiew';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { useCmsStore } from '../../../hooks/useCmsStore';
 import { default as BranchOverview } from '../../Github/Branch/ExpandableOverwiew';
+import { default as PrOverview } from '../../Github/PR/ExpandableOverwiew';
+import BranchPathNav from './BranchPathNav';
+import styles from './styles.module.scss';
 
 interface Props {}
 

@@ -1,6 +1,6 @@
+import { Config } from '@docusaurus/types';
 import { describe, expect, it } from 'vitest';
 import { applyTransformers, ConfigTransformers } from '../transformers';
-import { Config } from '@docusaurus/types';
 
 describe('applyTransformers', () => {
     it('appends a key to an empty config', () => {

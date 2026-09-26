@@ -1,14 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import CodeEditor from '@tdev-components/shared/CodeEditor';
-import Actions from '../../MdxEditor/toolbar/Actions';
-import File from '../../../models/File';
-import { action } from 'mobx';
 import { mdiLanguageMarkdown } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import Button from '@tdev-components/shared/Button';
+import CodeEditor from '@tdev-components/shared/CodeEditor';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import File from '../../../models/File';
+import Actions from '../../MdxEditor/toolbar/Actions';
+import styles from './styles.module.scss';
 
 interface Props {
     file: File;

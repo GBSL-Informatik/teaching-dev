@@ -1,4 +1,4 @@
-import { TypeDataMapping, Access } from '@tdev-api/document';
+import { TypeDataMapping } from '@tdev-api/document';
 import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import { computed } from 'mobx';
 

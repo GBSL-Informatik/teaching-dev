@@ -1,8 +1,7 @@
 import React from 'react';
-import _ from 'es-toolkit/compat';
 
-import Editor from './Editor';
 import type { GenericPropery, GenericValueProperty } from '../GenericAttributeEditor';
+import Editor from './Editor';
 
 export interface Props {
     properties: GenericPropery[];

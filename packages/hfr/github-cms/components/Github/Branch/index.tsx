@@ -1,19 +1,20 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useCmsStore } from '../../../hooks/useCmsStore';
-import { Delete } from '@tdev-components/shared/Button/Delete';
-import Badge from '@tdev-components/shared/Badge';
-import Icon from '@mdi/react';
 import { mdiGit, mdiPlusCircleMultipleOutline, mdiSourceBranch, mdiSourceCommit, mdiSync } from '@mdi/js';
-import { default as BranchModel } from '../../../models/Branch';
+import Icon from '@mdi/react';
+import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
-import Popup from 'reactjs-popup';
-import NewPR from '../PR/NewPR';
-import { PopupActions } from 'reactjs-popup/dist/types';
+import { Delete } from '@tdev-components/shared/Button/Delete';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
+import { useCmsStore } from '../../../hooks/useCmsStore';
+import { default as BranchModel } from '../../../models/Branch';
+import NewPR from '../PR/NewPR';
+import styles from './styles.module.scss';
 type BranchElements = 'name' | 'spacer' | 'delete' | 'commits' | 'reload' | 'defaultBranch' | 'createPr';
+
 interface Props {
     branch: BranchModel;
     className?: string;

@@ -1,10 +1,10 @@
-import React from 'react';
-import iSideEffect from '@tdev-models/SideEffects/iSideEffect';
 import { TypeDataMapping } from '@tdev-api/document';
-import DocumentRoot from '@tdev-models/DocumentRoot';
-import { computed } from 'mobx';
 import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
+import DocumentRoot from '@tdev-models/DocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import iSideEffect from '@tdev-models/SideEffects/iSideEffect';
+import { computed } from 'mobx';
+import React from 'react';
 
 interface SelfCheckContextType {
     solutionId: string;

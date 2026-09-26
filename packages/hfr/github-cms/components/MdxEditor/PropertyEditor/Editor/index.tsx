@@ -1,20 +1,19 @@
-import React from 'react';
-import _ from 'es-toolkit/compat';
-import Card from '@tdev-components/shared/Card';
-import styles from './styles.module.scss';
-import Button from '@tdev-components/shared/Button';
 import { mdiCircleSmall, mdiClose, mdiContentSave, mdiIdentifier, mdiRestore, mdiSync } from '@mdi/js';
-import { Delete } from '@tdev-components/shared/Button/Delete';
-import clsx from 'clsx';
-import { GenericPropery } from '../../GenericAttributeEditor';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import Icon from '@mdi/react';
+import Button from '@tdev-components/shared/Button';
+import { Delete } from '@tdev-components/shared/Button/Delete';
+import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import TextInput from '@tdev-components/shared/TextInput';
-import { v4 as uuidv4 } from 'uuid';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import Form from '@tdev-models/Form';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { GenericPropery } from '../../GenericAttributeEditor';
 import Input from './Input';
+import styles from './styles.module.scss';
 
 /* @see https://github.com/mdx-editor/editor/blob/main/src/plugins/core/PropertyPopover.tsx */
 

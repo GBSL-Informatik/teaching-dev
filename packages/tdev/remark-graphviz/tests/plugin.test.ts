@@ -1,10 +1,10 @@
+import { promises as fs } from 'fs';
+import path from 'path';
 import { remark } from 'remark';
 import remarkMdx from 'remark-mdx';
-import { afterAll, afterEach, describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'url';
 import { VFile } from 'vfile';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

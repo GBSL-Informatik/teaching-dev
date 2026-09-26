@@ -1,15 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
+import { mdiAccount, mdiAccountGroup, mdiFileMultipleOutline, mdiShareVariantOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { DocumentType } from '@tdev-api/document';
+import { AccessColor, AccessIcon } from '@tdev-components/PermissionsPanel/AccessBadge';
 import Badge from '@tdev-components/shared/Badge';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
-import { AccessColor, AccessIcon } from '@tdev-components/PermissionsPanel/AccessBadge';
-import Icon from '@mdi/react';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import { mdiAccount, mdiAccountGroup, mdiFileMultipleOutline, mdiShareVariantOutline } from '@mdi/js';
-import { DocumentType } from '@tdev-api/document';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     doc: { id: string; type: DocumentType };

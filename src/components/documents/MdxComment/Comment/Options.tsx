@@ -1,12 +1,12 @@
-import React from 'react';
+import { mdiClose, mdiTrashCan, mdiTrashCanOutline } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import { Color } from '@tdev-components/shared/Colors';
+import MdxComment from '@tdev-models/documents/MdxComment';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import sharedStyles from '../styles.module.scss';
 import styles from './options.module.scss';
-import { observer } from 'mobx-react-lite';
-import MdxComment from '@tdev-models/documents/MdxComment';
-import { mdiClose, mdiTrashCan, mdiTrashCanOutline } from '@mdi/js';
-import { Color } from '@tdev-components/shared/Colors';
-import Button from '@tdev-components/shared/Button';
 
 interface Props {
     comment: MdxComment;

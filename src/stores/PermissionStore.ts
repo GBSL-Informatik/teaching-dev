@@ -1,26 +1,26 @@
-import { action, observable } from 'mobx';
-import { RootStore } from '@tdev-stores/rootStore';
-import { computedFn } from 'mobx-utils';
-import UserPermission from '@tdev-models/UserPermission';
-import GroupPermission from '@tdev-models/GroupPermission';
-import iStore from '@tdev-stores/iStore';
+import { Access } from '@tdev-api/document';
 import {
     GroupPermission as GroupPermissionProps,
     UserPermission as UserPermissionProps,
+    documentRootPermissions as apiDocumentRootPermissions,
     createGroupPermission as createGroupPermissionApi,
     createUserPermission as createUserPermissionApi,
-    updateGroupPermission as updateGroupPermissionApi,
-    updateUserPermission as updateUserPermissionApi,
-    deleteUserPermission as deleteUserPermissionApi,
     deleteGroupPermission as deleteGroupPermissionApi,
-    documentRootPermissions as apiDocumentRootPermissions
+    deleteUserPermission as deleteUserPermissionApi,
+    updateGroupPermission as updateGroupPermissionApi,
+    updateUserPermission as updateUserPermissionApi
 } from '@tdev-api/permission';
-import User from '@tdev-models/User';
-import { Access } from '@tdev-api/document';
-import StudentGroup from '@tdev-models/StudentGroup';
-import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import DocumentRoot from '@tdev-models/DocumentRoot';
+import GroupPermission from '@tdev-models/GroupPermission';
+import StudentGroup from '@tdev-models/StudentGroup';
+import User from '@tdev-models/User';
+import UserPermission from '@tdev-models/UserPermission';
 import { UnknownMeta } from '@tdev-models/documents/Unknown';
+import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import iStore from '@tdev-stores/iStore';
+import { RootStore } from '@tdev-stores/rootStore';
+import { action, observable } from 'mobx';
+import { computedFn } from 'mobx-utils';
 
 class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;

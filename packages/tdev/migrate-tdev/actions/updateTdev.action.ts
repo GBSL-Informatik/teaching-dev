@@ -1,5 +1,5 @@
-import { MigrationRunner } from '../src/constants';
 import { execa } from 'execa';
+import { MigrationRunner } from '../src/constants';
 import { hasUncommittedChanges } from '../src/helpers/gitHelpers';
 
 const migrate: MigrationRunner = async (root, name, ts, conf, argv): Promise<void> => {

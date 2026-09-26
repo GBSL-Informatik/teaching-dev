@@ -1,6 +1,6 @@
 import { type EditUrlFunction } from '@docusaurus/plugin-content-docs';
-import { loadMaterialConfig, normalizeMaterialConfig } from './index.js';
 import path from 'path';
+import { loadMaterialConfig, normalizeMaterialConfig } from './index.js';
 
 const ensureLeadingSlash = (str: string) => {
     return str.startsWith('/') ? str : `/${str}`;

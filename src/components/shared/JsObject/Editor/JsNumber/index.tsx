@@ -1,11 +1,10 @@
-import React from 'react';
+import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
-import styles from './styles.module.scss';
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import JsType from '../JsType';
 import type { default as JsNumberModel } from '../models/JsNumber';
-import TextInput from '@tdev-components/shared/TextInput';
-import { action } from 'mobx';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsNumberModel;

@@ -1,6 +1,6 @@
+import clsx from 'clsx';
 import React from 'react';
 import styles from './Dice.module.css';
-import clsx from 'clsx';
 
 const rollDice = () => {
     return Math.floor(Math.random() * 6) + 1;

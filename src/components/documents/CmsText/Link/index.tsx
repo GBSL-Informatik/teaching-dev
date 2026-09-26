@@ -1,15 +1,15 @@
-import { observer } from 'mobx-react-lite';
+import Link from '@docusaurus/Link';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 import { CmsTextContext, useFirstCmsTextDocumentIfExists } from '@tdev-components/documents/CmsText/shared';
+import DivSpanWrapper from '@tdev-components/shared/DivSpanWrapper';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Props as DefaultCmsProps, EmptyContent } from '..';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import CmsActions from '../CmsActions';
 import { CmsTextEntries } from '../WithCmsText';
-import { useStore } from '@tdev-hooks/useStore';
-import Link from '@docusaurus/Link';
-import DivSpanWrapper from '@tdev-components/shared/DivSpanWrapper';
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import styles from './styles.module.scss';
 
 interface Props extends DefaultCmsProps {
     children?: React.ReactNode;

@@ -1,9 +1,9 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useDocument } from '@tdev-hooks/useContextDocument';
 import type { AssessableType, TypeModelMapping } from '@tdev-api/document';
-import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
 import Alert, { type AlertType } from '@tdev-components/shared/Alert';
+import { useDocument } from '@tdev-hooks/useContextDocument';
+import { Correctness } from '@tdev-models/documents/Assessable/iAssessable';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 type When = Correctness | 'assessed' | 'unassessed';
 type WhenFunction<T extends AssessableType> = (

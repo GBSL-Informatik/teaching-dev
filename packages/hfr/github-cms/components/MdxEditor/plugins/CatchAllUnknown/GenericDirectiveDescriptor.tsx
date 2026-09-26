@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { PhrasingContent } from 'mdast';
-import React from 'react';
-import { Directives } from 'mdast-util-directive';
 import { DirectiveDescriptor, DirectiveEditorProps, NestedLexicalEditor } from '@mdxeditor/editor';
-import styles from './styles.module.scss';
-import GenericAttributeEditor from '../../GenericAttributeEditor';
-import { useDirectiveAttributeEditor } from '../../hooks/useDirectiveAttributeEditor';
 import Card from '@tdev-components/shared/Card';
 import clsx from 'clsx';
+import { PhrasingContent } from 'mdast';
+import { Directives } from 'mdast-util-directive';
+import React from 'react';
+import GenericAttributeEditor from '../../GenericAttributeEditor';
 import MyAttributes from '../../GenericAttributeEditor/MyAttributes';
+import { useDirectiveAttributeEditor } from '../../hooks/useDirectiveAttributeEditor';
 import RemoveNode from '../../RemoveNode';
+import styles from './styles.module.scss';
 
 /**
  * A generic editor that can be used as an universal UI for any directive.

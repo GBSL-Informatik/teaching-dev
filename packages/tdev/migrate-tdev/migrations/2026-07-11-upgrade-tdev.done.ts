@@ -1,8 +1,8 @@
-import { MigrationRunner } from '../src/constants';
-import { packageJson, updateTdevConfig } from '../src/helpers/loadFile';
 import { execa } from 'execa';
-import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
+import { MigrationRunner } from '../src/constants';
 import { ensureTdevConfig, modifyPackages } from '../src/helpers/actions';
+import { packageJson, updateTdevConfig } from '../src/helpers/loadFile';
+import { writePackageJson, writeUpdateTdevConfig } from '../src/helpers/writeFile';
 
 const migrate: MigrationRunner = async (root, name): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });

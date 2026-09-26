@@ -1,7 +1,7 @@
-import clsx from 'clsx';
-import styles from '../styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { Clock } from '@tdev/packages/pyodide-code/models/Clock';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from '../styles.module.scss';
 
 interface Props {
     clock: Clock;

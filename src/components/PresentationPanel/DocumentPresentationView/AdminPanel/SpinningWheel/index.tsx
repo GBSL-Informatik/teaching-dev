@@ -1,15 +1,15 @@
 /**
  * Generated with Sonnet 5 @ claude.ai 4-8-2026
  */
+import { Access } from '@tdev-api/document';
+import Loader from '@tdev-components/Loader';
+import Alert from '@tdev-components/shared/Alert';
+import { useStore } from '@tdev-hooks/useStore';
 import StudentGroup from '@tdev-models/StudentGroup';
-import styles from './styles.module.scss';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React, { CSSProperties } from 'react';
-import Alert from '@tdev-components/shared/Alert';
-import Loader from '@tdev-components/Loader';
-import { useStore } from '@tdev-hooks/useStore';
-import { Access } from '@tdev-api/document';
+import styles from './styles.module.scss';
 
 /**
  * SpinningWheel

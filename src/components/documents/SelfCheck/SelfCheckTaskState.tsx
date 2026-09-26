@@ -1,17 +1,15 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { DocumentModelType } from '@tdev-api/document';
 import Loader from '@tdev-components/Loader';
-import TaskStateComponent from '@tdev-components/documents/TaskState';
-import { MetaInit, TaskMeta } from '@tdev-models/documents/TaskState';
-import { ModelMeta as SolutionModelMeta } from '@tdev-models/documents/Solution';
-import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
-import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
 import { SelfCheckContext, SelfCheckStateSideEffect } from '@tdev-components/documents/SelfCheck/shared';
-import { DocumentModelType } from '@tdev-api/document';
-import TaskState from '@tdev-models/documents/TaskState';
-import { reaction } from 'mobx';
+import TaskStateComponent from '@tdev-components/documents/TaskState';
+import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { ModelMeta as SolutionModelMeta } from '@tdev-models/documents/Solution';
+import TaskState, { MetaInit, TaskMeta } from '@tdev-models/documents/TaskState';
+import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface Props extends MetaInit {
     includeQuestion: boolean;

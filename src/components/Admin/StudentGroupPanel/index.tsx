@@ -1,17 +1,15 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
 import { mdiCloseCircleOutline, mdiMagnify, mdiPlusCircleOutline, mdiRestore } from '@mdi/js';
-import StudentGroup from '@tdev-components/StudentGroup';
-import _ from 'es-toolkit/compat';
-import { action } from 'mobx';
 import Icon from '@mdi/react';
-import TextInput from '@tdev-components/shared/TextInput';
 import DefinitionList from '@tdev-components/DefinitionList';
 import Badge from '@tdev-components/shared/Badge';
+import Button from '@tdev-components/shared/Button';
+import TextInput from '@tdev-components/shared/TextInput';
+import StudentGroup from '@tdev-components/StudentGroup';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 const StudentGroupPanel = observer(() => {
     const userStore = useStore('userStore');

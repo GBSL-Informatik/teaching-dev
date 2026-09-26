@@ -1,10 +1,3 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import shared from '../shared.module.scss';
-import { observer } from 'mobx-react-lite';
-import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
-import Icon from '@mdi/react';
 import {
     mdiFile,
     mdiFileCode,
@@ -13,13 +6,13 @@ import {
     mdiFileDocumentOutline,
     mdiFileOutline
 } from '@mdi/js';
-import SyncStatus from '../../../SyncStatus';
+import Icon from '@mdi/react';
 import { DocumentType } from '@tdev-api/document';
-import Actions from '../Actions';
-import Name from '../Name';
-import FsDetails from '../FsDetails';
 import { ExcalidrawColor, mdiExcalidraw, mdiExcalidrawOutline } from '@tdev/excalidoc/Component';
+import Actions from '../Actions';
 import DocumentView from '../DocumentView';
+import FsDetails from '../FsDetails';
+import Name from '../Name';
 
 interface Props {
     file: FileModel;

@@ -1,18 +1,20 @@
-import * as React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
+// ace editor must be imported before ace-builds/*
 import AceEditor from 'react-ace';
+// rest
+import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import 'ace-builds/esm-resolver';
+import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/ext-searchbox';
 import 'ace-builds/src-noconflict/mode-plain_text';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/mode-svg';
 import 'ace-builds/src-noconflict/theme-dracula';
-import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/webpack-resolver';
-import 'ace-builds/esm-resolver';
-import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import * as React from 'react';
+import styles from './styles.module.scss';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',

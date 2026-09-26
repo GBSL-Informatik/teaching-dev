@@ -2,12 +2,12 @@
  * By Mdx Editor, @url https://github.com/mdx-editor/editor/tree/main/src/plugins/image
  */
 
-import * as Mdast from 'mdast';
-import { ImageNode, $isImageNode } from './ImageNode';
 import { LexicalExportVisitor } from '@mdxeditor/editor';
-import { $isImageFigureNode, ImageFigureNode } from './ImageFigureNode';
-import { $isImageCaptionNode, ImageCaptionNode } from './ImageCaptionNode';
+import * as Mdast from 'mdast';
 import { ImageCaption, ImageFigure } from '.';
+import { $isImageCaptionNode, ImageCaptionNode } from './ImageCaptionNode';
+import { $isImageFigureNode, ImageFigureNode } from './ImageFigureNode';
+import { $isImageNode, ImageNode } from './ImageNode';
 
 export const LexicalImageVisitor: LexicalExportVisitor<ImageNode, Mdast.Image> = {
     testLexicalNode: $isImageNode,

@@ -1,16 +1,16 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
-import { MetaInit, ModelMeta } from '../model/ModelMeta';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import SlideButton from '@tdev-components/shared/SlideButton';
-import Badge from '@tdev-components/shared/Badge';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import { mdiFlashTriangle } from '@mdi/js';
 import Icon from '@mdi/react';
-import PageReadChecker from '../model';
+import Badge from '@tdev-components/shared/Badge';
+import SlideButton from '@tdev-components/shared/SlideButton';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { useScrollTo } from '@tdev-hooks/useScrollTo';
+import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import PageReadChecker from '../model';
+import { MetaInit, ModelMeta } from '../model/ModelMeta';
+import styles from './styles.module.scss';
 
 interface Props extends MetaInit {
     id: string;

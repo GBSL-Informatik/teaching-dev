@@ -1,14 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Button from '@tdev-components/shared/Button';
 import { mdiMotionPauseOutline, mdiMotionPlay, mdiMotionPlayOutline, mdiStopCircleOutline } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 // @ts-ignore
+import Badge from '@tdev-components/shared/Badge';
+import SerialDevice from '@tdev/webserial/models/SerialDevice';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import SerialDevice from '@tdev/webserial/models/SerialDevice';
-import Badge from '@tdev-components/shared/Badge';
 
 interface Props {
     device: SerialDevice;

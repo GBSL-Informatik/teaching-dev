@@ -1,12 +1,12 @@
-import { action, computed, observable } from 'mobx';
-import { runCode } from '@tdev/brython-code/components/utils/bryRunner';
-import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
 import siteConfig from '@generated/docusaurus.config';
 import globalData from '@generated/globalData';
-import _ from 'es-toolkit/compat';
+import { Document as DocumentProps, Factory } from '@tdev-api/document';
+import { LogMessage as _LogMessageType } from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
 import iCode from '@tdev-models/documents/iCode';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { runCode } from '@tdev/brython-code/components/utils/bryRunner';
 import { orderBy } from 'es-toolkit/array';
+import { action, computed, observable } from 'mobx';
 import {
     CANVAS_OUTPUT_TESTER,
     DOM_ELEMENT_IDS,
@@ -15,7 +15,6 @@ import {
     TURTLE_IMPORTS_TESTER
 } from '..';
 import { ScriptMeta } from './ScriptMeta';
-import { LogMessage as _LogMessageType } from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
 export const IsBrythonPluginRegistered = 'tdev-brython-code' in globalData;
 const libDir = IsBrythonPluginRegistered
     ? (globalData['tdev-brython-code'] as { default: { libDir: string } }).default.libDir
