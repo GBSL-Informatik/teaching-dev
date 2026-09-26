@@ -8,11 +8,17 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DocumentType } from '@tdev-api/document';
+import SyncStatus from '@tdev-components/SyncStatus';
+import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import { ExcalidrawColor, mdiExcalidraw, mdiExcalidrawOutline } from '@tdev/excalidoc/Component';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import Actions from '../Actions';
 import DocumentView from '../DocumentView';
 import FsDetails from '../FsDetails';
 import Name from '../Name';
+import shared from '../shared.module.scss';
+import styles from './styles.module.scss';
 
 interface Props {
     file: FileModel;
