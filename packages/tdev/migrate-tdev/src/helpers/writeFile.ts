@@ -6,10 +6,22 @@ import type { PackageJson } from './loadFile.js';
 
 // add overload signatures for writeFile function: `${string}.json` and `${string}.yaml` or `${string}.yml` should return a Promise<T extends Object> and any other string should return a Promise<string>
 
-async function writeFile<T extends object>(filePath: `${string}.json`, data: T): Promise<void>;
-async function writeFile<T extends object>(filePath: `${string}.yaml`, data: T): Promise<void>;
-async function writeFile<T extends object>(filePath: `${string}.yml`, data: T): Promise<void>;
-async function writeFile<T>(filePath: string, data: T | string): Promise<void> {
+async function writeFile<T extends object>(
+    filePath: `${string}.json`,
+    data: T,
+    noFinalNewline?: boolean
+): Promise<void>;
+async function writeFile<T extends object>(
+    filePath: `${string}.yaml`,
+    data: T,
+    noFinalNewline?: boolean
+): Promise<void>;
+async function writeFile<T extends object>(
+    filePath: `${string}.yml`,
+    data: T,
+    noFinalNewline?: boolean
+): Promise<void>;
+async function writeFile<T>(filePath: string, data: T | string, noFinalNewline?: boolean): Promise<void> {
     const fileExtension = path.extname(filePath).toLowerCase();
     try {
         const parentDir = path.dirname(filePath);
@@ -25,6 +37,9 @@ async function writeFile<T>(filePath: string, data: T | string): Promise<void> {
                 break;
             default:
                 fileData = data as string;
+        }
+        if (!noFinalNewline && !fileData.endsWith('\n')) {
+            fileData += '\n';
         }
         await fs.writeFile(filePath, fileData, 'utf8');
     } catch (err) {
