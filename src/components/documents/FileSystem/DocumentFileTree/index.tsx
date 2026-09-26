@@ -1,16 +1,15 @@
-import React from 'react';
-import { useStore } from '@tdev-hooks/useStore';
-import { observer } from 'mobx-react-lite';
-import { FileTree, useFileTree } from '@pierre/trees/react';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { preparePresortedFileTreeInput } from '@pierre/trees';
-import { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
+import { FileTree, useFileTree } from '@pierre/trees/react';
+import { useStore } from '@tdev-hooks/useStore';
+import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
-import File from '../File';
-import DocumentView from '../DocumentView';
+import { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
 import { mdiExcalidraw } from '@tdev/excalidoc/Component';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import DocumentView from '../DocumentView';
+import styles from './styles.module.scss';
 
 interface Props {
     dir: Directory;

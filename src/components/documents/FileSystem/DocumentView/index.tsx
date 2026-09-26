@@ -1,11 +1,10 @@
-import React from 'react';
-import styles from './styles.module.scss';
+import { DocumentModelType } from '@tdev-api/document';
+import iCode from '@tdev-models/documents/iCode';
+import { ExcalidocComponent } from '@tdev/excalidoc/Component';
 import { observer } from 'mobx-react-lite';
 import { QuillV2Component } from '../../QuillV2';
-import { ExcalidocComponent } from '@tdev/excalidoc/Component';
 import CodeEditorSelector from './CodeEditorSelector';
-import iCode from '@tdev-models/documents/iCode';
-import { DocumentModelType } from '@tdev-api/document';
+import styles from './styles.module.scss';
 
 interface Props {
     document?: DocumentModelType;
