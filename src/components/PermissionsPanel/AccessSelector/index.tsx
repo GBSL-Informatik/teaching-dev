@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { Access } from '@tdev-api/document';
-import Icon from '@mdi/react';
 import { mdiCircleSmall } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Access } from '@tdev-api/document';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import styles from './styles.module.scss';
 
 export const AccessNames: { [key in Access]: string } = {
     [Access.RO_User]: 'RO',

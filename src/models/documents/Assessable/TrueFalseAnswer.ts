@@ -1,11 +1,11 @@
-import { TypeDataMapping, Document as DocumentProps } from '@tdev-api/document';
+import { mdiCommentAlertOutline } from '@mdi/js';
+import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
+import type { Props as TrueFalseProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
-import iAssessable from './iAssessable';
-import type { Props as TrueFalseProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import { AssessableMeta } from './AssessableMeta';
-import { mdiCommentAlertOutline } from '@mdi/js';
+import iAssessable from './iAssessable';
 
 export class ModelMeta
     extends AssessableMeta<'true_false_answer'>

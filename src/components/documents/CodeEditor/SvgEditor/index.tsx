@@ -1,18 +1,18 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
+import ErrorBoundary from '@docusaurus/ErrorBoundary';
+import useIsBrowser from '@docusaurus/useIsBrowser';
+import PermissionsPanel from '@tdev-components/PermissionsPanel';
+import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { useStore } from '@tdev-hooks/useStore';
 import { CodeMeta } from '@tdev-models/documents/Code';
 import { MetaProps } from '@tdev/theme/CodeBlock';
-import PermissionsPanel from '@tdev-components/PermissionsPanel';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import CodeEditorComponent from '..';
-import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import CodeBlock from '@theme/CodeBlock';
-import Card from '@tdev-components/shared/Card';
-import Button from '@tdev-components/shared/Button';
-import useIsBrowser from '@docusaurus/useIsBrowser';
-import { useStore } from '@tdev-hooks/useStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import CodeEditorComponent from '..';
+import styles from './styles.module.scss';
 
 export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' | 'title'> {
     title?: string;

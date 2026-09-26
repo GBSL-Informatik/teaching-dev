@@ -1,9 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
 import { mdiBackupRestore, mdiMoonWaxingCrescent, mdiThemeLightDark, mdiWhiteBalanceSunny } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
+import clsx from 'clsx';
+import React from 'react';
+import styles from './styles.module.scss';
 
 export const CodeThemeIcon = {
     light: mdiWhiteBalanceSunny,

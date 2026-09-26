@@ -1,15 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../AccessPanel.module.scss';
-import { observer } from 'mobx-react-lite';
-import DocumentRoot from '@tdev-models/DocumentRoot';
-import { useStore } from '@tdev-hooks/useStore';
-import GroupPermission from '.';
-import AccessSelector from '@tdev-components/PermissionsPanel/AccessSelector';
-import Loader from '@tdev-components/Loader';
 import { Access } from '@tdev-api/document';
-import { default as GroupPermissionModel } from '@tdev-models/GroupPermission';
-import _ from 'es-toolkit/compat';
+import Loader from '@tdev-components/Loader';
+import AccessSelector from '@tdev-components/PermissionsPanel/AccessSelector';
+import { useStore } from '@tdev-hooks/useStore';
+import DocumentRoot from '@tdev-models/DocumentRoot';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import GroupPermission from '.';
+import styles from '../AccessPanel.module.scss';
 
 interface Props {
     documentRoots: DocumentRoot<any>[];

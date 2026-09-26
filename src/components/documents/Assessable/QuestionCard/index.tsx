@@ -1,12 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Card from '@tdev-components/shared/Card';
 import { AssessableType, TypeModelMapping } from '@tdev-api/document';
 import DocumentContext from '@tdev-components/documents/DocumentContext';
+import Card from '@tdev-components/shared/Card';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { QuestionScore } from '../Feedback/QuestionScore';
 import QuestionControls from './Controls';
+import styles from './styles.module.scss';
 
 interface Props<T extends AssessableType> {
     doc: TypeModelMapping[T];

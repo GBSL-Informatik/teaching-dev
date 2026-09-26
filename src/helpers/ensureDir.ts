@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { dirname, sep, normalize } from 'path';
+import { dirname, normalize, sep } from 'path';
 
 /**
  * Ensures that the directory for the given path exists.

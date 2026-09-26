@@ -1,8 +1,7 @@
-import * as React from 'react';
-import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
-import { observer } from 'mobx-react-lite';
-import type Script from '@tdev/brython-code/models/Script';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Footer/Container';
+import Logs from '@tdev-components/documents/CodeEditor/Editor/Footer/Logs';
+import type Script from '@tdev/brython-code/models/Script';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     code: Script;

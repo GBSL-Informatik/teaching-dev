@@ -1,8 +1,8 @@
-import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
-import { DocumentType, Document as DocumentProps, TypeDataMapping, Access } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
+import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
     readonly?: boolean;

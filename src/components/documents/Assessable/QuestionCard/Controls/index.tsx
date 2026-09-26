@@ -1,12 +1,12 @@
-import styles from './styles.module.scss';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import Button from '@tdev-components/shared/Button';
-import SyncStatus from '@tdev-components/SyncStatus';
-import { observer } from 'mobx-react-lite';
 import { mdiCheckboxMarkedCircleAutoOutline, mdiRestore } from '@mdi/js';
-import clsx from 'clsx';
-import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
+import SyncStatus from '@tdev-components/SyncStatus';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface ControlsProps<T extends AssessableType> {
     doc: AssessableTypeModelMapping[T];

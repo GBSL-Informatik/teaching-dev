@@ -8,14 +8,14 @@
  */
 
 import { defaultsDeep } from 'es-toolkit/compat';
+import type Quill from 'quill';
+import React from 'react';
+import { BaseModule } from './BaseModule';
 import DefaultOptions from './DefaultOptions';
-import Toolbar from './Toolbar';
+import { deleteSelectedImage } from './helper';
 import Resize from './Resize';
 import Size from './Size';
-import React from 'react';
-import type Quill from 'quill';
-import { BaseModule } from './BaseModule';
-import { deleteSelectedImage } from './helper';
+import Toolbar from './Toolbar';
 
 /**
  * Custom module for quilljs to allow user to resize <img> elements

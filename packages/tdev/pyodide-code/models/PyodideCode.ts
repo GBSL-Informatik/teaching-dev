@@ -1,10 +1,10 @@
-import { action, computed, observable } from 'mobx';
 import { Document as DocumentProps, Factory } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
-import { ModelMeta } from './ModelMeta';
 import iCode from '@tdev-models/documents/iCode';
-import { orderBy } from 'es-toolkit/array';
+import DocumentStore from '@tdev-stores/DocumentStore';
 import { ErrorMessage, LogMessage, Message } from '@tdev/pyodide-code/pyodideJsModules';
+import { orderBy } from 'es-toolkit/array';
+import { action, computed, observable } from 'mobx';
+import { ModelMeta } from './ModelMeta';
 
 export const createModel: Factory = (data, store) => {
     return new PyodideCode(data as DocumentProps<'pyodide_code'>, store);

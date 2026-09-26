@@ -1,11 +1,11 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import { useStore } from '@tdev-hooks/useStore';
-import Button from '@tdev-components/shared/Button';
 import { mdiPlusCircleOutline } from '@mdi/js';
 import { ContainerType } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
+import { useStore } from '@tdev-hooks/useStore';
+import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface Props {
     dynamicDocumentRoot: DynamicDocumentRoots<ContainerType>;

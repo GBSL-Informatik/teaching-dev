@@ -1,20 +1,20 @@
-import * as React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Reset from '@tdev-components/documents/CodeEditor/Actions/Reset';
-import { observer } from 'mobx-react-lite';
-import SyncStatus from '@tdev-components/SyncStatus';
-import Icon from '@mdi/react';
 import { mdiFlashTriangle } from '@mdi/js';
+import Icon from '@mdi/react';
 import type { CodeType } from '@tdev-api/document';
+import Reset from '@tdev-components/documents/CodeEditor/Actions/Reset';
+import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
+import RequestPresentationMode from '@tdev-components/shared/RequestPresentationMode';
+import SyncStatus from '@tdev-components/SyncStatus';
+import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
+import { useStore } from '@tdev-hooks/useStore';
 import type iCode from '@tdev-models/documents/iCode';
+import clsx from 'clsx';
+import { reaction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import * as React from 'react';
 import DownloadCode from '../../Actions/DownloadCode';
 import ShowRaw from '../../Actions/ShowRaw';
-import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
-import { useFullscreenTargetId } from '@tdev-hooks/useFullscreenTargetId';
-import { reaction } from 'mobx';
-import { useStore } from '@tdev-hooks/useStore';
-import RequestPresentationMode from '@tdev-components/shared/RequestPresentationMode';
+import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;

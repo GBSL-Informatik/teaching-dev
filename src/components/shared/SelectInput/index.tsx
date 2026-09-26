@@ -1,7 +1,7 @@
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
 
 interface Option {
     value: string;

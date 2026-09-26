@@ -1,13 +1,12 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from '../Permission.module.scss';
-import { observer } from 'mobx-react-lite';
-import AccessSelector from '../AccessSelector';
-import Button from '@tdev-components/shared/Button';
 import { mdiAccountSupervisorCircle, mdiDelete } from '@mdi/js';
-import { default as GroupPermissionModel } from '@tdev-models/GroupPermission';
 import Icon from '@mdi/react';
 import { Access } from '@tdev-api/document';
+import Button from '@tdev-components/shared/Button';
+import { default as GroupPermissionModel } from '@tdev-models/GroupPermission';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import AccessSelector from '../AccessSelector';
+import styles from '../Permission.module.scss';
 
 interface SingleProps {
     permission: GroupPermissionModel;

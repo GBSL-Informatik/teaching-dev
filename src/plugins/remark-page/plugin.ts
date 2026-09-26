@@ -1,6 +1,6 @@
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import type { Root } from 'mdast';
+import type { MdxJsxFlowElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
 import { toJsxAttribute } from '../helpers';
 
 /**

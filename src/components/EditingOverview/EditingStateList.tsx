@@ -1,10 +1,8 @@
-import React from 'react';
-
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '@tdev-hooks/useStore';
 import Icon from '@mdi/react';
+import { useStore } from '@tdev-hooks/useStore';
 import type { iTaskableDocument } from '@tdev-models/iTaskableDocument';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     editingStatus: iTaskableDocument[];

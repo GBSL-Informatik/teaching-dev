@@ -1,14 +1,14 @@
-import React from 'react';
+import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { default as DirModel } from '../../../../models/Dir';
+import iFile from '../../../../models/iFile';
 import File from '../File';
+import AddFilePopup from '../File/AddOrUpdateFile/AddFilePopup';
+import PreviewPopup from '../File/FilePreview/PreviewPopup';
 import shared from '../styles.module.scss';
 import styles from './styles.module.scss';
-import Icon from '@mdi/react';
-import AddFilePopup from '../File/AddOrUpdateFile/AddFilePopup';
-import iFile from '../../../../models/iFile';
-import PreviewPopup from '../File/FilePreview/PreviewPopup';
 
 interface Props<T extends iFile = iFile> {
     dir: DirModel;

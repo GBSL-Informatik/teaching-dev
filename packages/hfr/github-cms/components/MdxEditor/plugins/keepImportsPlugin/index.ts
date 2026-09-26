@@ -1,7 +1,7 @@
 import { addExportVisitor$, addImportVisitor$, addLexicalNode$, realmPlugin } from '@mdxeditor/editor';
-import { MdastMdxJsEsmVisitor } from './MdastMdxJsEsmVisitor';
 import { MetaDataNode } from './LexicalMetaDataNode';
 import { LexicalMetaDataVisitor } from './LexicalMetaDataVisitor';
+import { MdastMdxJsEsmVisitor } from './MdastMdxJsEsmVisitor';
 
 export const keepImportsPlugin = realmPlugin({
     init: (realm, params) => {

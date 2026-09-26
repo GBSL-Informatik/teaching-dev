@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
-import Button from '@tdev-components/shared/Button';
 import { mdiImage, mdiImageSizeSelectLarge } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import React, { useEffect, useRef } from 'react';
 import { createDownloadCanvas } from './createDownloadCanvas';
+import styles from './styles.module.scss';
 
 interface Props {
     pixels?: ImageDataArray;

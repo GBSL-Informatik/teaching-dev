@@ -1,27 +1,27 @@
 import Layout from '@theme/Layout';
 
-import { matchPath, Redirect, useLocation } from '@docusaurus/router';
-import type { Location } from 'history';
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import { observer } from 'mobx-react-lite';
+import { matchPath, Redirect, useLocation } from '@docusaurus/router';
+import siteConfig from '@generated/docusaurus.config';
 import Loader from '@tdev-components/Loader';
-import React from 'react';
 import { useStore } from '@tdev-hooks/useStore';
-import { useGithubAccess } from '../hooks/useGithubAccess';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
-import Directory from './MdxEditor/Directory';
 import Details from '@theme/Details';
-import PR from './Github/PR';
+import clsx from 'clsx';
+import type { Location } from 'history';
+import { reaction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { useCmsNavigator } from '../hooks/useCmsNavigator';
+import { useCmsStore } from '../hooks/useCmsStore';
+import { useGithubAccess } from '../hooks/useGithubAccess';
+import { FileNavigation } from '../stores/CmsStore';
 import Branch from './Github/Branch';
+import PR from './Github/PR';
+import Directory from './MdxEditor/Directory';
 import EditorNav from './MdxEditor/EditorNav';
 import { useLoadedFile } from './MdxEditor/hooks/useLoadedFile';
 import ShowFile from './ShowFile';
-import siteConfig from '@generated/docusaurus.config';
-import { reaction } from 'mobx';
-import { useCmsNavigator } from '../hooks/useCmsNavigator';
-import { FileNavigation } from '../stores/CmsStore';
-import { useCmsStore } from '../hooks/useCmsStore';
+import styles from './styles.module.scss';
 const { organizationName, projectName } = siteConfig;
 
 const parseLocation = (location: Location): FileNavigation => {

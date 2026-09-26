@@ -1,9 +1,9 @@
-import { action, computed, observable } from 'mobx';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import { Source } from '@tdev-models/iDocument';
 import iDocumentContainer from '@tdev-models/iDocumentContainer';
-import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
+import { action, computed, observable } from 'mobx';
 import TextMessage from '../TextMessage';
 
 export const createModel: Factory = (data, store) => {

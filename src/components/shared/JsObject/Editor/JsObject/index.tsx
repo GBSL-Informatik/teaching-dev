@@ -1,15 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import JsType from '../JsType';
-import Button from '@tdev-components/shared/Button';
 import { mdiChevronDown, mdiChevronRight } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import { SIZE_XS } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import type { CustomAction } from '..';
+import AddValue from '../Actions/AddValue';
+import JsType from '../JsType';
 import type { default as JsObjectModel } from '../models/JsObject';
 import JsSchemaEditor from '../SchemaEditor';
-import AddValue from '../Actions/AddValue';
-import type { CustomAction } from '..';
+import styles from './styles.module.scss';
 
 interface Props {
     js: JsObjectModel;

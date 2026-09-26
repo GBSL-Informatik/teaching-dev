@@ -1,6 +1,6 @@
+import minimist from 'minimist';
 import fs from 'node:fs';
 import path from 'node:path';
-import minimist from 'minimist';
 import {
     docBasePath,
     ensureTrailingSlash,

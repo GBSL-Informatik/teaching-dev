@@ -1,6 +1,6 @@
+import { LexicalExportVisitor } from '@mdxeditor/editor';
 import { Root } from 'mdast';
 import { $isMetaDataNode, MetaDataNode } from './LexicalMetaDataNode';
-import { LexicalExportVisitor } from '@mdxeditor/editor';
 
 export const LexicalMetaDataVisitor: LexicalExportVisitor<MetaDataNode, Root> = {
     testLexicalNode: $isMetaDataNode,

@@ -1,15 +1,15 @@
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import styles from './PdfViewer.module.scss';
-import clsx from 'clsx';
-import React, { useState } from 'react';
-import { pdfjs, Document, Page } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import Icon from '@mdi/react';
 import { mdiArrowLeftCircle, mdiArrowRightCircle, mdiDownload } from '@mdi/js';
+import Icon from '@mdi/react';
+import Loader from '@tdev-components/Loader';
 import Button from '@tdev-components/shared/Button';
 import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
-import Loader from '@tdev-components/Loader';
+import clsx from 'clsx';
+import React, { useState } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import styles from './PdfViewer.module.scss';
 
 export interface Props {
     file: string | { data: Uint8Array; url?: string } | { url: string };

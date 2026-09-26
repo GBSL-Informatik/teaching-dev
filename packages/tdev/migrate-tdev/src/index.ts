@@ -1,11 +1,11 @@
+import minimist from 'minimist';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
-import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
-import { gitEnsureClean } from './helpers/actions.js';
-import minimist from 'minimist';
-import { pathExists, REPO_ROOT } from './helpers/base.js';
 import { MIGRATION_PATH } from './constants.js';
+import { gitEnsureClean } from './helpers/actions.js';
+import { pathExists, REPO_ROOT } from './helpers/base.js';
+import { loadMigrationRunners } from './helpers/loadMigrationRunners.js';
+import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
 
 process.chdir(REPO_ROOT);
 const argv = minimist(process.argv.slice(2));

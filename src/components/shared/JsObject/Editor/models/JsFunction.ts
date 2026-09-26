@@ -1,5 +1,5 @@
-import iJs from './iJs';
 import type { JsFunction as JsFunctionType } from '../../toJsSchema';
+import iJs from './iJs';
 import type iParentable from './iParentable';
 class JsFunction extends iJs {
     readonly type = 'function';

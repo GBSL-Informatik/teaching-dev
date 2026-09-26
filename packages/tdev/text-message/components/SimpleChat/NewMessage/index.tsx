@@ -1,11 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { mdiSend } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import SimpleChat from '@tdev/text-message/models/SimpleChat';
 import TextInput from '@tdev-components/shared/TextInput';
+import SimpleChat from '@tdev/text-message/models/SimpleChat';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 
 interface Props {
     simpleChat: SimpleChat;

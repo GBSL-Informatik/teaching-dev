@@ -1,9 +1,8 @@
-import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { Delete } from '@tdev-components/shared/Button/Delete';
 import { mdiChatRemove } from '@mdi/js';
+import { Delete } from '@tdev-components/shared/Button/Delete';
 import SimpleChat from '@tdev/text-message/models/SimpleChat';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
     simpleChat: SimpleChat;

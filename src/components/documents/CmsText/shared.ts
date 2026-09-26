@@ -1,6 +1,6 @@
-import React from 'react';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import CmsText, { CmsTextMeta } from '@tdev-models/documents/CmsText';
+import React from 'react';
 
 interface CmsTextContextType {
     entries: { [key: string]: string };

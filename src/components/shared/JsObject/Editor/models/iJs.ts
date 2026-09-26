@@ -1,15 +1,15 @@
-import { action, computed, observable } from 'mobx';
-import type { EditLevel, JsTypes, JsValue, JsTypeName } from '../../toJsSchema';
-import JsNumber from './JsNumber';
-import JsBoolean from './JsBoolean';
-import JsString from './JsString';
-import JsObject from './JsObject';
-import JsArray from './JsArray';
-import JsNullish from './JsNullish';
-import JsFunction from './JsFunction';
 import _ from 'es-toolkit/compat';
-import { castToType, toModel } from './toModel';
+import { action, computed, observable } from 'mobx';
+import type { EditLevel, JsTypeName, JsTypes, JsValue } from '../../toJsSchema';
 import iParentable from './iParentable';
+import JsArray from './JsArray';
+import JsBoolean from './JsBoolean';
+import JsFunction from './JsFunction';
+import JsNullish from './JsNullish';
+import JsNumber from './JsNumber';
+import JsObject from './JsObject';
+import JsString from './JsString';
+import { castToType, toModel } from './toModel';
 
 export type JsModelType = JsObject | JsString | JsNumber | JsArray | JsBoolean | JsNullish | JsFunction;
 

@@ -1,10 +1,10 @@
-import path from 'node:path';
-import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
-import { gitEnsureClean } from './helpers/actions.js';
 import minimist from 'minimist';
-import { pathExists, REPO_ROOT } from './helpers/base.js';
+import path from 'node:path';
 import { ACTIONS_PATH } from './constants.js';
+import { gitEnsureClean } from './helpers/actions.js';
+import { pathExists, REPO_ROOT } from './helpers/base.js';
 import { loadActionRunner } from './helpers/loadActionRunner.js';
+import readOrCreateMigrationConfig from './helpers/readOrCreateMigrationConfig.js';
 const LINE = '----------------------------------------------------------------------------------';
 
 process.chdir(REPO_ROOT);

@@ -1,9 +1,9 @@
-import { OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
 import { logger } from '@docusaurus/logger';
+import { OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
+import { promises as fs } from 'fs';
 import path from 'path';
 import { NEW_EXCALIDRAW_DRAWING, VALID_EXPORT_EXTENSIONS } from './helpers/constants';
 import { ensureDir } from './helpers/ensureDir';
-import { promises as fs } from 'fs';
 
 const reportBrokenImage = (params: Parameters<OnBrokenMarkdownImagesFunction>[0]) => {
     const cwd = process.cwd();

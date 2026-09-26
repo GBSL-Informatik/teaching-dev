@@ -1,17 +1,17 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import Button from '@tdev-components/shared/Button';
-import Icon from '@mdi/react';
 import {
-    mdiFolderOpen,
     mdiChevronLeft,
     mdiChevronRight,
     mdiFilePlusOutline,
+    mdiFolderOpen,
     mdiRenameOutline
 } from '@mdi/js';
+import Icon from '@mdi/react';
 import Dir, { DirType } from '@tdev-components/FileSystem/Dir';
+import Button from '@tdev-components/shared/Button';
 import RequestFullscreen from '@tdev-components/shared/RequestFullscreen';
+import clsx from 'clsx';
+import React from 'react';
+import styles from './styles.module.scss';
 
 interface Props {
     fullscreenTargetId: string;

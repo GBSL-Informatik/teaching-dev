@@ -1,30 +1,30 @@
-import type { Code, Node } from 'mdast';
-import type { LeafDirective } from 'mdast-util-directive';
-import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
-import deflistPlugin from '../plugins/remark-deflist/plugin';
-import mdiPlugin from '../plugins/remark-mdi/plugin';
-import kbdPlugin from '../plugins/remark-kbd/plugin';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import defboxPlugin from '../plugins/remark-code-defbox/plugin';
-import flexCardsPlugin from '../plugins/remark-flex-cards/plugin';
-import imagePlugin, { CaptionVisitor } from '../plugins/remark-images/plugin';
-import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
-import mediaPlugin from '../plugins/remark-media/plugin';
-import detailsPlugin from '../plugins/remark-details/plugin';
-import pagePlugin from '../plugins/remark-page/plugin';
 import pageIndexPlugin, {
     type PluginOptions as PageIndexPluginOptions
 } from '@tdev/page-index/remark-plugin';
 import graphvizPlugin from '@tdev/remark-graphviz/remark-plugin';
 import pdfPlugin from '@tdev/remark-pdf/remark-plugin';
-import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
-import commentPlugin from '../plugins/remark-comments/plugin';
-import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
-import transformAssessableComponentsPlugin from '../plugins/remark-transform-assessable-components/plugin';
-import { getAnswerDocumentType } from '../components/Answer/helper.answer';
 import fs from 'fs';
+import type { Code, Node } from 'mdast';
+import type { LeafDirective } from 'mdast-util-directive';
 import path from 'path';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+import { getAnswerDocumentType } from '../components/Answer/helper.answer';
+import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
+import defboxPlugin from '../plugins/remark-code-defbox/plugin';
+import commentPlugin from '../plugins/remark-comments/plugin';
+import deflistPlugin from '../plugins/remark-deflist/plugin';
+import detailsPlugin from '../plugins/remark-details/plugin';
+import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
+import flexCardsPlugin from '../plugins/remark-flex-cards/plugin';
+import imagePlugin, { CaptionVisitor } from '../plugins/remark-images/plugin';
+import kbdPlugin from '../plugins/remark-kbd/plugin';
+import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
+import mdiPlugin from '../plugins/remark-mdi/plugin';
+import mediaPlugin from '../plugins/remark-media/plugin';
+import pagePlugin from '../plugins/remark-page/plugin';
+import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
+import transformAssessableComponentsPlugin from '../plugins/remark-transform-assessable-components/plugin';
 
 export const flexCardsPluginConfig = [
     flexCardsPlugin,

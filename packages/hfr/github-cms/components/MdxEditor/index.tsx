@@ -1,9 +1,7 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import _ from 'es-toolkit/compat';
-import File from '../../models/File';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import Loader from '@tdev-components/Loader';
+import { observer } from 'mobx-react-lite';
+import File from '../../models/File';
 
 export interface Props {
     file: File;

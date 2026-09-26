@@ -1,15 +1,14 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
 import { useStore } from '@tdev-hooks/useStore';
 import StudentGroup from '@tdev-models/StudentGroup';
-import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import AdminPanel from './AdminPanel';
-import CodeEditor from './CodeEditor';
 import AdminActions from './AdminPanel/AdminActions';
 import CanEditBadge from './CanEditBadge';
+import CodeEditor from './CodeEditor';
+import styles from './styles.module.scss';
 
 interface Props {
     group: StudentGroup;

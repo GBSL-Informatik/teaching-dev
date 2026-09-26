@@ -1,10 +1,10 @@
-import React from 'react';
+import { useMdastNodeUpdater } from '@mdxeditor/editor';
 import _ from 'es-toolkit/compat';
 import { Directives } from 'mdast-util-directive';
-import { useMdastNodeUpdater } from '@mdxeditor/editor';
+import React from 'react';
 
-import type { GenericPropery, GenericValueProperty } from '../GenericAttributeEditor';
 import { Options, transformAttributes } from '@tdev-plugins/helpers';
+import type { GenericPropery, GenericValueProperty } from '../GenericAttributeEditor';
 
 export type DirectiveProperty = Omit<GenericPropery, 'type'> & { type: React.HTMLInputTypeAttribute };
 type DirectiveValueProperty = Omit<GenericValueProperty, 'type'> & { type: React.HTMLInputTypeAttribute };

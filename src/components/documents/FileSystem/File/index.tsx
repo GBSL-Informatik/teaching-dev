@@ -1,10 +1,3 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import shared from '../shared.module.scss';
-import { observer } from 'mobx-react-lite';
-import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
-import Icon from '@mdi/react';
 import {
     mdiFile,
     mdiFileCode,
@@ -13,20 +6,26 @@ import {
     mdiFileDocumentOutline,
     mdiFileOutline
 } from '@mdi/js';
-import SyncStatus from '../../../SyncStatus';
+import Icon from '@mdi/react';
 import { DocumentType } from '@tdev-api/document';
-import { QuillV2Component } from '../../QuillV2';
-import Actions from '../Actions';
-import Name from '../Name';
-import FsDetails from '../FsDetails';
+import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
+import iCode from '@tdev-models/documents/iCode';
 import {
     ExcalidocComponent,
     ExcalidrawColor,
     mdiExcalidraw,
     mdiExcalidrawOutline
 } from '@tdev/excalidoc/Component';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import SyncStatus from '../../../SyncStatus';
+import { QuillV2Component } from '../../QuillV2';
+import Actions from '../Actions';
+import FsDetails from '../FsDetails';
+import Name from '../Name';
+import shared from '../shared.module.scss';
 import CodeEditorSelector from './CodeEditorSelector';
-import iCode from '@tdev-models/documents/iCode';
+import styles from './styles.module.scss';
 
 interface Props {
     file: FileModel;

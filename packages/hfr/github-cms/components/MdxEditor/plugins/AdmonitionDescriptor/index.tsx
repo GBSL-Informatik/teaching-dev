@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React from 'react';
 import { DirectiveDescriptor } from '@mdxeditor/editor';
-import { ContainerDirective } from 'mdast-util-directive';
-import styles from './styles.module.scss';
-import clsx from 'clsx';
 import Admonition from '@theme/Admonition';
+import clsx from 'clsx';
+import { ContainerDirective } from 'mdast-util-directive';
 import { observer } from 'mobx-react-lite';
-import { ADMONITION_TYPES } from './AdmonitionTypeSelector/admonitionTypes';
 import AdmonitionBody from './AdmonitionBody';
 import AdmonitionHeader from './AdmonitionHeader';
+import { ADMONITION_TYPES } from './AdmonitionTypeSelector/admonitionTypes';
+import styles from './styles.module.scss';
 
 /** @internal */
 export type AdmonitionKind = (typeof ADMONITION_TYPES)[number];

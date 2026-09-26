@@ -1,6 +1,6 @@
 import { JsxComponentDescriptor, NestedLexicalEditor } from '@mdxeditor/editor';
-import { MdxJsxFlowElement } from 'mdast-util-mdx';
 import DefinitionList from '@tdev-components/DefinitionList';
+import { MdxJsxFlowElement } from 'mdast-util-mdx';
 
 export const DeflistDescriptor: JsxComponentDescriptor = {
     name: 'Dl',

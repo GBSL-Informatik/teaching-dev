@@ -1,5 +1,5 @@
 import _ from 'es-toolkit/compat';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const useIsMobileView = (mobileViewWidth: number = 768) => {
     const [isMobileView, setIsMobileView] = useState(false);

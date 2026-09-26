@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
 import { TranslationsContext } from '@tdev-components/shared/WithTranslations';
+import React, { useContext } from 'react';
 
 export function useTranslation(name?: string): React.ReactNode {
     const context = useContext(TranslationsContext);

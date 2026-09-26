@@ -1,4 +1,4 @@
-import { TypeDataMapping, CodeType } from '@tdev-api/document';
+import { CodeType, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import { computed } from 'mobx';

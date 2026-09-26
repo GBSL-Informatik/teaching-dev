@@ -1,3 +1,4 @@
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
     ButtonOrDropdownButton,
     iconComponentFor$,
@@ -6,10 +7,9 @@ import {
     usePublisher,
     useTranslation
 } from '@mdxeditor/editor';
-import React from 'react';
 import _ from 'es-toolkit/compat';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { ADMONITION_TYPES } from './AdmonitionTypeSelector/admonitionTypes';
 
 /**

@@ -1,8 +1,8 @@
 import chokidar from 'chokidar';
 import minimist from 'minimist';
 import path from 'path';
-import { getDebouncedSyncer, categoryFileLocation, packageInfo, syncCategoryFile } from './actions';
 import packageDocsSync from '.';
+import { categoryFileLocation, getDebouncedSyncer, packageInfo, syncCategoryFile } from './actions';
 
 const argv = minimist(process.argv.slice(2), {
     string: ['src', 'dest'],

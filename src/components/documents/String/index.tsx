@@ -1,17 +1,17 @@
-import React, { useId, type ReactNode } from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
-import Loader from '@tdev-components/Loader';
-import { MetaInit, ModelMeta, StringAnswer } from '@tdev-models/documents/String';
-import Button from '@tdev-components/shared/Button';
-import Icon from '@mdi/react';
-import SyncStatus from '@tdev-components/SyncStatus';
-import { Source } from '@tdev-models/iDocument';
-import { mdiCheckCircle, mdiCloseCircle, mdiFlashTriangle, mdiHelpCircleOutline } from '@mdi/js';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { mdiCheckCircle, mdiCloseCircle, mdiFlashTriangle, mdiHelpCircleOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import Loader from '@tdev-components/Loader';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import Button from '@tdev-components/shared/Button';
+import SyncStatus from '@tdev-components/SyncStatus';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { MetaInit, ModelMeta, StringAnswer } from '@tdev-models/documents/String';
+import { Source } from '@tdev-models/iDocument';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React, { useId, type ReactNode } from 'react';
+import styles from './styles.module.scss';
 
 interface Props extends MetaInit {
     id: string;

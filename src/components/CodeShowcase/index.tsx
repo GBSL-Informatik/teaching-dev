@@ -1,8 +1,8 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
-import CodeBlock from '@theme/CodeBlock';
 import BrowserWindow from '@tdev-components/BrowserWindow';
+import CodeBlock from '@theme/CodeBlock';
 import Details from '@theme/Details';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 interface Props {
     code: string;

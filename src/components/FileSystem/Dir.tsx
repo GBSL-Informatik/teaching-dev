@@ -1,11 +1,11 @@
-import React from 'react';
+import { ReactContextError } from '@docusaurus/theme-common';
+import { mdiFolder, mdiFolderOpen } from '@mdi/js';
+import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import styles from './styles.module.scss';
-import Icon from '@mdi/react';
-import { mdiFolder, mdiFolderOpen } from '@mdi/js';
+import React from 'react';
 import File, { FileType } from './File';
-import { ReactContextError } from '@docusaurus/theme-common';
+import styles from './styles.module.scss';
 
 export type DirType = {
     name: string;

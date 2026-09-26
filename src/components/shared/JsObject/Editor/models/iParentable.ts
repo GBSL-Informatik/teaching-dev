@@ -1,9 +1,8 @@
 import { action, computed, observable } from 'mobx';
-import iJs, { type JsModelType } from './iJs';
-import { toModel } from './toModel';
 import { JsParents, JsValue, sortValues } from '../../toJsSchema';
-import _ from 'es-toolkit/compat';
+import iJs, { type JsModelType } from './iJs';
 import type JsRoot from './JsRoot';
+import { toModel } from './toModel';
 
 abstract class iParentable<T extends JsParents = JsParents> extends iJs<T> {
     abstract readonly type: T['type'];

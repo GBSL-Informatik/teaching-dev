@@ -1,19 +1,19 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
+import { mdiClose, mdiFileEdit, mdiFileMove, mdiFilePlus, mdiLoading } from '@mdi/js';
+import Alert from '@tdev-components/shared/Alert';
+import Button from '@tdev-components/shared/Button';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
-import Button from '@tdev-components/shared/Button';
-import { mdiClose, mdiFileEdit, mdiFileMove, mdiFilePlus, mdiLoading } from '@mdi/js';
-import { ApiState } from '@tdev-stores/iStore';
-import Alert from '@tdev-components/shared/Alert';
-import FileStub from '../../../../../models/FileStub';
-import File from '../../../../../models/File';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
-import { Confirm } from '@tdev-components/shared/Button/Confirm';
-import BinFile from '../../../../../models/BinFile';
+import { ApiState } from '@tdev-stores/iStore';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { useCmsStore } from '../../../../../hooks/useCmsStore';
+import BinFile from '../../../../../models/BinFile';
+import File from '../../../../../models/File';
+import FileStub from '../../../../../models/FileStub';
+import styles from './styles.module.scss';
 
 export type Response = { state: ApiState; message?: string };
 

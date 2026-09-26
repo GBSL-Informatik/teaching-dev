@@ -1,18 +1,18 @@
-import { observer } from 'mobx-react-lite';
-import React from 'react';
+import { DocContext } from '@tdev-components/documents/DocumentContext';
+import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
+import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
+import { useNestedAssessableDocumentBy } from '@tdev-hooks/useNestedAssessableDocumentBy';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
 import {
     type default as TrueFalseAnswerModel,
     ModelMeta
 } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
-import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
-import { useNestedAssessableDocumentBy } from '@tdev-hooks/useNestedAssessableDocumentBy';
-import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
-import QuestionCard from '../QuestionCard';
-import { DocContext } from '@tdev-components/documents/DocumentContext';
-import Options from '../Inputs/Options';
-import Option from '../Inputs/Option';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Option from '../Inputs/Option';
+import Options from '../Inputs/Options';
+import QuestionCard from '../QuestionCard';
 
 interface BaseProps extends AssessableComponentProps<'true_false_answer'> {}
 

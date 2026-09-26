@@ -10,14 +10,14 @@ import {
     createRootEditorSubscription$,
     realmPlugin
 } from '@mdxeditor/editor';
-import type { Parent, PhrasingContent, Root } from 'mdast';
-import { MdastKbdVisitor } from './MdastKbdVisitor';
-import { $isKbdNode, $toggleKbd, KbdNode, TOGGLE_KBD_COMMAND } from './KbdNode';
-import { LexicalKbdVisitor } from './LexicalKbdVisitor';
+import { transformer } from '@tdev-plugins/remark-kbd/plugin';
 import { COMMAND_PRIORITY_LOW, type LexicalEditor } from 'lexical';
+import type { Parent, PhrasingContent, Root } from 'mdast';
 import handleFocusNextInline from '../../components/MdxEditor/helpers/lexical/handle-focus-next-inline';
 import handleFocusPreviousInline from '../../components/MdxEditor/helpers/lexical/handle-focus-previous-inline';
-import { transformer } from '@tdev-plugins/remark-kbd/plugin';
+import { $isKbdNode, $toggleKbd, KbdNode, TOGGLE_KBD_COMMAND } from './KbdNode';
+import { LexicalKbdVisitor } from './LexicalKbdVisitor';
+import { MdastKbdVisitor } from './MdastKbdVisitor';
 
 export interface Kbd extends Parent {
     type: 'kbd';

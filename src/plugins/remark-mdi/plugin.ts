@@ -1,9 +1,9 @@
-import { visit } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
-import type { MdxJsxTextElement, MdxjsEsm } from 'mdast-util-mdx';
-import { camelCased, captialize, Options, toJsxAttribute, transformAttributes } from '../helpers';
-import { Root, Text } from 'mdast';
 import _ from 'es-toolkit/compat';
+import { Root, Text } from 'mdast';
+import type { MdxjsEsm, MdxJsxTextElement } from 'mdast-util-mdx';
+import type { Plugin, Transformer } from 'unified';
+import { visit } from 'unist-util-visit';
+import { camelCased, captialize, Options, toJsxAttribute, transformAttributes } from '../helpers';
 
 // const MDI_PROPS = [
 //     {

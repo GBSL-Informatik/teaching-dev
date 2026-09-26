@@ -1,13 +1,13 @@
-import * as React from 'react';
-import styles from './styles.module.scss';
-import CodeBlock from '@theme/CodeBlock';
-import clsx from 'clsx';
-import { observer } from 'mobx-react-lite';
-import Icon from '@mdi/react';
 import { mdiArrowExpandDown, mdiArrowExpandUp } from '@mdi/js';
-import _ from 'es-toolkit/compat';
+import Icon from '@mdi/react';
 import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
+import CodeBlock from '@theme/CodeBlock';
+import clsx from 'clsx';
+import _ from 'es-toolkit/compat';
+import { observer } from 'mobx-react-lite';
+import * as React from 'react';
+import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
     type: 'pre' | 'post';

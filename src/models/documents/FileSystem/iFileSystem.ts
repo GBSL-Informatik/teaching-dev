@@ -1,10 +1,9 @@
-import { action, computed, observable } from 'mobx';
-import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, Access, DocumentModelType } from '@tdev-api/document';
-import DocumentStore from '@tdev-stores/DocumentStore';
+import { DocumentModelType, Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import _ from 'es-toolkit/compat';
+import iDocument, { Source } from '@tdev-models/iDocument';
+import DocumentStore from '@tdev-stores/DocumentStore';
+import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
     readonly?: boolean;

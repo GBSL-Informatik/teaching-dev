@@ -1,5 +1,5 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
+import ErrorBoundary from '@docusaurus/ErrorBoundary';
+import { mdiCodeJson } from '@mdi/js';
 import {
     BlockTypeSelect,
     BoldItalicUnderlineToggles,
@@ -33,47 +33,45 @@ import {
     ViewMode,
     viewMode$
 } from '@mdxeditor/editor';
-import _ from 'es-toolkit/compat';
 import '@mdxeditor/editor/style.css';
-import { default as FileModel } from '../../models/File';
-import { AdmonitionDirectiveDescriptor } from './plugins/AdmonitionDescriptor';
-import { DetailsDirectiveDescriptor } from '../../plugins/details';
-import '@mdxeditor/editor/style.css';
-import { InsertAdmonition } from './plugins/AdmonitionDescriptor/InsertAdmonition';
-import { InsertJsxElements } from './plugins/plugins-jsx/InsertJsxOptions';
-import { MdiDescriptor } from '../../plugins/mdi';
-import { CardsDirectiveDescriptor, FlexDirectiveDescriptor } from '../../plugins/flex-cards';
-import mdiCompletePlugin from '../../plugins/mdi/MdiComplete';
-import { ImageFigure, imagePlugin } from '../../plugins/images';
-import ErrorBoundary from '@docusaurus/ErrorBoundary';
-import styles from './styles.module.scss';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import useLocalStorage from '@tdev-hooks/useLocalStorage';
+import { extractOptions } from '@tdev-plugins/helpers';
 import clsx from 'clsx';
-import Actions from './toolbar/Actions';
 import * as Mdast from 'mdast';
-import { InsertImage } from '../../plugins/images/InsertImage';
-import { Box, strongPlugin } from '../../plugins/strong';
-import { ToolbarInsertBoxed } from '../../plugins/strong/ToolbarInsertBoxed';
-import { useCmsStore } from '../../hooks/useCmsStore';
-import { codeMirrorPlugin } from './plugins/Codemirror';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 import DefaultEditor from '../../components/Github/DefaultEditor';
+import { useCmsStore } from '../../hooks/useCmsStore';
+import { Asset } from '../../models/Dir';
+import { default as FileModel } from '../../models/File';
+import { CodeDefBoxDirectiveDescriptor } from '../../plugins/defbox';
+import { DetailsDirectiveDescriptor } from '../../plugins/details';
+import { CardsDirectiveDescriptor, FlexDirectiveDescriptor } from '../../plugins/flex-cards';
+import { ImageFigure, imagePlugin } from '../../plugins/images';
+import { InsertImage } from '../../plugins/images/InsertImage';
 import { Kbd, kbdPlugin } from '../../plugins/kbd';
 import { ToolbarInsertKbd } from '../../plugins/kbd/ToolbarInsertKbd';
-import { CodeDefBoxDirectiveDescriptor } from '../../plugins/defbox';
-import { footnotePlugin } from './plugins/footnote';
-import Button from '@tdev-components/shared/Button';
-import { mathPlugin } from './plugins/mathPlugin';
+import { MdiDescriptor } from '../../plugins/mdi';
+import mdiCompletePlugin from '../../plugins/mdi/MdiComplete';
 import MediaDescriptors from '../../plugins/media';
 import { PdfDescriptor } from '../../plugins/pdf/PdfDescriptor';
-import { Asset } from '../../models/Dir';
-import { draggableBlockPlugin } from './plugins/DraggableBlockPlugin';
-import JsxDescriptors from './plugins/plugins-jsx/JsxDescriptors';
-import { extractOptions } from '@tdev-plugins/helpers';
+import { Box, strongPlugin } from '../../plugins/strong';
+import { ToolbarInsertBoxed } from '../../plugins/strong/ToolbarInsertBoxed';
+import { AdmonitionDirectiveDescriptor } from './plugins/AdmonitionDescriptor';
+import { InsertAdmonition } from './plugins/AdmonitionDescriptor/InsertAdmonition';
 import { GenericDirectiveDescriptor } from './plugins/CatchAllUnknown/GenericDirectiveDescriptor';
-import { keepImportsPlugin } from './plugins/keepImportsPlugin';
-import useLocalStorage from '@tdev-hooks/useLocalStorage';
-import { mdiCodeJson } from '@mdi/js';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { codeMirrorPlugin } from './plugins/Codemirror';
+import { draggableBlockPlugin } from './plugins/DraggableBlockPlugin';
 import { registerKeydownHandler } from './plugins/focusHandler/keyDownHandler';
+import { footnotePlugin } from './plugins/footnote';
+import { keepImportsPlugin } from './plugins/keepImportsPlugin';
+import { mathPlugin } from './plugins/mathPlugin';
+import { InsertJsxElements } from './plugins/plugins-jsx/InsertJsxOptions';
+import JsxDescriptors from './plugins/plugins-jsx/JsxDescriptors';
+import styles from './styles.module.scss';
+import Actions from './toolbar/Actions';
 
 export interface Props {
     file: FileModel;

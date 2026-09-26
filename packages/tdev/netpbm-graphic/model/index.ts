@@ -1,10 +1,10 @@
-import { action, computed, observable } from 'mobx';
+import { Document as DocumentProps, Factory, TypeDataMapping } from '@tdev-api/document';
 import iDocument, { Source } from '@tdev-models/iDocument';
-import { Document as DocumentProps, TypeDataMapping, Access, Factory } from '@tdev-api/document';
 import DocumentStore from '@tdev-stores/DocumentStore';
+import { ApiState } from '@tdev-stores/iStore';
 import { parse } from '@tdev/netpbm-graphic/model/parser/parser';
 import { ParserResult } from '@tdev/netpbm-graphic/model/types';
-import { ApiState } from '@tdev-stores/iStore';
+import { action, computed, observable } from 'mobx';
 import { ModelMeta } from './ModelMeta';
 
 export const createModel: Factory = (data, store) => {

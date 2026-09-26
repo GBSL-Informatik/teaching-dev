@@ -1,8 +1,8 @@
 // https://github.com/mdx-editor/editor/blob/main/src/plugins/sandpack/useCodeMirrorRef.ts
 import type { EditorView } from '@codemirror/view';
-import React from 'react';
-import { usePublisher } from '@mdxeditor/gurx';
 import { editorInFocus$, useCodeBlockEditorContext, VoidEmitter } from '@mdxeditor/editor';
+import { usePublisher } from '@mdxeditor/gurx';
+import React from 'react';
 import { $insertPlaceholderParagraph } from '../focusHandler/keyDownHandler';
 
 interface CodeMirrorRef {

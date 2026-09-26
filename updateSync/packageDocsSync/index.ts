@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
-import { getPackageDocsConfigs, syncCategoryFile, syncDocsFolder } from './actions';
 import path from 'path';
+import { getPackageDocsConfigs, syncCategoryFile, syncDocsFolder } from './actions';
 
 const packageDocsSync = async (packageDir: string, destDir: string) => {
     const srcPath = path.resolve(process.cwd(), packageDir);

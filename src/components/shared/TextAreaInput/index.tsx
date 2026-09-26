@@ -1,10 +1,10 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import Button from '../Button';
 import { mdiKeyboardTab } from '@mdi/js';
 import scheduleMicrotask from '@tdev-components/utils/scheduleMicrotask';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import Button from '../Button';
+import styles from './styles.module.scss';
 
 interface Props {
     defaultValue?: string;

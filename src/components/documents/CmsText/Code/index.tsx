@@ -1,14 +1,14 @@
-import { observer } from 'mobx-react-lite';
+import useIsBrowser from '@docusaurus/useIsBrowser';
 import { CmsTextContext, useFirstCmsTextDocumentIfExists } from '@tdev-components/documents/CmsText/shared';
-import React from 'react';
+import { useStore } from '@tdev-hooks/useStore';
 import CodeBlock, { Props as CodeBlockProps } from '@theme/CodeBlock';
-import { Props as DefaultCmsProps } from '..';
-import styles from './styles.module.scss';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { Props as DefaultCmsProps } from '..';
 import CmsActions from '../CmsActions';
 import { CmsTextEntries } from '../WithCmsText';
-import { useStore } from '@tdev-hooks/useStore';
-import useIsBrowser from '@docusaurus/useIsBrowser';
+import styles from './styles.module.scss';
 
 interface Props extends DefaultCmsProps {
     codeBlockProps?: CodeBlockProps;

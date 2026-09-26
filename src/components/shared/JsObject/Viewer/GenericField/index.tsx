@@ -1,8 +1,7 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { GenericValue as GenericValueType } from '@tdev-components/shared/JsObject/toJsSchema';
-import JsType from '@tdev-components/shared/JsObject/Viewer/JsType';
 import GenericValue from '@tdev-components/shared/JsObject/Viewer/GenericField/GenericValue';
+import JsType from '@tdev-components/shared/JsObject/Viewer/JsType';
+import { observer } from 'mobx-react-lite';
 
 export interface Props {
     js: GenericValueType;

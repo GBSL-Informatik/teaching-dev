@@ -1,12 +1,11 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.scss';
-import { observer } from 'mobx-react-lite';
-import { Access } from '@tdev-api/document';
-import Icon from '@mdi/react';
-import { NoneAccess, ROAccess, RWAccess } from '@tdev-models/helpers/accessPolicy';
 import { mdiEye, mdiEyeOff, mdiSquareEditOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Access } from '@tdev-api/document';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import { NoneAccess, ROAccess, RWAccess } from '@tdev-models/helpers/accessPolicy';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import styles from './styles.module.scss';
 const SIZE = 0.8;
 export const AccessIcon = (access?: Access) => {
     if (RWAccess.has(access)) {

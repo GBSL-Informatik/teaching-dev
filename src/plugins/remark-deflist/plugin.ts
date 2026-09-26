@@ -1,7 +1,7 @@
-import { visit, CONTINUE, SKIP, EXIT } from 'unist-util-visit';
-import type { Plugin, Transformer } from 'unified';
+import { Paragraph, Parent, PhrasingContent, Root, RootContent, Text } from 'mdast';
 import type { MdxJsxFlowElement, MdxJsxTextElement } from 'mdast-util-mdx';
-import { BlockContent, Paragraph, Parent, PhrasingContent, Root, RootContent, Text } from 'mdast';
+import type { Plugin, Transformer } from 'unified';
+import { CONTINUE, EXIT, SKIP, visit } from 'unist-util-visit';
 
 // match to determine if the line is an opening tag
 const DD_REGEX = /(\r?\n):[ \t]+(.*?)/;

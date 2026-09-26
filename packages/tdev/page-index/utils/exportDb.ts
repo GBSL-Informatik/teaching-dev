@@ -1,7 +1,7 @@
-import { promises as fs } from 'fs';
-import { pageIndexPath } from './options';
-import { PageIndex } from '..';
 import type { Statement } from 'better-sqlite3';
+import { promises as fs } from 'fs';
+import { PageIndex } from '..';
+import { pageIndexPath } from './options';
 
 const _cachedImport = {
     getDocumentRoots: null as Statement | null

@@ -1,8 +1,8 @@
+import { mdiOpenInNew } from '@mdi/js';
+import Icon from '@mdi/react';
 import clsx from 'clsx';
 import React from 'react';
 import styles from './styles.module.scss';
-import Icon from '@mdi/react';
-import { mdiOpenInNew } from '@mdi/js';
 
 interface Bib {
     author?: string;

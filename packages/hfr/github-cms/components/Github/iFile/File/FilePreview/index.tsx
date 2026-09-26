@@ -1,13 +1,12 @@
-import React from 'react';
-import styles from './styles.module.scss';
+import Loader from '@tdev-components/Loader';
+import Card from '@tdev-components/shared/Card';
 import { observer } from 'mobx-react-lite';
-import FileStub from '../../../../../models/FileStub';
 import BinFile from '../../../../../models/BinFile';
 import File from '../../../../../models/File';
-import Card from '@tdev-components/shared/Card';
+import FileStub from '../../../../../models/FileStub';
 import { useLoadedFile } from '../../../../MdxEditor/hooks/useLoadedFile';
-import Loader from '@tdev-components/Loader';
 import ImagePreview from './ImagePreview';
+import styles from './styles.module.scss';
 import TextPreview from './TextPreview';
 import VideoPreview from './VideoPreview';
 
