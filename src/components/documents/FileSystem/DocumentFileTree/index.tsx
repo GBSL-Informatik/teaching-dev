@@ -1,4 +1,4 @@
-import { preparePresortedFileTreeInput } from '@pierre/trees';
+import { FileTreeDirectoryHandle, preparePresortedFileTreeInput } from '@pierre/trees';
 import { FileTree, useFileTree } from '@pierre/trees/react';
 import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
@@ -119,11 +119,20 @@ const DocumentFileTree = observer((props: Props) => {
         const openPaths = dir?.allFiles
             .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
             .map((d) => d.filePath);
-        console.log('open', openPaths);
         model.resetPaths({
             preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
             initialExpandedPaths: openPaths
         });
+        return () => {
+            const folders = dir?.allFiles.filter((d) => d.type === 'dir' && d.filePath) ?? [];
+            folders.forEach((dir) => {
+                const item = model.getItem(dir.filePath);
+                if (item?.isDirectory()) {
+                    const isOpen = (item as FileTreeDirectoryHandle).isExpanded();
+                    dir.setIsOpen(isOpen);
+                }
+            });
+        };
     }, [model, dir.fileTree]);
 
     return (
