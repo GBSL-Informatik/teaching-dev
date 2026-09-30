@@ -17,8 +17,6 @@ export const DefaultName: Record<SystemType, string> = {
     ['dir']: 'Ordner'
 };
 
-export const SystemDocumentTypes: SystemType[] = Object.keys(DefaultName) as SystemType[];
-
 export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
     readonly readonly?: boolean;
     readonly name: string;
@@ -96,7 +94,7 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
     @computed
     get basePath(): string {
         if (!this.parentId) {
-            return ''
+            return '';
         }
         if (this.parent?.type !== 'dir') {
             return '';
