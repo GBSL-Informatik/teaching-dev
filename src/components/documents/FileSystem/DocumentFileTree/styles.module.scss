@@ -12,6 +12,14 @@
         // --trees-fg-muted
         // --trees-bg-muted
         color-scheme: light;
+        .contextMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            .menuContent {
+                transform: translate();
+            }
+        }
     }
     .selectedFile {
         flex-grow: 1;

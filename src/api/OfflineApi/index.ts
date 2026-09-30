@@ -12,7 +12,7 @@ import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = true;
+const LOG_REQUESTS = false;
 
 export const DEFAULT_OFFLINE_USER: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
