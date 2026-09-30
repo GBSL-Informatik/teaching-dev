@@ -442,7 +442,23 @@ export default class OfflineApi {
 
         switch (model) {
             case 'documents':
+                const doc = await this.dbAdapter.get<Document<DocumentType>>(DOCUMENTS_STORE, id);
                 await this.dbAdapter.delete(DOCUMENTS_STORE, id);
+                if (doc && doc.documentRootId) {
+                    const cascaded = await this.dbAdapter
+                        .byDocumentRootId(doc.documentRootId)
+                        .then((docs) => docs.filter((d) => d.parentId));
+                    const children = cascaded.filter((d) => d.parentId && d.parentId === doc.id);
+                    let delta = children.length;
+                    while (delta > 0) {
+                        const nested = children.flatMap((c) =>
+                            cascaded.filter((d) => d.parentId === c.id && !children.includes(d))
+                        );
+                        delta = nested.length;
+                        children.push(...nested);
+                    }
+                    await Promise.all(children.map((d) => this.dbAdapter.delete(DOCUMENTS_STORE, d.id)));
+                }
                 return resolveResponse(null);
             case 'documentRoots':
                 // Deleting a document root could involve deleting associated documents
