@@ -1,5 +1,4 @@
 import { mdiDelete, mdiFilePlus, mdiRename } from '@mdi/js';
-import { FileTree } from '@pierre/trees';
 import { FileTree as FileTreeComponent } from '@pierre/trees/react';
 import Button from '@tdev-components/shared/Button';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
@@ -12,6 +11,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { ComponentProps } from 'react';
 import styles from './styles.module.scss';
+import { useFileTreeModel } from './WithFileTreeModel';
 
 type RenderContextMenuFn = Exclude<ComponentProps<typeof FileTreeComponent>['renderContextMenu'], undefined>;
 type FileTreeContextMenuItem = Parameters<RenderContextMenuFn>[0];
@@ -19,15 +19,15 @@ type FileTreeContextMenuOpenContext = Parameters<RenderContextMenuFn>[1];
 
 interface Props {
     dir: Directory;
-    model: FileTree;
     item: FileTreeContextMenuItem;
     context: FileTreeContextMenuOpenContext;
 }
 
 const ContextMenu = observer((props: Props) => {
-    const { model, dir, item, context } = props;
+    const { dir, item, context } = props;
     const pos = context.anchorRect;
     const documentStore = useStore('documentStore');
+    const model = useFileTreeModel();
 
     return (
         <div

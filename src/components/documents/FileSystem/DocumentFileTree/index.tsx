@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import DocumentView from '../DocumentView';
 import FileTreeComponent from './FileTreeComponent';
+import WithFileTreeModel from './FileTreeComponent/WithFileTreeModel';
 import styles from './styles.module.scss';
 
 const hashery = new Hashery({ cache: { enabled: false, maxSize: 20 } });
@@ -21,7 +22,9 @@ const DocumentFileTree = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.container)}>
-            <FileTreeComponent dir={dir} key={hash} onSelected={setSelected} />
+            <WithFileTreeModel dir={dir} onSelected={setSelected} key={hash}>
+                <FileTreeComponent dir={dir} onSelected={setSelected} />
+            </WithFileTreeModel>
             <div className={clsx(styles.selectedFile)}>{<DocumentView document={selected?.document} />}</div>
         </div>
     );
