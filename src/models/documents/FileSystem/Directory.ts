@@ -1,8 +1,8 @@
-import { Document as DocumentProps } from '@tdev-api/document';
+import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
-import { computed } from 'mobx';
+import { action, computed } from 'mobx';
 import File from './File';
 import iFileSystem, { DefaultName, iFSMeta, isFileSystemType, MetaInit } from './iFileSystem';
 
@@ -72,6 +72,70 @@ class Directory extends iFileSystem<'dir'> {
             return [basePath];
         }
         return [...directoryTrees, ...filePaths];
+    }
+
+    @action
+    createDir(name?: string): Promise<Directory | void> {
+        const defaultName = name || DefaultName['dir'];
+        const existingNames = new Set([...this.directories, ...this.files].map((f) => f.name));
+        let nr = 0;
+        while (existingNames.has(`${defaultName} ${nr > 0 ? ` (${nr})` : ''}`)) {
+            nr++;
+        }
+        return this.store.create({
+            documentRootId: this.documentRootId,
+            parentId: this.id,
+            type: 'dir',
+            data: {
+                name: `${defaultName} ${nr > 0 ? ` (${nr})` : ''}`,
+                isOpen: true
+            }
+        });
+    }
+
+    @action
+    createFile(type: DocumentType, name?: string): Promise<File | void> {
+        const defaultName = name || 'new-file';
+        const fileConfig = this.store.fileExtensions.get(type);
+        if (!fileConfig) {
+            console.error(`No file configuration found for type ${type}`);
+            return Promise.resolve();
+        }
+        const extension = fileConfig.extension;
+        const existingNames = new Set([...this.directories, ...this.files].map((f) => f.name));
+        let nr = 0;
+        while (existingNames.has(`${defaultName}${nr > 0 ? ` (${nr})` : ''}${extension}`)) {
+            nr++;
+        }
+        return this.store
+            .create({
+                documentRootId: this.documentRootId,
+                parentId: this.id,
+                type: 'file',
+                data: {
+                    isOpen: true,
+                    name: `${defaultName}${nr > 0 ? ` (${nr})` : ''}${extension}`
+                }
+            })
+            .then((file) => {
+                if (!file) {
+                    return;
+                }
+                return this.store.create({
+                    documentRootId: this.documentRootId,
+                    parentId: file.id,
+                    type: type,
+                    data: {
+                        ...fileConfig.defaultData
+                    }
+                });
+            })
+            .then((doc) => {
+                if (!doc) {
+                    return;
+                }
+                return doc.parent as File;
+            });
     }
 }
 

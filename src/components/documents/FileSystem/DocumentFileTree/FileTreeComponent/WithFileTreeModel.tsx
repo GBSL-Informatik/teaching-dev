@@ -37,7 +37,7 @@ const WithFileTreeModel = observer((props: Props) => {
     const treeOptions = React.useMemo((): FileTreeOptions => {
         return {
             preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
-            search: true as const, // seems not work ?
+            search: true,
             initialVisibleRowCount: 11,
             initialExpandedPaths: dir?.allFiles
                 .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
@@ -57,6 +57,7 @@ const WithFileTreeModel = observer((props: Props) => {
                     console.error(message);
                 }
             },
+            unsafeCSS: `[data-file-tree-search-container][data-open='false'] { display: none; }`,
             dragAndDrop: {
                 canDrag: (draggedPaths) => true,
                 canDrop: ({ target }) => true,
@@ -93,10 +94,6 @@ const WithFileTreeModel = observer((props: Props) => {
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {
-        setTimeout(() => {
-            console.log('close search');
-            model.closeSearch();
-        }, 1000);
         const onUnload = () => {
             const folders = dir?.allFiles.filter((d) => d.type === 'dir' && d.filePath) ?? [];
             folders.forEach((dir) => {

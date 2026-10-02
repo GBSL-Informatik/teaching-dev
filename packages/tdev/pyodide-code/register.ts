@@ -25,6 +25,10 @@ const register = () => {
             return undefined;
         }
     });
+    rootStore.documentStore.registerFileExtension('pyodide_code', {
+        extension: '.pyo',
+        defaultData: { code: '' }
+    });
 };
 
 register();

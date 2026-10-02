@@ -10,6 +10,7 @@ import {
     Document as DocumentProps,
     DocumentType,
     Factory,
+    TypeDataMapping,
     TypeModelMapping
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
@@ -39,6 +40,7 @@ import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
 import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
+import { type Delta } from 'quill';
 import { v4 as uuidv4 } from 'uuid';
 import { RootStore } from './rootStore';
 
@@ -112,10 +114,24 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['dynamic_document_roots', CreateDocumentModel]
 ];
 
+export interface DocumentConfig<T extends DocumentType> {
+    extension: string;
+    icon?: string;
+    defaultData: TypeDataMapping[T];
+}
+
+const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> }> = {
+    code: { extension: '.py', defaultData: { code: '' } },
+    quill_v2: { extension: '.qil', defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta } }
+};
+
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
+    fileExtensions = new Map<DocumentType, DocumentConfig<DocumentType>>(
+        Object.entries(DefaultExtensions) as [DocumentType, DocumentConfig<DocumentType>][]
+    );
 
     constructor(root: RootStore) {
         super();
@@ -131,6 +147,10 @@ class DocumentStore extends iStore<`delete-${string}`> {
         },
         { keepAlive: true }
     );
+
+    registerFileExtension<T extends DocumentType>(type: T, config: DocumentConfig<T>) {
+        this.fileExtensions.set(type, config);
+    }
 
     registerFactory(type: DocumentType, factory: Factory) {
         this.factories.set(type, factory);
