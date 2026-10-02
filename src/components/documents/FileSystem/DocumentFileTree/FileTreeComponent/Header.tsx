@@ -17,8 +17,17 @@ const Header = observer((props: Props) => {
                 icon={mdiMagnify}
                 size={SIZE_S}
                 color="red"
+                onMouseDown={(e) => {
+                    e.preventDefault();
+                }}
                 onClick={() => {
-                    model.openSearch('bl');
+                    if (model.isSearchOpen()) {
+                        console.log('Closing search');
+                        model.closeSearch();
+                        return;
+                    }
+                    console.log('Opening search');
+                    model.openSearch();
                 }}
             />
         </div>

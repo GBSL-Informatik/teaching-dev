@@ -17,6 +17,7 @@ export enum Source {
     API = 'api'
 }
 abstract class iDocument<Type extends DocumentType> {
+    readonly localObjectId: string;
     readonly store: DocumentStore;
     readonly id: string;
     readonly authorId: string;
@@ -48,6 +49,7 @@ abstract class iDocument<Type extends DocumentType> {
         store: DocumentStore,
         saveDebounceTime: number = SAVE_DEBOUNCE_TIME
     ) {
+        this.localObjectId = crypto.randomUUID();
         this.store = store;
         this.id = props.id;
         this.authorId = props.authorId;

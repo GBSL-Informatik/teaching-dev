@@ -1,3 +1,4 @@
+import DocumentContext from '@tdev-components/documents/DocumentContext';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import clsx from 'clsx';
@@ -18,13 +19,14 @@ interface Props {
 const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
     const [selected, setSelected] = React.useState<FileModel | null>(null);
-    const hash = hashery.toHashSync([dir.id, dir.fileTree]);
 
     return (
         <div className={clsx(styles.container)}>
-            <WithFileTreeModel dir={dir} onSelected={setSelected} key={hash}>
-                <FileTreeComponent dir={dir} onSelected={setSelected} />
-            </WithFileTreeModel>
+            <DocumentContext document={dir}>
+                <WithFileTreeModel onSelected={setSelected} key={dir.localObjectId}>
+                    <FileTreeComponent onSelected={setSelected} />
+                </WithFileTreeModel>
+            </DocumentContext>
             <div className={clsx(styles.selectedFile)}>{<DocumentView document={selected?.document} />}</div>
         </div>
     );

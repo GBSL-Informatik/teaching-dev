@@ -4,8 +4,8 @@ import Button from '@tdev-components/shared/Button';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
 import iFileSystem, { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -18,14 +18,14 @@ type FileTreeContextMenuItem = Parameters<RenderContextMenuFn>[0];
 type FileTreeContextMenuOpenContext = Parameters<RenderContextMenuFn>[1];
 
 interface Props {
-    dir: Directory;
     item: FileTreeContextMenuItem;
     context: FileTreeContextMenuOpenContext;
 }
 
 const ContextMenu = observer((props: Props) => {
-    const { dir, item, context } = props;
+    const { item, context } = props;
     const pos = context.anchorRect;
+    const dir = useDocument<'dir'>();
     const documentStore = useStore('documentStore');
     const model = useFileTreeModel();
 
