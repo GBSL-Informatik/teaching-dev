@@ -28,10 +28,12 @@ export const onRename = (dir: Directory | undefined): RenameAction => {
             console.error(`New name cannot contain slashes: ${newName}`);
             return;
         }
-        if (file.type === 'file') {
-            const ext = (file as File).fileExtension.toLowerCase();
-            if (ext && !newName.toLowerCase().endsWith(`.${ext}`)) {
-                newName = `${newName}.${ext}`;
+        if (file.type === 'file' && (file as File).document) {
+            if ((file as File).document.type !== 'script') {
+                const ext = (file as File).fileExtension.toLowerCase();
+                if (ext && !newName.toLowerCase().endsWith(`.${ext}`)) {
+                    newName = `${newName}.${ext}`;
+                }
             }
         }
         file.setName(newName);
