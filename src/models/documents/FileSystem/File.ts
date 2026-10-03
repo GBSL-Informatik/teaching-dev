@@ -27,6 +27,9 @@ class File extends iFileSystem<'file'> {
 
     @computed
     get fileExtension() {
+        if (this.document && this.store.fileExtensions.has(this.document.type)) {
+            return this.store.fileExtensions.get(this.document.type)!.extension.replace(/^\./, '');
+        }
         const parts = this.name.split('.');
         if (parts.length < 2) {
             return '';

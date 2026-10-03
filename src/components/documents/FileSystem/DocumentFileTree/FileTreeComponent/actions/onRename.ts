@@ -1,5 +1,6 @@
 import { type FileTreeRenameEvent } from '@pierre/trees';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
+import File from '@tdev-models/documents/FileSystem/File';
 
 type RenameAction = ((event: FileTreeRenameEvent) => void) | undefined;
 
@@ -22,12 +23,17 @@ export const onRename = (dir: Directory | undefined): RenameAction => {
             console.error(`Destination path already exists: ${destinationPath}`);
             return;
         }
-        const newName = destinationPath.replace(file.basePath, '');
+        let newName = destinationPath.replace(file.basePath, '');
         if (newName.includes('/')) {
             console.error(`New name cannot contain slashes: ${newName}`);
             return;
         }
-        console.log('setting new name', newName, 'for file', file.filePath);
+        if (file.type === 'file') {
+            const ext = (file as File).fileExtension.toLowerCase();
+            if (ext && !newName.toLowerCase().endsWith(`.${ext}`)) {
+                newName = `${newName}.${ext}`;
+            }
+        }
         file.setName(newName);
     };
 };

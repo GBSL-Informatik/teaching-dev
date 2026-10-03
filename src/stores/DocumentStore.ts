@@ -1,3 +1,4 @@
+import { mdiFeather, mdiLanguagePython } from '@mdi/js';
 import {
     Access,
     ADMIN_EDITABLE_DOCUMENTS,
@@ -117,12 +118,18 @@ const FactoryDefault: [DocumentType, Factory][] = [
 export interface DocumentConfig<T extends DocumentType> {
     extension: string;
     icon?: string;
+    iconColor?: string;
     defaultData: TypeDataMapping[T];
 }
 
 const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> }> = {
-    code: { extension: '.py', defaultData: { code: '' } },
-    quill_v2: { extension: '.qil', defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta } }
+    code: { extension: '.py', defaultData: { code: '' }, icon: mdiLanguagePython, iconColor: '#ffd107' },
+    quill_v2: {
+        extension: '.qil',
+        icon: mdiFeather,
+        iconColor: 'var(--ifm-color-content)',
+        defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta }
+    }
 };
 
 class DocumentStore extends iStore<`delete-${string}`> {

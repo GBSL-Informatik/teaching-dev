@@ -129,7 +129,10 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
 
     @action
     setName(name: string) {
-        this.setData({ name: name }, Source.LOCAL, new Date());
+        if (name.trim() === this.name || name.trim() === '') {
+            return;
+        }
+        this.setData({ name: name.trim() }, Source.LOCAL, new Date());
     }
 
     @action

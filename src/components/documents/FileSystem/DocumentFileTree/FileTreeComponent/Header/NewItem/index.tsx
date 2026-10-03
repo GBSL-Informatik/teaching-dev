@@ -26,7 +26,7 @@ const NewItem = observer((props: Props) => {
                     <Button icon={mdiFilePlus} size={SIZE_S} noBorder />
                 </span>
             }
-            on={['hover', 'focus', 'click']}
+            on={['hover', 'click']}
             position={['bottom right', 'bottom center', 'bottom left']}
             arrow={false}
         >
@@ -39,6 +39,7 @@ const NewItem = observer((props: Props) => {
                             title={config?.extension || type}
                             text={config?.icon ? (undefined as any) : config?.extension || type}
                             icon={config?.icon}
+                            color={config?.iconColor}
                             size={SIZE_S}
                             iconSide="left"
                             onClick={async () => {

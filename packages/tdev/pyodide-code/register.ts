@@ -1,3 +1,4 @@
+import { mdiLanguagePython } from '@mdi/js';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
@@ -27,6 +28,8 @@ const register = () => {
     });
     rootStore.documentStore.registerFileExtension('pyodide_code', {
         extension: '.pyo',
+        icon: mdiLanguagePython,
+        iconColor: '#3d96e0',
         defaultData: { code: '' }
     });
 };

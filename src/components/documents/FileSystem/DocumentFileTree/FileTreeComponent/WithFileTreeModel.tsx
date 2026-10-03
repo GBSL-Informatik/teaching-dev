@@ -13,7 +13,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { onDropComplete } from './actions/onDropComplete';
 import { onRename } from './actions/onRename';
-import { spriteSheet } from './sprites';
+import { createIconSet } from './createIconSet';
 
 export const FileTreeContext = React.createContext<FileTreeModel | null>(null);
 
@@ -42,14 +42,7 @@ const WithFileTreeModel = observer((props: Props) => {
             initialExpandedPaths: dir?.allFiles
                 .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
                 .map((d) => d.filePath),
-            icons: {
-                set: 'complete',
-                colored: true,
-                spriteSheet: spriteSheet,
-                byFileExtension: {
-                    excalidraw: 'mdi-excalidraw'
-                }
-            },
+            icons: createIconSet(documentStore),
             renaming: {
                 canRename: (item) => true,
                 onRename: onRename(dir),

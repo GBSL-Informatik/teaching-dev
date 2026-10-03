@@ -7,6 +7,7 @@ const register = () => {
     rootStore.documentStore.registerFileExtension('excalidoc', {
         extension: '.excalidraw',
         icon: mdiExcalidraw,
+        iconColor: '#6965db',
         defaultData: {
             elements: [],
             files: {},
