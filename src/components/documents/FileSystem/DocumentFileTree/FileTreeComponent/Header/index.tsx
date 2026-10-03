@@ -25,7 +25,7 @@ const Header = observer((props: Props) => {
                 icon={mdiMagnify}
                 size={SIZE_S}
                 noBorder
-                color={search.isOpen ? 'primary' : undefined}
+                color={search.isOpen ? 'primary' : 'grey'}
                 onMouseDown={(e) => {
                     e.preventDefault();
                 }}
@@ -37,11 +37,13 @@ const Header = observer((props: Props) => {
                     search.open();
                 }}
             />
+            <NewItem />
             <Button
                 icon={mdiFolderPlus}
                 size={SIZE_S}
+                title="Neuer Ordner"
+                color="grey"
                 noBorder
-                color={undefined}
                 onMouseDown={(e) => {
                     e.preventDefault();
                 }}
@@ -61,7 +63,6 @@ const Header = observer((props: Props) => {
                     }
                 }}
             />
-            <NewItem />
         </div>
     );
 });

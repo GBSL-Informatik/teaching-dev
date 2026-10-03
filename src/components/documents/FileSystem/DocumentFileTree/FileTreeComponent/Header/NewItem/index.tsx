@@ -23,7 +23,7 @@ const NewItem = observer((props: Props) => {
         <Popup
             trigger={
                 <span>
-                    <Button icon={mdiFilePlus} size={SIZE_S} noBorder />
+                    <Button icon={mdiFilePlus} size={SIZE_S} noBorder color="grey" />
                 </span>
             }
             on={['hover', 'click']}
