@@ -1,4 +1,4 @@
-import { mdiFeather, mdiLanguageHtml5 } from '@mdi/js';
+import { mdiFeather, mdiLanguageHtml5, mdiSvg } from '@mdi/js';
 import {
     Access,
     ADMIN_EDITABLE_DOCUMENTS,
@@ -37,6 +37,7 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
+import { DefaultHtmlCode, DefaultSvgCode } from '@tdev/helpers/defaultData';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
 import { action, computed, observable } from 'mobx';
@@ -122,8 +123,18 @@ export interface DocumentConfig<T extends DocumentType> {
     defaultData: TypeDataMapping[T];
 }
 
-const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> }> = {
-    code: { extension: '.html', defaultData: { code: '' }, icon: mdiLanguageHtml5, iconColor: '#a81414' },
+const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> | DocumentConfig<K>[] }> = {
+    code: [
+        {
+            extension: '.html',
+            icon: mdiLanguageHtml5,
+            iconColor: '#a81414',
+            defaultData: {
+                code: DefaultHtmlCode
+            }
+        },
+        { extension: '.svg', icon: mdiSvg, iconColor: '#2d27c4', defaultData: { code: DefaultSvgCode } }
+    ],
     quill_v2: {
         extension: '.qil',
         icon: mdiFeather,
@@ -136,7 +147,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
-    fileExtensions = new Map<DocumentType, DocumentConfig<DocumentType>>(
+    fileExtensions = new Map<DocumentType, DocumentConfig<DocumentType> | DocumentConfig<DocumentType>[]>(
         Object.entries(DefaultExtensions) as [DocumentType, DocumentConfig<DocumentType>][]
     );
 
@@ -155,7 +166,7 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
-    registerFileExtension<T extends DocumentType>(type: T, config: DocumentConfig<T>) {
+    registerFileExtension<T extends DocumentType>(type: T, config: DocumentConfig<T> | DocumentConfig<T>[]) {
         this.fileExtensions.set(type, config);
     }
 

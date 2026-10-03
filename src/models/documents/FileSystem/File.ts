@@ -26,16 +26,29 @@ class File extends iFileSystem<'file'> {
     }
 
     @computed
-    get fileExtension() {
-        if (this.document && this.store.fileExtensions.has(this.document.type)) {
-            return this.store.fileExtensions.get(this.document.type)!.extension.replace(/^\./, '');
+    get allowedFileExtensions() {
+        if (!this.document || !this.store.fileExtensions.has(this.document.type)) {
+            return [];
+        }
+        const _configs = this.store.fileExtensions.get(this.document.type)!;
+        const configs = Array.isArray(_configs) ? _configs : [_configs];
+        return configs.map((c) => c.extension.toLowerCase().replace(/^\./, ''));
+    }
+
+    @computed
+    get fileExtension(): string {
+        if (this.allowedFileExtensions.length === 1) {
+            return '';
+        }
+        if (this.allowedFileExtensions.length === 1) {
+            return this.allowedFileExtensions[0];
         }
         const parts = this.name.split('.');
         if (parts.length < 2) {
-            return '';
+            return this.allowedFileExtensions[0] || '';
         }
         const ext = parts[parts.length - 1].toLowerCase();
-        return ext;
+        return this.allowedFileExtensions.includes(ext) ? ext : this.allowedFileExtensions[0];
     }
 
     @computed

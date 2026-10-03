@@ -31,34 +31,40 @@ const NewItem = observer((props: Props) => {
             arrow={false}
         >
             <Card classNames={{ body: clsx(styles.newItem) }}>
-                {createableTypes.map((type) => {
-                    const config = documentStore.fileExtensions.get(type);
-                    return (
-                        <Button
-                            key={type}
-                            title={config?.extension || type}
-                            text={config?.icon ? (undefined as any) : config?.extension || type}
-                            icon={config?.icon}
-                            color={config?.iconColor}
-                            size={SIZE_S}
-                            iconSide="left"
-                            onClick={async () => {
-                                const path = model.getFocusedPath();
-                                const focused = root.allFiles.find((f) => f.filePath === path);
-                                if (!focused) {
-                                    return;
-                                }
-                                const dir = focused.type === 'dir' ? focused : focused.parent;
-                                if (!dir || dir.type !== 'dir') {
-                                    return;
-                                }
-                                const newFile = await (dir as Directory).createFile(type);
-                                if (newFile) {
-                                    model.startRenaming(newFile.filePath);
-                                }
-                            }}
-                        />
-                    );
+                {createableTypes.flatMap((type) => {
+                    const _configs = documentStore.fileExtensions.get(type) ?? [];
+                    const configs = Array.isArray(_configs) ? _configs : [_configs];
+                    return configs.map((config) => {
+                        return (
+                            <Button
+                                key={type}
+                                title={config?.extension || type}
+                                text={config?.icon ? (undefined as any) : config?.extension || type}
+                                icon={config?.icon}
+                                color={config?.iconColor}
+                                size={SIZE_S}
+                                iconSide="left"
+                                onClick={async () => {
+                                    const path = model.getFocusedPath();
+                                    const focused = root.allFiles.find((f) => f.filePath === path);
+                                    if (!focused) {
+                                        return;
+                                    }
+                                    const dir = focused.type === 'dir' ? focused : focused.parent;
+                                    if (!dir || dir.type !== 'dir') {
+                                        return;
+                                    }
+                                    const newFile = await (dir as Directory).createFile(
+                                        type,
+                                        `new-file${config.extension}`
+                                    );
+                                    if (newFile) {
+                                        model.startRenaming(newFile.filePath);
+                                    }
+                                }}
+                            />
+                        );
+                    });
                 })}
             </Card>
         </Popup>

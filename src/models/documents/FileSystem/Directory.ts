@@ -96,17 +96,31 @@ class Directory extends iFileSystem<'dir'> {
     @action
     createFile(type: DocumentType, name?: string): Promise<File | void> {
         const defaultName = name || 'new-file';
-        const fileConfig = this.store.fileExtensions.get(type);
-        if (!fileConfig) {
+        const configs = this.store.fileExtensions.get(type);
+        if (!configs) {
             console.error(`No file configuration found for type ${type}`);
             return Promise.resolve();
         }
-        const extension = fileConfig.extension;
+        const fileConfigs = Array.isArray(configs) ? configs : [configs];
+        const extensions = fileConfigs.map((c) => c.extension);
+        let extension = defaultName.includes('.')
+            ? `.${defaultName.split('.').pop()!.toLowerCase()}`
+            : extensions[0] || '';
+        if (!extensions.includes(extension)) {
+            extension = extensions[0] || '';
+        }
+        const fileConfig = fileConfigs.find((c) => c.extension === extension) || fileConfigs[0];
         const existingNames = new Set([...this.directories, ...this.files].map((f) => f.name));
         let nr = 0;
-        while (existingNames.has(`${defaultName}${nr > 0 ? ` (${nr})` : ''}${extension}`)) {
+        const baseName = defaultName.endsWith(extension)
+            ? defaultName.slice(0, -extension.length)
+            : defaultName;
+        const getName = (nr: number) => `${baseName}${nr > 0 ? ` (${nr})` : ''}${extension}`;
+
+        while (extensions.some((e) => existingNames.has(getName(nr)))) {
             nr++;
         }
+
         return this.store
             .create({
                 documentRootId: this.documentRootId,
@@ -114,7 +128,7 @@ class Directory extends iFileSystem<'dir'> {
                 type: 'file',
                 data: {
                     isOpen: true,
-                    name: `${defaultName}${nr > 0 ? ` (${nr})` : ''}${extension}`
+                    name: getName(nr)
                 }
             })
             .then((file) => {
@@ -126,7 +140,7 @@ class Directory extends iFileSystem<'dir'> {
                     parentId: file.id,
                     type: type,
                     data: {
-                        ...fileConfig.defaultData
+                        ...(fileConfig.defaultData ?? {})
                     }
                 });
             })
