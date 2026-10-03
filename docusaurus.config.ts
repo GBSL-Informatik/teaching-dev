@@ -2,9 +2,9 @@ require('dotenv').config();
 import logger from '@docusaurus/logger';
 import type { VersionOptions } from '@docusaurus/plugin-content-docs';
 import type {
-    EditThisPageOption,
-    ShowEditThisPage,
-    TdevConfig
+  EditThisPageOption,
+  ShowEditThisPage,
+  TdevConfig
 } from '@tdev/siteConfig/siteConfig';
 
 import type * as Preset from '@docusaurus/preset-classic';
@@ -21,29 +21,29 @@ import { v4 as uuidv4 } from 'uuid';
 import pageIndexPlugin from './packages/tdev/page-index/plugin';
 import { useTdevContentPath } from './src/siteConfig/helpers';
 import {
-    recommendedBeforeDefaultRemarkPlugins,
-    recommendedRehypePlugins,
-    recommendedRemarkPlugins,
+  recommendedBeforeDefaultRemarkPlugins,
+  recommendedRehypePlugins,
+  recommendedRemarkPlugins,
 } from './src/siteConfig/markdownPluginConfigs';
 import {
-    accountSwitcher,
-    blog,
-    devModeAccessLocalFS,
-    docs,
-    gitHub,
-    loginProfileButton,
-    personalSpaceOverlay,
-    requestTarget,
-    taskStateOverview
+  accountSwitcher,
+  blog,
+  devModeAccessLocalFS,
+  docs,
+  gitHub,
+  loginProfileButton,
+  personalSpaceOverlay,
+  requestTarget,
+  taskStateOverview
 } from './src/siteConfig/navbarItems';
 import {
-    aliasConfigurationPlugin,
-    dynamicRouterPluginConfig,
-    rsDoctorPluginConfig,
-    sassPluginConfig,
-    sentryPluginConfig,
-    socketIoNoDepWarningsPluginConfig,
-    stackblitzRspackTargetPluginConfig
+  aliasConfigurationPlugin,
+  dynamicRouterPluginConfig,
+  rsDoctorPluginConfig,
+  sassPluginConfig,
+  sentryPluginConfig,
+  socketIoNoDepWarningsPluginConfig,
+  stackblitzRspackTargetPluginConfig
 } from './src/siteConfig/pluginConfigs';
 import { applyTransformers } from './src/siteConfig/transformers';
 import { withSiteConfig } from './src/siteConfig/withSiteConfig';

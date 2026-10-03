@@ -12,7 +12,7 @@ export interface MetaInit {
 
 type SystemType = 'file' | 'dir';
 
-export const DefaultName = {
+export const DefaultName: Record<SystemType, string> = {
     ['file']: 'Dokument',
     ['dir']: 'Ordner'
 };
@@ -35,7 +35,7 @@ export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
     }
 }
 
-abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
+abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<T> {
     @observable accessor name: string;
     @observable accessor isOpen: boolean = true;
     @observable accessor isEditing: boolean = false;
@@ -76,7 +76,34 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
     abstract get meta(): iFSMeta<T>;
 
     @computed
-    get path() {
+    get filePath(): string {
+        if (!this.parentId) {
+            if (this.type === 'dir') {
+                return `${this.name || this.id}/`;
+            }
+            return this.name;
+        }
+        const name = this.type === 'dir' ? `${this.name}/` : this.name;
+        if (this.parent?.type !== 'dir') {
+            return name;
+        }
+        const basePath = this.parent.filePath ? this.parent.filePath : '';
+        return `${basePath}${name}`;
+    }
+
+    @computed
+    get basePath(): string {
+        if (!this.parentId) {
+            return '';
+        }
+        if (this.parent?.type !== 'dir') {
+            return '';
+        }
+        return this.parent.filePath;
+    }
+
+    @computed
+    get path(): DocumentModelType[] {
         const path: DocumentModelType[] = [];
         let parent = this.parent;
         while (parent) {
@@ -102,7 +129,10 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     @action
     setName(name: string) {
-        this.setData({ name: name }, Source.LOCAL, new Date());
+        if (name.trim() === this.name || name.trim() === '') {
+            return;
+        }
+        this.setData({ name: name.trim() }, Source.LOCAL, new Date());
     }
 
     @action
@@ -110,5 +140,9 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
         return this.store.apiDelete(this as unknown as DocumentModelType);
     }
 }
+
+export const isFileSystemType = (doc: iDocument<any>): doc is iFileSystem => {
+    return doc.type === 'file' || doc.type === 'dir';
+};
 
 export default iFileSystem;

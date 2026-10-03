@@ -1,6 +1,6 @@
 import CodeEditorComponent from '@tdev-components/documents/CodeEditor';
-import HtmlEditor from '@tdev-components/documents/CodeEditor/HtmlEditor';
-import SvgEditor from '@tdev-components/documents/CodeEditor/SvgEditor';
+import { HtmlEditorComponent } from '@tdev-components/documents/CodeEditor/HtmlEditor';
+import { SvgEditorComponent } from '@tdev-components/documents/CodeEditor/SvgEditor';
 import iCode from '@tdev-models/documents/iCode';
 import { observer } from 'mobx-react-lite';
 
@@ -12,9 +12,9 @@ const CodeEditorSelector = observer((props: Props) => {
     const { code } = props;
     switch (code.derivedLang) {
         case 'html':
-            return <HtmlEditor id={code.id} />;
+            return <HtmlEditorComponent doc={code} />;
         case 'svg':
-            return <SvgEditor id={code.id} />;
+            return <SvgEditorComponent doc={code} />;
         default:
             return <CodeEditorComponent code={code} />;
     }

@@ -1,10 +1,11 @@
 import {
+    DocumentModelType,
+    TaskableType,
+    TypeModelMapping,
     type CodeType,
     type ContainerType,
     type ContainerTypeModelMapping,
-    type DocumentType,
-    TaskableType,
-    TypeModelMapping
+    type DocumentType
 } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { ModelMeta as ChoiceMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
@@ -57,6 +58,7 @@ class ComponentStore {
     readonly root: RootStore;
     components = new Map<ContainerType, ContainerComponent>();
     editorComponents = new Map<CodeType, EditorComponent>();
+    documentViews = new Map<DocumentType, React.ComponentType<{ document: DocumentModelType }>>();
     taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
         ['task_state', new TaskStateMeta({})],
         ['progress_state', new ProgressStateMeta({})],
@@ -130,6 +132,13 @@ class ComponentStore {
 
     registerEditorComponent<T extends CodeType>(type: T, component: EditorComponent<T>) {
         this.editorComponents.set(type, component as EditorComponent<any>);
+    }
+
+    registerDocumentView<T extends DocumentType>(
+        type: T,
+        component: React.ComponentType<{ document: TypeModelMapping[T] }>
+    ) {
+        this.documentViews.set(type, component as React.ComponentType<{ document: DocumentModelType }>);
     }
 
     createEditorMeta<T extends CodeType>(type: T, props: Partial<MetaInit>): iCodeMeta<T> {

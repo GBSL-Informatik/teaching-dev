@@ -1,3 +1,4 @@
+import { mdiFeather, mdiLanguageHtml5, mdiSvg } from '@mdi/js';
 import {
     Access,
     ADMIN_EDITABLE_DOCUMENTS,
@@ -10,6 +11,7 @@ import {
     Document as DocumentProps,
     DocumentType,
     Factory,
+    TypeDataMapping,
     TypeModelMapping
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
@@ -22,6 +24,7 @@ import Code from '@tdev-models/documents/Code';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import QuillV2 from '@tdev-models/documents/QuillV2';
@@ -34,10 +37,12 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
+import { DefaultHtmlCode, DefaultSvgCode } from '@tdev/helpers/defaultData';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
 import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
+import { type Delta } from 'quill';
 import { v4 as uuidv4 } from 'uuid';
 import { RootStore } from './rootStore';
 
@@ -111,10 +116,40 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['dynamic_document_roots', CreateDocumentModel]
 ];
 
+export interface DocumentConfig<T extends DocumentType> {
+    extension: string;
+    icon?: string;
+    iconColor?: string;
+    defaultData: TypeDataMapping[T];
+}
+
+const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> | DocumentConfig<K>[] }> = {
+    code: [
+        {
+            extension: '.html',
+            icon: mdiLanguageHtml5,
+            iconColor: '#a81414',
+            defaultData: {
+                code: DefaultHtmlCode
+            }
+        },
+        { extension: '.svg', icon: mdiSvg, iconColor: '#2d27c4', defaultData: { code: DefaultSvgCode } }
+    ],
+    quill_v2: {
+        extension: '.qil',
+        icon: mdiFeather,
+        iconColor: 'var(--ifm-color-content)',
+        defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta }
+    }
+};
+
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
+    fileExtensions = new Map<DocumentType, DocumentConfig<DocumentType> | DocumentConfig<DocumentType>[]>(
+        Object.entries(DefaultExtensions) as [DocumentType, DocumentConfig<DocumentType>][]
+    );
 
     constructor(root: RootStore) {
         super();
@@ -130,6 +165,10 @@ class DocumentStore extends iStore<`delete-${string}`> {
         },
         { keepAlive: true }
     );
+
+    registerFileExtension<T extends DocumentType>(type: T, config: DocumentConfig<T> | DocumentConfig<T>[]) {
+        this.fileExtensions.set(type, config);
+    }
 
     registerFactory(type: DocumentType, factory: Factory) {
         this.factories.set(type, factory);
@@ -456,11 +495,13 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    relinkParent(document: DocumentModelType, newParent: DocumentModelType) {
+    relinkParent(document: DocumentModelType | iFileSystem, newParent: DocumentModelType | iFileSystem) {
+        console.log('Relinking', document.id, 'to new parent', newParent.id);
         return this.withAbortController(`save-${document.id}`, (sig) => {
             return apiLinkTo(document.id, newParent.id, sig.signal);
         })
             .then((res) => {
+                console.log('Relinking successful', res.data);
                 this.addToStore(res.data);
             })
             .catch((err) => {

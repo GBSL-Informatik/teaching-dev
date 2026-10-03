@@ -1,11 +1,13 @@
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { CodeType } from '@tdev-api/document';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { CodeMeta } from '@tdev-models/documents/Code';
+import iCode from '@tdev-models/documents/iCode';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
@@ -33,10 +35,21 @@ const SvgEditor = observer((props: Props) => {
     if (!isBrowser || !doc) {
         return <CodeBlock language="svg">{props.code}</CodeBlock>;
     }
-    if (!doc.canDisplay && props.id && !userStore.isUserSwitched) {
+
+    return <SvgEditorComponent doc={doc as iCode<CodeType>} />;
+});
+
+interface ComponentProps {
+    doc: iCode<CodeType>;
+}
+
+export const SvgEditorComponent = observer((props: ComponentProps) => {
+    const { doc } = props;
+    const userStore = useStore('userStore');
+    if (!doc.canDisplay && !userStore.isUserSwitched) {
         return (
             <div>
-                <PermissionsPanel documentRootId={props.id} />
+                <PermissionsPanel documentRootId={doc.id} />
             </div>
         );
     }

@@ -1,5 +1,7 @@
+import { mdiLanguagePython } from '@mdi/js';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
+import DocumentView from './components/DocumentView';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import Meta from './components/Meta';
@@ -20,6 +22,13 @@ const register = () => {
         }
     });
     rootStore.documentStore.registerFactory('script', createModel);
+    rootStore.documentStore.registerFileExtension('script', {
+        extension: '.py',
+        icon: mdiLanguagePython,
+        iconColor: '#ffd107',
+        defaultData: { code: '' }
+    });
+    rootStore.componentStore.registerDocumentView('script', DocumentView);
 };
 
 register();

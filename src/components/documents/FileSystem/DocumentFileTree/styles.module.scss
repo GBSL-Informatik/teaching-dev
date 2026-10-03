@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    flex-wrap: wrap;
+    .selectedFile {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 300px;
+        max-width: 1200px;
+    }
+}

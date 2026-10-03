@@ -8,27 +8,21 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DocumentType } from '@tdev-api/document';
+import SyncStatus from '@tdev-components/SyncStatus';
 import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
-import iCode from '@tdev-models/documents/iCode';
-import {
-    ExcalidocComponent,
-    ExcalidrawColor,
-    mdiExcalidraw,
-    mdiExcalidrawOutline
-} from '@tdev/excalidoc/Component';
+import { ExcalidrawColor, mdiExcalidraw, mdiExcalidrawOutline } from '@tdev/excalidoc/Component';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import SyncStatus from '../../../SyncStatus';
-import { QuillV2Component } from '../../QuillV2';
 import Actions from '../Actions';
+import DocumentView from '../DocumentView';
 import FsDetails from '../FsDetails';
 import Name from '../Name';
 import shared from '../shared.module.scss';
-import CodeEditorSelector from './CodeEditorSelector';
 import styles from './styles.module.scss';
 
 interface Props {
     file: FileModel;
+    className?: string;
 }
 
 const getColor = (type?: DocumentType) => {
@@ -71,11 +65,11 @@ const getOpenIcon = (type?: DocumentType) => {
 };
 
 const File = observer((props: Props) => {
-    const { file } = props;
+    const { file, className } = props;
     return (
         <FsDetails
             model={file}
-            className={clsx(shared.fsItem, styles.file)}
+            className={clsx(shared.fsItem, styles.file, className)}
             summary={
                 <summary className={clsx(shared.summary, styles.summary)}>
                     <Icon
@@ -95,23 +89,7 @@ const File = observer((props: Props) => {
             }
         >
             <div className={clsx(shared.content, styles.content)}>
-                {file.document && file.isOpen && (
-                    <>
-                        {file.document.type === 'script' && (
-                            <CodeEditorSelector code={file.document as iCode} />
-                        )}
-                        {file.document.type === 'quill_v2' && (
-                            <QuillV2Component quillDoc={file.document} className={styles.quill} />
-                        )}
-                        {file.document.type === 'excalidoc' && (
-                            <ExcalidocComponent
-                                documentId={file.document.id}
-                                height="80vh"
-                                allowImageInsertion
-                            />
-                        )}
-                    </>
-                )}
+                {file.isOpen && <DocumentView document={file.document} />}
             </div>
         </FsDetails>
     );
