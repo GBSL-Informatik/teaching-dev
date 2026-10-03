@@ -1,6 +1,6 @@
 import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import DocumentStore from '@tdev-stores/DocumentStore';
+import DocumentStore, { DocumentConfig } from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed } from 'mobx';
 import File from './File';
@@ -77,80 +77,107 @@ class Directory extends iFileSystem<'dir'> {
     @action
     createDir(name?: string): Promise<Directory | void> {
         const defaultName = name || DefaultName['dir'];
-        const existingNames = new Set([...this.directories, ...this.files].map((f) => f.name));
-        let nr = 0;
-        while (existingNames.has(`${defaultName} ${nr > 0 ? ` (${nr})` : ''}`)) {
-            nr++;
-        }
+        const directoryName = this.getUniqueName(defaultName);
         return this.store.create({
             documentRootId: this.documentRootId,
             parentId: this.id,
             type: 'dir',
             data: {
-                name: `${defaultName} ${nr > 0 ? ` (${nr})` : ''}`,
+                name: directoryName,
                 isOpen: true
             }
         });
     }
 
     @action
-    createFile(type: DocumentType, name?: string): Promise<File | void> {
-        const defaultName = name || 'new-file';
-        const configs = this.store.fileExtensions.get(type);
-        if (!configs) {
+    async createFile(type: DocumentType, name?: string): Promise<File | void> {
+        const requestedName = name || 'new-file';
+        const fileConfig = this.findFileConfig(type, requestedName);
+        if (!fileConfig) {
+            return;
+        }
+
+        const fileName = this.getUniqueFileName(requestedName, fileConfig.extension);
+        const file = await this.createFileContainer(fileName);
+        if (!file) {
+            return;
+        }
+
+        const document = await this.createFileContent(file.id, type, fileConfig);
+        if (!document) {
+            return;
+        }
+
+        console.log('Created file', document.data);
+        return document.parent as File;
+    }
+
+    private findFileConfig(
+        type: DocumentType,
+        requestedName: string
+    ): DocumentConfig<DocumentType> | undefined {
+        const registeredConfigs = this.store.fileExtensions.get(type);
+        const fileConfigs = Array.isArray(registeredConfigs)
+            ? registeredConfigs
+            : registeredConfigs
+              ? [registeredConfigs]
+              : [];
+        if (fileConfigs.length === 0) {
             console.error(`No file configuration found for type ${type}`);
-            return Promise.resolve();
-        }
-        const fileConfigs = Array.isArray(configs) ? configs : [configs];
-        const extensions = fileConfigs.map((c) => c.extension);
-        let extension = defaultName.includes('.')
-            ? `.${defaultName.split('.').pop()!.toLowerCase()}`
-            : extensions[0] || '';
-        if (!extensions.includes(extension)) {
-            extension = extensions[0] || '';
-        }
-        const fileConfig = fileConfigs.find((c) => c.extension === extension) || fileConfigs[0];
-        const existingNames = new Set([...this.directories, ...this.files].map((f) => f.name));
-        let nr = 0;
-        const baseName = defaultName.endsWith(extension)
-            ? defaultName.slice(0, -extension.length)
-            : defaultName;
-        const getName = (nr: number) => `${baseName}${nr > 0 ? ` (${nr})` : ''}${extension}`;
-
-        while (extensions.some((e) => existingNames.has(getName(nr)))) {
-            nr++;
+            return;
         }
 
-        return this.store
-            .create({
-                documentRootId: this.documentRootId,
-                parentId: this.id,
-                type: 'file',
-                data: {
-                    isOpen: true,
-                    name: getName(nr)
-                }
-            })
-            .then((file) => {
-                if (!file) {
-                    return;
-                }
-                return this.store.create({
-                    documentRootId: this.documentRootId,
-                    parentId: file.id,
-                    type: type,
-                    data: {
-                        ...(fileConfig.defaultData ?? {})
-                    }
-                });
-            })
-            .then((doc) => {
-                if (!doc) {
-                    return;
-                }
-                console.log('Created file', doc.data);
-                return doc.parent as File;
-            });
+        const requestedExtension = requestedName.includes('.')
+            ? `.${requestedName.split('.').pop()!.toLowerCase()}`
+            : '';
+        return (
+            fileConfigs.find((config) => config.extension.toLowerCase() === requestedExtension) ??
+            fileConfigs[0]
+        );
+    }
+
+    private getUniqueFileName(requestedName: string, extension: string): string {
+        const baseName =
+            extension && requestedName.toLowerCase().endsWith(extension.toLowerCase())
+                ? requestedName.slice(0, -extension.length)
+                : requestedName;
+
+        return this.getUniqueName(baseName, extension);
+    }
+
+    private getUniqueName(baseName: string, extension: string = ''): string {
+        const existingNames = new Set([...this.directories, ...this.files].map((item) => item.name));
+        let suffix = 0;
+        let uniqueName = `${baseName}${extension}`;
+
+        while (existingNames.has(uniqueName)) {
+            suffix++;
+            uniqueName = `${baseName} (${suffix})${extension}`;
+        }
+        return uniqueName;
+    }
+
+    private createFileContainer(fileName: string) {
+        return this.store.create({
+            documentRootId: this.documentRootId,
+            parentId: this.id,
+            type: 'file',
+            data: {
+                isOpen: true,
+                name: fileName
+            }
+        });
+    }
+
+    private createFileContent(fileId: string, type: DocumentType, fileConfig: DocumentConfig<DocumentType>) {
+        return this.store.create({
+            documentRootId: this.documentRootId,
+            parentId: fileId,
+            type,
+            data: {
+                ...(fileConfig.defaultData ?? {})
+            }
+        });
     }
 }
 

@@ -37,11 +37,11 @@ const NewItem = observer((props: Props) => {
                     return configs.map((config) => {
                         return (
                             <Button
-                                key={type}
-                                title={config?.extension || type}
-                                text={config?.icon ? (undefined as any) : config?.extension || type}
-                                icon={config?.icon}
-                                color={config?.iconColor}
+                                key={config.extension}
+                                title={config.extension || type}
+                                text={config.icon ? (undefined as any) : config?.extension || type}
+                                icon={config.icon}
+                                color={config.iconColor}
                                 size={SIZE_S}
                                 iconSide="left"
                                 onClick={async () => {
