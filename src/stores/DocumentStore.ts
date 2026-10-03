@@ -1,4 +1,4 @@
-import { mdiFeather, mdiLanguagePython } from '@mdi/js';
+import { mdiFeather, mdiLanguageHtml5 } from '@mdi/js';
 import {
     Access,
     ADMIN_EDITABLE_DOCUMENTS,
@@ -123,7 +123,7 @@ export interface DocumentConfig<T extends DocumentType> {
 }
 
 const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> }> = {
-    code: { extension: '.py', defaultData: { code: '' }, icon: mdiLanguagePython, iconColor: '#ffd107' },
+    code: { extension: '.html', defaultData: { code: '' }, icon: mdiLanguageHtml5, iconColor: '#a81414' },
     quill_v2: {
         extension: '.qil',
         icon: mdiFeather,
