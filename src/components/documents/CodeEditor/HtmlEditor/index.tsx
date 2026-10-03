@@ -1,11 +1,13 @@
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { CodeType } from '@tdev-api/document';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import Button from '@tdev-components/shared/Button';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { CodeMeta } from '@tdev-models/documents/Code';
+import iCode from '@tdev-models/documents/iCode';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
@@ -47,10 +49,37 @@ const HtmlEditor = observer((props: Props) => {
     if (!isBrowser || !doc) {
         return <CodeBlock language="html">{props.code}</CodeBlock>;
     }
-    if (!doc.canDisplay && props.id && !userStore.isUserSwitched) {
+
+    return (
+        <HtmlEditorComponent
+            doc={doc as iCode<CodeType>}
+            maxHeight={props.maxHeight}
+            minHeight={props.minHeight}
+            showLineNumbers={props.showLineNumbers}
+            htmlTransformer={props.htmlTransformer}
+            onNavigate={props.onNavigate}
+            allowSameOrigin={props.allowSameOrigin}
+        />
+    );
+});
+
+interface ComponentProps {
+    doc: iCode<CodeType>;
+    maxHeight?: string | number;
+    minHeight?: string | number;
+    showLineNumbers?: boolean;
+    htmlTransformer?: (raw: string) => string;
+    onNavigate?: (href: string) => void;
+    allowSameOrigin?: boolean;
+}
+
+export const HtmlEditorComponent = observer((props: ComponentProps) => {
+    const { doc } = props;
+    const userStore = useStore('userStore');
+    if (!doc.canDisplay && !userStore.isUserSwitched) {
         return (
             <div>
-                <PermissionsPanel documentRootId={props.id} />
+                <PermissionsPanel documentRootId={doc.id} />
             </div>
         );
     }
