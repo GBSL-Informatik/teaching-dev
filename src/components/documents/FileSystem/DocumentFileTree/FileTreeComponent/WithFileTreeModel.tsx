@@ -38,7 +38,6 @@ const WithFileTreeModel = observer((props: Props) => {
         return {
             preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
             search: true,
-            initialVisibleRowCount: 11,
             initialExpandedPaths: dir?.allFiles
                 .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
                 .map((d) => d.filePath),

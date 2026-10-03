@@ -10,16 +10,18 @@ import { useFileTreeModel } from './WithFileTreeModel';
 interface Props {
     onSelected: (document: FileModel | null) => void;
     className?: string;
+    height?: string;
 }
 const FileTreeComponent = observer((props: Props) => {
     const model = useFileTreeModel();
 
     return (
         <div className={clsx(props.className)}>
+            {props.height}
             <FileTree
                 model={model}
                 className={clsx(styles.tree, 'rounded-lg border')}
-                style={{ height: '320px' }}
+                style={{ height: props.height ?? '320px' }}
                 renderContextMenu={(item, context) => {
                     return <ContextMenu item={item} context={context} />;
                 }}

@@ -24,7 +24,7 @@ const DocumentFileTree = observer((props: Props) => {
         <div className={clsx(styles.container)}>
             <DocumentContext document={dir}>
                 <WithFileTreeModel onSelected={setSelected} key={dir.localObjectId}>
-                    <FileTreeComponent onSelected={setSelected} />
+                    <FileTreeComponent onSelected={setSelected} height={'450px'} />
                 </WithFileTreeModel>
             </DocumentContext>
             <div className={clsx(styles.selectedFile)}>{<DocumentView document={selected?.document} />}</div>
