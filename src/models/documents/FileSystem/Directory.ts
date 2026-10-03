@@ -134,6 +134,7 @@ class Directory extends iFileSystem<'dir'> {
                 if (!doc) {
                     return;
                 }
+                console.log('Created file', doc.data);
                 return doc.parent as File;
             });
     }

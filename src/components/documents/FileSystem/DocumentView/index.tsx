@@ -1,4 +1,5 @@
 import { DocumentModelType } from '@tdev-api/document';
+import { useStore } from '@tdev-hooks/useStore';
 import iCode from '@tdev-models/documents/iCode';
 import { ExcalidocComponent } from '@tdev/excalidoc/Component';
 import { observer } from 'mobx-react-lite';
@@ -12,8 +13,13 @@ interface Props {
 
 const DocumentView = observer((props: Props) => {
     const { document } = props;
+    const componentStore = useStore('componentStore');
     if (!document) {
         return null;
+    }
+    if (componentStore.documentViews.has(document.type)) {
+        const Component = componentStore.documentViews.get(document.type)!;
+        return <Component document={document} />;
     }
     if (document.type === 'script' || document.type === 'pyodide_code' || document.type === 'code') {
         return <CodeEditorSelector code={document as iCode} />;
