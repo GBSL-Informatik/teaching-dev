@@ -1,5 +1,6 @@
 import { rootStore } from '@tdev-stores/rootStore';
 import { mdiExcalidraw } from './Component';
+import DocumentView from './Component/DocumentView';
 import { createModel } from './model';
 
 const register = () => {
@@ -14,6 +15,7 @@ const register = () => {
             image: ''
         }
     });
+    rootStore.componentStore.registerDocumentView('excalidoc', DocumentView);
 };
 
 register();

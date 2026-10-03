@@ -1,7 +1,6 @@
 import { DocumentModelType } from '@tdev-api/document';
 import { useStore } from '@tdev-hooks/useStore';
 import iCode from '@tdev-models/documents/iCode';
-import { ExcalidocComponent } from '@tdev/excalidoc/Component';
 import { observer } from 'mobx-react-lite';
 import { QuillV2Component } from '../../QuillV2';
 import CodeEditorSelector from './CodeEditorSelector';
@@ -26,9 +25,6 @@ const DocumentView = observer((props: Props) => {
     }
     if (document.type === 'quill_v2') {
         return <QuillV2Component quillDoc={document} className={styles.quill} />;
-    }
-    if (document.type === 'excalidoc') {
-        return <ExcalidocComponent documentId={document.id} height="80vh" allowImageInsertion />;
     }
     return null;
 });
