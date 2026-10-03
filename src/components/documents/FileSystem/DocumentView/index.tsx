@@ -20,7 +20,7 @@ const DocumentView = observer((props: Props) => {
         const Component = componentStore.documentViews.get(document.type)!;
         return <Component document={document} />;
     }
-    if (document.type === 'script' || document.type === 'pyodide_code' || document.type === 'code') {
+    if (document.type === 'script' || document.type === 'code') {
         return <CodeEditorSelector code={document as iCode} />;
     }
     if (document.type === 'quill_v2') {
