@@ -1,29 +1,30 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useStore } from '@tdev-hooks/useStore';
 import '@tdev/webserial';
 import RadarDevice from '../models/RadarDevice';
-
-const consumers = new WeakMap<RadarDevice, { count: number; cleanup?: ReturnType<typeof setTimeout> }>();
 
 export default function useRadarDevice(deviceId: string): RadarDevice {
     const viewStore = useStore('viewStore');
     const store = viewStore.useStore('webserialStore');
     const radar = useMemo(() => RadarDevice.request(store, deviceId), [store, deviceId]);
+    const pendingCleanup = useRef<{ radar: RadarDevice; timer: ReturnType<typeof setTimeout> } | undefined>(
+        undefined
+    );
 
     useEffect(() => {
-        const entry = consumers.get(radar) ?? { count: 0 };
-        consumers.set(radar, entry);
-        clearTimeout(entry.cleanup);
-        entry.count++;
+        if (pendingCleanup.current?.radar === radar) {
+            clearTimeout(pendingCleanup.current.timer);
+            pendingCleanup.current = undefined;
+        }
         return () => {
-            entry.count--;
-            if (entry.count === 0) {
-                // Defer disposal so React StrictMode's effect restart reuses the same controller.
-                entry.cleanup = setTimeout(() => {
+            // Defer disposal so React StrictMode's effect restart reuses the same controller.
+            // A different device ID must still dispose its previous controller.
+            pendingCleanup.current = {
+                radar,
+                timer: setTimeout(() => {
                     void radar.close().then(() => store.clearDevice(deviceId));
-                    consumers.delete(radar);
-                }, 0);
-            }
+                }, 0)
+            };
         };
     }, [radar, store, deviceId]);
 
