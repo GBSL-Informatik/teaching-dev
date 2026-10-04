@@ -1,5 +1,5 @@
-import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
+import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
 import type WebserialStore from '@tdev/webserial/stores/WebserialStore';
 import { action, computed, observable } from 'mobx';
