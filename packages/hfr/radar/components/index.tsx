@@ -1,19 +1,19 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import ReplayControl from '@tdev/webserial/component/ReplayControl';
-import Card from '@tdev-components/shared/Card';
-import Badge from '@tdev-components/shared/Badge';
-import Alert from '@tdev-components/shared/Alert';
+import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
 import DefinitionList from '@tdev-components/DefinitionList';
 import Loader from '@tdev-components/Loader';
-import useRadarDevice from '../hooks/useRadarDevice';
-import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
-import RadarChart from './RadarChart';
-import DistanceChart from './DistanceChart';
-import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
+import Alert from '@tdev-components/shared/Alert';
+import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
+import Card from '@tdev-components/shared/Card';
+import ReplayControl from '@tdev/webserial/component/ReplayControl';
+import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useId, useRef, useState } from 'react';
+import useRadarDevice from '../hooks/useRadarDevice';
 import RadarDevice from '../models/RadarDevice';
 import { DEFAULT_SETTINGS, DISTANCE_RANGES, SPEED_RANGES, type RadarSettings } from '../models/protocol';
+import DistanceChart from './DistanceChart';
+import RadarChart from './RadarChart';
 import styles from './styles.module.scss';
 
 export interface Props {
