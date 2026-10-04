@@ -1,3 +1,4 @@
+import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
 import type WebserialStore from '@tdev/webserial/stores/WebserialStore';
@@ -24,7 +25,7 @@ const STATUS_MESSAGES = [
 
 export interface RadarMeasurement {
     timestamp: number;
-    source: 'live' | 'replay' | 'demo';
+    source: 'live' | 'replay';
     targets: RadarTarget[];
 }
 
@@ -41,7 +42,8 @@ export default class RadarDevice implements iBinarySubscriber {
     private pollTask?: Promise<void>;
     private pollTimer?: ReturnType<typeof setTimeout>;
     private wakePoll?: () => void;
-    private demoTimer?: ReturnType<typeof setInterval>;
+    private static instances = new WeakMap<SerialBinaryDevice, RadarDevice>();
+    private resetListeners = new Set<() => void>();
 
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
@@ -69,48 +71,48 @@ export default class RadarDevice implements iBinarySubscriber {
             },
             { dataBufferSize: 0, portFilters: [{ usbVendorId: 0x0403, usbProductId: 0x6001 }] }
         );
-        return new RadarDevice(device, `${id}-decoder`);
+        const existing = this.instances.get(device);
+        if (existing) {
+            return existing;
+        }
+        const radar = new RadarDevice(device, `${id}-decoder`);
+        this.instances.set(device, radar);
+        return radar;
     }
 
-    subscribe(listener: (measurement: RadarMeasurement) => void): () => void {
+    subscribe(listener: (measurement: RadarMeasurement) => void, onReset?: () => void): () => void {
         this.listeners.add(listener);
+        if (onReset) {
+            this.resetListeners.add(onReset);
+        }
         return () => {
             this.listeners.delete(listener);
+            if (onReset) {
+                this.resetListeners.delete(onReset);
+            }
         };
     }
 
-    startDemo(range: number, onTargets: (targets: RadarTarget[]) => void): void {
-        if (this.device.isConnected || this.device.isReplaying || this.device.isReplayPaused) {
-            throw new Error('Demo benötigt ein getrenntes Radar ohne aktives Replay.');
-        }
-        this.stopDemo();
-        this.reset();
-        this.onTargets = onTargets;
-        let tick = 0;
-        const sample = () => {
-            tick += 0.12;
-            const targets = [0, 1, 2].map((index) => {
-                const distance = range * (0.24 + index * 0.2 + Math.sin(tick + index) * 0.08);
-                const angle = Math.sin(tick / 3 + index * 2) * 35;
-                const radians = (angle * Math.PI) / 180;
-                return {
-                    distance,
-                    angle,
-                    speed: Math.cos(tick + index) * 2,
-                    magnitude: 30 + index * 5,
-                    x: -distance * Math.sin(radians),
-                    y: distance * Math.cos(radians)
-                };
-            });
-            this.publish({ timestamp: Date.now(), source: 'demo', targets });
-        };
-        sample();
-        this.demoTimer = setInterval(sample, 100);
-    }
-
-    stopDemo(): void {
-        clearInterval(this.demoTimer);
-        this.demoTimer = undefined;
+    static createDemoData(range: number, count = 200): BinarySample[] {
+        return Array.from({ length: count }, (_, sample) => {
+            const tick = (sample + 1) * 0.12;
+            const bytes = new Uint8Array(8 + 3 * 8);
+            bytes.set(new TextEncoder().encode('PDAT'));
+            const view = new DataView(bytes.buffer);
+            view.setUint32(4, 3 * 8, true);
+            for (let index = 0; index < 3; index++) {
+                const offset = 8 + index * 8;
+                view.setUint16(
+                    offset,
+                    Math.round(range * (0.24 + index * 0.2 + Math.sin(tick + index) * 0.08) * 100),
+                    true
+                );
+                view.setInt16(offset + 2, Math.round(Math.cos(tick + index) * 200), true);
+                view.setInt16(offset + 4, Math.round(Math.sin(tick / 3 + index * 2) * 3500), true);
+                view.setUint16(offset + 6, (30 + index * 5) * 100, true);
+            }
+            return { timestamp: sample * 100, bytes };
+        });
     }
 
     @action
@@ -130,6 +132,7 @@ export default class RadarDevice implements iBinarySubscriber {
         this.decoder = new FrameDecoder();
         this.measurements.clear();
         this.onReset?.();
+        this.resetListeners.forEach((listener) => listener());
     }
 
     onConnectionStateChange(state: ConnectionState): void {
@@ -173,7 +176,6 @@ export default class RadarDevice implements iBinarySubscriber {
     }
 
     async connect(settings: RadarSettings): Promise<void> {
-        this.stopDemo();
         settingCommands(settings);
         try {
             await this.device.connect();
@@ -187,7 +189,7 @@ export default class RadarDevice implements iBinarySubscriber {
                 await this.command(header, value);
             }
         } catch (error) {
-            await this.close();
+            await this.disconnect();
             throw error;
         }
     }
@@ -292,15 +294,15 @@ export default class RadarDevice implements iBinarySubscriber {
     }
 
     async close(): Promise<void> {
-        this.stopDemo();
         await this.device.disconnect();
         this.device.stopReplay();
         this.device.unsubscribe(this.id);
         this.listeners.clear();
+        this.resetListeners.clear();
+        RadarDevice.instances.delete(this.device);
     }
 
     async disconnect(): Promise<void> {
-        this.stopDemo();
         await this.device.disconnect();
     }
 

@@ -7,10 +7,13 @@ page_id: 854056ae-82d1-4101-a7bc-dbdcc88bfc2f
 ---
 
 import Radar from '@site/packages/hfr/radar/components';
+import RadarDevice from '@site/packages/hfr/radar/models/RadarDevice';
+
+export const demoData = RadarDevice.createDemoData(10);
 
 # K-LD7 Radar
 
-<Radar demo />
+<Radar initialData={demoData} />
 
 Das Paket `@hfr/radar` zeigt Positionen, Distanzen, Geschwindigkeiten und Winkel der bewegten Ziele eines RFbeam K-LD7 an. Die eigenständige Seite ist unter [/radar/](/radar/) erreichbar. Die runde Positionsansicht zeigt die aktuelle PDAT-Zielliste auf einem Radarfeld mit Distanzbögen und Winkelstrahlen; der Verlauf zeigt die nächste Distanz der letzten 100 Messungen. Leere Messungen erzeugen Lücken. Im Recharts-Distanzverlauf zeigen Tooltips die Messwerte. Die Zeitachse zählt die Messungen vor dem aktuellen Zeitpunkt; die aktuelle Messung liegt rechts. Objektnummern sind pro Frame vergeben und keine Tracking-IDs.
 
@@ -18,10 +21,11 @@ Das Paket `@hfr/radar` zeigt Positionen, Distanzen, Geschwindigkeiten und Winkel
 
 ```tsx
 import Radar from '@hfr/radar/components';
+import RadarDevice from '@hfr/radar/models/RadarDevice';
 
 <Radar initialSettings={{ range: 1, speed: 0 }} />
-// Ohne Hardware:
-<Radar demo />
+// Ohne Hardware: binäre PDAT-Frames als Replay-Daten
+<Radar initialData={RadarDevice.createDemoData(10)} />
 ```
 
 ## Hardware und Browser
@@ -67,7 +71,9 @@ radar.start(onTargets, onError);
 
 `radar.measurements` enthält die letzten 2000 decodierten Messungen. Die vollständige binäre Sitzungsaufzeichnung liegt in `radar.device.receivedData` und wird beim erneuten Verbinden zurückgesetzt. Jedes Element enthält `bytes` und `timestamp`. Die Rohaufzeichnung speichert die gesamte Sitzung im Speicher, damit der Anfang eines binären Frames beim Replay erhalten bleibt. Zum Laden einer Aufzeichnung `setReplayData()` verwenden; Byte-Arrays werden kopiert.
 
-`radar.startDemo(range, onTargets)` erzeugt im Modell alle 100 ms drei simulierte Ziele und veröffentlicht sie ebenfalls an Messwert-Listener, mit `source: 'demo'`. Die Demo öffnet keinen Port und verändert die binäre Aufzeichnung nicht. `stopDemo()`, `disconnect()` und `close()` beenden den Demo-Timer.
+`RadarDevice.createDemoData(range)` erzeugt 200 binäre PDAT-Frames mit drei simulierten Zielen und Zeitstempeln im Abstand von 100 ms. Über `<Radar initialData={...} />` werden sie wie beim Webserial-Demo in `setReplayData()` geladen. Die gemeinsame Replay-Steuerung decodiert sie über denselben Subscriber wie echte Aufzeichnungen (`source: 'replay'`), ohne einen Port zu öffnen. **Demo starten** spielt diese Initialdaten ab; ohne Initialdaten erzeugt das Modell eine Demo passend zum gewählten Messbereich. `demo` bleibt als Kurzform zum Vorladen generierter Initialdaten verfügbar.
+
+`useRadarDevice(deviceId)` liefert einen stabilen Radar-Controller aus dem gemeinsamen Store oder erstellt ihn. Komponenten mit derselben ID teilen sich den Controller. Der Hook gibt ihn nach dem Entfernen des letzten Consumers frei. Die beiden Charts sind separate Komponenten (`RadarChart` und `DistanceChart`); Card, Badge, Alert, Loader und DefinitionList verwenden die gemeinsame Projekt-UI.
 
 Nach **Trennen** erscheint die gemeinsame Replay-Steuerung. Replay, Pause, Fortsetzen und Geschwindigkeit verwenden dieselbe Aufzeichnung. Das Radar decodiert Replay-Frames und veröffentlicht sie mit `source: 'replay'` und dem ursprünglichen Empfangszeitstempel, ohne INIT, GNFD oder andere Hardware-Kommandos zu senden. `disconnect()` behält den Subscriber für Replay; `close()` trennt zusätzlich die Subscription. `unsubscribe()` beendet einen Messwert-Listener.
 

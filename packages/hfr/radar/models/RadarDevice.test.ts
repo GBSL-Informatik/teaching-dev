@@ -49,37 +49,38 @@ afterEach(() => {
 });
 
 describe('Radar lifecycle', () => {
-    it('generates demo measurements in the model and stops them on disconnect and close', async () => {
+    it('replays generated demo PDAT data through the shared serial device without hardware writes', async () => {
         vi.useFakeTimers();
         const sensor = new Sensor();
         const radar = createRadar(sensor);
-        const onTargets = vi.fn();
         const listener = vi.fn();
-        radar.subscribe(listener);
-        radar.startDemo(10, onTargets);
-        expect(onTargets).toHaveBeenCalledOnce();
-        expect(radar.measurements[0]).toMatchObject({ source: 'demo', timestamp: Date.now() });
-        expect(radar.measurements[0].targets).toHaveLength(3);
+        const onReset = vi.fn();
+        const unsubscribe = radar.subscribe(listener, onReset);
+        const initialData = RadarDevice.createDemoData(10, 5);
+        radar.device.setReplayData(initialData);
+        radar.device.setReplaySpeed(100);
+        radar.device.replay();
         await vi.advanceTimersByTimeAsync(300);
-        expect(listener).toHaveBeenCalledTimes(4);
-        const target = radar.measurements[3].targets[0];
+        expect(listener).toHaveBeenCalledTimes(3);
+        expect(onReset).toHaveBeenCalled();
+        expect(radar.measurements[0]).toMatchObject({ source: 'replay', timestamp: 0 });
+        expect(radar.measurements[0].targets).toHaveLength(3);
+        const target = radar.measurements[2].targets[0];
         expect(Math.hypot(target.x, target.y)).toBeCloseTo(target.distance);
         expect(sensor.open).not.toHaveBeenCalled();
         expect(sensor.writes).toHaveLength(0);
-        await radar.disconnect();
-        await vi.advanceTimersByTimeAsync(200);
-        expect(listener).toHaveBeenCalledTimes(4);
-        radar.startDemo(5, onTargets);
-        expect(radar.measurements).toHaveLength(1);
         await radar.close();
-        await vi.advanceTimersByTimeAsync(200);
-        expect(onTargets).toHaveBeenCalledTimes(5);
+        const calls = listener.mock.calls.length;
+        await vi.advanceTimersByTimeAsync(300);
+        expect(listener).toHaveBeenCalledTimes(calls);
+        expect(radar.device.receivedData).toEqual(initialData);
+        unsubscribe();
     });
     it('keeps one radar controller per shared device while allowing additional byte subscribers', async () => {
         installPort(new Sensor());
         const store = new WebserialStore({} as never);
         const radar = RadarDevice.request(store, 'shared');
-        expect(() => RadarDevice.request(store, 'shared')).toThrow('already registered');
+        expect(RadarDevice.request(store, 'shared')).toBe(radar);
         const subscriber = { id: 'other-decoder', reset: vi.fn(), onNewBytes: vi.fn() };
         radar.device.subscribe(subscriber);
         await radar.connect(DEFAULT_SETTINGS);
@@ -102,8 +103,13 @@ describe('Radar lifecycle', () => {
     it('closes the shared serial device after a rejected setting', async () => {
         const sensor = new Sensor();
         sensor.fail = 'RRAI';
-        await expect(createRadar(sensor).connect(DEFAULT_SETTINGS)).rejects.toThrow('RRAI');
+        const radar = createRadar(sensor);
+        await expect(radar.connect(DEFAULT_SETTINGS)).rejects.toThrow('RRAI');
         expect(sensor.close).toHaveBeenCalledOnce();
+        sensor.fail = undefined;
+        await radar.connect(DEFAULT_SETTINGS);
+        expect((await radar.measure())[0].distance).toBe(0.8);
+        await radar.close();
     });
     it('rejects sensor errors without waiting for PDAT', async () => {
         const sensor = new Sensor();

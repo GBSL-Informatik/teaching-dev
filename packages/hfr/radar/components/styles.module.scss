@@ -1,12 +1,6 @@
 .radar {
-    border: 1px solid var(--ifm-color-emphasis-300);
-    border-radius: var(--ifm-global-radius);
-    padding: 1.25rem;
-    background: var(--ifm-background-surface-color);
-
     .toolbar,
-    .actions,
-    .summary {
+    .actions {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
@@ -41,26 +35,11 @@
         color: var(--ifm-color-emphasis-700);
         margin: 0.75rem 0;
     }
-    .error {
-        color: var(--ifm-color-danger);
-        margin-top: 1rem;
-    }
-    .summary {
-        justify-content: flex-start;
-        gap: 2rem;
-        padding: 1rem;
-        background: var(--ifm-color-emphasis-100);
-        border-radius: var(--ifm-global-radius);
-        strong {
-            display: block;
-            font-size: 1.5rem;
-        }
-    }
     .plots {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
         gap: 1rem;
-        margin-top: 1.25rem;
+        margin: 1.25rem 0;
         figure {
             margin: 0;
             min-width: 0;
