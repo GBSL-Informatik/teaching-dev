@@ -1,6 +1,7 @@
 ---
 tags:
     - WebUSB
+    - WebSerial
     - Radar
     - Visualization
 page_id: 854056ae-82d1-4101-a7bc-dbdcc88bfc2f
@@ -29,6 +30,16 @@ import Radar from '@hfr/radar/components';
 Unterstützt wird das FT232R-USB-UART-Kabel des K-LD7-Evaluation-Kits (VID `0x0403`, PID `0x6001`). Andere USB-UART-Chips benötigen einen eigenen Transporttreiber. Der Sensor selbst hat eine UART-Schnittstelle, keine native USB-Schnittstelle. Versorgung und Pinbelegung gemäss [RFbeam-Datenblatt](https://rfbeam.ch/wp-content/uploads/dlm_uploads/2022/10/K-LD7_Datasheet.pdf) beachten.
 
 WebUSB benötigt Chrome oder Edge mit HTTPS oder localhost. Die Geräteauswahl erfolgt über **USB verbinden**. Andere serielle Programme schliessen. Bei belegter USB-Schnittstelle oder fehlenden Berechtigungen den Betriebssystemtreiber prüfen: Unter Windows ist für WebUSB beispielsweise WinUSB nötig; unter Linux benötigt der Browser Zugriff auf das USB-Gerät und eine vom Kernel-Treiber freigegebene Schnittstelle. Treiberänderungen können die RFbeam-PC-Software betreffen. Bei einem Timeout den Sensor neu einschalten und erneut verbinden.
+
+### Windows 11 / Edge: «Access denied»
+
+Wenn `USBDevice.open()` mit «Access denied» scheitert, obwohl die Hersteller-Software funktioniert, kann der installierte FTDI-Treiber den direkten WebUSB-Zugriff verhindern. Die Geräteauswahl im Browser allein bestätigt keinen Treiberzugriff. Unter Windows benötigt WebUSB WinUSB; die Hersteller-Software verwendet normalerweise den FTDI-Treiber.
+
+Mit **Seriell verbinden** wird stattdessen der bestehende FTDI-COM-Port über WebSerial verwendet. Hersteller-Software vollständig schliessen, den Adapter bei Bedarf neu anstecken und in Edge den FTDI-Port auswählen. Bei einem anschliessenden Radar-Timeout den Sensor neu einschalten. Der Transport konfiguriert `115200`, 8 Datenbits, gerade Parität und einen Stopbit. Ein Treiberwechsel ist dafür nicht erforderlich, sofern der Adapter als COM-Port verfügbar ist.
+
+WebUSB bleibt über **USB verbinden** verfügbar. Beide Verbindungswege verwenden dieselben binären Radar-Kommandos und Auswertungen. Der WebSerial-Transport bekommt reine UART-Daten; FTDI-USB-Statusbytes werden dort bereits vom Betriebssystemtreiber entfernt.
+
+Quellen: [Chrome: WebUSB-Treiberanforderungen](https://developer.chrome.com/docs/capabilities/build-for-webusb), [Chrome: WebSerial](https://developer.chrome.com/docs/capabilities/serial), [FTDI VCP-Treiber](https://ftdichip.com/drivers/vcp-drivers/).
 
 ## Konfiguration und Protokoll
 

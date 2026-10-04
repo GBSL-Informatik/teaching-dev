@@ -2,6 +2,19 @@ import { describe, expect, it, vi } from 'vitest';
 import FtdiTransport, { type UsbDevice } from './FtdiTransport';
 
 describe('FT232R transport', () => {
+    it('explains access-denied errors and offers the existing COM driver alternative', async () => {
+        const device = {
+            open: vi
+                .fn()
+                .mockRejectedValue(
+                    new DOMException(
+                        "Failed to execute 'open' on 'USBDevice': Access denied.",
+                        'NetworkError'
+                    )
+                )
+        } as unknown as UsbDevice;
+        await expect(new FtdiTransport(device).open()).rejects.toThrow('Seriell verbinden');
+    });
     it('claims the bulk interface and configures 115200 8E1 before transferring bytes', async () => {
         const controls: { request: number; value: number; index: number }[] = [];
         const device: UsbDevice = {

@@ -3,6 +3,7 @@ import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import RadarDevice from '../models/RadarDevice';
 import { getWebUsb } from '../models/FtdiTransport';
+import { getWebSerial } from '../models/WebSerialTransport';
 import {
     DEFAULT_SETTINGS,
     DISTANCE_RANGES,
@@ -23,6 +24,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
     const [error, setError] = useState('');
     const [supported, setSupported] = useState(false);
+    const [serialSupported, setSerialSupported] = useState(false);
     const [history, setHistory] = useState<(number | null)[]>([]);
     const device = useRef<RadarDevice | undefined>(undefined);
     const mounted = useRef(false);
@@ -71,6 +73,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
     useEffect(() => {
         mounted.current = true;
         setSupported(!!getWebUsb());
+        setSerialSupported(!!getWebSerial());
         if (demo) {
             startDemo();
         }
@@ -93,13 +96,13 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
         }
     };
 
-    const connect = async () => {
+    const connect = async (transport: 'usb' | 'serial' = 'usb') => {
         setError('');
         setHistory([]);
         setState('connecting');
         let current: RadarDevice | undefined;
         try {
-            current = await RadarDevice.request();
+            current = await (transport === 'serial' ? RadarDevice.requestSerial() : RadarDevice.request());
             if (!mounted.current) {
                 await current.close();
                 return;
@@ -174,6 +177,14 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                         }
                         onClick={() => void (state === 'connected' ? stop() : connect())}
                     />
+                    {state !== 'connected' && (
+                        <Button
+                            icon={mdiConnection}
+                            text="Seriell verbinden"
+                            disabled={busy || !serialSupported}
+                            onClick={() => void connect('serial')}
+                        />
+                    )}
                     <Button
                         icon={state === 'demo' ? mdiStop : mdiPlay}
                         text={state === 'demo' ? 'Demo stoppen' : 'Demo starten'}
@@ -187,10 +198,10 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                     {error}
                 </p>
             )}
-            {!supported && (
+            {!supported && !serialSupported && (
                 <p>
-                    Live-Messungen benötigen WebUSB in Chrome oder Edge auf HTTPS oder localhost. Die Demo
-                    funktioniert ohne USB.
+                    Live-Messungen benötigen WebUSB oder WebSerial in Chrome oder Edge auf HTTPS oder
+                    localhost. Die Demo funktioniert ohne USB.
                 </p>
             )}
             <div className={styles.settings}>

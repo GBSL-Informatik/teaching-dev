@@ -86,7 +86,20 @@ export default class FtdiTransport implements RadarTransport {
     }
 
     async open(): Promise<void> {
-        await this.device.open();
+        try {
+            await this.device.open();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            if (
+                /access denied/i.test(message) ||
+                (error instanceof DOMException && error.name === 'SecurityError')
+            ) {
+                throw new Error(
+                    'WebUSB-Zugriff verweigert. Hersteller-Software schliessen und USB-Berechtigungen prüfen. Unter Windows benötigt WebUSB WinUSB statt des FTDI-COM-Treibers. Mit dem bestehenden COM-Treiber alternativ «Seriell verbinden» verwenden.'
+                );
+            }
+            throw error;
+        }
         if (!this.device.configuration) {
             await this.device.selectConfiguration(1);
         }

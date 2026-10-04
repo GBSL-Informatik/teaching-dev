@@ -19,6 +19,11 @@ const RadarPage = () => (
                     localhost.
                 </p>
                 <p>
+                    Unter Windows mit installiertem FTDI-Treiber «Seriell verbinden» wählen und den COM-Port
+                    freigeben. Das nutzt den bestehenden Treiber. Falls «USB verbinden» mit «Access denied»
+                    scheitert, ist dieser Verbindungsweg die Alternative ohne Wechsel zu WinUSB.
+                </p>
+                <p>
                     Andere Programme mit Zugriff auf den Adapter schliessen. Falls das Betriebssystem die
                     Schnittstelle belegt, ist ein passender USB-Treiber nötig (unter Windows beispielsweise
                     WinUSB für WebUSB). Unter Linux benötigt der Browser USB-Geräteberechtigungen und eine

@@ -1,3 +1,4 @@
+import WebSerialTransport, { getWebSerial } from './WebSerialTransport';
 import FtdiTransport, { getWebUsb, type RadarTransport } from './FtdiTransport';
 import {
     decodeTargets,
@@ -44,6 +45,15 @@ export default class RadarDevice {
         }
         const device = await usb.requestDevice({ filters: [{ vendorId: 0x0403, productId: 0x6001 }] });
         return new RadarDevice(new FtdiTransport(device));
+    }
+
+    static async requestSerial(): Promise<RadarDevice> {
+        const serial = getWebSerial();
+        if (!serial) {
+            throw new Error('WebSerial benötigt Chrome oder Edge auf HTTPS bzw. localhost.');
+        }
+        const port = await serial.requestPort({ filters: [{ usbVendorId: 0x0403, usbProductId: 0x6001 }] });
+        return new RadarDevice(new WebSerialTransport(port));
     }
 
     async connect(settings: RadarSettings): Promise<void> {
