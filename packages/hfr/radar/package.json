@@ -6,5 +6,9 @@
     "peerDependencies": {
         "@tdev/core": "1.0.0",
         "react": "*"
+    },
+    "dependencies": {
+        "react-is": "^19.2.7",
+        "recharts": "^3.10.1"
     }
 }
