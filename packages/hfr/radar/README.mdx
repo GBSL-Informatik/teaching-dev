@@ -69,7 +69,7 @@ await radar.connect(settings);
 radar.start(onTargets, onError);
 ```
 
-`radar.measurements` enthält die letzten 2000 decodierten Messungen. Die vollständige binäre Sitzungsaufzeichnung liegt in `radar.device.receivedData` und wird beim erneuten Verbinden zurückgesetzt. Jedes Element enthält `bytes` und `timestamp`. Die Rohaufzeichnung speichert die gesamte Sitzung im Speicher, damit der Anfang eines binären Frames beim Replay erhalten bleibt. Zum Laden einer Aufzeichnung `setReplayData()` verwenden; Byte-Arrays werden kopiert.
+`radar.measurements` enthält alle decodierten Rohmessungen der aktuellen Sitzung. `appendRecord(measurement)` ergänzt eine Messung und aktualisiert die Distanzfilterung. `radar.targets` liefert die letzte rohe Zielliste, `radar.history` als `@computed` die letzten 100 gefilterten Distanzen. `getMinimumDistance()` liefert die aktuelle gefilterte Distanz oder `null`; mit einem Messungsindex kann ein früherer Wert abgefragt werden. Die vollständige binäre Sitzungsaufzeichnung liegt in `radar.device.receivedData` und wird beim erneuten Verbinden zurückgesetzt. Jedes Element enthält `bytes` und `timestamp`. Die Rohaufzeichnung speichert die gesamte Sitzung im Speicher, damit der Anfang eines binären Frames beim Replay erhalten bleibt. Auch Rohmessungen und gefilterte Distanzen bleiben bis zum Reset oder erneuten Verbinden im Speicher. Zum Laden einer Aufzeichnung `setReplayData()` verwenden; Byte-Arrays werden kopiert.
 
 `RadarDevice.createDemoData(range)` erzeugt 200 binäre PDAT-Frames mit drei simulierten Zielen und Zeitstempeln im Abstand von 100 ms. Über `<Radar initialData={...} />` werden sie wie beim Webserial-Demo in `setReplayData()` geladen. Die gemeinsame Replay-Steuerung decodiert sie über denselben Subscriber wie echte Aufzeichnungen (`source: 'replay'`), ohne einen Port zu öffnen. **Demo starten** spielt diese Initialdaten ab; ohne Initialdaten erzeugt das Modell eine Demo passend zum gewählten Messbereich. `demo` bleibt als Kurzform zum Vorladen generierter Initialdaten verfügbar.
 
@@ -86,3 +86,11 @@ yarn vitest run packages/hfr/radar packages/tdev/webserial/models
 ```
 
 Die Tests prüfen Text-Kompatibilität, binäre Frames, Einheiten, Fragmentierung, gemeinsame Port-Nutzung, Konfiguration, kombinierte RESP/PDAT-Antworten, Fehler, Timeout, Port-Freigabe sowie verlustfreies Replay ohne Hardware-Kommandos.
+
+## Filterung der nächsten Distanz
+
+Die erste gültige Messung verwendet die minimale Distanz. Danach werden Kandidaten auf ihre Plausibilität gegenüber dem bisherigen Abstand geprüft: Die Toleranz beträgt 15 cm plus die Strecke, die bei der konfigurierten maximalen Geschwindigkeit seit der letzten akzeptierten Messung möglich ist. Unter den plausiblen Kandidaten wird der gewählt, der dem aus den letzten Messungen vorhergesagten Abstand am nächsten kommt. Näheres, unplausibles Rauschen soll dadurch keinen Zielwechsel auslösen.
+
+Ein exponentieller Filter mit 150 ms Zeitkonstante glättet den gewählten Abstand. Er verwendet die Empfangszeitstempel; Replay-Geschwindigkeit verändert das Ergebnis nicht. Ein unplausibler Sprung ergibt `null` statt einer erfundenen Position. Drei konsistente neue Kandidaten erlauben die Übernahme eines neuen Ziels. Nach mehr als einer Sekunde ohne akzeptierte Messung oder einem rückwärts laufenden Zeitstempel beginnt die Auswahl erneut bei der minimalen Distanz. Leere oder ungültige Ziellisten erzeugen Lücken.
+
+Die gefilterte Distanz kann durch die Glättung und das Beibehalten eines plausiblen Ziels vom rohen Minimum abweichen. Die Regeln sind heuristisch: PDAT enthält keine stabilen Objekt-IDs, daher lassen sich Zielwechsel und kreuzende Objekte nicht sicher unterscheiden. Die Filterung startet bei Reset und Replay neu; Tabelle und Radar-Draufsicht behalten die ungefilterten Ziele.

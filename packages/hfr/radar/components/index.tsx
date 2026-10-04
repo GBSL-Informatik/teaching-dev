@@ -13,13 +13,7 @@ import DistanceChart from './DistanceChart';
 import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import RadarDevice from '../models/RadarDevice';
-import {
-    DEFAULT_SETTINGS,
-    DISTANCE_RANGES,
-    SPEED_RANGES,
-    type RadarSettings,
-    type RadarTarget
-} from '../models/protocol';
+import { DEFAULT_SETTINGS, DISTANCE_RANGES, SPEED_RANGES, type RadarSettings } from '../models/protocol';
 import styles from './styles.module.scss';
 
 export interface Props {
@@ -34,26 +28,15 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
     const deviceId = providedId ?? `radar-${generatedId}`;
     const device = useRadarDevice(deviceId);
     const [settings, setSettings] = useState<RadarSettings>({ ...DEFAULT_SETTINGS, ...initialSettings });
-    const [targets, setTargets] = useState<RadarTarget[]>([]);
+    const targets = device.targets;
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
     const [error, setError] = useState('');
     const [supported, setSupported] = useState(false);
-    const [history, setHistory] = useState<(number | null)[]>([]);
+    const history = device.history;
     const mounted = useRef(false);
     const range = DISTANCE_RANGES[settings.range] || 10;
     const replaying = device.device.isReplaying || device.device.isReplayPaused;
     const busy = state !== 'disconnected' || replaying;
-
-    const update = (values: RadarTarget[]) => {
-        if (!mounted.current) {
-            return;
-        }
-        setTargets(values);
-        setHistory((previous) => [
-            ...previous.slice(-99),
-            values.length ? Math.min(...values.map((target) => target.distance)) : null
-        ]);
-    };
 
     const startDemo = () => {
         setError('');
@@ -66,15 +49,6 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
     useEffect(() => {
         mounted.current = true;
         setSupported(device.device.webserialStore.isSupported);
-        const unsubscribe = device.subscribe(
-            ({ targets }) => update(targets),
-            () => {
-                if (mounted.current) {
-                    setTargets([]);
-                    setHistory([]);
-                }
-            }
-        );
         if (initialData?.length) {
             device.device.setReplayData(initialData);
         } else if (demo) {
@@ -82,7 +56,6 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
         }
         return () => {
             mounted.current = false;
-            unsubscribe();
         };
     }, [device, initialData]);
 
@@ -97,7 +70,6 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
         device.device.stopReplay();
         await device.disconnect();
         if (mounted.current) {
-            setTargets([]);
             setState('disconnected');
         }
     };
@@ -148,7 +120,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
             </select>
         </label>
     );
-    const nearest = targets.length ? Math.min(...targets.map((target) => target.distance)) : undefined;
+    const nearest = device.getMinimumDistance();
 
     return (
         <section aria-label="K-LD7 Radar">
@@ -246,7 +218,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
                     <dt>Erkannte Objekte</dt>
                     <dd>{targets.length}</dd>
                     <dt>Nächste Distanz</dt>
-                    <dd>{nearest === undefined ? '—' : `${nearest.toFixed(2)} m`}</dd>
+                    <dd>{nearest === null ? '—' : `${nearest.toFixed(2)} m`}</dd>
                     <dt>Messbereich</dt>
                     <dd>{range} m</dd>
                 </DefinitionList>

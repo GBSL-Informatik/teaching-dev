@@ -2,12 +2,14 @@ import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
 import type WebserialStore from '@tdev/webserial/stores/WebserialStore';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import {
     decodeTargets,
+    DEFAULT_SETTINGS,
     encodeCommand,
     FrameDecoder,
     settingCommands,
+    SPEED_RANGES,
     type RadarFrame,
     type RadarSettings,
     type RadarTarget
@@ -46,6 +48,10 @@ export default class RadarDevice implements iBinarySubscriber {
     private resetListeners = new Set<() => void>();
 
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
+    private distances = observable.array<number | null>([], { deep: false });
+    private maxSpeed = SPEED_RANGES[DEFAULT_SETTINGS.speed] / 3.6;
+    private track?: { distance: number; timestamp: number; velocity: number; smoothed: number };
+    private candidate?: { distance: number; timestamp: number; count: number };
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
     private onTargets?: (targets: RadarTarget[]) => void;
     private onError?: (error: Error) => void;
@@ -116,13 +122,79 @@ export default class RadarDevice implements iBinarySubscriber {
     }
 
     @action
-    private publish(measurement: RadarMeasurement): void {
-        this.measurements.push(measurement);
-        if (this.measurements.length > 2000) {
-            this.measurements.shift();
+    appendRecord(measurement: RadarMeasurement): void {
+        const record = { ...measurement, targets: measurement.targets.map((target) => ({ ...target })) };
+        this.measurements.push(record);
+        this.distances.push(this.filterDistance(record));
+        this.onTargets?.(record.targets);
+        this.listeners.forEach((listener) => listener(record));
+    }
+
+    @computed
+    get targets(): RadarTarget[] {
+        return this.measurements.at(-1)?.targets ?? [];
+    }
+
+    @computed
+    get history(): (number | null)[] {
+        return this.distances.slice(-100);
+    }
+
+    getMinimumDistance(index = this.measurements.length - 1): number | null {
+        return this.distances[index] ?? null;
+    }
+
+    private filterDistance({ targets, timestamp }: RadarMeasurement): number | null {
+        const distances = targets
+            .map((target) => target.distance)
+            .filter((distance) => Number.isFinite(distance) && distance >= 0);
+        if (!distances.length || !Number.isFinite(timestamp)) {
+            this.candidate = undefined;
+            return null;
         }
-        this.onTargets?.(measurement.targets);
-        this.listeners.forEach((listener) => listener(measurement));
+        const minimum = Math.min(...distances);
+        const previous = this.track;
+        const elapsed = previous ? (timestamp - previous.timestamp) / 1000 : 0;
+        // Reacquire the nearest object after a long gap or a restarted timestamp sequence.
+        if (!previous || elapsed < 0 || elapsed > 1) {
+            this.track = { distance: minimum, timestamp, velocity: 0, smoothed: minimum };
+            this.candidate = undefined;
+            return minimum;
+        }
+        const predicted = previous.distance + previous.velocity * elapsed;
+        // Allow 15 cm of measurement jitter plus the configured maximum travel distance.
+        const tolerance = 0.15 + this.maxSpeed * elapsed;
+        const plausible = distances.filter((distance) => Math.abs(distance - previous.distance) <= tolerance);
+        if (!plausible.length) {
+            const candidate = this.candidate;
+            const candidateElapsed = candidate ? (timestamp - candidate.timestamp) / 1000 : 0;
+            const consistent =
+                candidate &&
+                candidateElapsed >= 0 &&
+                candidateElapsed <= 1 &&
+                Math.abs(minimum - candidate.distance) <= 0.15 + this.maxSpeed * candidateElapsed;
+            this.candidate = { distance: minimum, timestamp, count: consistent ? candidate.count + 1 : 1 };
+            // An isolated jump is a gap, not an invented position. Confirm a new target over three frames.
+            if (this.candidate.count < 3) {
+                return null;
+            }
+            this.track = { distance: minimum, timestamp, velocity: 0, smoothed: minimum };
+            this.candidate = undefined;
+            return minimum;
+        }
+        const distance = plausible.reduce((best, value) =>
+            Math.abs(value - predicted) < Math.abs(best - predicted) ? value : best
+        );
+        const velocity =
+            elapsed > 0
+                ? Math.max(-this.maxSpeed, Math.min(this.maxSpeed, (distance - previous.distance) / elapsed))
+                : previous.velocity;
+        // A 150 ms exponential smoother reduces jitter without depending on the replay playback speed.
+        const weight = elapsed > 0 ? 1 - Math.exp(-elapsed / 0.15) : 0;
+        const smoothed = previous.smoothed + weight * (distance - previous.smoothed);
+        this.track = { distance, timestamp, velocity: (previous.velocity + velocity) / 2, smoothed };
+        this.candidate = undefined;
+        return smoothed;
     }
 
     @action
@@ -131,6 +203,9 @@ export default class RadarDevice implements iBinarySubscriber {
         this.pending = undefined;
         this.decoder = new FrameDecoder();
         this.measurements.clear();
+        this.distances.clear();
+        this.track = undefined;
+        this.candidate = undefined;
         this.onReset?.();
         this.resetListeners.forEach((listener) => listener());
     }
@@ -155,7 +230,7 @@ export default class RadarDevice implements iBinarySubscriber {
                 }
                 if (frame.header === 'PDAT') {
                     const targets = decodeTargets(frame.payload);
-                    this.publish({
+                    this.appendRecord({
                         timestamp,
                         targets,
                         source: this.device.isConnected ? 'live' : 'replay'
@@ -177,6 +252,7 @@ export default class RadarDevice implements iBinarySubscriber {
 
     async connect(settings: RadarSettings): Promise<void> {
         settingCommands(settings);
+        this.maxSpeed = SPEED_RANGES[settings.speed] / 3.6;
         try {
             await this.device.connect();
             if (!this.device.isConnected) {
