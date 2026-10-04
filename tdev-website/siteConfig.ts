@@ -87,6 +87,10 @@ const getSiteConfig: SiteConfigProvider = () => {
                     title: 'Tools',
                     items: [
                         {
+                            label: 'Radar',
+                            to: '/radar/'
+                        },
+                        {
                             label: 'Icon Selector',
                             to: '/mdi'
                         },
@@ -123,6 +127,10 @@ const getSiteConfig: SiteConfigProvider = () => {
             {
                 path: '/cms/',
                 component: '@hfr/github-cms/components'
+            },
+            {
+                path: '/radar/',
+                component: '@site/packages/hfr/radar/pages'
             }
         ],
         apiDocumentProviders: [

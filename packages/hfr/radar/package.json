@@ -1,0 +1,10 @@
+{
+    "name": "@hfr/radar",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "peerDependencies": {
+        "@tdev/core": "1.0.0",
+        "react": "*"
+    }
+}
