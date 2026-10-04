@@ -67,6 +67,8 @@ radar.start(onTargets, onError);
 
 `radar.measurements` enthält die letzten 2000 decodierten Messungen. Die vollständige binäre Sitzungsaufzeichnung liegt in `radar.device.receivedData` und wird beim erneuten Verbinden zurückgesetzt. Jedes Element enthält `bytes` und `timestamp`. Die Rohaufzeichnung speichert die gesamte Sitzung im Speicher, damit der Anfang eines binären Frames beim Replay erhalten bleibt. Zum Laden einer Aufzeichnung `setReplayData()` verwenden; Byte-Arrays werden kopiert.
 
+`radar.startDemo(range, onTargets)` erzeugt im Modell alle 100 ms drei simulierte Ziele und veröffentlicht sie ebenfalls an Messwert-Listener, mit `source: 'demo'`. Die Demo öffnet keinen Port und verändert die binäre Aufzeichnung nicht. `stopDemo()`, `disconnect()` und `close()` beenden den Demo-Timer.
+
 Nach **Trennen** erscheint die gemeinsame Replay-Steuerung. Replay, Pause, Fortsetzen und Geschwindigkeit verwenden dieselbe Aufzeichnung. Das Radar decodiert Replay-Frames und veröffentlicht sie mit `source: 'replay'` und dem ursprünglichen Empfangszeitstempel, ohne INIT, GNFD oder andere Hardware-Kommandos zu senden. `disconnect()` behält den Subscriber für Replay; `close()` trennt zusätzlich die Subscription. `unsubscribe()` beendet einen Messwert-Listener.
 
 ## Umsetzung und Prüfung

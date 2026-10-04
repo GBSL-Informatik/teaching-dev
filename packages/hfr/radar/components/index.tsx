@@ -33,7 +33,6 @@ const Radar = observer(({ initialSettings, demo = false }: Props) => {
     const [history, setHistory] = useState<(number | null)[]>([]);
     const device = useRef<RadarDevice | undefined>(undefined);
     const mounted = useRef(false);
-    const demoTimer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
     const range = DISTANCE_RANGES[settings.range] || 10;
     const replaying =
         !!device.current && (device.current.device.isReplaying || device.current.device.isReplayPaused);
@@ -54,27 +53,9 @@ const Radar = observer(({ initialSettings, demo = false }: Props) => {
         setError('');
         setHistory([]);
         setState('demo');
-        let tick = 0;
-        const sample = () => {
-            tick += 0.12;
-            update(
-                [0, 1, 2].map((index) => {
-                    const distance = range * (0.24 + index * 0.2 + Math.sin(tick + index) * 0.08);
-                    const angle = Math.sin(tick / 3 + index * 2) * 35;
-                    const radians = (angle * Math.PI) / 180;
-                    return {
-                        distance,
-                        angle,
-                        speed: Math.cos(tick + index) * 2,
-                        magnitude: 30 + index * 5,
-                        x: -distance * Math.sin(radians),
-                        y: distance * Math.cos(radians)
-                    };
-                })
-            );
-        };
-        sample();
-        demoTimer.current = setInterval(sample, 100);
+        const current = device.current ?? RadarDevice.request(webserialStore, deviceId);
+        device.current = current;
+        current.startDemo(range, update);
     };
 
     useEffect(() => {
@@ -85,7 +66,6 @@ const Radar = observer(({ initialSettings, demo = false }: Props) => {
         }
         return () => {
             mounted.current = false;
-            clearInterval(demoTimer.current);
             const current = device.current;
             if (current) {
                 void current.close().then(() => webserialStore.clearDevice(deviceId));
@@ -94,7 +74,6 @@ const Radar = observer(({ initialSettings, demo = false }: Props) => {
     }, []);
 
     const stop = async () => {
-        clearInterval(demoTimer.current);
         const current = device.current;
         setState('connecting');
         await current?.disconnect();

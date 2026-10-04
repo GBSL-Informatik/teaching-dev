@@ -49,6 +49,32 @@ afterEach(() => {
 });
 
 describe('Radar lifecycle', () => {
+    it('generates demo measurements in the model and stops them on disconnect and close', async () => {
+        vi.useFakeTimers();
+        const sensor = new Sensor();
+        const radar = createRadar(sensor);
+        const onTargets = vi.fn();
+        const listener = vi.fn();
+        radar.subscribe(listener);
+        radar.startDemo(10, onTargets);
+        expect(onTargets).toHaveBeenCalledOnce();
+        expect(radar.measurements[0]).toMatchObject({ source: 'demo', timestamp: Date.now() });
+        expect(radar.measurements[0].targets).toHaveLength(3);
+        await vi.advanceTimersByTimeAsync(300);
+        expect(listener).toHaveBeenCalledTimes(4);
+        const target = radar.measurements[3].targets[0];
+        expect(Math.hypot(target.x, target.y)).toBeCloseTo(target.distance);
+        expect(sensor.open).not.toHaveBeenCalled();
+        expect(sensor.writes).toHaveLength(0);
+        await radar.disconnect();
+        await vi.advanceTimersByTimeAsync(200);
+        expect(listener).toHaveBeenCalledTimes(4);
+        radar.startDemo(5, onTargets);
+        expect(radar.measurements).toHaveLength(1);
+        await radar.close();
+        await vi.advanceTimersByTimeAsync(200);
+        expect(onTargets).toHaveBeenCalledTimes(5);
+    });
     it('keeps one radar controller per shared device while allowing additional byte subscribers', async () => {
         installPort(new Sensor());
         const store = new WebserialStore({} as never);

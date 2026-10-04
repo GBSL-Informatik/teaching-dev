@@ -24,7 +24,7 @@ const STATUS_MESSAGES = [
 
 export interface RadarMeasurement {
     timestamp: number;
-    source: 'live' | 'replay';
+    source: 'live' | 'replay' | 'demo';
     targets: RadarTarget[];
 }
 
@@ -41,6 +41,7 @@ export default class RadarDevice implements iBinarySubscriber {
     private pollTask?: Promise<void>;
     private pollTimer?: ReturnType<typeof setTimeout>;
     private wakePoll?: () => void;
+    private demoTimer?: ReturnType<typeof setInterval>;
 
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
@@ -78,6 +79,50 @@ export default class RadarDevice implements iBinarySubscriber {
         };
     }
 
+    startDemo(range: number, onTargets: (targets: RadarTarget[]) => void): void {
+        if (this.device.isConnected || this.device.isReplaying || this.device.isReplayPaused) {
+            throw new Error('Demo benötigt ein getrenntes Radar ohne aktives Replay.');
+        }
+        this.stopDemo();
+        this.reset();
+        this.onTargets = onTargets;
+        let tick = 0;
+        const sample = () => {
+            tick += 0.12;
+            const targets = [0, 1, 2].map((index) => {
+                const distance = range * (0.24 + index * 0.2 + Math.sin(tick + index) * 0.08);
+                const angle = Math.sin(tick / 3 + index * 2) * 35;
+                const radians = (angle * Math.PI) / 180;
+                return {
+                    distance,
+                    angle,
+                    speed: Math.cos(tick + index) * 2,
+                    magnitude: 30 + index * 5,
+                    x: -distance * Math.sin(radians),
+                    y: distance * Math.cos(radians)
+                };
+            });
+            this.publish({ timestamp: Date.now(), source: 'demo', targets });
+        };
+        sample();
+        this.demoTimer = setInterval(sample, 100);
+    }
+
+    stopDemo(): void {
+        clearInterval(this.demoTimer);
+        this.demoTimer = undefined;
+    }
+
+    @action
+    private publish(measurement: RadarMeasurement): void {
+        this.measurements.push(measurement);
+        if (this.measurements.length > 2000) {
+            this.measurements.shift();
+        }
+        this.onTargets?.(measurement.targets);
+        this.listeners.forEach((listener) => listener(measurement));
+    }
+
     @action
     reset(): void {
         this.pending?.reject(new Error('Radar-Daten wurden zurückgesetzt.'));
@@ -107,17 +152,11 @@ export default class RadarDevice implements iBinarySubscriber {
                 }
                 if (frame.header === 'PDAT') {
                     const targets = decodeTargets(frame.payload);
-                    const measurement: RadarMeasurement = {
+                    this.publish({
                         timestamp,
                         targets,
                         source: this.device.isConnected ? 'live' : 'replay'
-                    };
-                    this.measurements.push(measurement);
-                    if (this.measurements.length > 2000) {
-                        this.measurements.shift();
-                    }
-                    this.onTargets?.(targets);
-                    this.listeners.forEach((listener) => listener(measurement));
+                    });
                 }
             }
         } catch (error) {
@@ -134,6 +173,7 @@ export default class RadarDevice implements iBinarySubscriber {
     }
 
     async connect(settings: RadarSettings): Promise<void> {
+        this.stopDemo();
         settingCommands(settings);
         try {
             await this.device.connect();
@@ -252,6 +292,7 @@ export default class RadarDevice implements iBinarySubscriber {
     }
 
     async close(): Promise<void> {
+        this.stopDemo();
         await this.device.disconnect();
         this.device.stopReplay();
         this.device.unsubscribe(this.id);
@@ -259,6 +300,7 @@ export default class RadarDevice implements iBinarySubscriber {
     }
 
     async disconnect(): Promise<void> {
+        this.stopDemo();
         await this.device.disconnect();
     }
 
