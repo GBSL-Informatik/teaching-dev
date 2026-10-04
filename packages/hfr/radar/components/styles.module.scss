@@ -92,7 +92,19 @@
         stroke-width: 2;
     }
     .table {
-        overflow-x: auto;
+        max-height: 15rem;
+        overflow: auto;
+        scrollbar-gutter: stable;
+        th,
+        td {
+            white-space: nowrap;
+        }
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: var(--ifm-background-surface-color);
+        }
         table {
             display: table;
             width: 100%;

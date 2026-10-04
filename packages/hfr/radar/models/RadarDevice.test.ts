@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import RadarDevice from './RadarDevice';
-import { type RadarTransport } from './FtdiTransport';
+import { type RadarTransport } from './WebSerialTransport';
 import { DEFAULT_SETTINGS } from './protocol';
 
 const frame = (header: string, payload: number[] = []): Uint8Array => {
@@ -52,7 +52,7 @@ class Sensor implements RadarTransport {
     }
     async close() {
         this.closed = true;
-        this.reader?.reject(new Error('USB disconnected'));
+        this.reader?.reject(new Error('Serial disconnected'));
         this.reader = undefined;
     }
 }
@@ -68,7 +68,7 @@ describe('Radar lifecycle', () => {
         expect(sensor.commands.at(-1)).toBe('GBYE');
         expect(sensor.closed).toBe(true);
     });
-    it('closes USB after a rejected setting', async () => {
+    it('closes the serial transport after a rejected setting', async () => {
         const sensor = new Sensor();
         sensor.fail = 'RRAI';
         await expect(new RadarDevice(sensor).connect(DEFAULT_SETTINGS)).rejects.toThrow('RRAI');
@@ -82,7 +82,7 @@ describe('Radar lifecycle', () => {
         await expect(radar.measure()).rejects.toThrow('Ungültiger Parameter');
         await radar.close();
     });
-    it('times out a missing ACK and releases the USB device', async () => {
+    it('times out a missing ACK and releases the serial port', async () => {
         vi.useFakeTimers();
         try {
             const sensor = new Sensor();

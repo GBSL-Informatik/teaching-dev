@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import RadarDevice from '../models/RadarDevice';
-import { getWebUsb } from '../models/FtdiTransport';
 import { getWebSerial } from '../models/WebSerialTransport';
 import {
     DEFAULT_SETTINGS,
@@ -24,7 +23,6 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
     const [error, setError] = useState('');
     const [supported, setSupported] = useState(false);
-    const [serialSupported, setSerialSupported] = useState(false);
     const [history, setHistory] = useState<(number | null)[]>([]);
     const device = useRef<RadarDevice | undefined>(undefined);
     const mounted = useRef(false);
@@ -72,8 +70,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
 
     useEffect(() => {
         mounted.current = true;
-        setSupported(!!getWebUsb());
-        setSerialSupported(!!getWebSerial());
+        setSupported(!!getWebSerial());
         if (demo) {
             startDemo();
         }
@@ -96,13 +93,13 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
         }
     };
 
-    const connect = async (transport: 'usb' | 'serial' = 'usb') => {
+    const connect = async () => {
         setError('');
         setHistory([]);
         setState('connecting');
         let current: RadarDevice | undefined;
         try {
-            current = await (transport === 'serial' ? RadarDevice.requestSerial() : RadarDevice.request());
+            current = await RadarDevice.request();
             if (!mounted.current) {
                 await current.close();
                 return;
@@ -169,7 +166,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                 <div className={styles.actions}>
                     <Button
                         icon={state === 'connected' ? mdiEject : mdiConnection}
-                        text={state === 'connected' ? 'Trennen' : 'USB verbinden'}
+                        text={state === 'connected' ? 'Trennen' : 'Seriell verbinden'}
                         disabled={
                             state === 'connecting' ||
                             state === 'demo' ||
@@ -177,14 +174,6 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                         }
                         onClick={() => void (state === 'connected' ? stop() : connect())}
                     />
-                    {state !== 'connected' && (
-                        <Button
-                            icon={mdiConnection}
-                            text="Seriell verbinden"
-                            disabled={busy || !serialSupported}
-                            onClick={() => void connect('serial')}
-                        />
-                    )}
                     <Button
                         icon={state === 'demo' ? mdiStop : mdiPlay}
                         text={state === 'demo' ? 'Demo stoppen' : 'Demo starten'}
@@ -198,10 +187,10 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                     {error}
                 </p>
             )}
-            {!supported && !serialSupported && (
+            {!supported && (
                 <p>
-                    Live-Messungen benötigen WebUSB oder WebSerial in Chrome oder Edge auf HTTPS oder
-                    localhost. Die Demo funktioniert ohne USB.
+                    Live-Messungen benötigen WebSerial in Chrome oder Edge auf HTTPS oder localhost. Die Demo
+                    funktioniert ohne USB.
                 </p>
             )}
             <div className={styles.settings}>
@@ -335,7 +324,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                     </svg>
                 </figure>
             </div>
-            <div className={styles.table}>
+            <div className={styles.table} role="region" aria-label="Messwerte" tabIndex={0}>
                 <table>
                     <thead>
                         <tr>
@@ -359,7 +348,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                         {!targets.length && (
                             <tr>
                                 <td colSpan={5}>
-                                    {busy ? 'Keine Objekte erkannt.' : 'USB verbinden oder Demo starten.'}
+                                    {busy ? 'Keine Objekte erkannt.' : 'Seriell verbinden oder Demo starten.'}
                                 </td>
                             </tr>
                         )}

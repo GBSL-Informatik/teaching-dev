@@ -45,7 +45,7 @@ export const encodeCommand = (header: string, value?: number): Uint8Array => {
     return bytes;
 };
 
-/** UART and USB packets do not necessarily end at a radar frame boundary. */
+/** Serial chunks do not necessarily end at a radar frame boundary. */
 export class FrameDecoder {
     private buffer: Uint8Array = new Uint8Array();
 

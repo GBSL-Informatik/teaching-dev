@@ -1,5 +1,4 @@
-import WebSerialTransport, { getWebSerial } from './WebSerialTransport';
-import FtdiTransport, { getWebUsb, type RadarTransport } from './FtdiTransport';
+import WebSerialTransport, { getWebSerial, type RadarTransport } from './WebSerialTransport';
 import {
     decodeTargets,
     encodeCommand,
@@ -39,15 +38,6 @@ export default class RadarDevice {
     constructor(private transport: RadarTransport) {}
 
     static async request(): Promise<RadarDevice> {
-        const usb = getWebUsb();
-        if (!usb) {
-            throw new Error('WebUSB benötigt Chrome oder Edge auf HTTPS bzw. localhost.');
-        }
-        const device = await usb.requestDevice({ filters: [{ vendorId: 0x0403, productId: 0x6001 }] });
-        return new RadarDevice(new FtdiTransport(device));
-    }
-
-    static async requestSerial(): Promise<RadarDevice> {
         const serial = getWebSerial();
         if (!serial) {
             throw new Error('WebSerial benötigt Chrome oder Edge auf HTTPS bzw. localhost.');
@@ -134,7 +124,7 @@ export default class RadarDevice {
     }
 
     async measure(): Promise<RadarTarget[]> {
-        // RESP and PDAT may share one USB transfer. Install the data waiter inside the ACK handler.
+        // RESP and PDAT may share one serial chunk. Install the data waiter inside the ACK handler.
         let response: Promise<RadarFrame> | undefined;
         const ack = this.receive('RESP');
         const pending = this.pending!;
@@ -204,7 +194,7 @@ export default class RadarDevice {
                 await this.command('GBYE');
             }
         } catch {
-            // Closing USB must still succeed when the sensor was unplugged.
+            // Closing the serial port must still succeed when the sensor was unplugged.
         } finally {
             this.reading = false;
             this.pending?.reject(new Error('Verbindung geschlossen.'));

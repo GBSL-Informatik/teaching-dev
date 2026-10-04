@@ -5,7 +5,7 @@ import Radar from '../components';
 const RadarPage = () => (
     <Layout
         title="K-LD7 Radar"
-        description="Objektdistanzen und Positionen mit dem K-LD7 Radar über WebUSB messen."
+        description="Objektdistanzen und Positionen mit dem K-LD7 Radar über die serielle Schnittstelle messen."
     >
         <main className="container margin-vert--lg">
             <h1>K-LD7 Radar</h1>
@@ -15,20 +15,12 @@ const RadarPage = () => (
                 <summary>Hardware verbinden</summary>
                 <p>
                     K-LD7-EVAL mit FT232R-USB-UART-Kabel (VID 0403, PID 6001) anschliessen. UART: 115200 Baud,
-                    8 Datenbits, gerade Parität, 1 Stopbit. WebUSB benötigt Chrome oder Edge auf HTTPS oder
+                    8 Datenbits, gerade Parität, 1 Stopbit. WebSerial benötigt Chrome oder Edge auf HTTPS oder
                     localhost.
                 </p>
                 <p>
-                    Unter Windows mit installiertem FTDI-Treiber «Seriell verbinden» wählen und den COM-Port
-                    freigeben. Das nutzt den bestehenden Treiber. Falls «USB verbinden» mit «Access denied»
-                    scheitert, ist dieser Verbindungsweg die Alternative ohne Wechsel zu WinUSB.
-                </p>
-                <p>
-                    Andere Programme mit Zugriff auf den Adapter schliessen. Falls das Betriebssystem die
-                    Schnittstelle belegt, ist ein passender USB-Treiber nötig (unter Windows beispielsweise
-                    WinUSB für WebUSB). Unter Linux benötigt der Browser USB-Geräteberechtigungen und eine
-                    freie Schnittstelle. Treiberänderungen können den Zugriff der RFbeam-PC-Software
-                    beeinflussen.
+                    «Seriell verbinden» wählen und den FTDI-COM-Port freigeben. Die Verbindung nutzt den
+                    vorhandenen FTDI-Treiber. Andere Programme mit Zugriff auf den COM-Port vorher schliessen.
                 </p>
                 <p>
                     Bei einem Timeout den Radar neu einschalten. Ein Doppler-Radar erkennt primär bewegte

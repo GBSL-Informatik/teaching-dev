@@ -1,6 +1,5 @@
 ---
 tags:
-    - WebUSB
     - WebSerial
     - Radar
     - Visualization
@@ -27,23 +26,17 @@ import Radar from '@hfr/radar/components';
 
 ## Hardware und Browser
 
-Unterstützt wird das FT232R-USB-UART-Kabel des K-LD7-Evaluation-Kits (VID `0x0403`, PID `0x6001`). Andere USB-UART-Chips benötigen einen eigenen Transporttreiber. Der Sensor selbst hat eine UART-Schnittstelle, keine native USB-Schnittstelle. Versorgung und Pinbelegung gemäss [RFbeam-Datenblatt](https://rfbeam.ch/wp-content/uploads/dlm_uploads/2022/10/K-LD7_Datasheet.pdf) beachten.
+Unterstützt wird das FT232R-USB-UART-Kabel des K-LD7-Evaluation-Kits (VID `0x0403`, PID `0x6001`). Die Geräteauswahl ist auf diesen Adapter gefiltert. Der Sensor selbst hat eine UART-Schnittstelle, keine native USB-Schnittstelle. Versorgung und Pinbelegung gemäss [RFbeam-Datenblatt](https://rfbeam.ch/wp-content/uploads/dlm_uploads/2022/10/K-LD7_Datasheet.pdf) beachten.
 
-WebUSB benötigt Chrome oder Edge mit HTTPS oder localhost. Die Geräteauswahl erfolgt über **USB verbinden**. Andere serielle Programme schliessen. Bei belegter USB-Schnittstelle oder fehlenden Berechtigungen den Betriebssystemtreiber prüfen: Unter Windows ist für WebUSB beispielsweise WinUSB nötig; unter Linux benötigt der Browser Zugriff auf das USB-Gerät und eine vom Kernel-Treiber freigegebene Schnittstelle. Treiberänderungen können die RFbeam-PC-Software betreffen. Bei einem Timeout den Sensor neu einschalten und erneut verbinden.
+WebSerial benötigt Chrome oder Edge mit HTTPS oder localhost. Über **Seriell verbinden** den FTDI-COM-Port auswählen. Die Verbindung verwendet den vorhandenen FTDI-VCP-Treiber. Hersteller-Software und andere Programme mit Zugriff auf den Port vorher vollständig schliessen. Bei einem Radar-Timeout den Sensor neu einschalten und erneut verbinden.
 
-### Windows 11 / Edge: «Access denied»
+Die Messwerttabelle zeigt etwa vier Objektzeilen. Weitere Ziele sind durch vertikales Scrollen erreichbar; die Spaltenüberschriften bleiben sichtbar. Auf schmalen Bildschirmen kann die Tabelle zusätzlich horizontal gescrollt werden.
 
-Wenn `USBDevice.open()` mit «Access denied» scheitert, obwohl die Hersteller-Software funktioniert, kann der installierte FTDI-Treiber den direkten WebUSB-Zugriff verhindern. Die Geräteauswahl im Browser allein bestätigt keinen Treiberzugriff. Unter Windows benötigt WebUSB WinUSB; die Hersteller-Software verwendet normalerweise den FTDI-Treiber.
-
-Mit **Seriell verbinden** wird stattdessen der bestehende FTDI-COM-Port über WebSerial verwendet. Hersteller-Software vollständig schliessen, den Adapter bei Bedarf neu anstecken und in Edge den FTDI-Port auswählen. Bei einem anschliessenden Radar-Timeout den Sensor neu einschalten. Der Transport konfiguriert `115200`, 8 Datenbits, gerade Parität und einen Stopbit. Ein Treiberwechsel ist dafür nicht erforderlich, sofern der Adapter als COM-Port verfügbar ist.
-
-WebUSB bleibt über **USB verbinden** verfügbar. Beide Verbindungswege verwenden dieselben binären Radar-Kommandos und Auswertungen. Der WebSerial-Transport bekommt reine UART-Daten; FTDI-USB-Statusbytes werden dort bereits vom Betriebssystemtreiber entfernt.
-
-Quellen: [Chrome: WebUSB-Treiberanforderungen](https://developer.chrome.com/docs/capabilities/build-for-webusb), [Chrome: WebSerial](https://developer.chrome.com/docs/capabilities/serial), [FTDI VCP-Treiber](https://ftdichip.com/drivers/vcp-drivers/).
+Quellen: [Chrome: WebSerial](https://developer.chrome.com/docs/capabilities/serial), [FTDI VCP-Treiber](https://ftdichip.com/drivers/vcp-drivers/).
 
 ## Konfiguration und Protokoll
 
-Die Verbindung verwendet `115200`, `8E1` und `INIT(0)`. Die Baudrate bleibt bewusst konstant, da nur PDAT und keine ADC-/FFT-Rohdaten übertragen werden. Kommandos und Längen werden little-endian codiert; jede Bestätigung (`RESP`) wird geprüft. `GNFD(4)` fordert eine neue PDAT-Zielliste an. Nach jeder Antwort beträgt die Pause 100 ms. `GBYE` beendet die Verbindung. USB-Fragmente werden zusammengesetzt und FTDI-Statusbytes pro USB-Paket entfernt. Ein fehlendes Antwortpaket beendet die Messung nach zwei Sekunden mit einer Fehlermeldung.
+Die Verbindung verwendet `115200`, `8E1` und `INIT(0)`. Die Baudrate bleibt bewusst konstant, da nur PDAT und keine ADC-/FFT-Rohdaten übertragen werden. Kommandos und Längen werden little-endian codiert; jede Bestätigung (`RESP`) wird geprüft. `GNFD(4)` fordert eine neue PDAT-Zielliste an. Nach jeder Antwort beträgt die Pause 100 ms. `GBYE` beendet die Verbindung. Fragmentierte serielle Daten werden zu vollständigen Radar-Frames zusammengesetzt. Ein fehlendes Antwortpaket beendet die Messung nach zwei Sekunden mit einer Fehlermeldung.
 
 | Einstellung | Kommando | Werte (Index) |
 | --- | --- | --- |
@@ -59,10 +52,10 @@ PDAT enthält bis zu zwölf Ziele mit Distanz in cm, vorzeichenbehafteter Geschw
 
 ## Umsetzung und Prüfung
 
-Die Implementierung trennt USB-Transport, binäres Protokoll, Geräte-Lifecycle und React-Darstellung. Paketaufbau, TypeScript-Formatierung, SCSS-Module und gemeinsame Buttons folgen dem Projekt und dem [Serial-Plotter](https://github.com/lebalz/teaching-inf/tree/main/packages/hfr/serial-plotter).
+Die Implementierung trennt seriellen Transport, binäres Protokoll, Geräte-Lifecycle und React-Darstellung. Paketaufbau, TypeScript-Formatierung, SCSS-Module und gemeinsame Buttons folgen dem Projekt und dem [Serial-Plotter](https://github.com/lebalz/teaching-inf/tree/main/packages/hfr/serial-plotter).
 
 ```bash
 yarn vitest run packages/hfr/radar
 ```
 
-Die Tests prüfen binäre Frames, Einheiten, USB-Paketfragmentierung, FTDI-Statusbytes, Konfiguration, kombinierte RESP/PDAT-Antworten, Fehler, Timeout und Trennen. Ein Test mit echter Hardware muss zusätzlich Geräteauswahl, Treiberzugriff, Messbereich und reale Distanzen prüfen.
+Die Tests prüfen binäre Frames, Einheiten, serielle Paketfragmentierung, Konfiguration, kombinierte RESP/PDAT-Antworten, Fehler, Timeout und Trennen. Ein Test mit echter Hardware muss zusätzlich Geräteauswahl, Treiberzugriff, Messbereich und reale Distanzen prüfen.

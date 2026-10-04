@@ -1,4 +1,9 @@
-import type { RadarTransport } from './FtdiTransport';
+export interface RadarTransport {
+    open(): Promise<void>;
+    read(): Promise<Uint8Array>;
+    write(bytes: Uint8Array): Promise<void>;
+    close(): Promise<void>;
+}
 
 export interface RadarSerialPort {
     readable: ReadableStream<Uint8Array> | null;

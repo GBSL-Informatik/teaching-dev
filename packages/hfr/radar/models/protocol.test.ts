@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { decodeTargets, encodeCommand, FrameDecoder, settingCommands, DEFAULT_SETTINGS } from './protocol';
-import { stripFtdiStatus } from './FtdiTransport';
 
 const frame = (header: string, payload: number[] = []): Uint8Array => {
     const result = new Uint8Array(8 + payload.length);
@@ -46,10 +45,5 @@ describe('K-LD7 binary protocol', () => {
         expect(() => decodeTargets(new Uint8Array(7))).toThrow();
         expect(() => new FrameDecoder().push(new Uint8Array([80, 68, 65, 84, 0, 0, 1, 0]))).toThrow();
         expect(() => settingCommands({ ...DEFAULT_SETTINGS, range: 4 })).toThrow();
-    });
-    it('removes status bytes from every USB packet and detects UART errors', () => {
-        expect([...stripFtdiStatus(new Uint8Array([1, 0x60, 10, 11, 1, 0x60, 12]), 4)]).toEqual([10, 11, 12]);
-        expect(stripFtdiStatus(new Uint8Array([1, 0x60]), 64)).toHaveLength(0);
-        expect(() => stripFtdiStatus(new Uint8Array([1, 0x64, 10]), 64)).toThrow('UART');
     });
 });
