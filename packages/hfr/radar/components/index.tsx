@@ -1,21 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-    CartesianGrid,
-    LabelList,
-    Line,
-    LineChart,
-    ReferenceDot,
-    ResponsiveContainer,
-    Scatter,
-    ScatterChart,
-    Tooltip,
-    XAxis,
-    YAxis
-} from 'recharts';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '@tdev-hooks/useStore';
+import ReplayControl from '@tdev/webserial/component/ReplayControl';
+import '@tdev/webserial';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import RadarDevice from '../models/RadarDevice';
-import { getWebSerial } from '../models/WebSerialTransport';
 import {
     DEFAULT_SETTINGS,
     DISTANCE_RANGES,
@@ -30,7 +21,10 @@ export interface Props {
     demo?: boolean;
 }
 
-const Radar = ({ initialSettings, demo = false }: Props) => {
+const Radar = observer(({ initialSettings, demo = false }: Props) => {
+    const viewStore = useStore('viewStore');
+    const webserialStore = viewStore.useStore('webserialStore');
+    const deviceId = `radar-${useId()}`;
     const [settings, setSettings] = useState<RadarSettings>({ ...DEFAULT_SETTINGS, ...initialSettings });
     const [targets, setTargets] = useState<RadarTarget[]>([]);
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
@@ -41,7 +35,9 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
     const mounted = useRef(false);
     const demoTimer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
     const range = DISTANCE_RANGES[settings.range] || 10;
-    const busy = state !== 'disconnected';
+    const replaying =
+        !!device.current && (device.current.device.isReplaying || device.current.device.isReplayPaused);
+    const busy = state !== 'disconnected' || replaying;
 
     const update = (values: RadarTarget[]) => {
         if (!mounted.current) {
@@ -83,23 +79,25 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
 
     useEffect(() => {
         mounted.current = true;
-        setSupported(!!getWebSerial());
+        setSupported(webserialStore.isSupported);
         if (demo) {
             startDemo();
         }
         return () => {
             mounted.current = false;
             clearInterval(demoTimer.current);
-            void device.current?.close();
+            const current = device.current;
+            if (current) {
+                void current.close().then(() => webserialStore.clearDevice(deviceId));
+            }
         };
     }, []);
 
     const stop = async () => {
         clearInterval(demoTimer.current);
         const current = device.current;
-        device.current = undefined;
         setState('connecting');
-        await current?.close();
+        await current?.disconnect();
         if (mounted.current) {
             setTargets([]);
             setState('disconnected');
@@ -112,7 +110,8 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
         setState('connecting');
         let current: RadarDevice | undefined;
         try {
-            current = await RadarDevice.request();
+            await device.current?.close();
+            current = RadarDevice.request(webserialStore, deviceId);
             if (!mounted.current) {
                 await current.close();
                 return;
@@ -124,12 +123,21 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                 return;
             }
             setState('connected');
-            current.start(update, (failure) => {
-                if (mounted.current) {
-                    setError(failure.message);
-                    void stop();
+            current.start(
+                update,
+                (failure) => {
+                    if (mounted.current) {
+                        setError(failure.message);
+                        void stop();
+                    }
+                },
+                () => {
+                    if (mounted.current) {
+                        setTargets([]);
+                        setHistory([]);
+                    }
                 }
-            });
+            );
         } catch (failure) {
             await current?.close();
             device.current = undefined;
@@ -158,9 +166,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
             </select>
         </label>
     );
-    const positionData = targets
-        .map((target, index) => ({ ...target, id: index + 1 }))
-        .filter((target) => target.distance <= range);
+    const scale = 220 / range;
     const distanceData = history.map((distance, index) => ({ sample: index - history.length + 1, distance }));
     const nearest = targets.length ? Math.min(...targets.map((target) => target.distance)) : undefined;
 
@@ -170,13 +176,15 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                 <div>
                     <strong>K-LD7 Radar</strong>
                     <span className={styles.status} role="status">
-                        {state === 'demo'
-                            ? 'Demo · simulierte Messwerte'
-                            : state === 'connected'
-                              ? 'Verbunden · Live-Messung'
-                              : state === 'connecting'
-                                ? 'Verbindung wird bearbeitet…'
-                                : 'Getrennt'}
+                        {replaying
+                            ? 'Replay · aufgezeichnete Messwerte'
+                            : state === 'demo'
+                              ? 'Demo · simulierte Messwerte'
+                              : state === 'connected'
+                                ? 'Verbunden · Live-Messung'
+                                : state === 'connecting'
+                                  ? 'Verbindung wird bearbeitet…'
+                                  : 'Getrennt'}
                     </span>
                 </div>
                 <div className={styles.actions}>
@@ -186,6 +194,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                         disabled={
                             state === 'connecting' ||
                             state === 'demo' ||
+                            replaying ||
                             (!supported && state !== 'connected')
                         }
                         onClick={() => void (state === 'connected' ? stop() : connect())}
@@ -193,7 +202,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                     <Button
                         icon={state === 'demo' ? mdiStop : mdiPlay}
                         text={state === 'demo' ? 'Demo stoppen' : 'Demo starten'}
-                        disabled={state === 'connecting' || state === 'connected'}
+                        disabled={state === 'connecting' || state === 'connected' || replaying}
                         onClick={() => (state === 'demo' ? void stop() : startDemo())}
                     />
                 </div>
@@ -209,6 +218,7 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
                     funktioniert ohne USB.
                 </p>
             )}
+            {device.current && state === 'disconnected' && <ReplayControl device={device.current.device} />}
             <div className={styles.settings}>
                 {select(
                     'range',
@@ -250,72 +260,57 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
             <div className={styles.plots}>
                 <figure>
                     <figcaption>Objektpositionen · Draufsicht</figcaption>
-                    <div
-                        className={styles.chart}
+                    <svg
+                        viewBox="0 0 520 300"
                         role="img"
                         aria-label="Objektpositionen nach Distanz und Winkel"
                     >
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                            <ScatterChart margin={{ top: 20, right: 25, bottom: 25, left: 5 }}>
-                                <CartesianGrid stroke="var(--ifm-color-emphasis-300)" />
-                                <XAxis
-                                    type="number"
-                                    dataKey="x"
-                                    domain={[-range, range]}
-                                    allowDataOverflow
-                                    name="Seitliche Position"
-                                    unit=" m"
-                                    tickCount={5}
-                                    label={{
-                                        value: 'Seitliche Position (m)',
-                                        position: 'insideBottom',
-                                        offset: -15
-                                    }}
+                        {[0.25, 0.5, 0.75, 1].map((fraction) => (
+                            <g key={fraction}>
+                                <path
+                                    className={styles.grid}
+                                    d={`M ${260 - 220 * fraction} 260 A ${220 * fraction} ${220 * fraction} 0 0 1 ${260 + 220 * fraction} 260`}
                                 />
-                                <YAxis
-                                    type="number"
-                                    dataKey="y"
-                                    domain={[0, range]}
-                                    allowDataOverflow
-                                    name="Entfernung nach vorne"
-                                    unit=" m"
-                                    width={65}
-                                />
-                                <Tooltip
-                                    content={({ active, payload }) => {
-                                        const target = payload?.[0]?.payload as
-                                            (RadarTarget & { id: number }) | undefined;
-                                        return active && target ? (
-                                            <div className={styles.tooltip}>
-                                                <strong>Objekt {target.id}</strong>
-                                                <div>Distanz: {target.distance.toFixed(2)} m</div>
-                                                <div>Geschwindigkeit: {target.speed.toFixed(2)} km/h</div>
-                                                <div>Winkel: {target.angle.toFixed(1)}°</div>
-                                                <div>Signal: {target.magnitude.toFixed(1)} dB</div>
-                                            </div>
-                                        ) : null;
-                                    }}
-                                />
-                                <ReferenceDot
-                                    x={0}
-                                    y={0}
-                                    r={5}
-                                    fill="var(--ifm-color-emphasis-700)"
-                                    stroke="none"
-                                    pointerEvents="none"
-                                    label={{ value: 'Sensor', position: 'top', pointerEvents: 'none' }}
-                                />
-                                <Scatter
-                                    name="Objekte"
-                                    data={positionData}
-                                    fill="var(--ifm-color-primary)"
-                                    isAnimationActive={false}
-                                >
-                                    <LabelList dataKey="id" position="right" />
-                                </Scatter>
-                            </ScatterChart>
-                        </ResponsiveContainer>
-                    </div>
+                                <text x="267" y={260 - 220 * fraction + 14}>
+                                    {range * fraction} m
+                                </text>
+                            </g>
+                        ))}
+                        {[-60, -40, 0, 40, 60].map((angle) => (
+                            <line
+                                className={styles.grid}
+                                key={angle}
+                                x1="260"
+                                y1="260"
+                                x2={260 + 220 * Math.sin((angle * Math.PI) / 180)}
+                                y2={260 - 220 * Math.cos((angle * Math.PI) / 180)}
+                            />
+                        ))}
+                        {targets
+                            .filter((target) => target.distance <= range)
+                            .map((target, index) => (
+                                <g key={index}>
+                                    <circle
+                                        className={styles.target}
+                                        cx={260 + target.x * scale}
+                                        cy={260 - target.y * scale}
+                                        r="6"
+                                    >
+                                        <title>
+                                            {target.distance.toFixed(2)} m · {target.angle.toFixed(1)}° ·{' '}
+                                            {target.speed.toFixed(2)} km/h
+                                        </title>
+                                    </circle>
+                                    <text x={270 + target.x * scale} y={255 - target.y * scale}>
+                                        {index + 1}
+                                    </text>
+                                </g>
+                            ))}
+                        <circle cx="260" cy="260" r="7" className={styles.sensor} />
+                        <text x="260" y="287" textAnchor="middle">
+                            Sensor · 0 m
+                        </text>
+                    </svg>
                 </figure>
                 <figure>
                     <figcaption>Nächste Distanz · letzte 100 Messungen</figcaption>
@@ -416,6 +411,6 @@ const Radar = ({ initialSettings, demo = false }: Props) => {
             </p>
         </section>
     );
-};
+});
 
 export default Radar;

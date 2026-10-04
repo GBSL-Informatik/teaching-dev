@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import RadarDevice from './RadarDevice';
-import { type RadarTransport } from './WebSerialTransport';
+import WebserialStore from '../../../tdev/webserial/stores/WebserialStore';
+import MockSerialPort, { installPort } from '../../../tdev/webserial/models/__tests__/MockSerialPort';
 import { DEFAULT_SETTINGS } from './protocol';
 
 const frame = (header: string, payload: number[] = []): Uint8Array => {
@@ -11,72 +12,76 @@ const frame = (header: string, payload: number[] = []): Uint8Array => {
     return bytes;
 };
 
-class Sensor implements RadarTransport {
+class Sensor extends MockSerialPort {
     commands: string[] = [];
-    closed = false;
     fail?: string;
     silent?: string;
-    private queue: Uint8Array[] = [];
-    private reader?: { resolve: (bytes: Uint8Array) => void; reject: (error: Error) => void };
-    async open() {}
-    read(): Promise<Uint8Array> {
-        const bytes = this.queue.shift();
-        if (bytes) {
-            return Promise.resolve(bytes);
-        }
-        return new Promise((resolve, reject) => {
-            this.reader = { resolve, reject };
-        });
-    }
-    async write(bytes: Uint8Array) {
-        const command = new TextDecoder().decode(bytes.subarray(0, 4));
-        this.commands.push(command);
-        if (this.silent === command) {
-            return;
-        }
-        const ack = frame('RESP', [this.fail === command ? 2 : 0]);
-        const data =
-            command === 'GNFD' && this.fail !== command
-                ? frame('PDAT', [80, 0, 100, 0, 0, 0, 100, 0])
-                : new Uint8Array();
-        const combined = new Uint8Array(ack.length + data.length);
-        combined.set(ack);
-        combined.set(data, ack.length);
-        if (this.reader) {
-            const reader = this.reader;
-            this.reader = undefined;
-            reader.resolve(combined);
-        } else {
-            this.queue.push(combined);
-        }
-    }
-    async close() {
-        this.closed = true;
-        this.reader?.reject(new Error('Serial disconnected'));
-        this.reader = undefined;
+    constructor() {
+        super();
+        this.onWrite = (bytes) => {
+            const command = new TextDecoder().decode(bytes.subarray(0, 4));
+            this.commands.push(command);
+            if (this.silent === command) {
+                return;
+            }
+            const ack = frame('RESP', [this.fail === command ? 2 : 0]);
+            const data =
+                command === 'GNFD' && this.fail !== command
+                    ? frame('PDAT', [80, 0, 100, 0, 0, 0, 100, 0])
+                    : new Uint8Array();
+            const combined = new Uint8Array(ack.length + data.length);
+            combined.set(ack);
+            combined.set(data, ack.length);
+            this.receive(combined);
+        };
     }
 }
 
+const createRadar = (sensor: Sensor) => {
+    installPort(sensor);
+    const store = new WebserialStore({} as never);
+    return RadarDevice.request(store, 'radar-test');
+};
+
+afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+});
+
 describe('Radar lifecycle', () => {
+    it('keeps one radar controller per shared device while allowing additional byte subscribers', async () => {
+        installPort(new Sensor());
+        const store = new WebserialStore({} as never);
+        const radar = RadarDevice.request(store, 'shared');
+        expect(() => RadarDevice.request(store, 'shared')).toThrow('already registered');
+        const subscriber = { id: 'other-decoder', reset: vi.fn(), onNewBytes: vi.fn() };
+        radar.device.subscribe(subscriber);
+        await radar.connect(DEFAULT_SETTINGS);
+        await radar.measure();
+        expect(subscriber.onNewBytes).toHaveBeenCalled();
+        await radar.close();
+        const next = RadarDevice.request(store, 'shared');
+        await next.close();
+    });
     it('configures the sensor, reads combined ACK/PDAT and disconnects gracefully', async () => {
         const sensor = new Sensor();
-        const radar = new RadarDevice(sensor);
+        const radar = createRadar(sensor);
         await radar.connect(DEFAULT_SETTINGS);
         expect(sensor.commands).toEqual(['INIT', 'RBFR', 'RSPI', 'RRAI', 'TRFT', 'MIDS']);
         expect((await radar.measure())[0].distance).toBe(0.8);
         await radar.close();
         expect(sensor.commands.at(-1)).toBe('GBYE');
-        expect(sensor.closed).toBe(true);
+        expect(sensor.close).toHaveBeenCalledOnce();
     });
-    it('closes the serial transport after a rejected setting', async () => {
+    it('closes the shared serial device after a rejected setting', async () => {
         const sensor = new Sensor();
         sensor.fail = 'RRAI';
-        await expect(new RadarDevice(sensor).connect(DEFAULT_SETTINGS)).rejects.toThrow('RRAI');
-        expect(sensor.closed).toBe(true);
+        await expect(createRadar(sensor).connect(DEFAULT_SETTINGS)).rejects.toThrow('RRAI');
+        expect(sensor.close).toHaveBeenCalledOnce();
     });
     it('rejects sensor errors without waiting for PDAT', async () => {
         const sensor = new Sensor();
-        const radar = new RadarDevice(sensor);
+        const radar = createRadar(sensor);
         await radar.connect(DEFAULT_SETTINGS);
         sensor.fail = 'GNFD';
         await expect(radar.measure()).rejects.toThrow('Ungültiger Parameter');
@@ -87,22 +92,76 @@ describe('Radar lifecycle', () => {
         try {
             const sensor = new Sensor();
             sensor.silent = 'INIT';
-            const radar = new RadarDevice(sensor);
+            const radar = createRadar(sensor);
             const result = expect(radar.connect(DEFAULT_SETTINGS)).rejects.toThrow('Keine RESP-Antwort');
             await vi.advanceTimersByTimeAsync(2100);
             await result;
-            expect(sensor.closed).toBe(true);
+            expect(sensor.close).toHaveBeenCalledOnce();
         } finally {
             vi.useRealTimers();
         }
     });
     it('stops polling before GBYE, with no more measurements after close', async () => {
         const sensor = new Sensor();
-        const radar = new RadarDevice(sensor);
+        const radar = createRadar(sensor);
         await radar.connect(DEFAULT_SETTINGS);
         await new Promise<void>((resolve, reject) => radar.start(() => resolve(), reject));
         await radar.close();
         expect(sensor.commands.slice(-2)).toEqual(['GNFD', 'GBYE']);
-        expect(sensor.closed).toBe(true);
+        expect(sensor.close).toHaveBeenCalledOnce();
+    });
+    it('records and replays fragmented radar frames without sending hardware commands', async () => {
+        vi.useFakeTimers();
+        const sensor = new Sensor();
+        const radar = createRadar(sensor);
+        await radar.connect(DEFAULT_SETTINGS);
+        const measurementListener = vi.fn();
+        radar.subscribe(measurementListener);
+        await radar.measure();
+        await radar.disconnect();
+        const recorded = radar.device.receivedData.map((sample) => ({
+            timestamp: sample.timestamp,
+            bytes: sample.bytes.slice()
+        }));
+        const writeCount = sensor.writes.length;
+        radar.device.setReplaySpeed(10);
+        radar.device.replay();
+        await vi.advanceTimersByTimeAsync((recorded.length + 2) * 10);
+        expect(sensor.writes).toHaveLength(writeCount);
+        expect(radar.device.receivedData).toEqual(recorded);
+        expect(radar.measurements).toHaveLength(1);
+        expect(radar.measurements[0].source).toBe('replay');
+        expect(measurementListener.mock.calls.at(-1)?.[0].timestamp).toBe(
+            recorded.find((sample) => new TextDecoder().decode(sample.bytes).includes('PDAT'))?.timestamp
+        );
+        await radar.close();
+    });
+    it('stops invalid replay data without throwing from the replay timer or sending bytes', async () => {
+        vi.useFakeTimers();
+        const sensor = new Sensor();
+        const radar = createRadar(sensor);
+        radar.device.setReplayData([{ timestamp: 10, bytes: new Uint8Array(8) }]);
+        radar.device.replay();
+        await vi.advanceTimersByTimeAsync(300);
+        expect(radar.device.isReplaying).toBe(false);
+        expect(radar.device.error).toContain('Datenrahmen');
+        expect(sensor.writes).toHaveLength(0);
+        await radar.close();
+    });
+    it('decodes byte-by-byte replay including arbitrary binary values and empty PDAT frames', async () => {
+        vi.useFakeTimers();
+        const radar = createRadar(new Sensor());
+        const payload = [0x0a, 0x0d, 0xff, 0xff, 0, 0, 0xff, 0];
+        const bytes = new Uint8Array([...frame('PDAT', payload), ...frame('PDAT', [])]);
+        radar.device.setReplayData(
+            [...bytes].map((byte, index) => ({ timestamp: index, bytes: new Uint8Array([byte]) }))
+        );
+        radar.device.setReplaySpeed(1);
+        radar.device.replay();
+        await vi.advanceTimersByTimeAsync(bytes.length + 2);
+        expect(radar.measurements).toHaveLength(2);
+        expect(radar.measurements[0].targets[0].distance).toBe(33.38);
+        expect(radar.measurements[1].targets).toEqual([]);
+        await radar.close();
     });
 });

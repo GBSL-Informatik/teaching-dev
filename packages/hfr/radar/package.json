@@ -5,6 +5,7 @@
     "types": "index.ts",
     "peerDependencies": {
         "@tdev/core": "1.0.0",
+        "@tdev/webserial": "1.0.0",
         "react": "*"
     },
     "dependencies": {

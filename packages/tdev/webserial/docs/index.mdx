@@ -224,3 +224,11 @@ Zum Schluss muss erneut installiert werden, so dass yarn das neue Package verwen
 ```bash
 yarn install
 ```
+
+## Text- und Binärgeräte
+
+`WebserialStore.useDevice(id, options, config)` liefert ein `SerialTextDevice` mit der bestehenden zeilenbasierten API. Der bisherige Import `@tdev/webserial/models/SerialDevice` bleibt ein kompatibler Einstieg für Textgeräte. `useBinaryDevice()` liefert ein `SerialBinaryDevice`; eine Geräte-ID kann nur einen Modus verwenden.
+
+Beide Geräte erben Portverwaltung, Verbindungsstatus und Replay von `SerialDeviceBase`. Text-Subscriber implementieren `iSubscriber.onNewLines()`, binäre Subscriber `iBinarySubscriber.onNewBytes(bytes, timestamp)`. Beide besitzen `id`, `reset()` und optional `onConnectionStateChange()`. Pro Subscription-ID darf bei Binärgeräten nur ein Subscriber registriert sein. `onBeforeDisconnect()` erlaubt protokollspezifische Abschiedskommandos vor der Port-Freigabe.
+
+Binärgeräte senden über `sendBytes()` und zeichnen kopierte Byte-Chunks mit Empfangszeitstempel in `receivedData` auf. `setReplayData()` lädt diese Aufzeichnungen; die gemeinsame Replay-Steuerung kann sie wiedergeben, pausieren und fortsetzen. Replay öffnet keinen Port und sendet keine Daten. Standardmässig wird die vollständige binäre Sitzung gespeichert (`dataBufferSize: 0`); eine Begrenzung der Chunk-Anzahl kann mitten in einem protokollspezifischen Frame beginnen und sollte nur mit einem Decoder verwendet werden, der sich neu synchronisieren kann.

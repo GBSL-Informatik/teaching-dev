@@ -1,4 +1,7 @@
-import WebSerialTransport, { getWebSerial, type RadarTransport } from './WebSerialTransport';
+import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
+import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
+import type WebserialStore from '@tdev/webserial/stores/WebserialStore';
+import { action, observable } from 'mobx';
 import {
     decodeTargets,
     encodeCommand,
@@ -19,7 +22,13 @@ const STATUS_MESSAGES = [
     'Sensor-Timeout'
 ];
 
-export default class RadarDevice {
+export interface RadarMeasurement {
+    timestamp: number;
+    source: 'live' | 'replay';
+    targets: RadarTarget[];
+}
+
+export default class RadarDevice implements iBinarySubscriber {
     private decoder = new FrameDecoder();
     private pending?: {
         header: string;
@@ -30,28 +39,108 @@ export default class RadarDevice {
     private polling = false;
     private initialized = false;
     private pollTask?: Promise<void>;
-    private readTask?: Promise<void>;
-    private closing?: Promise<void>;
     private pollTimer?: ReturnType<typeof setTimeout>;
     private wakePoll?: () => void;
 
-    constructor(private transport: RadarTransport) {}
+    readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
+    private listeners = new Set<(measurement: RadarMeasurement) => void>();
+    private onTargets?: (targets: RadarTarget[]) => void;
+    private onError?: (error: Error) => void;
+    private onReset?: () => void;
 
-    static async request(): Promise<RadarDevice> {
-        const serial = getWebSerial();
-        if (!serial) {
-            throw new Error('WebSerial benötigt Chrome oder Edge auf HTTPS bzw. localhost.');
+    constructor(
+        readonly device: SerialBinaryDevice,
+        readonly id = 'radar-decoder'
+    ) {
+        this.device.subscribe(this);
+    }
+
+    static request(store: WebserialStore, id: string): RadarDevice {
+        const device = store.useBinaryDevice(
+            id,
+            {
+                baudRate: 115200,
+                dataBits: 8,
+                parity: 'even',
+                stopBits: 1,
+                flowControl: 'none',
+                bufferSize: 4096
+            },
+            { dataBufferSize: 0, portFilters: [{ usbVendorId: 0x0403, usbProductId: 0x6001 }] }
+        );
+        return new RadarDevice(device, `${id}-decoder`);
+    }
+
+    subscribe(listener: (measurement: RadarMeasurement) => void): () => void {
+        this.listeners.add(listener);
+        return () => {
+            this.listeners.delete(listener);
+        };
+    }
+
+    @action
+    reset(): void {
+        this.pending?.reject(new Error('Radar-Daten wurden zurückgesetzt.'));
+        this.pending = undefined;
+        this.decoder = new FrameDecoder();
+        this.measurements.clear();
+        this.onReset?.();
+    }
+
+    onConnectionStateChange(state: ConnectionState): void {
+        if (state === 'disconnected' || state === 'error') {
+            this.reading = false;
+            this.initialized = false;
+            this.pending?.reject(new Error('Radar-Verbindung unterbrochen.'));
+            this.pending = undefined;
         }
-        const port = await serial.requestPort({ filters: [{ usbVendorId: 0x0403, usbProductId: 0x6001 }] });
-        return new RadarDevice(new WebSerialTransport(port));
+    }
+
+    @action
+    onNewBytes(bytes: Uint8Array, timestamp: number): void {
+        try {
+            for (const frame of this.decoder.push(bytes)) {
+                if (this.pending?.header === frame.header && this.device.isConnected) {
+                    const pending = this.pending;
+                    this.pending = undefined;
+                    pending.resolve(frame);
+                }
+                if (frame.header === 'PDAT') {
+                    const targets = decodeTargets(frame.payload);
+                    const measurement: RadarMeasurement = {
+                        timestamp,
+                        targets,
+                        source: this.device.isConnected ? 'live' : 'replay'
+                    };
+                    this.measurements.push(measurement);
+                    if (this.measurements.length > 2000) {
+                        this.measurements.shift();
+                    }
+                    this.onTargets?.(targets);
+                    this.listeners.forEach((listener) => listener(measurement));
+                }
+            }
+        } catch (error) {
+            const failure = error instanceof Error ? error : new Error(String(error));
+            this.pending?.reject(failure);
+            this.pending = undefined;
+            this.onError?.(failure);
+            if (this.device.isConnected) {
+                throw failure;
+            }
+            this.device.setError(failure.message);
+            this.device.stopReplay(false);
+        }
     }
 
     async connect(settings: RadarSettings): Promise<void> {
         settingCommands(settings);
         try {
-            await this.transport.open();
+            await this.device.connect();
+            if (!this.device.isConnected) {
+                throw new Error(this.device.error || 'Verbindungsaufbau abgebrochen.');
+            }
             this.reading = true;
-            this.readTask = this.readLoop();
             await this.command('INIT', 0); // Keep 115200 baud: sufficient for PDAT, no baud switch needed.
             this.initialized = true;
             for (const [header, value] of settingCommands(settings)) {
@@ -63,28 +152,7 @@ export default class RadarDevice {
         }
     }
 
-    private async readLoop(): Promise<void> {
-        try {
-            while (this.reading) {
-                const frames = this.decoder.push(await this.transport.read());
-                for (const frame of frames) {
-                    if (this.pending?.header === frame.header) {
-                        const pending = this.pending;
-                        this.pending = undefined;
-                        pending.resolve(frame);
-                    }
-                }
-            }
-        } catch (error) {
-            if (this.reading) {
-                this.reading = false;
-                this.pending?.reject(error instanceof Error ? error : new Error(String(error)));
-                this.pending = undefined;
-            }
-        }
-    }
-
-    private async receive(header: string, send?: Uint8Array): Promise<RadarFrame> {
+    private receive(header: string, send?: Uint8Array): Promise<RadarFrame> {
         if (!this.reading) {
             throw new Error('Radar-Verbindung unterbrochen.');
         }
@@ -108,7 +176,7 @@ export default class RadarDevice {
                 }
             };
             if (send) {
-                void this.transport.write(send).catch((error) => {
+                void this.device.sendBytes(send).catch((error) => {
                     this.pending?.reject(error instanceof Error ? error : new Error(String(error)));
                     this.pending = undefined;
                 });
@@ -137,7 +205,7 @@ export default class RadarDevice {
             }
             resolveAck(frame);
         };
-        void this.transport.write(encodeCommand('GNFD', 4)).catch((error) => {
+        void this.device.sendBytes(encodeCommand('GNFD', 4)).catch((error) => {
             this.pending?.reject(error instanceof Error ? error : new Error(String(error)));
             this.pending = undefined;
         });
@@ -148,7 +216,14 @@ export default class RadarDevice {
         return decodeTargets((await response).payload);
     }
 
-    start(onTargets: (targets: RadarTarget[]) => void, onError: (error: Error) => void): void {
+    start(
+        onTargets: (targets: RadarTarget[]) => void,
+        onError: (error: Error) => void,
+        onReset?: () => void
+    ): void {
+        this.onTargets = onTargets;
+        this.onError = onError;
+        this.onReset = onReset;
         if (this.polling) {
             return;
         }
@@ -156,11 +231,11 @@ export default class RadarDevice {
         this.pollTask = (async () => {
             try {
                 while (this.polling) {
-                    const targets = await this.measure();
+                    await this.measure();
                     if (!this.polling) {
                         break;
                     }
-                    onTargets(targets);
+
                     await new Promise<void>((resolve) => {
                         this.wakePoll = resolve;
                         this.pollTimer = setTimeout(resolve, 100);
@@ -176,15 +251,18 @@ export default class RadarDevice {
         })();
     }
 
-    close(): Promise<void> {
-        if (this.closing) {
-            return this.closing;
-        }
-        this.closing = this.disconnect();
-        return this.closing;
+    async close(): Promise<void> {
+        await this.device.disconnect();
+        this.device.stopReplay();
+        this.device.unsubscribe(this.id);
+        this.listeners.clear();
     }
 
-    private async disconnect(): Promise<void> {
+    async disconnect(): Promise<void> {
+        await this.device.disconnect();
+    }
+
+    async onBeforeDisconnect(): Promise<void> {
         this.polling = false;
         clearTimeout(this.pollTimer);
         this.wakePoll?.();
@@ -194,13 +272,9 @@ export default class RadarDevice {
                 await this.command('GBYE');
             }
         } catch {
-            // Closing the serial port must still succeed when the sensor was unplugged.
+            // Release the serial port even if the sensor does not acknowledge GBYE.
         } finally {
-            this.reading = false;
-            this.pending?.reject(new Error('Verbindung geschlossen.'));
-            this.pending = undefined;
-            await this.transport.close().catch(() => {});
-            await this.readTask;
+            this.initialized = false;
         }
     }
 }

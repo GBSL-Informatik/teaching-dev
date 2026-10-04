@@ -12,7 +12,7 @@ import Radar from '@site/packages/hfr/radar/components';
 
 <Radar demo />
 
-Das Paket `@hfr/radar` zeigt Positionen, Distanzen, Geschwindigkeiten und Winkel der bewegten Ziele eines RFbeam K-LD7 an. Die eigenständige Seite ist unter [/radar/](/radar/) erreichbar. Die Recharts-Positionsansicht zeigt die aktuelle PDAT-Zielliste als Streudiagramm mit seitlicher Position und Entfernung nach vorne in Metern; der Verlauf zeigt die nächste Distanz der letzten 100 Messungen. Leere Messungen erzeugen Lücken. Tooltips zeigen die Messwerte. Die Zeitachse zählt die Messungen vor dem aktuellen Zeitpunkt; die aktuelle Messung liegt rechts. Objektnummern sind pro Frame vergeben und keine Tracking-IDs.
+Das Paket `@hfr/radar` zeigt Positionen, Distanzen, Geschwindigkeiten und Winkel der bewegten Ziele eines RFbeam K-LD7 an. Die eigenständige Seite ist unter [/radar/](/radar/) erreichbar. Die runde Positionsansicht zeigt die aktuelle PDAT-Zielliste auf einem Radarfeld mit Distanzbögen und Winkelstrahlen; der Verlauf zeigt die nächste Distanz der letzten 100 Messungen. Leere Messungen erzeugen Lücken. Im Recharts-Distanzverlauf zeigen Tooltips die Messwerte. Die Zeitachse zählt die Messungen vor dem aktuellen Zeitpunkt; die aktuelle Messung liegt rechts. Objektnummern sind pro Frame vergeben und keine Tracking-IDs.
 
 ## Einbindung
 
@@ -50,12 +50,31 @@ Einstellungen werden beim Verbinden geschrieben und während der Messung gesperr
 
 PDAT enthält bis zu zwölf Ziele mit Distanz in cm, vorzeichenbehafteter Geschwindigkeit in km/h × 100, vorzeichenbehaftetem Winkel in Grad × 100 und Signalstärke in dB × 100. Die Anzeige verwendet Meter, km/h, Grad und dB. Die Draufsicht folgt dem lokalen Python-Beispiel: `x = -distance * sin(angle)`, `y = distance * cos(angle)`.
 
-## Umsetzung und Prüfung
+## WebserialStore und weitere Verarbeitung
 
-Die Implementierung trennt seriellen Transport, binäres Protokoll, Geräte-Lifecycle und React-Darstellung. Paketaufbau, TypeScript-Formatierung, SCSS-Module und gemeinsame Buttons folgen dem Projekt und dem [Serial-Plotter](https://github.com/lebalz/teaching-inf/tree/main/packages/hfr/serial-plotter).
+Der Port gehört dem gemeinsamen `WebserialStore`. `SerialDeviceBase` übernimmt Verbindung, Subscriber und Replay; `SerialTextDevice` verarbeitet UTF-8-Zeilen und `SerialBinaryDevice` zeichnet unveränderte Byte-Chunks mit Zeitstempel auf. Bestehende Text-Imports von `models/SerialDevice` bleiben kompatibel. Der Store liefert Textgeräte über `useDevice()` und Binärgeräte über `useBinaryDevice()` und verhindert einen Moduswechsel derselben Geräte-ID.
 
-```bash
-yarn vitest run packages/hfr/radar
+`RadarDevice` implementiert `iBinarySubscriber`. Es konfiguriert den Sensor und decodiert Frames, öffnet aber keinen eigenen Port. Ein Radar-Controller pro Geräte-ID verwaltet die Kommandos; zusätzliche Byte-Subscriber und Messwert-Listener können parallel auswerten. Für die Radar-Komponente muss `@tdev/webserial/register` in `apiDocumentProviders` registriert sein, wie in der mitgelieferten Website-Konfiguration.
+
+```ts
+const radar = RadarDevice.request(webserialStore, 'radar-labor');
+const unsubscribe = radar.subscribe(({ timestamp, source, targets }) => {
+    console.log(timestamp, source, targets);
+});
+await radar.connect(settings);
+radar.start(onTargets, onError);
 ```
 
-Die Tests prüfen binäre Frames, Einheiten, serielle Paketfragmentierung, Konfiguration, kombinierte RESP/PDAT-Antworten, Fehler, Timeout und Trennen. Ein Test mit echter Hardware muss zusätzlich Geräteauswahl, Treiberzugriff, Messbereich und reale Distanzen prüfen.
+`radar.measurements` enthält die letzten 2000 decodierten Messungen. Die vollständige binäre Sitzungsaufzeichnung liegt in `radar.device.receivedData` und wird beim erneuten Verbinden zurückgesetzt. Jedes Element enthält `bytes` und `timestamp`. Die Rohaufzeichnung speichert die gesamte Sitzung im Speicher, damit der Anfang eines binären Frames beim Replay erhalten bleibt. Zum Laden einer Aufzeichnung `setReplayData()` verwenden; Byte-Arrays werden kopiert.
+
+Nach **Trennen** erscheint die gemeinsame Replay-Steuerung. Replay, Pause, Fortsetzen und Geschwindigkeit verwenden dieselbe Aufzeichnung. Das Radar decodiert Replay-Frames und veröffentlicht sie mit `source: 'replay'` und dem ursprünglichen Empfangszeitstempel, ohne INIT, GNFD oder andere Hardware-Kommandos zu senden. `disconnect()` behält den Subscriber für Replay; `close()` trennt zusätzlich die Subscription. `unsubscribe()` beendet einen Messwert-Listener.
+
+## Umsetzung und Prüfung
+
+Das Paket trennt den seriellen Transport im gemeinsamen Store, binäres Protokoll, Radar-Subscriber und React-Darstellung. Die Draufsicht ist ein rundes SVG-Radarfeld; Recharts zeichnet den Distanzverlauf. Paketaufbau, TypeScript-Formatierung, SCSS-Module und gemeinsame Buttons folgen dem Projekt und dem [Serial-Plotter](https://github.com/lebalz/teaching-inf/tree/main/packages/hfr/serial-plotter).
+
+```bash
+yarn vitest run packages/hfr/radar packages/tdev/webserial/models
+```
+
+Die Tests prüfen Text-Kompatibilität, binäre Frames, Einheiten, Fragmentierung, gemeinsame Port-Nutzung, Konfiguration, kombinierte RESP/PDAT-Antworten, Fehler, Timeout, Port-Freigabe sowie verlustfreies Replay ohne Hardware-Kommandos.
