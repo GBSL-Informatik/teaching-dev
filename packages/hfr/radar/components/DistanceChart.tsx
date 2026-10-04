@@ -4,11 +4,13 @@ import styles from './styles.module.scss';
 
 interface Props {
     history: (number | null)[];
-    range: number;
 }
 
-export default function DistanceChart({ history, range }: Props) {
+export default function DistanceChart({ history }: Props) {
     const distanceData = history.map((distance, index) => ({ sample: index - history.length + 1, distance }));
+    const maxDistance = Math.ceil(
+        history.reduce<number>((maximum, distance) => Math.max(maximum, distance ?? 0), 1)
+    );
     return (
         <figure>
             <figcaption>Nächste Distanz · gefiltert · letzte 100 Messungen</figcaption>
@@ -28,7 +30,13 @@ export default function DistanceChart({ history, range }: Props) {
                             }}
                             tickFormatter={(value) => String(Math.abs(value))}
                         />
-                        <YAxis type="number" domain={[0, range]} allowDataOverflow unit=" m" width={65} />
+                        <YAxis
+                            type="number"
+                            domain={[0, maxDistance]}
+                            allowDataOverflow
+                            unit=" m"
+                            width={65}
+                        />
                         <Tooltip
                             labelFormatter={(value) =>
                                 Number(value) === 0

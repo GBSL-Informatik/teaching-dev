@@ -224,7 +224,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
                 </DefinitionList>
                 <div className={styles.plots}>
                     <RadarChart targets={targets} range={range} />
-                    <DistanceChart history={history} range={range} />
+                    <DistanceChart history={history} />
                 </div>
                 <div className={styles.table} role="region" aria-label="Messwerte" tabIndex={0}>
                     <table>
