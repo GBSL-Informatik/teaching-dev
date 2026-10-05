@@ -11,7 +11,7 @@ export interface DistanceRecord {
 
 // Starting parameters for comparison; tune against recorded hardware measurements.
 export const DISTANCE_FILTER_SETTINGS = {
-    person: { maxSpeedKmh: 20, maxAngleDegrees: 15 },
+    person: { maxSpeedKmh: 20, maxAngleDegrees: 25 },
     oneEuro: { minCutoff: 1, beta: 4, dCutoff: 1 },
     kalman: { distanceStdDev: 0.1, accelerationStdDev: 3 }
 };
