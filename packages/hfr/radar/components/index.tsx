@@ -6,6 +6,7 @@ import Alert from '@tdev-components/shared/Alert';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
+import SelectInput from '@tdev-components/shared/SelectInput';
 import ReplayControl from '@tdev/webserial/component/ReplayControl';
 import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import { observer } from 'mobx-react-lite';
@@ -108,17 +109,12 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
     const select = (key: keyof RadarSettings, label: string, values: (string | number)[]) => (
         <label>
             {label}
-            <select
-                value={settings[key]}
-                disabled={busy}
-                onChange={(event) => setSettings({ ...settings, [key]: Number(event.target.value) })}
-            >
-                {values.map((value, index) => (
-                    <option key={index} value={index}>
-                        {value}
-                    </option>
-                ))}
-            </select>
+            <SelectInput
+                value={String(settings[key])}
+                disabled={device.device.isConnected || busy}
+                options={values.map((value, index) => ({ value: String(index), label: String(value) }))}
+                onChange={(value) => setSettings((previous) => ({ ...previous, [key]: Number(value) }))}
+            />
         </label>
     );
     const nearest = device.getMinimumDistance();
