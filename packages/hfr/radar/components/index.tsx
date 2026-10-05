@@ -33,7 +33,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
     const [error, setError] = useState('');
     const [supported, setSupported] = useState(false);
-    const history = device.history;
+    const history = device.medianHistory;
     const mounted = useRef(false);
     const range = DISTANCE_RANGES[settings.range] || 10;
     const replaying = device.device.isReplaying || device.device.isReplayPaused;
@@ -116,7 +116,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
             />
         </label>
     );
-    const nearest = device.getMinimumDistance();
+    const nearest = history.at(-1) ?? null;
 
     return (
         <section aria-label="K-LD7 Radar">
@@ -220,7 +220,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
                 </DefinitionList>
                 <div className={styles.plots}>
                     <RadarChart targets={targets} range={range} />
-                    <DistanceChart history={history} medianHistory={device.medianHistory} />
+                    <DistanceChart history={history} />
                 </div>
                 <div className={styles.table} role="region" aria-label="Messwerte" tabIndex={0}>
                     <table>
