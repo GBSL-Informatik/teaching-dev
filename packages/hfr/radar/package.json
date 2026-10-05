@@ -10,7 +10,6 @@
     },
     "dependencies": {
         "digital-filter": "^2.4.2",
-        "kalman-filter": "^2.3.0",
         "react-is": "^19.2.7",
         "recharts": "^3.10.1"
     }

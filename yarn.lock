@@ -4796,18 +4796,6 @@
   resolved "https://registry.yarnpkg.com/@radix-ui/rect/-/rect-1.1.3.tgz#5a58fbae3deefb7f8cfe6ea314287d699eb694a9"
   integrity sha512-JtyZR+mqgBibTo8xea3B6ZRmzZiM/YeVBtUkas6zMuXjAlfIFIW2FgqeM9eLyvEaYX66vr6DJMK+4U6LV0KhNw==
 
-"@rayyamhk/complex@1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@rayyamhk/complex/-/complex-1.0.10.tgz#6daa9c1bf4b6a86b2e1414a6aa8a1f32ef6a8ace"
-  integrity sha512-0HGH6SDcOd34zQVO97pfnIU6ul/qu0WkShZdupLLS3e5IEyNSkaX7mgVsDcWLpFNxLRs5RL2wS7iIYbsEp9MZg==
-
-"@rayyamhk/matrix@^1.0.5":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@rayyamhk/matrix/-/matrix-1.0.8.tgz#207649294a59bedf302fc714cd393abfe67e9bf9"
-  integrity sha512-EIvEnmcL4q5FMb/g20/FxoZnewkbiiSY4S0+TWu+jkAKF4E/p8ocUN3CET0AXUVJwaA7t8drtBwGNFE8qAgAxg==
-  dependencies:
-    "@rayyamhk/complex" "1.0.10"
-
 "@react-hook/intersection-observer@^3.1.1":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@react-hook/intersection-observer/-/intersection-observer-3.1.2.tgz#f6f0e42588e03c4afeac0276889d97927d67edc7"
@@ -10858,15 +10846,6 @@ jszip@^3.10.1:
     readable-stream "~2.3.6"
     setimmediate "^1.0.5"
 
-kalman-filter@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/kalman-filter/-/kalman-filter-2.3.0.tgz#e20b7e32c93aaae5b1ac94a48c8b91e11657bb16"
-  integrity sha512-DcH0LcuJdU8uo9w8VaJvoDTQ5HtgpPAIpt81/3fP/zYBrfQVgQOa566ZVOeM6x93t5s95kByeEY26my4SrpH7w==
-  dependencies:
-    "@rayyamhk/matrix" "^1.0.5"
-    matrix-inverse "^2.0.0"
-    simple-linalg "^1.2.0"
-
 katex@^0.16.0, katex@^0.16.47:
   version "0.16.47"
   resolved "https://registry.yarnpkg.com/katex/-/katex-0.16.47.tgz#0a13a42c2deb4f74e61f162d440b9165a548030f"
@@ -11305,11 +11284,6 @@ math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
   integrity sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==
-
-matrix-inverse@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/matrix-inverse/-/matrix-inverse-2.0.0.tgz#2e8db33f8b977bd5e3b03f31d2fae89c2278203b"
-  integrity sha512-iUZfjmnAEDah54qLlj63PYFnZvcCwW+mhfYgf3KrtDn1ruyVE5vFrEeJ77RfsHaqMN/L3ZLnP+5/O2E7bgKEvQ==
 
 mdast-util-directive@^3.0.0:
   version "3.1.0"
@@ -14844,13 +14818,6 @@ simple-get@^4.0.0:
     decompress-response "^6.0.0"
     once "^1.3.1"
     simple-concat "^1.0.0"
-
-simple-linalg@^1.2.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/simple-linalg/-/simple-linalg-1.5.0.tgz#82334c3421799bcc33544eb7a19be95a7cf8d8c8"
-  integrity sha512-jeuUoszKtkcNyohIkXNEY5LEWdH6s8YQif8iTzh37cNOP7kqStORz4jziXOvCde9Y0VR+Zm06DkEaHtT1x12WQ==
-  dependencies:
-    matrix-inverse "^2.0.0"
 
 sirv@^2.0.3:
   version "2.0.4"

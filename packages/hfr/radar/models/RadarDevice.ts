@@ -1,4 +1,4 @@
-import DistanceFilters, { DISTANCE_FILTER_SETTINGS, type DistanceRecord } from './DistanceFilters';
+import OneEuroFilter from './OneEuroFilter';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
 import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
@@ -47,11 +47,8 @@ export default class RadarDevice implements iBinarySubscriber {
     private resetListeners = new Set<() => void>();
 
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
-    private distanceRecords = observable.array<DistanceRecord>([], { deep: false });
-    private filters = new DistanceFilters();
-    private maxSpeed = DISTANCE_FILTER_SETTINGS.person.maxSpeedKmh / 3.6;
-    private track?: { distance: number; timestamp: number; velocity: number };
-    private candidate?: { distance: number; timestamp: number; count: number };
+    private distances = observable.array<number | null>([], { deep: false });
+    private filter = new OneEuroFilter();
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
     private onTargets?: (targets: RadarTarget[]) => void;
     private onError?: (error: Error) => void;
@@ -129,10 +126,11 @@ export default class RadarDevice implements iBinarySubscriber {
     appendRecord(measurement: RadarMeasurement): void {
         const record = { ...measurement, targets: measurement.targets.map((target) => ({ ...target })) };
         this.measurements.push(record);
-        const selection = this.selectDistance(record);
-        this.distanceRecords.push(
-            this.filters.update(selection.distance, record.timestamp, selection.reacquired)
-        );
+        const distances = record.targets
+            .map((target) => target.distance)
+            .filter((distance) => Number.isFinite(distance) && distance >= 0);
+        const minimum = distances.length ? Math.min(...distances) : null;
+        this.distances.push(this.filter.update(minimum, record.timestamp));
         this.onTargets?.(record.targets);
         this.listeners.forEach((listener) => listener(record));
     }
@@ -144,76 +142,11 @@ export default class RadarDevice implements iBinarySubscriber {
 
     @computed
     get history(): (number | null)[] {
-        return this.distanceRecords.slice(-100).map((record) => record.legacy);
+        return this.distances.slice(-100);
     }
 
     getMinimumDistance(index = this.measurements.length - 1): number | null {
-        return this.distanceRecords[index]?.legacy ?? null;
-    }
-
-    @computed
-    get comparisonHistory(): DistanceRecord[] {
-        return this.distanceRecords.slice(-100);
-    }
-
-    private selectDistance({ targets, timestamp }: RadarMeasurement): {
-        distance: number | null;
-        reacquired: boolean;
-    } {
-        const distances = targets
-            .filter(
-                (target) =>
-                    Number.isFinite(target.angle) &&
-                    Math.abs(target.angle) <= DISTANCE_FILTER_SETTINGS.person.maxAngleDegrees &&
-                    Number.isFinite(target.speed) &&
-                    Math.abs(target.speed) <= DISTANCE_FILTER_SETTINGS.person.maxSpeedKmh
-            )
-            .map((target) => target.distance)
-            .filter((distance) => Number.isFinite(distance) && distance >= 0);
-        if (!distances.length || !Number.isFinite(timestamp)) {
-            this.candidate = undefined;
-            return { distance: null, reacquired: false };
-        }
-        const minimum = Math.min(...distances);
-        const previous = this.track;
-        const elapsed = previous ? (timestamp - previous.timestamp) / 1000 : 0;
-        // Reacquire the nearest object after a long gap or a restarted timestamp sequence.
-        if (!previous || elapsed < 0 || elapsed > 1) {
-            this.track = { distance: minimum, timestamp, velocity: 0 };
-            this.candidate = undefined;
-            return { distance: minimum, reacquired: true };
-        }
-        const predicted = previous.distance + previous.velocity * elapsed;
-        // Allow 15 cm of measurement jitter plus the configured maximum travel distance.
-        const tolerance = 0.15 + this.maxSpeed * elapsed;
-        const plausible = distances.filter((distance) => Math.abs(distance - previous.distance) <= tolerance);
-        if (!plausible.length) {
-            const candidate = this.candidate;
-            const candidateElapsed = candidate ? (timestamp - candidate.timestamp) / 1000 : 0;
-            const consistent =
-                candidate &&
-                candidateElapsed >= 0 &&
-                candidateElapsed <= 1 &&
-                Math.abs(minimum - candidate.distance) <= 0.15 + this.maxSpeed * candidateElapsed;
-            this.candidate = { distance: minimum, timestamp, count: consistent ? candidate.count + 1 : 1 };
-            // An isolated jump is a gap, not an invented position. Confirm a new target over three frames.
-            if (this.candidate.count < 3) {
-                return { distance: null, reacquired: false };
-            }
-            this.track = { distance: minimum, timestamp, velocity: 0 };
-            this.candidate = undefined;
-            return { distance: minimum, reacquired: true };
-        }
-        const distance = plausible.reduce((best, value) =>
-            Math.abs(value - predicted) < Math.abs(best - predicted) ? value : best
-        );
-        const velocity =
-            elapsed > 0
-                ? Math.max(-this.maxSpeed, Math.min(this.maxSpeed, (distance - previous.distance) / elapsed))
-                : previous.velocity;
-        this.track = { distance, timestamp, velocity: (previous.velocity + velocity) / 2 };
-        this.candidate = undefined;
-        return { distance, reacquired: false };
+        return this.distances[index] ?? null;
     }
 
     @action
@@ -222,10 +155,8 @@ export default class RadarDevice implements iBinarySubscriber {
         this.pending = undefined;
         this.decoder = new FrameDecoder();
         this.measurements.clear();
-        this.distanceRecords.clear();
-        this.filters.reset();
-        this.track = undefined;
-        this.candidate = undefined;
+        this.distances.clear();
+        this.filter.reset();
         this.onReset?.();
         this.resetListeners.forEach((listener) => listener());
     }

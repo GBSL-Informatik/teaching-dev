@@ -1,4 +1,3 @@
-import { DISTANCE_FILTER_SETTINGS } from '../models/DistanceFilters';
 import { mdiConnection, mdiEject, mdiPlay, mdiStop } from '@mdi/js';
 import DefinitionList from '@tdev-components/DefinitionList';
 import Loader from '@tdev-components/Loader';
@@ -34,7 +33,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
     const [error, setError] = useState('');
     const [supported, setSupported] = useState(false);
-    const history = device.comparisonHistory;
+    const history = device.history;
     const mounted = useRef(false);
     const range = DISTANCE_RANGES[settings.range] || 10;
     const replaying = device.device.isReplaying || device.device.isReplayPaused;
@@ -210,11 +209,6 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
                 <p className={styles.hint}>
                     Einstellungen werden beim Verbinden gesetzt. Der Messbereich muss alle erwarteten Ziele
                     einschliessen.
-                </p>
-                <p className={styles.hint}>
-                    Distanz-Auswertung für Personen innerhalb von ±
-                    {DISTANCE_FILTER_SETTINGS.person.maxAngleDegrees}° vor dem Sensor und bis{' '}
-                    {DISTANCE_FILTER_SETTINGS.person.maxSpeedKmh} km/h.
                 </p>
                 <DefinitionList small compact>
                     <dt>Erkannte Objekte</dt>
