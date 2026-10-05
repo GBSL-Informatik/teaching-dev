@@ -11,7 +11,7 @@ export interface RadarSettings {
 
 export const DEFAULT_SETTINGS: RadarSettings = {
     range: 1,
-    speed: 0,
+    speed: 1,
     frequency: 1,
     tracking: 0,
     sensitivity: 4
