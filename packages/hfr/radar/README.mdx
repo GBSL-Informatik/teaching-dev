@@ -1,0 +1,100 @@
+---
+tags:
+    - WebSerial
+    - Radar
+    - Visualization
+page_id: 854056ae-82d1-4101-a7bc-dbdcc88bfc2f
+---
+
+import Radar from '@site/packages/hfr/radar/components';
+import RadarDevice from '@site/packages/hfr/radar/models/RadarDevice';
+
+export const demoData = RadarDevice.createDemoData(10);
+
+# K-LD7 Radar
+
+<Radar initialData={demoData} />
+
+Das Paket `@hfr/radar` zeigt Positionen, Distanzen, Geschwindigkeiten und Winkel der bewegten Ziele eines RFbeam K-LD7 an. Die eigenständige Seite ist unter [/radar/](/radar/) erreichbar. Die runde Positionsansicht zeigt die aktuelle PDAT-Zielliste auf einem Radarfeld mit Distanzbögen und Winkelstrahlen; der Verlauf zeigt die nächste Distanz der letzten 100 Messungen. Der Recharts-Distanzverlauf und die aktuelle Distanzanzeige zeigen ausschliesslich die One-Euro-gefilterte Distanz mit zusätzlichem Fenstermedian (3). Bei leerer Zielliste bleibt ein robuster Wert aus den letzten drei erkannten Messungen sichtbar. Die Zeitachse zählt die Messungen vor dem aktuellen Zeitpunkt; die aktuelle Messung liegt rechts. Objektnummern sind pro Frame vergeben und keine Tracking-IDs.
+
+## Einbindung
+
+```tsx
+import Radar from '@hfr/radar/components';
+import RadarDevice from '@hfr/radar/models/RadarDevice';
+
+<Radar initialSettings={{ range: 1, speed: 0 }} />
+// Ohne Hardware: binäre PDAT-Frames als Replay-Daten
+<Radar initialData={RadarDevice.createDemoData(10)} />
+```
+
+## Hardware und Browser
+
+Unterstützt wird das FT232R-USB-UART-Kabel des K-LD7-Evaluation-Kits (VID `0x0403`, PID `0x6001`). Die Geräteauswahl ist auf diesen Adapter gefiltert. Der Sensor selbst hat eine UART-Schnittstelle, keine native USB-Schnittstelle. Versorgung und Pinbelegung gemäss [RFbeam-Datenblatt](https://rfbeam.ch/wp-content/uploads/dlm_uploads/2022/10/K-LD7_Datasheet.pdf) beachten.
+
+WebSerial benötigt Chrome oder Edge mit HTTPS oder localhost. Über **Seriell verbinden** den FTDI-COM-Port auswählen. Die Verbindung verwendet den vorhandenen FTDI-VCP-Treiber. Hersteller-Software und andere Programme mit Zugriff auf den Port vorher vollständig schliessen. Bei einem Radar-Timeout den Sensor neu einschalten und erneut verbinden.
+
+Die Messwerttabelle zeigt etwa vier Objektzeilen. Weitere Ziele sind durch vertikales Scrollen erreichbar; die Spaltenüberschriften bleiben sichtbar. Auf schmalen Bildschirmen kann die Tabelle zusätzlich horizontal gescrollt werden.
+
+Quellen: [Chrome: WebSerial](https://developer.chrome.com/docs/capabilities/serial), [FTDI VCP-Treiber](https://ftdichip.com/drivers/vcp-drivers/).
+
+## Konfiguration und Protokoll
+
+Die Verbindung verwendet `115200`, `8E1` und `INIT(0)`. Die Baudrate bleibt bewusst konstant, da nur PDAT und keine ADC-/FFT-Rohdaten übertragen werden. Kommandos und Längen werden little-endian codiert; jede Bestätigung (`RESP`) wird geprüft. `GNFD(4)` fordert eine neue PDAT-Zielliste an. Nach jeder Antwort beträgt die Pause 5 ms. `GBYE` beendet die Verbindung. Fragmentierte serielle Daten werden zu vollständigen Radar-Frames zusammengesetzt. Ein fehlendes Antwortpaket beendet die Messung nach zwei Sekunden mit einer Fehlermeldung.
+
+| Einstellung | Kommando | Werte (Index) |
+| --- | --- | --- |
+| Messbereich | RRAI | 0: 5 m, 1: 10 m, 2: 30 m, 3: 100 m |
+| Geschwindigkeit | RSPI | 0: 12.5, 1: 25, 2: 50, 3: 100 km/h |
+| Frequenzkanal | RBFR | 0: tief, 1: mittel, 2: hoch |
+| Tracking-Filter | TRFT | 0: Standard, 1: schnelle Erkennung, 2: lange Sichtbarkeit |
+| Mikro-Empfindlichkeit | MIDS | 0–9 |
+
+Einstellungen werden beim Verbinden geschrieben und während der Messung gesperrt. TRFT und MIDS konfigurieren das sensorinterne Tracking bzw. die Mikrodetektion; die dargestellten Rohziele stammen aus PDAT. Der Messbereich muss alle erwarteten Ziele einschliessen, sonst können mehrdeutige Distanzen entstehen. Das Radar erkennt vor allem bewegte Objekte, keine vollständige statische Raumgeometrie.
+
+PDAT enthält bis zu zwölf Ziele mit Distanz in cm, vorzeichenbehafteter Geschwindigkeit in km/h × 100, vorzeichenbehaftetem Winkel in Grad × 100 und Signalstärke in dB × 100. Die Anzeige verwendet Meter, km/h, Grad und dB. Die Draufsicht folgt dem lokalen Python-Beispiel: `x = -distance * sin(angle)`, `y = distance * cos(angle)`.
+
+## WebserialStore und weitere Verarbeitung
+
+Der Port gehört dem gemeinsamen `WebserialStore`. `SerialDeviceBase` übernimmt Verbindung, Subscriber und Replay; `SerialTextDevice` verarbeitet UTF-8-Zeilen und `SerialBinaryDevice` zeichnet unveränderte Byte-Chunks mit Zeitstempel auf. Bestehende Text-Imports von `models/SerialDevice` bleiben kompatibel. Der Store liefert Textgeräte über `useDevice()` und Binärgeräte über `useBinaryDevice()` und verhindert einen Moduswechsel derselben Geräte-ID.
+
+`RadarDevice` implementiert `iBinarySubscriber`. Es konfiguriert den Sensor und decodiert Frames, öffnet aber keinen eigenen Port. Ein Radar-Controller pro Geräte-ID verwaltet die Kommandos; zusätzliche Byte-Subscriber und Messwert-Listener können parallel auswerten. Für die Radar-Komponente muss `@tdev/webserial/register` in `apiDocumentProviders` registriert sein, wie in der mitgelieferten Website-Konfiguration.
+
+```ts
+const radar = RadarDevice.request(webserialStore, 'radar-labor');
+const unsubscribe = radar.subscribe(({ timestamp, source, targets }) => {
+    console.log(timestamp, source, targets);
+});
+await radar.connect(settings);
+radar.start(onTargets, onError);
+```
+
+`radar.measurements` enthält alle decodierten Rohmessungen der aktuellen Sitzung. `appendRecord(measurement)` ergänzt eine Messung und aktualisiert die Distanzfilterung. `radar.targets` liefert die letzte rohe Zielliste, `radar.history` als `@computed` die letzten 100 gefilterten Distanzen. `getMinimumDistance()` liefert die aktuelle One-Euro-gefilterte Distanz oder `null`, solange noch keine gültige Distanz vorliegt; mit einem Messungsindex kann ein früherer Wert abgefragt werden. Die vollständige binäre Sitzungsaufzeichnung liegt in `radar.device.receivedData` und wird beim erneuten Verbinden zurückgesetzt. Jedes Element enthält `bytes` und `timestamp`. Die Rohaufzeichnung speichert die gesamte Sitzung im Speicher, damit der Anfang eines binären Frames beim Replay erhalten bleibt. Auch Rohmessungen und gefilterte Distanzen bleiben bis zum Reset oder erneuten Verbinden im Speicher. Zum Laden einer Aufzeichnung `setReplayData()` verwenden; Byte-Arrays werden kopiert.
+
+`RadarDevice.createDemoData(range)` erzeugt 200 binäre PDAT-Frames mit drei simulierten Zielen und Zeitstempeln im Abstand von 100 ms. Über `<Radar initialData={...} />` werden sie wie beim Webserial-Demo in `setReplayData()` geladen. Die gemeinsame Replay-Steuerung decodiert sie über denselben Subscriber wie echte Aufzeichnungen (`source: 'replay'`), ohne einen Port zu öffnen. **Demo starten** spielt diese Initialdaten ab; ohne Initialdaten erzeugt das Modell eine Demo passend zum gewählten Messbereich. `demo` bleibt als Kurzform zum Vorladen generierter Initialdaten verfügbar.
+
+`useRadarDevice(deviceId)` liefert einen stabilen Radar-Controller aus dem gemeinsamen Store oder erstellt ihn. Jede Geräte-ID gehört einer Radar-Komponente. Beim Entfernen der Komponente schliesst der Hook das Modell und entfernt das serielle Gerät aus dem Store. Das verzögerte Cleanup wird beim Effect-Neustart von React StrictMode abgebrochen; beim Wechsel der Geräte-ID wird das bisherige Gerät weiterhin freigegeben. Die beiden Charts sind separate Komponenten (`RadarChart` und `DistanceChart`); Card, Badge, Alert, Loader und DefinitionList verwenden die gemeinsame Projekt-UI.
+
+Nach **Trennen** erscheint die gemeinsame Replay-Steuerung. Replay, Pause, Fortsetzen und Geschwindigkeit verwenden dieselbe Aufzeichnung. Das Radar decodiert Replay-Frames und veröffentlicht sie mit `source: 'replay'` und dem ursprünglichen Empfangszeitstempel, ohne INIT, GNFD oder andere Hardware-Kommandos zu senden. `disconnect()` behält den Subscriber für Replay; `close()` trennt zusätzlich die Subscription. `unsubscribe()` beendet einen Messwert-Listener.
+
+## Umsetzung und Prüfung
+
+Das Paket trennt den seriellen Transport im gemeinsamen Store, binäres Protokoll, Radar-Subscriber und React-Darstellung. Die Draufsicht ist ein rundes SVG-Radarfeld; Recharts zeichnet den Distanzverlauf. Paketaufbau, TypeScript-Formatierung, SCSS-Module und gemeinsame Buttons folgen dem Projekt und dem [Serial-Plotter](https://github.com/lebalz/teaching-inf/tree/main/packages/hfr/serial-plotter).
+
+```bash
+yarn vitest run packages/hfr/radar packages/tdev/webserial/models
+```
+
+Die Tests prüfen Text-Kompatibilität, binäre Frames, Einheiten, Fragmentierung, gemeinsame Port-Nutzung, Konfiguration, kombinierte RESP/PDAT-Antworten, Fehler, Timeout, Port-Freigabe sowie verlustfreies Replay ohne Hardware-Kommandos.
+
+## Filterung der nächsten Distanz
+
+Die minimale endliche, nichtnegative Distanz jeder Zielliste wird mit dem **One Euro Filter** aus [`digital-filter`](https://github.com/scijs/digital-filter) geglättet. Seine adaptive Grenzfrequenz reduziert Rauschen bei ruhigen Messungen und reagiert schneller bei Bewegung. Die Parameter stehen in `models/OneEuroFilter.ts` unter `ONE_EURO_SETTINGS`: `minCutoff: 1 Hz`, `beta: 4`, `dCutoff: 1 Hz`.
+
+Für `radar.history` und `getMinimumDistance()` wird bei leerer oder ungültiger Zielliste ein robuster Wert aus den letzten drei One-Euro-gefilterten Messungen in den Verlauf übernommen. Der letzte Wert wird beibehalten, wenn seine Änderung gegenüber dem Vorgänger weniger als 15 % beträgt und die Richtung der vorherigen Änderung fortsetzt. Andernfalls wird der Median der drei Werte gehalten. Eine unveränderte Distanz ist mit einem Stillstand vereinbar; ein zuvor unveränderter Abstand gibt keine Richtung vor. Bei weniger als drei gültigen Messungen wird der letzte verfügbare Wert verwendet. Die Schwelle steht als `HOLD_MAX_RELATIVE_CHANGE` in `models/OneEuroFilter.ts`. Erkannte Messungen bleiben in `radar.history` unverändert One-Euro-gefiltert. Dabei werden weder künstliche Messungen in den Filter eingespeist noch seine Zustände weitergerechnet. Ohne vorherige gültige Distanz bleibt der Wert `null`. Eine fehlende Erkennung bedeutet nicht zwingend Stillstand; die Objekttabelle und die Radar-Draufsicht zeigen weiterhin die tatsächlich erkannten Ziele.
+
+Die Abtastrate wird aus den Zeitstempeln der gültigen Messungen berechnet, auch wenn dazwischen keine Ziele erkannt wurden. Live und Replay erzeugen mit identischen Zeitstempeln denselben Verlauf. Wiederholte Zeitstempel verändern den Filterzustand nicht. Reset und rückwärts laufende Zeitstempel initialisieren den Filter neu. Der Distanzverlauf zeigt ausschliesslich One Euro mit zusätzlichem Fenstermedian; die Y-Achse passt sich den gefilterten Daten an und zeigt mindestens 1 m.
+
+Alle Rohmessungen bleiben erhalten. Es gibt keine zusätzliche Zielbestätigung, Bewegungsvorhersage oder Winkel- und Geschwindigkeitsbegrenzung in der Distanzfilterung. PDAT enthält keine stabilen Objekt-IDs; bei mehreren Zielen folgt der Verlauf der jeweils nächsten Distanz.
+
+Für die Darstellung liefert `radar.medianHistory` die letzten 100 Werte eines gleitenden Medians der letzten drei erkannten One-Euro-gefilterten Distanzen. Diese Kurve legt den Medianfilter auf den One-Euro-Filter. Beim Start wird der Median der verfügbaren Werte verwendet (bei zwei Werten deren Mittelwert). Leere oder ungültige Frames halten den letzten Median, ohne das Fenster mit Ersatzwerten zu füllen. Reset und rückwärts laufende Zeitstempel leeren das Fenster; wiederholte Zeitstempel ändern es nicht. Die Oberfläche zeigt nur diese Kurve und ihren aktuellen Wert. `radar.history` und `getMinimumDistance()` bleiben für die Auswertung der One-Euro-Ergebnisse verfügbar.

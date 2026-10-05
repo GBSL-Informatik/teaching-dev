@@ -5,6 +5,7 @@
     padding: 3.25px;
     font-size: calc(0.9 * var(--ifm-font-size-base));
     color: var(--ifm-font-color-base);
+    background-color: var(--ifm-dropdown-background-color);
     cursor: pointer;
     width: auto;
     max-width: 90vw;
@@ -21,6 +22,10 @@
         outline: none;
         box-shadow: 0 0 2px var(--ifm-link-hover-color);
     }
+    // disabled
+    &[disabled] {
+        --ifm-dropdown-background-color: var(--ifm-color-gray-200);
+    }
 
     option {
         padding: var(--ifm-button-padding-vertical);
@@ -28,5 +33,11 @@
             background-color: var(--ifm-color-primary);
             color: white;
         }
+    }
+}
+
+html[data-theme='dark'] .dropdown {
+    &[disabled] {
+        --ifm-dropdown-background-color: var(--ifm-color-disabled);
     }
 }

@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Decoder from '../model/Decoder';
+import SerialTextDevice from '@tdev/webserial/models/SerialTextDevice';
 import Byte from './Byte';
 import byteStyles from './Byte/styles.module.scss';
 import styles from './styles.module.scss';
@@ -24,7 +25,7 @@ const BinaryDecoder = observer((props: Props) => {
     const device = webserialStore.devices.get(deviceId);
     const isFullscreen = viewStore.isFullscreenTarget(fullscreenTargetId);
     const decoder = React.useMemo(() => {
-        if (device) {
+        if (device instanceof SerialTextDevice) {
             return new Decoder(subscriptionId, device);
         }
     }, [device, subscriptionId]);

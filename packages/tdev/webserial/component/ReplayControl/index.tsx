@@ -10,7 +10,18 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 interface Props {
-    device: SerialDevice;
+    device: Pick<
+        SerialDevice,
+        | 'canReplay'
+        | 'isReplaying'
+        | 'isReplayPaused'
+        | '_replayPausedAt'
+        | 'replaySpeed'
+        | 'replay'
+        | 'pauseReplay'
+        | 'stopReplay'
+        | 'setReplaySpeed'
+    >;
 }
 
 const ReplayControl = observer((props: Props) => {
