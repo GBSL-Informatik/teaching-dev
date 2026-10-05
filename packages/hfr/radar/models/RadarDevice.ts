@@ -1,4 +1,4 @@
-import DistanceFilters, { type DistanceRecord } from './DistanceFilters';
+import DistanceFilters, { DISTANCE_FILTER_SETTINGS, type DistanceRecord } from './DistanceFilters';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
 import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
@@ -6,11 +6,9 @@ import type WebserialStore from '@tdev/webserial/stores/WebserialStore';
 import { action, computed, observable } from 'mobx';
 import {
     decodeTargets,
-    DEFAULT_SETTINGS,
     encodeCommand,
     FrameDecoder,
     settingCommands,
-    SPEED_RANGES,
     type RadarFrame,
     type RadarSettings,
     type RadarTarget
@@ -51,7 +49,7 @@ export default class RadarDevice implements iBinarySubscriber {
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
     private distanceRecords = observable.array<DistanceRecord>([], { deep: false });
     private filters = new DistanceFilters();
-    private maxSpeed = SPEED_RANGES[DEFAULT_SETTINGS.speed] / 3.6;
+    private maxSpeed = DISTANCE_FILTER_SETTINGS.person.maxSpeedKmh / 3.6;
     private track?: { distance: number; timestamp: number; velocity: number };
     private candidate?: { distance: number; timestamp: number; count: number };
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
@@ -116,7 +114,11 @@ export default class RadarDevice implements iBinarySubscriber {
                     true
                 );
                 view.setInt16(offset + 2, Math.round(Math.cos(tick + index) * 200), true);
-                view.setInt16(offset + 4, Math.round(Math.sin(tick / 3 + index * 2) * 3500), true);
+                view.setInt16(
+                    offset + 4,
+                    Math.round(Math.sin(tick / 3 + index * 2) * (index === 0 ? 800 : 3500)),
+                    true
+                );
                 view.setUint16(offset + 6, (30 + index * 5) * 100, true);
             }
             return { timestamp: sample * 100, bytes };
@@ -159,6 +161,13 @@ export default class RadarDevice implements iBinarySubscriber {
         reacquired: boolean;
     } {
         const distances = targets
+            .filter(
+                (target) =>
+                    Number.isFinite(target.angle) &&
+                    Math.abs(target.angle) <= DISTANCE_FILTER_SETTINGS.person.maxAngleDegrees &&
+                    Number.isFinite(target.speed) &&
+                    Math.abs(target.speed) <= DISTANCE_FILTER_SETTINGS.person.maxSpeedKmh
+            )
             .map((target) => target.distance)
             .filter((distance) => Number.isFinite(distance) && distance >= 0);
         if (!distances.length || !Number.isFinite(timestamp)) {
@@ -263,7 +272,6 @@ export default class RadarDevice implements iBinarySubscriber {
 
     async connect(settings: RadarSettings): Promise<void> {
         settingCommands(settings);
-        this.maxSpeed = SPEED_RANGES[settings.speed] / 3.6;
         try {
             await this.device.connect();
             if (!this.device.isConnected) {

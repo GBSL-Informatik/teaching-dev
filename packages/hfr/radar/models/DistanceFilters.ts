@@ -11,8 +11,9 @@ export interface DistanceRecord {
 
 // Starting parameters for comparison; tune against recorded hardware measurements.
 export const DISTANCE_FILTER_SETTINGS = {
+    person: { maxSpeedKmh: 20, maxAngleDegrees: 15 },
     oneEuro: { minCutoff: 1, beta: 4, dCutoff: 1 },
-    kalman: { distanceStdDev: 0.05, accelerationStdDev: 2 }
+    kalman: { distanceStdDev: 0.1, accelerationStdDev: 3 }
 };
 
 export default class DistanceFilters {
@@ -21,6 +22,10 @@ export default class DistanceFilters {
     private kalman?: KalmanFilter;
     private state?: KalmanState;
     private elapsed = 0;
+
+    get estimatedSpeedKmh(): number | null {
+        return this.state ? this.state.mean[1][0] * 3.6 : null;
+    }
 
     reset(): void {
         this.previous = undefined;
@@ -74,6 +79,9 @@ export default class DistanceFilters {
         this.euro!.fs = 1 / this.elapsed;
         const euro = oneEuro(new Float64Array([selected]), this.euro!)[0];
         this.state = this.kalman!.filter({ previousCorrected: this.state!, observation: [selected] });
+        // Project the motion estimate onto the application's walking/running speed bound.
+        const maxSpeed = DISTANCE_FILTER_SETTINGS.person.maxSpeedKmh / 3.6;
+        this.state.mean[1][0] = Math.max(-maxSpeed, Math.min(maxSpeed, this.state.mean[1][0]));
         const weight = 1 - Math.exp(-this.elapsed / 0.15);
         this.previous = {
             timestamp,

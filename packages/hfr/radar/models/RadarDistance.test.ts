@@ -16,6 +16,38 @@ const append = (radar: RadarDevice, timestamp: number, distances: number[]) =>
     radar.appendRecord({ timestamp, source: 'live', targets: distances.map(target) });
 
 describe('Radar distance tracking', () => {
+    it('selects a central person below 20 km/h while retaining all raw targets', () => {
+        const radar = createRadar();
+        const targets = [
+            { ...target(1), angle: 30 },
+            { ...target(1.5), speed: 21 },
+            { ...target(2), angle: 5, speed: -18 }
+        ];
+        radar.appendRecord({ timestamp: 0, source: 'live', targets });
+        expect(radar.getMinimumDistance()).toBe(2);
+        expect(radar.targets).toEqual(targets);
+        radar.appendRecord({
+            timestamp: 100,
+            source: 'live',
+            targets: [
+                { ...target(1), angle: -16 },
+                { ...target(1.5), speed: -21 }
+            ]
+        });
+        expect(radar.getMinimumDistance()).toBeNull();
+        expect(radar.comparisonHistory.at(-1)?.kalman).toBeNull();
+    });
+    it('allows movement at 20 km/h within the central corridor', () => {
+        const radar = createRadar();
+        for (let index = 0; index < 10; index++) {
+            radar.appendRecord({
+                timestamp: index * 100,
+                source: 'live',
+                targets: [{ ...target(2 + index * (20 / 3.6) * 0.1), angle: 15, speed: 20 }]
+            });
+        }
+        expect(radar.comparisonHistory.every((record) => record.kalman !== null)).toBe(true);
+    });
     it('retains all raw measurements while exposing only the last 100 filtered distances as chart history', () => {
         const radar = createRadar();
         for (let index = 0; index < 2100; index++) append(radar, index * 100, [2]);

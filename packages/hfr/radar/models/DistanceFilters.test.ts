@@ -4,6 +4,29 @@ import DistanceFilters, { type DistanceRecord } from './DistanceFilters';
 const keys = ['legacy', 'oneEuro', 'kalman'] as const;
 
 describe('Distance filter comparison', () => {
+    it('follows an approaching and departing walking or running person without exceeding 20 km/h', () => {
+        for (const speed of [-5, -1.4, 1.4, 5]) {
+            const filters = new DistanceFilters();
+            const results = Array.from({ length: 60 }, (_, index) => {
+                const distance = 40 + speed * index * 0.1;
+                const record = filters.update(distance, index * 100);
+                expect(Math.abs(filters.estimatedSpeedKmh!)).toBeLessThanOrEqual(20);
+                return Math.abs(record.kalman! - distance);
+            });
+            expect(Math.max(...results.slice(20))).toBeLessThan(0.08);
+        }
+    });
+    it('bounds the Kalman motion estimate even when presented with excessive apparent speed', () => {
+        for (const speed of [-10, 10]) {
+            const filters = new DistanceFilters();
+            for (let index = 0; index < 20; index++) {
+                filters.update(40 + speed * index * 0.1, index * 100);
+                expect(Math.abs(filters.estimatedSpeedKmh!)).toBeLessThanOrEqual(20);
+            }
+            filters.reset();
+            expect(filters.estimatedSpeedKmh).toBeNull();
+        }
+    });
     it('reduces steady motion lag for both alternatives compared with the fixed smoother', () => {
         const filters = new DistanceFilters();
         const results = Array.from({ length: 80 }, (_, index) =>
