@@ -72,6 +72,41 @@ describe('Radar One Euro distances', () => {
         expect(radar.getMinimumDistance(2)).toBe(detected[2]);
         expect(radar.measurements[2].targets[0].distance).toBe(8);
     });
+    it('computes a three-reading median on top of One Euro and holds it through missing frames', () => {
+        const radar = createRadar();
+        [null, 2, 8, 3, null, null, 4, 1].forEach((distance, index) =>
+            append(radar, index * 100, distance === null ? [] : [distance, 20])
+        );
+        const detected = [radar.history[1]!, radar.history[2]!, radar.history[3]!];
+        const median = [...detected].sort((a, b) => a - b)[1];
+        expect(radar.medianHistory.slice(0, 6)).toEqual([
+            null,
+            detected[0],
+            (detected[0] + detected[1]) / 2,
+            median,
+            median,
+            median
+        ]);
+        const nextMedian = [detected[1], detected[2], radar.history[6]!].sort((a, b) => a - b)[1];
+        const lastMedian = [detected[2], radar.history[6]!, radar.history[7]!].sort((a, b) => a - b)[1];
+        expect(radar.medianHistory.slice(6)).toEqual([nextMedian, lastMedian]);
+        expect(radar.medianHistory).not.toEqual(radar.history);
+        radar.reset();
+        expect(radar.medianHistory).toEqual([]);
+        append(radar, 0, []);
+        expect(radar.medianHistory).toEqual([null]);
+    });
+    it('limits median history to 100 frames and restarts its window on timestamp rollback', () => {
+        const radar = createRadar();
+        for (let index = 0; index < 110; index++) append(radar, index * 100, [2]);
+        expect(radar.medianHistory).toEqual(Array(100).fill(2));
+        append(radar, 0, [8]);
+        expect(radar.medianHistory.at(-1)).toBe(8);
+        append(radar, 0, [1]);
+        expect(radar.medianHistory.at(-1)).toBe(8);
+        append(radar, 100, [NaN, Infinity, -1]);
+        expect(radar.medianHistory.at(-1)).toBe(8);
+    });
     it('copies raw records and produces identical histories for live and replay, including held values', () => {
         const radar = createRadar();
         const replay = createRadar();
@@ -87,5 +122,6 @@ describe('Radar One Euro distances', () => {
         measurements[0].targets[0].distance = 99;
         expect(radar.measurements[0].targets[0].distance).toBe(2);
         expect(replay.history).toEqual(radar.history);
+        expect(replay.medianHistory).toEqual(radar.medianHistory);
     });
 });

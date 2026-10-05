@@ -1,4 +1,5 @@
 import OneEuroFilter from './OneEuroFilter';
+import WindowMedianFilter from './WindowMedianFilter';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
 import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
@@ -49,6 +50,8 @@ export default class RadarDevice implements iBinarySubscriber {
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
     private distances = observable.array<number | null>([], { deep: false });
     private filter = new OneEuroFilter();
+    private medianDistances = observable.array<number | null>([], { deep: false });
+    private medianFilter = new WindowMedianFilter();
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
     private onTargets?: (targets: RadarTarget[]) => void;
     private onError?: (error: Error) => void;
@@ -130,7 +133,11 @@ export default class RadarDevice implements iBinarySubscriber {
             .map((target) => target.distance)
             .filter((distance) => Number.isFinite(distance) && distance >= 0);
         const minimum = distances.length ? Math.min(...distances) : null;
-        this.distances.push(this.filter.update(minimum, record.timestamp));
+        const filtered = this.filter.update(minimum, record.timestamp);
+        this.distances.push(filtered);
+        this.medianDistances.push(
+            this.medianFilter.update(minimum === null ? null : filtered, record.timestamp)
+        );
         this.onTargets?.(record.targets);
         this.listeners.forEach((listener) => listener(record));
     }
@@ -145,6 +152,11 @@ export default class RadarDevice implements iBinarySubscriber {
         return this.distances.slice(-100);
     }
 
+    @computed
+    get medianHistory(): (number | null)[] {
+        return this.medianDistances.slice(-100);
+    }
+
     getMinimumDistance(index = this.measurements.length - 1): number | null {
         return this.distances[index] ?? null;
     }
@@ -157,6 +169,8 @@ export default class RadarDevice implements iBinarySubscriber {
         this.measurements.clear();
         this.distances.clear();
         this.filter.reset();
+        this.medianDistances.clear();
+        this.medianFilter.reset();
         this.onReset?.();
         this.resetListeners.forEach((listener) => listener());
     }
