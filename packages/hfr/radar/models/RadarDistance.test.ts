@@ -60,10 +60,22 @@ describe('Radar One Euro distances', () => {
         expect(radar.history).toEqual([]);
         expect(radar.getMinimumDistance()).toBeNull();
     });
+    it('publishes the robust held median in history without altering detected values or raw records', () => {
+        const radar = createRadar();
+        [2, 2.1, 8].forEach((distance, index) => append(radar, index * 100, [distance]));
+        const detected = radar.history.slice();
+        expect(detected[2]).toBeGreaterThan(detected[1]!);
+        append(radar, 300, []);
+        append(radar, 1000, []);
+        expect(radar.history).toEqual([...detected, detected[1], detected[1]]);
+        expect(radar.getMinimumDistance()).toBe(detected[1]);
+        expect(radar.getMinimumDistance(2)).toBe(detected[2]);
+        expect(radar.measurements[2].targets[0].distance).toBe(8);
+    });
     it('copies raw records and produces identical histories for live and replay, including held values', () => {
         const radar = createRadar();
         const replay = createRadar();
-        const measurements = [2, 2.1, null, null, 2.2].map((distance, index) => ({
+        const measurements = [2, 2.1, 8, null, null, 2.2].map((distance, index) => ({
             timestamp: index * 100,
             source: 'live' as const,
             targets: distance === null ? [] : [target(distance)]
