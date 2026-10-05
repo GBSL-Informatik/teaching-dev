@@ -5,6 +5,7 @@
     padding: 3.25px;
     font-size: calc(0.9 * var(--ifm-font-size-base));
     color: var(--ifm-font-color-base);
+    background-color: var(--ifm-dropdown-background-color);
     cursor: pointer;
     width: auto;
     max-width: 90vw;
@@ -20,6 +21,10 @@
         border-color: var(--ifm-link-hover-color);
         outline: none;
         box-shadow: 0 0 2px var(--ifm-link-hover-color);
+    }
+    // disabled
+    &[disabled] {
+        --ifm-dropdown-background-color: var(--ifm-color-disabled);
     }
 
     option {
