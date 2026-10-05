@@ -40,7 +40,7 @@ Quellen: [Chrome: WebSerial](https://developer.chrome.com/docs/capabilities/seri
 
 ## Konfiguration und Protokoll
 
-Die Verbindung verwendet `115200`, `8E1` und `INIT(0)`. Die Baudrate bleibt bewusst konstant, da nur PDAT und keine ADC-/FFT-Rohdaten übertragen werden. Kommandos und Längen werden little-endian codiert; jede Bestätigung (`RESP`) wird geprüft. `GNFD(4)` fordert eine neue PDAT-Zielliste an. Nach jeder Antwort beträgt die Pause 100 ms. `GBYE` beendet die Verbindung. Fragmentierte serielle Daten werden zu vollständigen Radar-Frames zusammengesetzt. Ein fehlendes Antwortpaket beendet die Messung nach zwei Sekunden mit einer Fehlermeldung.
+Die Verbindung verwendet `115200`, `8E1` und `INIT(0)`. Die Baudrate bleibt bewusst konstant, da nur PDAT und keine ADC-/FFT-Rohdaten übertragen werden. Kommandos und Längen werden little-endian codiert; jede Bestätigung (`RESP`) wird geprüft. `GNFD(4)` fordert eine neue PDAT-Zielliste an. Nach jeder Antwort beträgt die Pause 5 ms. `GBYE` beendet die Verbindung. Fragmentierte serielle Daten werden zu vollständigen Radar-Frames zusammengesetzt. Ein fehlendes Antwortpaket beendet die Messung nach zwei Sekunden mit einer Fehlermeldung.
 
 | Einstellung | Kommando | Werte (Index) |
 | --- | --- | --- |

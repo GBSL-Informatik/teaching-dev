@@ -356,7 +356,7 @@ export default class RadarDevice implements iBinarySubscriber {
 
                     await new Promise<void>((resolve) => {
                         this.wakePoll = resolve;
-                        this.pollTimer = setTimeout(resolve, 100);
+                        this.pollTimer = setTimeout(resolve, 5);
                     });
                     this.wakePoll = undefined;
                 }
