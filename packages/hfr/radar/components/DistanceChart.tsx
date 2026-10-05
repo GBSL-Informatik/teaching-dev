@@ -1,4 +1,3 @@
-import React from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styles from './styles.module.scss';
 
@@ -55,9 +54,9 @@ export default function DistanceChart({ history }: Props) {
                             name="Nächste Distanz"
                             stroke="var(--ifm-color-primary)"
                             strokeWidth={2}
-                            dot={false}
+                            dot={true}
                             activeDot={{ r: 4 }}
-                            connectNulls={false}
+                            connectNulls={true}
                             isAnimationActive={false}
                         />
                     </LineChart>
