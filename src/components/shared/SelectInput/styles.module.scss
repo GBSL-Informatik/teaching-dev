@@ -24,7 +24,7 @@
     }
     // disabled
     &[disabled] {
-        --ifm-dropdown-background-color: var(--ifm-color-disabled);
+        --ifm-dropdown-background-color: var(--ifm-color-gray-200);
     }
 
     option {
@@ -33,5 +33,11 @@
             background-color: var(--ifm-color-primary);
             color: white;
         }
+    }
+}
+
+html[data-theme='dark'] .dropdown {
+    &[disabled] {
+        --ifm-dropdown-background-color: var(--ifm-color-disabled);
     }
 }
