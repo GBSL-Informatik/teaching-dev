@@ -36,6 +36,7 @@ describe('Radar distance tracking', () => {
         expect(radar.getMinimumDistance()).toBeGreaterThan(radar.history[1]!);
         expect(radar.getMinimumDistance()).toBeLessThan(2.2);
         expect(radar.targets.map((value) => value.distance)).toEqual([2.2, 0.2, 5]);
+        expect(radar.comparisonHistory.map((record) => record.selected)).toEqual([2, 2.1, 2.2]);
     });
     it('reduces stationary jitter and rejects an isolated impossible jump', () => {
         const radar = createRadar();
@@ -44,6 +45,7 @@ describe('Radar distance tracking', () => {
         expect(radar.getMinimumDistance()).toBeCloseTo(2.0487, 3);
         append(radar, 200, [8]);
         expect(radar.getMinimumDistance()).toBeNull();
+        expect(radar.comparisonHistory.at(-1)).toMatchObject({ legacy: null, oneEuro: null, kalman: null });
         append(radar, 300, [2]);
         expect(radar.getMinimumDistance()).toBeCloseTo(2, 1);
     });
@@ -79,6 +81,7 @@ describe('Radar distance tracking', () => {
         radar.reset();
         expect(radar.measurements).toHaveLength(0);
         expect(radar.history).toEqual([]);
+        expect(radar.comparisonHistory).toEqual([]);
         expect(radar.getMinimumDistance()).toBeNull();
     });
     it('copies appended records and produces the same history for replay at a different wall-clock speed', () => {
@@ -96,5 +99,6 @@ describe('Radar distance tracking', () => {
         measurements[0].targets[0].distance = 99;
         expect(radar.measurements[0].targets[0].distance).toBe(2);
         expect(replay.history).toEqual(radar.history);
+        expect(replay.comparisonHistory).toEqual(radar.comparisonHistory);
     });
 });

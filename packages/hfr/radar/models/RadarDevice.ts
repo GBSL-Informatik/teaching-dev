@@ -1,3 +1,4 @@
+import DistanceFilters, { type DistanceRecord } from './DistanceFilters';
 import type SerialBinaryDevice from '@tdev/webserial/models/SerialBinaryDevice';
 import type { BinarySample } from '@tdev/webserial/models/SerialBinaryDevice';
 import type { ConnectionState, iBinarySubscriber } from '@tdev/webserial/models/SerialDevice';
@@ -48,9 +49,10 @@ export default class RadarDevice implements iBinarySubscriber {
     private resetListeners = new Set<() => void>();
 
     readonly measurements = observable.array<RadarMeasurement>([], { deep: false });
-    private distances = observable.array<number | null>([], { deep: false });
+    private distanceRecords = observable.array<DistanceRecord>([], { deep: false });
+    private filters = new DistanceFilters();
     private maxSpeed = SPEED_RANGES[DEFAULT_SETTINGS.speed] / 3.6;
-    private track?: { distance: number; timestamp: number; velocity: number; smoothed: number };
+    private track?: { distance: number; timestamp: number; velocity: number };
     private candidate?: { distance: number; timestamp: number; count: number };
     private listeners = new Set<(measurement: RadarMeasurement) => void>();
     private onTargets?: (targets: RadarTarget[]) => void;
@@ -125,7 +127,10 @@ export default class RadarDevice implements iBinarySubscriber {
     appendRecord(measurement: RadarMeasurement): void {
         const record = { ...measurement, targets: measurement.targets.map((target) => ({ ...target })) };
         this.measurements.push(record);
-        this.distances.push(this.filterDistance(record));
+        const selection = this.selectDistance(record);
+        this.distanceRecords.push(
+            this.filters.update(selection.distance, record.timestamp, selection.reacquired)
+        );
         this.onTargets?.(record.targets);
         this.listeners.forEach((listener) => listener(record));
     }
@@ -137,29 +142,37 @@ export default class RadarDevice implements iBinarySubscriber {
 
     @computed
     get history(): (number | null)[] {
-        return this.distances.slice(-100);
+        return this.distanceRecords.slice(-100).map((record) => record.legacy);
     }
 
     getMinimumDistance(index = this.measurements.length - 1): number | null {
-        return this.distances[index] ?? null;
+        return this.distanceRecords[index]?.legacy ?? null;
     }
 
-    private filterDistance({ targets, timestamp }: RadarMeasurement): number | null {
+    @computed
+    get comparisonHistory(): DistanceRecord[] {
+        return this.distanceRecords.slice(-100);
+    }
+
+    private selectDistance({ targets, timestamp }: RadarMeasurement): {
+        distance: number | null;
+        reacquired: boolean;
+    } {
         const distances = targets
             .map((target) => target.distance)
             .filter((distance) => Number.isFinite(distance) && distance >= 0);
         if (!distances.length || !Number.isFinite(timestamp)) {
             this.candidate = undefined;
-            return null;
+            return { distance: null, reacquired: false };
         }
         const minimum = Math.min(...distances);
         const previous = this.track;
         const elapsed = previous ? (timestamp - previous.timestamp) / 1000 : 0;
         // Reacquire the nearest object after a long gap or a restarted timestamp sequence.
         if (!previous || elapsed < 0 || elapsed > 1) {
-            this.track = { distance: minimum, timestamp, velocity: 0, smoothed: minimum };
+            this.track = { distance: minimum, timestamp, velocity: 0 };
             this.candidate = undefined;
-            return minimum;
+            return { distance: minimum, reacquired: true };
         }
         const predicted = previous.distance + previous.velocity * elapsed;
         // Allow 15 cm of measurement jitter plus the configured maximum travel distance.
@@ -176,11 +189,11 @@ export default class RadarDevice implements iBinarySubscriber {
             this.candidate = { distance: minimum, timestamp, count: consistent ? candidate.count + 1 : 1 };
             // An isolated jump is a gap, not an invented position. Confirm a new target over three frames.
             if (this.candidate.count < 3) {
-                return null;
+                return { distance: null, reacquired: false };
             }
-            this.track = { distance: minimum, timestamp, velocity: 0, smoothed: minimum };
+            this.track = { distance: minimum, timestamp, velocity: 0 };
             this.candidate = undefined;
-            return minimum;
+            return { distance: minimum, reacquired: true };
         }
         const distance = plausible.reduce((best, value) =>
             Math.abs(value - predicted) < Math.abs(best - predicted) ? value : best
@@ -189,12 +202,9 @@ export default class RadarDevice implements iBinarySubscriber {
             elapsed > 0
                 ? Math.max(-this.maxSpeed, Math.min(this.maxSpeed, (distance - previous.distance) / elapsed))
                 : previous.velocity;
-        // A 150 ms exponential smoother reduces jitter without depending on the replay playback speed.
-        const weight = elapsed > 0 ? 1 - Math.exp(-elapsed / 0.15) : 0;
-        const smoothed = previous.smoothed + weight * (distance - previous.smoothed);
-        this.track = { distance, timestamp, velocity: (previous.velocity + velocity) / 2, smoothed };
+        this.track = { distance, timestamp, velocity: (previous.velocity + velocity) / 2 };
         this.candidate = undefined;
-        return smoothed;
+        return { distance, reacquired: false };
     }
 
     @action
@@ -203,7 +213,8 @@ export default class RadarDevice implements iBinarySubscriber {
         this.pending = undefined;
         this.decoder = new FrameDecoder();
         this.measurements.clear();
-        this.distances.clear();
+        this.distanceRecords.clear();
+        this.filters.reset();
         this.track = undefined;
         this.candidate = undefined;
         this.onReset?.();

@@ -1,18 +1,58 @@
+import { IfmColors } from '@tdev-components/shared/Colors';
+import type { DistanceRecord } from '../models/DistanceFilters';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import styles from './styles.module.scss';
 
+const SERIES = [
+    {
+        key: 'selected',
+        name: 'Ausgewählt (roh)',
+        color: IfmColors.gray,
+        dash: '4 4'
+    },
+    {
+        key: 'legacy',
+        name: 'Bisheriger Filter',
+        color: IfmColors.primary,
+        dash: undefined
+    },
+    { key: 'oneEuro', name: 'One Euro', color: IfmColors.orange, dash: undefined },
+    { key: 'kalman', name: 'Kalman', color: IfmColors.red, dash: undefined }
+];
+
 interface Props {
-    history: (number | null)[];
+    history: DistanceRecord[];
 }
 
 export default function DistanceChart({ history }: Props) {
-    const distanceData = history.map((distance, index) => ({ sample: index - history.length + 1, distance }));
+    const distanceData = history.map((record, index) => ({ ...record, sample: index - history.length + 1 }));
     const maxDistance = Math.ceil(
-        history.reduce<number>((maximum, distance) => Math.max(maximum, distance ?? 0), 1)
+        history.reduce(
+            (maximum, record) =>
+                Math.max(
+                    maximum,
+                    record.selected ?? 0,
+                    record.legacy ?? 0,
+                    record.oneEuro ?? 0,
+                    record.kalman ?? 0
+                ),
+            1
+        )
     );
     return (
         <figure>
-            <figcaption>Nächste Distanz · gefiltert · letzte 100 Messungen</figcaption>
+            <figcaption>Distanzfilter im Vergleich · letzte 100 Messungen</figcaption>
+            <div className={styles.legend} aria-label="Filterlegende">
+                {SERIES.map(({ key, name, color, dash }) => (
+                    <span key={key} style={{ color }}>
+                        <span
+                            aria-hidden="true"
+                            style={{ borderTop: `2px ${dash ? 'dashed' : 'solid'} ${color}` }}
+                        />
+                        {name}
+                    </span>
+                ))}
+            </div>
             <div className={styles.chart} role="img" aria-label="Zeitverlauf der nächsten Objektdistanz">
                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                     <LineChart data={distanceData} margin={{ top: 20, right: 25, bottom: 25, left: 5 }}>
@@ -42,23 +82,27 @@ export default function DistanceChart({ history }: Props) {
                                     ? 'Aktuelle Messung'
                                     : `Vor ${Math.abs(Number(value))} Messungen`
                             }
-                            formatter={(value) => [`${Number(value).toFixed(2)} m`, 'Nächste Distanz']}
+                            formatter={(value, name) => [`${Number(value).toFixed(2)} m`, name]}
                             contentStyle={{
                                 background: 'var(--ifm-background-surface-color)',
                                 borderColor: 'var(--ifm-color-emphasis-300)'
                             }}
                         />
-                        <Line
-                            type="linear"
-                            dataKey="distance"
-                            name="Nächste Distanz"
-                            stroke="var(--ifm-color-primary)"
-                            strokeWidth={2}
-                            dot={true}
-                            activeDot={{ r: 4 }}
-                            connectNulls={true}
-                            isAnimationActive={false}
-                        />
+                        {SERIES.map(({ key, name, color, dash }) => (
+                            <Line
+                                key={key}
+                                type="linear"
+                                dataKey={key}
+                                name={name}
+                                stroke={color}
+                                strokeDasharray={dash}
+                                strokeWidth={2}
+                                dot={true}
+                                activeDot={{ r: 4 }}
+                                connectNulls={false}
+                                isAnimationActive={false}
+                            />
+                        ))}
                     </LineChart>
                 </ResponsiveContainer>
             </div>

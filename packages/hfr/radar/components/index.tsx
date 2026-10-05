@@ -32,7 +32,7 @@ const Radar = observer(({ initialSettings, demo = false, deviceId: providedId, i
     const [state, setState] = useState<'disconnected' | 'connecting' | 'connected' | 'demo'>('disconnected');
     const [error, setError] = useState('');
     const [supported, setSupported] = useState(false);
-    const history = device.history;
+    const history = device.comparisonHistory;
     const mounted = useRef(false);
     const range = DISTANCE_RANGES[settings.range] || 10;
     const replaying = device.device.isReplaying || device.device.isReplayPaused;
