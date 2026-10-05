@@ -12,7 +12,10 @@ const DEFAULT_IMAGE = `P1
 const register = () => {
     rootStore.documentStore.registerFactory('netpbm_graphic', createModel);
     rootStore.documentStore.registerFileExtension('netpbm_graphic', {
+        name: 'Netpbm',
+        description: 'Für Bitmap-Bilder',
         extension: '.pbm',
+        priority: 10,
         defaultData: { imageData: DEFAULT_IMAGE },
         icon: mdiCheckerboard,
         iconColor: '#65dbc7'

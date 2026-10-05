@@ -1,12 +1,13 @@
 import { mdiFilePlus } from '@mdi/js';
-import { DocumentType } from '@tdev-api/document';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
+import { FileConfig } from '@tdev-stores/DocumentStore';
 import clsx from 'clsx';
+import { orderBy } from 'es-toolkit';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
@@ -15,12 +16,18 @@ import styles from './styles.module.scss';
 
 interface Props {}
 
-const NewItem = observer((props: Props) => {
+const NewFile = observer((props: Props) => {
     const documentStore = useStore('documentStore');
     const model = useFileTreeModel();
     const root = useDocument<'dir'>();
-    const [docType, setDocType] = React.useState<string | null>(null);
-    const createableTypes = [...documentStore.fileExtensions.keys()] as DocumentType[];
+    const [docType, setDocType] = React.useState<FileConfig<any> | null>(null);
+    const fileTypes = orderBy(
+        [...documentStore.fileExtensions.entries()].flatMap(([type, configs]) => {
+            return configs.map((config) => ({ type, config }));
+        }),
+        [(c) => c.config.priority],
+        ['asc']
+    );
     return (
         <Popup
             trigger={
@@ -32,13 +39,12 @@ const NewItem = observer((props: Props) => {
             position={['bottom right', 'bottom center', 'bottom left']}
             arrow={false}
         >
-            <Card classNames={{ body: clsx(styles.newItem) }} header={<h3>Neues {docType || 'Dokument'}</h3>}>
-                {createableTypes.flatMap((type) => {
-                    const _configs = documentStore.fileExtensions.get(type) ?? [];
-                    const configs = Array.isArray(_configs) ? _configs : [_configs];
-                    return configs.map((config) => {
+            <Card classNames={{ body: clsx(styles.newFile) }}>
+                <div className={clsx(styles.select)}>
+                    {fileTypes.map((item) => {
+                        const { type, config } = item;
                         return (
-                            <div key={config.extension} onMouseEnter={() => setDocType(config.extension)}>
+                            <div key={config.extension} onMouseEnter={() => setDocType(config)}>
                                 <Button
                                     title={config.extension || type}
                                     text={config.icon ? (undefined as any) : config?.extension || type}
@@ -67,11 +73,22 @@ const NewItem = observer((props: Props) => {
                                 />
                             </div>
                         );
-                    });
-                })}
+                    })}
+                </div>
+                {docType && (
+                    <i>
+                        {docType.name} (
+                        <small>
+                            <code>{docType.extension}</code>
+                        </small>
+                        )
+                        <br />
+                        <small>{docType.description}</small>
+                    </i>
+                )}
             </Card>
         </Popup>
     );
 });
 
-export default NewItem;
+export default NewFile;

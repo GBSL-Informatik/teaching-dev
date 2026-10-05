@@ -5,8 +5,7 @@ export const createIconSet = (documentStore: DocumentStore): FileTreeIcons => {
     const extensions: Record<string, string> = {};
     const iconMap = [...documentStore.fileExtensions.keys()]
         .flatMap((type) => {
-            const _configs = documentStore.fileExtensions.get(type)!;
-            const configs = Array.isArray(_configs) ? _configs : [_configs];
+            const configs = documentStore.fileExtensions.get(type)!;
             return configs.map((config) => {
                 if (!config.icon) {
                     return;

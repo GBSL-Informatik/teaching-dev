@@ -30,8 +30,7 @@ class File extends iFileSystem<'file'> {
         if (!this.document || !this.store.fileExtensions.has(this.document.type)) {
             return [];
         }
-        const _configs = this.store.fileExtensions.get(this.document.type)!;
-        const configs = Array.isArray(_configs) ? _configs : [_configs];
+        const configs = this.store.fileExtensions.get(this.document.type)!;
         return configs.map((c) => c.extension.toLowerCase().replace(/^\./, ''));
     }
 

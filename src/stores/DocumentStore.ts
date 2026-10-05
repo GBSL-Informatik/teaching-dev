@@ -116,39 +116,58 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['dynamic_document_roots', CreateDocumentModel]
 ];
 
-export interface DocumentConfig<T extends DocumentType> {
+export interface FileConfig<T extends DocumentType> {
     extension: string;
+    name?: string;
+    description?: string;
     icon?: string;
     iconColor?: string;
+    priority?: number;
     defaultData: TypeDataMapping[T];
 }
 
-const DefaultExtensions: Partial<{ [K in DocumentType]: DocumentConfig<K> | DocumentConfig<K>[] }> = {
+const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
     code: [
         {
             extension: '.html',
+            name: 'HTML',
+            description: 'Für Webseiten',
             icon: mdiLanguageHtml5,
             iconColor: '#a81414',
+            priority: 10,
             defaultData: {
                 code: DefaultHtmlCode
             }
         },
-        { extension: '.svg', icon: mdiSvg, iconColor: '#2d27c4', defaultData: { code: DefaultSvgCode } }
+        {
+            extension: '.svg',
+            name: 'SVG',
+            description: 'Scalable Vector Graphics',
+            priority: 10,
+            icon: mdiSvg,
+            iconColor: '#2d27c4',
+            defaultData: { code: DefaultSvgCode }
+        }
     ],
-    quill_v2: {
-        extension: '.qil',
-        icon: mdiFeather,
-        iconColor: 'var(--ifm-color-content)',
-        defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta }
-    }
+    quill_v2: [
+        {
+            extension: '.qil',
+            name: 'Quill',
+            description: 'Für Texte mit Formatierungen',
+            priority: 1,
+            icon: mdiFeather,
+            iconColor: 'var(--ifm-color-content)',
+            defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta }
+        }
+    ]
 };
 
 class DocumentStore extends iStore<`delete-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
-    fileExtensions = new Map<DocumentType, DocumentConfig<DocumentType> | DocumentConfig<DocumentType>[]>(
-        Object.entries(DefaultExtensions) as [DocumentType, DocumentConfig<DocumentType>][]
+    fileExtensions = new Map<DocumentType, FileConfig<DocumentType>[]>(
+        Object.entries(DefaultExtensions) as [DocumentType, FileConfig<DocumentType>[]][]
     );
 
     constructor(root: RootStore) {
@@ -166,8 +185,12 @@ class DocumentStore extends iStore<`delete-${string}`> {
         { keepAlive: true }
     );
 
-    registerFileExtension<T extends DocumentType>(type: T, config: DocumentConfig<T> | DocumentConfig<T>[]) {
-        this.fileExtensions.set(type, config);
+    registerFileExtension<T extends DocumentType>(type: T, config: FileConfig<T> | FileConfig<T>[]) {
+        const newConfig = (Array.isArray(config) ? config : [config]).map((c) => ({
+            ...c,
+            priority: c.priority ?? 10
+        }));
+        this.fileExtensions.set(type, newConfig);
     }
 
     registerFactory(type: DocumentType, factory: Factory) {

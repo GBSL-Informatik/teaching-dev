@@ -3,12 +3,11 @@ import { useFileTreeSearch } from '@pierre/trees/react';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
-import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useFileTreeModel } from '../WithFileTreeModel';
-import NewItem from './NewItem';
+import NewFile from './NewFile';
 import styles from './styles.module.scss';
 
 interface Props {}
@@ -17,11 +16,11 @@ const Header = observer((props: Props) => {
     const model = useFileTreeModel();
     const root = useDocument<'dir'>();
     const search = useFileTreeSearch(model);
-    const documentStore = useStore('documentStore');
 
     return (
         <div className={clsx(styles.header)}>
             <Button
+                title="Suche"
                 icon={mdiMagnify}
                 size={SIZE_S}
                 noBorder
@@ -37,7 +36,7 @@ const Header = observer((props: Props) => {
                     search.open();
                 }}
             />
-            <NewItem />
+            <NewFile />
             <Button
                 icon={mdiFolderPlus}
                 size={SIZE_S}

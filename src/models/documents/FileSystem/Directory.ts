@@ -1,6 +1,6 @@
 import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import DocumentStore, { DocumentConfig } from '@tdev-stores/DocumentStore';
+import DocumentStore, { FileConfig } from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed } from 'mobx';
 import File from './File';
@@ -112,16 +112,8 @@ class Directory extends iFileSystem<'dir'> {
         return document.parent as File;
     }
 
-    private findFileConfig(
-        type: DocumentType,
-        requestedName: string
-    ): DocumentConfig<DocumentType> | undefined {
-        const registeredConfigs = this.store.fileExtensions.get(type);
-        const fileConfigs = Array.isArray(registeredConfigs)
-            ? registeredConfigs
-            : registeredConfigs
-              ? [registeredConfigs]
-              : [];
+    private findFileConfig(type: DocumentType, requestedName: string): FileConfig<DocumentType> | undefined {
+        const fileConfigs = this.store.fileExtensions.get(type) ?? [];
         if (fileConfigs.length === 0) {
             console.error(`No file configuration found for type ${type}`);
             return;
@@ -169,7 +161,7 @@ class Directory extends iFileSystem<'dir'> {
         });
     }
 
-    private createFileContent(fileId: string, type: DocumentType, fileConfig: DocumentConfig<DocumentType>) {
+    private createFileContent(fileId: string, type: DocumentType, fileConfig: FileConfig<DocumentType>) {
         return this.store.create({
             documentRootId: this.documentRootId,
             parentId: fileId,

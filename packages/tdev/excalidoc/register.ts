@@ -6,9 +6,12 @@ import { createModel } from './model';
 const register = () => {
     rootStore.documentStore.registerFactory('excalidoc', createModel);
     rootStore.documentStore.registerFileExtension('excalidoc', {
+        name: 'Excalidraw',
+        description: 'Für Skizzen und Diagramme',
         extension: '.excalidraw',
         icon: mdiExcalidraw,
         iconColor: '#6965db',
+        priority: 6,
         defaultData: {
             elements: [],
             files: {},

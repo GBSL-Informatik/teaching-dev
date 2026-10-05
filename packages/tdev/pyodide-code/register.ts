@@ -28,7 +28,10 @@ const register = () => {
         }
     });
     rootStore.documentStore.registerFileExtension('pyodide_code', {
+        name: 'Python',
+        description: 'Standard Python, ohne Turtle-Grafik',
         extension: '.pyo',
+        priority: 5.5,
         icon: mdiLanguagePython,
         iconColor: '#3d96e0',
         defaultData: { code: '' }

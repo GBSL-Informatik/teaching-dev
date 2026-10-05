@@ -24,6 +24,9 @@ const register = () => {
     rootStore.documentStore.registerFactory('script', createModel);
     rootStore.documentStore.registerFileExtension('script', {
         extension: '.py',
+        name: 'Python',
+        description: 'Webbasiertes Python, inkl. Turtle-Grafik',
+        priority: 5,
         icon: mdiLanguagePython,
         iconColor: '#ffd107',
         defaultData: { code: '' }
