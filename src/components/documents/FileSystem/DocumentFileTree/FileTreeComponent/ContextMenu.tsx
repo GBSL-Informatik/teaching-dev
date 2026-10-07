@@ -35,24 +35,45 @@ const ContextMenu = observer((props: Props) => {
     const [shiftY, setShiftY] = React.useState(0);
     const ref = React.useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
-        if (!ref.current) {
+    React.useLayoutEffect(() => {
+        const popup = ref.current;
+        if (!popup) {
             return;
         }
-        const popupRect = ref.current.getBoundingClientRect();
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        if (popupRect.right > windowWidth) {
-            setShiftX(windowWidth - popupRect.right - 16);
-        } else {
-            setShiftX(0);
-        }
-        if (popupRect.bottom > windowHeight) {
-            setShiftY(windowHeight - popupRect.bottom - 32);
-        } else {
-            setShiftY(0);
-        }
-    }, [move, ref]);
+        const keepInsideWindow = () => {
+            const popupRect = popup.getBoundingClientRect();
+            const deltaX =
+                popupRect.left < 0
+                    ? -popupRect.left
+                    : popupRect.right > window.innerWidth
+                      ? Math.max(-popupRect.left, window.innerWidth - popupRect.right - 16)
+                      : 0;
+            const deltaY =
+                popupRect.top < 0
+                    ? -popupRect.top
+                    : popupRect.bottom > window.innerHeight
+                      ? Math.max(-popupRect.top, window.innerHeight - popupRect.bottom - 32)
+                      : 0;
+
+            // Keep existing shifts when the popup fits, including after folders collapse.
+            if (deltaX !== 0) {
+                setShiftX(popupRect.left + deltaX - pos.x);
+            }
+            if (deltaY !== 0) {
+                setShiftY(popupRect.top + deltaY - pos.y - 16);
+            }
+        };
+
+        const resizeObserver = new ResizeObserver(keepInsideWindow);
+        resizeObserver.observe(popup, { box: 'border-box' });
+        window.addEventListener('resize', keepInsideWindow);
+        keepInsideWindow();
+
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', keepInsideWindow);
+        };
+    }, [pos.x, pos.y, move]);
 
     return (
         <div
@@ -71,6 +92,8 @@ const ContextMenu = observer((props: Props) => {
                             text="Abbrechen"
                             onClick={() => {
                                 setMove(false);
+                                setShiftX(0);
+                                setShiftY(0);
                             }}
                         />
                     )
