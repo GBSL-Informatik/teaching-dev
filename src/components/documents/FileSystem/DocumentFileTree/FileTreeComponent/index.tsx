@@ -1,10 +1,10 @@
 import { FileTree } from '@pierre/trees/react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { useFileTreeModel } from '../hooks/useFileTreeModel';
 import ContextMenu from './ContextMenu';
 import Header from './Header';
 import styles from './styles.module.scss';
-import { useFileTreeModel } from './WithFileTreeModel';
 
 interface Props {
     className?: string;

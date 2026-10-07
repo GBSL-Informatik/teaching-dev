@@ -150,19 +150,10 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
 
     @action
     setIsOpen(isOpen: boolean) {
-        console.log(`setIsOpen(${isOpen}) for ${this.name} (${this.id}) in #${this.documentRootId}`);
         if (this.isOpen === isOpen) {
             return;
         }
         this.setData({ isOpen: isOpen }, Source.LOCAL, new Date());
-        if (isOpen && this.type === 'file') {
-            // close all other open files in the same directory
-            this.rootDir?.selectedFiles.forEach((f) => {
-                if (f.id !== this.id) {
-                    f.setIsOpen(false);
-                }
-            });
-        }
         this.saveNow();
     }
 

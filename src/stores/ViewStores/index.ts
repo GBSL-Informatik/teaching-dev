@@ -1,4 +1,5 @@
 import { ViewStore as ViewStores, ViewStoreType, ViewStoreTypeMapping } from '@tdev-api/document';
+import File from '@tdev-models/documents/FileSystem/File';
 import { RootStore } from '@tdev-stores/rootStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import { AdminView } from './AdminView';
@@ -17,11 +18,17 @@ export default class ViewStore {
     @observable accessor isPageVisible: boolean = true;
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
     @observable accessor isPresentedEditorZoomed: boolean = false;
+    selectedFile = observable.map<string, File | null>();
 
     constructor(store: RootStore) {
         this.root = store;
         this.permissionControl = new PermissionsControlView(store);
         this.adminView = new AdminView(store);
+    }
+
+    @action
+    setSelectedFile(rootId: string, file: File | null) {
+        this.selectedFile.set(rootId, file);
     }
 
     @action

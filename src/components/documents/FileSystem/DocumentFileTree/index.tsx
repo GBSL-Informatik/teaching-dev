@@ -16,17 +16,17 @@ const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
 
     return (
-        <div className={clsx(styles.container)}>
-            <DocumentContext document={dir}>
-                <WithFileTreeModel key={dir.localObjectId}>
+        <DocumentContext document={dir}>
+            <WithFileTreeModel key={dir.localObjectId}>
+                <div className={clsx(styles.container)}>
                     <FileTreeComponent height={props.height || '450px'} />
-                </WithFileTreeModel>
-            </DocumentContext>
-            <div className={clsx(styles.selectedFile)}>
-                <DocumentView dir={dir} />
-                <small className={clsx(styles.filePath)}>{dir.selectedFiles[0]?.filePath}</small>
-            </div>
-        </div>
+                    <div className={clsx(styles.selectedFile)}>
+                        <DocumentView rootDirId={dir.id} />
+                        <small className={clsx(styles.filePath)}>{dir.selectedFiles[0]?.filePath}</small>
+                    </div>
+                </div>
+            </WithFileTreeModel>
+        </DocumentContext>
     );
 });
 

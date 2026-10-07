@@ -10,8 +10,8 @@ import iFileSystem, { isFileSystemType } from '@tdev-models/documents/FileSystem
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { ComponentProps } from 'react';
+import { useFileTreeModel } from '../hooks/useFileTreeModel';
 import styles from './styles.module.scss';
-import { useFileTreeModel } from './WithFileTreeModel';
 
 type RenderContextMenuFn = Exclude<ComponentProps<typeof FileTreeComponent>['renderContextMenu'], undefined>;
 type FileTreeContextMenuItem = Parameters<RenderContextMenuFn>[0];
@@ -50,7 +50,7 @@ const ContextMenu = observer((props: Props) => {
                             if (!dir) {
                                 return context.close({ restoreFocus: false });
                             }
-                            const folder = dir.allFiles.find((f) => f.filePath === item.path);
+                            const folder = dir.allItems.find((f) => f.filePath === item.path);
                             if (!folder) {
                                 return context.close({ restoreFocus: false });
                             }
@@ -107,7 +107,7 @@ const ContextMenu = observer((props: Props) => {
                     iconSide="left"
                     size={SIZE_S}
                     onConfirm={async () => {
-                        const file = dir.allFiles.find((f) => f.filePath === item.path);
+                        const file = dir.allItems.find((f) => f.filePath === item.path);
                         if (file) {
                             await file.delete();
                         }

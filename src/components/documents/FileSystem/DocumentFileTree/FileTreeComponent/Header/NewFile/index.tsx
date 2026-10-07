@@ -11,7 +11,7 @@ import { orderBy } from 'es-toolkit';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
-import { useFileTreeModel } from '../../WithFileTreeModel';
+import { useFileTreeModel } from '../../../hooks/useFileTreeModel';
 import styles from './styles.module.scss';
 
 interface Props {}
@@ -54,7 +54,7 @@ const NewFile = observer((props: Props) => {
                                     iconSide="left"
                                     onClick={async () => {
                                         const path = model.getFocusedPath();
-                                        const focused = root.allFiles.find((f) => f.filePath === path);
+                                        const focused = root.allItems.find((f) => f.filePath === path);
                                         if (!focused) {
                                             return;
                                         }

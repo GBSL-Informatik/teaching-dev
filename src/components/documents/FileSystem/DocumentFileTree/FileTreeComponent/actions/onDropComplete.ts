@@ -11,8 +11,8 @@ export const onDropComplete = (
     }
     return ({ draggedPaths, target }) => {
         const targetDoc =
-            target.kind === 'root' ? dir : dir.allFiles.find((d) => d.filePath === target.directoryPath);
-        const files = dir.allFiles.filter((d) => draggedPaths.includes(d.filePath));
+            target.kind === 'root' ? dir : dir.allItems.find((d) => d.filePath === target.directoryPath);
+        const files = dir.allItems.filter((d) => draggedPaths.includes(d.filePath));
         if (targetDoc && files.length > 0) {
             files.forEach((f) => {
                 documentStore.relinkParent(f, targetDoc);

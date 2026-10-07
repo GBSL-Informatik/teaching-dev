@@ -11,12 +11,12 @@ export const onRename = (dir: Directory | undefined): RenameAction => {
     }
     return ({ sourcePath: _sourcePath, destinationPath, isFolder }) => {
         const sourcePath = isFolder ? `${_sourcePath}/` : _sourcePath;
-        const file = dir.allFiles.find((d) => d.filePath === sourcePath);
-        const hasConflict = dir.allFiles.some((d) => d.filePath === destinationPath);
+        const file = dir.allItems.find((d) => d.filePath === sourcePath);
+        const hasConflict = dir.allItems.some((d) => d.filePath === destinationPath);
         if (!file) {
             console.error(
                 `File not found for path: ${sourcePath}`,
-                dir.allFiles.map((d) => d.filePath)
+                dir.allItems.map((d) => d.filePath)
             );
             return;
         }

@@ -6,7 +6,7 @@ import { useDocument } from '@tdev-hooks/useContextDocument';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useFileTreeModel } from '../WithFileTreeModel';
+import { useFileTreeModel } from '../../hooks/useFileTreeModel';
 import NewFile from './NewFile';
 import styles from './styles.module.scss';
 
@@ -48,7 +48,7 @@ const Header = observer((props: Props) => {
                 }}
                 onClick={async () => {
                     const path = model.getFocusedPath();
-                    const focused = root.allFiles.find((f) => f.filePath === path);
+                    const focused = root.allItems.find((f) => f.filePath === path);
                     if (!focused) {
                         return;
                     }

@@ -28,11 +28,21 @@ class Directory extends iFileSystem<'dir'> {
     }
 
     @computed
-    get allFiles(): iFileSystem[] {
+    get allItems(): iFileSystem[] {
         const files = this.root?.documents.filter(
             (d) => isFileSystemType(d) && d.filePath.startsWith(this.filePath)
         ) as iFileSystem[];
         return orderBy(files || [], ['filePath'], ['asc']);
+    }
+
+    @computed
+    get allFiles(): File[] {
+        return this.allItems.filter((f) => f.type === 'file') as File[];
+    }
+
+    @computed
+    get allDirectories(): Directory[] {
+        return this.allItems.filter((f) => f.type === 'dir') as Directory[];
     }
 
     @computed
@@ -49,7 +59,7 @@ class Directory extends iFileSystem<'dir'> {
 
     @computed
     get selectedFiles(): File[] {
-        return this.allFiles.filter((f) => f.type === 'file' && f.isOpen) as File[];
+        return this.allItems.filter((f) => f.type === 'file' && f.isOpen) as File[];
     }
 
     @computed

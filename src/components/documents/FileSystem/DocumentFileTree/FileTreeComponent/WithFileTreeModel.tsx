@@ -7,7 +7,7 @@ import {
 import { useFileTree } from '@pierre/trees/react';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
+import type File from '@tdev-models/documents/FileSystem/File';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { onDropComplete } from './actions/onDropComplete';
@@ -16,26 +16,18 @@ import { createIconSet } from './createIconSet';
 
 export const FileTreeContext = React.createContext<FileTreeModel | null>(null);
 
-export const useFileTreeModel = (): FileTreeModel => {
-    const context = React.useContext(FileTreeContext);
-    if (!context) {
-        throw new Error('useFileTreeModel must be used within a FileTreeContext.Provider');
-    }
-    return context;
-};
-
 interface Props {
     children: React.ReactNode;
 }
 const WithFileTreeModel = observer((props: Props) => {
     const dir = useDocument<'dir'>();
     const documentStore = useStore('documentStore');
-    const docRootStore = useStore('documentRootStore');
+    const viewStore = useStore('viewStore');
     const treeOptions = React.useMemo((): FileTreeOptions => {
         return {
             preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
             search: true,
-            initialExpandedPaths: dir?.allFiles
+            initialExpandedPaths: dir?.allItems
                 .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
                 .map((d) => d.filePath),
             icons: createIconSet(documentStore),
@@ -62,17 +54,20 @@ const WithFileTreeModel = observer((props: Props) => {
                     buttonVisibility: 'when-needed'
                 }
             },
+            initialSelectedPaths: dir?.selectedFiles.map((f) => f.filePath),
+            gitStatus: dir?.selectedFiles.map((f) => ({ path: f.filePath, status: 'modified' })),
             flattenEmptyDirectories: false,
             onSelectionChange: (selectedPaths) => {
-                const root = docRootStore.find<'dir'>(dir.documentRootId);
-                if (!root) {
-                    return;
-                }
-                const selected = root.documents
-                    .filter((d) => isFileSystemType(d))
-                    .filter((d) => selectedPaths.includes(d.filePath));
+                const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
                 if (selected.length === 1) {
+                    const currentSelected = viewStore.selectedFile.get(dir.id);
+                    if (currentSelected?.isOpen) {
+                        currentSelected.setIsOpen(false);
+                    }
                     selected[0].setIsOpen(true);
+                    if (selected[0].type === 'file') {
+                        viewStore.setSelectedFile(dir.id, selected[0] as File);
+                    }
                 }
             }
         };
@@ -80,21 +75,39 @@ const WithFileTreeModel = observer((props: Props) => {
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {
-        const onUnload = () => {
-            const folders = dir?.allFiles.filter((d) => d.type === 'dir' && d.filePath) ?? [];
-            folders.forEach((dir) => {
-                const item = model.getItem(dir.filePath);
-                if (item?.isDirectory()) {
-                    const isOpen = (item as FileTreeDirectoryHandle).isExpanded();
-                    dir.setIsOpen(isOpen);
+        const currentSelected = viewStore.selectedFile.get(dir.id);
+        if (currentSelected) {
+            return;
+        }
+        const selected = dir.selectedFiles.map((f) => f.filePath);
+        if (selected.length > 0) {
+            viewStore.selectedFile.set(dir.id, dir.selectedFiles[0]);
+        }
+    }, [dir.id]);
+
+    React.useEffect(() => {
+        model.setGitStatus(dir?.selectedFiles.map((f) => ({ path: f.filePath, status: 'modified' })) ?? []);
+    }, [dir.selectedFiles, model]);
+
+    React.useEffect(() => {
+        const disposer = model.subscribe(() => {
+            const item = model.getFocusedItem() as FileTreeDirectoryHandle;
+            if (!item || !item.isDirectory() || !item.isFocused()) {
+                return;
+            }
+            const path = item.getPath();
+            const isOpen = item.isExpanded();
+            setTimeout(() => {
+                if (!dir || dir.type !== 'dir') {
+                    return;
                 }
-            });
-        };
-        window.addEventListener('beforeunload', onUnload);
-        return () => {
-            onUnload();
-            window.removeEventListener('beforeunload', onUnload);
-        };
+                const thisDir = dir.allDirectories.find((f) => f.filePath === path);
+                if (thisDir && thisDir.isOpen !== isOpen) {
+                    thisDir.setIsOpen(isOpen);
+                }
+            }, 0);
+        });
+        return disposer;
     }, [model]);
     /**
      * useFileTree only builds the model once, from the initial props - it never
@@ -103,7 +116,8 @@ const WithFileTreeModel = observer((props: Props) => {
      * re-synced whenever the paths change after mount.
      */
     React.useEffect(() => {
-        const openPaths = dir.allFiles
+        console.log('WithFileTreeModel: syncing paths for', dir.fileTree?.length, 'items');
+        const openPaths = dir.allItems
             .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
             .map((d) => d.filePath);
         model.resetPaths({
