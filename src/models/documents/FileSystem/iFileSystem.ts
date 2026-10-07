@@ -36,14 +36,31 @@ export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
 }
 
 abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<T> {
-    @observable accessor name: string;
+    @observable accessor _name: string;
     @observable accessor isOpen: boolean = true;
     @observable accessor isEditing: boolean = false;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
-        this.name = props.data?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
+        this._name = props.data?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
         this.isOpen = props.data?.isOpen ?? true;
+    }
+
+    @computed
+    get name(): string {
+        if (!this.isUniqueName) {
+            return `${this._name}:${this.id.slice(0, 8)}`;
+        }
+        return this._name;
+    }
+
+    @computed
+    get isUniqueName(): boolean {
+        if (!this.parent) {
+            return true;
+        }
+        const siblings = this.parent.children.filter((c) => c.id !== this.id && c.type === this.type);
+        return !siblings.some((s) => (s as iFileSystem)._name === this._name);
     }
 
     @action
@@ -53,7 +70,7 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
         updatedAt?: Date
     ): void {
         if (data.name !== undefined) {
-            this.name = data.name;
+            this._name = data.name;
         }
         if (data.isOpen !== undefined) {
             this.isOpen = data.isOpen;
@@ -68,7 +85,7 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
 
     get data(): TypeDataMapping[T] {
         return {
-            name: this.name,
+            name: this._name,
             isOpen: this.isOpen
         };
     }
@@ -133,7 +150,8 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
 
     @action
     setName(name: string) {
-        if (name.trim() === this.name || name.trim() === '') {
+        const sanitized = name.replace(/:[a-f0-9]{8}$/g, '');
+        if (sanitized.trim() === this._name || sanitized.trim() === '') {
             return;
         }
         this.setData({ name: name.trim() }, Source.LOCAL, new Date());

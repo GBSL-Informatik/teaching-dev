@@ -15,7 +15,7 @@ export class ModelMeta extends iFSMeta<'dir'> {
 class Directory extends iFileSystem<'dir'> {
     constructor(props: DocumentProps<'dir'>, store: DocumentStore) {
         super(props, store);
-        this.name =
+        this._name =
             props.data?.name || this.meta?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
     }
 

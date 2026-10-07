@@ -13,7 +13,7 @@ export class ModelMeta extends iFSMeta<'file'> {
 class File extends iFileSystem<'file'> {
     constructor(props: DocumentProps<'file'>, store: DocumentStore) {
         super(props, store);
-        this.name =
+        this._name =
             props.data?.name || this.meta?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
     }
 
