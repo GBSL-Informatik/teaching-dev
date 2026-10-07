@@ -109,7 +109,6 @@ const WithFileTreeModel = observer((props: Props) => {
      * re-synced whenever the paths change after mount.
      */
     React.useEffect(() => {
-        console.log('WithFileTreeModel: resetting paths', dir.id);
         const openPaths = dir.allFiles
             .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
             .map((d) => d.filePath);
