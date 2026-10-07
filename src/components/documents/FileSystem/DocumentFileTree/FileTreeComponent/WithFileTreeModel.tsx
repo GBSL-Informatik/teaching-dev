@@ -7,7 +7,6 @@ import {
 import { useFileTree } from '@pierre/trees/react';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import type File from '@tdev-models/documents/FileSystem/File';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { onDropComplete } from './actions/onDropComplete';
@@ -69,13 +68,13 @@ const WithFileTreeModel = observer((props: Props) => {
             onSelectionChange: (selectedPaths) => {
                 const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
                 if (selected.length === 1) {
-                    const currentSelected = viewStore.selectedFile.get(dir.id);
+                    const currentSelected = viewStore.getSelectedFile(dir.id);
                     if (currentSelected?.isOpen) {
                         currentSelected.setIsOpen(false);
                     }
                     selected[0].setIsOpen(true);
                     if (selected[0].type === 'file') {
-                        viewStore.setSelectedFile(dir.id, selected[0] as File);
+                        viewStore.setSelectedFile(dir.id, selected[0].id);
                     }
                 }
             }
@@ -84,15 +83,15 @@ const WithFileTreeModel = observer((props: Props) => {
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {
-        const currentSelected = viewStore.selectedFile.get(dir.id);
+        const currentSelected = viewStore.getSelectedFile(dir.id);
         if (currentSelected) {
             return;
         }
         const selected = dir.selectedFiles.map((f) => f.filePath);
         if (selected.length > 0) {
-            viewStore.selectedFile.set(dir.id, dir.selectedFiles[0]);
+            viewStore.setSelectedFile(dir.id, dir.selectedFiles[0].id);
         }
-    }, [dir.id]);
+    }, [dir, viewStore]);
 
     React.useEffect(() => {
         const disposer = model.subscribe(() => {

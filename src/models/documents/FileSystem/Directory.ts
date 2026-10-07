@@ -124,7 +124,6 @@ class Directory extends iFileSystem<'dir'> {
             return;
         }
 
-        console.log('Created file', document.data);
         return document.parent as File;
     }
 

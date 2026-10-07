@@ -19,20 +19,21 @@ type Props =
 const DocumentView = observer((props: Props) => {
     const componentStore = useStore('componentStore');
     const viewStore = useStore('viewStore');
-    const file = props.file ?? viewStore.selectedFile.get(props.rootDirId);
+    const file = props.file ?? viewStore.getSelectedFile(props.rootDirId);
     if (!file || !file.document) {
         return null;
     }
     const document = file.document;
+    const editorKey = document.localObjectId;
     if (componentStore.documentViews.has(document.type)) {
         const Component = componentStore.documentViews.get(document.type)!;
-        return <Component document={document} />;
+        return <Component key={editorKey} document={document} />;
     }
     if (document.type === 'code') {
-        return <CodeEditorSelector code={document as iCode} />;
+        return <CodeEditorSelector key={editorKey} code={document as iCode} />;
     }
     if (document.type === 'quill_v2') {
-        return <QuillV2Component quillDoc={document} className={styles.quill} />;
+        return <QuillV2Component key={editorKey} quillDoc={document} className={styles.quill} />;
     }
     return null;
 });

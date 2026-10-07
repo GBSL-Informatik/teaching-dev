@@ -1,4 +1,5 @@
 import DocumentContext from '@tdev-components/documents/DocumentContext';
+import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -14,6 +15,7 @@ interface Props {
 
 const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
+    const viewStore = useStore('viewStore');
 
     return (
         <DocumentContext document={dir}>
@@ -22,7 +24,9 @@ const DocumentFileTree = observer((props: Props) => {
                     <FileTreeComponent height={props.height || '450px'} />
                     <div className={clsx(styles.selectedFile)}>
                         <DocumentView rootDirId={dir.id} />
-                        <small className={clsx(styles.filePath)}>{dir.selectedFiles[0]?.filePath}</small>
+                        <small className={clsx(styles.filePath)}>
+                            {viewStore.getSelectedFile(dir.id)?.filePath}
+                        </small>
                     </div>
                 </div>
             </WithFileTreeModel>

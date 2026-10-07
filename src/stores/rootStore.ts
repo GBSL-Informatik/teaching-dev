@@ -74,6 +74,7 @@ export class RootStore {
          * could be probably ignored since the page gets reloaded on logout?
          */
         console.log('cleanup data stores');
+        this.viewStore.cleanup();
         this.sessionStore.setIsLoggedIn(false);
         this.userStore.cleanup();
         this.socketStore.cleanup();

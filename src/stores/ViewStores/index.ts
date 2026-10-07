@@ -1,6 +1,6 @@
 import { ViewStore as ViewStores, ViewStoreType, ViewStoreTypeMapping } from '@tdev-api/document';
-import File from '@tdev-models/documents/FileSystem/File';
-import { RootStore } from '@tdev-stores/rootStore';
+import type File from '@tdev-models/documents/FileSystem/File';
+import type { RootStore } from '@tdev-stores/rootStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import { AdminView } from './AdminView';
 import { PermissionsControlView } from './PermissionsControlView';
@@ -18,7 +18,7 @@ export default class ViewStore {
     @observable accessor isPageVisible: boolean = true;
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
     @observable accessor isPresentedEditorZoomed: boolean = false;
-    selectedFile = observable.map<string, File | null>();
+    selectedFileIds = observable.map<string, string>();
 
     constructor(store: RootStore) {
         this.root = store;
@@ -27,8 +27,28 @@ export default class ViewStore {
     }
 
     @action
-    setSelectedFile(rootId: string, file: File | null) {
-        this.selectedFile.set(rootId, file);
+    setSelectedFile(rootId: string, fileId: string | null) {
+        if (fileId === null) {
+            this.selectedFileIds.delete(rootId);
+        } else {
+            this.selectedFileIds.set(rootId, fileId);
+        }
+    }
+
+    getSelectedFile(rootId?: string): File | undefined {
+        if (!rootId) {
+            return;
+        }
+        const file = this.root.documentStore.find(this.selectedFileIds.get(rootId));
+        if (file?.type !== 'file' || file.rootDir?.id !== rootId) {
+            return;
+        }
+        return file;
+    }
+
+    @action
+    cleanup() {
+        this.selectedFileIds.clear();
     }
 
     @action
