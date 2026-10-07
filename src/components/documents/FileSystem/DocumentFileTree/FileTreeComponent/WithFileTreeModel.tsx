@@ -54,8 +54,17 @@ const WithFileTreeModel = observer((props: Props) => {
                     buttonVisibility: 'when-needed'
                 }
             },
+            renderRowDecoration: ({ item }) => {
+                if (item.path === dir.filePath) {
+                    return null;
+                }
+                const selected = dir.selectedFiles.map((f) => f.filePath);
+                if (item.path && selected.some((p) => p.startsWith(item.path))) {
+                    return { icon: `active-${item.kind}` };
+                }
+                return null;
+            },
             initialSelectedPaths: dir?.selectedFiles.map((f) => f.filePath),
-            gitStatus: dir?.selectedFiles.map((f) => ({ path: f.filePath, status: 'modified' })),
             flattenEmptyDirectories: false,
             onSelectionChange: (selectedPaths) => {
                 const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
@@ -84,10 +93,6 @@ const WithFileTreeModel = observer((props: Props) => {
             viewStore.selectedFile.set(dir.id, dir.selectedFiles[0]);
         }
     }, [dir.id]);
-
-    React.useEffect(() => {
-        model.setGitStatus(dir?.selectedFiles.map((f) => ({ path: f.filePath, status: 'modified' })) ?? []);
-    }, [dir.selectedFiles, model]);
 
     React.useEffect(() => {
         const disposer = model.subscribe(() => {
