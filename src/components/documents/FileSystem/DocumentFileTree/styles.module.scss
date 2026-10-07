@@ -119,6 +119,9 @@
         .mobileHeaderFile {
             font-size: 0.875rem;
         }
+        &.standalone .mobileHeader {
+            position: static;
+        }
         .sidebar {
             width: 100%;
         }
@@ -138,10 +141,7 @@
             overflow: visible;
         }
         .filePath {
-            position: static;
-            display: block;
-            margin-top: 0.5em;
-            overflow-wrap: anywhere;
+            display: none;
         }
     }
 }

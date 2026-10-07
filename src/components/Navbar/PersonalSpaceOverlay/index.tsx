@@ -63,7 +63,7 @@ const PersonalSpaceOverlay = observer(() => {
         >
             <div className={clsx(styles.personalSpaceOverlay)}>
                 <Card
-                    classNames={{ card: clsx(styles.content) }}
+                    classNames={{ card: clsx(styles.content), body: styles.body }}
                     header={
                         <div className={clsx(styles.header)}>
                             <h3>Persönlicher Bereich</h3>

@@ -5,12 +5,18 @@
     align-items: center;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
 
     .content {
         width: 80vw;
         max-width: 1450px;
         height: 80vh;
         --ifm-card-vertical-spacing: 0.25rem;
+        .body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+        }
         .header {
             margin-top: 0.5rem;
             display: flex;
@@ -35,10 +41,12 @@
     }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 768px) {
     .personalSpaceOverlay {
         .content {
             width: 98vw;
+            height: 95vh;
+            height: 95dvh;
         }
     }
 }
