@@ -586,12 +586,10 @@ class DocumentStore extends iStore<`delete-${string}`> {
 
     @action
     relinkParent(document: DocumentModelType | iFileSystem, newParent: DocumentModelType | iFileSystem) {
-        console.log('Relinking', document.id, 'to new parent', newParent.id);
         return this.withAbortController(`save-${document.id}`, (sig) => {
             return apiLinkTo(document.id, newParent.id, sig.signal);
         })
             .then((res) => {
-                console.log('Relinking successful', res.data);
                 this.addToStore(res.data);
             })
             .catch((err) => {

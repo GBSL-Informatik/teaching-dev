@@ -1,6 +1,5 @@
 import {
     mdiCircle,
-    mdiClose,
     mdiFileMove,
     mdiFileMoveOutline,
     mdiFolderMove,
@@ -10,7 +9,7 @@ import {
 } from '@mdi/js';
 import Icon, { Stack } from '@mdi/react';
 import { DocumentType } from '@tdev-api/document';
-import Button from '@tdev-components/shared/Button';
+import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { getNumericCircleIcon } from '@tdev-components/shared/numberIcons';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import type iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
@@ -29,7 +28,6 @@ interface DirProps {
 
 const DirTree = observer((props: DirProps) => {
     const { dir, item } = props;
-    const [confirmMove, setConfirmMove] = React.useState(false);
     const [isOpen, setIsOpen] = React.useState(item.path.some((p) => p.id === dir.id));
     const disabled = dir.id === item.id || dir.children.some((c) => c.id === item.id);
     return (
@@ -61,42 +59,16 @@ const DirTree = observer((props: DirProps) => {
                 <div>{dir.name}</div>
                 <div className={clsx(styles.spacer)} />
                 <div className={clsx(styles.move, 'button-group button-group--block')}>
-                    {confirmMove && (
-                        <Button
-                            icon={mdiClose}
-                            iconSide="left"
-                            size={1}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setConfirmMove(false);
-                            }}
-                        />
-                    )}
-                    <Button
-                        text={confirmMove ? 'Ja' : ''}
-                        color={'primary'}
-                        icon={
-                            props.fileType === 'dir'
-                                ? confirmMove
-                                    ? mdiFolderMove
-                                    : mdiFolderMoveOutline
-                                : confirmMove
-                                  ? mdiFileMove
-                                  : mdiFileMoveOutline
-                        }
+                    <Confirm
                         title={'Hierhin verschieben?'}
-                        size={1}
-                        disabled={disabled}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            if (confirmMove) {
-                                props.moveTo(dir);
-                            } else {
-                                setConfirmMove(true);
-                            }
+                        onConfirm={() => {
+                            props.moveTo(dir);
                         }}
+                        icon={props.fileType === 'dir' ? mdiFolderMoveOutline : mdiFileMoveOutline}
+                        confirmIcon={props.fileType === 'dir' ? mdiFolderMove : mdiFileMove}
+                        confirmText="Ja"
+                        disabled={disabled}
+                        color="primary"
                     />
                 </div>
             </div>

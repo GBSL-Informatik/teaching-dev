@@ -1,6 +1,5 @@
 import { useStore } from '@tdev-hooks/useStore';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
-import File from '@tdev-models/documents/FileSystem/File';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import clsx from 'clsx';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
@@ -8,7 +7,8 @@ import DirTree from './DirTree';
 import styles from './styles.module.scss';
 
 interface Props {
-    item: File | Directory;
+    item: iFileSystem;
+    onDone?: () => void;
 }
 
 const MoveItem = observer((props: Props) => {
@@ -29,6 +29,7 @@ const MoveItem = observer((props: Props) => {
                     fileType={item.type}
                     moveTo={action((to) => {
                         documentStore.relinkParent(item, to);
+                        props.onDone?.();
                     })}
                     item={item}
                 />
