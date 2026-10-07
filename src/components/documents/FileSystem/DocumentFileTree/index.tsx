@@ -17,6 +17,7 @@ interface Props {
     dir: Directory;
     name?: string;
     height?: string;
+    standalone?: boolean;
 }
 
 const DIVIDER_WIDTH = 16;
@@ -74,7 +75,11 @@ const DocumentFileTree = observer((props: Props) => {
             <WithFileTreeModel key={dir.localObjectId}>
                 <div
                     ref={containerRef}
-                    className={clsx(styles.container, isDragging && styles.resizing)}
+                    className={clsx(
+                        styles.container,
+                        isDragging && styles.resizing,
+                        props.standalone && styles.standalone
+                    )}
                     style={
                         {
                             '--file-tree-width': `${width}px`,

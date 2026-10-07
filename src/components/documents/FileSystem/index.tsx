@@ -12,6 +12,7 @@ interface Props extends MetaInit {
     className?: string;
     name?: string;
     height?: string;
+    standalone?: boolean;
 }
 
 const FileSystem = observer((props: Props) => {
@@ -24,7 +25,14 @@ const FileSystem = observer((props: Props) => {
     if (!doc || !Lib) {
         return <Loader />;
     }
-    return <Lib.default dir={doc} height={props.height || 'calc(80vh - 5rem)'} name={props.name} />;
+    return (
+        <Lib.default
+            dir={doc}
+            height={props.height || 'calc(80vh - 5rem)'}
+            name={props.name}
+            standalone={props.standalone}
+        />
+    );
 });
 
 export default FileSystem;

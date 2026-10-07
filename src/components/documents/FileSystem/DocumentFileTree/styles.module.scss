@@ -80,10 +80,15 @@
     }
     .filePath {
         position: absolute;
-        bottom: -2em;
+        bottom: -1em;
         left: 0;
         font-family: var(--ifm-font-family-monospace);
         font-style: italic;
+    }
+    &.standalone {
+        .filePath {
+            bottom: -2em;
+        }
     }
 
     @media screen and (max-width: 768px) {
