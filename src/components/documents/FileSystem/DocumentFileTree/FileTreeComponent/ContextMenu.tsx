@@ -6,7 +6,6 @@ import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
-import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React, { ComponentProps } from 'react';
 import MoveItem from '../../Actions/MoveItem';
@@ -78,14 +77,14 @@ const ContextMenu = observer((props: Props) => {
 
     return (
         <div
-            className={clsx(styles.contextMenu)}
+            className={styles.contextMenu}
             style={{
                 transform: `translateX(${pos.x + shiftX}px) translateY(${pos.y + 16 + shiftY}px)`
             }}
             ref={ref}
         >
             <Card
-                classNames={{ card: clsx(styles.menuContent), header: clsx(styles.menuHeader) }}
+                classNames={{ header: styles.menuHeader }}
                 header={
                     move && (
                         <Button
@@ -121,7 +120,7 @@ const ContextMenu = observer((props: Props) => {
                         {file && (
                             <Button
                                 text="Verschieben"
-                                icon={file?.type === 'dir' ? mdiFolderMove : mdiFileMove}
+                                icon={file.type === 'dir' ? mdiFolderMove : mdiFileMove}
                                 onClick={() => setMove(true)}
                                 size={SIZE_S}
                                 color="blue"
@@ -138,7 +137,6 @@ const ContextMenu = observer((props: Props) => {
                             size={SIZE_S}
                             disabled={pending}
                             onConfirm={async () => {
-                                const file = dir.allItems.find((f) => f.filePath === item.path);
                                 if (file) {
                                     setPending(true);
                                     setError(null);

@@ -4,12 +4,9 @@ import type DocumentStore from '@tdev-stores/DocumentStore';
 
 export const onDropComplete = (
     documentStore: DocumentStore,
-    dir: Directory | undefined,
+    dir: Directory,
     onComplete?: (succeeded: boolean) => void
-): ((event: FileTreeDropResult) => Promise<boolean>) | undefined => {
-    if (!dir) {
-        return;
-    }
+): ((event: FileTreeDropResult) => Promise<boolean>) => {
     return async ({ draggedPaths, target }) => {
         let succeeded = false;
         try {

@@ -28,6 +28,7 @@ const FileSystem = observer((props: Props) => {
     return (
         <Lib.default
             dir={doc}
+            className={props.className}
             height={props.height || 'calc(80vh - 5rem)'}
             name={props.name}
             standalone={props.standalone}

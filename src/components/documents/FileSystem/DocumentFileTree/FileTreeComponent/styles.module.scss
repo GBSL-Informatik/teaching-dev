@@ -1,26 +1,25 @@
 .tree {
-    --trees-search-bg: var(--ifm-background-surface-color);
-    --trees-bg: var(--ifm-background-color);
-    // --trees-search-fg
-    // --trees-border-color
-    // --trees-accent
-    // --trees-fg-muted
-    // --trees-bg-muted
+    --trees-search-bg-override: var(--ifm-background-surface-color);
+    --trees-bg-override: var(--ifm-background-color);
+    --trees-fg-override: var(--ifm-color-content);
+    --trees-fg-muted-override: var(--ifm-color-content-secondary);
+    --trees-accent-override: var(--ifm-color-primary);
+    --trees-border-color-override: var(--ifm-color-emphasis-300);
+    --trees-border-radius-override: var(--ifm-global-radius);
+    --trees-font-family-override: var(--ifm-font-family-base);
     color-scheme: light;
-    .contextMenu {
-        position: fixed;
-        top: 0;
-        left: 0;
-        max-width: 100vw;
-        max-height: 100dvh;
-        overflow: auto;
-        .menuContent {
-            transform: translate();
-        }
-        .menuHeader {
-            display: flex;
-            justify-content: flex-end;
-        }
+}
+
+.contextMenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    max-width: 100vw;
+    max-height: 100dvh;
+    overflow: auto;
+    .menuHeader {
+        display: flex;
+        justify-content: flex-end;
     }
 }
 .fileTreeComponent {

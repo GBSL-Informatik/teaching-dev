@@ -15,82 +15,70 @@ const HomepageFeatures = observer(() => {
     const sessionStore = useStore('sessionStore');
     const userStore = useStore('userStore');
     const isLive = useIsLive();
-
     return (
-        <>
-            <section className={styles.features}>
-                {sessionStore.apiMode === 'api' ? (
-                    <div className="container">
-                        <h2>Socket.IO</h2>
-                        <DefinitionList>
-                            <dt>URL</dt>
-                            <dd>{BACKEND_URL}</dd>
-                            <dt>Connected?</dt>
-                            <dd>
-                                {isLive ? (
-                                    <span>
-                                        <Icon
-                                            path={mdiCheckCircle}
-                                            size={0.8}
-                                            color="var(--ifm-color-success)"
-                                        />{' '}
-                                        Live
-                                    </span>
-                                ) : (
-                                    <span>
-                                        <Icon
-                                            path={mdiCloseCircle}
-                                            size={0.8}
-                                            color="var(--ifm-color-danger)"
-                                        />{' '}
-                                        Offline
-                                    </span>
-                                )}
-                            </dd>
-                            {isLive && (
-                                <>
-                                    <dt>Clients</dt>
-                                    <dd>
-                                        {socketStore.connectedClients.get(userStore.viewedUser?.id ?? '') ??
-                                            0}
-                                    </dd>
-                                </>
+        <section className={styles.features}>
+            {sessionStore.apiMode === 'api' ? (
+                <div className="container">
+                    <h2>Socket.IO</h2>
+                    <DefinitionList>
+                        <dt>URL</dt>
+                        <dd>{BACKEND_URL}</dd>
+                        <dt>Connected?</dt>
+                        <dd>
+                            {isLive ? (
+                                <span>
+                                    <Icon path={mdiCheckCircle} size={0.8} color="var(--ifm-color-success)" />{' '}
+                                    Live
+                                </span>
+                            ) : (
+                                <span>
+                                    <Icon path={mdiCloseCircle} size={0.8} color="var(--ifm-color-danger)" />{' '}
+                                    Offline
+                                </span>
                             )}
-                            <dt>Offline API</dt>
-                            <dd>{OFFLINE_API || '-'}</dd>
-                            <dt>No Auth</dt>
-                            <dd>{NO_AUTH ? 'Ja' : 'Nein'}</dd>
-                            <dt>Connection</dt>
-                            <dd>
-                                <Button
-                                    icon={mdiConnection}
-                                    text="Connect"
-                                    onClick={() => {
-                                        socketStore.resetUserData();
-                                        socketStore.connect();
-                                    }}
-                                    disabled={isLive}
-                                    color="blue"
-                                />
-                            </dd>
-                            <dd>
-                                <Button
-                                    icon={mdiCloseCircle}
-                                    text="Disconnect"
-                                    onClick={() => socketStore.disconnect()}
-                                    disabled={!isLive}
-                                    color="red"
-                                />
-                            </dd>
-                        </DefinitionList>
-                    </div>
-                ) : (
-                    <Card classNames={{ card: 'container' }}>
-                        <h2>Willkommen 🥳</h2>
-                    </Card>
-                )}
-            </section>
-        </>
+                        </dd>
+                        {isLive && (
+                            <>
+                                <dt>Clients</dt>
+                                <dd>
+                                    {socketStore.connectedClients.get(userStore.viewedUser?.id ?? '') ?? 0}
+                                </dd>
+                            </>
+                        )}
+                        <dt>Offline API</dt>
+                        <dd>{OFFLINE_API || '-'}</dd>
+                        <dt>No Auth</dt>
+                        <dd>{NO_AUTH ? 'Ja' : 'Nein'}</dd>
+                        <dt>Connection</dt>
+                        <dd>
+                            <Button
+                                icon={mdiConnection}
+                                text="Connect"
+                                onClick={() => {
+                                    socketStore.resetUserData();
+                                    socketStore.connect();
+                                }}
+                                disabled={isLive}
+                                color="blue"
+                            />
+                        </dd>
+                        <dd>
+                            <Button
+                                icon={mdiCloseCircle}
+                                text="Disconnect"
+                                onClick={() => socketStore.disconnect()}
+                                disabled={!isLive}
+                                color="red"
+                            />
+                        </dd>
+                    </DefinitionList>
+                </div>
+            ) : (
+                <Card classNames={{ card: 'container' }}>
+                    <h2>Willkommen 🥳</h2>
+                </Card>
+            )}
+        </section>
     );
 });
 

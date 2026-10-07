@@ -56,18 +56,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        padding: 5px 2px;
         background: var(--ifm-background-color);
         pointer-events: none;
-        span {
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            background: currentColor;
-        }
     }
     .selectedFile {
         flex-grow: 1;
@@ -106,20 +96,9 @@
             gap: 8px;
             width: 100%;
             min-height: 44px;
-            padding: 6px 10px;
-            border: 1px solid var(--ifm-color-emphasis-300);
-            border-radius: var(--ifm-global-radius);
-            background: var(--ifm-background-surface-color);
-            color: var(--ifm-color-content);
-            font: inherit;
             text-align: left;
-            cursor: pointer;
             svg {
                 flex-shrink: 0;
-            }
-            &:focus-visible {
-                outline: 2px solid var(--ifm-color-primary);
-                outline-offset: 2px;
             }
         }
         .mobileHeaderLabel {
@@ -135,7 +114,6 @@
             white-space: nowrap;
         }
         .mobileHeaderTitle {
-            font-size: 0.75rem;
             color: var(--ifm-color-emphasis-700);
         }
         .mobileHeaderFile {

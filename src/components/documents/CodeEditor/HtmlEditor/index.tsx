@@ -33,7 +33,6 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
 
 const HtmlEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
-    const userStore = useStore('userStore');
     const meta = React.useMemo(
         () =>
             new CodeMeta({
@@ -52,7 +51,7 @@ const HtmlEditor = observer((props: Props) => {
 
     return (
         <HtmlEditorComponent
-            doc={doc as iCode<CodeType>}
+            doc={doc}
             maxHeight={props.maxHeight}
             minHeight={props.minHeight}
             showLineNumbers={props.showLineNumbers}
@@ -63,17 +62,14 @@ const HtmlEditor = observer((props: Props) => {
     );
 });
 
-interface ComponentProps {
-    doc: iCode<CodeType>;
-    maxHeight?: string | number;
-    minHeight?: string | number;
-    showLineNumbers?: boolean;
-    htmlTransformer?: (raw: string) => string;
-    onNavigate?: (href: string) => void;
-    allowSameOrigin?: boolean;
+interface ComponentProps<T extends CodeType> extends Pick<
+    Props,
+    'maxHeight' | 'minHeight' | 'showLineNumbers' | 'htmlTransformer' | 'onNavigate' | 'allowSameOrigin'
+> {
+    doc: iCode<T>;
 }
 
-export const HtmlEditorComponent = observer((props: ComponentProps) => {
+export const HtmlEditorComponent = observer(<T extends CodeType>(props: ComponentProps<T>) => {
     const { doc } = props;
     const userStore = useStore('userStore');
     if (!doc.canDisplay && !userStore.isUserSwitched) {

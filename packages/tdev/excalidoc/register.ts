@@ -1,5 +1,5 @@
 import { rootStore } from '@tdev-stores/rootStore';
-import { mdiExcalidraw } from './Component';
+import { ExcalidrawColor, mdiExcalidraw } from './Component';
 import DocumentView from './Component/DocumentView';
 import { createModel } from './model';
 
@@ -10,7 +10,7 @@ const register = () => {
         description: 'Für Skizzen und Diagramme',
         extension: '.excalidraw',
         icon: mdiExcalidraw,
-        iconColor: '#6965db',
+        iconColor: ExcalidrawColor,
         priority: 6,
         defaultData: {
             elements: [],

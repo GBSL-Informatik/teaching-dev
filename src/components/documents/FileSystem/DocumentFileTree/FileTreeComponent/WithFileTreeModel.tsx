@@ -5,9 +5,9 @@ import {
     preparePresortedFileTreeInput
 } from '@pierre/trees';
 import { useFileTree } from '@pierre/trees/react';
+import Alert from '@tdev-components/shared/Alert';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { onDropComplete } from './actions/onDropComplete';
@@ -36,16 +36,16 @@ const WithFileTreeModel = observer((props: Props) => {
                     setMutationError('Nicht alle Dateien konnten verschoben werden.');
                 }
             }
-        })!;
+        });
         return {
-            preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
+            preparedInput: preparePresortedFileTreeInput(dir.fileTree),
             search: true,
-            initialExpandedPaths: dir?.allItems
-                .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
+            initialExpandedPaths: dir.allDirectories
+                .filter((d) => d.filePath && d.isOpen)
                 .map((d) => d.filePath),
             icons: createIconSet(documentStore),
             renaming: {
-                canRename: (item) => true,
+                canRename: () => true,
                 onRename: onRename(dir),
                 onError: (message) => {
                     console.error(message);
@@ -76,7 +76,7 @@ const WithFileTreeModel = observer((props: Props) => {
                     return null;
                 }
                 const selected = dir.selectedFiles.map((f) => f.filePath);
-                const displayed = viewStore.getSelectedFile(dir.id) as iFileSystem | undefined;
+                const displayed = viewStore.getSelectedFile(dir.id);
                 if (displayed && !selected.some((s) => s === displayed.filePath)) {
                     selected.push(displayed.filePath);
                 }
@@ -85,7 +85,7 @@ const WithFileTreeModel = observer((props: Props) => {
                 }
                 return null;
             },
-            initialSelectedPaths: dir?.selectedFiles.map((f) => f.filePath),
+            initialSelectedPaths: dir.selectedFiles.map((f) => f.filePath),
             flattenEmptyDirectories: false,
             onSelectionChange: (selectedPaths) => {
                 const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
@@ -102,7 +102,7 @@ const WithFileTreeModel = observer((props: Props) => {
                 }
             }
         };
-    }, [dir]);
+    }, [dir, documentStore, viewStore]);
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {
@@ -132,9 +132,6 @@ const WithFileTreeModel = observer((props: Props) => {
             const path = item.getPath();
             const isOpen = item.isExpanded();
             setTimeout(() => {
-                if (!dir || dir.type !== 'dir') {
-                    return;
-                }
                 const thisDir = dir.allDirectories.find((f) => f.filePath === path);
                 if (thisDir && thisDir.isOpen !== isOpen) {
                     thisDir.setIsOpen(isOpen);
@@ -155,11 +152,7 @@ const WithFileTreeModel = observer((props: Props) => {
 
     return (
         <FileTreeContext.Provider value={model}>
-            {mutationError && (
-                <div role="alert" className="alert alert--danger">
-                    {mutationError}
-                </div>
-            )}
+            {mutationError && <Alert type="danger">{mutationError}</Alert>}
             {props.children}
         </FileTreeContext.Provider>
     );

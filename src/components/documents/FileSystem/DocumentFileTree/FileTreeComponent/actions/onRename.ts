@@ -3,12 +3,9 @@ import type Code from '@tdev-models/documents/Code';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
 
-type RenameAction = ((event: FileTreeRenameEvent) => void) | undefined;
+type RenameAction = (event: FileTreeRenameEvent) => void;
 
-export const onRename = (dir: Directory | undefined): RenameAction => {
-    if (!dir) {
-        return;
-    }
+export const onRename = (dir: Directory): RenameAction => {
     return ({ sourcePath: _sourcePath, destinationPath, isFolder }) => {
         const sourcePath = isFolder ? `${_sourcePath}/` : _sourcePath;
         const file = dir.allItems.find((d) => d.filePath === sourcePath);

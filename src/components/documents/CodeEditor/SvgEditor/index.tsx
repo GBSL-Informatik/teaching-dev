@@ -26,7 +26,6 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
 
 const SvgEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
-    const userStore = useStore('userStore');
     const [meta] = React.useState(
         new CodeMeta({ title: 'SVG', ...props, code: props.code || '', lang: 'svg' })
     );
@@ -36,14 +35,14 @@ const SvgEditor = observer((props: Props) => {
         return <CodeBlock language="svg">{props.code}</CodeBlock>;
     }
 
-    return <SvgEditorComponent doc={doc as iCode<CodeType>} />;
+    return <SvgEditorComponent doc={doc} />;
 });
 
-interface ComponentProps {
-    doc: iCode<CodeType>;
+interface ComponentProps<T extends CodeType> {
+    doc: iCode<T>;
 }
 
-export const SvgEditorComponent = observer((props: ComponentProps) => {
+export const SvgEditorComponent = observer(<T extends CodeType>(props: ComponentProps<T>) => {
     const { doc } = props;
     const userStore = useStore('userStore');
     if (!doc.canDisplay && !userStore.isUserSwitched) {

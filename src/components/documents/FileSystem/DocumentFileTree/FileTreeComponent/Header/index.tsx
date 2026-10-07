@@ -3,10 +3,10 @@ import { useFileTreeSearch } from '@pierre/trees/react';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
-import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useFileTreeModel } from '../../hooks/useFileTreeModel';
+import { getFocusedDirectory } from '../actions/getFocusedDirectory';
+import { syncFileTree } from '../actions/syncFileTree';
 import NewFile from './NewFile';
 import styles from './styles.module.scss';
 
@@ -20,9 +20,9 @@ const Header = observer((props: Props) => {
     const search = useFileTreeSearch(model);
 
     return (
-        <div className={clsx(styles.header)}>
-            {props.name && <h4 className={clsx(styles.name)}>{props.name}</h4>}
-            <span className={clsx(styles.spacer)} />
+        <div className={styles.header}>
+            {props.name && <h4 className={styles.name}>{props.name}</h4>}
+            <span className={styles.spacer} />
             <Button
                 title="Suche"
                 icon={mdiMagnify}
@@ -51,17 +51,13 @@ const Header = observer((props: Props) => {
                     e.preventDefault();
                 }}
                 onClick={async () => {
-                    const path = model.getFocusedPath();
-                    const focused = root.allItems.find((f) => f.filePath === path);
-                    if (!focused) {
+                    const dir = getFocusedDirectory(model, root);
+                    if (!dir) {
                         return;
                     }
-                    const dir = focused.type === 'dir' ? focused : focused.parent;
-                    if (!dir || dir.type !== 'dir') {
-                        return;
-                    }
-                    const newDir = await (dir as Directory).createDir();
+                    const newDir = await dir.createDir();
                     if (newDir) {
+                        syncFileTree(model, root);
                         model.startRenaming(newDir.filePath);
                     }
                 }}

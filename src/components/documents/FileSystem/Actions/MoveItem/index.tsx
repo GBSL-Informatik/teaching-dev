@@ -1,4 +1,5 @@
 import Alert from '@tdev-components/shared/Alert';
+import Card from '@tdev-components/shared/Card';
 import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
@@ -24,37 +25,35 @@ const MoveItem = observer((props: Props) => {
         return null;
     }
     return (
-        <div className={clsx(styles.moveItem, 'card')}>
-            <div className={clsx('card__header', styles.header)}>
-                <h3 className={clsx('card__title', styles.title)}>"{item.name}" Verschieben</h3>
-            </div>
-            <div className={clsx('card__body', styles.body)}>
-                {error && <Alert type="danger">{error}</Alert>}
-                <DirTree
-                    dir={root}
-                    fileType={item.type}
-                    pending={pending}
-                    moveTo={async (to) => {
-                        if (pending) {
-                            return;
+        <Card
+            classNames={{ card: styles.moveItem, header: styles.header, body: styles.body }}
+            header={<h3 className={clsx('card__title', styles.title)}>"{item.name}" Verschieben</h3>}
+        >
+            {error && <Alert type="danger">{error}</Alert>}
+            <DirTree
+                dir={root}
+                fileType={item.type}
+                pending={pending}
+                moveTo={async (to) => {
+                    if (pending) {
+                        return;
+                    }
+                    setPending(true);
+                    setError(null);
+                    try {
+                        const moved = await documentStore.relinkParent(item, to);
+                        if (moved) {
+                            props.onDone?.();
+                        } else {
+                            setError('Die Datei konnte nicht verschoben werden.');
                         }
-                        setPending(true);
-                        setError(null);
-                        try {
-                            const moved = await documentStore.relinkParent(item, to);
-                            if (moved) {
-                                props.onDone?.();
-                            } else {
-                                setError('Die Datei konnte nicht verschoben werden.');
-                            }
-                        } finally {
-                            setPending(false);
-                        }
-                    }}
-                    item={item}
-                />
-            </div>
-        </div>
+                    } finally {
+                        setPending(false);
+                    }
+                }}
+                item={item}
+            />
+        </Card>
     );
 });
 export default MoveItem;

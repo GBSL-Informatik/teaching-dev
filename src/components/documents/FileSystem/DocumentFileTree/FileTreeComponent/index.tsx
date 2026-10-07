@@ -19,7 +19,7 @@ const FileTreeComponent = observer((props: Props) => {
         <div className={clsx(props.className, styles.fileTreeComponent)}>
             <FileTree
                 model={model}
-                className={clsx(styles.tree, 'rounded-lg border')}
+                className={styles.tree}
                 style={{ height: props.height ?? '320px' }}
                 onClick={(event) => {
                     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey) {
