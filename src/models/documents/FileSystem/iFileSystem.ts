@@ -78,14 +78,6 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
         }
         if (from === Source.LOCAL) {
             this.save();
-            if (data.isOpen && this.type === 'file') {
-                // close all other open files in the same directory
-                this.rootDir?.selectedFiles.forEach((f) => {
-                    if (f.id !== this.id) {
-                        f.setIsOpen(false);
-                    }
-                });
-            }
         }
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
@@ -163,6 +155,14 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
             return;
         }
         this.setData({ isOpen: isOpen }, Source.LOCAL, new Date());
+        if (isOpen && this.type === 'file') {
+            // close all other open files in the same directory
+            this.rootDir?.selectedFiles.forEach((f) => {
+                if (f.id !== this.id) {
+                    f.setIsOpen(false);
+                }
+            });
+        }
         this.saveNow();
     }
 

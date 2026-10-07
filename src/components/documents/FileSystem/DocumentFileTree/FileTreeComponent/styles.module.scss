@@ -16,6 +16,9 @@
         }
     }
 }
+.fileTreeComponent {
+    --trees-padding-inline-override: 0px;
+}
 
 [data-theme='dark'] {
     .tree {

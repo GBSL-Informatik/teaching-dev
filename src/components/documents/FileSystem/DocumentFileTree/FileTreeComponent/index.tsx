@@ -14,7 +14,7 @@ const FileTreeComponent = observer((props: Props) => {
     const model = useFileTreeModel();
 
     return (
-        <div className={clsx(props.className)}>
+        <div className={clsx(props.className, styles.fileTreeComponent)}>
             <FileTree
                 model={model}
                 className={clsx(styles.tree, 'rounded-lg border')}
