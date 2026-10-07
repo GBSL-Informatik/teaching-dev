@@ -97,7 +97,8 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
     get filePath(): string {
         if (!this.parentId) {
             if (this.type === 'dir') {
-                return `${this.name || this.id}/`;
+                return '';
+                // return `${this.name || this.id}/`;
             }
             return this.name;
         }

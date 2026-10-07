@@ -77,7 +77,8 @@ class Directory extends iFileSystem<'dir'> {
     @computed
     get fileTree(): string[] {
         // returns relative to self path all files having the current directory as parent.
-        const basePath = `${this.name || this.id}/`;
+        // const basePath = `${this.name || this.id}/`;
+        const basePath = this.parent ? `${this.name ?? this.id}/` : '';
         const directoryTrees = this.directories.flatMap((d) => {
             return d.fileTree.map((p) => `${basePath}${p}`);
         });
