@@ -110,21 +110,31 @@ class Directory extends iFileSystem<'dir'> {
         const requestedName = name || 'new-file';
         const fileConfig = this.findFileConfig(type, requestedName);
         if (!fileConfig) {
-            return;
+            throw new Error('Dieser Dateityp kann nicht erstellt werden.');
         }
 
         const fileName = this.getUniqueFileName(requestedName, fileConfig.extension);
         const file = await this.createFileContainer(fileName);
         if (!file) {
-            return;
+            throw new Error('Die Datei konnte nicht erstellt werden.');
         }
 
-        const document = await this.createFileContent(file.id, type, fileConfig);
-        if (!document) {
-            return;
+        try {
+            const document = await this.createFileContent(file.id, type, fileConfig);
+            if (!document) {
+                throw new Error('Der Dateiinhalt konnte nicht erstellt werden.');
+            }
+            return document.parent as File;
+        } catch (error) {
+            const removed = await this.store.apiDelete(file).catch(() => false);
+            if (!removed) {
+                throw new Error(
+                    'Der Dateiinhalt konnte nicht erstellt werden. Die leere Datei konnte nicht entfernt werden. Bitte lösche sie nach dem Wiederverbinden.',
+                    { cause: error }
+                );
+            }
+            throw error;
         }
-
-        return document.parent as File;
     }
 
     private findFileConfig(type: DocumentType, requestedName: string): FileConfig<DocumentType> | undefined {

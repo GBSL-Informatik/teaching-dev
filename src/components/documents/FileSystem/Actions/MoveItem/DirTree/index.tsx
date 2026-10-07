@@ -23,6 +23,7 @@ interface DirProps {
     dir: Directory;
     fileType: DocumentType;
     moveTo: (dir: Directory) => void;
+    pending?: boolean;
     children?: React.ReactNode;
 }
 
@@ -67,7 +68,7 @@ const DirTree = observer((props: DirProps) => {
                         icon={props.fileType === 'dir' ? mdiFolderMoveOutline : mdiFileMoveOutline}
                         confirmIcon={props.fileType === 'dir' ? mdiFolderMove : mdiFileMove}
                         confirmText="Ja"
-                        disabled={disabled}
+                        disabled={disabled || props.pending}
                         color="primary"
                     />
                 </div>
@@ -82,6 +83,7 @@ const DirTree = observer((props: DirProps) => {
                                 fileType={props.fileType}
                                 moveTo={props.moveTo}
                                 item={item}
+                                pending={props.pending}
                             />
                         );
                     })}

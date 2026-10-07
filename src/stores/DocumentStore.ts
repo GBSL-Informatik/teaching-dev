@@ -224,7 +224,7 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
     ]
 };
 
-class DocumentStore extends iStore<`delete-${string}`> {
+class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
@@ -568,33 +568,47 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    apiDelete(document: DocumentModelType | iDocument<any>) {
+    apiDelete(document: DocumentModelType | iDocument<any>): Promise<boolean> {
         if (document.authorId !== this.root.userStore.current?.id) {
-            return;
+            return Promise.resolve(false);
         }
+        let signal: AbortSignal;
         return this.withAbortController(`delete-${document.id}`, (sig) => {
+            signal = sig.signal;
             return apiDelete(document.id, sig.signal);
         })
             .then(({ data }) => {
+                if (signal.aborted) {
+                    return false;
+                }
                 this.removeFromStore(document);
+                return true;
             })
             .catch((err) => {
                 console.warn('Error deleting document', err);
-                this.removeFromStore(document);
+                return false;
             });
     }
 
     @action
-    relinkParent(document: DocumentModelType | iFileSystem, newParent: DocumentModelType | iFileSystem) {
-        return this.withAbortController(`save-${document.id}`, (sig) => {
+    relinkParent(
+        document: DocumentModelType | iFileSystem,
+        newParent: DocumentModelType | iFileSystem
+    ): Promise<boolean> {
+        let signal: AbortSignal;
+        return this.withAbortController(`move-${document.id}`, (sig) => {
+            signal = sig.signal;
             return apiLinkTo(document.id, newParent.id, sig.signal);
         })
             .then((res) => {
-                this.addToStore(res.data);
+                if (signal.aborted || !res.data || res.data.parentId !== newParent.id) {
+                    return false;
+                }
+                return !!this.addToStore(res.data);
             })
             .catch((err) => {
                 console.warn('Relinking not possible', err);
-                document.reset();
+                return false;
             });
     }
 }

@@ -1,17 +1,17 @@
-import { mdiClose, mdiDelete, mdiFileMove, mdiFilePlus, mdiFolderMove, mdiRename } from '@mdi/js';
+import { mdiClose, mdiDelete, mdiFileMove, mdiFolderMove, mdiRename } from '@mdi/js';
 import { FileTree as FileTreeComponent } from '@pierre/trees/react';
+import Alert from '@tdev-components/shared/Alert';
 import Button from '@tdev-components/shared/Button';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
-import { useStore } from '@tdev-hooks/useStore';
-import iFileSystem, { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React, { ComponentProps } from 'react';
 import MoveItem from '../../Actions/MoveItem';
 import { useFileTreeModel } from '../hooks/useFileTreeModel';
+import { syncFileTree } from './actions/syncFileTree';
 import styles from './styles.module.scss';
 
 type RenderContextMenuFn = Exclude<ComponentProps<typeof FileTreeComponent>['renderContextMenu'], undefined>;
@@ -27,10 +27,11 @@ const ContextMenu = observer((props: Props) => {
     const { item, context } = props;
     const pos = context.anchorRect;
     const dir = useDocument<'dir'>();
-    const documentStore = useStore('documentStore');
     const model = useFileTreeModel();
     const file = dir.allItems.find((f) => f.filePath === item.path);
     const [move, setMove] = React.useState(false);
+    const [pending, setPending] = React.useState(false);
+    const [error, setError] = React.useState<string | null>(null);
     const [shiftX, setShiftX] = React.useState(0);
     const [shiftY, setShiftY] = React.useState(0);
     const ref = React.useRef<HTMLDivElement>(null);
@@ -99,62 +100,17 @@ const ContextMenu = observer((props: Props) => {
                     )
                 }
             >
+                {error && <Alert type="danger">{error}</Alert>}
                 {move && file ? (
                     <MoveItem item={file} onDone={() => context.close({ restoreFocus: true })} />
                 ) : (
                     <>
-                        {item.kind === 'directory' && (
-                            <Button
-                                text="Neu"
-                                icon={mdiFilePlus}
-                                iconSide="left"
-                                size={SIZE_S}
-                                onClick={async (e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    if (!dir) {
-                                        return context.close({ restoreFocus: false });
-                                    }
-                                    const folder = dir.allItems.find((f) => f.filePath === item.path);
-                                    if (!folder) {
-                                        return context.close({ restoreFocus: false });
-                                    }
-                                    const names = folder.children
-                                        .filter((c) => isFileSystemType(c) && c.name.startsWith('new-file'))
-                                        .map((c) => (c as iFileSystem).name);
-                                    let nr = names.length;
-                                    while (nr > 0 && names.includes(`new-file(${nr}).py`)) {
-                                        nr = nr + 1;
-                                    }
-                                    const newName = nr === 0 ? 'new-file' : `new-file(${nr})`;
-                                    const file = await documentStore.create({
-                                        type: 'file',
-                                        documentRootId: dir.documentRootId,
-                                        parentId: folder.id,
-                                        data: {
-                                            name: `${newName}.py`,
-                                            isOpen: false
-                                        }
-                                    });
-                                    if (file) {
-                                        const doc = await documentStore.create({
-                                            type: 'script',
-                                            documentRootId: dir.documentRootId,
-                                            parentId: file.id
-                                        });
-                                        if (doc) {
-                                            model.startRenaming(file.filePath);
-                                        }
-                                    }
-                                    context.close({ restoreFocus: false });
-                                }}
-                            />
-                        )}
                         <Button
                             text="Umbenennen"
                             icon={mdiRename}
                             iconSide="left"
                             size={SIZE_S}
+                            disabled={pending}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -170,6 +126,7 @@ const ContextMenu = observer((props: Props) => {
                                 size={SIZE_S}
                                 color="blue"
                                 iconSide="left"
+                                disabled={pending}
                             />
                         )}
                         <Confirm
@@ -179,10 +136,22 @@ const ContextMenu = observer((props: Props) => {
                             color="red"
                             iconSide="left"
                             size={SIZE_S}
+                            disabled={pending}
                             onConfirm={async () => {
                                 const file = dir.allItems.find((f) => f.filePath === item.path);
                                 if (file) {
-                                    await file.delete();
+                                    setPending(true);
+                                    setError(null);
+                                    try {
+                                        const deleted = await file.delete();
+                                        if (!deleted) {
+                                            setError('Die Datei konnte nicht gelöscht werden.');
+                                            return;
+                                        }
+                                        syncFileTree(model, dir);
+                                    } finally {
+                                        setPending(false);
+                                    }
                                 }
                                 context.close({ restoreFocus: false });
                             }}

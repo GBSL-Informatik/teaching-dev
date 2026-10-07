@@ -5,12 +5,14 @@ import {
     preparePresortedFileTreeInput
 } from '@pierre/trees';
 import { useFileTree } from '@pierre/trees/react';
+import Alert from '@tdev-components/shared/Alert';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { onDropComplete } from './actions/onDropComplete';
 import { onRename } from './actions/onRename';
+import { syncFileTree } from './actions/syncFileTree';
 import { createIconSet } from './createIconSet';
 
 export const FileTreeContext = React.createContext<FileTreeModel | null>(null);
@@ -22,7 +24,19 @@ const WithFileTreeModel = observer((props: Props) => {
     const dir = useDocument<'dir'>();
     const documentStore = useStore('documentStore');
     const viewStore = useStore('viewStore');
+    const modelRef = React.useRef<FileTreeModel | null>(null);
+    const dropPending = React.useRef(false);
+    const [mutationError, setMutationError] = React.useState<string | null>(null);
     const treeOptions = React.useMemo((): FileTreeOptions => {
+        const persistDrop = onDropComplete(documentStore, dir, (succeeded) => {
+            dropPending.current = false;
+            if (modelRef.current) {
+                syncFileTree(modelRef.current, dir);
+                if (!succeeded) {
+                    setMutationError('Nicht alle Dateien konnten verschoben werden.');
+                }
+            }
+        })!;
         return {
             preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
             search: true,
@@ -39,9 +53,13 @@ const WithFileTreeModel = observer((props: Props) => {
             },
             unsafeCSS: `[data-file-tree-search-container][data-open='false'] { display: none; }`,
             dragAndDrop: {
-                canDrag: (draggedPaths) => true,
-                canDrop: ({ target }) => true,
-                onDropComplete: onDropComplete(documentStore, dir),
+                canDrag: () => !dropPending.current,
+                canDrop: () => !dropPending.current,
+                onDropComplete: (event) => {
+                    dropPending.current = true;
+                    setMutationError(null);
+                    return persistDrop(event);
+                },
                 onDropError: (message) => {
                     console.error(message);
                 }
@@ -79,8 +97,15 @@ const WithFileTreeModel = observer((props: Props) => {
                 }
             }
         };
-    }, [dir]);
+    }, [dir, documentStore, viewStore]);
     const { model } = useFileTree(treeOptions);
+
+    React.useEffect(() => {
+        modelRef.current = model;
+        return () => {
+            modelRef.current = null;
+        };
+    }, [model]);
 
     React.useEffect(() => {
         const currentSelected = viewStore.getSelectedFile(dir.id);
@@ -112,7 +137,7 @@ const WithFileTreeModel = observer((props: Props) => {
             }, 0);
         });
         return disposer;
-    }, [model]);
+    }, [model, dir]);
     /**
      * useFileTree only builds the model once, from the initial props - it never
      * reacts to prop changes. Paths often arrive asynchronously (e.g. after a
@@ -120,16 +145,14 @@ const WithFileTreeModel = observer((props: Props) => {
      * re-synced whenever the paths change after mount.
      */
     React.useEffect(() => {
-        console.log('WithFileTreeModel: syncing paths for', dir.fileTree?.length, 'items');
-        const openPaths = dir.allItems
-            .filter((d) => d.type === 'dir' && d.filePath && d.isOpen)
-            .map((d) => d.filePath);
-        model.resetPaths({
-            preparedInput: preparePresortedFileTreeInput(dir.fileTree ?? []),
-            initialExpandedPaths: openPaths
-        });
-    }, [model, dir.fileTree]);
+        syncFileTree(model, dir);
+    }, [model, dir, dir.fileTree]);
 
-    return <FileTreeContext.Provider value={model}>{props.children}</FileTreeContext.Provider>;
+    return (
+        <FileTreeContext.Provider value={model}>
+            {mutationError && <Alert type="danger">{mutationError}</Alert>}
+            {props.children}
+        </FileTreeContext.Provider>
+    );
 });
 export default WithFileTreeModel;

@@ -1,4 +1,5 @@
 import { mdiFilePlus } from '@mdi/js';
+import Alert from '@tdev-components/shared/Alert';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
@@ -13,6 +14,7 @@ import React from 'react';
 import Popup from 'reactjs-popup';
 import { useFileTreeModel } from '../../../hooks/useFileTreeModel';
 import styles from './styles.module.scss';
+import { syncFileTree } from '../../actions/syncFileTree';
 
 interface Props {}
 
@@ -21,6 +23,8 @@ const NewFile = observer((props: Props) => {
     const model = useFileTreeModel();
     const root = useDocument<'dir'>();
     const [docType, setDocType] = React.useState<FileConfig<any> | null>(null);
+    const [pending, setPending] = React.useState(false);
+    const [error, setError] = React.useState<string | null>(null);
     const fileTypes = orderBy(
         [...documentStore.fileExtensions.entries()].flatMap(([type, configs]) => {
             return configs.filter((c) => !c.hide).map((config) => ({ type, config }));
@@ -52,7 +56,11 @@ const NewFile = observer((props: Props) => {
                                     color={config.iconColor}
                                     size={SIZE_S}
                                     iconSide="left"
+                                    disabled={pending}
                                     onClick={async () => {
+                                        if (pending) {
+                                            return;
+                                        }
                                         const path = model.getFocusedPath();
                                         const focused = root.allItems.find((f) => f.filePath === path);
                                         if (!focused) {
@@ -62,12 +70,25 @@ const NewFile = observer((props: Props) => {
                                         if (!dir || dir.type !== 'dir') {
                                             return;
                                         }
-                                        const newFile = await (dir as Directory).createFile(
-                                            type,
-                                            `new-file${config.extension}`
-                                        );
-                                        if (newFile) {
-                                            model.startRenaming(newFile.filePath);
+                                        setPending(true);
+                                        setError(null);
+                                        try {
+                                            const newFile = await (dir as Directory).createFile(
+                                                type,
+                                                `new-file${config.extension}`
+                                            );
+                                            if (newFile) {
+                                                syncFileTree(model, root);
+                                                model.startRenaming(newFile.filePath);
+                                            }
+                                        } catch (error) {
+                                            setError(
+                                                error instanceof Error
+                                                    ? error.message
+                                                    : 'Die Datei konnte nicht erstellt werden.'
+                                            );
+                                        } finally {
+                                            setPending(false);
                                         }
                                     }}
                                 />
@@ -75,6 +96,7 @@ const NewFile = observer((props: Props) => {
                         );
                     })}
                 </div>
+                {error && <Alert type="danger">{error}</Alert>}
                 {docType && (
                     <i>
                         {docType.name} (
