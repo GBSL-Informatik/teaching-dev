@@ -5,9 +5,9 @@ import {
     preparePresortedFileTreeInput
 } from '@pierre/trees';
 import { useFileTree } from '@pierre/trees/react';
-import Alert from '@tdev-components/shared/Alert';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { onDropComplete } from './actions/onDropComplete';
@@ -76,6 +76,10 @@ const WithFileTreeModel = observer((props: Props) => {
                     return null;
                 }
                 const selected = dir.selectedFiles.map((f) => f.filePath);
+                const displayed = viewStore.getSelectedFile(dir.id) as iFileSystem | undefined;
+                if (displayed && !selected.some((s) => s === displayed.filePath)) {
+                    selected.push(displayed.filePath);
+                }
                 if (item.path && selected.some((p) => p.startsWith(item.path))) {
                     return { icon: `active-${item.kind}` };
                 }
@@ -85,6 +89,7 @@ const WithFileTreeModel = observer((props: Props) => {
             flattenEmptyDirectories: false,
             onSelectionChange: (selectedPaths) => {
                 const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
+
                 if (selected.length === 1) {
                     const currentSelected = viewStore.getSelectedFile(dir.id);
                     if (currentSelected?.isOpen) {
@@ -97,7 +102,7 @@ const WithFileTreeModel = observer((props: Props) => {
                 }
             }
         };
-    }, [dir, documentStore, viewStore]);
+    }, [dir]);
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {
@@ -150,7 +155,11 @@ const WithFileTreeModel = observer((props: Props) => {
 
     return (
         <FileTreeContext.Provider value={model}>
-            {mutationError && <Alert type="danger">{mutationError}</Alert>}
+            {mutationError && (
+                <div role="alert" className="alert alert--danger">
+                    {mutationError}
+                </div>
+            )}
             {props.children}
         </FileTreeContext.Provider>
     );
