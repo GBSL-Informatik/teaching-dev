@@ -15,6 +15,7 @@ import styles from './styles.module.scss';
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
     py: 'python',
+    pyo: 'python',
     md: 'markdown',
     js: 'javascript',
     ts: 'typescript'

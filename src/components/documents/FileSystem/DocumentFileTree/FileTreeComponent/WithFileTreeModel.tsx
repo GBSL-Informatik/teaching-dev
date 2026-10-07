@@ -7,7 +7,6 @@ import {
 import { useFileTree } from '@pierre/trees/react';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import { isFileSystemType } from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -26,11 +25,9 @@ export const useFileTreeModel = (): FileTreeModel => {
 };
 
 interface Props {
-    onSelected: (document: FileModel | null) => void;
     children: React.ReactNode;
 }
 const WithFileTreeModel = observer((props: Props) => {
-    const { onSelected } = props;
     const dir = useDocument<'dir'>();
     const documentStore = useStore('documentStore');
     const docRootStore = useStore('documentRootStore');
@@ -75,14 +72,11 @@ const WithFileTreeModel = observer((props: Props) => {
                     .filter((d) => isFileSystemType(d))
                     .filter((d) => selectedPaths.includes(d.filePath));
                 if (selected.length === 1) {
-                    if (selected[0].type === 'file') {
-                        onSelected(selected[0]);
-                    }
                     selected[0].setIsOpen(true);
                 }
             }
         };
-    }, [dir, onSelected]);
+    }, [dir]);
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {

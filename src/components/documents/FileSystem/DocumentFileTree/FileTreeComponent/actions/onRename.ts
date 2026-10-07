@@ -1,4 +1,5 @@
 import { type FileTreeRenameEvent } from '@pierre/trees';
+import type Code from '@tdev-models/documents/Code';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
 
@@ -29,8 +30,21 @@ export const onRename = (dir: Directory | undefined): RenameAction => {
             return;
         }
         if (file.type === 'file' && (file as File).document) {
-            if ((file as File).document.type !== 'code' && (file as File).document.type !== 'script') {
-                const ext = (file as File).fileExtension.toLowerCase();
+            const doc = file as File;
+            const ext = doc.fileExtension.toLowerCase();
+            if (doc.document.type === 'code') {
+                const newExt = newName.includes('.') ? newName.split('.').pop()!.toLowerCase() : '';
+                const code = doc.document as Code;
+                if (newExt && newExt !== ext && code.code.trim() === '') {
+                    // set default code
+                    const config = code.store.registeredFileExtensions.find(
+                        (c) => c.extension.toLowerCase() === `.${newExt}`
+                    );
+                    if (config && config.defaultData && 'code' in config.defaultData) {
+                        code.setCode(config.defaultData.code || '');
+                    }
+                }
+            } else if (doc.document.type !== 'script') {
                 console.log(`File extension: ${ext}, new name: ${newName}`);
                 if (ext && !newName.toLowerCase().endsWith(`.${ext}`)) {
                     newName = `${newName}.${ext}`;

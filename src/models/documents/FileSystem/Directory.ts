@@ -48,6 +48,11 @@ class Directory extends iFileSystem<'dir'> {
     }
 
     @computed
+    get selectedFiles(): File[] {
+        return this.allFiles.filter((f) => f.type === 'file' && f.isOpen) as File[];
+    }
+
+    @computed
     get directories(): Directory[] {
         if (!this.root) {
             return [];

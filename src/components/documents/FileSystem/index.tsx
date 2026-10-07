@@ -17,7 +17,7 @@ const FileSystem = observer((props: Props) => {
     if (!doc) {
         return <Loader />;
     }
-    return <DocumentFileTree dir={doc} height="calc(80vh - 3em)" />;
+    return <DocumentFileTree dir={doc} height="calc(80vh - 5rem)" />;
 });
 
 export default FileSystem;

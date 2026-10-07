@@ -1,5 +1,4 @@
 import { FileTree } from '@pierre/trees/react';
-import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import ContextMenu from './ContextMenu';
@@ -8,7 +7,6 @@ import styles from './styles.module.scss';
 import { useFileTreeModel } from './WithFileTreeModel';
 
 interface Props {
-    onSelected: (document: FileModel | null) => void;
     className?: string;
     height?: string;
 }
@@ -29,4 +27,5 @@ const FileTreeComponent = observer((props: Props) => {
         </div>
     );
 });
+
 export default FileTreeComponent;

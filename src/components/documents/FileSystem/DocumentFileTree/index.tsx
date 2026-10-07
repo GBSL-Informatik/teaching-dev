@@ -1,9 +1,7 @@
 import DocumentContext from '@tdev-components/documents/DocumentContext';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
-import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
 import DocumentView from '../DocumentView';
 import FileTreeComponent from './FileTreeComponent';
 import WithFileTreeModel from './FileTreeComponent/WithFileTreeModel';
@@ -16,17 +14,17 @@ interface Props {
 
 const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
-    const [selected, setSelected] = React.useState<FileModel | null>(null);
 
     return (
         <div className={clsx(styles.container)}>
             <DocumentContext document={dir}>
-                <WithFileTreeModel onSelected={setSelected} key={dir.localObjectId}>
-                    <FileTreeComponent onSelected={setSelected} height={props.height || '450px'} />
+                <WithFileTreeModel key={dir.localObjectId}>
+                    <FileTreeComponent height={props.height || '450px'} />
                 </WithFileTreeModel>
             </DocumentContext>
             <div className={clsx(styles.selectedFile)}>
-                <DocumentView document={selected?.document} />
+                <DocumentView dir={dir} />
+                <small className={clsx(styles.filePath)}>{dir.selectedFiles[0]?.filePath}</small>
             </div>
         </div>
     );

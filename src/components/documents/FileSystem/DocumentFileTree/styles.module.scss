@@ -2,11 +2,20 @@
     display: flex;
     align-items: flex-start;
     width: 100%;
-    flex-wrap: wrap;
+    position: relative;
     .selectedFile {
         flex-grow: 1;
         flex-shrink: 1;
         flex-basis: 300px;
         max-width: 1200px;
+        max-height: 76vh;
+        overflow: auto;
+    }
+    .filePath {
+        position: absolute;
+        bottom: -2em;
+        left: 0;
+        font-family: var(--ifm-font-family-monospace);
+        font-style: italic;
     }
 }

@@ -146,7 +146,7 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
             iconColor: '#13a500',
             priority: 10,
             defaultData: {
-                code: '\n'
+                code: ''
             }
         },
         {
@@ -178,7 +178,7 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
             priority: 10,
             icon: mdiLanguageMarkdownOutline,
             iconColor: 'var(--ifm-color-content)',
-            defaultData: { code: '\n' }
+            defaultData: { code: '' }
         },
         {
             extension: '.css',
@@ -188,7 +188,7 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
             hide: true,
             icon: mdiLanguageCss3,
             iconColor: '#c4cb00',
-            defaultData: { code: '\n' }
+            defaultData: { code: '' }
         },
         {
             extension: '.js',
@@ -198,7 +198,7 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
             hide: true,
             icon: mdiLanguageJavascript,
             iconColor: '#2f47b0',
-            defaultData: { code: '\n' }
+            defaultData: { code: '' }
         },
         {
             extension: '.ts',
@@ -208,7 +208,7 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
             hide: true,
             icon: mdiLanguageTypescript,
             iconColor: '#1c3fdb',
-            defaultData: { code: '\n' }
+            defaultData: { code: '' }
         }
     ],
     quill_v2: [
@@ -253,6 +253,11 @@ class DocumentStore extends iStore<`delete-${string}`> {
             priority: c.priority ?? 10
         }));
         this.fileExtensions.set(type, newConfig);
+    }
+
+    @computed
+    get registeredFileExtensions() {
+        return Array.from(this.fileExtensions.values()).flat();
     }
 
     registerFactory(type: DocumentType, factory: Factory) {
