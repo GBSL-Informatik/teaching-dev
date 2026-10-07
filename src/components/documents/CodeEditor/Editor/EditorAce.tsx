@@ -14,7 +14,10 @@ import styles from './styles.module.scss';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
-    py: 'python'
+    py: 'python',
+    md: 'markdown',
+    js: 'javascript',
+    ts: 'typescript'
 };
 
 export interface Overrides {
@@ -48,7 +51,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
             };
             textInput?.addEventListener('compositionstart', onCompositionStart);
             textInput?.addEventListener('compositionend', onCompositionEnd);
-            if (code.lang === 'python') {
+            if (code.derivedLang === 'python') {
                 node.editor.commands.addCommand({
                     // commands is array of key bindings.
                     name: 'execute',
@@ -106,7 +109,10 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 minLines={props.overrides?.minLines ?? code.meta.minLines}
                 maxLines={props.overrides?.maxLines ?? code.meta.maxLines}
                 ref={eRef}
-                mode={ALIAS_LANG_MAP_ACE[code.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.lang}
+                mode={
+                    ALIAS_LANG_MAP_ACE[code.derivedLang as keyof typeof ALIAS_LANG_MAP_ACE] ??
+                    code.derivedLang
+                }
                 theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     // Mobile/Touch Devices use IME and often emit transient remove deltas during composition.

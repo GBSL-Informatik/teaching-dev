@@ -29,8 +29,9 @@ export const onRename = (dir: Directory | undefined): RenameAction => {
             return;
         }
         if (file.type === 'file' && (file as File).document) {
-            if ((file as File).document.type !== 'script') {
+            if ((file as File).document.type !== 'code' && (file as File).document.type !== 'script') {
                 const ext = (file as File).fileExtension.toLowerCase();
+                console.log(`File extension: ${ext}, new name: ${newName}`);
                 if (ext && !newName.toLowerCase().endsWith(`.${ext}`)) {
                     newName = `${newName}.${ext}`;
                 }

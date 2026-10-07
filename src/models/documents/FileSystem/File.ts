@@ -36,7 +36,7 @@ class File extends iFileSystem<'file'> {
 
     @computed
     get fileExtension(): string {
-        if (this.allowedFileExtensions.length === 1) {
+        if (this.allowedFileExtensions.length === 0) {
             return '';
         }
         if (this.allowedFileExtensions.length === 1) {

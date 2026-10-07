@@ -87,6 +87,10 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
         if (this.parent?.type !== 'dir') {
             return name;
         }
+        // const duplicates = (this.parent as Directory).children.filter(
+        //     (c) => c.id !== this.id && c.type === this.type && c.name === this.name
+        // );
+        // const sanitizedName = duplicates.length > 0 ? `${this.name}:${this.id.slice(0, 8)}` : this.name;
         const basePath = this.parent.filePath ? this.parent.filePath : '';
         return `${basePath}${name}`;
     }

@@ -23,7 +23,7 @@ const NewFile = observer((props: Props) => {
     const [docType, setDocType] = React.useState<FileConfig<any> | null>(null);
     const fileTypes = orderBy(
         [...documentStore.fileExtensions.entries()].flatMap(([type, configs]) => {
-            return configs.map((config) => ({ type, config }));
+            return configs.filter((c) => !c.hide).map((config) => ({ type, config }));
         }),
         [(c) => c.config.priority],
         ['asc']

@@ -1,4 +1,13 @@
-import { mdiFeather, mdiLanguageHtml5, mdiSvg } from '@mdi/js';
+import {
+    mdiFeather,
+    mdiFileCode,
+    mdiLanguageCss3,
+    mdiLanguageHtml5,
+    mdiLanguageJavascript,
+    mdiLanguageMarkdownOutline,
+    mdiLanguageTypescript,
+    mdiSvg
+} from '@mdi/js';
 import {
     Access,
     ADMIN_EDITABLE_DOCUMENTS,
@@ -122,6 +131,7 @@ export interface FileConfig<T extends DocumentType> {
     description?: string;
     icon?: string;
     iconColor?: string;
+    hide?: boolean;
     priority?: number;
     defaultData: TypeDataMapping[T];
 }
@@ -129,11 +139,23 @@ export interface FileConfig<T extends DocumentType> {
 const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
     code: [
         {
+            extension: '',
+            name: 'Code',
+            description: 'Code-Editor für .svg, .html, .js, .ts, .css, .md und weitere',
+            icon: mdiFileCode,
+            iconColor: '#13a500',
+            priority: 10,
+            defaultData: {
+                code: '\n'
+            }
+        },
+        {
             extension: '.html',
             name: 'HTML',
             description: 'Für Webseiten',
             icon: mdiLanguageHtml5,
             iconColor: '#a81414',
+            hide: true,
             priority: 10,
             defaultData: {
                 code: DefaultHtmlCode
@@ -145,8 +167,48 @@ const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
             description: 'Scalable Vector Graphics',
             priority: 10,
             icon: mdiSvg,
+            hide: true,
             iconColor: '#2d27c4',
             defaultData: { code: DefaultSvgCode }
+        },
+        {
+            extension: '.md',
+            name: 'Markdown',
+            hide: true,
+            priority: 10,
+            icon: mdiLanguageMarkdownOutline,
+            iconColor: 'var(--ifm-color-content)',
+            defaultData: { code: '\n' }
+        },
+        {
+            extension: '.css',
+            name: 'CSS',
+            description: 'Für das Styling von Webseiten',
+            priority: 10,
+            hide: true,
+            icon: mdiLanguageCss3,
+            iconColor: '#c4cb00',
+            defaultData: { code: '\n' }
+        },
+        {
+            extension: '.js',
+            name: 'JavaScript',
+            description: 'Für die Programmierung von Webseiten',
+            priority: 10,
+            hide: true,
+            icon: mdiLanguageJavascript,
+            iconColor: '#2f47b0',
+            defaultData: { code: '\n' }
+        },
+        {
+            extension: '.ts',
+            name: 'TypeScript',
+            description: 'Für die Programmierung von Webseiten',
+            priority: 10,
+            hide: true,
+            icon: mdiLanguageTypescript,
+            iconColor: '#1c3fdb',
+            defaultData: { code: '\n' }
         }
     ],
     quill_v2: [
