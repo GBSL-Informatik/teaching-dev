@@ -1,10 +1,11 @@
+import type * as DocumentFileTreeLib from '@tdev-components/documents/FileSystem/DocumentFileTree';
 import Loader from '@tdev-components/Loader';
+import { useClientLib } from '@tdev-hooks/useClientLib';
 import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
 import { ModelMeta } from '@tdev-models/documents/FileSystem/Directory';
 import { MetaInit } from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import DocumentFileTree from './DocumentFileTree';
 
 interface Props extends MetaInit {
     id: string;
@@ -14,10 +15,14 @@ interface Props extends MetaInit {
 const FileSystem = observer((props: Props) => {
     const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const doc = useFirstRealMainDocument(props.id, meta);
-    if (!doc) {
+    const Lib = useClientLib<typeof DocumentFileTreeLib>(
+        () => import('@tdev-components/documents/FileSystem/DocumentFileTree'),
+        '@tdev-components/documents/FileSystem/DocumentFileTree'
+    );
+    if (!doc || !Lib) {
         return <Loader />;
     }
-    return <DocumentFileTree dir={doc} height="calc(80vh - 5rem)" />;
+    return <Lib.default dir={doc} height="calc(80vh - 5rem)" />;
 });
 
 export default FileSystem;
