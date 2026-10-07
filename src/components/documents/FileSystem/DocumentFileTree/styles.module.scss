@@ -1,13 +1,76 @@
 .container {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
     width: 100%;
     position: relative;
+    &.resizing {
+        cursor: col-resize;
+        user-select: none;
+        .selectedFile {
+            pointer-events: none;
+        }
+    }
+    .sidebar {
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .hidden {
+        display: none;
+    }
+    .divider {
+        position: relative;
+        flex: 0 0 16px;
+        align-self: stretch;
+        min-height: 48px;
+        cursor: col-resize;
+        touch-action: none;
+        user-select: none;
+        color: var(--ifm-color-emphasis-500);
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: calc(50% - 0.5px);
+            width: 1px;
+            background: var(--ifm-color-emphasis-300);
+        }
+        &:hover,
+        &:focus-visible,
+        &.dragging {
+            color: var(--ifm-color-primary);
+            &::before {
+                background: var(--ifm-color-primary);
+            }
+        }
+        &:focus-visible {
+            outline: 2px solid var(--ifm-color-primary);
+            outline-offset: -2px;
+        }
+    }
+    .grip {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        padding: 5px 2px;
+        background: var(--ifm-background-color);
+        pointer-events: none;
+        span {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+    }
     .selectedFile {
         flex-grow: 1;
         flex-shrink: 1;
         flex-basis: 300px;
+        min-width: 0;
         max-width: 1200px;
         max-height: 76vh;
         overflow: auto;

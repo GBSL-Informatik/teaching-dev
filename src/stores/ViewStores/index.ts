@@ -9,6 +9,9 @@ export interface ViewStoreProps<T extends ViewStoreType = ViewStoreType> {
     store: ViewStoreTypeMapping[T];
 }
 
+export const FILE_TREE_DEFAULT_WIDTH = 240;
+export const FILE_TREE_MIN_WIDTH = 120;
+
 export default class ViewStore {
     readonly root: RootStore;
     stores = new Map<ViewStoreType, ViewStores>();
@@ -19,6 +22,7 @@ export default class ViewStore {
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
     @observable accessor isPresentedEditorZoomed: boolean = false;
     selectedFileIds = observable.map<string, string>();
+    fileTreeWidths = observable.map<string, number>();
 
     constructor(store: RootStore) {
         this.root = store;
@@ -46,9 +50,24 @@ export default class ViewStore {
         return file;
     }
 
+    getFileTreeWidth(rootId: string) {
+        return this.fileTreeWidths.get(rootId) ?? FILE_TREE_DEFAULT_WIDTH;
+    }
+
+    isFileTreeCollapsed(rootId: string) {
+        return this.getFileTreeWidth(rootId) === 0;
+    }
+
+    @action
+    setFileTreeWidth(rootId: string, width: number, maxWidth = Infinity) {
+        const nextWidth = Math.max(0, Math.min(width, maxWidth));
+        this.fileTreeWidths.set(rootId, nextWidth < FILE_TREE_MIN_WIDTH ? 0 : nextWidth);
+    }
+
     @action
     cleanup() {
         this.selectedFileIds.clear();
+        this.fileTreeWidths.clear();
     }
 
     @action
