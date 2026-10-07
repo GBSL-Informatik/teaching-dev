@@ -10,6 +10,8 @@ import React from 'react';
 interface Props extends MetaInit {
     id: string;
     className?: string;
+    name?: string;
+    height?: string;
 }
 
 const FileSystem = observer((props: Props) => {
@@ -22,7 +24,7 @@ const FileSystem = observer((props: Props) => {
     if (!doc || !Lib) {
         return <Loader />;
     }
-    return <Lib.default dir={doc} height="calc(80vh - 5rem)" />;
+    return <Lib.default dir={doc} height={props.height || 'calc(80vh - 5rem)'} name={props.name} />;
 });
 
 export default FileSystem;

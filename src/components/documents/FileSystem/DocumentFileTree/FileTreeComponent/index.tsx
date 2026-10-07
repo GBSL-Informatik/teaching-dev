@@ -9,6 +9,7 @@ import styles from './styles.module.scss';
 interface Props {
     className?: string;
     height?: string;
+    name?: string;
 }
 const FileTreeComponent = observer((props: Props) => {
     const model = useFileTreeModel();
@@ -22,7 +23,7 @@ const FileTreeComponent = observer((props: Props) => {
                 renderContextMenu={(item, context) => {
                     return <ContextMenu item={item} context={context} />;
                 }}
-                header={<Header />}
+                header={<Header name={props.name} />}
             />
         </div>
     );

@@ -10,7 +10,9 @@ import { useFileTreeModel } from '../../hooks/useFileTreeModel';
 import NewFile from './NewFile';
 import styles from './styles.module.scss';
 
-interface Props {}
+interface Props {
+    name?: string;
+}
 
 const Header = observer((props: Props) => {
     const model = useFileTreeModel();
@@ -19,6 +21,8 @@ const Header = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.header)}>
+            {props.name && <h4 className={clsx(styles.name)}>{props.name}</h4>}
+            <span className={clsx(styles.spacer)} />
             <Button
                 title="Suche"
                 icon={mdiMagnify}

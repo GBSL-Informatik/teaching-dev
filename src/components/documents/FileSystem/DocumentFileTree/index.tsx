@@ -10,6 +10,7 @@ import styles from './styles.module.scss';
 
 interface Props {
     dir: Directory;
+    name?: string;
     height?: string;
 }
 
@@ -21,7 +22,7 @@ const DocumentFileTree = observer((props: Props) => {
         <DocumentContext document={dir}>
             <WithFileTreeModel key={dir.localObjectId}>
                 <div className={clsx(styles.container)}>
-                    <FileTreeComponent height={props.height || '450px'} />
+                    <FileTreeComponent name={props.name} height={props.height || '450px'} />
                     <div className={clsx(styles.selectedFile)}>
                         <DocumentView rootDirId={dir.id} />
                         <small className={clsx(styles.filePath)}>
