@@ -1,4 +1,7 @@
+import { mdiChevronDown, mdiChevronUp, mdiFolderOpenOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import DocumentContext from '@tdev-components/documents/DocumentContext';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import { FILE_TREE_DEFAULT_WIDTH, FILE_TREE_MIN_WIDTH } from '@tdev-stores/ViewStores';
@@ -18,12 +21,16 @@ interface Props {
 
 const DIVIDER_WIDTH = 16;
 const MIN_DOCUMENT_WIDTH = 200;
+const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
 
 const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
     const viewStore = useStore('viewStore');
     const width = viewStore.getFileTreeWidth(dir.id);
     const isCollapsed = width === 0;
+    const selectedFile = viewStore.getSelectedFile(dir.id);
+    const isMobileExpanded = viewStore.isMobileFileTreeExpanded(dir.id);
+    const treeId = React.useId();
     const containerRef = React.useRef<HTMLDivElement>(null);
     const dragRef = React.useRef<{ pointerId: number; startX: number; startWidth: number } | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
@@ -42,25 +49,65 @@ const DocumentFileTree = observer((props: Props) => {
         if (!container) {
             return;
         }
-        const observer = new ResizeObserver(() => {
+        const mobileQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+        const clampDesktopWidth = () => {
             // Hidden containers have no usable width yet.
-            if (container.clientWidth > 0) {
+            if (!mobileQuery.matches && container.clientWidth > 0) {
                 viewStore.setFileTreeWidth(dir.id, viewStore.getFileTreeWidth(dir.id), maxWidth());
             }
-        });
-        observer.observe(container);
-        return () => observer.disconnect();
+        };
+        const handleLayoutChange = () => {
+            endDrag();
+            clampDesktopWidth();
+        };
+        const resizeObserver = new ResizeObserver(clampDesktopWidth);
+        resizeObserver.observe(container);
+        mobileQuery.addEventListener('change', handleLayoutChange);
+        return () => {
+            resizeObserver.disconnect();
+            mobileQuery.removeEventListener('change', handleLayoutChange);
+        };
     }, [dir.id, viewStore]);
 
     return (
         <DocumentContext document={dir}>
             <WithFileTreeModel key={dir.localObjectId}>
-                <div ref={containerRef} className={clsx(styles.container, isDragging && styles.resizing)}>
-                    <div className={clsx(styles.sidebar)} style={{ width }}>
+                <div
+                    ref={containerRef}
+                    className={clsx(styles.container, isDragging && styles.resizing)}
+                    style={
+                        {
+                            '--file-tree-width': `${width}px`,
+                            '--desktop-file-tree-height': props.height || '450px'
+                        } as React.CSSProperties
+                    }
+                >
+                    <button
+                        type="button"
+                        className={styles.mobileHeader}
+                        aria-expanded={isMobileExpanded}
+                        aria-controls={treeId}
+                        title={selectedFile?.filePath}
+                        onClick={() => viewStore.setMobileFileTreeExpanded(dir.id, !isMobileExpanded)}
+                    >
+                        <Icon path={mdiFolderOpenOutline} size={SIZE_S} />
+                        <span className={styles.mobileHeaderLabel}>
+                            <span className={styles.mobileHeaderTitle}>{props.name || 'Dateien'}</span>
+                            <span className={styles.mobileHeaderFile}>
+                                {selectedFile?.name || 'Datei auswählen'}
+                            </span>
+                        </span>
+                        <Icon path={isMobileExpanded ? mdiChevronUp : mdiChevronDown} size={SIZE_S} />
+                    </button>
+                    <div
+                        id={treeId}
+                        className={clsx(styles.sidebar, !isMobileExpanded && styles.mobileCollapsed)}
+                    >
                         <FileTreeComponent
-                            className={clsx(isCollapsed && styles.hidden)}
+                            className={clsx(styles.tree, isCollapsed && styles.desktopCollapsed)}
                             name={props.name}
-                            height={props.height || '450px'}
+                            height="var(--file-tree-height)"
+                            onFileClick={() => viewStore.setMobileFileTreeExpanded(dir.id, false)}
                         />
                     </div>
                     <div
@@ -128,9 +175,7 @@ const DocumentFileTree = observer((props: Props) => {
                     </div>
                     <div className={clsx(styles.selectedFile)}>
                         <DocumentView rootDirId={dir.id} />
-                        <small className={clsx(styles.filePath)}>
-                            {viewStore.getSelectedFile(dir.id)?.filePath}
-                        </small>
+                        <small className={clsx(styles.filePath)}>{selectedFile?.filePath}</small>
                     </div>
                 </div>
             </WithFileTreeModel>

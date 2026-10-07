@@ -1,4 +1,5 @@
 .container {
+    --file-tree-height: var(--desktop-file-tree-height, 450px);
     display: flex;
     align-items: flex-start;
     width: 100%;
@@ -13,8 +14,10 @@
     .sidebar {
         flex-shrink: 0;
         overflow: hidden;
+        width: var(--file-tree-width);
     }
-    .hidden {
+    .mobileHeader,
+    .desktopCollapsed {
         display: none;
     }
     .divider {
@@ -81,5 +84,81 @@
         left: 0;
         font-family: var(--ifm-font-family-monospace);
         font-style: italic;
+    }
+
+    @media screen and (max-width: 768px) {
+        --file-tree-height: min(40dvh, 320px);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+
+        .mobileHeader {
+            position: sticky;
+            top: var(--ifm-navbar-height);
+            z-index: calc(var(--ifm-z-index-fixed) - 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            min-height: 44px;
+            padding: 6px 10px;
+            border: 1px solid var(--ifm-color-emphasis-300);
+            border-radius: var(--ifm-global-radius);
+            background: var(--ifm-background-surface-color);
+            color: var(--ifm-color-content);
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            svg {
+                flex-shrink: 0;
+            }
+            &:focus-visible {
+                outline: 2px solid var(--ifm-color-primary);
+                outline-offset: 2px;
+            }
+        }
+        .mobileHeaderLabel {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.3;
+        }
+        .mobileHeaderTitle,
+        .mobileHeaderFile {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .mobileHeaderTitle {
+            font-size: 0.75rem;
+            color: var(--ifm-color-emphasis-700);
+        }
+        .mobileHeaderFile {
+            font-size: 0.875rem;
+        }
+        .sidebar {
+            width: 100%;
+        }
+        .tree.desktopCollapsed {
+            display: block;
+        }
+        .sidebar.mobileCollapsed {
+            display: none;
+        }
+        .divider {
+            display: none;
+        }
+        .selectedFile {
+            flex: 0 1 auto;
+            width: 100%;
+            max-height: none;
+            overflow: visible;
+        }
+        .filePath {
+            position: static;
+            display: block;
+            margin-top: 0.5em;
+            overflow-wrap: anywhere;
+        }
     }
 }

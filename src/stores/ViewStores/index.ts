@@ -23,6 +23,7 @@ export default class ViewStore {
     @observable accessor isPresentedEditorZoomed: boolean = false;
     selectedFileIds = observable.map<string, string>();
     fileTreeWidths = observable.map<string, number>();
+    mobileFileTreeExpanded = observable.map<string, boolean>();
 
     constructor(store: RootStore) {
         this.root = store;
@@ -34,8 +35,10 @@ export default class ViewStore {
     setSelectedFile(rootId: string, fileId: string | null) {
         if (fileId === null) {
             this.selectedFileIds.delete(rootId);
+            this.mobileFileTreeExpanded.delete(rootId);
         } else {
             this.selectedFileIds.set(rootId, fileId);
+            this.mobileFileTreeExpanded.set(rootId, false);
         }
     }
 
@@ -54,6 +57,15 @@ export default class ViewStore {
         return this.fileTreeWidths.get(rootId) ?? FILE_TREE_DEFAULT_WIDTH;
     }
 
+    isMobileFileTreeExpanded(rootId: string) {
+        return this.mobileFileTreeExpanded.get(rootId) ?? !this.getSelectedFile(rootId);
+    }
+
+    @action
+    setMobileFileTreeExpanded(rootId: string, expanded: boolean) {
+        this.mobileFileTreeExpanded.set(rootId, expanded);
+    }
+
     isFileTreeCollapsed(rootId: string) {
         return this.getFileTreeWidth(rootId) === 0;
     }
@@ -68,6 +80,7 @@ export default class ViewStore {
     cleanup() {
         this.selectedFileIds.clear();
         this.fileTreeWidths.clear();
+        this.mobileFileTreeExpanded.clear();
     }
 
     @action
