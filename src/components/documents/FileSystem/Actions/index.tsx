@@ -6,6 +6,8 @@ import {
     mdiTrashCanOutline
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
+import Directory from '@tdev-models/documents/FileSystem/Directory';
+import File from '@tdev-models/documents/FileSystem/File';
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -15,7 +17,7 @@ import MoveItemPopup from './MoveItem/MoveItemPopup';
 import styles from './styles.module.scss';
 
 interface Props {
-    item: iFileSystem;
+    item: iFileSystem | Directory | File;
 }
 
 const Actions = observer((props: Props) => {

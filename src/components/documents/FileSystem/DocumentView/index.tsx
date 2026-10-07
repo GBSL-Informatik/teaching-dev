@@ -1,18 +1,25 @@
 import { useStore } from '@tdev-hooks/useStore';
+import File from '@tdev-models/documents/FileSystem/File';
 import iCode from '@tdev-models/documents/iCode';
 import { observer } from 'mobx-react-lite';
 import { QuillV2Component } from '../../QuillV2';
 import CodeEditorSelector from './CodeEditorSelector';
 import styles from './styles.module.scss';
 
-interface Props {
-    rootDirId: string;
-}
+type Props =
+    | {
+          rootDirId: string;
+          file?: undefined;
+      }
+    | {
+          rootDirId?: undefined;
+          file: File;
+      };
 
 const DocumentView = observer((props: Props) => {
     const componentStore = useStore('componentStore');
     const viewStore = useStore('viewStore');
-    const file = viewStore.selectedFile.get(props.rootDirId);
+    const file = props.file ?? viewStore.selectedFile.get(props.rootDirId);
     if (!file || !file.document) {
         return null;
     }

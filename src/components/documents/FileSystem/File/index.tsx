@@ -89,7 +89,7 @@ const File = observer((props: Props) => {
             }
         >
             <div className={clsx(shared.content, styles.content)}>
-                {file.isOpen && <DocumentView document={file.document} />}
+                {file.isOpen && <DocumentView file={file} />}
             </div>
         </FsDetails>
     );

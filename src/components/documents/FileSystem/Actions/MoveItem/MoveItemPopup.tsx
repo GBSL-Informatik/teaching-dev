@@ -1,12 +1,14 @@
 import { mdiFileMove, mdiFolderMove } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
+import Directory from '@tdev-models/documents/FileSystem/Directory';
+import File from '@tdev-models/documents/FileSystem/File';
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
 import MoveItem from '.';
 
 interface Props {
-    item: iFileSystem;
+    item: iFileSystem | File | Directory;
     iconSide?: 'left' | 'right';
 }
 
