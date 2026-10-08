@@ -14,10 +14,7 @@ const Home = (): React.ReactNode => {
     const hasCourses = courseList.length > 0;
 
     return (
-        <Layout
-            title={`Hello from ${siteConfig.title}`}
-            description="Description will go into a meta tag in <head />"
-        >
+        <Layout title={`Hello from ${siteConfig.title}`} wrapperClassName="no-search">
             <HomepageHeader hasCourses={hasCourses} />
             <main className={clsx(styles.main, hasCourses && styles.courses)}>
                 {hasCourses ? <HomepageCourses /> : <HomepageFeatures />}
