@@ -16,6 +16,21 @@ import { getFocusedDirectory } from '../../actions/getFocusedDirectory';
 import { syncFileTree } from '../../actions/syncFileTree';
 import styles from './styles.module.scss';
 
+const ShowExtension = ({ extension }: { extension: string | undefined }) => {
+    if (!extension) {
+        return null;
+    }
+    return (
+        <>
+            {' ('}
+            <small>
+                <code>{extension}</code>
+            </small>
+            {')'}
+        </>
+    );
+};
+
 const NewFile = observer(() => {
     const documentStore = useStore('documentStore');
     const model = useFileTreeModel();
@@ -86,11 +101,8 @@ const NewFile = observer(() => {
                 {error && <Alert type="danger">{error}</Alert>}
                 {docType && (
                     <i>
-                        {docType.name} (
-                        <small>
-                            <code>{docType.extension}</code>
-                        </small>
-                        )
+                        {docType.name}
+                        <ShowExtension extension={docType.extension} />
                         <br />
                         <small>{docType.description}</small>
                     </i>
