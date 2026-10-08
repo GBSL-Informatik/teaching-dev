@@ -39,8 +39,12 @@ class Directory extends iFileSystem<'dir'> {
 
     @computed
     get allItems(): iFileSystem[] {
+        const rootDirId = this.rootDir?.id;
+        if (!rootDirId) {
+            return [];
+        }
         const files = this.root?.documents.filter(
-            (d) => isFileSystemType(d) && d.filePath.startsWith(this.filePath)
+            (d) => isFileSystemType(d) && d.rootDir?.id === rootDirId && d.filePath.startsWith(this.filePath)
         ) as iFileSystem[];
         return orderBy(files || [], ['filePath'], ['asc']);
     }

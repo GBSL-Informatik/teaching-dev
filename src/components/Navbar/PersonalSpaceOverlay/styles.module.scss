@@ -7,7 +7,7 @@
     height: 100vh;
     height: 100dvh;
     --tdev-personal-space-max-content-height: 95dvh;
-    --tdev-personal-space-max-content-width: 80vh;
+    --tdev-personal-space-max-content-width: 80vw;
 
     .content {
         width: var(--tdev-personal-space-max-content-width, 80vw);
