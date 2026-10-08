@@ -28,7 +28,8 @@ Some content
         "# Details element example
 
         Hello [👉 example](https://example.org) world!
-        "`);
+        "
+        `);
     });
 
     it('does not append the prefix, if it is already there', async () => {
@@ -40,7 +41,8 @@ Some content
         "# Details element example
 
         Hello [👉 example](https://example.org) world!
-        "`);
+        "
+        `);
     });
 
     it('can configure the prefix', async () => {
@@ -52,7 +54,8 @@ Some content
         "# Details element example
 
         Hello [🔗 example](https://example.org) world!
-        "`);
+        "
+        `);
     });
 
     it('can set a postfix', async () => {
@@ -64,6 +67,7 @@ Some content
         "# Details element example
 
         Hello [example 🔗](https://example.org) world!
-        "`);
+        "
+        `);
     });
 });

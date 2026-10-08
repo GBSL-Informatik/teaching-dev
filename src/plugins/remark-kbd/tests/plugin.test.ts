@@ -28,7 +28,8 @@ Some content
         "# Details element example
 
         Hello <kbd>ctrl</kbd> world!
-        "`);
+        "
+        `);
     });
 
     it('can convert multiple kbds', async () => {
@@ -68,7 +69,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "Hello ctrl]] world!
-        "`);
+        "
+        `);
     });
 
     it('accepts opening [[ without converting to kbd', async () => {
@@ -76,7 +78,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "Hello \\[\\[ctrl world!
-        "`);
+        "
+        `);
     });
 
     it('accepts unbalanced opening and closing brackets', async () => {
@@ -84,7 +87,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "Hello <kbd>ctrl</kbd> \\[\\[ world!
-        "`);
+        "
+        `);
     });
 
     it('accepts unbalanced opening and closing brackets', async () => {
@@ -92,7 +96,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "Hello <kbd>ctrl</kbd> ]] world!
-        "`);
+        "
+        `);
     });
 
     it('handels nested kbds', async () => {
@@ -101,7 +106,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "Hello <kbd>ctrl + <kbd>x</kbd></kbd> world!
-        "`);
+        "
+        `);
     });
 
     it('handels kbds in links', async () => {
@@ -110,7 +116,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "[<kbd>ctrl</kbd> + <kbd>x</kbd>](https://foobar.ch) world!
-        "`);
+        "
+        `);
     });
     it('handels links in kbds', async () => {
         const input = `[[ctrl + [x](https://foobar.ch)]] world!
@@ -118,7 +125,8 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "<kbd>ctrl + [x](https://foobar.ch)</kbd> world!
-        "`);
+        "
+        `);
     });
     it('handels html in kbds', async () => {
         const input = `[[ctrl + <span>a</span>]] world!
@@ -126,6 +134,7 @@ Some content
         const result = await process(input);
         expect(result).toMatchInlineSnapshot(`
         "<kbd>ctrl + <span>a</span></kbd> world!
-        "`);
+        "
+        `);
     });
 });
