@@ -10,7 +10,7 @@ import {
     mdiSvg
 } from '@mdi/js';
 import type { DocumentType, TypeDataMapping } from '@tdev-api/document';
-import { mdiLanguageYaml } from '@tdev-components/shared/mdiExtension';
+import { mdiLanguageSass, mdiLanguageYaml } from '@tdev-components/shared/mdiExtension';
 import {
     DefaultHtmlCode,
     DefaultJsonCode,
@@ -130,6 +130,15 @@ export const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }
             icon: mdiLanguageYaml,
             iconColor: 'light-dark(#d52c36, #ff6762)',
             defaultData: { code: DefaultYamlCode }
+        },
+        {
+            extension: '.scss',
+            name: 'Sass',
+            priority: 10,
+            hide: true,
+            icon: mdiLanguageSass,
+            iconColor: 'light-dark(#d32a61, #ff678d)',
+            defaultData: { code: '' }
         }
     ],
     quill_v2: [
