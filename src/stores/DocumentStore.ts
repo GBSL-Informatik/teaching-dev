@@ -1,14 +1,4 @@
 import {
-    mdiFeather,
-    mdiFileCode,
-    mdiLanguageCss3,
-    mdiLanguageHtml5,
-    mdiLanguageJavascript,
-    mdiLanguageMarkdownOutline,
-    mdiLanguageTypescript,
-    mdiSvg
-} from '@mdi/js';
-import {
     Access,
     ADMIN_EDITABLE_DOCUMENTS,
     allDocuments as apiAllDocuments,
@@ -20,7 +10,6 @@ import {
     Document as DocumentProps,
     DocumentType,
     Factory,
-    TypeDataMapping,
     TypeModelMapping
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
@@ -46,13 +35,12 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
-import { DefaultHtmlCode, DefaultSvgCode } from '@tdev/helpers/defaultData';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
 import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import { type Delta } from 'quill';
 import { v4 as uuidv4 } from 'uuid';
+import { DefaultExtensions, FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
 
 const IsNotUniqueError = (error: any) => {
@@ -124,105 +112,6 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['cms_text', CreateDocumentModel],
     ['dynamic_document_roots', CreateDocumentModel]
 ];
-
-export interface FileConfig<T extends DocumentType> {
-    extension: string;
-    name?: string;
-    description?: string;
-    icon?: string;
-    iconColor?: string;
-    hide?: boolean;
-    priority?: number;
-    defaultData: TypeDataMapping[T];
-}
-
-const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
-    code: [
-        {
-            extension: '',
-            name: 'Code',
-            description: 'Code-Editor für .svg, .html, .js, .ts, .css, .md und weitere',
-            icon: mdiFileCode,
-            iconColor: '#13a500',
-            priority: 10,
-            defaultData: {
-                code: ''
-            }
-        },
-        {
-            extension: '.html',
-            name: 'HTML',
-            description: 'Für Webseiten',
-            icon: mdiLanguageHtml5,
-            iconColor: '#a81414',
-            hide: true,
-            priority: 10,
-            defaultData: {
-                code: DefaultHtmlCode
-            }
-        },
-        {
-            extension: '.svg',
-            name: 'SVG',
-            description: 'Scalable Vector Graphics',
-            priority: 10,
-            icon: mdiSvg,
-            hide: true,
-            iconColor: '#2d27c4',
-            defaultData: { code: DefaultSvgCode }
-        },
-        {
-            extension: '.md',
-            name: 'Markdown',
-            hide: true,
-            priority: 10,
-            icon: mdiLanguageMarkdownOutline,
-            iconColor: 'var(--ifm-color-content)',
-            defaultData: { code: '' }
-        },
-        {
-            extension: '.css',
-            name: 'CSS',
-            description: 'Für das Styling von Webseiten',
-            priority: 10,
-            hide: true,
-            icon: mdiLanguageCss3,
-            iconColor: '#c4cb00',
-            defaultData: { code: '' }
-        },
-        {
-            extension: '.js',
-            name: 'JavaScript',
-            description: 'Für die Programmierung von Webseiten',
-            priority: 10,
-            hide: true,
-            icon: mdiLanguageJavascript,
-            iconColor: '#2f47b0',
-            defaultData: { code: '' }
-        },
-        {
-            extension: '.ts',
-            name: 'TypeScript',
-            description: 'Für die Programmierung von Webseiten',
-            priority: 10,
-            hide: true,
-            icon: mdiLanguageTypescript,
-            iconColor: '#1c3fdb',
-            defaultData: { code: '' }
-        }
-    ],
-    quill_v2: [
-        {
-            extension: '.qil',
-            name: 'Quill',
-            description: 'Für Texte mit Formatierungen',
-            priority: 1,
-            icon: mdiFeather,
-            iconColor: 'var(--ifm-color-content)',
-            defaultData: { delta: { ops: [{ insert: '\n' }] } as Delta }
-        }
-    ]
-};
 
 class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
     readonly root: RootStore;

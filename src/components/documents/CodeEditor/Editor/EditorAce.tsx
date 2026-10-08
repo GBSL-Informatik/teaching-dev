@@ -19,7 +19,9 @@ const ALIAS_LANG_MAP_ACE = {
     pyo: 'python',
     md: 'markdown',
     js: 'javascript',
-    ts: 'typescript'
+    ts: 'typescript',
+    yml: 'yaml',
+    yaml: 'yaml'
 };
 
 export interface Overrides {

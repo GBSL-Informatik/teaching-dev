@@ -6,7 +6,7 @@ import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
-import { FileConfig } from '@tdev-stores/DocumentStore';
+import { FileConfig } from '@tdev-stores/assets/FileExtensions';
 import { orderBy } from 'es-toolkit';
 import { observer } from 'mobx-react-lite';
 import React from 'react';

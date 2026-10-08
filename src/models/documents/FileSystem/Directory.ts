@@ -1,6 +1,7 @@
 import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import DocumentStore, { FileConfig } from '@tdev-stores/DocumentStore';
+import { FileConfig } from '@tdev-stores/assets/FileExtensions';
+import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed } from 'mobx';
 import File from './File';

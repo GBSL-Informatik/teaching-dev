@@ -33,7 +33,7 @@ const register = () => {
         extension: '.pyo',
         priority: 5.5,
         icon: mdiLanguagePython,
-        iconColor: '#3d96e0',
+        iconColor: 'light-dark(#3b87c5, #49a0e7)',
         defaultData: { code: '' }
     });
     rootStore.componentStore.registerDocumentView('pyodide_code', DocumentView);

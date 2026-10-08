@@ -1,3 +1,5 @@
+import { type Delta } from 'quill';
+
 export const DefaultSvgCode = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
     <rect
         x="50" y="50"
@@ -16,3 +18,10 @@ export const DefaultHtmlCode = `<!DOCTYPE html>
         <h1>Willkommen</h1>
     </body>
 </html>`;
+
+export const DefaultYamlCode = `foo: bar`;
+export const DefaultJsonCode = `{
+    "foo": "bar"
+}`;
+
+export const DefaultQuillDelta = { ops: [{ insert: '\n' }] } as Delta;

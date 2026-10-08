@@ -28,7 +28,7 @@ const register = () => {
         description: 'Webbasiertes Python, inkl. Turtle-Grafik',
         priority: 5,
         icon: mdiLanguagePython,
-        iconColor: 'var(--ifm-color-warning)',
+        iconColor: 'light-dark(#ffba00, #ebff00)',
         defaultData: { code: '' }
     });
     rootStore.componentStore.registerDocumentView('script', DocumentView);
