@@ -6,6 +6,7 @@ import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
 import React, { ComponentProps } from 'react';
 import MoveItem from '../../Actions/MoveItem';
@@ -27,7 +28,10 @@ const ContextMenu = observer((props: Props) => {
     const pos = context.anchorRect;
     const dir = useDocument<'dir'>();
     const model = useFileTreeModel();
-    const file = dir.allItems.find((f) => f.filePath === item.path);
+    const currentSelection = model.getSelectedPaths();
+    const files = currentSelection
+        .map((path) => dir.allItems.find((f) => f.filePath === path))
+        .filter((f): f is iFileSystem => !!f);
     const [move, setMove] = React.useState(false);
     const [pending, setPending] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
@@ -75,6 +79,12 @@ const ContextMenu = observer((props: Props) => {
         };
     }, [pos.x, pos.y, move]);
 
+    if (files.length === 0) {
+        return null;
+    }
+
+    const file = files.length === 1 ? files[0] : null;
+
     return (
         <div
             className={styles.contextMenu}
@@ -104,32 +114,34 @@ const ContextMenu = observer((props: Props) => {
                     <MoveItem item={file} onDone={() => context.close({ restoreFocus: true })} />
                 ) : (
                     <>
-                        <Button
-                            text="Umbenennen"
-                            icon={mdiRename}
-                            iconSide="left"
-                            size={SIZE_S}
-                            disabled={pending || item.path === ''}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                model.startRenaming(item.path);
-                                context.close({ restoreFocus: false });
-                            }}
-                        />
                         {file && (
-                            <Button
-                                text="Verschieben"
-                                icon={file.type === 'dir' ? mdiFolderMove : mdiFileMove}
-                                onClick={() => setMove(true)}
-                                size={SIZE_S}
-                                color="blue"
-                                iconSide="left"
-                                disabled={pending || item.path === ''}
-                            />
+                            <>
+                                <Button
+                                    text="Umbenennen"
+                                    icon={mdiRename}
+                                    iconSide="left"
+                                    size={SIZE_S}
+                                    disabled={pending || item.path === ''}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        model.startRenaming(item.path);
+                                        context.close({ restoreFocus: false });
+                                    }}
+                                />
+                                <Button
+                                    text="Verschieben"
+                                    icon={file.type === 'dir' ? mdiFolderMove : mdiFileMove}
+                                    onClick={() => setMove(true)}
+                                    size={SIZE_S}
+                                    color="blue"
+                                    iconSide="left"
+                                    disabled={pending || item.path === ''}
+                                />
+                            </>
                         )}
                         <Confirm
-                            text="Löschen"
+                            text={files.length === 1 ? 'Löschen' : `${files.length} Löschen`}
                             confirmText="Wirklich?"
                             icon={mdiDelete}
                             color="red"
@@ -137,13 +149,15 @@ const ContextMenu = observer((props: Props) => {
                             size={SIZE_S}
                             disabled={pending || item.path === ''}
                             onConfirm={async () => {
-                                if (file) {
+                                if (files.length > 0) {
                                     setPending(true);
                                     setError(null);
                                     try {
-                                        const deleted = await file.delete();
+                                        const deleted = await Promise.all(files.map((f) => f.delete()));
                                         if (!deleted) {
-                                            setError('Die Datei konnte nicht gelöscht werden.');
+                                            setError(
+                                                `Die ${files.length > 1 ? `${files.length} Dateien konnten` : 'Datei konnte'} nicht gelöscht werden.`
+                                            );
                                             return;
                                         }
                                         syncFileTree(model, dir);
