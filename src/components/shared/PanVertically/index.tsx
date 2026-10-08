@@ -15,6 +15,8 @@ type HandleProps = Omit<
 
 export interface Props extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
     children: React.ReactNode;
+    /** Show the resize handle and enable pan gestures. Defaults to true. */
+    enabled?: boolean;
     /** Return false to prevent the gesture from starting. */
     onPanStart?: () => void | false;
     /** Total displacement from the start in pixels; positive values move downward. */
@@ -24,7 +26,7 @@ export interface Props extends Omit<React.HTMLAttributes<HTMLDivElement>, 'child
 }
 
 const PanVertically = (props: Props) => {
-    const { children, onPanStart, onPan, onPanEnd, handleProps, ...wrapperProps } = props;
+    const { children, enabled = true, onPanStart, onPan, onPanEnd, handleProps, ...wrapperProps } = props;
     const panRef = React.useRef<{
         pointerId: number;
         startY: number;
@@ -51,6 +53,12 @@ const PanVertically = (props: Props) => {
     };
 
     React.useEffect(() => {
+        if (!enabled) {
+            endPan();
+        }
+    }, [enabled]);
+
+    React.useEffect(() => {
         return () => {
             const pan = panRef.current;
             panRef.current = null;
@@ -63,47 +71,49 @@ const PanVertically = (props: Props) => {
     return (
         <div {...wrapperProps}>
             {children}
-            <div
-                role="separator"
-                aria-label="Höhe anpassen"
-                aria-orientation="horizontal"
-                tabIndex={0}
-                {...handleProps}
-                className={clsx(styles.handle, isPanning && styles.panning, handleProps?.className)}
-                onPointerDown={(event) => {
-                    if (event.button !== 0 || !event.isPrimary || panRef.current) {
-                        return;
-                    }
-                    if (onPanStart?.() === false) {
-                        return;
-                    }
-                    event.preventDefault();
-                    event.currentTarget.focus();
-                    event.currentTarget.setPointerCapture(event.pointerId);
-                    panRef.current = {
-                        pointerId: event.pointerId,
-                        startY: event.clientY,
-                        handle: event.currentTarget
-                    };
-                    setIsPanning(true);
-                }}
-                onPointerMove={(event) => {
-                    const pan = panRef.current;
-                    if (pan?.pointerId === event.pointerId) {
-                        onPan?.(event.clientY - pan.startY);
-                    }
-                }}
-                onPointerUp={onPointerEnd}
-                onPointerCancel={onPointerEnd}
-                onLostPointerCapture={onPointerEnd}
-                onKeyDown={(event) => {
-                    if ((event.key === 'Enter' || event.key === 'Escape') && panRef.current) {
+            {enabled && (
+                <div
+                    role="separator"
+                    aria-label="Höhe anpassen"
+                    aria-orientation="horizontal"
+                    tabIndex={0}
+                    {...handleProps}
+                    className={clsx(styles.handle, isPanning && styles.panning, handleProps?.className)}
+                    onPointerDown={(event) => {
+                        if (event.button !== 0 || !event.isPrimary || panRef.current) {
+                            return;
+                        }
+                        if (onPanStart?.() === false) {
+                            return;
+                        }
                         event.preventDefault();
-                        endPan();
-                    }
-                    handleProps?.onKeyDown?.(event);
-                }}
-            />
+                        event.currentTarget.focus();
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                        panRef.current = {
+                            pointerId: event.pointerId,
+                            startY: event.clientY,
+                            handle: event.currentTarget
+                        };
+                        setIsPanning(true);
+                    }}
+                    onPointerMove={(event) => {
+                        const pan = panRef.current;
+                        if (pan?.pointerId === event.pointerId) {
+                            onPan?.(event.clientY - pan.startY);
+                        }
+                    }}
+                    onPointerUp={onPointerEnd}
+                    onPointerCancel={onPointerEnd}
+                    onLostPointerCapture={onPointerEnd}
+                    onKeyDown={(event) => {
+                        if ((event.key === 'Enter' || event.key === 'Escape') && panRef.current) {
+                            event.preventDefault();
+                            endPan();
+                        }
+                        handleProps?.onKeyDown?.(event);
+                    }}
+                />
+            )}
         </div>
     );
 };

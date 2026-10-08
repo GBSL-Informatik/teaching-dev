@@ -49,6 +49,9 @@ export const CodeEditor = observer((props: Props) => {
             // We force remount the editor on hydration,
             // otherwise the correct language mode might not be applied
             key={String(code.lang)}
+            overrides={{
+                showPanVertically: false
+            }}
         />
     );
 });

@@ -27,6 +27,8 @@ export interface Overrides {
     maxLines?: number;
     theme?: string;
     showLineNumbers?: boolean;
+    /** Show the vertical resize handle. Defaults to true. */
+    showPanVertically?: boolean;
     fontSize?: string | number;
 }
 
@@ -46,6 +48,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const [resizedLines, setResizedLines] = React.useState<number>();
     const minLines = props.overrides?.minLines ?? code.meta.minLines;
     const maxLines = props.overrides?.maxLines ?? code.meta.maxLines;
+    const showPanVertically = props.overrides?.showPanVertically ?? true;
     const { aceTheme } = useCodeTheme();
     const codeLang =
         ALIAS_LANG_MAP_ACE[code.derivedLang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.derivedLang;
@@ -64,7 +67,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     React.useEffect(() => {
         setResizedLines(undefined);
         endResize();
-    }, [code, minLines, maxLines]);
+    }, [code, minLines, maxLines, showPanVertically]);
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
@@ -115,6 +118,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     return (
         <PanVertically
             className={clsx(styles.editor)}
+            enabled={showPanVertically}
             onPanStart={() => {
                 const renderer = eRef.current?.editor.renderer;
                 if (!renderer?.lineHeight) {
@@ -138,7 +142,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
             }}
         >
             <AceEditor
-                className={clsx(styles.brythonEditor, !code.meta.showLineNumbers && styles.noGutter)}
+                className={clsx(styles.aceEditor, !code.meta.showLineNumbers && styles.noGutter)}
                 style={{
                     width: '100%',
                     lineHeight: 'var(--ifm-pre-line-height)',
@@ -156,8 +160,8 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 }}
                 focus={false}
                 navigateToFileEnd={false}
-                minLines={resizedLines ?? minLines}
-                maxLines={resizedLines ?? maxLines}
+                minLines={showPanVertically ? (resizedLines ?? minLines) : minLines}
+                maxLines={showPanVertically ? (resizedLines ?? maxLines) : maxLines}
                 ref={eRef}
                 mode={codeLang}
                 theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
