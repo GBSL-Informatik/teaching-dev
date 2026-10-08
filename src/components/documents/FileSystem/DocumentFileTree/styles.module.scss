@@ -1,5 +1,6 @@
 .notifications {
     margin-bottom: 0.75rem;
+    --ifm-alert-padding-vertical: 0.25rem;
 }
 .container {
     --file-tree-height: var(--desktop-file-tree-height, 450px);
