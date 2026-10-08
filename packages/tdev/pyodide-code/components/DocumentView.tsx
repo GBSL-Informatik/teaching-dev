@@ -6,12 +6,11 @@ interface Props {
     document: PyodideCode;
 }
 
+const importStatement = () => import('@tdev-components/documents/CodeEditor');
+
 const DocumentView = observer((props: Props) => {
     const { document } = props;
-    const Lib = useClientLib<typeof CodeEditorLib>(
-        () => import('@tdev-components/documents/CodeEditor'),
-        '@tdev-components/documents/CodeEditor'
-    );
+    const Lib = useClientLib<typeof CodeEditorLib>(importStatement, '@tdev-components/documents/CodeEditor');
     if (!Lib) {
         return null;
     }

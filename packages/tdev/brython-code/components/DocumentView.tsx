@@ -1,4 +1,4 @@
-import type * as CodeEditorSelectorLib from '@tdev-components/documents/FileSystem/DocumentView/CodeEditorSelector';
+import type * as CodeEditorLib from '@tdev-components/documents/CodeEditor';
 import { useClientLib } from '@tdev-hooks/useClientLib';
 import { observer } from 'mobx-react-lite';
 import Script from '../models/Script';
@@ -7,13 +7,11 @@ interface Props {
     document: Script;
 }
 
+const importStatement = () => import('@tdev-components/documents/CodeEditor');
+
 const DocumentView = observer((props: Props) => {
     const { document } = props;
-    // Legacy script documents can contain HTML or SVG.
-    const Lib = useClientLib<typeof CodeEditorSelectorLib>(
-        () => import('@tdev-components/documents/FileSystem/DocumentView/CodeEditorSelector'),
-        '@tdev-components/documents/FileSystem/DocumentView/CodeEditorSelector'
-    );
+    const Lib = useClientLib<typeof CodeEditorLib>(importStatement, '@tdev-components/documents/CodeEditor');
 
     if (!Lib) {
         return null;
