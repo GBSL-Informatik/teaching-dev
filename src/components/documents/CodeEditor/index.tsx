@@ -50,7 +50,7 @@ export const CodeEditor = observer((props: Props) => {
             // otherwise the correct language mode might not be applied
             key={String(code.lang)}
             overrides={{
-                showPanVertically: false
+                allowVerticalPan: false
             }}
         />
     );
