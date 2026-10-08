@@ -1,0 +1,34 @@
+.handle {
+    display: flex;
+    flex: 0 0 100%;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 12px;
+    border-top: 1px solid var(--ifm-color-emphasis-300);
+    background: var(--ifm-background-surface-color);
+    color: var(--ifm-color-emphasis-500);
+    cursor: ns-resize;
+    touch-action: none;
+    user-select: none;
+
+    &::after {
+        content: '';
+        width: 32px;
+        height: 3px;
+        border-radius: 2px;
+        background: currentColor;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &.panning {
+        color: var(--ifm-color-primary);
+        border-color: var(--ifm-color-primary);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ifm-color-primary);
+        outline-offset: -2px;
+    }
+}

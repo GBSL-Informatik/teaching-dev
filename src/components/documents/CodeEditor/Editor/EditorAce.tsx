@@ -2,6 +2,7 @@
 import AceEditor from 'react-ace';
 // rest
 import type { CodeType } from '@tdev-api/document';
+import PanVertically from '@tdev-components/shared/PanVertically';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
 import type iCode from '@tdev-models/documents/iCode';
 import 'ace-builds/esm-resolver';
@@ -38,9 +39,32 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const eRef = React.useRef<AceEditor>(null);
     const isComposingRef = React.useRef(false);
+    const resizeRef = React.useRef<{
+        startLines: number;
+        lineHeight: number;
+    } | null>(null);
+    const [resizedLines, setResizedLines] = React.useState<number>();
+    const minLines = props.overrides?.minLines ?? code.meta.minLines;
+    const maxLines = props.overrides?.maxLines ?? code.meta.maxLines;
     const { aceTheme } = useCodeTheme();
     const codeLang =
         ALIAS_LANG_MAP_ACE[code.derivedLang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.derivedLang;
+    const visibleLines = () => {
+        const renderer = eRef.current?.editor.renderer;
+        return (
+            resizedLines ??
+            (renderer?.lineHeight
+                ? Math.max(1, Math.round(renderer.scroller.clientHeight / renderer.lineHeight))
+                : (minLines ?? 1))
+        );
+    };
+    const endResize = () => {
+        resizeRef.current = null;
+    };
+    React.useEffect(() => {
+        setResizedLines(undefined);
+        endResize();
+    }, [code, minLines, maxLines]);
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
@@ -89,7 +113,35 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     }, [eRef, code]);
 
     return (
-        <div className={clsx(styles.editor)}>
+        <PanVertically
+            className={clsx(styles.editor)}
+            onPanStart={() => {
+                const renderer = eRef.current?.editor.renderer;
+                if (!renderer?.lineHeight) {
+                    return false;
+                }
+                resizeRef.current = {
+                    startLines: visibleLines(),
+                    lineHeight: renderer.lineHeight
+                };
+            }}
+            onPan={(deltaY) => {
+                const resize = resizeRef.current;
+                if (resize) {
+                    setResizedLines(Math.max(1, resize.startLines + Math.round(deltaY / resize.lineHeight)));
+                }
+            }}
+            onPanEnd={endResize}
+            handleProps={{
+                'aria-label': 'Höhe des Code-Editors',
+                'aria-controls': code.codeId,
+                'aria-valuemin': 1,
+                'aria-valuenow': visibleLines(),
+                'aria-valuetext': `${visibleLines()} Zeilen`,
+                title: 'Ziehen oder Pfeiltasten zum Vergrössern oder Verkleinern; Doppelklick zum Zurücksetzen',
+                onDoubleClick: () => setResizedLines(undefined)
+            }}
+        >
             <AceEditor
                 className={clsx(styles.brythonEditor, !code.meta.showLineNumbers && styles.noGutter)}
                 style={{
@@ -109,8 +161,8 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 }}
                 focus={false}
                 navigateToFileEnd={false}
-                minLines={props.overrides?.minLines ?? code.meta.minLines}
-                maxLines={props.overrides?.maxLines ?? code.meta.maxLines}
+                minLines={resizedLines ?? minLines}
+                maxLines={resizedLines ?? maxLines}
                 ref={eRef}
                 mode={codeLang}
                 theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
@@ -135,7 +187,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 enableSnippets={false}
                 showGutter={props.overrides?.showLineNumbers ?? code.meta.showLineNumbers}
             />
-        </div>
+        </PanVertically>
     );
 });
 export default EditorAce;
