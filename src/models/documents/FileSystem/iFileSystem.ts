@@ -155,6 +155,14 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
     @action
     setName(name: string) {
         this.setData({ name: name }, Source.LOCAL, new Date());
+        this.save(
+            false,
+            action(async () => {
+                const name = this._name.trim() || DefaultName[this.type];
+                this._name =
+                    this.parent?.type === 'dir' ? this.parent.getUniqueFileName(name, '', this.id) : name;
+            })
+        );
     }
 
     @action

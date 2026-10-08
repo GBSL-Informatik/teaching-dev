@@ -37,6 +37,7 @@ abstract class iDocument<Type extends DocumentType> {
      * Edits    :    |||  |            |||   ||  |  |     ||  ||||  |||    ||  ||| |||||
      */
     saveFn: DebouncedFunc<typeof iDocument.prototype._save>;
+    private isSavePending: boolean = false;
 
     @observable accessor state: ApiState = ApiState.IDLE;
 
@@ -238,6 +239,7 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     save(skipStreamUpdate: boolean = false, onBeforeSave?: (() => Promise<void>) | undefined) {
+        this.isSavePending = true;
         const res = this.saveFn(onBeforeSave);
         if (!skipStreamUpdate) {
             this.streamUpdate();
@@ -261,12 +263,15 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     saveNow() {
-        this.save();
+        if (!this.isSavePending) {
+            this.save();
+        }
         return this.saveFn.flush() ?? Promise.resolve();
     }
 
     @action
     _save(onBeforeSave: () => Promise<void> = () => Promise.resolve()) {
+        this.isSavePending = false;
         /**
          * call the api to save the code...
          */

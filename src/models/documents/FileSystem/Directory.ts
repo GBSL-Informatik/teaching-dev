@@ -161,17 +161,21 @@ class Directory extends iFileSystem<'dir'> {
         );
     }
 
-    private getUniqueFileName(requestedName: string, extension: string): string {
+    getUniqueFileName(requestedName: string, extension: string, excludedDocId?: string): string {
         const baseName =
             extension && requestedName.toLowerCase().endsWith(extension.toLowerCase())
                 ? requestedName.slice(0, -extension.length)
                 : requestedName;
 
-        return this.getUniqueName(baseName, extension);
+        return this.getUniqueName(baseName, extension, excludedDocId);
     }
 
-    private getUniqueName(baseName: string, extension: string = ''): string {
-        const existingNames = new Set([...this.directories, ...this.files].map((item) => item.name));
+    private getUniqueName(baseName: string, extension: string = '', excludedDocId?: string): string {
+        const existingNames = new Set(
+            [...this.directories, ...this.files]
+                .filter((item) => item.id !== excludedDocId)
+                .map((item) => item._name.trim())
+        );
         let suffix = 0;
         let uniqueName = `${baseName}${extension}`;
 
