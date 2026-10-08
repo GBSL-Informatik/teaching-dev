@@ -69,7 +69,7 @@
         flex-basis: 300px;
         min-width: 0;
         max-width: 1200px;
-        max-height: 76vh;
+        max-height: calc(var(--tdev-personal-space-max-content-height, 95vh) - 5rem);
         overflow: auto;
     }
     .filePath {

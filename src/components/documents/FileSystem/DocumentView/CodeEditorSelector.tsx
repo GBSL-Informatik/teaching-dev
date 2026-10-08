@@ -17,7 +17,7 @@ const CodeEditorSelector = observer(<T extends CodeType>(props: Props<T>) => {
         case 'svg':
             return <SvgEditorComponent doc={code} />;
         default:
-            return <CodeEditorComponent code={code} overrides={{ maxLines: 40 }} />;
+            return <CodeEditorComponent code={code} />;
     }
 });
 

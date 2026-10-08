@@ -6,12 +6,14 @@
     width: 100vw;
     height: 100vh;
     height: 100dvh;
+    --tdev-personal-space-max-content-height: 95dvh;
+    --tdev-personal-space-max-content-width: 80vh;
 
     .content {
-        width: 80vw;
+        width: var(--tdev-personal-space-max-content-width, 80vw);
         max-width: 1450px;
         height: 95vh;
-        height: 95dvh;
+        height: var(--tdev-personal-space-max-content-height, 95dvh);
         --ifm-card-vertical-spacing: 0.25rem;
         .body {
             flex: 1;
@@ -45,7 +47,7 @@
 @media screen and (max-width: 1700px) {
     .personalSpaceOverlay {
         .content {
-            width: 90vw;
+            --tdev-personal-space-max-content-width: 90vw;
         }
     }
 }
@@ -53,7 +55,7 @@
 @media screen and (max-width: 1440px) {
     .personalSpaceOverlay {
         .content {
-            width: 95vw;
+            --tdev-personal-space-max-content-width: 95vw;
         }
     }
 }
@@ -61,7 +63,7 @@
 @media screen and (max-width: 768px) {
     .personalSpaceOverlay {
         .content {
-            width: 98vw;
+            --tdev-personal-space-max-content-width: 98vw;
         }
     }
 }
