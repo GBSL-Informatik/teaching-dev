@@ -28,6 +28,16 @@ class Directory extends iFileSystem<'dir'> {
     }
 
     @computed
+    get expandedPaths(): string[] {
+        return this.directories.reduce((acc, d) => {
+            if (d.isOpen) {
+                return [...acc, d.filePath, ...d.expandedPaths];
+            }
+            return acc;
+        }, [] as string[]);
+    }
+
+    @computed
     get allItems(): iFileSystem[] {
         const files = this.root?.documents.filter(
             (d) => isFileSystemType(d) && d.filePath.startsWith(this.filePath)

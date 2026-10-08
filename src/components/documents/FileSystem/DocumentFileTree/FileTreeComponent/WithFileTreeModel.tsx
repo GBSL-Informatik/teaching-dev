@@ -43,9 +43,7 @@ const WithFileTreeModel = observer((props: Props) => {
         return {
             preparedInput: preparePresortedFileTreeInput(dir.fileTree),
             search: true,
-            initialExpandedPaths: dir.allDirectories
-                .filter((d) => d.filePath && d.isOpen)
-                .map((d) => d.filePath),
+            initialExpandedPaths: dir.expandedPaths,
             icons: createIconSet(documentStore),
             renaming: {
                 canRename: (item) => item.path !== '',
@@ -108,13 +106,14 @@ const WithFileTreeModel = observer((props: Props) => {
                 const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
 
                 if (selected.length === 1) {
+                    const item = selected[0];
                     const currentSelected = fileTreeView.getSelectedFile(dir.id);
                     if (currentSelected?.isOpen) {
                         currentSelected.setIsOpen(false);
                     }
-                    selected[0].setIsOpen(true);
-                    if (selected[0].type === 'file') {
-                        fileTreeView.setSelectedFile(dir.id, selected[0].id);
+                    if (item.type === 'file') {
+                        item.setIsOpen(true);
+                        fileTreeView.setSelectedFile(dir.id, item.id);
                     }
                 }
             }
@@ -141,6 +140,7 @@ const WithFileTreeModel = observer((props: Props) => {
     }, [dir, fileTreeView]);
 
     React.useEffect(() => {
+        const timers = new Set<ReturnType<typeof setTimeout>>();
         const disposer = model.subscribe(() => {
             const item = model.getFocusedItem() as FileTreeDirectoryHandle;
             if (!item || !item.isDirectory() || !item.isFocused()) {
@@ -148,14 +148,28 @@ const WithFileTreeModel = observer((props: Props) => {
             }
             const path = item.getPath();
             const isOpen = item.isExpanded();
-            setTimeout(() => {
+            const timer = setTimeout(() => {
+                timers.delete(timer);
                 const thisDir = dir.allDirectories.find((f) => f.filePath === path);
-                if (thisDir && thisDir.isOpen !== isOpen) {
+                if (thisDir) {
                     thisDir.setIsOpen(isOpen);
+                    if (isOpen) {
+                        thisDir.expandedPaths.forEach((p) => {
+                            const subdir = model.getItem(p) as FileTreeDirectoryHandle;
+                            if (subdir && subdir.isDirectory() && !subdir.isExpanded()) {
+                                subdir.expand();
+                            }
+                        });
+                    }
                 }
             }, 0);
+            timers.add(timer);
         });
-        return disposer;
+        return () => {
+            disposer();
+            timers.forEach((timer) => clearTimeout(timer));
+            timers.clear();
+        };
     }, [model, dir]);
     /**
      * useFileTree only builds the model once, from the initial props - it never

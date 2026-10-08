@@ -85,7 +85,9 @@ const DocumentFileTree = observer((props: Props) => {
                     </div>
                     <div className={styles.selectedFile}>
                         <DocumentView rootDirId={dir.id} />
-                        <small className={styles.filePath}>{selectedFile?.filePath}</small>
+                        <small className={clsx(styles.filePath, isCollapsed && styles.collapsed)}>
+                            {selectedFile?.filePath}
+                        </small>
                     </div>
                 </div>
             </WithFileTreeModel>

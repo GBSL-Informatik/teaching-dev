@@ -78,10 +78,16 @@
         left: 0;
         font-family: var(--ifm-font-family-monospace);
         font-style: italic;
+        &.collapsed {
+            bottom: -1.4em;
+        }
     }
     &.standalone {
         .filePath {
             bottom: -2em;
+            &.collapsed {
+                bottom: -3.5em;
+            }
         }
     }
 
