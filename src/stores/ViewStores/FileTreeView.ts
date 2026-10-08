@@ -36,11 +36,14 @@ export class FileTreeView {
     );
 
     @action
-    addNotification(message: Omit<FileTreeNotification, 'id'>) {
+    addNotification(message: Omit<FileTreeNotification, 'id'>, keepExisting = false) {
         const notification: FileTreeNotification = {
             id: crypto.randomUUID(),
             ...message
         };
+        if (!keepExisting) {
+            this.clearNotifications(message.rootId);
+        }
         this.notifications.push(notification);
         return notification;
     }

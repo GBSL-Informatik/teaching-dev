@@ -49,7 +49,7 @@ const WithFileTreeModel = observer((props: Props) => {
             icons: createIconSet(documentStore),
             renaming: {
                 canRename: (item) => item.path !== '',
-                onRename: onRename(dir, fileTreeView),
+                onRename: onRename(dir, fileTreeView, () => modelRef.current),
                 onError: (message) => {
                     fileTreeView.addNotification({
                         rootId: dir.id,
