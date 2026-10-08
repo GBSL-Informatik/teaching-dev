@@ -15,11 +15,13 @@ interface Props extends MetaInit {
     standalone?: boolean;
 }
 
+const importStatement = () => import('@tdev-components/documents/FileSystem/DocumentFileTree');
+
 const FileSystem = observer((props: Props) => {
     const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
     const doc = useFirstRealMainDocument(props.id, meta);
     const Lib = useClientLib<typeof DocumentFileTreeLib>(
-        () => import('@tdev-components/documents/FileSystem/DocumentFileTree'),
+        importStatement,
         '@tdev-components/documents/FileSystem/DocumentFileTree'
     );
     if (!doc || !Lib) {

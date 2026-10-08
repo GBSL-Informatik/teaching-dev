@@ -109,7 +109,7 @@ const ContextMenu = observer((props: Props) => {
                             icon={mdiRename}
                             iconSide="left"
                             size={SIZE_S}
-                            disabled={pending}
+                            disabled={pending || item.path === ''}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -125,7 +125,7 @@ const ContextMenu = observer((props: Props) => {
                                 size={SIZE_S}
                                 color="blue"
                                 iconSide="left"
-                                disabled={pending}
+                                disabled={pending || item.path === ''}
                             />
                         )}
                         <Confirm
@@ -135,7 +135,7 @@ const ContextMenu = observer((props: Props) => {
                             color="red"
                             iconSide="left"
                             size={SIZE_S}
-                            disabled={pending}
+                            disabled={pending || item.path === ''}
                             onConfirm={async () => {
                                 if (file) {
                                     setPending(true);

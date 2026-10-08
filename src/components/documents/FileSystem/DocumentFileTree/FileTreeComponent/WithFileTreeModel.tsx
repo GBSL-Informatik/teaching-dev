@@ -5,7 +5,6 @@ import {
     preparePresortedFileTreeInput
 } from '@pierre/trees';
 import { useFileTree } from '@pierre/trees/react';
-import Alert from '@tdev-components/shared/Alert';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
@@ -27,14 +26,17 @@ const WithFileTreeModel = observer((props: Props) => {
 
     const modelRef = React.useRef<FileTreeModel | null>(null);
     const dropPending = React.useRef(false);
-    const [mutationError, setMutationError] = React.useState<string | null>(null);
     const treeOptions = React.useMemo((): FileTreeOptions => {
         const persistDrop = onDropComplete(documentStore, dir, (succeeded) => {
             dropPending.current = false;
             if (modelRef.current) {
                 syncFileTree(modelRef.current, dir);
                 if (!succeeded) {
-                    setMutationError('Nicht alle Dateien konnten verschoben werden.');
+                    fileTreeView.addNotification({
+                        rootId: dir.id,
+                        type: 'warning',
+                        message: 'Nicht alle Dateien konnten verschoben werden.'
+                    });
                 }
             }
         });
@@ -46,10 +48,14 @@ const WithFileTreeModel = observer((props: Props) => {
                 .map((d) => d.filePath),
             icons: createIconSet(documentStore),
             renaming: {
-                canRename: () => true,
-                onRename: onRename(dir),
+                canRename: (item) => item.path !== '',
+                onRename: onRename(dir, fileTreeView),
                 onError: (message) => {
-                    console.error(message);
+                    fileTreeView.addNotification({
+                        rootId: dir.id,
+                        type: 'danger',
+                        message
+                    });
                 }
             },
             unsafeCSS: `[data-file-tree-search-container][data-open='false'] { display: none; }`,
@@ -58,11 +64,15 @@ const WithFileTreeModel = observer((props: Props) => {
                 canDrop: () => !dropPending.current,
                 onDropComplete: (event) => {
                     dropPending.current = true;
-                    setMutationError(null);
+                    fileTreeView.clearNotifications(dir.id);
                     return persistDrop(event);
                 },
                 onDropError: (message) => {
-                    console.error(message);
+                    fileTreeView.addNotification({
+                        rootId: dir.id,
+                        type: 'danger',
+                        message
+                    });
                 }
             },
             composition: {
@@ -157,11 +167,6 @@ const WithFileTreeModel = observer((props: Props) => {
         syncFileTree(model, dir);
     }, [model, dir, dir.fileTree]);
 
-    return (
-        <FileTreeContext.Provider value={model}>
-            {mutationError && <Alert type="danger">{mutationError}</Alert>}
-            {props.children}
-        </FileTreeContext.Provider>
-    );
+    return <FileTreeContext.Provider value={model}>{props.children}</FileTreeContext.Provider>;
 });
 export default WithFileTreeModel;

@@ -3,6 +3,7 @@ import { useFileTreeSearch } from '@pierre/trees/react';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
+import { useStore } from '@tdev-hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import { useFileTreeModel } from '../../hooks/useFileTreeModel';
 import { getFocusedDirectory } from '../actions/getFocusedDirectory';
@@ -17,6 +18,7 @@ interface Props {
 const Header = observer((props: Props) => {
     const model = useFileTreeModel();
     const root = useDocument<'dir'>();
+    const { fileTreeView } = useStore('viewStore');
     const search = useFileTreeSearch(model);
 
     return (
@@ -53,6 +55,11 @@ const Header = observer((props: Props) => {
                 onClick={async () => {
                     const dir = getFocusedDirectory(model, root);
                     if (!dir) {
+                        fileTreeView.addNotification({
+                            rootId: root.id,
+                            type: 'warning',
+                            message: 'Kein Ordner ausgewählt, in dem ein neuer Ordner erstellt werden kann.'
+                        });
                         return;
                     }
                     const newDir = await dir.createDir();

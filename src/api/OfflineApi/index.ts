@@ -1,6 +1,7 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { DB_NAME } from '@tdev-api/config';
 import { AxiosPromise } from 'axios';
+import { orderBy } from 'es-toolkit/array';
 import { v4 as uuidv4 } from 'uuid';
 import { Access, Document, DocumentType } from '../document';
 import { DocumentRoot } from '../documentRoot';
@@ -12,7 +13,7 @@ import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = false;
+const LOG_REQUESTS = true;
 
 export const DEFAULT_OFFLINE_USER: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -150,7 +151,9 @@ export default class OfflineApi {
         if (uniqueMain) {
             const savedDocuments = await this.documentsBy<T>(data.documentRootId);
             if (savedDocuments.length > 0) {
-                const firstByType = savedDocuments.find((doc) => doc.type === data.type);
+                const firstByType = orderBy(savedDocuments, ['createdAt'], ['asc']).find(
+                    (doc) => doc.type === data.type
+                );
                 if (firstByType) {
                     return firstByType;
                 }

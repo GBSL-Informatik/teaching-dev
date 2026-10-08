@@ -1,6 +1,7 @@
 import { mdiDragVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import DocumentContext from '@tdev-components/documents/DocumentContext';
+import Alert from '@tdev-components/shared/Alert';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
@@ -29,10 +30,24 @@ const DocumentFileTree = observer((props: Props) => {
     const isMobileExpanded = fileTreeView.isMobileFileTreeExpanded(dir.id);
     const treeId = React.useId();
     const { containerRef, width, isCollapsed, isDragging, separatorProps } = useFileTreeResize(dir.id);
+    const notifications = fileTreeView.notificationsBy(dir.id);
 
     return (
         <DocumentContext document={dir}>
             <WithFileTreeModel key={dir.localObjectId}>
+                {notifications.length > 0 && (
+                    <div className={styles.notifications}>
+                        {notifications.map((n) => (
+                            <Alert
+                                key={n.id}
+                                type={n.type}
+                                onDiscard={() => fileTreeView.dismissNotification(n.id)}
+                            >
+                                {n.message}
+                            </Alert>
+                        ))}
+                    </div>
+                )}
                 <div
                     ref={containerRef}
                     className={clsx(
