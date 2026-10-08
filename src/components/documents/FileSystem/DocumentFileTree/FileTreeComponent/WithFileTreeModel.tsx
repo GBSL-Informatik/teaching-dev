@@ -23,7 +23,8 @@ interface Props {
 const WithFileTreeModel = observer((props: Props) => {
     const dir = useDocument<'dir'>();
     const documentStore = useStore('documentStore');
-    const viewStore = useStore('viewStore');
+    const { fileTreeView } = useStore('viewStore');
+
     const modelRef = React.useRef<FileTreeModel | null>(null);
     const dropPending = React.useRef(false);
     const [mutationError, setMutationError] = React.useState<string | null>(null);
@@ -76,12 +77,18 @@ const WithFileTreeModel = observer((props: Props) => {
                     return null;
                 }
                 const selected = dir.selectedFiles.map((f) => f.filePath);
-                const displayed = viewStore.getSelectedFile(dir.id);
+                const displayed = fileTreeView.getSelectedFile(dir.id);
                 if (displayed && !selected.some((s) => s === displayed.filePath)) {
                     selected.push(displayed.filePath);
                 }
-                if (item.path && selected.some((p) => p.startsWith(item.path))) {
-                    return { icon: `active-${item.kind}` };
+                if (item.kind === 'directory') {
+                    if (selected.some((p) => p && p.startsWith(item.path))) {
+                        return { icon: 'active-directory' };
+                    }
+                } else if (item.kind === 'file') {
+                    if (selected.some((p) => p === item.path)) {
+                        return { icon: 'active-file' };
+                    }
                 }
                 return null;
             },
@@ -91,18 +98,18 @@ const WithFileTreeModel = observer((props: Props) => {
                 const selected = dir.allItems.filter((d) => selectedPaths.includes(d.filePath));
 
                 if (selected.length === 1) {
-                    const currentSelected = viewStore.getSelectedFile(dir.id);
+                    const currentSelected = fileTreeView.getSelectedFile(dir.id);
                     if (currentSelected?.isOpen) {
                         currentSelected.setIsOpen(false);
                     }
                     selected[0].setIsOpen(true);
                     if (selected[0].type === 'file') {
-                        viewStore.setSelectedFile(dir.id, selected[0].id);
+                        fileTreeView.setSelectedFile(dir.id, selected[0].id);
                     }
                 }
             }
         };
-    }, [dir, documentStore, viewStore]);
+    }, [dir, documentStore, fileTreeView]);
     const { model } = useFileTree(treeOptions);
 
     React.useEffect(() => {
@@ -113,15 +120,15 @@ const WithFileTreeModel = observer((props: Props) => {
     }, [model]);
 
     React.useEffect(() => {
-        const currentSelected = viewStore.getSelectedFile(dir.id);
+        const currentSelected = fileTreeView.getSelectedFile(dir.id);
         if (currentSelected) {
             return;
         }
         const selected = dir.selectedFiles.map((f) => f.filePath);
         if (selected.length > 0) {
-            viewStore.setSelectedFile(dir.id, dir.selectedFiles[0].id);
+            fileTreeView.setSelectedFile(dir.id, dir.selectedFiles[0].id);
         }
-    }, [dir, viewStore]);
+    }, [dir, fileTreeView]);
 
     React.useEffect(() => {
         const disposer = model.subscribe(() => {

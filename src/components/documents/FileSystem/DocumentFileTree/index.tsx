@@ -24,9 +24,9 @@ interface Props {
 
 const DocumentFileTree = observer((props: Props) => {
     const { dir } = props;
-    const viewStore = useStore('viewStore');
-    const selectedFile = viewStore.getSelectedFile(dir.id);
-    const isMobileExpanded = viewStore.isMobileFileTreeExpanded(dir.id);
+    const { fileTreeView } = useStore('viewStore');
+    const selectedFile = fileTreeView.getSelectedFile(dir.id);
+    const isMobileExpanded = fileTreeView.isMobileFileTreeExpanded(dir.id);
     const treeId = React.useId();
     const { containerRef, width, isCollapsed, isDragging, separatorProps } = useFileTreeResize(dir.id);
 
@@ -57,7 +57,7 @@ const DocumentFileTree = observer((props: Props) => {
                             className={clsx(styles.tree, isCollapsed && styles.desktopCollapsed)}
                             name={props.name}
                             height="var(--file-tree-height)"
-                            onFileClick={() => viewStore.setMobileFileTreeExpanded(dir.id, false)}
+                            onFileClick={() => fileTreeView.setMobileFileTreeExpanded(dir.id, false)}
                         />
                     </div>
                     <div {...separatorProps} className={clsx(styles.divider, isDragging && styles.dragging)}>

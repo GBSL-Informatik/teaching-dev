@@ -17,8 +17,8 @@ type Props =
 
 const DocumentView = observer((props: Props) => {
     const componentStore = useStore('componentStore');
-    const viewStore = useStore('viewStore');
-    const file = props.file ?? viewStore.getSelectedFile(props.rootDirId);
+    const { fileTreeView } = useStore('viewStore');
+    const file = props.file ?? fileTreeView.getSelectedFile(props.rootDirId);
     if (!file || !file.document) {
         return null;
     }

@@ -14,9 +14,9 @@ interface Props {
 
 const MobileHeader = observer((props: Props) => {
     const dir = useDocument<'dir'>();
-    const viewStore = useStore('viewStore');
-    const selectedFile = viewStore.getSelectedFile(dir.id);
-    const isExpanded = viewStore.isMobileFileTreeExpanded(dir.id);
+    const { fileTreeView } = useStore('viewStore');
+    const selectedFile = fileTreeView.getSelectedFile(dir.id);
+    const isExpanded = fileTreeView.isMobileFileTreeExpanded(dir.id);
 
     return (
         <button
@@ -25,7 +25,7 @@ const MobileHeader = observer((props: Props) => {
             aria-expanded={isExpanded}
             aria-controls={props.treeId}
             title={selectedFile?.filePath}
-            onClick={() => viewStore.setMobileFileTreeExpanded(dir.id, !isExpanded)}
+            onClick={() => fileTreeView.setMobileFileTreeExpanded(dir.id, !isExpanded)}
         >
             <Icon path={mdiFolderOpenOutline} size={SIZE_S} />
             <span className={styles.mobileHeaderLabel}>

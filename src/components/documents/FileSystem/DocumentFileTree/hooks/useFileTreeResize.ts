@@ -1,5 +1,5 @@
 import { useStore } from '@tdev-hooks/useStore';
-import { FILE_TREE_DEFAULT_WIDTH, FILE_TREE_MIN_WIDTH } from '@tdev-stores/ViewStores';
+import { FILE_TREE_DEFAULT_WIDTH, FILE_TREE_MIN_WIDTH } from '@tdev-stores/ViewStores/FileTreeView';
 import React from 'react';
 
 const DIVIDER_WIDTH = 16;
@@ -7,8 +7,8 @@ const MIN_DOCUMENT_WIDTH = 200;
 const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
 
 export const useFileTreeResize = (rootId: string) => {
-    const viewStore = useStore('viewStore');
-    const width = viewStore.getFileTreeWidth(rootId);
+    const { fileTreeView } = useStore('viewStore');
+    const width = fileTreeView.getFileTreeWidth(rootId);
     const isCollapsed = width === 0;
     const containerRef = React.useRef<HTMLDivElement>(null);
     const dragRef = React.useRef<{ pointerId: number; startX: number; startWidth: number } | null>(null);
@@ -16,7 +16,7 @@ export const useFileTreeResize = (rootId: string) => {
 
     const maxWidth = () =>
         Math.max(0, (containerRef.current?.clientWidth ?? 0) - DIVIDER_WIDTH - MIN_DOCUMENT_WIDTH);
-    const resize = (nextWidth: number) => viewStore.setFileTreeWidth(rootId, nextWidth, maxWidth());
+    const resize = (nextWidth: number) => fileTreeView.setFileTreeWidth(rootId, nextWidth, maxWidth());
     const toggle = () => resize(isCollapsed ? FILE_TREE_DEFAULT_WIDTH : 0);
     const endDrag = () => {
         dragRef.current = null;
@@ -32,7 +32,7 @@ export const useFileTreeResize = (rootId: string) => {
         const clampDesktopWidth = () => {
             // Hidden containers have no usable width yet.
             if (!mobileQuery.matches && container.clientWidth > 0) {
-                viewStore.setFileTreeWidth(rootId, viewStore.getFileTreeWidth(rootId), maxWidth());
+                fileTreeView.setFileTreeWidth(rootId, fileTreeView.getFileTreeWidth(rootId), maxWidth());
             }
         };
         const handleLayoutChange = () => {
@@ -46,7 +46,7 @@ export const useFileTreeResize = (rootId: string) => {
             resizeObserver.disconnect();
             mobileQuery.removeEventListener('change', handleLayoutChange);
         };
-    }, [rootId, viewStore]);
+    }, [rootId, fileTreeView]);
 
     const separatorProps: React.HTMLAttributes<HTMLDivElement> = {
         role: 'separator',
@@ -56,7 +56,7 @@ export const useFileTreeResize = (rootId: string) => {
         'aria-valuenow': width,
         'aria-valuetext': isCollapsed ? 'Eingeklappt' : `${Math.round(width)} Pixel`,
         tabIndex: 0,
-        title: 'Ziehen zum Vergrößern oder Verkleinern; Doppelklick zum Ein- oder Ausklappen',
+        title: 'Ziehen zum Vergrössern oder Verkleinern; Doppelklick zum Ein- oder Ausklappen',
         onPointerDown: (event) => {
             if (event.button !== 0) {
                 return;

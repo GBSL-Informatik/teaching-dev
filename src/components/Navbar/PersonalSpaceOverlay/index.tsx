@@ -77,7 +77,7 @@ const PersonalSpaceOverlay = observer(() => {
                         </div>
                     }
                 >
-                    <FileSystem id={PERSONAL_SPACE_DOC_ROOT_ID} name="Persönlicher Bereich" standalone />
+                    <FileSystem id={PERSONAL_SPACE_DOC_ROOT_ID} name="Ablage" standalone />
                 </Card>
             </div>
         </Popup>
