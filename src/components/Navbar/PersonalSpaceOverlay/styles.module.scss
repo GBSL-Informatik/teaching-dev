@@ -5,12 +5,30 @@
     align-items: center;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
+    --tdev-personal-space-max-content-height: 95dvh;
+    --tdev-personal-space-max-content-width: 80vw;
 
     .content {
-        border-radius: var(--ifm-global-radius);
-        overflow: auto;
-        width: 80vw;
-        height: 80vh;
+        width: var(--tdev-personal-space-max-content-width, 80vw);
+        max-width: 1450px;
+        height: 95vh;
+        height: var(--tdev-personal-space-max-content-height, 95dvh);
+        --ifm-card-vertical-spacing: 0.25rem;
+        .body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+        }
+        .header {
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            h3 {
+                margin: 0;
+            }
+        }
     }
 }
 
@@ -26,10 +44,26 @@
     }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 1700px) {
     .personalSpaceOverlay {
         .content {
-            width: 98vw;
+            --tdev-personal-space-max-content-width: 90vw;
+        }
+    }
+}
+
+@media screen and (max-width: 1440px) {
+    .personalSpaceOverlay {
+        .content {
+            --tdev-personal-space-max-content-width: 95vw;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .personalSpaceOverlay {
+        .content {
+            --tdev-personal-space-max-content-width: 98vw;
         }
     }
 }

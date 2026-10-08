@@ -3,12 +3,19 @@ page_id: 3139de4d-8bd6-4bed-978e-a342519d7c52
 ---
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
+import FileSystem from '@tdev-components/documents/FileSystem';
 import Directory from '@tdev-components/documents/FileSystem/Directory';
 
 # Dateien und Ordner
 
 <CodeShowcase imports={[`import Directory from '@tdev-components/documents/FileSystem/Directory';`]}>
-    <Directory name="Ordner" id="1e79cf9a-b890-4d9e-a5fe-e4b372e233c6"/>
+    <Directory name="Ordner" id="f7cd8c52-06db-429f-8956-542ab180a35a"/>
+</CodeShowcase>
+
+oder
+
+<CodeShowcase imports={[`import DocumentFileTree from '@tdev-components/documents/FileSystem';`]}>
+    <FileSystem name="Ordner" height="200px" id="2647802c-71c1-4b6c-b662-e633778af63f"/>
 </CodeShowcase>
 
 ## Installation

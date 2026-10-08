@@ -17,6 +17,7 @@ export enum Source {
     API = 'api'
 }
 abstract class iDocument<Type extends DocumentType> {
+    readonly localObjectId: string;
     readonly store: DocumentStore;
     readonly id: string;
     readonly authorId: string;
@@ -36,6 +37,7 @@ abstract class iDocument<Type extends DocumentType> {
      * Edits    :    |||  |            |||   ||  |  |     ||  ||||  |||    ||  ||| |||||
      */
     saveFn: DebouncedFunc<typeof iDocument.prototype._save>;
+    private isSavePending: boolean = false;
 
     @observable accessor state: ApiState = ApiState.IDLE;
 
@@ -48,6 +50,7 @@ abstract class iDocument<Type extends DocumentType> {
         store: DocumentStore,
         saveDebounceTime: number = SAVE_DEBOUNCE_TIME
     ) {
+        this.localObjectId = crypto.randomUUID();
         this.store = store;
         this.id = props.id;
         this.authorId = props.authorId;
@@ -229,13 +232,14 @@ abstract class iDocument<Type extends DocumentType> {
         this.stateDisposer();
         if (deep) {
             this.children.forEach((c) => {
-                this.store.removeFromStore(c);
+                this.store.removeFromStore(c, true);
             });
         }
     }
 
     @action
     save(skipStreamUpdate: boolean = false, onBeforeSave?: (() => Promise<void>) | undefined) {
+        this.isSavePending = true;
         const res = this.saveFn(onBeforeSave);
         if (!skipStreamUpdate) {
             this.streamUpdate();
@@ -259,12 +263,15 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     saveNow() {
-        this.save();
+        if (!this.isSavePending) {
+            this.save();
+        }
         return this.saveFn.flush() ?? Promise.resolve();
     }
 
     @action
     _save(onBeforeSave: () => Promise<void> = () => Promise.resolve()) {
+        this.isSavePending = false;
         /**
          * call the api to save the code...
          */

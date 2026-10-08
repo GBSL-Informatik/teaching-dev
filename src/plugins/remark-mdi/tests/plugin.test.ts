@@ -32,7 +32,8 @@ Some content
         # Details element example
 
         Hello <Icon path={mdiRobot} size={1.5} className="mdi-icon" /> world!
-        "`);
+        "
+        `);
     });
 
     it('can convert mdi with props', async () => {
@@ -48,7 +49,8 @@ Some content
         # Details element example
 
         Hello <Icon path={mdiRobot} color="teal" size="20em" className="mdi-icon" /> world!
-        "`);
+        "
+        `);
     });
 
     it('does not reimport modules', async () => {
@@ -65,7 +67,8 @@ Some content
         # Details element example
 
         Hello <Icon path={mdiRobot} size={1.5} className="mdi-icon" /> world!
-        "`);
+        "
+        `);
     });
 
     it('handels numbers correct', async () => {

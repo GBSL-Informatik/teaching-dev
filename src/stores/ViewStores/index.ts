@@ -1,7 +1,8 @@
 import { ViewStore as ViewStores, ViewStoreType, ViewStoreTypeMapping } from '@tdev-api/document';
-import { RootStore } from '@tdev-stores/rootStore';
+import type { RootStore } from '@tdev-stores/rootStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import { AdminView } from './AdminView';
+import { FileTreeView } from './FileTreeView';
 import { PermissionsControlView } from './PermissionsControlView';
 
 export interface ViewStoreProps<T extends ViewStoreType = ViewStoreType> {
@@ -13,6 +14,8 @@ export default class ViewStore {
     stores = new Map<ViewStoreType, ViewStores>();
     @observableRef accessor permissionControl: PermissionsControlView = null as any;
     @observableRef accessor adminView: AdminView = null as any;
+    @observableRef accessor fileTreeView: FileTreeView = null as any;
+
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
     @observable accessor _presentationPanelState: null | 'open' | 'closed' = null;
@@ -22,6 +25,14 @@ export default class ViewStore {
         this.root = store;
         this.permissionControl = new PermissionsControlView(store);
         this.adminView = new AdminView(store);
+        this.fileTreeView = new FileTreeView(store);
+    }
+
+    @action
+    cleanup() {
+        this.permissionControl = new PermissionsControlView(this.root);
+        this.adminView = new AdminView(this.root);
+        this.fileTreeView.cleanup();
     }
 
     @action

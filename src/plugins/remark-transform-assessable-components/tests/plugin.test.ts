@@ -334,9 +334,7 @@ describe('#standalone question', () => {
           "# Heading
 
           <ChoiceAnswer id="96df6c5b-2750-4269-bc97-cd49c2f0911d" correct={[5]} optionsCount={5}>
-            
-              > In welchem Jahr war 2024?
-            
+            > In welchem Jahr war 2024?
 
             <ChoiceAnswer.Options>
               <ChoiceAnswer.Option optionIndex={0}>
@@ -383,9 +381,7 @@ describe('#standalone question', () => {
           "# Heading
 
           <ChoiceAnswer id="96df6c5b-2750-4269-bc97-cd49c2f0911d" correct={[5]} optionsCount={5}>
-            
-              > In welchem Jahr war 2024?
-            
+            > In welchem Jahr war 2024?
 
             <ChoiceAnswer.Options>
               <ChoiceAnswer.Option optionIndex={0}>
@@ -409,7 +405,7 @@ describe('#standalone question', () => {
               </ChoiceAnswer.Option>
             </ChoiceAnswer.Options>
 
-              Überlege es dir gut, bevor du antwortest!
+            Überlege es dir gut, bevor du antwortest!
           </ChoiceAnswer>
           "
         `);

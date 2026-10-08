@@ -1,11 +1,13 @@
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import useIsBrowser from '@docusaurus/useIsBrowser';
+import { CodeType } from '@tdev-api/document';
 import BrowserWindow from '@tdev-components/BrowserWindow';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import Button from '@tdev-components/shared/Button';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { CodeMeta } from '@tdev-models/documents/Code';
+import iCode from '@tdev-models/documents/iCode';
 import { MetaProps } from '@tdev/theme/CodeBlock';
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
@@ -31,7 +33,6 @@ export interface Props extends Omit<Partial<MetaProps>, 'live_jsx' | 'live_py' |
 
 const HtmlEditor = observer((props: Props) => {
     const id = props.slim ? undefined : props.id;
-    const userStore = useStore('userStore');
     const meta = React.useMemo(
         () =>
             new CodeMeta({
@@ -47,10 +48,34 @@ const HtmlEditor = observer((props: Props) => {
     if (!isBrowser || !doc) {
         return <CodeBlock language="html">{props.code}</CodeBlock>;
     }
-    if (!doc.canDisplay && props.id && !userStore.isUserSwitched) {
+
+    return (
+        <HtmlEditorComponent
+            doc={doc}
+            maxHeight={props.maxHeight}
+            minHeight={props.minHeight}
+            showLineNumbers={props.showLineNumbers}
+            htmlTransformer={props.htmlTransformer}
+            onNavigate={props.onNavigate}
+            allowSameOrigin={props.allowSameOrigin}
+        />
+    );
+});
+
+interface ComponentProps<T extends CodeType> extends Pick<
+    Props,
+    'maxHeight' | 'minHeight' | 'showLineNumbers' | 'htmlTransformer' | 'onNavigate' | 'allowSameOrigin'
+> {
+    doc: iCode<T>;
+}
+
+export const HtmlEditorComponent = observer(<T extends CodeType>(props: ComponentProps<T>) => {
+    const { doc } = props;
+    const userStore = useStore('userStore');
+    if (!doc.canDisplay && !userStore.isUserSwitched) {
         return (
             <div>
-                <PermissionsPanel documentRootId={props.id} />
+                <PermissionsPanel documentRootId={doc.documentRootId} />
             </div>
         );
     }

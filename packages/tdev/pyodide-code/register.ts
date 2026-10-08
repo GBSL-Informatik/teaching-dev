@@ -1,6 +1,8 @@
+import { mdiLanguagePython } from '@mdi/js';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
+import DocumentView from './components/DocumentView';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import { ModelMeta } from './models/ModelMeta';
@@ -25,6 +27,16 @@ const register = () => {
             return undefined;
         }
     });
+    rootStore.documentStore.registerFileExtension('pyodide_code', {
+        name: 'Python',
+        description: 'Standard Python, ohne Turtle-Grafik',
+        extension: '.pyo',
+        priority: 5.5,
+        icon: mdiLanguagePython,
+        iconColor: 'light-dark(#3b87c5, #49a0e7)',
+        defaultData: { code: '' }
+    });
+    rootStore.componentStore.registerDocumentView('pyodide_code', DocumentView);
 };
 
 register();

@@ -1,6 +1,7 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { DB_NAME } from '@tdev-api/config';
 import { AxiosPromise } from 'axios';
+import { orderBy } from 'es-toolkit/array';
 import { v4 as uuidv4 } from 'uuid';
 import { Access, Document, DocumentType } from '../document';
 import { DocumentRoot } from '../documentRoot';
@@ -150,7 +151,9 @@ export default class OfflineApi {
         if (uniqueMain) {
             const savedDocuments = await this.documentsBy<T>(data.documentRootId);
             if (savedDocuments.length > 0) {
-                const firstByType = savedDocuments.find((doc) => doc.type === data.type);
+                const firstByType = orderBy(savedDocuments, ['createdAt'], ['asc']).find(
+                    (doc) => doc.type === data.type
+                );
                 if (firstByType) {
                     return firstByType;
                 }
@@ -405,7 +408,7 @@ export default class OfflineApi {
                     if (parts[0] === 'linkTo') {
                         document = {
                             ...document,
-                            documentRootId: parts[1],
+                            parentId: parts[1],
                             updatedAt: updatedAt
                         };
                     } else {
@@ -442,7 +445,38 @@ export default class OfflineApi {
 
         switch (model) {
             case 'documents':
+                const doc = await this.dbAdapter.get<Document<DocumentType>>(DOCUMENTS_STORE, id);
                 await this.dbAdapter.delete(DOCUMENTS_STORE, id);
+                if (doc && doc.documentRootId) {
+                    const toDelete = new Set<string>();
+
+                    const parentChildMap = new Map<string, string[]>();
+                    const docs = await this.dbAdapter
+                        .byDocumentRootId(doc.documentRootId)
+                        .then((docs) => docs.filter((d) => !!d.parentId));
+                    for (const d of docs) {
+                        const children = parentChildMap.get(d.parentId!);
+                        if (children) {
+                            children.push(d.id);
+                        } else {
+                            parentChildMap.set(d.parentId!, [d.id]);
+                        }
+                    }
+                    const pending = [id];
+                    while (pending.length > 0) {
+                        const currentId = pending.shift()!;
+                        for (const childId of parentChildMap.get(currentId) || []) {
+                            if (toDelete.has(childId)) {
+                                continue;
+                            }
+                            toDelete.add(childId);
+                            pending.push(childId);
+                        }
+                    }
+                    await Promise.all(
+                        [...toDelete].map((docId) => this.dbAdapter.delete(DOCUMENTS_STORE, docId))
+                    );
+                }
                 return resolveResponse(null);
             case 'documentRoots':
                 // Deleting a document root could involve deleting associated documents

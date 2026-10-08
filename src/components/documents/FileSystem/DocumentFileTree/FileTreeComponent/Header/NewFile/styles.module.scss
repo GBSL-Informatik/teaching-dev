@@ -1,0 +1,14 @@
+.popup {
+    --ifm-card-background-color: var(--ifm-color-secondary-lightest);
+    .newFile {
+        .select {
+            display: flex;
+            gap: 0.15rem;
+        }
+    }
+}
+[data-theme='dark'] {
+    .popup {
+        --ifm-card-background-color: var(--ifm-background-color);
+    }
+}

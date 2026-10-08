@@ -1,5 +1,4 @@
 import {
-    mdiFileCode,
     mdiFileDocument,
     mdiFolderOpenOutline,
     mdiFolderPlus,
@@ -37,14 +36,12 @@ const withFile = async (store: DocumentStore, rootId: string, parentId: string, 
     });
 };
 
-const SUPPORTED_EXTENSIONS = ['.py', '.svg', '.html', '.pbm', '.pgm', '.ppm'];
-
 const asCodeName = (name?: string) => {
     if (!name) {
         return 'programm.py';
     }
     const extension = name.split('.').pop();
-    if (SUPPORTED_EXTENSIONS.includes(`.${extension}`)) {
+    if (extension?.toLowerCase() === 'py') {
         return name;
     }
     return `${name}.py`;
@@ -83,10 +80,10 @@ const NewItem = observer((props: Props) => {
                 <div className={clsx('card__body', styles.body)}>
                     <TextInput onChange={setName} placeholder="Name" />
                     <Button
-                        text={isPyScript ? 'Neues Python Snippet' : 'Neues Snippet'}
+                        text={'Neues Python Snippet'}
                         color="rgb(19, 165, 0)"
                         size={0.8}
-                        icon={isPyScript ? mdiLanguagePython : mdiFileCode}
+                        icon={mdiLanguagePython}
                         iconSide="left"
                         onClick={async () => {
                             withFile(documentStore, rootId, directory.id, asCodeName(name))

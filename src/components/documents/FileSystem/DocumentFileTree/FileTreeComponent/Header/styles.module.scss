@@ -1,0 +1,11 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    .spacer {
+        flex: 1;
+    }
+    .name {
+        margin-bottom: 0.25em;
+    }
+}

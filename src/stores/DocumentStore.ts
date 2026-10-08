@@ -22,6 +22,7 @@ import Code from '@tdev-models/documents/Code';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import MdxComment from '@tdev-models/documents/MdxComment';
 import ProgressState from '@tdev-models/documents/ProgressState';
 import QuillV2 from '@tdev-models/documents/QuillV2';
@@ -39,6 +40,7 @@ import axios from 'axios';
 import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { v4 as uuidv4 } from 'uuid';
+import { DefaultExtensions, FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
 
 const IsNotUniqueError = (error: any) => {
@@ -111,10 +113,13 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['dynamic_document_roots', CreateDocumentModel]
 ];
 
-class DocumentStore extends iStore<`delete-${string}`> {
+class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
+    fileExtensions = new Map<DocumentType, FileConfig<DocumentType>[]>(
+        Object.entries(DefaultExtensions) as [DocumentType, FileConfig<DocumentType>[]][]
+    );
 
     constructor(root: RootStore) {
         super();
@@ -130,6 +135,19 @@ class DocumentStore extends iStore<`delete-${string}`> {
         },
         { keepAlive: true }
     );
+
+    registerFileExtension<T extends DocumentType>(type: T, config: FileConfig<T> | FileConfig<T>[]) {
+        const newConfig = (Array.isArray(config) ? config : [config]).map((c) => ({
+            ...c,
+            priority: c.priority ?? 10
+        }));
+        this.fileExtensions.set(type, newConfig);
+    }
+
+    @computed
+    get registeredFileExtensions() {
+        return Array.from(this.fileExtensions.values()).flat();
+    }
 
     registerFactory(type: DocumentType, factory: Factory) {
         this.factories.set(type, factory);
@@ -439,33 +457,47 @@ class DocumentStore extends iStore<`delete-${string}`> {
     }
 
     @action
-    apiDelete(document: DocumentModelType | iDocument<any>) {
+    apiDelete(document: DocumentModelType | iDocument<any>): Promise<boolean> {
         if (document.authorId !== this.root.userStore.current?.id) {
-            return;
+            return Promise.resolve(false);
         }
+        let signal: AbortSignal;
         return this.withAbortController(`delete-${document.id}`, (sig) => {
+            signal = sig.signal;
             return apiDelete(document.id, sig.signal);
         })
             .then(({ data }) => {
-                this.removeFromStore(document);
+                if (signal.aborted) {
+                    return false;
+                }
+                this.removeFromStore(document, true);
+                return true;
             })
             .catch((err) => {
                 console.warn('Error deleting document', err);
-                this.removeFromStore(document);
+                return false;
             });
     }
 
     @action
-    relinkParent(document: DocumentModelType, newParent: DocumentModelType) {
-        return this.withAbortController(`save-${document.id}`, (sig) => {
+    relinkParent(
+        document: DocumentModelType | iFileSystem,
+        newParent: DocumentModelType | iFileSystem
+    ): Promise<boolean> {
+        let signal: AbortSignal;
+        return this.withAbortController(`move-${document.id}`, (sig) => {
+            signal = sig.signal;
             return apiLinkTo(document.id, newParent.id, sig.signal);
         })
             .then((res) => {
-                this.addToStore(res.data);
+                if (signal.aborted || !res.data || res.data.parentId !== newParent.id) {
+                    return false;
+                }
+                return !!this.addToStore(res.data);
             })
             .catch((err) => {
                 console.warn('Relinking not possible', err);
-                document.reset();
+                return false;
             });
     }
 }

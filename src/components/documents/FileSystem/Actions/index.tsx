@@ -1,8 +1,6 @@
 import {
     mdiClose,
     mdiDotsHorizontalCircleOutline,
-    mdiFileMove,
-    mdiFolderMove,
     mdiRenameOutline,
     mdiTrashCan,
     mdiTrashCanOutline
@@ -10,15 +8,16 @@ import {
 import Button from '@tdev-components/shared/Button';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
-import MoveItem from './MoveItem';
+import MoveItemPopup from './MoveItem/MoveItemPopup';
 import styles from './styles.module.scss';
 
 interface Props {
-    item: File | Directory;
+    item: iFileSystem | Directory | File;
 }
 
 const Actions = observer((props: Props) => {
@@ -88,23 +87,7 @@ const Actions = observer((props: Props) => {
                                 />
                             </div>
                             <div className={clsx(styles.move)}>
-                                <Popup
-                                    trigger={
-                                        <span>
-                                            <Button
-                                                text="Verschieben"
-                                                color="blue"
-                                                icon={item.type === 'dir' ? mdiFolderMove : mdiFileMove}
-                                                size={1}
-                                            />
-                                        </span>
-                                    }
-                                    modal
-                                    overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
-                                    on="click"
-                                >
-                                    <MoveItem item={item} />
-                                </Popup>
+                                <MoveItemPopup item={item} />
                             </div>
                         </div>
                     </div>

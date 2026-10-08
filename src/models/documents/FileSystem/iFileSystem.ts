@@ -4,6 +4,7 @@ import { formatDateTime } from '@tdev-models/helpers/date';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
+import type Directory from './Directory';
 
 export interface MetaInit {
     readonly?: boolean;
@@ -12,7 +13,7 @@ export interface MetaInit {
 
 type SystemType = 'file' | 'dir';
 
-export const DefaultName = {
+export const DefaultName: Record<SystemType, string> = {
     ['file']: 'Dokument',
     ['dir']: 'Ordner'
 };
@@ -35,15 +36,32 @@ export class iFSMeta<T extends SystemType> extends TypeMeta<T> {
     }
 }
 
-abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
-    @observable accessor name: string;
+abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<T> {
+    @observable accessor _name: string;
     @observable accessor isOpen: boolean = true;
     @observable accessor isEditing: boolean = false;
 
     constructor(props: DocumentProps<T>, store: DocumentStore) {
         super(props, store);
-        this.name = props.data?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
+        this._name = props.data?.name || `${DefaultName[this.type]} ${formatDateTime(new Date())}`;
         this.isOpen = props.data?.isOpen ?? true;
+    }
+
+    @computed
+    get name(): string {
+        if (!this.isUniqueName) {
+            return `${this._name}:${this.id.slice(0, 8)}`;
+        }
+        return this._name;
+    }
+
+    @computed
+    get isUniqueName(): boolean {
+        if (!this.parent) {
+            return true;
+        }
+        const siblings = this.parent.children.filter((c) => c.id !== this.id && c.type === this.type);
+        return !siblings.some((s) => (s as iFileSystem)._name === this._name);
     }
 
     @action
@@ -53,7 +71,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
         updatedAt?: Date
     ): void {
         if (data.name !== undefined) {
-            this.name = data.name;
+            this._name = data.name;
         }
         if (data.isOpen !== undefined) {
             this.isOpen = data.isOpen;
@@ -68,7 +86,7 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
 
     get data(): TypeDataMapping[T] {
         return {
-            name: this.name,
+            name: this._name,
             isOpen: this.isOpen
         };
     }
@@ -76,7 +94,41 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
     abstract get meta(): iFSMeta<T>;
 
     @computed
-    get path() {
+    get filePath(): string {
+        if (!this.parentId) {
+            if (this.type === 'dir') {
+                return '';
+            }
+            return this.name;
+        }
+        const name = this.type === 'dir' ? `${this.name}/` : this.name;
+        if (this.parent?.type !== 'dir') {
+            return name;
+        }
+        return `${this.parent.filePath}${name}`;
+    }
+
+    @computed
+    get rootDir(): Directory | undefined {
+        if (!this.parentId && this.type === 'dir') {
+            return this as unknown as Directory;
+        }
+        return this.path.filter((p) => p.type === 'dir')[0] as Directory | undefined;
+    }
+
+    @computed
+    get basePath(): string {
+        if (!this.parentId) {
+            return '';
+        }
+        if (this.parent?.type !== 'dir') {
+            return '';
+        }
+        return this.parent.filePath;
+    }
+
+    @computed
+    get path(): DocumentModelType[] {
         const path: DocumentModelType[] = [];
         let parent = this.parent;
         while (parent) {
@@ -103,6 +155,14 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
     @action
     setName(name: string) {
         this.setData({ name: name }, Source.LOCAL, new Date());
+        this.save(
+            false,
+            action(async () => {
+                const name = this._name.trim() || DefaultName[this.type];
+                this._name =
+                    this.parent?.type === 'dir' ? this.parent.getUniqueFileName(name, '', this.id) : name;
+            })
+        );
     }
 
     @action
@@ -110,5 +170,9 @@ abstract class iFileSystem<T extends SystemType> extends iDocument<T> {
         return this.store.apiDelete(this as unknown as DocumentModelType);
     }
 }
+
+export const isFileSystemType = (doc: iDocument<any>): doc is iFileSystem => {
+    return doc.type === 'file' || doc.type === 'dir';
+};
 
 export default iFileSystem;

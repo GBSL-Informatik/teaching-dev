@@ -2,6 +2,7 @@
 import AceEditor from 'react-ace';
 // rest
 import type { CodeType } from '@tdev-api/document';
+import PanVertically from '@tdev-components/shared/PanVertically';
 import useCodeTheme from '@tdev-hooks/useCodeTheme';
 import type iCode from '@tdev-models/documents/iCode';
 import 'ace-builds/esm-resolver';
@@ -14,7 +15,13 @@ import styles from './styles.module.scss';
 
 const ALIAS_LANG_MAP_ACE = {
     mpy: 'python',
-    py: 'python'
+    py: 'python',
+    pyo: 'python',
+    md: 'markdown',
+    js: 'javascript',
+    ts: 'typescript',
+    yml: 'yaml',
+    yaml: 'yaml'
 };
 
 export interface Overrides {
@@ -22,6 +29,8 @@ export interface Overrides {
     maxLines?: number;
     theme?: string;
     showLineNumbers?: boolean;
+    /** Show the vertical resize handle. Defaults to true. */
+    allowVerticalPan?: boolean;
     fontSize?: string | number;
 }
 
@@ -34,7 +43,33 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const eRef = React.useRef<AceEditor>(null);
     const isComposingRef = React.useRef(false);
+    const resizeRef = React.useRef<{
+        startLines: number;
+        lineHeight: number;
+    } | null>(null);
+    const [resizedLines, setResizedLines] = React.useState<number>();
+    const minLines = props.overrides?.minLines ?? code.meta.minLines;
+    const maxLines = props.overrides?.maxLines ?? code.meta.maxLines;
+    const allowVerticalPan = props.overrides?.allowVerticalPan ?? true;
     const { aceTheme } = useCodeTheme();
+    const codeLang =
+        ALIAS_LANG_MAP_ACE[code.derivedLang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.derivedLang;
+    const visibleLines = () => {
+        const renderer = eRef.current?.editor.renderer;
+        return (
+            resizedLines ??
+            (renderer?.lineHeight
+                ? Math.max(1, Math.round(renderer.scroller.clientHeight / renderer.lineHeight))
+                : (minLines ?? 1))
+        );
+    };
+    const endResize = () => {
+        resizeRef.current = null;
+    };
+    React.useEffect(() => {
+        setResizedLines(undefined);
+        endResize();
+    }, [code, minLines, maxLines, allowVerticalPan]);
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
@@ -48,7 +83,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
             };
             textInput?.addEventListener('compositionstart', onCompositionStart);
             textInput?.addEventListener('compositionend', onCompositionEnd);
-            if (code.lang === 'python') {
+            if (codeLang === 'python') {
                 node.editor.commands.addCommand({
                     // commands is array of key bindings.
                     name: 'execute',
@@ -83,9 +118,33 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     }, [eRef, code]);
 
     return (
-        <div className={clsx(styles.editor)}>
+        <PanVertically
+            className={clsx(styles.editor)}
+            enabled={allowVerticalPan}
+            onPanStart={() => {
+                const renderer = eRef.current?.editor.renderer;
+                if (!renderer?.lineHeight) {
+                    return false;
+                }
+                resizeRef.current = {
+                    startLines: visibleLines(),
+                    lineHeight: renderer.lineHeight
+                };
+            }}
+            onPan={(deltaY) => {
+                const resize = resizeRef.current;
+                if (resize) {
+                    setResizedLines(Math.max(1, resize.startLines + Math.round(deltaY / resize.lineHeight)));
+                }
+            }}
+            onPanEnd={endResize}
+            handleProps={{
+                title: 'Ziehen oder Pfeiltasten zum Vergrössern oder Verkleinern; Doppelklick zum Zurücksetzen',
+                onDoubleClick: () => setResizedLines(undefined)
+            }}
+        >
             <AceEditor
-                className={clsx(styles.brythonEditor, !code.meta.showLineNumbers && styles.noGutter)}
+                className={clsx(styles.aceEditor, !code.meta.showLineNumbers && styles.noGutter)}
                 style={{
                     width: '100%',
                     lineHeight: 'var(--ifm-pre-line-height)',
@@ -103,10 +162,10 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 }}
                 focus={false}
                 navigateToFileEnd={false}
-                minLines={props.overrides?.minLines ?? code.meta.minLines}
-                maxLines={props.overrides?.maxLines ?? code.meta.maxLines}
+                minLines={allowVerticalPan ? (resizedLines ?? minLines) : minLines}
+                maxLines={allowVerticalPan ? (resizedLines ?? maxLines) : maxLines}
                 ref={eRef}
-                mode={ALIAS_LANG_MAP_ACE[code.lang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.lang}
+                mode={codeLang}
                 theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     // Mobile/Touch Devices use IME and often emit transient remove deltas during composition.
@@ -129,7 +188,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 enableSnippets={false}
                 showGutter={props.overrides?.showLineNumbers ?? code.meta.showLineNumbers}
             />
-        </div>
+        </PanVertically>
     );
 });
 export default EditorAce;

@@ -249,7 +249,7 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
     ],
     persistedCodeType: (node: Code) => {
         if (node.lang === 'html') {
-            return 'script';
+            return 'code';
         }
         const liveLangMatch = /(live_[a-zA-Z0-9-_]+)/.exec(node.meta || '');
         const liveCode = liveLangMatch ? liveLangMatch[1] : null;
@@ -257,7 +257,7 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
         switch (liveCode) {
             case 'live_py':
             case 'live_bry':
-                // legacy name, TODO. should be 'brython_code'?
+                // TODO legacy name, should be 'brython_code'
                 return 'script';
             case 'live_pyo':
                 return 'pyodide_code';

@@ -38,7 +38,7 @@ const ExcalidocWithCodeEditor = observer((props: Props) => {
                     allowImageInsertion={false}
                     onEdit={setShowEditor}
                     libraryItems={undefined}
-                    documentId={doc.id}
+                    doc={doc}
                     onlyCommitValidChanges
                     zenMode={false}
                 />
