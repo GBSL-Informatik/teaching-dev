@@ -231,7 +231,7 @@ abstract class iDocument<Type extends DocumentType> {
         this.stateDisposer();
         if (deep) {
             this.children.forEach((c) => {
-                this.store.removeFromStore(c);
+                this.store.removeFromStore(c, true);
             });
         }
     }

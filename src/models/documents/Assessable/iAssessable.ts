@@ -335,7 +335,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
         if (user) {
             this.store.apiDelete(this);
         } else {
-            this.store.removeFromStore(this);
+            this.store.removeFromStore(this, true);
         }
     }
 }
