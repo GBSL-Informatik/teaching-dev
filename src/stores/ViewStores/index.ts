@@ -29,7 +29,11 @@ export default class ViewStore {
     }
 
     @action
-    cleanup() {}
+    cleanup() {
+        this.permissionControl = new PermissionsControlView(this.root);
+        this.adminView = new AdminView(this.root);
+        this.fileTreeView.cleanup();
+    }
 
     @action
     setIsPresentedEditorZoomed(zoomed: boolean) {

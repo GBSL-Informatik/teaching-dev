@@ -581,7 +581,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
                 if (signal.aborted) {
                     return false;
                 }
-                this.removeFromStore(document);
+                this.removeFromStore(document, true);
                 return true;
             })
             .catch((err) => {

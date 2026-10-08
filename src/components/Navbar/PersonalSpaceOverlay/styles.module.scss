@@ -10,7 +10,8 @@
     .content {
         width: 80vw;
         max-width: 1450px;
-        height: 80vh;
+        height: 95vh;
+        height: 95dvh;
         --ifm-card-vertical-spacing: 0.25rem;
         .body {
             flex: 1;
@@ -41,12 +42,26 @@
     }
 }
 
+@media screen and (max-width: 1700px) {
+    .personalSpaceOverlay {
+        .content {
+            width: 90vw;
+        }
+    }
+}
+
+@media screen and (max-width: 1440px) {
+    .personalSpaceOverlay {
+        .content {
+            width: 95vw;
+        }
+    }
+}
+
 @media screen and (max-width: 768px) {
     .personalSpaceOverlay {
         .content {
             width: 98vw;
-            height: 95vh;
-            height: 95dvh;
         }
     }
 }
