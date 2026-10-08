@@ -17,6 +17,7 @@
     max-width: 100vw;
     max-height: 100dvh;
     overflow: auto;
+    --ifm-card-background-color: var(--ifm-color-secondary-lightest);
     .menuHeader {
         display: flex;
         justify-content: flex-end;
@@ -29,5 +30,8 @@
 [data-theme='dark'] {
     .tree {
         color-scheme: dark;
+    }
+    .contextMenu {
+        --ifm-card-background-color: var(--ifm-background-color);
     }
 }

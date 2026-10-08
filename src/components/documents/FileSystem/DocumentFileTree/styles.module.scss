@@ -20,10 +20,12 @@
         align-self: stretch;
     }
     .sidebar {
+        z-index: var(--ifm-z-index-dropdown);
         flex-shrink: 0;
         overflow: hidden;
         width: var(--file-tree-width);
     }
+
     .mobileHeader,
     .desktopCollapsed {
         display: none;
