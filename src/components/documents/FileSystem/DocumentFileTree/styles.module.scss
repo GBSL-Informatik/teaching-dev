@@ -20,7 +20,7 @@
         align-self: stretch;
     }
     .sidebar {
-        z-index: var(--ifm-z-index-dropdown);
+        z-index: var(--ifm-z-index-fixed);
         flex-shrink: 0;
         overflow: hidden;
         width: var(--file-tree-width);
