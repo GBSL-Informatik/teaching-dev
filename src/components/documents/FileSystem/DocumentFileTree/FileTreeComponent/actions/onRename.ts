@@ -83,7 +83,8 @@ export const onRename = (
             reportError(`Dateipfad existiert bereits: ${finalPath}`);
             return;
         }
-        file.setName(newName)?.then((res) => {
+        file.setName(newName);
+        file.saveNow()?.then((res) => {
             if (res) {
                 fileTreeView.clearNotifications(dir.id);
             } else {

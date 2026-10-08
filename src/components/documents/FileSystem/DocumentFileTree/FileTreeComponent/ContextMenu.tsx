@@ -154,9 +154,10 @@ const ContextMenu = observer((props: Props) => {
                                     setError(null);
                                     try {
                                         const deleted = await Promise.all(files.map((f) => f.delete()));
-                                        if (!deleted) {
+                                        if (deleted.some((d) => !d)) {
+                                            const nFailed = deleted.filter((d) => !d).length;
                                             setError(
-                                                `Die ${files.length > 1 ? `${files.length} Dateien konnten` : 'Datei konnte'} nicht gelöscht werden.`
+                                                `${nFailed}/${files.length} ${files.length > 1 ? 'Dateien konnten' : 'Datei konnte'} nicht gelöscht werden.`
                                             );
                                             return;
                                         }

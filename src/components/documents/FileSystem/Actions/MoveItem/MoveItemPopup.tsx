@@ -29,7 +29,6 @@ const MoveItemPopup = observer((props: Props) => {
             }
             modal
             nested
-            closeOnDocumentClick={false}
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
             on="click"
         >

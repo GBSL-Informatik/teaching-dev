@@ -154,12 +154,7 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
 
     @action
     setName(name: string) {
-        const sanitized = name.replace(/:[a-f0-9]{8}$/g, '');
-        if (sanitized.trim() === this._name || sanitized.trim() === '') {
-            return;
-        }
-        this.setData({ name: name.trim() }, Source.LOCAL, new Date());
-        return this.saveNow();
+        this.setData({ name: name }, Source.LOCAL, new Date());
     }
 
     @action
