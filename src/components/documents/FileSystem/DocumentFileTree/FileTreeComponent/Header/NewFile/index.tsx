@@ -73,11 +73,11 @@ const NewFile = observer(() => {
                     <Button icon={mdiFilePlus} title="Neue Datei" size={SIZE_S} noBorder color="grey" />
                 </span>
             }
-            on={['hover', 'click']}
+            on={['click']}
             position={['bottom right', 'bottom center', 'bottom left']}
             arrow={false}
         >
-            <Card classNames={{ body: styles.newFile }}>
+            <Card classNames={{ body: styles.newFile, card: styles.popup }}>
                 <div className={styles.select}>
                     {fileTypes.map((item) => {
                         const { type, config } = item;

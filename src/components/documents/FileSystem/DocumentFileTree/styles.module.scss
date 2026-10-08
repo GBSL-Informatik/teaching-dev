@@ -9,11 +9,15 @@
     width: 100%;
     position: relative;
     &.resizing {
-        cursor: col-resize;
+        cursor: ew-resize;
         user-select: none;
         .selectedFile {
             pointer-events: none;
         }
+    }
+    .panSidebar {
+        flex-shrink: 0;
+        align-self: stretch;
     }
     .sidebar {
         flex-shrink: 0;
@@ -25,43 +29,7 @@
         display: none;
     }
     .divider {
-        position: relative;
-        flex: 0 0 16px;
-        align-self: stretch;
         min-height: 48px;
-        cursor: col-resize;
-        touch-action: none;
-        user-select: none;
-        color: var(--ifm-color-emphasis-500);
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: calc(50% - 0.5px);
-            width: 1px;
-            background: var(--ifm-color-emphasis-300);
-        }
-        &:hover,
-        &:focus-visible,
-        &.dragging {
-            color: var(--ifm-color-primary);
-            &::before {
-                background: var(--ifm-color-primary);
-            }
-        }
-        &:focus-visible {
-            outline: 2px solid var(--ifm-color-primary);
-            outline-offset: -2px;
-        }
-    }
-    .grip {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: var(--ifm-background-color);
-        pointer-events: none;
     }
     .selectedFile {
         flex-grow: 1;
@@ -131,6 +99,9 @@
         }
         &.standalone .mobileHeader {
             position: static;
+        }
+        .panSidebar {
+            display: contents;
         }
         .sidebar {
             width: 100%;

@@ -133,11 +133,6 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
             }}
             onPanEnd={endResize}
             handleProps={{
-                'aria-label': 'Höhe des Code-Editors',
-                'aria-controls': code.codeId,
-                'aria-valuemin': 1,
-                'aria-valuenow': visibleLines(),
-                'aria-valuetext': `${visibleLines()} Zeilen`,
                 title: 'Ziehen oder Pfeiltasten zum Vergrössern oder Verkleinern; Doppelklick zum Zurücksetzen',
                 onDoubleClick: () => setResizedLines(undefined)
             }}
