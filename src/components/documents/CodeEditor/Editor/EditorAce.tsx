@@ -39,6 +39,8 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const eRef = React.useRef<AceEditor>(null);
     const isComposingRef = React.useRef(false);
     const { aceTheme } = useCodeTheme();
+    const codeLang =
+        ALIAS_LANG_MAP_ACE[code.derivedLang as keyof typeof ALIAS_LANG_MAP_ACE] ?? code.derivedLang;
     React.useEffect(() => {
         if (eRef && eRef.current) {
             const node = eRef.current;
@@ -52,7 +54,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
             };
             textInput?.addEventListener('compositionstart', onCompositionStart);
             textInput?.addEventListener('compositionend', onCompositionEnd);
-            if (code.derivedLang === 'python') {
+            if (codeLang === 'python') {
                 node.editor.commands.addCommand({
                     // commands is array of key bindings.
                     name: 'execute',
@@ -110,10 +112,7 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                 minLines={props.overrides?.minLines ?? code.meta.minLines}
                 maxLines={props.overrides?.maxLines ?? code.meta.maxLines}
                 ref={eRef}
-                mode={
-                    ALIAS_LANG_MAP_ACE[code.derivedLang as keyof typeof ALIAS_LANG_MAP_ACE] ??
-                    code.derivedLang
-                }
+                mode={codeLang}
                 theme={props.overrides?.theme ?? code.meta.theme ?? aceTheme}
                 onChange={(value: string, e: { action: 'insert' | 'remove' }) => {
                     // Mobile/Touch Devices use IME and often emit transient remove deltas during composition.
