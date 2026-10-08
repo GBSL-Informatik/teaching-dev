@@ -2,6 +2,7 @@ import { type FileTree, type FileTreeRenameEvent } from '@pierre/trees';
 import type Code from '@tdev-models/documents/Code';
 import type Directory from '@tdev-models/documents/FileSystem/Directory';
 import type File from '@tdev-models/documents/FileSystem/File';
+import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { type FileTreeView } from '@tdev-stores/ViewStores/FileTreeView';
 import { syncFileTree } from './syncFileTree';
 
@@ -19,6 +20,21 @@ export const onRename = (
             message
         });
     };
+    const reconcileFileTree = (file: iFileSystem, destinationPath: string, isFolder: boolean) => {
+        const model = getModel();
+        const actualPath = file?.filePath;
+        const requestedPath = isFolder ? `${destinationPath}/` : destinationPath;
+        if (!model || actualPath === requestedPath) {
+            return;
+        }
+        syncFileTree(model, dir);
+        for (const path of model.getSelectedPaths()) {
+            model.getItem(path)?.deselect();
+        }
+        const item = actualPath ? model.getItem(actualPath) : null;
+        item?.select();
+        item?.focus();
+    };
     return ({ sourcePath: _sourcePath, destinationPath, isFolder }) => {
         const sourcePath = isFolder ? `${_sourcePath}/` : _sourcePath;
         const file = dir.allItems.find((d) => d.filePath === sourcePath);
@@ -26,19 +42,7 @@ export const onRename = (
         // Its onError only covers built-in validation, not errors from this callback.
         // Reconcile after that move when validation failed or the name was normalized.
         queueMicrotask(() => {
-            const model = getModel();
-            const actualPath = file?.filePath;
-            const requestedPath = isFolder ? `${destinationPath}/` : destinationPath;
-            if (!model || actualPath === requestedPath) {
-                return;
-            }
-            syncFileTree(model, dir);
-            for (const path of model.getSelectedPaths()) {
-                model.getItem(path)?.deselect();
-            }
-            const item = actualPath ? model.getItem(actualPath) : null;
-            item?.select();
-            item?.focus();
+            reconcileFileTree(file!, destinationPath, isFolder);
         });
         const hasConflict = dir.allItems.some((d) => d.filePath === destinationPath);
         if (!file) {
@@ -79,7 +83,15 @@ export const onRename = (
             reportError(`Dateipfad existiert bereits: ${finalPath}`);
             return;
         }
-        file.setName(newName);
-        fileTreeView.clearNotifications(dir.id);
+        file.setName(newName)?.then((res) => {
+            if (res) {
+                fileTreeView.clearNotifications(dir.id);
+            } else {
+                // If the rename operation fails, we need to reconcile the file tree
+                reportError(
+                    `Fehler beim Umbenennen - Seite neu laden um den gespeicherten Stand wiederherzustellen.`
+                );
+            }
+        });
     };
 };

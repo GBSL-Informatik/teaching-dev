@@ -159,6 +159,7 @@ abstract class iFileSystem<T extends SystemType = SystemType> extends iDocument<
             return;
         }
         this.setData({ name: name.trim() }, Source.LOCAL, new Date());
+        return this.saveNow();
     }
 
     @action
