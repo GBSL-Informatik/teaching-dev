@@ -48,7 +48,7 @@ export const SvgEditorComponent = observer(<T extends CodeType>(props: Component
     if (!doc.canDisplay && !userStore.isUserSwitched) {
         return (
             <div>
-                <PermissionsPanel documentRootId={doc.id} />
+                <PermissionsPanel documentRootId={doc.documentRootId} />
             </div>
         );
     }

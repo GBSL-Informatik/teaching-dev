@@ -75,7 +75,7 @@ export const HtmlEditorComponent = observer(<T extends CodeType>(props: Componen
     if (!doc.canDisplay && !userStore.isUserSwitched) {
         return (
             <div>
-                <PermissionsPanel documentRootId={doc.id} />
+                <PermissionsPanel documentRootId={doc.documentRootId} />
             </div>
         );
     }
