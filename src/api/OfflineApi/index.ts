@@ -448,19 +448,34 @@ export default class OfflineApi {
                 const doc = await this.dbAdapter.get<Document<DocumentType>>(DOCUMENTS_STORE, id);
                 await this.dbAdapter.delete(DOCUMENTS_STORE, id);
                 if (doc && doc.documentRootId) {
-                    const cascaded = await this.dbAdapter
+                    const toDelete = new Set<string>();
+
+                    const parentChildMap = new Map<string, string[]>();
+                    const docs = await this.dbAdapter
                         .byDocumentRootId(doc.documentRootId)
-                        .then((docs) => docs.filter((d) => d.parentId));
-                    const children = cascaded.filter((d) => d.parentId && d.parentId === doc.id);
-                    let delta = children.length;
-                    while (delta > 0) {
-                        const nested = children.flatMap((c) =>
-                            cascaded.filter((d) => d.parentId === c.id && !children.includes(d))
-                        );
-                        delta = nested.length;
-                        children.push(...nested);
+                        .then((docs) => docs.filter((d) => !!d.parentId));
+                    for (const d of docs) {
+                        const children = parentChildMap.get(d.parentId!);
+                        if (children) {
+                            children.push(d.id);
+                        } else {
+                            parentChildMap.set(d.parentId!, [d.id]);
+                        }
                     }
-                    await Promise.all(children.map((d) => this.dbAdapter.delete(DOCUMENTS_STORE, d.id)));
+                    const pending = [id];
+                    while (pending.length > 0) {
+                        const currentId = pending.shift()!;
+                        for (const childId of parentChildMap.get(currentId) || []) {
+                            if (toDelete.has(childId)) {
+                                continue;
+                            }
+                            toDelete.add(childId);
+                            pending.push(childId);
+                        }
+                    }
+                    await Promise.all(
+                        [...toDelete].map((docId) => this.dbAdapter.delete(DOCUMENTS_STORE, docId))
+                    );
                 }
                 return resolveResponse(null);
             case 'documentRoots':
