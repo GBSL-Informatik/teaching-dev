@@ -57,5 +57,6 @@ export const onRename = (dir: Directory, fileTreeView: FileTreeView): RenameActi
             return;
         }
         file.setName(newName);
+        fileTreeView.clearNotifications(dir.id);
     };
 };
