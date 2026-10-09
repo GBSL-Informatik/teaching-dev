@@ -62,18 +62,21 @@ yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> for
 Eine Aktion ist wie eine Migration, aber sie kann beliebig oft ausgeführt werden und wird nicht in `.done.ts` umbenannt. Aktionen werden im Ordner `actions` abgelegt und können mit folgendem Befehl ausgeführt werden:
 
 ```bash
-yarn workspace @tdev/migrate-tdev runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]]
+yarn workspace @tdev/migrate-tdev runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]] [[-m "apply patch #123"]]
 ```
 
 Einige Aktionen sind bereits vorhanden:
 
-`format`
+`format  [[-m|--message]]`
 : formatiert das Projekt mit `yarn format` und committet+pushed die Änderungen.
-`updateTdev [[--format]]`
+: Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
+`updateTdev [[--format]] [[-m|--message]]`
 : führt `yarn run updateTdev` aus, installiert mögliche Package-Updates und committet+pushed die Änderungen.
 : Optional kann `--format` angegeben werden, um das Projekt nach dem Update zu formatieren.
-`reinstall`
+: Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
+`reinstall  [[-m|--message]]`
 : entfernt `node_modules` und `yarn.lock`, installiert alle Pakete neu und committet+pushed die Änderungen.
+: Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
 `git.status`
 : zeigt den aktuellen Git-Status an.
 

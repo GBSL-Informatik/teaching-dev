@@ -1,5 +1,6 @@
 import { execa } from 'execa';
 import { MigrationRunner } from '../src/constants';
+import { getCommitMessage } from '../src/helpers/commitMessages';
 import { hasUncommittedChanges } from '../src/helpers/gitHelpers';
 
 const migrate: MigrationRunner = async (root, name, ts, conf, argv): Promise<void> => {
@@ -18,7 +19,7 @@ const migrate: MigrationRunner = async (root, name, ts, conf, argv): Promise<voi
     }
 
     await $`git add .`;
-    const message = `[tdev] update tdev core on ${new Date().toISOString().split('T')[0]}`;
+    const message = getCommitMessage(argv, `update tdev core on ${new Date().toISOString().split('T')[0]}`);
     await $`git commit -m ${message}`;
     await $`git push`;
 };

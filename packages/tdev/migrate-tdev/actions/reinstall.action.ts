@@ -1,7 +1,8 @@
 import { execa } from 'execa';
 import { MigrationRunner } from '../src/constants';
+import { getCommitMessage } from '../src/helpers/commitMessages';
 
-const migrate: MigrationRunner = async (root, name): Promise<void> => {
+const migrate: MigrationRunner = async (root, name, ts, conf, argv): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
     await $`yarn run updateTdev`;
@@ -10,7 +11,11 @@ const migrate: MigrationRunner = async (root, name): Promise<void> => {
     await $`yarn install`;
 
     await $`git add .`;
-    const message = `[tdev] clean install dependencies`;
+
+    const message = getCommitMessage(
+        argv,
+        `clean install dependencies at ${new Date().toISOString().split('T')[0]}`
+    );
     await $`git commit -m ${message}`;
     await $`git push`;
 };
