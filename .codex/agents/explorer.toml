@@ -1,4 +1,4 @@
-name = "code_explorer"
+name = "explorer"
 description = "Investigate the codebase and report relevant files and patterns."
 model = "gpt-6-luna"
 model_reasoning_effort = "low"
