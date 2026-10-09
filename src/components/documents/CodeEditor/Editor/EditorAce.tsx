@@ -22,7 +22,8 @@ const ALIAS_LANG_MAP_ACE = {
     ts: 'typescript',
     yml: 'yaml',
     yaml: 'yaml',
-    scss: 'sass'
+    scss: 'sass',
+    css: 'sass'
 };
 
 export interface Overrides {
