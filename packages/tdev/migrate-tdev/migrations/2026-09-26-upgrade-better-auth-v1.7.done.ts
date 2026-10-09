@@ -33,18 +33,11 @@ const migrate: MigrationRunner = async (root, name): Promise<void> => {
         await writeFile(vscodeSettingsPath, vscodeSettings);
     }
 
-    await $`rm -rf node_modules`;
-    await $`rm yarn.lock`;
-    await $`yarn install`;
-
-    await $`yarn format`;
-
     await $`git add .`;
-    await $`git commit -m ${'[tdev] Update better-auth to v1.7.4 and auto organize imports on save'}`;
+    await $`git commit -m ${'[tdev] Update better-auth to v1.7.4 and auto organize imports on save\n\nhttps://github.com/GBSL-Informatik/teaching-dev/pull/321'}`;
     await $`git checkout main`;
     await $`git merge ${branchName}`;
     await $`git branch -d ${branchName}`;
-    await $`git push`;
 };
 
 export default migrate;
