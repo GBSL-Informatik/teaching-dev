@@ -237,6 +237,11 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
+    get mainDocuments() {
+        return this.documents.filter((d) => d.uniqOnRoot === 'main');
+    }
+
+    @computed
     get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
         const sortedDocs = orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']);
         return sortedDocs.reduce((map, doc) => {

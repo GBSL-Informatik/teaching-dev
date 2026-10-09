@@ -53,15 +53,13 @@ export const useFirstMainDocument = <Type extends DocumentType>(
                     return;
                 }
                 if (!loadOnlyType || loadOnlyType === meta.type) {
-                    documentStore.create(
-                        {
-                            documentRootId: documentRoot.id,
-                            authorId: userStore.current!.id,
-                            type: meta.type,
-                            data: meta.defaultData
-                        },
-                        true
-                    );
+                    documentStore.create({
+                        documentRootId: documentRoot.id,
+                        authorId: userStore.current!.id,
+                        type: meta.type,
+                        uniqOnRoot: 'main',
+                        data: meta.defaultData
+                    });
                 }
             },
             { fireImmediately: true }

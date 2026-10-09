@@ -34,16 +34,14 @@ export const useCreateDocument = <Type extends DocumentType>(
             return Promise.resolve(null);
         }
         return runInAction(() => {
-            return documentStore.create(
-                {
-                    id: uuid, // this won't have any effect server-side, but allows to track the creation state
-                    documentRootId: documentRoot.id,
-                    authorId: userId,
-                    type: meta.type,
-                    data: meta.defaultData
-                },
-                uniqueMain
-            );
+            return documentStore.create({
+                id: uuid, // this won't have any effect server-side, but allows to track the creation state
+                documentRootId: documentRoot.id,
+                authorId: userId,
+                type: meta.type,
+                uniqOnRoot: uniqueMain ? 'main' : undefined,
+                data: meta.defaultData
+            });
         });
     }, [userId, uniqueMain, uuid]);
 

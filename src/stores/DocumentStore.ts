@@ -6,11 +6,13 @@ import {
     remove as apiDelete,
     linkTo as apiLinkTo,
     update as apiUpdate,
+    updateConstraints as apiUpdateConstraints,
     DocumentModelType,
     Document as DocumentProps,
     DocumentType,
     Factory,
-    TypeModelMapping
+    TypeModelMapping,
+    UniquenessConstraints
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
 import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
@@ -113,7 +115,7 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['dynamic_document_roots', CreateDocumentModel]
 ];
 
-class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
+class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `update-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
     factories = new Map<DocumentType, Factory>(FactoryDefault);
@@ -335,8 +337,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
 
     @action
     create<Type extends DocumentType>(
-        model: { documentRootId: string; type: Type } & Partial<DocumentProps<Type>>,
-        isMain: boolean = false
+        model: { documentRootId: string; type: Type } & Partial<DocumentProps<Type>>
     ) {
         const rootDoc = this.root.documentRootStore.find(model.documentRootId);
         if (!rootDoc || rootDoc.isDummy) {
@@ -365,7 +366,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
         return Promise.all(preTasks)
             .then(() =>
                 this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
-                    return apiCreate<Type>(model, onBehalfOf, isMain, sig.signal);
+                    return apiCreate<Type>(model, onBehalfOf, sig.signal);
                 })
             )
             .then(
@@ -498,6 +499,28 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}`> {
             .catch((err) => {
                 console.warn('Relinking not possible', err);
                 return false;
+            });
+    }
+
+    @action
+    updateConstraints<T extends DocumentType>(
+        document: TypeModelMapping[T],
+        constraints: UniquenessConstraints
+    ): Promise<TypeModelMapping[T] | undefined> {
+        let signal: AbortSignal;
+        return this.withAbortController(`update-${document.id}`, (sig) => {
+            signal = sig.signal;
+            return apiUpdateConstraints<T>(document.id, constraints, sig.signal);
+        })
+            .then((res) => {
+                if (signal.aborted) {
+                    return undefined;
+                }
+                return this.addToStore<T>(res.data);
+            })
+            .catch((err) => {
+                console.warn('Error updating constraints', err);
+                return undefined;
             });
     }
 }
