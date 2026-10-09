@@ -301,7 +301,7 @@ export function linkTo<Type extends DocumentType>(
     linkToId: string,
     signal: AbortSignal
 ): AxiosPromise<Document<Type>> {
-    return api.put(`/documents/${id}/linkTo/${linkToId}`, { signal });
+    return api.put(`/documents/${id}/linkTo/${linkToId}`, {}, { signal });
 }
 
 export function updateConstraints<Type extends DocumentType>(

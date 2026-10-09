@@ -29,7 +29,7 @@ export function linkUserPassword(userId: string, userPW: string, signal: AbortSi
 }
 
 export function revokeUserPassword(userId: string, signal: AbortSignal): AxiosPromise<void> {
-    return api.post(`/admin/users/${userId}/revokeUserPassword`, { signal });
+    return api.post(`/admin/users/${userId}/revokeUserPassword`, {}, { signal });
 }
 
 type ExportData = {
