@@ -5,7 +5,6 @@ import { useStore } from '@tdev-hooks/useStore';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import { runInAction } from 'mobx';
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
@@ -23,7 +22,7 @@ export const useCreateDocument = <Type extends DocumentType>(
     uniqueMain: boolean = true,
     access: Partial<Config> = {}
 ) => {
-    const [uuid] = React.useState(uuidv4());
+    const id = React.useId();
     const documentRoot = useDocumentRoot(documentRootId, meta, false, access);
     const userStore = useStore('userStore');
     const userId = userStore.current?.id;
@@ -35,7 +34,7 @@ export const useCreateDocument = <Type extends DocumentType>(
         }
         return runInAction(() => {
             return documentStore.create({
-                id: uuid, // this won't have any effect server-side, but allows to track the creation state
+                id: id, // this won't have any effect server-side, but allows to track the creation state
                 documentRootId: documentRoot.id,
                 authorId: userId,
                 type: meta.type,
@@ -43,7 +42,7 @@ export const useCreateDocument = <Type extends DocumentType>(
                 data: meta.defaultData
             });
         });
-    }, [userId, uniqueMain, uuid]);
+    }, [userId, uniqueMain, id]);
 
-    return { create, apiState: documentStore.apiStateFor(`create-${uuid}`) };
+    return { create, apiState: documentStore.apiStateFor(`create-${id}`) };
 };
