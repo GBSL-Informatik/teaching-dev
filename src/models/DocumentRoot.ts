@@ -242,6 +242,18 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
+    get mainDocument() {
+        const type = this.meta.type;
+        return this.mainDocuments.find((d) => d.authorId === this.viewedUserId && d.type === type);
+    }
+
+    @computed
+    get sharedMainDocument() {
+        const type = this.meta.type;
+        return this.mainDocuments.find((d) => d.authorId !== this.viewedUserId && d.type === type);
+    }
+
+    @computed
     get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
         const sortedDocs = orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']);
         return sortedDocs.reduce((map, doc) => {
@@ -290,13 +302,12 @@ class DocumentRoot<T extends DocumentType> {
 
     @computed
     get _needsInitialDocumentCreation() {
-        return this._canInitializeDocuments && !this.documentsByType.has(this.meta.type);
+        return this._canInitializeDocuments && !this.mainDocument;
     }
 
     @computed
     get _triggerDocumentReload() {
-        const firstMainDoc = this.documentsByType.get(this.meta.type)?.[0];
-        return `${firstMainDoc?.id}-${this.store.root.userStore.viewedUserId}`;
+        return `${this.mainDocument?.id}-${this.store.root.userStore.viewedUserId}`;
     }
 }
 

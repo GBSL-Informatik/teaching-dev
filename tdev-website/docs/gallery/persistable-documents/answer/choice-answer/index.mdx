@@ -4,14 +4,14 @@ tags:
   - persistable
 ---
 
-import PermissionsPanel from "@tdev-components/PermissionsPanel"
 import BrowserWindow from '@tdev-components/BrowserWindow';
-import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
-import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
-import Quiz from '@tdev-components/documents/Assessable/Quiz';
-import Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
-import { points, multipleChoicePoints, noPoints } from '@tdev-components/documents/Assessable/helpers/scoring';
 import CodeShowcase from '@tdev-components/CodeShowcase';
+import ChoiceAnswer from '@tdev-components/documents/Assessable/ChoiceAnswer';
+import Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
+import { multipleChoicePoints, noPoints, points } from '@tdev-components/documents/Assessable/helpers/scoring';
+import Quiz from '@tdev-components/documents/Assessable/Quiz';
+import TrueFalseAnswer from '@tdev-components/documents/Assessable/TrueFalseAnswer';
+import PermissionsPanel from "@tdev-components/PermissionsPanel";
 
 # Choice Answer
 
@@ -485,7 +485,7 @@ Eine `ScoringFunction` ist eine Funktion, die die Bewertung einer Frage oder ein
 ## Testing Only
 Dummy Quiz zum Test des Fixes.
 
-<Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" id="e4fd5d0b-f5b0-4722-8452-ca78f1de0aa1" >
+<Quiz scoring={points(1)} randomizeQuestions randomizeOptions resetMode="incorrect" id="1b2af9e3-193f-4649-bb27-dc2508aed996" >
     <ChoiceAnswer correct={[1]}>
         1. Diese Antwort ist richtig.
         2. Diese Antwort ist falsch.

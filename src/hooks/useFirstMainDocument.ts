@@ -24,6 +24,7 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     access: Partial<Config> = {},
     loadOnlyType?: DocumentType
 ) => {
+    const createRequestedAt = React.useRef<number>(0);
     const defaultDocId = useDummyId(documentRootId);
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
     const userStore = useStore('userStore');
@@ -52,7 +53,12 @@ export const useFirstMainDocument = <Type extends DocumentType>(
                 if (!needsCreation || !createDocument) {
                     return;
                 }
+                const now = Date.now();
+                if (now - createRequestedAt.current < 1000) {
+                    return;
+                }
                 if (!loadOnlyType || loadOnlyType === meta.type) {
+                    createRequestedAt.current = Date.now();
                     documentStore.create({
                         documentRootId: documentRoot.id,
                         authorId: userStore.current!.id,
@@ -65,5 +71,5 @@ export const useFirstMainDocument = <Type extends DocumentType>(
             { fireImmediately: true }
         );
     }, [userStore, createDocument, documentRoot]);
-    return (documentRoot?.documentsByType?.get(meta.type)?.[0] as TypeModelMapping[Type]) || dummyDocument;
+    return (documentRoot?.mainDocument as TypeModelMapping[Type]) || dummyDocument;
 };

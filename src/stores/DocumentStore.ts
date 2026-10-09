@@ -376,13 +376,6 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             )
             .catch((err) => {
                 if (!axios.isCancel(err)) {
-                    if (IsNotUniqueError(err)) {
-                        const docRoot = this.root.documentRootStore.find(model.documentRootId);
-                        if ((docRoot?.documentsByType?.get(model.type)?.length || 0) < 1) {
-                            console.log('The main document must be unique - try to load it from the api.');
-                            return this.root.documentRootStore.loadInNextBatch(model.documentRootId);
-                        }
-                    }
                     console.warn('Error creating document', err);
                 }
                 return undefined;

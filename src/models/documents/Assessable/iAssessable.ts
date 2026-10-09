@@ -66,6 +66,9 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @action
     setLinkedMeta(metadata: AssessableMeta<T>) {
+        if (this.type !== metadata.type) {
+            return;
+        }
         this._linkedMeta = metadata;
         this.onLinkedMetaChange();
     }

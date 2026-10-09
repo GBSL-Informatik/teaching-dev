@@ -1,4 +1,4 @@
-import type { AssessableType, AssessableTypeModelMapping, DocumentModelType } from '@tdev-api/document';
+import type { AssessableType, AssessableTypeModelMapping } from '@tdev-api/document';
 import { Config } from '@tdev-api/documentRoot';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useStore } from '@tdev-hooks/useStore';
@@ -28,16 +28,10 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
     /** ensure to put the selector in a React.useCallback */
     qid: string | undefined
 ) => {
+    const createRequestedAt = React.useRef<number>(0);
+    const requestedId = React.useRef<string | null>(null);
+
     // // when inside a quizz, this will share the document root with the quiz
-    const selector = React.useCallback(
-        (doc: DocumentModelType) => {
-            if (qid) {
-                return doc.type === meta.type && doc.data.qid === qid;
-            }
-            return doc.type === meta.type;
-        },
-        [meta.type, qid]
-    );
     const defaultDocId = useDummyId(documentRootId);
     // if qid is provided, we are in e.g. a quiz and don't want to create a new document, since the quiz should already have created it.
     const skipCreate = !!qid;
@@ -56,24 +50,11 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             }) as AssessableTypeModelMapping[Type],
-        [meta.type, defaultDocId, documentRoot.id, meta.defaultData]
+        [meta.type, defaultDocId, meta.defaultData]
     );
 
-    const [canRequest, setCanRequest] = React.useState(false);
     React.useEffect(() => {
         if (!documentRoot) {
-            return;
-        }
-        const timeoutId = setTimeout(() => {
-            setCanRequest(true);
-        }, 25);
-        return () => {
-            clearTimeout(timeoutId);
-        };
-    }, [documentRoot]);
-
-    React.useEffect(() => {
-        if (!documentRoot || !canRequest) {
             return;
         }
         return reaction(
@@ -81,35 +62,37 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
                 if (!documentRoot?._canInitializeDocuments) {
                     return false;
                 }
-                const byType = documentRoot.documentsByType.get(meta.type);
-                return !byType?.find(selector);
+                if (!qid) {
+                    return !documentRoot?.mainDocument;
+                }
+                return !documentRoot?.documents?.find((d) => d.type === meta.type && d.uniqOnParent === qid);
             },
             (needsCreation) => {
                 if (!needsCreation) {
                     return;
                 }
-                const key = `${documentRoot.id}::${userStore.current!.id}::${meta.type}::${qid}`;
-                if (requested.has(key)) {
+                const now = Date.now();
+                if (requestedId.current === documentRoot.id && now - createRequestedAt.current < 1000) {
                     return;
                 }
-                requested.add(key);
-                documentStore
-                    .create({
-                        documentRootId: documentRoot.id,
-                        authorId: userStore.current!.id,
-                        type: meta.type,
-                        data: meta.defaultData
-                    })
-                    .then(() => {
-                        requested.delete(key);
-                    });
+                requestedId.current = documentRoot.id;
+                createRequestedAt.current = now;
+                documentStore.create({
+                    documentRootId: documentRoot.id,
+                    authorId: userStore.current!.id,
+                    type: meta.type,
+                    data: meta.defaultData,
+                    uniqOnRoot: qid ? undefined : 'main',
+                    uniqOnParent: qid
+                });
             },
             { fireImmediately: true }
         );
-    }, [userStore, documentRoot, canRequest]);
-    const byType = documentRoot?.documentsByType.get(meta.type);
-    const firstDoc = byType?.find(selector) as AssessableTypeModelMapping[Type] | undefined;
-    const doc = firstDoc || dummyDocument;
+    }, [userStore, documentRoot]);
+    const firstDoc = qid
+        ? documentRoot.documents.find((d) => d.type === meta.type && d.uniqOnParent === qid)
+        : documentRoot.mainDocument;
+    const doc = (firstDoc || dummyDocument) as AssessableTypeModelMapping[Type];
 
     useLinkedMetaModel(doc, meta);
     return doc;
