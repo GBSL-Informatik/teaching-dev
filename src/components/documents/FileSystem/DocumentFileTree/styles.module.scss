@@ -70,34 +70,7 @@
         .mobileHeader {
             position: sticky;
             top: var(--ifm-navbar-height);
-            z-index: calc(var(--ifm-z-index-fixed) - 1);
             display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            min-height: 44px;
-            text-align: left;
-            svg {
-                flex-shrink: 0;
-            }
-        }
-        .mobileHeaderLabel {
-            flex: 1;
-            min-width: 0;
-            line-height: 1.3;
-        }
-        .mobileHeaderTitle,
-        .mobileHeaderFile {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .mobileHeaderTitle {
-            color: var(--ifm-color-emphasis-700);
-        }
-        .mobileHeaderFile {
-            font-size: 0.875rem;
         }
         &.standalone .mobileHeader {
             position: static;

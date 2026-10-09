@@ -10,6 +10,7 @@ import styles from './styles.module.scss';
 interface Props {
     name?: string;
     treeId: string;
+    className?: string;
 }
 
 const MobileHeader = observer((props: Props) => {
@@ -21,16 +22,16 @@ const MobileHeader = observer((props: Props) => {
     return (
         <button
             type="button"
-            className={clsx(styles.mobileHeader, 'button button--secondary')}
+            className={clsx(styles.header, 'button button--secondary', props.className)}
             aria-expanded={isExpanded}
             aria-controls={props.treeId}
             title={selectedFile?.filePath}
             onClick={() => fileTreeView.setMobileFileTreeExpanded(dir.id, !isExpanded)}
         >
             <Icon path={mdiFolderOpenOutline} size={SIZE_S} />
-            <span className={styles.mobileHeaderLabel}>
-                <small className={styles.mobileHeaderTitle}>{props.name || 'Dateien'}</small>
-                <span className={styles.mobileHeaderFile}>{selectedFile?.name || 'Datei auswählen'}</span>
+            <span className={styles.label}>
+                <small className={styles.title}>{props.name || 'Dateien'}</small>
+                <span className={styles.file}>{selectedFile?.name || 'Datei auswählen'}</span>
             </span>
             <Icon path={isExpanded ? mdiChevronUp : mdiChevronDown} size={SIZE_S} />
         </button>

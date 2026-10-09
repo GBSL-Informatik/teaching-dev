@@ -11,6 +11,7 @@ import { orderBy } from 'es-toolkit';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
+import { PopupActions } from 'reactjs-popup/dist/types';
 import { useFileTreeModel } from '../../../hooks/useFileTreeModel';
 import { getFocusedDirectory } from '../../actions/getFocusedDirectory';
 import { syncFileTree } from '../../actions/syncFileTree';
@@ -38,6 +39,8 @@ const NewFile = observer(() => {
     const [docType, setDocType] = React.useState<FileConfig<DocumentType> | null>(null);
     const [pending, setPending] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
+    const ref = React.useRef<PopupActions>(null);
+
     const fileTypes = orderBy(
         [...documentStore.fileExtensions.entries()].flatMap(([type, configs]) => {
             return configs.filter((c) => !c.hide).map((config) => ({ type, config }));
@@ -57,6 +60,7 @@ const NewFile = observer(() => {
             const newFile = await dir.createFile(type, `new-file${config.extension}`);
             if (newFile) {
                 syncFileTree(model, root);
+                ref.current?.close();
                 model.startRenaming(newFile.filePath);
             }
         } catch (error) {
@@ -76,6 +80,7 @@ const NewFile = observer(() => {
             on={['click']}
             position={['bottom right', 'bottom center', 'bottom left']}
             arrow={false}
+            ref={ref}
         >
             <Card classNames={{ body: styles.newFile, card: styles.popup }}>
                 <div className={styles.select}>
