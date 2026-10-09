@@ -104,7 +104,7 @@ const DocumentFileTree = observer((props: Props) => {
                         } as React.CSSProperties
                     }
                 >
-                    <MobileHeader name={props.name} treeId={treeId} />
+                    <MobileHeader name={props.name} treeId={treeId} className={clsx(styles.mobileHeader)} />
                     <PanHorizontally
                         className={styles.panSidebar}
                         onPanStart={() => {
