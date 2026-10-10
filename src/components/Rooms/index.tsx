@@ -10,7 +10,7 @@ import { default as DynamicDocumentRootsComponent } from '@tdev-components/docum
 import Loader from '@tdev-components/Loader';
 import PermissionsPanel from '@tdev-components/PermissionsPanel';
 import NoAccess from '@tdev-components/shared/NoAccess';
-import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
+import { useGlobalFirstMainDocument } from '@tdev-hooks/useGlobalFirstMainDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import type DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import { ModelMeta } from '@tdev-models/documents/DynamicDocumentRoots';
@@ -37,11 +37,11 @@ const NoType = ({ dynamicRoot }: { dynamicRoot: DynamicDocumentRoots<ContainerTy
     );
 };
 
-export const NotCreated = () => {
+export const NotCreated = ({ message }: { message?: React.ReactNode }) => {
     return (
         <div className={clsx('alert alert--warning', styles.alert)} role="alert">
             <Icon path={mdiEmoticonSad} size={1} color="var(--ifm-color-warning)" />
-            Dieser Dokument-Container wurde noch nicht erzeugt. Warten auf die Lehrperson.
+            {message ?? 'Dieser Dokument-Container wurde noch nicht erzeugt. Warten auf die Lehrperson.'}
             <div style={{ flexGrow: 1, flexBasis: 0 }} />
             <Loader noLabel />
         </div>
@@ -112,7 +112,7 @@ interface WithModelProps {
 const WithDocumentRoot = observer((props: WithModelProps): React.ReactNode => {
     const { rootId, docContainerId } = props;
     const meta = React.useMemo(() => new ModelMeta({ type: 'dummy' as ContainerType }), []);
-    const dynDoc = useFirstMainDocument(rootId, meta, false) as DynamicDocumentRoots<ContainerType> | null;
+    const dynDoc = useGlobalFirstMainDocument(rootId, meta, false);
 
     if (!rootId || !dynDoc) {
         return <NoRoom />;

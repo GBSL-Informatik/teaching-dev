@@ -1,4 +1,4 @@
-import { Access, DocumentType, TypeDataMapping, TypeModelMapping } from '@tdev-api/document';
+import { Access, DocumentType, TypeDataMapping, type TypeModelMapping } from '@tdev-api/document';
 import { DocumentRootBase as DocumentRootProps } from '@tdev-api/documentRoot';
 import { isDummyId } from '@tdev-hooks/useDummyId';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
@@ -237,33 +237,32 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     @computed
-    get mainDocuments() {
-        return this.documents.filter((d) => d.uniqOnRoot === 'main');
+    get mainConstrainedDocuments() {
+        return orderBy(
+            this.documents.filter((d) => d.uniqOnRoot === 'main'),
+            ['createdAt', 'id'],
+            ['asc', 'asc']
+        );
+    }
+
+    @computed
+    get mainDocuments(): TypeModelMapping[T][] {
+        const type = this.meta.type;
+        return orderBy(
+            this.mainConstrainedDocuments.filter((d) => d.type === type) as TypeModelMapping[T][],
+            ['createdAt', 'id'],
+            ['asc', 'asc']
+        );
     }
 
     @computed
     get mainDocument() {
-        const type = this.meta.type;
-        return this.mainDocuments.find((d) => d.authorId === this.viewedUserId && d.type === type);
+        return this.mainDocuments.find((d) => d.authorId === this.viewedUserId);
     }
 
     @computed
-    get sharedMainDocument() {
-        const type = this.meta.type;
-        return this.mainDocuments.find((d) => d.authorId !== this.viewedUserId && d.type === type);
-    }
-
-    @computed
-    get documentsByType(): Map<DocumentType, TypeModelMapping[DocumentType][]> {
-        const sortedDocs = orderBy(this.documents, ['createdAt', 'id'], ['asc', 'asc']);
-        return sortedDocs.reduce((map, doc) => {
-            const docs = map.get(doc.type) || [];
-            if (docs.length === 0) {
-                map.set(doc.type, docs);
-            }
-            docs.push(doc);
-            return map;
-        }, new Map<DocumentType, TypeModelMapping[DocumentType][]>());
+    get sharedMainDocuments() {
+        return this.mainDocuments.filter((d) => d.authorId !== this.viewedUserId);
     }
 
     @action

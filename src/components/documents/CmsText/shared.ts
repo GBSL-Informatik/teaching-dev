@@ -19,5 +19,5 @@ export function useFirstCmsTextDocumentIfExists(id?: string): CmsText | undefine
 
     // Not using useFirstMainDocument() here because that would always supply a (dummy) document.
     const docRoot = useDocumentRoot(id, meta, false);
-    return docRoot.sharedMainDocument as CmsText | undefined;
+    return docRoot.sharedMainDocuments[0] as CmsText | undefined;
 }
