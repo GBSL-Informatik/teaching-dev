@@ -1,4 +1,4 @@
-import { Document as DocumentProps } from '@tdev-api/document';
+import { type DocumentModelType, Document as DocumentProps } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { computed } from 'mobx';
@@ -51,8 +51,8 @@ class File extends iFileSystem<'file'> {
     }
 
     @computed
-    get document() {
-        return this.children[0];
+    get document(): DocumentModelType | undefined {
+        return this.children.find((d) => d.uniqOnParent === 'file') ?? this.children[0];
     }
 }
 

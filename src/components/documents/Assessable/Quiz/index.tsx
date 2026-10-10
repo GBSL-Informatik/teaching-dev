@@ -1,7 +1,8 @@
 import { AssessableType } from '@tdev-api/document';
 import LoginRequiredForDocumentType from '@tdev-components/shared/Alert/LoginRequiredForDocumentType';
 import { DocumentRootIdContext } from '@tdev-hooks/useContextDocumentRootId';
-import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
+import { isDummyId } from '@tdev-hooks/useDummyId';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import useLinkedMetaModel from '@tdev-hooks/useLinkedMetaModel';
 import { useScrollTo } from '@tdev-hooks/useScrollTo';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
@@ -28,12 +29,19 @@ export interface Props extends AssessableComponentProps<AssessableType> {
 
 const Quiz = observer((props: Props) => {
     const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
-    const doc = useFirstRealMainDocument(props.id, meta);
+    const doc = useFirstMainDocument(props.id, meta);
     const [ref, animate] = useScrollTo(doc, 'end');
     useLinkedMetaModel(doc, meta);
 
     if (!doc) {
         return <LoginRequiredForDocumentType type={meta.type} />;
+    }
+    if (doc.isDummy || isDummyId(doc.id)) {
+        return (
+            <DocumentRootIdContext id={props.id}>
+                <div className={styles.content}>{props.children}</div>
+            </DocumentRootIdContext>
+        );
     }
 
     return (
