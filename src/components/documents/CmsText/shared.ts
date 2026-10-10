@@ -1,4 +1,4 @@
-import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
+import { useGlobalFirstMainDocument } from '@tdev-hooks/useGlobalFirstMainDocument';
 import CmsText, { CmsTextMeta } from '@tdev-models/documents/CmsText';
 import React from 'react';
 
@@ -7,17 +7,18 @@ interface CmsTextContextType {
 }
 
 export const CmsTextContext = React.createContext<CmsTextContextType | undefined>(undefined);
+const CmsMeta = new CmsTextMeta({});
 
 /**
  * @returns an existing, real CmsText document or undefined. (no dummy document is returned)
  */
 export function useFirstCmsTextDocumentIfExists(id?: string): CmsText | undefined {
-    const meta = React.useMemo(() => new CmsTextMeta({}), [id]);
     if (!id) {
         return undefined;
     }
-
-    // Not using useFirstMainDocument() here because that would always supply a (dummy) document.
-    const docRoot = useDocumentRoot(id, meta, false);
-    return docRoot.sharedMainDocuments[0] as CmsText | undefined;
+    const doc = useGlobalFirstMainDocument(id, CmsMeta, false, true);
+    if (doc.isDummy) {
+        return;
+    }
+    return doc;
 }

@@ -23,7 +23,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     access: Partial<Config> = {},
     skipCreate?: boolean,
     loadOnlyType?: DocumentType
-) => {
+): DocumentRoot<Type> => {
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');

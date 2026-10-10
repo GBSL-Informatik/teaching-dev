@@ -10,7 +10,7 @@ import { useDummyId } from './useDummyId';
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
 /**
- * This hook provides access to the first main document of the rootDocument.
+ * This hook provides access to the first main document from the viewed user, of the given rootDocument.
  * This is especially useful, when the DocumentType is expected to have only
  * one main document - like a TaskState.
  *
