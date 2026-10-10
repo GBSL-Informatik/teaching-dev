@@ -22,10 +22,9 @@ export const useNestedAssessableDocumentBy = <Type extends AssessableType>(
     /** ensure to put the selector in a React.useCallback */
     qid: string | undefined
 ) => {
-    if (!qid) {
-        return useFirstMainDocument(documentRootId, meta, true);
-    }
-    const doc = useUniqChildOfMainDocument<Type>(documentRootId, null, meta, qid);
+    const doc = !!qid
+        ? useUniqChildOfMainDocument<Type>(documentRootId, null, meta, qid)
+        : useFirstMainDocument(documentRootId, meta, true);
     useLinkedMetaModel(doc, meta);
     return doc;
 };
