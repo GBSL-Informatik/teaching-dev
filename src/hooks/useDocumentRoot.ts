@@ -1,7 +1,7 @@
 import { Access, DocumentType } from '@tdev-api/document';
 import { Config } from '@tdev-api/documentRoot';
 import { useStore } from '@tdev-hooks/useStore';
-import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
+import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import { reaction } from 'mobx';
 import React from 'react';
 import { useDummyId } from './useDummyId';
@@ -23,23 +23,23 @@ export const useDocumentRoot = <Type extends DocumentType>(
     access: Partial<Config> = {},
     skipCreate?: boolean,
     loadOnlyType?: DocumentType
-) => {
+): DocumentRoot<Type> => {
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
-    const componentStore = useStore('componentStore');
-    const dummyDocumentRoot = React.useMemo(() => {
-        return new DocumentRoot(
-            {
-                id: id || defaultRootDocId,
-                access: Access.RW_DocumentRoot,
-                sharedAccess: Access.None_DocumentRoot
-            },
-            meta,
-            documentRootStore,
-            true
-        );
-    }, []);
+    const [dummyDocumentRoot] = React.useState(
+        () =>
+            new DocumentRoot(
+                {
+                    id: id || defaultRootDocId,
+                    access: Access.RW_DocumentRoot,
+                    sharedAccess: Access.None_DocumentRoot
+                },
+                meta,
+                documentRootStore,
+                true
+            )
+    );
 
     /** initial load */
     React.useEffect(() => {
@@ -88,20 +88,23 @@ export const useDocumentRoot = <Type extends DocumentType>(
             return;
         }
         return reaction(
-            () => documentRootStore.find(dummyDocumentRoot.id)?._triggerDocumentReload,
+            () => documentRootStore.find(id)?._triggerDocumentReload,
             () => {
-                const docRoot = documentRootStore.find(dummyDocumentRoot.id);
+                const docRoot = documentRootStore.find(id);
+                if (id === '2686fc4e-10e7-4288-bf41-e6175e489b8e') {
+                    console.log('trigger reload for ps');
+                }
                 if (!docRoot) {
                     return;
                 }
-                const firstMainDoc = docRoot.documentsByType.get(meta.type)?.[0];
-                if (firstMainDoc) {
+                if (docRoot.mainDocument) {
                     return;
                 }
                 if (userStore.isUserSwitched) {
                     documentRootStore.loadInNextBatch(id, meta, {
                         documentRoot: 'addIfMissing',
-                        skipCreate: true
+                        skipCreate: true,
+                        documentType: loadOnlyType // TODO: correct and intended?
                     });
                 } else {
                     documentRootStore.loadInNextBatch(
@@ -113,38 +116,39 @@ export const useDocumentRoot = <Type extends DocumentType>(
                 }
             }
         );
-    }, [userStore, id, userStore.current?.hasElevatedAccess]);
+    }, [id, userStore.current?.hasElevatedAccess]);
 
-    React.useEffect(() => {
-        const rootDoc = documentRootStore.find<Type>(id);
-        if (!rootDoc || !rootDoc.isLoaded) {
-            return;
-        }
-        const hash = MetaHasher.toHashSync(meta.props);
-        if (hash === rootDoc._metaHash) {
-            return;
-        }
-        if (componentStore.taskableDocuments.has(meta.type)) {
-            const isNested =
-                !!(meta.props as { qid?: string }).qid && !(rootDoc.meta.props as { qid?: string }).qid;
-            if (isNested) {
-                return;
-            }
-        }
-        // update the metadata for this documentRoot, because it changed since the last load
-        documentRootStore.addDocumentRoot(
-            new DocumentRoot(
-                {
-                    id: rootDoc.id,
-                    access: rootDoc.rootAccess,
-                    sharedAccess: rootDoc.sharedAccess
-                },
-                meta,
-                documentRootStore,
-                false
-            )
-        );
-    }, [id, meta]);
+    // TODO: is this needed, or only a dev convenience?
+    // React.useEffect(() => {
+    //     const rootDoc = documentRootStore.find<Type>(id);
+    //     if (!rootDoc || !rootDoc.isLoaded) {
+    //         return;
+    //     }
+    //     const hash = MetaHasher.toHashSync(meta.props);
+    //     if (hash === rootDoc._metaHash) {
+    //         return;
+    //     }
+    //     if (componentStore.taskableDocuments.has(meta.type)) {
+    //         const isNested =
+    //             !!(meta.props as { qid?: string }).qid && !(rootDoc.meta.props as { qid?: string }).qid;
+    //         if (isNested) {
+    //             return;
+    //         }
+    //     }
+    //     // update the metadata for this documentRoot, because it changed since the last load
+    //     documentRootStore.addDocumentRoot(
+    //         new DocumentRoot(
+    //             {
+    //                 id: rootDoc.id,
+    //                 access: rootDoc.rootAccess,
+    //                 sharedAccess: rootDoc.sharedAccess
+    //             },
+    //             meta,
+    //             documentRootStore,
+    //             false
+    //         )
+    //     );
+    // }, [id, meta]);
 
     const rootDoc = documentRootStore.find<Type>(id);
     return rootDoc || dummyDocumentRoot;

@@ -61,7 +61,7 @@ export const onRename = (
         if (file.type === 'file' && (file as File).document) {
             const doc = file as File;
             const ext = doc.fileExtension.toLowerCase();
-            if (doc.document.type === 'code') {
+            if (doc.document?.type === 'code') {
                 const newExt = newName.includes('.') ? newName.split('.').pop()!.toLowerCase() : '';
                 const code = doc.document as Code;
                 if (newExt && newExt !== ext && code.code.trim() === '') {

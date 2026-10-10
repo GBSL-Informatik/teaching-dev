@@ -57,7 +57,7 @@ export function update(
 }
 
 export function addUser(id: string, userId: string, signal: AbortSignal): AxiosPromise<StudentGroup[]> {
-    return api.post(`/studentGroups/${id}/members/${userId}`, { signal });
+    return api.post(`/studentGroups/${id}/members/${userId}`, {}, { signal });
 }
 
 export function removeUser(id: string, userId: string, signal: AbortSignal): AxiosPromise<StudentGroup[]> {

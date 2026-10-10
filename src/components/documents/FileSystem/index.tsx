@@ -1,7 +1,7 @@
 import type * as DocumentFileTreeLib from '@tdev-components/documents/FileSystem/DocumentFileTree';
 import Loader from '@tdev-components/Loader';
 import { useClientLib } from '@tdev-hooks/useClientLib';
-import { useFirstRealMainDocument } from '@tdev-hooks/useFirstRealMainDocument';
+import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { ModelMeta } from '@tdev-models/documents/FileSystem/Directory';
 import { MetaInit } from '@tdev-models/documents/FileSystem/iFileSystem';
 import { observer } from 'mobx-react-lite';
@@ -19,7 +19,7 @@ const importStatement = () => import('@tdev-components/documents/FileSystem/Docu
 
 const FileSystem = observer((props: Props) => {
     const meta = React.useMemo(() => new ModelMeta(props), [props.id]);
-    const doc = useFirstRealMainDocument(props.id, meta);
+    const doc = useFirstMainDocument(props.id, meta);
     const Lib = useClientLib<typeof DocumentFileTreeLib>(
         importStatement,
         '@tdev-components/documents/FileSystem/DocumentFileTree'

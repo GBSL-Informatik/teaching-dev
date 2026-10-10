@@ -1,3 +1,4 @@
+import { NotCreated } from '@tdev-components/Rooms';
 import Button from '@tdev-components/shared/Button';
 import { useCreateDocument } from '@tdev-hooks/useCreateDocument';
 import { useStore } from '@tdev-hooks/useStore';
@@ -20,7 +21,12 @@ const CreateSimpleChat = observer((props: Props) => {
     const meta = React.useMemo(() => new ModelMeta({ name: props.name }), [props.id, props.name]);
     const { create, apiState } = useCreateDocument(props.id, meta, true);
     if (!userStore.current?.hasElevatedAccess) {
-        return null;
+        return (
+            <>
+                <ChatName name={props.name} documentRootId={props.id} />
+                <NotCreated message="Kein Chat vorhanden - warten auf die Lehrperson, bis der Chat erstellt wurde." />
+            </>
+        );
     }
     return (
         <div className={clsx(styles.simpleChatContainer)}>

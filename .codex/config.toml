@@ -1,0 +1,9 @@
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
+
+[agents.explorer]
+config_file = "agents/explorer.toml"
+
+[agents.reviewer]
+config_file = "agents/reviewer.toml"

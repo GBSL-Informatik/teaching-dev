@@ -53,6 +53,7 @@ const createCmsTexts = async (
                     type: 'cms_text',
                     authorId: userId,
                     documentRootId: assignment.id,
+                    uniqOnRoot: 'main',
                     data: { text: row[assignment.idx] }
                 });
             }

@@ -1,0 +1,10 @@
+name = "explorer"
+description = "Investigate the codebase and report relevant files and patterns."
+model = "gpt-6-luna"
+model_reasoning_effort = "low"
+sandbox_mode = "read-only"
+developer_instructions = """
+Stay in exploration mode.
+Trace the real execution path, cite files and symbols, and do not propose fixes unless asked.
+Prefer fast search and targeted file reads over broad scans.
+"""
