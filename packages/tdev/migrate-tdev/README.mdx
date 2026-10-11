@@ -47,7 +47,7 @@ yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip=
 : Gibt den Branch an, der im Remote-Projekt vor dem Ausführen der Aktion ausgecheckt werden soll (Standard: __main__). Der Branch muss existieren.
 
 
-# examples:
+#### Beispiele:
 ```bash
 yarn workspace @tdev/migrate-tdev migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
 yarn workspace @tdev/migrate-tdev migrate --only="inf-abc"             # --> migrates only inf-abc
@@ -79,6 +79,22 @@ Einige Aktionen sind bereits vorhanden:
 : Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
 `git.status`
 : zeigt den aktuellen Git-Status an.
+
+
+
+#### Beispiele:
+```bash
+# --> führt updateTdev aus und committet+pushed die Änderungen mit der Nachricht "[tdev] https://github.com/GBSL-Informatik/teaching-dev/pull/331"
+yarn workspace @tdev/migrate-tdev runAction updateTdev -m "https://github.com/GBSL-Informatik/teaching-dev/pull/331"
+# --> + formatiert das Projekt nach dem Update
+yarn workspace @tdev/migrate-tdev runAction updateTdev --format -m "https://github.com/GBSL-Informatik/teaching-dev/pull/331"
+yarn workspace @tdev/migrate-tdev runAction updateTdev --only="inf-abc,inf-ccd"  # --> nur für die Projekte inf-abc und inf-ccd
+yarn workspace @tdev/migrate-tdev runAction updateTdev --skip="inf-zyx"          # --> für alle im migrateTdev.config.yaml gelisteten Projekte, ausser inf-zyx 
+yarn workspace @tdev/migrate-tdev runAction format                               # --> formatiert die Projekte
+yarn workspace @tdev/migrate-tdev runAction format -m "fix formatting"           # --> + eigene Commit-Nachricht: "[tdev] fix formatting"
+yarn workspace @tdev/migrate-tdev runAction reinstall                            # --> rm node_modules, yarn.lock, install, commit, push
+yarn workspace @tdev/migrate-tdev runAction git.status                           # --> zeigt den aktuellen Git-Status an
+```
 
 ## Migrationen
 
