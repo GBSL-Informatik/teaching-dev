@@ -48,24 +48,34 @@ export const useUniqChildOfMainDocument = <Type extends DocumentType>(
 
     React.useEffect(() => {
         return reaction(
-            () => documentRootStore.find(documentRootId)?.mainDocument,
-            (mainDoc) => {
-                const isDummy = !mainDoc || mainDoc.isDummy || isDummyId(mainDoc.id);
-                if (isDummy || !documentRootId || !mainDoc.root?._canInitializeDocuments) {
-                    return;
+            () => {
+                const mainDoc = documentRootStore.find(documentRootId)?.mainDocument;
+                if (!documentRootId) {
+                    return undefined;
                 }
+                const isDummy = !mainDoc || mainDoc.isDummy || isDummyId(mainDoc.id);
+                if (isDummy || !mainDoc.root?._canInitializeDocuments) {
+                    return undefined;
+                }
+
                 const existingChild = mainDoc.children.find(
                     (d) => d.type === meta.type && d.uniqOnParent === uniqOnParentKey
                 );
+                return existingChild ? undefined : mainDoc;
+            },
+            (mainDoc) => {
+                if (!mainDoc || !documentRootId) {
+                    return;
+                }
+
                 const now = Date.now();
-                if (existingChild || now - createRequestedAt.current < 200) {
+                if (now - createRequestedAt.current < 200) {
                     return;
                 }
 
                 createRequestedAt.current = now;
-                console.log('!creating child document', uniqOnParentKey, documentRootId);
                 documentStore.create({
-                    documentRootId: documentRootId,
+                    documentRootId,
                     type: meta.type,
                     data: meta.defaultData,
                     parentId: mainDoc.id,
