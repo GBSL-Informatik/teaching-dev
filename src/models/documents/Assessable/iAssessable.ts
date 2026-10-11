@@ -54,7 +54,7 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @computed
     get linkedMeta() {
-        if (!this._linkedMeta && (this.type === 'quiz' || this.quiz)) {
+        if (!this._linkedMeta) {
             // Share page metadata across authors using a persisted quiz or question model.
             const refMeta = this.root?.allDocuments.find(
                 (doc) =>
