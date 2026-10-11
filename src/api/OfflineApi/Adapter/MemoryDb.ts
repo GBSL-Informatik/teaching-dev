@@ -1,7 +1,7 @@
 import type { Document, DocumentType } from '@tdev-api/document';
 import type { DbAdapter, DocumentsTransaction } from '.';
 import { OfflineUser } from '..';
-import { assertUniqueDocument } from '../documents';
+import { assertUniqueDocument, normalizeDocumentParent } from '../documents';
 import { IMPORT_STORES, type ImportedStores, prepareImport } from './import';
 
 class MemoryDbAdapter implements DbAdapter {
@@ -29,7 +29,7 @@ class MemoryDbAdapter implements DbAdapter {
                 getAll: async () => structuredClone(Object.values(documents)),
                 put: async (document) => {
                     assertUniqueDocument(Object.values(documents), document);
-                    documents[document.id] = structuredClone(document);
+                    documents[document.id] = structuredClone(normalizeDocumentParent(document));
                 },
                 delete: async (id) => {
                     delete documents[id];

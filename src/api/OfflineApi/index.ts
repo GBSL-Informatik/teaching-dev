@@ -1,6 +1,6 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { DB_NAME } from '@tdev-api/config';
-import { AxiosPromise } from 'axios';
+import { AxiosError, type AxiosPromise } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { Access, type Document, type DocumentType, type UniquenessConstraints } from '../document';
 import { DocumentRoot } from '../documentRoot';
@@ -15,13 +15,14 @@ import {
     cleanDocument,
     consolidateDocuments,
     deleteDocumentTree,
+    isDocumentConstraintError,
     matchingConstraint,
     OfflineDocumentError,
     sameDocumentScope
 } from './documents';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = true;
+const LOG_REQUESTS = false;
 
 export const DEFAULT_OFFLINE_USER: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -65,14 +66,54 @@ const resolveResponse = <T>(data: T, statusCode: number = 200, statusText: strin
     }) as AxiosPromise<T>;
 };
 const rejectResponse = <T>(data: T, statusCode: number = 400, statusText: string = ''): AxiosPromise<T> => {
-    return Promise.reject({
+    const response = {
         data,
         status: statusCode,
         statusText: statusText,
         config: {} as any,
         headers: {},
         request: {}
-    });
+    };
+    return Promise.reject(
+        new AxiosError(
+            statusText || `Request failed with status code ${statusCode}`,
+            statusCode >= 500 ? AxiosError.ERR_BAD_RESPONSE : AxiosError.ERR_BAD_REQUEST,
+            response.config,
+            response.request,
+            response
+        )
+    );
+};
+
+const rejectDocumentResponse = <T>(error: unknown): AxiosPromise<T> => {
+    if (error instanceof OfflineDocumentError) {
+        const name =
+            { 400: 'BAD REQUEST', 403: 'FORBIDDEN', 404: 'NOT FOUND' }[error.status] ??
+            'INTERNAL SERVER ERROR';
+        return rejectResponse(
+            {
+                errors: [
+                    {
+                        name,
+                        message: `[${error.status}] ${error.message}`,
+                        status: error.status,
+                        isOperational: true
+                    }
+                ]
+            } as T,
+            error.status,
+            error.message
+        );
+    }
+    if (isDocumentConstraintError(error)) {
+        // The backend leaves update/relink database conflicts to its generic 500 error handler.
+        return rejectResponse(
+            { errors: [{ name: error.name, message: 'Unique constraint violation' }] } as T,
+            500,
+            'Unique constraint violation'
+        );
+    }
+    throw error;
 };
 
 const log = (method: string, url: string, data?: any) => {
@@ -170,6 +211,7 @@ export default class OfflineApi {
             ...data,
             id: uuidv4(),
             authorId,
+            parentId: data.parentId || undefined,
             createdAt: now,
             updatedAt: now
         } as Document<Type>;
@@ -223,10 +265,7 @@ export default class OfflineApi {
         try {
             return resolveResponse(await work());
         } catch (error) {
-            if (error instanceof OfflineDocumentError) {
-                return rejectResponse({ error: error.message } as T, error.status, error.message);
-            }
-            throw error;
+            return rejectDocumentResponse<T>(error);
         }
     }
 
@@ -318,10 +357,35 @@ export default class OfflineApi {
                     );
                     return resolveResponse(result.document as unknown as T, result.exists ? 200 : 201);
                 } catch (error) {
-                    if (error instanceof OfflineDocumentError) {
-                        return rejectResponse({ error: error.message } as T, error.status, error.message);
+                    if (isDocumentConstraintError(error)) {
+                        const requested = data as Partial<Document<DocumentType>>;
+                        const actor = OfflineUser.getUser();
+                        try {
+                            const existing = (await this.documentsBy(requested.documentRootId)).find(
+                                (document) =>
+                                    matchingConstraint(
+                                        {
+                                            ...requested,
+                                            authorId:
+                                                query.get('onBehalfOf') === 'true'
+                                                    ? (requested.authorId ?? actor.id)
+                                                    : actor.id,
+                                            parentId: requested.parentId || undefined
+                                        } as Document<DocumentType>,
+                                        document
+                                    )
+                            );
+                            if (existing) {
+                                return resolveResponse(existing as unknown as T);
+                            }
+                        } catch (lookupError) {
+                            return rejectDocumentResponse<T>(lookupError);
+                        }
+                        return rejectDocumentResponse<T>(
+                            new OfflineDocumentError('Unique constraint violation')
+                        );
                     }
-                    throw error;
+                    return rejectDocumentResponse<T>(error);
                 }
             case 'documentRoots':
                 if (id === 'permissions') {

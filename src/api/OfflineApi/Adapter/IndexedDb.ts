@@ -2,7 +2,7 @@ import type { Document, DocumentType } from '@tdev-api/document';
 import { deleteDB, type IDBPDatabase, openDB } from 'idb';
 import type { DbAdapter, DBSchema, DocumentsTransaction } from '.';
 import { OfflineUser } from '..';
-import { assertUniqueDocument } from '../documents';
+import { normalizeDocumentParent } from '../documents';
 import { IMPORT_STORES, type ImportedStores, prepareImport } from './import';
 import { DB_VERSION, migrations } from './migrations';
 
@@ -29,6 +29,10 @@ class IndexedDbAdapter implements DbAdapter {
         let upgradeError: unknown;
         const opened = openDB<DBSchema>(this.dbName, DB_VERSION, {
             upgrade(db, oldVersion, newVersion, transaction) {
+                // Index population can fail asynchronously after createIndex has returned.
+                void transaction.done.catch((error) => {
+                    upgradeError ??= error;
+                });
                 upgraded = (async () => {
                     for (const migration of migrations) {
                         if (
@@ -74,8 +78,7 @@ class IndexedDbAdapter implements DbAdapter {
             get: (id) => transaction.store.get(id),
             getAll: () => transaction.store.getAll(),
             put: async (document) => {
-                assertUniqueDocument(await transaction.store.getAll(), document);
-                await transaction.store.put(document);
+                await transaction.store.put(normalizeDocumentParent(document));
             },
             delete: async (id) => {
                 await transaction.store.delete(id);

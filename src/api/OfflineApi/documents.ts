@@ -11,12 +11,29 @@ export class OfflineDocumentError extends Error {
     }
 }
 
+/** The memory adapter and validation use the same error name as IndexedDB's unique indexes. */
+export class OfflineDocumentConstraintError extends Error {
+    readonly name = 'ConstraintError';
+
+    constructor() {
+        super('Unique constraint violation');
+    }
+}
+
+export const isDocumentConstraintError = (error: unknown): error is Error =>
+    error instanceof Error && error.name === 'ConstraintError';
+
+/** Empty parent IDs mean no parent on the backend and must not enter IndexedDB's parent index. */
+export const normalizeDocumentParent = <T extends DocumentType>(document: Document<T>): Document<T> =>
+    document.parentId === '' ? { ...document, parentId: undefined } : document;
+
 export const compareDocuments = (a: OfflineDocument, b: OfflineDocument) =>
     new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() ||
     (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
 export const cleanDocument = <T extends DocumentType>(document: Document<T>): Document<T> => {
     const cleaned = { ...document };
+    // remove empty string or null values for parentId, uniqOnRoot, and uniqOnParent
     for (const key of ['parentId', 'uniqOnRoot', 'uniqOnParent'] as const) {
         if (!cleaned[key]) {
             delete cleaned[key];
@@ -38,7 +55,7 @@ export const matchingConstraint = (a: OfflineDocument, b: OfflineDocument) =>
 
 export const assertUniqueDocument = (documents: OfflineDocument[], document: OfflineDocument) => {
     if (documents.some((other) => other.id !== document.id && matchingConstraint(document, other))) {
-        throw new OfflineDocumentError('Unique constraint violation');
+        throw new OfflineDocumentConstraintError();
     }
 };
 
@@ -58,7 +75,7 @@ export const assertUniqueDocuments = (documents: OfflineDocument[]) => {
         ] as const) {
             if (key !== null) {
                 if (keys.has(key)) {
-                    throw new OfflineDocumentError('Unique constraint violation');
+                    throw new OfflineDocumentConstraintError();
                 }
                 keys.add(key);
             }
@@ -115,7 +132,7 @@ const questionId = (document: OfflineDocument) => {
 
 export const linkLegacyQuizAnswers = (documents: OfflineDocument[]) =>
     documents.map((document) => {
-        if (document.parentId || !questionId(document)) {
+        if (document.parentId || document.uniqOnParent !== undefined || !questionId(document)) {
             return document;
         }
         const quiz = documents
@@ -201,7 +218,9 @@ export const constrainLegacyQuizAnswers = (documents: OfflineDocument[]) => {
 };
 
 export const migrateLegacyDocuments = (documents: OfflineDocument[]) => {
-    const migrated = constrainLegacyQuizAnswers(constrainSingletonRoots(linkLegacyQuizAnswers(documents)));
+    const migrated = constrainLegacyQuizAnswers(
+        constrainSingletonRoots(linkLegacyQuizAnswers(documents.map(normalizeDocumentParent)))
+    );
     assertUniqueDocuments(migrated);
     return migrated;
 };

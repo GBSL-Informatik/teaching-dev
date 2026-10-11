@@ -3,11 +3,18 @@ import initializeStores from './004-initialize-stores';
 import linkQuizAnswers from './005-link-quiz-answers';
 import constrainSingletonRoots from './006-constrain-singleton-roots';
 import constrainQuizAnswers from './007-constrain-quiz-answers';
+import addUniqueDocumentIndexes from './008-add-unique-document-indexes';
 import type { Migration } from './types';
 
 // Versions 1–3 predate the migration registry. Keep released migrations immutable.
 export const migrations: readonly Migration[] = orderBy(
-    [initializeStores, linkQuizAnswers, constrainSingletonRoots, constrainQuizAnswers],
+    [
+        initializeStores,
+        linkQuizAnswers,
+        constrainSingletonRoots,
+        constrainQuizAnswers,
+        addUniqueDocumentIndexes
+    ],
     ['version'],
     ['asc']
 );
