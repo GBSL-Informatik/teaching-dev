@@ -1,5 +1,6 @@
 import { AssessableType, Document as DocumentProps } from '@tdev-api/document';
 import { IfmColors } from '@tdev-components/shared/Colors';
+import { isDummyId } from '@tdev-hooks/useDummyId';
 import iDocument from '@tdev-models/iDocument';
 import { iTaskableDocument } from '@tdev-models/iTaskableDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
@@ -53,10 +54,11 @@ abstract class iAssessable<T extends AssessableType> extends iDocument<T> implem
 
     @computed
     get linkedMeta() {
-        if (!this._linkedMeta && this.quiz) {
-            // try getting a linked meta from the quiz
+        if (!this._linkedMeta && (this.type === 'quiz' || this.quiz)) {
+            // Share page metadata across authors using a persisted quiz or question model.
             const refMeta = this.root?.allDocuments.find(
-                (doc) => doc.type === this.type && !!doc._linkedMeta && doc.qid === this.qid
+                (doc) =>
+                    !isDummyId(doc.id) && doc.type === this.type && !!doc._linkedMeta && doc.qid === this.qid
             ) as iAssessable<T> | undefined;
             return refMeta?._linkedMeta;
         }
