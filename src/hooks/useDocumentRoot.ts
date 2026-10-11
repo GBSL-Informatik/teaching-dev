@@ -91,9 +91,6 @@ export const useDocumentRoot = <Type extends DocumentType>(
             () => documentRootStore.find(id)?._triggerDocumentReload,
             () => {
                 const docRoot = documentRootStore.find(id);
-                if (id === '2686fc4e-10e7-4288-bf41-e6175e489b8e') {
-                    console.log('trigger reload for ps');
-                }
                 if (!docRoot) {
                     return;
                 }
@@ -104,7 +101,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
                     documentRootStore.loadInNextBatch(id, meta, {
                         documentRoot: 'addIfMissing',
                         skipCreate: true,
-                        documentType: loadOnlyType // TODO: correct and intended?
+                        documentType: loadOnlyType
                     });
                 } else {
                     documentRootStore.loadInNextBatch(
@@ -114,7 +111,8 @@ export const useDocumentRoot = <Type extends DocumentType>(
                         access
                     );
                 }
-            }
+            },
+            { fireImmediately: true }
         );
     }, [id, userStore.current?.hasElevatedAccess]);
 
