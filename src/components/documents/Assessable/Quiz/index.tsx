@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { QuizScore } from '../Feedback/QuizScore';
+import OfflineQuiz from './OfflineQuiz';
 import QuizControls from './QuizControls';
 import styles from './styles.module.scss';
 
@@ -37,11 +38,7 @@ const Quiz = observer((props: Props) => {
         return <LoginRequiredForDocumentType type={meta.type} />;
     }
     if (doc.isDummy || isDummyId(doc.id)) {
-        return (
-            <DocumentRootIdContext id={props.id}>
-                <div className={styles.content}>{props.children}</div>
-            </DocumentRootIdContext>
-        );
+        return <OfflineQuiz documentRootId={props.id}>{props.children}</OfflineQuiz>;
     }
 
     return (

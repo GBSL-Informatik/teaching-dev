@@ -21,6 +21,7 @@ interface Props<T extends AssessableType> {
 const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
     const { doc } = props;
     const correctAnswer = doc.linkedMeta?.correct ?? [];
+    const isDummy = doc.isDummy || isDummyId(doc.id);
     return (
         <Card
             classNames={{
@@ -38,11 +39,17 @@ const QuestionCard = observer(<T extends AssessableType>(props: Props<T>) => {
                 <>
                     <h3 className={clsx(styles.questionTitle)}>{doc.displayTitle}</h3>
                     <div className={clsx(styles.controlsAndFeedback)}>
-                        {isDummyId(doc.id) ? (
-                            <Icon path={mdiAlert} size={SIZE_S} color="var(--ifm-color-warning)" />
-                        ) : null}
                         {correctAnswer && <QuestionControls doc={doc} />}
                         <QuestionScore doc={doc} />
+                        {isDummy && (
+                            <Icon
+                                path={mdiAlert}
+                                color="var(--ifm-color-warning)"
+                                size={SIZE_S}
+                                title="Diese Frage wurde nicht von der Datenbank geladen und kann nicht gespeichert werden."
+                                className={clsx(styles.dummyIcon)}
+                            />
+                        )}
                     </div>
                 </>
             }
