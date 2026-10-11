@@ -42,6 +42,7 @@ const AddComment = observer((props: Props) => {
                                     documentRootId: props.pageId,
                                     parentId: comment.id,
                                     type: 'quill_v2',
+                                    uniqOnParent: 'comment',
                                     data: {
                                         delta: { ops: [{ insert: '\n' }] } as Delta
                                     }

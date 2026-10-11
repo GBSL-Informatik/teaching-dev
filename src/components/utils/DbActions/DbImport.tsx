@@ -35,15 +35,25 @@ const DbImport = observer((props: Props) => {
                     const file = (event.target as HTMLInputElement).files?.[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = (e) => {
+                        reader.onload = async (e) => {
                             try {
                                 const jsonData = JSON.parse(e.target?.result as string);
-                                localDb.importDb(jsonData).then(() => {
+                                await localDb.importDb(jsonData);
+                                if (sessionStore.apiMode === 'indexedDB') {
                                     window.location.reload();
-                                });
+                                } else if (sessionStore.apiMode === 'memory') {
+                                    const user = (await localDb.getAll('users')) as { id: string }[];
+                                    if (user.length > 0) {
+                                        sessionStore.root.cleanup();
+                                        sessionStore.root.load(user[0].id);
+                                    }
+                                }
                             } catch (error) {
                                 window.alert('Fehler beim Importieren der Daten: ' + error);
                             }
+                        };
+                        reader.onerror = () => {
+                            window.alert('Fehler beim Lesen der Datei: ' + reader.error);
                         };
                         reader.readAsText(file);
                     }

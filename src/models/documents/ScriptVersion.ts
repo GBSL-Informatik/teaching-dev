@@ -2,7 +2,7 @@ import type { Document as DocumentProps, ScriptVersionData } from '@tdev-api/doc
 import iDocument from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { computed } from 'mobx';
-import type Script from './Code';
+import iCode from './iCode';
 
 // TODO: Rename to CodeVersion
 class ScriptVersion extends iDocument<'script_version'> {
@@ -24,11 +24,11 @@ class ScriptVersion extends iDocument<'script_version'> {
 
     @computed
     get version() {
-        const script = this.root?.documentsByType.get('script')?.[0] as Script;
-        if (!script) {
+        const code = this.root?.mainDocument as iCode | undefined;
+        if (!code) {
             return 0;
         }
-        return script.versions.indexOf(this) + 1;
+        return code.versions.indexOf(this) + 1;
     }
 
     get pasted() {

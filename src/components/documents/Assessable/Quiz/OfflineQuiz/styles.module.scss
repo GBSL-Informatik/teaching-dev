@@ -1,0 +1,20 @@
+.offlineQuiz {
+    border: 1px solid var(--ifm-color-warning);
+    padding: 0.25em;
+    border-radius: var(--ifm-global-radius);
+    .title {
+        margin-bottom: 0.15em;
+        display: flex;
+        justify-content: space-between;
+        .icon {
+            cursor: help;
+        }
+    }
+    .content {
+        display: flex;
+        flex-direction: column;
+        > :last-child {
+            margin-bottom: 0;
+        }
+    }
+}

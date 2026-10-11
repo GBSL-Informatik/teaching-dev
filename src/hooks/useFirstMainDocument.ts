@@ -10,7 +10,7 @@ import { useDummyId } from './useDummyId';
 export const DUMMY_DOCUMENT_ID = 'dummy' as const;
 
 /**
- * This hook provides access to the first main document of the rootDocument.
+ * This hook provides access to the first main document from the viewed user, of the given rootDocument.
  * This is especially useful, when the DocumentType is expected to have only
  * one main document - like a TaskState.
  *
@@ -24,6 +24,7 @@ export const useFirstMainDocument = <Type extends DocumentType>(
     access: Partial<Config> = {},
     loadOnlyType?: DocumentType
 ) => {
+    const createRequestedAt = React.useRef<number>(0);
     const defaultDocId = useDummyId(documentRootId);
     const documentRoot = useDocumentRoot(documentRootId, meta, true, access, false, loadOnlyType);
     const userStore = useStore('userStore');
@@ -52,20 +53,23 @@ export const useFirstMainDocument = <Type extends DocumentType>(
                 if (!needsCreation || !createDocument) {
                     return;
                 }
+                const now = Date.now();
+                if (now - createRequestedAt.current < 1000) {
+                    return;
+                }
                 if (!loadOnlyType || loadOnlyType === meta.type) {
-                    documentStore.create(
-                        {
-                            documentRootId: documentRoot.id,
-                            authorId: userStore.current!.id,
-                            type: meta.type,
-                            data: meta.defaultData
-                        },
-                        true
-                    );
+                    createRequestedAt.current = Date.now();
+                    documentStore.create({
+                        documentRootId: documentRoot.id,
+                        authorId: userStore.current!.id,
+                        type: meta.type,
+                        uniqOnRoot: 'main',
+                        data: meta.defaultData
+                    });
                 }
             },
             { fireImmediately: true }
         );
     }, [userStore, createDocument, documentRoot]);
-    return (documentRoot?.documentsByType?.get(meta.type)?.[0] as TypeModelMapping[Type]) || dummyDocument;
+    return (documentRoot?.mainDocument as TypeModelMapping[Type]) || dummyDocument;
 };

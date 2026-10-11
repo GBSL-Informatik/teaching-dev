@@ -40,5 +40,5 @@ export const useDummyId = (refId?: string) => {
     if (!refId || isDummyId(refId)) {
         return `${DUMMY_PREFIX}${id}`;
     }
-    return `${TEMP_PREFIX}${id}`;
+    return `${TEMP_PREFIX}${refId}-${id}`;
 };

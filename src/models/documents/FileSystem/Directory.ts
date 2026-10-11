@@ -207,6 +207,7 @@ class Directory extends iFileSystem<'dir'> {
         return this.store.create({
             documentRootId: this.documentRootId,
             parentId: fileId,
+            uniqOnParent: 'file',
             type,
             data: {
                 ...(fileConfig.defaultData ?? {})

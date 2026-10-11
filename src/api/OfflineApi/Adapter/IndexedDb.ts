@@ -1,152 +1,192 @@
-import { Document, DocumentType } from '@tdev-api/document';
-import { IDBPDatabase, openDB } from 'idb';
-import { DbAdapter, DBSchema } from '.';
+import type { Document, DocumentType } from '@tdev-api/document';
+import { deleteDB, type IDBPDatabase, openDB } from 'idb';
+import type { DbAdapter, DBSchema, DocumentsTransaction } from '.';
 import { OfflineUser } from '..';
+import { normalizeDocumentParent } from '../documents';
+import { IMPORT_STORES, type ImportedStores, prepareImport } from './import';
+import { DB_VERSION, migrations } from './migrations';
 
 const withFallback = <T>(fn: () => Promise<T>, fallback: T = undefined as T) => {
     return fn().catch(() => fallback);
 };
 
 type InitStores = 'fsHandles' | 'documents' | 'studentGroups' | 'permissions' | 'users';
-const DB_VERSION = 3 as const;
 
 class IndexedDbAdapter implements DbAdapter {
     private dbName: string;
     private dbPromise: Promise<IDBPDatabase<DBSchema>>;
     readonly mode = 'indexedDB';
 
-    constructor(dbName: string, initializeStores: boolean = false) {
+    // Retain the constructor argument for existing callers; every mode now uses the same schema.
+    constructor(dbName: string, _initializeStores: boolean = false) {
         this.dbName = dbName;
-        this.dbPromise = this.initDB(initializeStores);
+        this.dbPromise = this.initDB();
+        void this.dbPromise.catch((error) => console.error('Failed to initialize IndexedDB:', error));
     }
 
-    private async initDB(initializeStores: boolean): Promise<IDBPDatabase<DBSchema>> {
-        return openDB<DBSchema>(this.dbName, DB_VERSION, {
-            upgrade(db) {
-                if (!db.objectStoreNames.contains('fsHandles')) {
-                    db.createObjectStore('fsHandles');
-                }
-                if (process.env.NODE_ENV !== 'production' || initializeStores) {
-                    if (!db.objectStoreNames.contains('documents')) {
-                        const store = db.createObjectStore('documents', { keyPath: 'id' });
-                        store.createIndex('documentRootId', 'documentRootId', { unique: false });
+    private async initDB(): Promise<IDBPDatabase<DBSchema>> {
+        let upgraded: Promise<void> = Promise.resolve();
+        let upgradeError: unknown;
+        const opened = openDB<DBSchema>(this.dbName, DB_VERSION, {
+            upgrade(db, oldVersion, newVersion, transaction) {
+                // Index population can fail asynchronously after createIndex has returned.
+                void transaction.done.catch((error) => {
+                    upgradeError ??= error;
+                });
+                upgraded = (async () => {
+                    for (const migration of migrations) {
+                        if (
+                            oldVersion < migration.version &&
+                            migration.version <= (newVersion ?? DB_VERSION)
+                        ) {
+                            await migration.upgrade(db, transaction);
+                        }
                     }
-                    if (!db.objectStoreNames.contains('studentGroups')) {
-                        db.createObjectStore('studentGroups', { keyPath: 'id' });
+                })().catch((error) => {
+                    upgradeError = error;
+                    console.error('IndexedDB migration failed:', error);
+                    try {
+                        transaction.abort();
+                    } catch {
+                        // A failed IndexedDB request may have already aborted the upgrade.
                     }
-                    if (!db.objectStoreNames.contains('permissions')) {
-                        db.createObjectStore('permissions', { keyPath: 'id' });
-                    }
-                    if (!db.objectStoreNames.contains('users')) {
-                        db.createObjectStore('users', { keyPath: 'id' });
-                    }
-                }
-            }
+                });
+            },
+            blocked: () => console.warn('IndexedDB upgrade blocked by another open tab:', this.dbName),
+            blocking: () => void this.dbPromise.then((db) => db.close())
         });
+        try {
+            const db = await opened;
+            await upgraded;
+            if (upgradeError) {
+                db.close();
+                throw upgradeError;
+            }
+            return db;
+        } catch (error) {
+            throw upgradeError ?? error;
+        }
+    }
+
+    async withDocumentsTransaction<T>(work: (store: DocumentsTransaction) => Promise<T>): Promise<T> {
+        const db = await this.dbPromise;
+        const transaction = db.transaction('documents', 'readwrite');
+        const done = transaction.done;
+        // Observe aborts even when a request or validation fails before awaiting completion.
+        void done.catch(() => {});
+        const store: DocumentsTransaction = {
+            get: (id) => transaction.store.get(id),
+            getAll: () => transaction.store.getAll(),
+            put: async (document) => {
+                await transaction.store.put(normalizeDocumentParent(document));
+            },
+            delete: async (id) => {
+                await transaction.store.delete(id);
+            }
+        };
+        try {
+            const result = await work(store);
+            await done;
+            return result;
+        } catch (error) {
+            try {
+                transaction.abort();
+            } catch {
+                // A failed IndexedDB request may have already aborted the transaction.
+            }
+            await done.catch(() => {});
+            throw error;
+        }
     }
 
     async get<T>(storeName: InitStores, id: string): Promise<T | undefined>;
     async get<T>(storeName: string, id: string): Promise<T | undefined>;
-    async get<T>(storeName: InitStores | string, id: string): Promise<T | undefined> {
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            return db.get(storeName, id) as Promise<T | undefined>;
-        });
+    async get<T>(storeName: string, id: string): Promise<T | undefined> {
+        const db = await this.dbPromise;
+        return withFallback(() => db.get(storeName, id) as Promise<T | undefined>);
     }
 
     async byDocumentRootId<T extends DocumentType>(
         documentRootId: string | null | undefined
     ): Promise<Document<T>[]> {
+        const db = await this.dbPromise;
         if (!documentRootId) {
-            return Promise.resolve([]);
+            return [];
         }
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            const index = db.transaction('documents', 'readonly').store.index('documentRootId');
-            const docs = (await index.getAll(documentRootId)) as Document<T>[];
-            return docs;
-        }, []);
+        return db.getAllFromIndex('documents', 'documentRootId', documentRootId);
     }
 
     async getAll<T>(storeName: string): Promise<T[]> {
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            return db.getAll(storeName) as Promise<T[]>;
-        }, []);
-    }
-    async put<T>(storeName: string, item: T, id: IDBKeyRange | IDBValidKey): Promise<void>;
-    async put<T>(storeName: string, item: T & { id: string }): Promise<void>;
-    async put<T>(
-        storeName: string,
-        item: (T & { id: string }) | T,
-        id?: IDBKeyRange | IDBValidKey
-    ): Promise<void> {
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            await db.put(storeName, item, id);
-        });
+        const db = await this.dbPromise;
+        return withFallback(() => db.getAll(storeName) as Promise<T[]>, []);
     }
 
-    async delete(storeName: InitStores, id: string): Promise<void>;
-    async delete(storeName: string, id: string): Promise<void>;
-    async delete(storeName: string | InitStores, id: string): Promise<void> {
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            await db.delete(storeName, id);
-        });
+    async put<T>(storeName: string, item: T, id: IDBKeyRange | IDBValidKey): Promise<void>;
+    async put<T>(storeName: string, item: T & { id: string }): Promise<void>;
+    async put<T>(storeName: string, item: T, id?: IDBKeyRange | IDBValidKey): Promise<void> {
+        if (storeName === 'documents') {
+            return this.withDocumentsTransaction((store) => store.put(item as Document<DocumentType>));
+        }
+        const db = await this.dbPromise;
+        await db.put(storeName, item, id);
+    }
+
+    async delete(storeName: string, id: string): Promise<void> {
+        if (storeName === 'documents') {
+            return this.withDocumentsTransaction((store) => store.delete(id));
+        }
+        const db = await this.dbPromise;
+        await db.delete(storeName, id);
     }
 
     async destroyDb(): Promise<void> {
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            await db.close();
-            // Optionally delete the database
-            await indexedDB.deleteDatabase(this.dbName);
-        });
+        const db = await this.dbPromise;
+        db.close();
+        await deleteDB(this.dbName);
     }
+
     async exportDb(): Promise<{ [storeName: string]: any }> {
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            const exportData: { [storeName: string]: any } = {};
-            for (const storeName of ['documents', 'studentGroups', 'permissions']) {
-                exportData[storeName] = await db.getAll(storeName);
-            }
-            // Here you can handle the exportData, e.g., save it to a file or send it to a server
-            return exportData;
-        });
-    }
-    async importDb(data: { [storeName: string]: any }): Promise<void> {
-        const hasUser = data['user'];
-        let needsCleanup = false;
-        if (hasUser) {
-            const user = data['user'];
-            const current = OfflineUser.getUser();
-            if (!current || current.id !== user.id) {
-                needsCleanup = true;
-            }
-            OfflineUser.setUser(user);
+        const db = await this.dbPromise;
+        const transaction = db.transaction(['documents', 'studentGroups', 'permissions'], 'readonly');
+        const data: { [storeName: string]: any } = { user: OfflineUser.getUser() };
+        for (const name of transaction.objectStoreNames) {
+            data[name] = await transaction.objectStore(name).getAll();
         }
-        return withFallback(async () => {
-            const db = await this.dbPromise;
-            if (needsCleanup) {
-                await db.clear('users');
-                await db.clear('documents');
-                await db.clear('studentGroups');
-                await db.clear('permissions');
+        await transaction.done;
+        return data;
+    }
+
+    async importDb(data: { [storeName: string]: any }): Promise<void> {
+        const db = await this.dbPromise;
+        const transaction = db.transaction([...IMPORT_STORES], 'readwrite');
+        const done = transaction.done;
+        void done.catch(() => {});
+        try {
+            const existing = {} as ImportedStores;
+            for (const name of IMPORT_STORES) {
+                existing[name] = await transaction.objectStore(name).getAll();
             }
-            for (const storeName of Object.keys(data)) {
-                if (storeName === 'user') {
-                    await db.put('users', data['user']);
-                }
-                if (!db.objectStoreNames.contains(storeName)) {
-                    continue;
-                }
-                const items = data[storeName];
-                for (const item of items) {
-                    await db.put(storeName, item);
+            const imported = prepareImport(data, existing, OfflineUser.getUser());
+            for (const name of IMPORT_STORES) {
+                const store = transaction.objectStore(name);
+                await store.clear();
+                for (const record of imported.stores[name]) {
+                    await store.put(record);
                 }
             }
-        });
+            await done;
+            if (imported.user) {
+                OfflineUser.setUser(imported.user);
+            }
+        } catch (error) {
+            try {
+                transaction.abort();
+            } catch {
+                // The transaction may already be aborted.
+            }
+            await done.catch(() => {});
+            throw error;
+        }
     }
 }
 

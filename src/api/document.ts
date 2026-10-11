@@ -233,8 +233,21 @@ export interface Document<Type extends DocumentType> {
 
     data: TypeDataMapping[Type];
 
+    /**
+     * A unique identifier for the document within its root document.
+     */
+    uniqOnRoot?: string | null | undefined;
+    /**
+     * A unique identifier for the document within its parent document (only has an effect when parentId is set).
+     */
+    uniqOnParent?: string | null | undefined;
+
     createdAt: string;
     updatedAt: string;
+}
+export interface UniquenessConstraints {
+    uniqOnRoot?: string | null;
+    uniqOnParent?: string | null;
 }
 
 export type Factory<Type extends DocumentType = DocumentType> = (
@@ -252,15 +265,11 @@ export function find<Type extends DocumentType>(
 export function create<Type extends DocumentType>(
     data: Partial<Document<Type>>,
     onBehalfOf: boolean,
-    isMain: boolean,
     signal: AbortSignal
 ): AxiosPromise<Document<Type>> {
     const queryParams: string[] = [];
     if (onBehalfOf) {
         queryParams.push('onBehalfOf=true');
-    }
-    if (isMain) {
-        queryParams.push('uniqueMain=true');
     }
     return api.post(`/documents${queryParams.length > 0 ? `?${queryParams.join('&')}` : ''}`, data, {
         signal
@@ -292,5 +301,13 @@ export function linkTo<Type extends DocumentType>(
     linkToId: string,
     signal: AbortSignal
 ): AxiosPromise<Document<Type>> {
-    return api.put(`/documents/${id}/linkTo/${linkToId}`, { signal });
+    return api.put(`/documents/${id}/linkTo/${linkToId}`, {}, { signal });
+}
+
+export function updateConstraints<Type extends DocumentType>(
+    id: string,
+    constraints: UniquenessConstraints,
+    signal: AbortSignal
+): AxiosPromise<Document<Type>> {
+    return api.put(`/documents/${id}/constraints`, { data: constraints }, { signal });
 }

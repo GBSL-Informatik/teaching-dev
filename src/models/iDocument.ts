@@ -24,6 +24,8 @@ abstract class iDocument<Type extends DocumentType> {
     readonly parentId: string | null | undefined;
     readonly documentRootId: string;
     readonly type: Type;
+    readonly uniqOnRoot: string | null;
+    readonly uniqOnParent: string | null;
     @observableRef accessor _pristine: TypeDataMapping[Type];
 
     readonly createdAt: Date;
@@ -54,6 +56,8 @@ abstract class iDocument<Type extends DocumentType> {
         this.store = store;
         this.id = props.id;
         this.authorId = props.authorId;
+        this.uniqOnRoot = props.uniqOnRoot ? props.uniqOnRoot : null;
+        this.uniqOnParent = props.uniqOnParent ? props.uniqOnParent : null;
         this.parentId = props.parentId;
         this.documentRootId = props.documentRootId;
         this.type = props.type;
@@ -154,7 +158,7 @@ abstract class iDocument<Type extends DocumentType> {
 
     @computed
     get isMain() {
-        return !this.parentId && this.root?.type === this.type;
+        return this.uniqOnRoot === 'main' && this.root?.type === this.type;
     }
 
     @computed

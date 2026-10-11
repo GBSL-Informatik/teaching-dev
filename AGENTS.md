@@ -28,6 +28,10 @@ Follow existing TypeScript/TSX patterns and `.prettierrc`: four-space indentatio
 
 Use PascalCase for components and classes, `useCamelCase` for hooks. Prefer configured `@tdev-*` import aliases and keep site-specific overrides in the appropriate `tdev-website/` directory.
 
+New components should normally be put in an `index.tsx` alongside a `styles.module.css` file, where the folder is named after the component. Use `clsx` for conditional class names. Avoid inline styles and global CSS.
+
+Use mobx for state management and only use local reactish component state for component-specific state that does not need to be shared or persisted after unmounting. Use `useStore` to access stores.
+
 ## Testing Guidelines
 
 Use tests only for remark plugins or packages which are run from the cli. No tests for components, hooks, or stores. Use Vitest with descriptive `describe` and `it` blocks. Name tests `*.test.ts` under the relevant module's `tests/` directory. Plugin tests commonly use inline snapshots; review snapshot changes for intended output differences. No coverage threshold is configured.
@@ -41,3 +45,13 @@ In pull requests, describe the behavior change, link relevant issues, report val
 ## Configuration & Secrets
 
 Use `.env.example` and the README to configure local settings. Keep credentials and tokens out of commits.
+
+## Agent delegation
+
+For complex tasks, delegate independent work to subagents:
+
+- Use explorer to investigate relevant code and existing patterns.
+- Use reviewer to review the completed changes.
+- The main agent implements changes and runs validation.
+- Avoid having multiple agents edit the same files.
+- Keep simple tasks in the main agent
