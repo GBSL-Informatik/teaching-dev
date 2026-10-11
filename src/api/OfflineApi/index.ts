@@ -1,9 +1,8 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { DB_NAME } from '@tdev-api/config';
 import { AxiosPromise } from 'axios';
-import { orderBy } from 'es-toolkit/array';
 import { v4 as uuidv4 } from 'uuid';
-import { Access, Document, DocumentType } from '../document';
+import { Access, type Document, type DocumentType, type UniquenessConstraints } from '../document';
 import { DocumentRoot } from '../documentRoot';
 import { GroupPermission, Permissions, UserPermission } from '../permission';
 import { StudentGroup } from '../studentGroup';
@@ -11,9 +10,18 @@ import { Role, User } from '../user';
 import { DbAdapter } from './Adapter';
 import IndexedDbAdapter from './Adapter/IndexedDb';
 import MemoryDbAdapter from './Adapter/MemoryDb';
+import {
+    assertUniqueDocument,
+    cleanDocument,
+    consolidateDocuments,
+    deleteDocumentTree,
+    matchingConstraint,
+    OfflineDocumentError,
+    sameDocumentScope
+} from './documents';
 
 const TIME_NOW = new Date().toISOString();
-const LOG_REQUESTS = false;
+const LOG_REQUESTS = true;
 
 export const DEFAULT_OFFLINE_USER: User = {
     id: 'c23c0238-4aeb-457f-9a2c-3d2d5d8931c0',
@@ -141,36 +149,85 @@ export default class OfflineApi {
         if (!documentRootId) {
             return Promise.resolve([]);
         }
-        return this.dbAdapter.byDocumentRootId<T>(documentRootId);
+        return (await this.dbAdapter.byDocumentRootId<T>(documentRootId)).map(cleanDocument);
     }
 
-    async upsertDocumentRecord<T extends DocumentType = any>(
-        data: Partial<Document<T>>,
-        uniqueMain: boolean = false
-    ): Promise<Document<T>> {
-        if (uniqueMain) {
-            const savedDocuments = await this.documentsBy<T>(data.documentRootId);
-            if (savedDocuments.length > 0) {
-                const firstByType = orderBy(savedDocuments, ['createdAt'], ['asc']).find(
-                    (doc) => doc.type === data.type
+    private async createDocumentRecord<Type extends DocumentType>(
+        data: Partial<Document<Type>>,
+        onBehalfOf: boolean
+    ): Promise<{ document: Document<Type>; exists: boolean }> {
+        const actor = OfflineUser.getUser();
+        const authorId = onBehalfOf ? (data.authorId ?? actor.id) : actor.id;
+        if (authorId !== actor.id && actor.role === Role.STUDENT) {
+            throw new OfflineDocumentError('Insufficient access permission');
+        }
+        if (!data.documentRootId || !data.type) {
+            throw new OfflineDocumentError('Missing document root or type', 400);
+        }
+        const now = new Date().toISOString();
+        // Client IDs identify requests; the server independently assigns persisted identities.
+        const requested = {
+            ...data,
+            id: uuidv4(),
+            authorId,
+            createdAt: now,
+            updatedAt: now
+        } as Document<Type>;
+        return this.dbAdapter.withDocumentsTransaction(async (store) => {
+            const all = await store.getAll();
+            const documents = all.filter((document) => document.documentRootId === requested.documentRootId);
+            const existing = documents.find((document) => matchingConstraint(requested, document));
+            if (existing) {
+                return { document: cleanDocument(existing as Document<Type>), exists: true };
+            }
+            if (requested.uniqOnRoot === 'main') {
+                const legacy = documents.filter(
+                    (document) =>
+                        sameDocumentScope(document, requested) &&
+                        !document.parentId &&
+                        document.uniqOnRoot == null
                 );
-                if (firstByType) {
-                    return firstByType;
+                if (legacy.length > 0) {
+                    const consolidated = consolidateDocuments(documents, legacy);
+                    const retainedIds = new Set(consolidated.documents.map((document) => document.id));
+                    for (const document of documents) {
+                        if (!retainedIds.has(document.id)) {
+                            await store.delete(document.id);
+                        }
+                    }
+                    let main: Document<Type> | undefined;
+                    for (const document of consolidated.documents) {
+                        const updated =
+                            document.id === consolidated.id ? { ...document, uniqOnRoot: 'main' } : document;
+                        await store.put(updated);
+                        if (updated.id === consolidated.id) {
+                            main = updated as Document<Type>;
+                        }
+                    }
+                    return { document: cleanDocument(main!), exists: true };
                 }
             }
-        }
-        const tNow = new Date().toISOString();
-        const document: Document<T> = {
-            createdAt: tNow,
-            updatedAt: tNow,
-            authorId: OfflineUser.getUser().id,
-            documentRootId: data.documentRootId,
-            id: uuidv4(),
-            ...data
-        } as Document<T>;
+            await store.put(requested);
+            return { document: cleanDocument(requested), exists: false };
+        });
+    }
 
-        await this.dbAdapter.put(DOCUMENTS_STORE, document);
-        return document;
+    async upsertDocumentRecord<Type extends DocumentType = DocumentType>(
+        data: Partial<Document<Type>>,
+        onBehalfOf: boolean = false
+    ): Promise<Document<Type>> {
+        return (await this.createDocumentRecord(data, onBehalfOf)).document;
+    }
+
+    private async documentResponse<T>(work: () => Promise<T>): AxiosPromise<T> {
+        try {
+            return resolveResponse(await work());
+        } catch (error) {
+            if (error instanceof OfflineDocumentError) {
+                return rejectResponse({ error: error.message } as T, error.status, error.message);
+            }
+            throw error;
+        }
     }
 
     async upsertStudentGroupRecord(data: Partial<StudentGroup>, _id?: string): Promise<StudentGroup> {
@@ -252,13 +309,20 @@ export default class OfflineApi {
                         documentRootIds.has(doc.documentRootId)
                     );
                     log('-> post', url, filteredDocuments);
-                    return resolveResponse(filteredDocuments as unknown as T);
+                    return resolveResponse(filteredDocuments.map(cleanDocument) as unknown as T);
                 }
-                const document = await this.upsertDocumentRecord<any>(
-                    data as Partial<Document<any>>,
-                    query.has('uniqueMain')
-                );
-                return resolveResponse(document as unknown as T);
+                try {
+                    const result = await this.createDocumentRecord(
+                        data as Partial<Document<DocumentType>>,
+                        query.get('onBehalfOf') === 'true'
+                    );
+                    return resolveResponse(result.document as unknown as T, result.exists ? 200 : 201);
+                } catch (error) {
+                    if (error instanceof OfflineDocumentError) {
+                        return rejectResponse({ error: error.message } as T, error.status, error.message);
+                    }
+                    throw error;
+                }
             case 'documentRoots':
                 if (id === 'permissions') {
                     const permissions = (data as { documentRootIds: string[] }).documentRootIds.map(
@@ -323,7 +387,7 @@ export default class OfflineApi {
                 if (id) {
                     const document = await this.dbAdapter.get<Document<any>>(DOCUMENTS_STORE, id);
                     if (document) {
-                        return resolveResponse(document as unknown as T);
+                        return resolveResponse(cleanDocument(document) as unknown as T);
                     }
                     return resolveResponse(null);
                 }
@@ -337,11 +401,13 @@ export default class OfflineApi {
                             filteredDocuments.push(doc);
                         }
                     }
-                    return resolveResponse(filteredDocuments as unknown as T);
+                    return resolveResponse(filteredDocuments.map(cleanDocument) as unknown as T);
                 }
 
                 return resolveResponse(
-                    (await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE)) as unknown as T
+                    (await this.dbAdapter.getAll<Document<any>>(DOCUMENTS_STORE)).map(
+                        cleanDocument
+                    ) as unknown as T
                 );
             case 'users':
                 return resolveResponse([OfflineUser.getUser()] as unknown as T);
@@ -401,28 +467,47 @@ export default class OfflineApi {
 
         switch (model) {
             case 'documents':
-                let document = await this.dbAdapter.get<Document<any>>(DOCUMENTS_STORE, id);
-                if (document) {
-                    const updatedAt = new Date().toISOString();
-
-                    if (parts[0] === 'linkTo') {
-                        document = {
-                            ...document,
-                            parentId: parts[1],
-                            updatedAt: updatedAt
-                        };
-                    } else {
-                        document = {
-                            ...document,
-                            ...(data as Partial<Document<any>>),
-                            updatedAt: updatedAt
-                        };
-                    }
-                    await this.dbAdapter.put(DOCUMENTS_STORE, document);
-
-                    return resolveResponse(document as unknown as T);
-                }
-                return resolveResponse(null); // or rejectResponse if you prefer
+                return this.documentResponse(async () => {
+                    const updated = await this.dbAdapter.withDocumentsTransaction(async (store) => {
+                        const document = await store.get(id);
+                        if (!document) {
+                            throw new OfflineDocumentError('Document not found', 404);
+                        }
+                        let changes: Partial<Document<DocumentType>>;
+                        if (parts[0] === 'constraints') {
+                            if (document.authorId !== OfflineUser.getUser().id) {
+                                throw new OfflineDocumentError('Not authorized');
+                            }
+                            const input = (data as { data?: UniquenessConstraints }).data;
+                            const constraints: UniquenessConstraints = {};
+                            for (const key of ['uniqOnRoot', 'uniqOnParent'] as const) {
+                                const value = input?.[key];
+                                if (value === null || (typeof value === 'string' && value.length > 0)) {
+                                    constraints[key] = value;
+                                }
+                            }
+                            if (Object.keys(constraints).length === 0) {
+                                throw new OfflineDocumentError('No valid constraints to update');
+                            }
+                            changes = constraints;
+                        } else if (parts[0] === 'linkTo') {
+                            const parent = await store.get(parts[1]);
+                            if (!parent || parent.documentRootId !== document.documentRootId) {
+                                throw new OfflineDocumentError('Parent document not found', 404);
+                            }
+                            changes = { parentId: parent.id };
+                        } else {
+                            changes = {
+                                data: (data as Partial<Document<DocumentType>>).data ?? document.data
+                            };
+                        }
+                        const result = { ...document, ...changes, updatedAt: new Date().toISOString() };
+                        assertUniqueDocument(await store.getAll(), result);
+                        await store.put(result);
+                        return cleanDocument(result);
+                    });
+                    return updated as unknown as T;
+                });
 
             case 'permissions':
                 return rejectResponse({} as T, 400, 'Not implemented');
@@ -445,45 +530,26 @@ export default class OfflineApi {
 
         switch (model) {
             case 'documents':
-                const doc = await this.dbAdapter.get<Document<DocumentType>>(DOCUMENTS_STORE, id);
-                await this.dbAdapter.delete(DOCUMENTS_STORE, id);
-                if (doc && doc.documentRootId) {
-                    const toDelete = new Set<string>();
-
-                    const parentChildMap = new Map<string, string[]>();
-                    const docs = await this.dbAdapter
-                        .byDocumentRootId(doc.documentRootId)
-                        .then((docs) => docs.filter((d) => !!d.parentId));
-                    for (const d of docs) {
-                        const children = parentChildMap.get(d.parentId!);
-                        if (children) {
-                            children.push(d.id);
-                        } else {
-                            parentChildMap.set(d.parentId!, [d.id]);
-                        }
-                    }
-                    const pending = [id];
-                    while (pending.length > 0) {
-                        const currentId = pending.shift()!;
-                        for (const childId of parentChildMap.get(currentId) || []) {
-                            if (toDelete.has(childId)) {
-                                continue;
-                            }
-                            toDelete.add(childId);
-                            pending.push(childId);
-                        }
-                    }
-                    await Promise.all(
-                        [...toDelete].map((docId) => this.dbAdapter.delete(DOCUMENTS_STORE, docId))
+                await this.dbAdapter.withDocumentsTransaction(async (store) => {
+                    const documents = await store.getAll();
+                    const retained = new Set(
+                        deleteDocumentTree(documents, [id]).map((document) => document.id)
                     );
-                }
+                    for (const document of documents) {
+                        if (!retained.has(document.id)) {
+                            await store.delete(document.id);
+                        }
+                    }
+                });
                 return resolveResponse(null);
             case 'documentRoots':
-                // Deleting a document root could involve deleting associated documents
-                const documents = await this.dbAdapter.byDocumentRootId(id);
-                for (const doc of documents) {
-                    await this.dbAdapter.delete(DOCUMENTS_STORE, doc.id);
-                }
+                await this.dbAdapter.withDocumentsTransaction(async (store) => {
+                    for (const document of await store.getAll()) {
+                        if (document.documentRootId === id) {
+                            await store.delete(document.id);
+                        }
+                    }
+                });
                 return resolveResponse(null);
             case 'permissions':
                 await this.dbAdapter.delete(PERMISSIONS_STORE, id);
