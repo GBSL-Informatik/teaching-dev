@@ -26,7 +26,6 @@ interface SwitchToUserButtonProps {
 
 const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserButtonProps) => {
     const userStore = useStore('userStore');
-    const pageStore = useStore('pageStore');
 
     const active = userStore.viewedUserId === user.id;
 
