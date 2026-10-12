@@ -12,6 +12,7 @@ export const Colors = {
     orange: styles.orange,
     warning: styles.orange,
     gray: styles.gray,
+    grey: styles.gray,
     lightBlue: styles.lightBlue,
     info: styles.gray,
     black: styles.black
@@ -29,6 +30,7 @@ export const ButtonColors: { [key in Color]: string } = {
     orange: 'button--warning',
     warning: 'button--warning',
     gray: 'button--secondary',
+    grey: 'button--secondary',
     lightBlue: 'button--info',
     info: 'button--info',
     black: 'button--primary'
@@ -47,6 +49,7 @@ export const IfmColors = {
     orange: 'var(--ifm-color-warning)',
     warning: 'var(--ifm-color-warning)',
     gray: 'var(--ifm-color-gray-600)',
+    grey: 'var(--ifm-color-gray-600)',
     lightBlue: 'var(--ifm-color-info)',
     info: 'var(--ifm-color-info)',
     black: 'var(--ifm-color-black)',
@@ -62,6 +65,6 @@ export const getButtonColorClass = (color: Color | string | undefined, defaultCo
         ButtonColors[color as Color] || ButtonColors[defaultColor as Color],
         color === 'blue' && styles.buttonBlue,
         color === 'black' && styles.buttonBlack,
-        color === 'gray' && styles.buttonGray
+        (color === 'gray' || color === 'grey') && styles.buttonGray
     );
 };
