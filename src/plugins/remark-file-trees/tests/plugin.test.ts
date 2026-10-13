@@ -59,19 +59,6 @@ const treeNodes = (root: Root) => {
     return nodes;
 };
 
-// Extract the live gallery JSX and its import so the snapshot is a complete, valid MDX document.
-const galleryTrees = (content: string) => {
-    const root = parseMdx(content);
-    const imports = root.children.filter(
-        (node) => node.type === 'mdxjsEsm' && dirImports({ type: 'root', children: [node] }).length > 0
-    );
-    return formatMdx(
-        remark()
-            .use(remarkMdx)
-            .stringify({ type: 'root', children: [...imports, ...treeNodes(root)] })
-    );
-};
-
 describe('remark-file-trees', () => {
     it('uses a single named root with nested directories and files', async () => {
         const input = alignLeft(`
@@ -258,21 +245,25 @@ describe('remark-file-trees', () => {
         `);
     });
 
-    it('defaults open to true and converts explicit boolean values and the bare attribute', async () => {
+    it('opens all directories by default and converts openLevel to a number', async () => {
         const input = alignLeft(`
             :::tree
             - src
             :::
 
-            :::tree{open}
+            :::tree{openLevel=0}
             - src
             :::
 
-            :::tree{open="true"}
+            :::tree{openLevel="1"}
             - src
             :::
 
-            :::tree{open="false"}
+            :::tree{openLevel=2}
+            - src
+            :::
+
+            :::tree{openLevel="2"}
             - src
             :::
         `);
@@ -281,100 +272,161 @@ describe('remark-file-trees', () => {
 
           <Dir dir={{ name: 'src', children: [] }} open />
 
-          <Dir dir={{ name: 'src', children: [] }} open />
+          <Dir dir={{ name: 'src', children: [] }} open={0} />
 
-          <Dir dir={{ name: 'src', children: [] }} open />
+          <Dir dir={{ name: 'src', children: [] }} open={1} />
 
-          <Dir dir={{ name: 'src', children: [] }} open={false} />
+          <Dir dir={{ name: 'src', children: [] }} open={2} />
+
+          <Dir dir={{ name: 'src', children: [] }} open={2} />
           "
         `);
     });
 
-    it('preserves CSS heights as strings, converts zero, and omits maxHeight when absent', async () => {
+    it('passes the opening depth to a named root with several nested directory levels', async () => {
+        const input = alignLeft(`
+            :::tree{openLevel=2}
+            - project
+              - src
+                - components
+                  - icons
+                    - Folder.tsx
+                - index.ts
+              - README.md
+            :::
+        `);
+        expect(await transform(input)).toMatchInlineSnapshot(`
+          "import Dir from '@tdev-components/FileSystem/Dir';
+
+          <Dir
+              dir={{
+                  name: 'project',
+                  children: [
+                      {
+                          name: 'src',
+                          children: [
+                              { name: 'components', children: [{ name: 'icons', children: ['Folder.tsx'] }] },
+                              'index.ts'
+                          ]
+                      },
+                      'README.md'
+                  ]
+              }}
+              open={2}
+          />
+          "
+        `);
+    });
+
+    it('counts the generated / root as the first opening level', async () => {
+        const input = alignLeft(`
+            :::tree{openLevel=2}
+            - src
+              - components
+                - icons
+                  - Folder.tsx
+              - index.ts
+            - public
+              - images
+                - logo.svg
+              - index.html
+            :::
+        `);
+        expect(await transform(input)).toMatchInlineSnapshot(`
+          "import Dir from '@tdev-components/FileSystem/Dir';
+
+          <Dir
+              dir={{
+                  name: '/',
+                  children: [
+                      {
+                          name: 'src',
+                          children: [
+                              { name: 'components', children: [{ name: 'icons', children: ['Folder.tsx'] }] },
+                              'index.ts'
+                          ]
+                      },
+                      { name: 'public', children: [{ name: 'images', children: ['logo.svg'] }, 'index.html'] }
+                  ]
+              }}
+              open={2}
+          />
+          "
+        `);
+    });
+
+    it('converts bare and explicit noSelect values to booleans and omits the prop by default', async () => {
         const input = alignLeft(`
             :::tree
             - src
             :::
 
-            :::tree{open="false" maxHeight="240px"}
+            :::tree{noSelect}
             - src
             :::
 
-            :::tree{open="false" maxHeight="20rem"}
+            :::tree{noSelect="true"}
             - src
             :::
 
-            :::tree{open="false" maxHeight="50vh"}
-            - src
-            :::
-
-            :::tree{open="false" maxHeight="100%"}
-            - src
-            :::
-
-            :::tree{open="false" maxHeight="none"}
-            - src
-            :::
-
-            :::tree{open="false" maxHeight="calc(100vh - 2rem)"}
-            - src
-            :::
-
-            :::tree{open="false" maxHeight="var(--tree-height)"}
-            - src
-            :::
-
-            :::tree{open="false" maxHeight="0"}
+            :::tree{noSelect="false"}
             - src
             :::
         `);
         const output = await transform(input);
-        const nodes = treeNodes(parseMdx(output));
         expect(
-            nodes[0].attributes.some(
-                (attribute) => attribute.type === 'mdxJsxAttribute' && attribute.name === 'maxHeight'
+            treeNodes(parseMdx(output))[0].attributes.some(
+                (attribute) => attribute.type === 'mdxJsxAttribute' && attribute.name === 'noSelect'
             )
         ).toBe(false);
-        expect(
-            nodes
-                .slice(1)
-                .every((node) =>
-                    node.attributes.some(
-                        (attribute) =>
-                            attribute.type === 'mdxJsxAttribute' &&
-                            attribute.name === 'maxHeight' &&
-                            typeof attribute.value === 'string'
-                    )
-                )
-        ).toBe(true);
         expect(output).toMatchInlineSnapshot(`
           "import Dir from '@tdev-components/FileSystem/Dir';
 
           <Dir dir={{ name: 'src', children: [] }} open />
 
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="240px" />
+          <Dir dir={{ name: 'src', children: [] }} open noSelect />
 
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="20rem" />
+          <Dir dir={{ name: 'src', children: [] }} open noSelect />
 
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="50vh" />
-
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="100%" />
-
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="none" />
-
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="calc(100vh - 2rem)" />
-
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="var(--tree-height)" />
-
-          <Dir dir={{ name: 'src', children: [] }} open={false} maxHeight="0" />
+          <Dir dir={{ name: 'src', children: [] }} open noSelect={false} />
           "
         `);
     });
 
+    it('combines openLevel, noSelect and maxHeight', async () => {
+        const input = alignLeft(`
+            :::tree{openLevel=2 noSelect maxHeight="12rem"}
+            - project
+              - src
+                - components
+                  - Button.tsx
+                - index.ts
+              - README.md
+            :::
+        `);
+        expect(await transform(input)).toMatchInlineSnapshot(`
+          "import Dir from '@tdev-components/FileSystem/Dir';
+
+          <Dir
+              dir={{
+                  name: 'project',
+                  children: [
+                      { name: 'src', children: [{ name: 'components', children: ['Button.tsx'] }, 'index.ts'] },
+                      'README.md'
+                  ]
+              }}
+              open={2}
+              noSelect
+              maxHeight="12rem"
+          />
+          "
+        `);
+    });
     const invalidList = 'A tree directive must contain exactly one Markdown list.';
     const invalidItem = 'Tree items must contain a name and at most one nested list.';
     const invalidName = 'Tree names support only plain text and inline code.';
-    const invalidOpen = 'The tree open attribute must be true or false.';
+    const invalidOpenLevel = 'The tree openLevel attribute must be a nonnegative integer.';
+    const invalidNoSelect = 'The tree noSelect attribute must be true or false.';
     const invalidHeight =
         'The tree maxHeight attribute must be a CSS height (e.g. 240px, 20rem, 50vh, none or 0).';
     it.each([
@@ -534,22 +586,76 @@ describe('remark-file-trees', () => {
             invalidItem
         ],
         [
-            'invalid open',
+            'nonnumeric opening level',
             `
-                :::tree{open="yes"}
+                :::tree{openLevel="yes"}
                 - src
                 :::
             `,
-            invalidOpen
+            invalidOpenLevel
         ],
         [
-            'numeric open',
+            'bare opening level',
             `
-                :::tree{open="1"}
+                :::tree{openLevel}
                 - src
                 :::
             `,
-            invalidOpen
+            invalidOpenLevel
+        ],
+        [
+            'boolean opening level',
+            `
+                :::tree{openLevel="false"}
+                - src
+                :::
+            `,
+            invalidOpenLevel
+        ],
+        [
+            'negative opening level',
+            `
+                :::tree{openLevel=-1}
+                - src
+                :::
+            `,
+            invalidOpenLevel
+        ],
+        [
+            'fractional opening level',
+            `
+                :::tree{openLevel=1.5}
+                - src
+                :::
+            `,
+            invalidOpenLevel
+        ],
+        [
+            'infinite opening level',
+            `
+                :::tree{openLevel="Infinity"}
+                - src
+                :::
+            `,
+            invalidOpenLevel
+        ],
+        [
+            'invalid noSelect',
+            `
+                :::tree{noSelect="yes"}
+                - src
+                :::
+            `,
+            invalidNoSelect
+        ],
+        [
+            'numeric noSelect',
+            `
+                :::tree{noSelect="1"}
+                - src
+                :::
+            `,
+            invalidNoSelect
         ],
         [
             'unitless height',
@@ -589,7 +695,7 @@ describe('remark-file-trees', () => {
 
     it('ignores unrecognized tree attributes', async () => {
         const input = alignLeft(`
-            :::tree{.custom #example other="value"}
+            :::tree{.custom #example other="value" open="false"}
             - src
             :::
         `);

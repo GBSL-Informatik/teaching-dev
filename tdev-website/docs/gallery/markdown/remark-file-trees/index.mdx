@@ -63,19 +63,22 @@ Geordnete und ungeordnete Listen sind möglich. Jeder Eintrag enthält einen Abs
 
 ## Attribute
 
-Die Attribute stehen direkt hinter `tree`, beispielsweise `:::tree{open="false" maxHeight="12rem"}`.
+Die Attribute stehen direkt hinter `tree`, beispielsweise `:::tree{openLevel=2 noSelect maxHeight="12rem"}`.
 
 | Attribut | Standard | Verhalten |
 | --- | --- | --- |
-| `open` | `true` | Öffnet anfangs alle Verzeichnisse. `open="false"` schliesst sie anfangs; sie bleiben durch Anklicken aufklappbar. `open="true"` und das kurze `{open}` setzen ausdrücklich `true`. |
+| `openLevel` | Nicht gesetzt: alle Ebenen offen | Gibt die Anzahl der anfangs geöffneten Verzeichnisebenen an. `0` schliesst die Wurzel, `1` öffnet nur die Wurzel, `2` öffnet zusätzlich deren direkte Unterverzeichnisse. |
+| `noSelect` | `false` | Verhindert die Auswahl und Hervorhebung von Dateien und Verzeichnissen. Verzeichnisse lassen sich weiterhin durch Anklicken öffnen und schliessen. |
 | `maxHeight` | Nicht gesetzt | Begrenzt die Höhe des gesamten Baums. Ohne Attribut gilt das bestehende Verhalten von `Dir`: keine zusätzliche Höhenbegrenzung. Bei Überlauf wird der Baum scrollbar. |
 
 `maxHeight` wird als CSS-Text an die Wurzelkomponente übergeben. Unterstützt werden beispielsweise `240px`, `20rem`, `50vh`, `100%`, `none`, `calc(100vh - 2rem)` und `var(--tree-height)`. Prozentwerte benötigen eine passende Höhe des übergeordneten Elements; CSS-Variablen müssen definiert sein. `maxHeight="0"` wird nach der Attributkonvertierung wieder zur Zeichenfolge `"0"`. Andere Zahlen ohne Einheit wie `maxHeight="240"`, leere Werte und boolesche Werte führen zu einem Fehler. Die Gültigkeit anderer CSS-Ausdrücke prüft der Browser.
 
-Dieses Beispiel setzt beide Attribute. Öffne das Wurzelverzeichnis, um seinen Inhalt zu sehen:
+Die Wurzel zählt immer als **erste Ebene**, auch ein automatisch erzeugtes `/`. `openLevel=2` und `openLevel="2"` sind gleichwertig: Das Plugin übergibt der bestehenden Komponente `open={2}`. Ohne `openLevel` übergibt es `open`, sodass alle Verzeichnisse anfangs offen sind. Die Verschachtelung der Verzeichnisdaten bleibt gleich.
+
+Dieses Beispiel öffnet das Wurzelverzeichnis `project` und seine direkten Unterverzeichnisse `src` und `public`. `components` und `utils` starten geschlossen. Die Auswahl ist deaktiviert, und die Höhe ist begrenzt:
 
 <CodeShowcase lang="md">
-:::tree{open="false" maxHeight="12rem"}
+:::tree{openLevel=2 noSelect maxHeight="12rem"}
 - project
   - src
     - components
@@ -93,6 +96,24 @@ Dieses Beispiel setzt beide Attribute. Öffne das Wurzelverzeichnis, um seinen I
 :::
 </CodeShowcase>
 
+Bei mehreren Einträgen zählt das ergänzte `/` mit: Hier sind `/`, `src` und `public` anfangs offen; `components` und `images` bleiben zunächst geschlossen.
+
+<CodeShowcase lang="md">
+:::tree{openLevel="2"}
+- src
+  - components
+    - icons
+      - Folder.tsx
+  - index.ts
+- public
+  - images
+    - logo.svg
+  - index.html
+:::
+</CodeShowcase>
+
+Mit `openLevel=0` startet der Baum ganz geschlossen. `{noSelect}` und `noSelect="true"` deaktivieren die Auswahl; `noSelect="false"` erlaubt sie ausdrücklich. Die Zeichenfolge `"false"` wird als boolescher Wert erkannt.
+
 ## Automatischer Import
 
 Das Plugin fügt bei Bedarf diesen Import hinzu:
@@ -104,14 +125,6 @@ import Dir from '@tdev-components/FileSystem/Dir';
 Mehrere Bäume auf derselben Seite teilen sich den Import. Ist `Dir` bereits ausdrücklich aus diesem Modul importiert, wird dieser Import wiederverwendet. Auch `import { default as Dir } from '@tdev-components/FileSystem/Dir';` wird erkannt.
 
 Für einen Baum sind weder manuelles JSX noch eigene `dir`-Props oder Komponentenimports nötig.
-
-## Grenzen und Fehler
-
-Ein `:::tree`-Block muss genau eine nichtleere Markdown-Liste enthalten. Leere Blöcke, zusätzlicher Text, mehrere separate Listen und Directive-Labels wie `:::tree[Titel]` führen zu einem Kompilierungsfehler mit der betroffenen Quellposition.
-
-Auch leere Namen, zusätzliche Absätze oder Blöcke innerhalb eines Eintrags, Aufgabenlisten, Links, Bilder, Hervorhebungen, explizite Zeilenumbrüche, JSX und MDX-Ausdrücke in Namen werden abgewiesen. Für solche Zeichen im Dateinamen eignet sich Inline-Code. Ein leeres Unterverzeichnis lässt sich innerhalb der Wurzel mit dieser Listensyntax nicht ausdrücken: Ein Eintrag ohne Unterliste ist dort immer eine Datei.
-
-`open` akzeptiert nur boolesche Werte; Werte wie `open="yes"` oder `open="1"` führen zu einem Fehler. Weitere Directive-Attribute werden ignoriert. Andere Markdown-Inhalte und Directives bleiben unverändert.
 
 ## Installation
 

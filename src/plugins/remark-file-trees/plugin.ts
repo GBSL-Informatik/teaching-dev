@@ -122,10 +122,13 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                         : first
                     : { name: '/', children };
             const attributes = transformAttributes(node.attributes, {}).attributes;
-            const open = attributes.open ?? true;
-            if (typeof open !== 'boolean') {
+            const openLevel = attributes.openLevel;
+            if (
+                openLevel !== undefined &&
+                (typeof openLevel !== 'number' || !Number.isInteger(openLevel) || openLevel < 0)
+            ) {
                 file.fail(
-                    'The tree open attribute must be true or false.',
+                    'The tree openLevel attribute must be a nonnegative integer.',
                     node,
                     'remark-file-trees:invalid-tree'
                 );
@@ -135,10 +138,20 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                 name: 'Dir',
                 attributes: [
                     toMdxJsxExpressionAttribute('dir', dir, dirExpression(dir)),
-                    toJsxAttribute('open', open)
+                    toJsxAttribute('open', openLevel ?? true)
                 ],
                 children: []
             };
+            if (attributes.noSelect !== undefined) {
+                if (typeof attributes.noSelect !== 'boolean') {
+                    file.fail(
+                        'The tree noSelect attribute must be true or false.',
+                        node,
+                        'remark-file-trees:invalid-tree'
+                    );
+                }
+                tree.attributes.push(toJsxAttribute('noSelect', attributes.noSelect));
+            }
             if (attributes.maxHeight !== undefined) {
                 const maxHeight = attributes.maxHeight;
                 if (
