@@ -1,5 +1,6 @@
 import type { Expression, ObjectExpression, Property } from 'estree';
 import type { List, ListItem, Root } from 'mdast';
+import { type ContainerDirective } from 'mdast-util-directive';
 import type { MdxjsEsm, MdxJsxFlowElement } from 'mdast-util-mdx';
 import type { Plugin, Transformer } from 'unified';
 import { SKIP, visit } from 'unist-util-visit';
@@ -21,7 +22,6 @@ const property = (name: string, value: Expression): Property => ({
     computed: false
 });
 
-// The shared object attribute helper handles flat objects. Dir needs recursive expressions.
 const dirExpression = (dir: DirType): ObjectExpression => ({
     type: 'ObjectExpression',
     properties: [
@@ -71,7 +71,7 @@ const listChildren = (list: List, file: VFile): DirType['children'] =>
     list.children.map((item) => listItem(item, file));
 
 // Keep the source and ESTree import in sync, as in remark-mdi.
-const IMPORT_DIR_NODE: MdxjsEsm = {
+const importStatement: () => MdxjsEsm = () => ({
     type: 'mdxjsEsm',
     value: `import Dir from '${DIR_SOURCE}';`,
     data: {
@@ -90,6 +90,10 @@ const IMPORT_DIR_NODE: MdxjsEsm = {
             ]
         }
     }
+});
+
+const fail = (file: VFile, node: ContainerDirective, message: string) => {
+    file.fail(message, node, 'remark-file-trees:invalid-tree');
 };
 
 const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
@@ -100,19 +104,11 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                 return;
             }
             if (node.children.length !== 1 || node.children[0].type !== 'list') {
-                file.fail(
-                    'A tree directive must contain exactly one Markdown list.',
-                    node,
-                    'remark-file-trees:invalid-tree'
-                );
+                fail(file, node, 'A tree directive must contain exactly one Markdown list.');
             }
             const children = listChildren(node.children[0] as List, file);
             if (children.length === 0) {
-                file.fail(
-                    'A tree list must contain at least one item.',
-                    node,
-                    'remark-file-trees:invalid-tree'
-                );
+                fail(file, node, 'A tree list must contain at least one item.');
             }
             const first = children[0];
             const dir: DirType =
@@ -127,11 +123,7 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                 openLevel !== undefined &&
                 (typeof openLevel !== 'number' || !Number.isInteger(openLevel) || openLevel < 0)
             ) {
-                file.fail(
-                    'The tree openLevel attribute must be a nonnegative integer.',
-                    node,
-                    'remark-file-trees:invalid-tree'
-                );
+                fail(file, node, 'The tree openLevel attribute must be a nonnegative integer.');
             }
             const tree: MdxJsxFlowElement = {
                 type: 'mdxJsxFlowElement',
@@ -148,10 +140,10 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                     (typeof maxHeight !== 'string' && maxHeight !== 0) ||
                     (typeof maxHeight === 'string' && !maxHeight.trim())
                 ) {
-                    file.fail(
-                        'The tree maxHeight attribute must be a CSS height (e.g. 240px, 20rem, 50vh, none or 0).',
+                    fail(
+                        file,
                         node,
-                        'remark-file-trees:invalid-tree'
+                        'The tree maxHeight attribute must be a CSS height (e.g. 240px, 20rem, 50vh, none or 0).'
                     );
                 }
                 tree.attributes.push(toJsxAttribute('maxHeight', String(maxHeight)));
@@ -178,7 +170,7 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                 );
             });
             if (!includesDir) {
-                root.children.unshift(IMPORT_DIR_NODE);
+                root.children.unshift(importStatement());
             }
         }
     };
