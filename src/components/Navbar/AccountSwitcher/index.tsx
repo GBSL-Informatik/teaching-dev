@@ -2,7 +2,14 @@ import clsx from 'clsx';
 
 import { useLocation } from '@docusaurus/router';
 import useIsBrowser from '@docusaurus/useIsBrowser';
-import { mdiAccountCircleOutline, mdiAccountSwitch, mdiHomeAccount, mdiShieldAccount } from '@mdi/js';
+import {
+    mdiAccountCircle,
+    mdiAccountCircleOutline,
+    mdiAccountEye,
+    mdiAccountSwitch,
+    mdiHomeAccount,
+    mdiShieldAccount
+} from '@mdi/js';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
@@ -19,24 +26,26 @@ interface SwitchToUserButtonProps {
 
 const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserButtonProps) => {
     const userStore = useStore('userStore');
-    const pageStore = useStore('pageStore');
+
+    const active = userStore.viewedUserId === user.id;
+
+    const icon = user.hasElevatedAccess
+        ? mdiShieldAccount
+        : active
+          ? mdiAccountEye
+          : isInCurrentClass
+            ? mdiAccountCircle
+            : mdiAccountCircleOutline;
 
     return (
         <div className={clsx(styles.switchToUserButton)}>
             <LiveStatusIndicator userId={user.id} size={0.3} className={clsx(styles.liveIndicator)} />
             <Button
-                icon={user.isStudent ? mdiAccountCircleOutline : mdiShieldAccount}
+                icon={icon}
                 className={clsx(styles.userButton)}
                 iconSide="left"
-                active={userStore.viewedUserId === user.id}
-                color={
-                    userStore.current?.id !== user.id &&
-                    pageStore.current?.userIdsWithoutEditingState?.includes(user.id)
-                        ? 'grey'
-                        : isInCurrentClass
-                          ? 'primary'
-                          : 'secondary'
-                }
+                active={active}
+                color={isInCurrentClass ? 'primary' : 'secondary'}
                 title={`Inhalte anzeigen für ${user.firstName} ${user.lastName}`}
                 onClick={() => userStore.switchUser(user.id)}
             >
