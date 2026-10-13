@@ -1,0 +1,134 @@
+---
+page_id: 4f7ac221-f971-4f68-a558-476706bd8fc9
+tags: [remark]
+---
+import CodeShowcase from '@tdev-components/CodeShowcase';
+
+# File Trees
+
+Mit `remark-file-trees` lässt sich eine Verzeichnisstruktur als verschachtelte Markdown-Liste innerhalb von `:::tree` beschreiben. Das Plugin erzeugt daraus die bestehende `Dir`-Komponente mit derselben Darstellung und denselben Interaktionen wie bei der manuellen Verwendung. Verzeichnisse lassen sich durch Anklicken öffnen und schliessen.
+
+## Syntax und Wurzelverzeichnis
+
+Jeder Baum hat genau **ein Wurzelverzeichnis**. Bei einem einzigen Eintrag auf der obersten Ebene wird dessen Name zur Wurzel und seine Unterliste zu deren Inhalt:
+
+<CodeShowcase lang="md">
+:::tree
+- src
+  - components
+    - Button.tsx
+  - index.ts
+:::
+</CodeShowcase>
+
+Ein einzelner Eintrag ohne Unterliste wird zu einem leeren Wurzelverzeichnis:
+
+<CodeShowcase lang="md">
+:::tree
+- src
+:::
+</CodeShowcase>
+
+Bei mehreren Einträgen auf der obersten Ebene ergänzt das Plugin ein Wurzelverzeichnis namens `/`:
+
+<CodeShowcase lang="md">
+:::tree
+- src
+  - components
+    - foo.docx
+    - bar.js
+  - utils
+    - helper.ts
+    - dir
+      - index.ts
+- public
+  - index.html
+  - favicon.ico
+- README.md
+:::
+</CodeShowcase>
+
+Innerhalb der Wurzel ist ein Eintrag mit Unterliste ein Verzeichnis, ein Eintrag ohne Unterliste eine Datei. Dateiendungen und abschliessende `/` ändern diese Regel nicht. Namen, Verschachtelung und Reihenfolge bleiben erhalten; es wird nichts sortiert.
+
+Geordnete und ungeordnete Listen sind möglich. Jeder Eintrag enthält einen Absatz mit seinem Namen und optional eine Unterliste. Namen dürfen normalen Text und Inline-Code enthalten. Inline-Code eignet sich beispielsweise für Zeichen, die Markdown sonst als Formatierung interpretieren würde:
+
+<CodeShowcase lang="md">
+:::tree
+- project
+  - `*notes*.md`
+  - `data & images`
+    - `a "quote".txt`
+:::
+</CodeShowcase>
+
+## Attribute
+
+Die Attribute stehen direkt hinter `tree`, beispielsweise `:::tree{open="false" maxHeight="12rem"}`.
+
+| Attribut | Standard | Verhalten |
+| --- | --- | --- |
+| `open` | `true` | Öffnet anfangs alle Verzeichnisse. `open="false"` schliesst sie anfangs; sie bleiben durch Anklicken aufklappbar. `open="true"` und das kurze `{open}` setzen ausdrücklich `true`. |
+| `maxHeight` | Nicht gesetzt | Begrenzt die Höhe des gesamten Baums. Ohne Attribut gilt das bestehende Verhalten von `Dir`: keine zusätzliche Höhenbegrenzung. Bei Überlauf wird der Baum scrollbar. |
+
+`maxHeight` wird als CSS-Text an die Wurzelkomponente übergeben. Unterstützt werden beispielsweise `240px`, `20rem`, `50vh`, `100%`, `none`, `calc(100vh - 2rem)` und `var(--tree-height)`. Prozentwerte benötigen eine passende Höhe des übergeordneten Elements; CSS-Variablen müssen definiert sein. `maxHeight="0"` wird nach der Attributkonvertierung wieder zur Zeichenfolge `"0"`. Andere Zahlen ohne Einheit wie `maxHeight="240"`, leere Werte und boolesche Werte führen zu einem Fehler. Die Gültigkeit anderer CSS-Ausdrücke prüft der Browser.
+
+Dieses Beispiel setzt beide Attribute. Öffne das Wurzelverzeichnis, um seinen Inhalt zu sehen:
+
+<CodeShowcase lang="md">
+:::tree{open="false" maxHeight="12rem"}
+- project
+  - src
+    - components
+      - Button.tsx
+      - Header.tsx
+      - Footer.tsx
+    - utils
+      - helper.ts
+    - index.ts
+  - public
+    - index.html
+    - favicon.ico
+  - README.md
+  - package.json
+:::
+</CodeShowcase>
+
+## Automatischer Import
+
+Das Plugin fügt bei Bedarf diesen Import hinzu:
+
+```tsx
+import Dir from '@tdev-components/FileSystem/Dir';
+```
+
+Mehrere Bäume auf derselben Seite teilen sich den Import. Ist `Dir` bereits ausdrücklich aus diesem Modul importiert, wird dieser Import wiederverwendet. Auch `import { default as Dir } from '@tdev-components/FileSystem/Dir';` wird erkannt.
+
+Für einen Baum sind weder manuelles JSX noch eigene `dir`-Props oder Komponentenimports nötig.
+
+## Grenzen und Fehler
+
+Ein `:::tree`-Block muss genau eine nichtleere Markdown-Liste enthalten. Leere Blöcke, zusätzlicher Text, mehrere separate Listen und Directive-Labels wie `:::tree[Titel]` führen zu einem Kompilierungsfehler mit der betroffenen Quellposition.
+
+Auch leere Namen, zusätzliche Absätze oder Blöcke innerhalb eines Eintrags, Aufgabenlisten, Links, Bilder, Hervorhebungen, explizite Zeilenumbrüche, JSX und MDX-Ausdrücke in Namen werden abgewiesen. Für solche Zeichen im Dateinamen eignet sich Inline-Code. Ein leeres Unterverzeichnis lässt sich innerhalb der Wurzel mit dieser Listensyntax nicht ausdrücken: Ein Eintrag ohne Unterliste ist dort immer eine Datei.
+
+`open` akzeptiert nur boolesche Werte; Werte wie `open="yes"` oder `open="1"` führen zu einem Fehler. Weitere Directive-Attribute werden ignoriert. Andere Markdown-Inhalte und Directives bleiben unverändert.
+
+## Installation
+
+:::info[Code]
+- `src/plugins/remark-file-trees`
+- `src/components/FileSystem/Dir.tsx`
+:::
+
+Das Plugin ist bereits in `recommendedBeforeDefaultRemarkPlugins` unter `src/siteConfig/markdownPluginConfigs.ts` registriert. Bei einer eigenen Plugin-Konfiguration gehört es vor die Standard-Remark-Plugins von Docusaurus. Die bestehende Directive-Parsing-Pipeline wird weiterverwendet:
+
+:::info[`docusaurus.config.ts`]
+```ts
+import fileTreesPlugin from './src/plugins/remark-file-trees/plugin';
+
+const BEFORE_DEFAULT_REMARK_PLUGINS = [
+    fileTreesPlugin
+    /* weitere Plugins */
+];
+```
+:::

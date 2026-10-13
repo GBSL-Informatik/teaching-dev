@@ -16,6 +16,7 @@ import commentPlugin from '../plugins/remark-comments/plugin';
 import deflistPlugin from '../plugins/remark-deflist/plugin';
 import detailsPlugin from '../plugins/remark-details/plugin';
 import enumerateAnswersPlugin from '../plugins/remark-enumerate-components/plugin';
+import fileTreesPlugin from '../plugins/remark-file-trees/plugin';
 import flexCardsPlugin from '../plugins/remark-flex-cards/plugin';
 import imagePlugin, { CaptionVisitor } from '../plugins/remark-images/plugin';
 import kbdPlugin from '../plugins/remark-kbd/plugin';
@@ -144,6 +145,8 @@ export const imagePluginConfig = [
 ];
 
 export const detailsPluginConfig = detailsPlugin;
+
+export const fileTreesPluginConfig = fileTreesPlugin;
 
 export const defboxPluginConfig = defboxPlugin;
 
@@ -306,6 +309,7 @@ export const transformAssessablePluginConfig = [
 export const rehypeKatexPluginConfig = rehypeKatex;
 
 export const recommendedBeforeDefaultRemarkPlugins = [
+    fileTreesPluginConfig,
     graphvizPluginConfig,
     deflistPluginConfig,
     flexCardsPluginConfig,
