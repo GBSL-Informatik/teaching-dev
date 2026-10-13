@@ -142,16 +142,6 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
                 ],
                 children: []
             };
-            if (attributes.noSelect !== undefined) {
-                if (typeof attributes.noSelect !== 'boolean') {
-                    file.fail(
-                        'The tree noSelect attribute must be true or false.',
-                        node,
-                        'remark-file-trees:invalid-tree'
-                    );
-                }
-                tree.attributes.push(toJsxAttribute('noSelect', attributes.noSelect));
-            }
             if (attributes.maxHeight !== undefined) {
                 const maxHeight = attributes.maxHeight;
                 if (

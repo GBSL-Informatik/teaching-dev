@@ -63,22 +63,21 @@ Geordnete und ungeordnete Listen sind möglich. Jeder Eintrag enthält einen Abs
 
 ## Attribute
 
-Die Attribute stehen direkt hinter `tree`, beispielsweise `:::tree{openLevel=2 noSelect maxHeight="12rem"}`.
+Die Attribute stehen direkt hinter `tree`, beispielsweise `:::tree{openLevel=2 maxHeight="12rem"}`.
 
 | Attribut | Standard | Verhalten |
 | --- | --- | --- |
 | `openLevel` | Nicht gesetzt: alle Ebenen offen | Gibt die Anzahl der anfangs geöffneten Verzeichnisebenen an. `0` schliesst die Wurzel, `1` öffnet nur die Wurzel, `2` öffnet zusätzlich deren direkte Unterverzeichnisse. |
-| `noSelect` | `false` | Verhindert die Auswahl und Hervorhebung von Dateien und Verzeichnissen. Verzeichnisse lassen sich weiterhin durch Anklicken öffnen und schliessen. |
 | `maxHeight` | Nicht gesetzt | Begrenzt die Höhe des gesamten Baums. Ohne Attribut gilt das bestehende Verhalten von `Dir`: keine zusätzliche Höhenbegrenzung. Bei Überlauf wird der Baum scrollbar. |
 
 `maxHeight` wird als CSS-Text an die Wurzelkomponente übergeben. Unterstützt werden beispielsweise `240px`, `20rem`, `50vh`, `100%`, `none`, `calc(100vh - 2rem)` und `var(--tree-height)`. Prozentwerte benötigen eine passende Höhe des übergeordneten Elements; CSS-Variablen müssen definiert sein. `maxHeight="0"` wird nach der Attributkonvertierung wieder zur Zeichenfolge `"0"`. Andere Zahlen ohne Einheit wie `maxHeight="240"`, leere Werte und boolesche Werte führen zu einem Fehler. Die Gültigkeit anderer CSS-Ausdrücke prüft der Browser.
 
 Die Wurzel zählt immer als **erste Ebene**, auch ein automatisch erzeugtes `/`. `openLevel=2` und `openLevel="2"` sind gleichwertig: Das Plugin übergibt der bestehenden Komponente `open={2}`. Ohne `openLevel` übergibt es `open`, sodass alle Verzeichnisse anfangs offen sind. Die Verschachtelung der Verzeichnisdaten bleibt gleich.
 
-Dieses Beispiel öffnet das Wurzelverzeichnis `project` und seine direkten Unterverzeichnisse `src` und `public`. `components` und `utils` starten geschlossen. Die Auswahl ist deaktiviert, und die Höhe ist begrenzt:
+Dieses Beispiel öffnet das Wurzelverzeichnis `project` und seine direkten Unterverzeichnisse `src` und `public`. `components` und `utils` starten geschlossen. Die Höhe ist begrenzt:
 
 <CodeShowcase lang="md">
-:::tree{openLevel=2 noSelect maxHeight="12rem"}
+:::tree{openLevel=2 maxHeight="12rem"}
 - project
   - src
     - components
@@ -112,7 +111,7 @@ Bei mehreren Einträgen zählt das ergänzte `/` mit: Hier sind `/`, `src` und `
 :::
 </CodeShowcase>
 
-Mit `openLevel=0` startet der Baum ganz geschlossen. `{noSelect}` und `noSelect="true"` deaktivieren die Auswahl; `noSelect="false"` erlaubt sie ausdrücklich. Die Zeichenfolge `"false"` wird als boolescher Wert erkannt.
+Mit `openLevel=0` startet der Baum ganz geschlossen.
 
 ## Automatischer Import
 

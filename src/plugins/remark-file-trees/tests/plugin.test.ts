@@ -355,47 +355,9 @@ describe('remark-file-trees', () => {
         `);
     });
 
-    it('converts bare and explicit noSelect values to booleans and omits the prop by default', async () => {
+    it('combines openLevel and maxHeight', async () => {
         const input = alignLeft(`
-            :::tree
-            - src
-            :::
-
-            :::tree{noSelect}
-            - src
-            :::
-
-            :::tree{noSelect="true"}
-            - src
-            :::
-
-            :::tree{noSelect="false"}
-            - src
-            :::
-        `);
-        const output = await transform(input);
-        expect(
-            treeNodes(parseMdx(output))[0].attributes.some(
-                (attribute) => attribute.type === 'mdxJsxAttribute' && attribute.name === 'noSelect'
-            )
-        ).toBe(false);
-        expect(output).toMatchInlineSnapshot(`
-          "import Dir from '@tdev-components/FileSystem/Dir';
-
-          <Dir dir={{ name: 'src', children: [] }} open />
-
-          <Dir dir={{ name: 'src', children: [] }} open noSelect />
-
-          <Dir dir={{ name: 'src', children: [] }} open noSelect />
-
-          <Dir dir={{ name: 'src', children: [] }} open noSelect={false} />
-          "
-        `);
-    });
-
-    it('combines openLevel, noSelect and maxHeight', async () => {
-        const input = alignLeft(`
-            :::tree{openLevel=2 noSelect maxHeight="12rem"}
+            :::tree{openLevel=2 maxHeight="12rem"}
             - project
               - src
                 - components
@@ -416,7 +378,6 @@ describe('remark-file-trees', () => {
                   ]
               }}
               open={2}
-              noSelect
               maxHeight="12rem"
           />
           "
@@ -426,7 +387,6 @@ describe('remark-file-trees', () => {
     const invalidItem = 'Tree items must contain a name and at most one nested list.';
     const invalidName = 'Tree names support only plain text and inline code.';
     const invalidOpenLevel = 'The tree openLevel attribute must be a nonnegative integer.';
-    const invalidNoSelect = 'The tree noSelect attribute must be true or false.';
     const invalidHeight =
         'The tree maxHeight attribute must be a CSS height (e.g. 240px, 20rem, 50vh, none or 0).';
     it.each([
@@ -638,24 +598,6 @@ describe('remark-file-trees', () => {
                 :::
             `,
             invalidOpenLevel
-        ],
-        [
-            'invalid noSelect',
-            `
-                :::tree{noSelect="yes"}
-                - src
-                :::
-            `,
-            invalidNoSelect
-        ],
-        [
-            'numeric noSelect',
-            `
-                :::tree{noSelect="1"}
-                - src
-                :::
-            `,
-            invalidNoSelect
         ],
         [
             'unitless height',
