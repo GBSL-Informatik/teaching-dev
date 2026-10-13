@@ -22,6 +22,7 @@
     position: relative;
     .liveIndicator {
         position: absolute;
+        z-index: 1;
         left: 3px;
         top: 1px;
     }
