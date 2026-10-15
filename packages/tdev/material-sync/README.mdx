@@ -57,6 +57,44 @@ Obige Konfiguration kann auch abgekürzt wie folgt geschrieben werden:
 : Pfad zum Zielordner, relativ zum Ordner `versioned_docs/version-<klasse>/`.
 : *alias* `section` (kann gleichbedeutend zu `as` verwendet werden)
 
+### Ausschluss aufgrund vom Dateinamen
+
+Das `@tdev/material-sync` ignoriert alle Dateien, die ein `.nosync.`, `.sync.` im Dateinamen enthalten oder mit `.nosync` enden. Dies kann z.B. für Dateien genutzt werden, die nur in der Entwicklungsumgebung benötigt werden, aber nicht in den Klassenordnern erscheinen sollen.
+
+#### Beispiel:
+
+::::cards
+#### Vorhandene Dateien
+:::tree
+- kryptologie
+    - 01-Grundbegriffe.mdx
+    - 02-Sicherheitsziele.mdx
+    - 03-Antike
+        - 01-Skytale.mdx
+        - 02-Polybios.mdx
+        - notes.sync.mdx
+    - 20-Archive.nosync
+        - 01-Grundbegriffe-v26.mdx
+        - 03-Antike-v26
+            - 01-Skytale.mdx
+            - 02-Polybios.mdx
+            - 03-Caesar.mdx
+    - index.mdx
+    - notes.nosync.mdx
+:::
+::br
+#### Synchronisierte Inhalte
+:::tree
+- kryptologie
+    - 01-Grundbegriffe.mdx
+    - 02-Sicherheitsziele.mdx
+    - 03-Antike
+        - 01-Skytale.mdx
+        - 02-Polybios.mdx
+    - index.mdx
+:::
+::::
+
 ## CLI
 
 Um das Material entsprechend der Konfiguration im `material.config.yaml` in die jeweiligen Klassenordner zu kopieren, muss folgender Befehl ausgeführt werden:

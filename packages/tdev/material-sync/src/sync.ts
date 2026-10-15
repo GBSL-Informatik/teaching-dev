@@ -133,7 +133,7 @@ const main = async (): Promise<void> => {
                         }
                     }
                 }
-                rsync.exclude(['.sync.*', '*.nosync.*']);
+                rsync.exclude(['.sync.*', '*.nosync', '*.nosync.*']);
                 console.log('SYNC', config.to, srcPath);
                 await ensureSync(rsync, srcPath);
             } else {
