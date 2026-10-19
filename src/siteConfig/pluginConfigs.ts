@@ -34,8 +34,8 @@ export const rsDoctorPluginConfig: PluginConfig = process.env.RSDOCTOR === 'true
 export const brythonCodePluginConfig: () => PluginConfig = () => [
     require.resolve('@tdev/brython-code/plugin'),
     {
-        brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython.min.js',
-        brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.13.2/brython_stdlib.js',
+        brythonSrc: 'https://cdn.jsdelivr.net/npm/brython@3.15.0/brython.min.js',
+        brythonStdlibSrc: 'https://cdn.jsdelivr.net/npm/brython@3.15.0/brython_stdlib.js',
         libDir: '/bry-libs/'
     }
 ];
