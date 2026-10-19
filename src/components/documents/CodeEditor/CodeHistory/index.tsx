@@ -9,13 +9,21 @@ import { Prism } from 'prism-react-renderer';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import * as React from 'react';
-import DiffViewer from 'react-diff-viewer-continued';
+import DiffViewer, { type ReactDiffViewerStylesOverride } from 'react-diff-viewer-continued';
 import Button from '../Button';
 import styles from './styles.module.scss';
 
+const DIFF_STYLES: ReactDiffViewerStylesOverride = {
+    marker: {
+        pre: {
+            display: 'none'
+        }
+    }
+};
+
 const highlightSyntax = (str: string) => {
     if (!str) {
-        return;
+        return <></>;
     }
     const leftSpacesCount = str.match(/^\s*/)?.[0].length || 0;
     const prefix = '&nbsp;'.repeat(leftSpacesCount);
@@ -132,9 +140,9 @@ const CodeHistory = observer(<T extends CodeType>(props: Props<T>) => {
                                             )}
                                         </div>
                                     }
-                                    renderContent={highlightSyntax as any}
+                                    renderContent={highlightSyntax}
                                     showDiffOnly
-                                    hideMarkers
+                                    styles={DIFF_STYLES}
                                 />
                             )}
                         </div>
