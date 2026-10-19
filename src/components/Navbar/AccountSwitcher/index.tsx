@@ -12,6 +12,7 @@ import {
 } from '@mdi/js';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Button from '@tdev-components/shared/Button';
+import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
 import User from '@tdev-models/User';
 import _ from 'es-toolkit/compat';
@@ -27,7 +28,7 @@ interface SwitchToUserButtonProps {
 const SwitchToUserButton = observer(({ user, isInCurrentClass }: SwitchToUserButtonProps) => {
     const userStore = useStore('userStore');
 
-    const active = userStore.viewedUserId === user.id;
+    const active = useComputed(() => userStore.viewedUserId === user.id, [userStore, user]);
 
     const icon = user.hasElevatedAccess
         ? mdiShieldAccount

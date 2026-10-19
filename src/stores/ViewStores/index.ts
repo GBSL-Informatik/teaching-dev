@@ -1,6 +1,7 @@
 import { ViewStore as ViewStores, ViewStoreType, ViewStoreTypeMapping } from '@tdev-api/document';
 import type { RootStore } from '@tdev-stores/rootStore';
 import { action, computed, observable, observableRef } from 'mobx';
+import { computedFn } from 'mobx-utils';
 import { AdminView } from './AdminView';
 import { FileTreeView } from './FileTreeView';
 import { PermissionsControlView } from './PermissionsControlView';
@@ -110,10 +111,10 @@ export default class ViewStore {
         return this.fullscreenTargetId !== null;
     }
 
-    isFullscreenTarget(targetId: string | null) {
+    isFullscreenTarget = computedFn(function (this: ViewStore, targetId: string | null) {
         if (!targetId) {
             return false;
         }
         return this.fullscreenTargetId === targetId;
-    }
+    });
 }

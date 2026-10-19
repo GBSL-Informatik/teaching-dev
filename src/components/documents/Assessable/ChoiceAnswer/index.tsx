@@ -3,6 +3,7 @@ import { DocContext } from '@tdev-components/documents/DocumentContext';
 import Loader from '@tdev-components/Loader';
 import UnknownDocumentType from '@tdev-components/shared/Alert/UnknownDocumentType';
 import { useDocument } from '@tdev-hooks/useContextDocument';
+import { useComputed } from '@tdev-hooks/useComputed';
 import { useDocumentRootId } from '@tdev-hooks/useContextDocumentRootId';
 import { useNestedAssessableDocumentBy } from '@tdev-hooks/useNestedAssessableDocumentBy';
 import { AssessableComponentProps } from '@tdev-models/documents/Assessable/AssessableMeta';
@@ -71,12 +72,13 @@ const onUpdateSelection = action((doc: ChoiceAnswerModel, optionIndex: number, c
 });
 ChoiceAnswer.Option = observer((props: Omit<OptionProps<'choice_answer'>, 'onChange'>) => {
     const doc = useDocument<'choice_answer'>();
+    const isChecked = useComputed(() => doc.choices.has(props.optionIndex), [doc, props.optionIndex]);
     return (
         <Option
             {...props}
             onChange={onUpdateSelection}
             optionOrder={doc.optionsDisplayOrder(props.optionIndex)}
-            isChecked={doc.choices.has(props.optionIndex)}
+            isChecked={isChecked}
             multiple={doc.multiple}
         />
     );

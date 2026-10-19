@@ -6,7 +6,7 @@ import { action, computed, observable } from 'mobx';
 export class AdminView {
     readonly root: RootStore;
     @observable accessor groupSearchFilter = '';
-    openGroupIds = observable.set<string>([]);
+    openGroupIds = observable.map<string, true>();
 
     constructor(root: RootStore) {
         this.root = root;
@@ -21,7 +21,7 @@ export class AdminView {
     @action
     setGroupOpen(groupId: string, isOpen: boolean) {
         if (isOpen) {
-            this.openGroupIds.add(groupId);
+            this.openGroupIds.set(groupId, true);
         } else {
             this.openGroupIds.delete(groupId);
         }
