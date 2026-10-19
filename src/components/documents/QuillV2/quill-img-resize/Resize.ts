@@ -103,15 +103,13 @@ export default class Resize extends BaseModule {
         }
         // update image size
         const deltaX = evt.clientX - this.dragStartX;
-        if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-            // left-side resize handler; dragging right shrinks image
-            this.img.width = Math.round(this.preDragWidth - deltaX);
-            this.img.style.width = `${Math.round(this.preDragWidth - deltaX)}px`;
-        } else {
-            // right-side resize handler; dragging right enlarges image
-            this.img.width = Math.round(this.preDragWidth + deltaX);
-            this.img.style.width = `${Math.round(this.preDragWidth + deltaX)}px`;
-        }
+        const isLeftHandle = this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3];
+        const width = Math.max(1, Math.round(this.preDragWidth + (isLeftHandle ? -deltaX : deltaX)));
+        this.img.width = width;
+        this.img.style.width = `${width}px`;
+        // Let height follow the natural aspect ratio, including for restored images with a fixed height.
+        this.img.removeAttribute('height');
+        this.img.style.height = 'auto';
         this.requestUpdate();
     };
 
