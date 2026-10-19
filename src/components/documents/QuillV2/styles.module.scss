@@ -74,6 +74,7 @@
         :global(.ql-container) {
             &:global(.ql-bubble) {
                 :global(.ql-tooltip) {
+                    box-sizing: border-box;
                     z-index: calc(var(--ifm-z-index-fixed) - 1);
                 }
             }
