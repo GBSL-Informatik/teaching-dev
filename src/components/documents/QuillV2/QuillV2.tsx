@@ -11,15 +11,15 @@ import { observer } from 'mobx-react-lite';
 import { Delta } from 'quill/core';
 import 'quill/dist/quill.bubble.css'; // Add css for snow theme
 import 'quill/dist/quill.snow.css'; // Add css for snow theme
-import BaseImageFormat from 'quill/formats/image';
 import type Toolbar from 'quill/modules/toolbar';
 import React from 'react';
 import { useQuill } from 'react-quilljs';
+import './configureQuill';
 import { downscaleImage } from './quill-img-compress/downscaleImage';
 import dropImage from './quill-img-compress/dropImage';
 import { file2b64 } from './quill-img-compress/file2b64';
 import pasteImage from './quill-img-compress/pasteImage';
-import ImageResize from './quill-img-resize';
+import type ImageResize from './quill-img-resize';
 import styles from './styles.module.scss';
 
 const FORMATS = [
@@ -67,7 +67,7 @@ const QuillV2 = observer((props: Props) => {
     const [processingImage, setProcessingImage] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const [theme] = React.useState(props.theme || 'snow');
-    const { quill, quillRef, Quill } = useQuill({
+    const { quill, quillRef } = useQuill({
         theme: theme,
         modules: {
             toolbar: doc.meta.toolbar,
@@ -261,42 +261,6 @@ const QuillV2 = observer((props: Props) => {
             imageResize?.destroy();
         };
     }, [quill]);
-
-    if (Quill && !quill) {
-        class ImageFormat extends BaseImageFormat {
-            static formats(domNode: Element) {
-                const formats: { [key: string]: string } = {};
-                /**
-                 * only those attributes are allowed to be set for the local editor
-                 */
-                ['alt', 'height', 'width', 'style', 'data-selected'].forEach((attribute) => {
-                    if (domNode.hasAttribute(attribute)) {
-                        formats[attribute] = domNode.getAttribute(attribute)!;
-                    }
-                });
-                return formats;
-            }
-            format(name: string, value: string) {
-                /**
-                 * only those attributes are allowed to be set and restored from external sources
-                 */
-                if (['alt', 'height', 'width', 'style'].includes(name)) {
-                    if (value) {
-                        this.domNode.setAttribute(name, value);
-                    } else {
-                        this.domNode.removeAttribute(name);
-                    }
-                } else {
-                    super.format(name, value);
-                }
-            }
-        }
-        Quill.register(ImageFormat, true);
-        /* Quill register method signature is => static register(path, target, overwrite = false)
-        Set overwrite to true to avoid warning
-        https://github.com/quilljs/quill/issues/2559#issuecomment-945605414 */
-        Quill.register('modules/imageResize', ImageResize, true);
-    }
 
     return (
         <div className={clsx(styles.quillEditor, styles.quill, 'notranslate', props.className)} ref={ref}>
