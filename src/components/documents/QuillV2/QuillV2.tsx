@@ -6,12 +6,13 @@ import { useDocument } from '@tdev-hooks/useContextDocument';
 import { MetaInit } from '@tdev-models/documents/QuillV2';
 import { ToolbarOptions } from '@tdev-models/documents/QuillV2/helpers/toolbar';
 import clsx from 'clsx';
-import { action } from 'mobx';
+import { action, reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Delta } from 'quill/core';
 import 'quill/dist/quill.bubble.css'; // Add css for snow theme
 import 'quill/dist/quill.snow.css'; // Add css for snow theme
 import BaseImageFormat from 'quill/formats/image';
+import type Toolbar from 'quill/modules/toolbar';
 import React from 'react';
 import { useQuill } from 'react-quilljs';
 import { downscaleImage } from './quill-img-compress/downscaleImage';
@@ -63,7 +64,6 @@ export interface Props extends MetaInit {
 
 const QuillV2 = observer((props: Props) => {
     const doc = useDocument<'quill_v2'>();
-    const updateSource = React.useRef<'current' | undefined>(undefined);
     const [processingImage, setProcessingImage] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const [theme] = React.useState(props.theme || 'snow');
@@ -79,186 +79,188 @@ const QuillV2 = observer((props: Props) => {
         },
         formats: FORMATS,
         placeholder: props.placeholder || '✍️ Antwort...',
-        readOnly: props.readonly
+        readOnly: !doc.canEdit || props.readonly
     });
-
-    // Insert Image(selected by user) to quill
-    const insertToEditor = (url: string) => {
-        if (!quillRef.current || !quill) {
-            return;
-        }
-        const range = quill.getSelection(true);
-        quill.insertEmbed(range.index, 'image', url);
-        range.index++;
-        quill.setSelection(range, 'api');
-        // add new line
-        quill.insertText(range.index, '\n');
-        range.index++;
-        quill.setSelection(range, 'api');
-    };
-
-    const insertImage = async (img?: string) => {
-        if (!img) {
-            return setProcessingImage(false);
-        }
-        downscaleImage(img)
-            .then((img) => {
-                insertToEditor(img);
-            })
-            .catch(() => {
-                console.log('Could not insert image');
-            })
-            .finally(() => {
-                if (quillRef.current) {
-                    setProcessingImage(false);
-                }
-            });
-    };
-
-    // Open Dialog to select Image File
-    const selectLocalImage = () => {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*,image/heic,image/heif');
-        input.onchange = () => {
-            if (!input.files || input.files.length < 1) {
-                return;
-            }
-            const file = input.files[0];
-            setProcessingImage(true);
-            file2b64(file).then(insertImage);
-        };
-        input.click();
-    };
-
-    const dropHandler = (event: DragEvent) => {
-        setProcessingImage(true);
-        dropImage(event).then(insertImage);
-    };
-    const pasteHandler = (event: ClipboardEvent) => {
-        setProcessingImage(true);
-        pasteImage(event).then(insertImage);
-    };
-
-    /**
-     * initial setup of the quill editor
-     * with the props of doc
-     */
-    React.useEffect(() => {
-        if (quill) {
-            quill.setContents(doc.delta, 'silent');
-            const saveHandeler = action((change?: Delta) => {
-                if (change) {
-                    const retainsOnly = change.ops.every((op) => op.retain !== undefined);
-                    const dataAttrsOnly =
-                        retainsOnly &&
-                        change.ops.every(
-                            (op) =>
-                                !op.attributes ||
-                                Object.keys(op.attributes).every((k) => k.startsWith('data-'))
-                        );
-                    /**
-                     * ignore changes that only retain the current content
-                     * and do only change data attributes (which shall not be saved)
-                     */
-                    if (dataAttrsOnly) {
-                        return;
-                    }
-                }
-                updateSource.current = 'current';
-                doc.setDelta(quill.getContents());
-            });
-            quill.on('text-change', saveHandeler);
-            quill.keyboard.addBinding({
-                key: 's',
-                shortKey: true,
-                handler: action(() => {
-                    doc.saveNow();
-                })
-            });
-            return () => {
-                if (doc.isDirty && updateSource.current !== 'current') {
-                    saveHandeler();
-                }
-                quill.off('text-change', saveHandeler);
-            };
-        }
-    }, [quill, updateSource]);
-
-    React.useEffect(() => {
-        if (quill) {
-            const isEnabled = quill.isEnabled();
-            const canEdit = doc.canEdit && !props.readonly;
-            if (canEdit && isEnabled) {
-                quill.enable();
-            } else if (!canEdit && !isEnabled) {
-                quill.disable();
-            }
-        }
-    }, [doc.canEdit, quill]);
-
-    /** ensure no context menu is shown when using bubble mode. Otherwise, touch-devices can't start to edit... */
-    React.useEffect(() => {
-        if (ref.current) {
-            if (props.theme === 'bubble') {
-                const onContext = (e: MouseEvent) => {
-                    e.preventDefault();
-                    try {
-                        (quill as any).theme.tooltip.edit();
-                        (quill as any).theme.tooltip.show();
-                    } catch (e) {
-                        console.log(e);
-                    }
-                };
-                ref.current.addEventListener('contextmenu', onContext);
-                return () => {
-                    if (ref.current) {
-                        ref.current.removeEventListener('contextmenu', onContext);
-                    }
-                };
-            }
-        }
-    }, [ref, quill]);
-
-    React.useEffect(() => {
-        const onQuillToolbarMouseDown = (e: any) => {
-            e.preventDefault();
-        };
-        if (quill) {
-            (quill.getModule('toolbar') as any).addHandler('image', selectLocalImage);
-            quill.root.addEventListener('drop', dropHandler, true);
-            quill.root.addEventListener('paste', pasteHandler, true);
-            (quill.getModule('toolbar') as any).container.addEventListener(
-                'mousedown',
-                onQuillToolbarMouseDown
-            );
-        }
-        return () => {
-            if (quill) {
-                (quill.getModule('toolbar') as any).container.removeEventListener(
-                    'mousedown',
-                    onQuillToolbarMouseDown
-                );
-            }
-        };
-    }, [quill]);
 
     React.useEffect(() => {
         if (!quill) {
             return;
         }
 
-        /**
-         * Do not update the quill editor if the change was made by the current quill component
-         */
-        const source = updateSource.current;
-        updateSource.current = undefined;
-        if (source === 'current') {
+        let localDelta: Delta | undefined;
+        const handleTextChange = action((change: Delta) => {
+            const dataAttrsOnly = change.ops.every(
+                (op) =>
+                    op.retain !== undefined &&
+                    (!op.attributes || Object.keys(op.attributes).every((key) => key.startsWith('data-')))
+            );
+            if (dataAttrsOnly) {
+                return;
+            }
+            localDelta = quill.getContents();
+            doc.setDelta(localDelta);
+        });
+        const handleSave = action(() => {
+            doc.saveNow();
+        });
+        const disposeSync = reaction(
+            () => doc.delta,
+            (delta) => {
+                if (delta !== localDelta) {
+                    (quill.getModule('imageResize') as ImageResize | undefined)?.hide();
+                    quill.setContents(delta, 'silent');
+                }
+                localDelta = undefined;
+            },
+            { fireImmediately: true }
+        );
+        quill.history.clear();
+
+        quill.on('text-change', handleTextChange);
+        quill.keyboard.addBinding({ key: 's', shortKey: true, handler: handleSave });
+
+        return () => {
+            disposeSync();
+            quill.off('text-change', handleTextChange);
+            // Quill exposes its bindings but has no removeBinding API.
+            quill.keyboard.bindings.s = quill.keyboard.bindings.s.filter(
+                (binding) => binding.handler !== handleSave
+            );
+        };
+    }, [doc, quill]);
+
+    React.useEffect(() => {
+        if (!quill) {
+            return;
+        }
+        return reaction(
+            () => doc.canEdit,
+            (canEdit) => {
+                const enabled = canEdit && !props.readonly;
+                quill.enable(enabled);
+                if (!enabled) {
+                    (quill.getModule('imageResize') as ImageResize | undefined)?.hide();
+                }
+            },
+            { fireImmediately: true }
+        );
+    }, [doc, quill, props.readonly]);
+
+    /** ensure no context menu is shown when using bubble mode. Otherwise, touch-devices can't start to edit... */
+    React.useEffect(() => {
+        const element = ref.current;
+        if (!element || !quill || theme !== 'bubble') {
+            return;
+        }
+        const handleContextMenu = (event: MouseEvent) => {
+            event.preventDefault();
+            try {
+                (quill as any).theme.tooltip.edit();
+                (quill as any).theme.tooltip.show();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        element.addEventListener('contextmenu', handleContextMenu);
+        return () => element.removeEventListener('contextmenu', handleContextMenu);
+    }, [quill, theme]);
+
+    React.useEffect(() => {
+        if (!quill) {
             return;
         }
 
-        quill.setContents(doc.delta, 'silent');
-    }, [quill, doc?.delta, updateSource]);
+        let disposed = false;
+        let fileInput: HTMLInputElement | undefined;
+        const root = quill.root;
+        const toolbar = quill.getModule('toolbar') as Toolbar | undefined;
+        const toolbarElement = toolbar?.container;
+        const previousImageHandler = toolbar?.handlers.image;
+        const imageResize = quill.getModule('imageResize') as ImageResize | undefined;
+        imageResize?.attach();
+
+        const insertImage = async (source: Promise<string | undefined>) => {
+            setProcessingImage(true);
+            try {
+                const image = await source;
+                if (!image || disposed || !quill.isEnabled()) {
+                    return;
+                }
+                const url = await downscaleImage(image);
+                if (disposed || !quill.isEnabled()) {
+                    return;
+                }
+                const index = quill.getSelection(true)?.index ?? quill.getLength() - 1;
+                quill.insertEmbed(index, 'image', url, 'user');
+                quill.insertText(index + 1, '\n', 'user');
+                quill.setSelection(index + 2, 'api');
+            } catch (error) {
+                if (!disposed) {
+                    console.log('Could not insert image', error);
+                }
+            } finally {
+                if (!disposed) {
+                    setProcessingImage(false);
+                }
+            }
+        };
+
+        const handleSelectImage = () => {
+            if (disposed || !quill.isEnabled()) {
+                return;
+            }
+            if (fileInput) {
+                fileInput.onchange = null;
+            }
+            const input = document.createElement('input');
+            fileInput = input;
+            input.type = 'file';
+            input.accept = 'image/*,image/heic,image/heif';
+            input.onchange = () => {
+                const file = input.files?.[0];
+                if (file && !disposed && quill.isEnabled()) {
+                    void insertImage(file2b64(file));
+                }
+            };
+            input.click();
+        };
+        const handleDrop = (event: DragEvent) => {
+            if (!disposed && quill.isEnabled()) {
+                void insertImage(dropImage(event));
+            }
+        };
+        const handlePaste = (event: ClipboardEvent) => {
+            if (!disposed && quill.isEnabled()) {
+                void insertImage(pasteImage(event));
+            }
+        };
+        const handleToolbarMouseDown = (event: MouseEvent) => {
+            event.preventDefault();
+        };
+
+        toolbar?.addHandler('image', handleSelectImage);
+        root.addEventListener('drop', handleDrop, true);
+        root.addEventListener('paste', handlePaste, true);
+        toolbarElement?.addEventListener('mousedown', handleToolbarMouseDown);
+
+        return () => {
+            disposed = true;
+            if (fileInput) {
+                fileInput.onchange = null;
+            }
+            root.removeEventListener('drop', handleDrop, true);
+            root.removeEventListener('paste', handlePaste, true);
+            toolbarElement?.removeEventListener('mousedown', handleToolbarMouseDown);
+            if (toolbar?.handlers.image === handleSelectImage) {
+                if (previousImageHandler) {
+                    toolbar.addHandler('image', previousImageHandler);
+                } else {
+                    delete toolbar.handlers.image;
+                }
+            }
+            imageResize?.destroy();
+        };
+    }, [quill]);
 
     if (Quill && !quill) {
         class ImageFormat extends BaseImageFormat {
@@ -297,13 +299,7 @@ const QuillV2 = observer((props: Props) => {
     }
 
     return (
-        <div
-            className={clsx(styles.quillEditor, styles.quill, 'notranslate', props.className)}
-            onBlur={() => {
-                updateSource.current = undefined;
-            }}
-            ref={ref}
-        >
+        <div className={clsx(styles.quillEditor, styles.quill, 'notranslate', props.className)} ref={ref}>
             <div
                 className={clsx(
                     'quill-editor-container',

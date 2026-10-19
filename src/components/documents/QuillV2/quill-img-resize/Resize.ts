@@ -4,6 +4,7 @@ export default class Resize extends BaseModule {
     dragBox?: HTMLElement;
     dragStartX: number = 0;
     preDragWidth: number = 0;
+    private dragStyles?: { bodyCursor: string; imageCursor: string; touchAction: string };
     onCreate = () => {
         // track resize handles
         this.boxes = [];
@@ -18,8 +19,9 @@ export default class Resize extends BaseModule {
     };
 
     onDestroy = () => {
-        // reset drag handle cursors
-        this.setCursor('');
+        this.handleMouseup();
+        this.boxes.forEach((box) => box.removeEventListener('pointerdown', this.handleMousedown));
+        this.boxes = [];
     };
 
     positionBoxes = () => {
@@ -58,6 +60,12 @@ export default class Resize extends BaseModule {
     };
 
     handleMousedown = (evt: MouseEvent) => {
+        this.handleMouseup();
+        this.dragStyles = {
+            bodyCursor: document.body.style.cursor,
+            imageCursor: this.img.style.cursor,
+            touchAction: document.body.style.touchAction
+        };
         // note which box
         this.dragBox = evt.target as HTMLElement;
         // note starting mousedown position
@@ -72,18 +80,20 @@ export default class Resize extends BaseModule {
         // listen for movement and mouseup
         document.addEventListener('pointermove', this.handleDrag, false);
         document.addEventListener('pointerup', this.handleMouseup, false);
+        document.addEventListener('pointercancel', this.handleMouseup, false);
     };
 
     handleMouseup = () => {
-        // enable default behavior of touch gestures on document root
-        document.body.style.touchAction = 'auto';
-        // reset cursor everywhere
-        this.setCursor('');
-        // stop listening for movement and mouseup
-
+        if (this.dragStyles) {
+            document.body.style.touchAction = this.dragStyles.touchAction;
+            document.body.style.cursor = this.dragStyles.bodyCursor;
+            this.img.style.cursor = this.dragStyles.imageCursor;
+            this.dragStyles = undefined;
+        }
+        this.dragBox = undefined;
         document.removeEventListener('pointermove', this.handleDrag);
-        // document.removeEventListener('mouseup', this.handleMouseup);
         document.removeEventListener('pointerup', this.handleMouseup);
+        document.removeEventListener('pointercancel', this.handleMouseup);
     };
 
     handleDrag = (evt: PointerEvent) => {
