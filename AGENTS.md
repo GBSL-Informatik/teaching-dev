@@ -71,6 +71,7 @@ Use mobx for state management and only use local reactish component state for co
 - Use `observable.map` rather than a set when observers check membership by key. `ObservableSet.has()` tracks the whole set, so any change re-renders every observer.
 - Store lookups called for each row of a list must not scan a computed list such as `orderedData`, as this subscribes the component to every item in the store.
 - A context value provided near the app root must not change on navigation. Expose frequently changing store values as getters read on access, not values read during render.
+- All stores which are initialized in the root store and have the lifecycle of the app - `{ keepAlive: true }` for `computedFn`s in these stores is generally a good practice.
 
 ## Testing Guidelines
 
