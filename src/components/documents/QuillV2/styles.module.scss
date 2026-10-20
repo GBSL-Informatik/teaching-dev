@@ -200,6 +200,20 @@
     }
 }
 
+.imageResizeHandle {
+    // This must be set before pointerdown so touch drags cannot turn into page scrolling.
+    touch-action: none;
+    user-select: none;
+
+    @media (pointer: coarse) {
+        &::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+        }
+    }
+}
+
 .imgToolbar {
     .imgToolbarButton {
         cursor: pointer;
