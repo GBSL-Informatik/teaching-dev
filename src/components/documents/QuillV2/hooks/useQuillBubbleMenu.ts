@@ -13,7 +13,7 @@ export const useQuillBubbleMenu: (
     containerRef: React.RefObject<HTMLDivElement | null>,
     theme: 'snow' | 'bubble'
 ): void => {
-    React.useEffect(() => {
+    React.useEffect((): (() => void) | undefined => {
         const element = containerRef.current;
         if (!element || !quill || theme !== 'bubble') {
             return;
@@ -33,12 +33,12 @@ export const useQuillBubbleMenu: (
         };
         const originalArrowStyle = arrow?.getAttribute('style');
         const originalFlip = menu.classList.contains('ql-flip');
-        const handlePosition = (reference: Bounds) => positionBubbleMenu(quill, tooltip, reference);
+        const handlePosition = (reference: Bounds): number => positionBubbleMenu(quill, tooltip, reference);
         tooltip.position = handlePosition;
 
         let frame: number | undefined;
         let disposed = false;
-        const handleReposition = () => {
+        const handleReposition = (): void => {
             if (disposed || frame !== undefined || menu.classList.contains('ql-hidden')) {
                 return;
             }
@@ -56,7 +56,7 @@ export const useQuillBubbleMenu: (
         };
 
         // Show Quill's formatting menu instead of the browser context menu on touch devices.
-        const handleContextMenu = (event: MouseEvent) => {
+        const handleContextMenu = (event: MouseEvent): void => {
             if (!quill.isEnabled() || !(event.target instanceof Node) || !quill.root.contains(event.target)) {
                 return;
             }
@@ -78,7 +78,7 @@ export const useQuillBubbleMenu: (
         viewport?.addEventListener('scroll', handleReposition);
         element.addEventListener('contextmenu', handleContextMenu);
 
-        return () => {
+        return (): void => {
             disposed = true;
             if (frame !== undefined) {
                 window.cancelAnimationFrame(frame);
