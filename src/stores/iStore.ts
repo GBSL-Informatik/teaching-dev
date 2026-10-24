@@ -59,15 +59,12 @@ abstract class iStore<Api = ''> {
         }
     }
 
-    apiStateFor = computedFn(
-        function (this: iStore<Api>, sigId?: Api | ApiAction): ApiState {
-            if (!sigId) {
-                return ApiState.IDLE;
-            }
-            return this.apiState.get(sigId) || ApiState.IDLE;
-        },
-        { keepAlive: true }
-    );
+    apiStateFor = computedFn(function (this: iStore<Api>, sigId?: Api | ApiAction): ApiState {
+        if (!sigId) {
+            return ApiState.IDLE;
+        }
+        return this.apiState.get(sigId) || ApiState.IDLE;
+    });
 
     @action
     private updateRequestState(sigId: Api | ApiAction, controller: AbortController, state: ApiState) {
