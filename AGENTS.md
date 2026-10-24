@@ -7,7 +7,9 @@ Teaching Dev is a Docusaurus teaching platform using React, TypeScript, MobX, an
 - `src/` contains shared components, hooks, models, stores, API clients, themes, and remark plugins.
 - `packages/` contains workspace packages, scoped to either the platform `packages/tdev/` or individual devs, e.g. `packages/hfr/`.
 - `docs/`, `blog/`, and `static/` hold content and assets; `website/` contains site customizations and should never be touched in the tdev repository.
-- `tdev-website/` contains the platform documentation site and its overrides.
+- `tdev-website/` the teaching dev website, built with Docusaurus+Teaching-Dev itself, that serves as project documentation and a way to dogfood the framework.
+    - `docs/` - The documentation for the "current" version of Teaching-Dev
+    - `website` - framework-overrides for the Teaching-Dev website itself. 
 - `updateSync/` contains synchronization tools. Tests live in nearby `tests/` directories.
 
 Refer to ARCHITECTURE.md for detailed architecture documentation.
@@ -40,7 +42,7 @@ Use Node.js 24.13 or newer (`.nvmrc` pins 24.13.0) and Yarn. Run commands from t
 
 - Use early returns for readability.
 - Emphasize type safety and static analysis.
-- Follow consistent oxfmt formatting.
+- Humans review all the code: always write code that is easy to read and review, following the [`code-style` skill](.agents/skills/code-style/SKILL.md).
 
 Follow existing TypeScript/TSX patterns and `.prettierrc`: four-space indentation, single quotes, semicolons, no trailing commas, and a 110-character print width. Markdown and MDX are excluded from repository-wide Prettier checks; format them consistently by hand.
 
@@ -49,6 +51,7 @@ Use PascalCase for components and classes, `useCamelCase` for hooks. Prefer conf
 New components should normally be put in an `index.tsx` alongside a `styles.module.css` file, where the folder is named after the component. Use `clsx` for conditional class names. Avoid inline styles and global CSS.
 
 Use mobx for state management and only use local reactish component state for component-specific state that does not need to be shared or persisted after unmounting. Use `useStore` to access stores.
+
 
 ## React Usage
 
@@ -72,6 +75,12 @@ Use mobx for state management and only use local reactish component state for co
 - Store lookups called for each row of a list must not scan a computed list such as `orderedData`, as this subscribes the component to every item in the store.
 - A context value provided near the app root must not change on navigation. Expose frequently changing store values as getters read on access, not values read during render.
 - All stores which are initialized in the root store and have the lifecycle of the app.
+
+## Skills
+
+Task-specific instructions live in skills, following the [Agent Skills](https://agentskills.io) format. Read the matching `SKILL.md` before starting one of these tasks:
+
+- [`code-style`](.agents/skills/code-style/SKILL.md) - Write or modify code that humans can easily review
 
 ## Testing Guidelines
 
