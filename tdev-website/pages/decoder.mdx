@@ -1,0 +1,16 @@
+---
+page_id: d778b765-1ca4-4694-82a1-b98453c4477b
+---
+import Webserial from '@tdev/webserial/component'
+import BinaryDecoder from '@tdev/webserial/decoders/BinaryDecoder/component'
+
+
+# Binär Decoder
+
+<Webserial 
+    baudRate={115200}
+    hideLogs
+    resetTrigger='::READY::'
+    initialData={'01001000 01100001 01101100 01101100 01101111 00100001'.replace(' ', '').split('')}
+    output={<BinaryDecoder />}
+/>
