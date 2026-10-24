@@ -409,7 +409,6 @@ Some content
         Byyye!
     `);
         const result = await process(input);
-        console.log(result);
 
         expect(result).toMatchInlineSnapshot(`
       "<div className="flex-cards flex">

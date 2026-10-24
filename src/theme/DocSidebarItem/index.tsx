@@ -18,7 +18,7 @@ type Props = WrapperProps<typeof DocSidebarItemType>;
 const DocSidebarItemWrapper = observer((props: Props): ReactNode => {
     const pageStore = useStore('pageStore');
     const path = props.item.type !== 'html' ? ensureTrailingSlash(props.item.href) : undefined;
-    const page = pageStore.pages.find((p) => p.path === path);
+    const page = pageStore.findByPath(path);
     return (
         <div className={clsx(styles.item)}>
             <DocSidebarItem {...props} />

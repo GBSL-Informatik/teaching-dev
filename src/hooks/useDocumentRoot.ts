@@ -1,5 +1,6 @@
 import { Access, DocumentType } from '@tdev-api/document';
 import { Config } from '@tdev-api/documentRoot';
+import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
 import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import { reaction } from 'mobx';
@@ -27,6 +28,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     const defaultRootDocId = useDummyId();
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
+    const hasElevatedAccess = useComputed(() => !!userStore.current?.hasElevatedAccess, [userStore]);
     const [dummyDocumentRoot] = React.useState(
         () =>
             new DocumentRoot(
@@ -84,7 +86,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     }, [documentRootStore, id, loadOnlyType]);
 
     React.useEffect(() => {
-        if (!id || !userStore.current?.hasElevatedAccess) {
+        if (!id || !hasElevatedAccess) {
             return;
         }
         return reaction(
@@ -114,7 +116,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
             },
             { fireImmediately: true }
         );
-    }, [id, userStore.current?.hasElevatedAccess]);
+    }, [id, hasElevatedAccess]);
 
     // TODO: is this needed, or only a dev convenience?
     // React.useEffect(() => {

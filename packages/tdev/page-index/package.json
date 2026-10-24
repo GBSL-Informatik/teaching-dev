@@ -7,8 +7,8 @@
     "devDependencies": {
         "@docusaurus/core": "*",
         "@docusaurus/module-type-aliases": "*",
-        "@types/better-sqlite3": "^7.6.13",
-        "better-sqlite3": "^12.8.0"
+        "@types/better-sqlite3": "^9.6.0",
+        "better-sqlite3": "^13.0.3"
     },
     "peerDependencies": {
         "@tdev/core": "1.0.0",

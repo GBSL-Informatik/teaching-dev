@@ -74,6 +74,7 @@
         :global(.ql-container) {
             &:global(.ql-bubble) {
                 :global(.ql-tooltip) {
+                    box-sizing: border-box;
                     z-index: calc(var(--ifm-z-index-fixed) - 1);
                 }
             }
@@ -195,6 +196,20 @@
                     -webkit-filter: invert(100%);
                 }
             }
+        }
+    }
+}
+
+.imageResizeHandle {
+    // This must be set before pointerdown so touch drags cannot turn into page scrolling.
+    touch-action: none;
+    user-select: none;
+
+    @media (pointer: coarse) {
+        &::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
         }
     }
 }

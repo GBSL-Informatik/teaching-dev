@@ -9,7 +9,6 @@
 
 import { defaultsDeep } from 'es-toolkit/compat';
 import type Quill from 'quill';
-import React from 'react';
 import { BaseModule } from './BaseModule';
 import DefaultOptions from './DefaultOptions';
 import { deleteSelectedImage } from './helper';
@@ -38,11 +37,19 @@ class ImageResize {
         // disable native image resizing on firefox
         document.execCommand('enableObjectResizing', false, 'false');
 
-        // respond to clicks inside the editor
-        this.quill.root.addEventListener('click', this.handleClick as any, false);
+        this.attach();
         // TODO: needed?
         // this.quill.root.parentNode!.style.position = this.quill.root.parentNode!.style.position || 'relative';
     }
+
+    attach = () => {
+        this.quill.root.addEventListener('click', this.handleClick);
+    };
+
+    destroy = () => {
+        this.hide();
+        this.quill.root.removeEventListener('click', this.handleClick);
+    };
 
     initializeModules = () => {
         this.removeModules();
@@ -72,7 +79,10 @@ class ImageResize {
         this.modules = [];
     };
 
-    handleClick = (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    handleClick = (evt: MouseEvent) => {
+        if (!this.quill.isEnabled()) {
+            return;
+        }
         if (
             evt.target &&
             (evt.target as HTMLElement).tagName &&
@@ -116,7 +126,7 @@ class ImageResize {
 
         // listen for the image being deleted or moved
         document.addEventListener('keyup', this.checkImage, true);
-        this.quill.root.addEventListener('input', this.checkImage as any, true);
+        this.quill.root.addEventListener('input', this.checkImage, true);
 
         // Create and add the overlay
         this.overlay = document.createElement('div');
@@ -128,17 +138,15 @@ class ImageResize {
     };
 
     hideOverlay = () => {
+        document.removeEventListener('keyup', this.checkImage, true);
+        this.quill.root.removeEventListener('input', this.checkImage, true);
         if (!this.overlay) {
             return;
         }
 
         // Remove the overlay
-        this.quill.root.parentNode?.removeChild(this.overlay);
+        this.overlay.remove();
         this.overlay = undefined;
-
-        // stop listening for image deletion or movement
-        document.removeEventListener('keyup', this.checkImage);
-        this.quill.root.removeEventListener('input', this.checkImage as any);
 
         // reset user-select
         this.setUserSelect('');
@@ -169,8 +177,8 @@ class ImageResize {
         if (this.img) {
             this.img.removeAttribute('data-selected');
         }
-        this.hideOverlay();
         this.removeModules();
+        this.hideOverlay();
         this.img = undefined;
     };
 
@@ -182,9 +190,9 @@ class ImageResize {
         });
     };
 
-    checkImage = (evt: KeyboardEvent) => {
+    checkImage = (evt: Event) => {
         if (this.img) {
-            if (evt.key === 'Delete' || evt.key === 'Backspace') {
+            if (evt instanceof KeyboardEvent && (evt.key === 'Delete' || evt.key === 'Backspace')) {
                 deleteSelectedImage(this.quill, this.img.src);
             }
             this.hide();

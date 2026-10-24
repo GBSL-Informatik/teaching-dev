@@ -35,20 +35,21 @@
     font-family: monospace;
     overflow: auto;
     table {
+        display: table;
+        min-width: 0;
+        line-height: 18px;
         tbody {
             tr {
                 td {
                     padding: 0;
-                    pre {
-                        white-space: nowrap;
-                        padding-top: 0;
-                        padding-bottom: 0;
-                        padding-left: 2px;
-                        line-height: 18px;
-                    }
                 }
             }
         }
+    }
+    pre {
+        margin: 0;
+        padding: 0 2px;
+        line-height: 18px;
     }
 }
 
