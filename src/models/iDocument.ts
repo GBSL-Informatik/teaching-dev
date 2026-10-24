@@ -11,6 +11,7 @@ import type iSideEffect from './SideEffects/iSideEffect';
  * normally, save only once all 1000ms
  */
 const SAVE_DEBOUNCE_TIME = 1000;
+const STATE_RESET_DELAY = 1500;
 
 export enum Source {
     LOCAL = 'local',
@@ -40,6 +41,8 @@ abstract class iDocument<Type extends DocumentType> {
      */
     saveFn: DebouncedFunc<typeof iDocument.prototype._save>;
     private isSavePending: boolean = false;
+    private isDisposed: boolean = false;
+    private stateResetTimeout: ReturnType<typeof setTimeout> | undefined;
 
     @observable accessor state: ApiState = ApiState.IDLE;
 
@@ -72,19 +75,7 @@ abstract class iDocument<Type extends DocumentType> {
         });
         this.stateDisposer = reaction(
             () => this.state,
-            (state) => {
-                if (state !== ApiState.IDLE) {
-                    const cancelId = setTimeout(
-                        action(() => {
-                            this.state = ApiState.IDLE;
-                        }),
-                        1500
-                    );
-                    return () => {
-                        clearTimeout(cancelId);
-                    };
-                }
-            }
+            (state) => this.scheduleStateReset(state)
         );
     }
 
@@ -230,19 +221,29 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     cleanup(deep?: boolean) {
-        /**
-         * cancel pending actions and cleanup if needed...
-         */
-        this.stateDisposer();
-        if (deep) {
-            this.children.forEach((c) => {
-                this.store.removeFromStore(c, true);
-            });
+        if (!this.isDisposed) {
+            // Cleanup retires a deleted or replaced model; its queued data must not be saved later.
+            this.isDisposed = true;
+            this.saveFn.cancel();
+            this.isSavePending = false;
+            this.stateDisposer();
+            this.clearStateResetTimeout();
         }
+        if (!deep) {
+            return;
+        }
+
+        const children = [...this.children];
+        children.forEach((child) => {
+            this.store.removeFromStore(child, true);
+        });
     }
 
     @action
     save(skipStreamUpdate: boolean = false, onBeforeSave?: (() => Promise<void>) | undefined) {
+        if (this.isDisposed) {
+            return;
+        }
         this.isSavePending = true;
         const res = this.saveFn(onBeforeSave);
         if (!skipStreamUpdate) {
@@ -253,7 +254,7 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     streamUpdate() {
-        if (!this.isPresenting) {
+        if (this.isDisposed || !this.isPresenting) {
             return;
         }
 
@@ -267,6 +268,9 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     saveNow() {
+        if (this.isDisposed) {
+            return Promise.resolve(false);
+        }
         if (!this.isSavePending) {
             this.save();
         }
@@ -275,32 +279,66 @@ abstract class iDocument<Type extends DocumentType> {
 
     @action
     _save(onBeforeSave: () => Promise<void> = () => Promise.resolve()) {
+        if (this.isDisposed) {
+            return Promise.resolve(false);
+        }
         this.isSavePending = false;
-        /**
-         * call the api to save the code...
-         */
         this.state = ApiState.SYNCING;
         return onBeforeSave()
-            .then(() => {
-                return this.store.save(this).then(
-                    action((res) => {
-                        if (res === 'error') {
-                            this.state = ApiState.ERROR;
-                            return false;
-                        } else {
-                            this.state = ApiState.SUCCESS;
-                            if (this.isDirty) {
-                                this._pristine = { ...this.data };
-                            }
-                            return true;
-                        }
-                    })
-                );
-            })
+            .then(() => this.savePreparedDocument())
             .catch((e) => {
-                console.warn('OnBeforeSave failed for', this.id, e);
+                if (!this.isDisposed) {
+                    console.warn('OnBeforeSave failed for', this.id, e);
+                }
                 return false;
             });
+    }
+
+    private scheduleStateReset(state: ApiState) {
+        this.clearStateResetTimeout();
+        if (this.isDisposed || state === ApiState.IDLE) {
+            return;
+        }
+
+        this.stateResetTimeout = setTimeout(
+            action(() => {
+                this.stateResetTimeout = undefined;
+                if (this.isDisposed) {
+                    return;
+                }
+                this.state = ApiState.IDLE;
+            }),
+            STATE_RESET_DELAY
+        );
+    }
+
+    private clearStateResetTimeout() {
+        clearTimeout(this.stateResetTimeout);
+        this.stateResetTimeout = undefined;
+    }
+
+    private savePreparedDocument(): Promise<boolean> {
+        if (this.isDisposed) {
+            return Promise.resolve(false);
+        }
+
+        return this.store.save(this).then(
+            action((result) => {
+                if (this.isDisposed) {
+                    return false;
+                }
+                if (result === 'error') {
+                    this.state = ApiState.ERROR;
+                    return false;
+                }
+
+                this.state = ApiState.SUCCESS;
+                if (this.isDirty) {
+                    this._pristine = { ...this.data };
+                }
+                return true;
+            })
+        );
     }
 }
 
