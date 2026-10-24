@@ -29,6 +29,7 @@ details only when needed.
   related getters and actions together, and respect initialization order.
 - Keep extracted code close to its owner and preserve MobX action
   boundaries, including observable updates after asynchronous operations.
+- private methods should be located after public methods at the bottom of the class.
 
 For example, this method inside `PermissionStore` expresses the decision
 to update or create a permission. Persistence and collection updates stay
