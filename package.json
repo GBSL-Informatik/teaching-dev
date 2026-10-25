@@ -65,7 +65,7 @@
         "micromark-extension-math": "^3.1.0",
         "micromatch": "^4.0.8",
         "minimist": "^1.2.8",
-        "mobx": "^7.1.0",
+        "mobx": "^7.1.1",
         "mobx-react-lite": "^5.1.0",
         "mobx-utils": "^6.1.1",
         "qrcode.react": "^4.2.0",

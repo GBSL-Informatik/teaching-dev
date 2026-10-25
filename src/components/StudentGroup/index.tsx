@@ -383,7 +383,7 @@ const StudentGroup = observer((props: Props) => {
                         <div className={styles.listContainer}>
                             <ul className={clsx(styles.students, styles.list)}>
                                 {group.students.map((student, idx) => (
-                                    <li key={idx} className={clsx(styles.listItem)}>
+                                    <li key={idx} className={clsx(styles.listItem)} title={student.email}>
                                         <LiveStatusIndicator
                                             userId={student.id}
                                             size={0.3}
