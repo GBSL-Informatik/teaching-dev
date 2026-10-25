@@ -105,7 +105,7 @@ def get_formatter(line_shift, source, fname):
         handle_repeats(filename, lineno, count_repeats)
 
         if isinstance(exc, SyntaxError):
-            trace.write(syntax_error(exc.args, line_shift, source, fname))
+            trace.write(syntax_error(exc, line_shift, source, fname))
         else:
             message = exc_msg
             if isinstance(exc, AttributeError):
@@ -130,9 +130,9 @@ def print_exc(file=None, line_shift=0, source='', fname=''):
     file.write(trace)
     return trace
 
-def syntax_error(args, line_shift, source, fname):
+def syntax_error(exc, line_shift, source, fname):
     trace = Trace()
-    info, [filename, lineno, offset, line, *extra] = args
+    info, [filename, lineno, offset, line, *extra] = exc.args
     line_nr = lineno - line_shift if lineno > 0 else 0
     if line is None:
         # try to get the line from the source
@@ -150,5 +150,5 @@ def syntax_error(args, line_shift, source, fname):
             nb_marks = end_offset - offset
     nb_marks = max(nb_marks, 1)
     trace.write("    " + (offset - 1) * " " + "^" * nb_marks)
-    trace.write("SyntaxError:", info)
+    trace.write(f"{exc.__class__.__name__}:", info)
     return trace.format()
