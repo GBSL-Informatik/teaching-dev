@@ -41,6 +41,12 @@ export const modifyPackages = (
         }
     }
 
+    for (const [key, value] of Object.entries(ensure?.scripts ?? {})) {
+        if (!pkg.scripts) {
+            pkg.scripts = {};
+        }
+        pkg.scripts[key] = value;
+    }
     for (const [key, value] of Object.entries(ensure?.dependencies ?? {})) {
         pkg.dependencies[key] = value;
     }
