@@ -49,7 +49,7 @@ export const QuillV2Component = observer((props: QuillProps) => {
 
     return (
         <DocContext.Provider value={quillDoc}>
-            <quill.default {...props} />
+            <quill.default key={quillDoc.localObjectId} {...props} />
         </DocContext.Provider>
     );
 });

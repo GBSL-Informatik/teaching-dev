@@ -1,9 +1,12 @@
+import styles from '../styles.module.scss';
 import { BaseModule } from './BaseModule';
 export default class Resize extends BaseModule {
     boxes: HTMLDivElement[] = [];
-    dragBox?: HTMLElement;
+    dragBox?: HTMLDivElement;
     dragStartX: number = 0;
     preDragWidth: number = 0;
+    private pointerId?: number;
+    private dragStyles?: { bodyCursor: string; imageCursor: string };
     onCreate = () => {
         // track resize handles
         this.boxes = [];
@@ -18,8 +21,9 @@ export default class Resize extends BaseModule {
     };
 
     onDestroy = () => {
-        // reset drag handle cursors
-        this.setCursor('');
+        this.stopDragging();
+        this.boxes.forEach((box) => box.removeEventListener('pointerdown', this.handlePointerDown));
+        this.boxes = [];
     };
 
     positionBoxes = () => {
@@ -37,71 +41,86 @@ export default class Resize extends BaseModule {
         });
     };
 
-    addBox = (cursor: any) => {
+    addBox = (cursor: string) => {
         // create div element for resize handle
         const box = document.createElement('div');
 
         // Start with the specified styles
         Object.assign(box.style, this.options.handleStyles);
         box.style.cursor = cursor;
+        box.classList.add(styles.imageResizeHandle);
 
-        // Set the width/height to use 'px'
-        box.style.width = `${this.options.handleStyles.width}px`;
-        box.style.height = `${this.options.handleStyles.height}px`;
-
-        // listen for mousedown on each box
-        box.addEventListener('pointerdown', this.handleMousedown, false);
+        box.addEventListener('pointerdown', this.handlePointerDown);
         // add drag handle to document
         this.overlay.appendChild(box);
         // keep track of drag handle
         this.boxes.push(box);
     };
 
-    handleMousedown = (evt: MouseEvent) => {
-        // note which box
-        this.dragBox = evt.target as HTMLElement;
-        // note starting mousedown position
+    handlePointerDown = (evt: PointerEvent) => {
+        if (evt.button !== 0 || !evt.isPrimary || this.pointerId !== undefined) {
+            return;
+        }
+        evt.preventDefault();
+        this.dragStyles = {
+            bodyCursor: document.body.style.cursor,
+            imageCursor: this.img.style.cursor
+        };
+        this.dragBox = evt.currentTarget as HTMLDivElement;
+        this.pointerId = evt.pointerId;
         this.dragStartX = evt.clientX;
-        // store the width before the drag
-        this.preDragWidth = this.img!.width || this.img!.naturalWidth;
-        // set the proper cursor everywhere
+        this.preDragWidth = this.img.width || this.img.naturalWidth;
         this.setCursor(this.dragBox.style.cursor);
 
-        // disable default behavior of touch gestures on document root, s.t. pointermove gets not interrupted
-        document.body.style.touchAction = 'none';
-        // listen for movement and mouseup
-        document.addEventListener('pointermove', this.handleDrag, false);
-        document.addEventListener('pointerup', this.handleMouseup, false);
+        // Keep receiving this pointer as the image and handle move underneath the finger.
+        this.dragBox.setPointerCapture(evt.pointerId);
+        this.dragBox.addEventListener('lostpointercapture', this.handlePointerEnd);
+        document.addEventListener('pointermove', this.handleDrag);
+        document.addEventListener('pointerup', this.handlePointerEnd);
+        document.addEventListener('pointercancel', this.handlePointerEnd);
+        window.addEventListener('blur', this.stopDragging);
     };
 
-    handleMouseup = () => {
-        // enable default behavior of touch gestures on document root
-        document.body.style.touchAction = 'auto';
-        // reset cursor everywhere
-        this.setCursor('');
-        // stop listening for movement and mouseup
+    handlePointerEnd = (evt: PointerEvent) => {
+        if (evt.pointerId === this.pointerId) {
+            this.stopDragging();
+        }
+    };
 
+    stopDragging = () => {
+        const box = this.dragBox;
+        const pointerId = this.pointerId;
+        this.dragBox = undefined;
+        this.pointerId = undefined;
         document.removeEventListener('pointermove', this.handleDrag);
-        // document.removeEventListener('mouseup', this.handleMouseup);
-        document.removeEventListener('pointerup', this.handleMouseup);
+        document.removeEventListener('pointerup', this.handlePointerEnd);
+        document.removeEventListener('pointercancel', this.handlePointerEnd);
+        window.removeEventListener('blur', this.stopDragging);
+        box?.removeEventListener('lostpointercapture', this.handlePointerEnd);
+        if (pointerId !== undefined && box?.hasPointerCapture(pointerId)) {
+            box.releasePointerCapture(pointerId);
+        }
+        if (this.dragStyles) {
+            document.body.style.cursor = this.dragStyles.bodyCursor;
+            this.img.style.cursor = this.dragStyles.imageCursor;
+            this.dragStyles = undefined;
+        }
     };
 
     handleDrag = (evt: PointerEvent) => {
-        if (!this.img) {
-            // image not set yet
+        if (evt.pointerId !== this.pointerId || !this.dragBox) {
             return;
         }
+        evt.preventDefault();
         // update image size
         const deltaX = evt.clientX - this.dragStartX;
-        if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-            // left-side resize handler; dragging right shrinks image
-            this.img.width = Math.round(this.preDragWidth - deltaX);
-            this.img.style.width = `${Math.round(this.preDragWidth - deltaX)}px`;
-        } else {
-            // right-side resize handler; dragging right enlarges image
-            this.img.width = Math.round(this.preDragWidth + deltaX);
-            this.img.style.width = `${Math.round(this.preDragWidth + deltaX)}px`;
-        }
+        const isLeftHandle = this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3];
+        const width = Math.max(1, Math.round(this.preDragWidth + (isLeftHandle ? -deltaX : deltaX)));
+        this.img.width = width;
+        this.img.style.width = `${width}px`;
+        // Let height follow the natural aspect ratio, including for restored images with a fixed height.
+        this.img.removeAttribute('height');
+        this.img.style.height = 'auto';
         this.requestUpdate();
     };
 
