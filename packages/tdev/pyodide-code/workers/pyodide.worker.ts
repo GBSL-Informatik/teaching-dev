@@ -3,7 +3,6 @@ import * as Comlink from 'comlink';
 import type { PyodideAPI } from 'pyodide';
 import type { PyProxy } from 'pyodide/ffi';
 import { loadPyodide } from '../loadPyodide';
-import { ExecutionController } from './execute';
 import { loadPackages } from './helper.loadPackages';
 import { configureInput } from './input';
 import { captureOutput } from './output';
@@ -19,21 +18,18 @@ interface Execution extends Context {
     showPackageLogs: boolean;
 }
 
+export interface ExecutionResult {
+    message: Message;
+    reusable: boolean;
+}
+
 const pyodideReadyPromise = loadPyodide({ stdout: () => {}, stderr: () => {} });
 // The ready RPC reports bootstrap errors to the editor.
 void pyodideReadyPromise.catch(() => {});
 
 export class PyWorker {
-    private execution: ExecutionController | undefined;
-
     async ready() {
         await pyodideReadyPromise;
-    }
-
-    cancel(executionId: number) {
-        if (this.execution?.executionId === executionId) {
-            this.execution.cancel();
-        }
     }
 
     async run(
@@ -45,16 +41,11 @@ export class PyWorker {
         executionId = 0,
         packages: readonly string[] = [],
         showPackageLogs = false
-    ): Promise<Message> {
+    ): Promise<ExecutionResult> {
         const getTime = createTimestamp();
-        if (this.execution) {
-            throw new Error('Python worker is already executing a script.');
-        }
-        const controller = new ExecutionController(executionId);
-        this.execution = controller;
         try {
             const pyodide = await pyodideReadyPromise;
-            const message = await this.execute(pyodide, controller, {
+            const message = await this.execute(pyodide, {
                 id,
                 code,
                 filename,
@@ -65,25 +56,24 @@ export class PyWorker {
                 sendMessage,
                 getTime
             });
-            return { type: 'log', message, id, timeStamp: getTime() };
+            return {
+                message: { type: 'log', message, id, timeStamp: getTime() },
+                reusable: this.canReuse(pyodide)
+            };
         } catch (error: unknown) {
             return {
-                type: 'error',
-                message: error instanceof Error ? error.message : String(error),
-                id,
-                timeStamp: getTime()
+                message: {
+                    type: 'error',
+                    message: error instanceof Error ? error.message : String(error),
+                    id,
+                    timeStamp: getTime()
+                },
+                reusable: false
             };
-        } finally {
-            controller.cancel();
-            this.execution = undefined;
         }
     }
 
-    private async execute(
-        pyodide: PyodideAPI,
-        controller: ExecutionController,
-        execution: Execution
-    ): Promise<string> {
+    private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
         const { id, code, filename, clientId, executionId } = execution;
         pyodide.registerComlink(Comlink);
         registerJsModule(pyodide, 'tdev', {
@@ -106,12 +96,12 @@ export class PyWorker {
                         __file__: fname,
                         __package__: undefined
                     })
-                ) as PyProxy;
+                );
             } finally {
                 dict.destroy();
             }
             restoreInput = configureInput(pyodide, { id, clientId, executionId });
-            result = await controller.execute(pyodide, code, globals, fname);
+            result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             return result === undefined ? '' : `${result}`;
         } finally {
             try {
@@ -137,6 +127,19 @@ export class PyWorker {
             await loadPackages(pyodide, execution, execution.code, execution.packages);
         } finally {
             await finishOutput?.();
+        }
+    }
+
+    private canReuse(pyodide: PyodideAPI): boolean {
+        try {
+            // Discard unfinished tasks instead of patching the Python scheduler.
+            return (
+                pyodide.runPython(
+                    'not __import__("asyncio").all_tasks(loop=__import__("asyncio").get_event_loop())'
+                ) === true
+            );
+        } catch {
+            return false;
         }
     }
 }
