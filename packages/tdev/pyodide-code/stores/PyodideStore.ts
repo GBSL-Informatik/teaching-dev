@@ -27,7 +27,7 @@ export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
     private readonly runtimes = new Map<string, RuntimeLease>();
-    private readonly idleRuntimes = new Map<string, PyodideRuntime>();
+    private readonly idleRuntimes: PyodideRuntime[] = [];
     private readonly latestExecutions = new Map<string, number>();
     private nextExecutionId = 0;
     private clientId = '';
@@ -280,11 +280,10 @@ export default class PyodideStore {
         if (this.executions.get(id) !== executionId) {
             return null;
         }
-        let runtime = this.idleRuntimes.get(id);
-        this.idleRuntimes.delete(id);
-        if (runtime && !runtime.isUsable) {
+        let runtime = this.idleRuntimes.pop();
+        while (runtime && !runtime.isUsable) {
             runtime.terminate();
-            runtime = undefined;
+            runtime = this.idleRuntimes.pop();
         }
         runtime ||= new PyodideRuntime();
         let release!: () => void;
@@ -303,17 +302,12 @@ export default class PyodideStore {
         this.runtimes.delete(id);
         lease.runtime.finishExecution();
         if (lease.runtime.isUsable) {
-            this.idleRuntimes.set(id, lease.runtime);
+            this.idleRuntimes.push(lease.runtime);
         } else {
             lease.runtime.terminate();
         }
-        while (this.idleRuntimes.size > MAX_IDLE_RUNTIMES) {
-            const oldestId = this.idleRuntimes.keys().next().value;
-            if (oldestId === undefined) {
-                break;
-            }
-            this.idleRuntimes.get(oldestId)?.terminate();
-            this.idleRuntimes.delete(oldestId);
+        while (this.idleRuntimes.length > MAX_IDLE_RUNTIMES) {
+            this.idleRuntimes.shift()?.terminate();
         }
         lease.release();
     }
