@@ -10,9 +10,6 @@ export default class PyodideRuntime {
     readonly failed: Promise<never>;
     private resolveStopped!: () => void;
     private rejectFailure!: (error: Error) => void;
-    private interruptionTimer: ReturnType<typeof setTimeout> | undefined;
-    private ready = false;
-    isUsable = true;
 
     constructor() {
         this.stopped = new Promise((resolve) => {
@@ -38,7 +35,6 @@ export default class PyodideRuntime {
         const WorkerApi = Comlink.wrap<PyWorkerApi>(this.worker);
         const ready = Promise.resolve(new WorkerApi()).then(async (api) => {
             await api.ready();
-            this.ready = true;
             return api;
         });
         this.api = withTimeout(
@@ -49,30 +45,11 @@ export default class PyodideRuntime {
     }
 
     terminate() {
-        this.finishExecution();
-        this.isUsable = false;
         this.worker.terminate();
         this.resolveStopped();
     }
 
     fail(error: Error) {
-        this.isUsable = false;
         this.rejectFailure(error);
-    }
-
-    interrupt(executionId: number) {
-        this.finishExecution();
-        if (!this.ready) {
-            this.terminate();
-            return;
-        }
-        // Native calls and engines without JSPI may never service the cancel RPC.
-        this.interruptionTimer = setTimeout(() => this.terminate(), 1000);
-        void this.api.then((api) => api.cancel(executionId)).catch(() => this.terminate());
-    }
-
-    finishExecution() {
-        clearTimeout(this.interruptionTimer);
-        this.interruptionTimer = undefined;
     }
 }
