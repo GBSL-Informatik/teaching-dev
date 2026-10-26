@@ -7,6 +7,7 @@ import { loadPackages } from './helper.loadPackages';
 import { configureInput } from './input';
 import { captureOutput } from './output';
 import { registerJsModule } from './registerJsModule';
+import PythonExecutor from './PythonExecutor';
 
 interface Execution extends Context {
     id: string;
@@ -24,12 +25,17 @@ export interface ExecutionResult {
 }
 
 const pyodideReadyPromise = loadPyodide({ stdout: () => {}, stderr: () => {} });
+const executorReadyPromise = pyodideReadyPromise.then((pyodide) => PythonExecutor.create(pyodide));
 // The ready RPC reports bootstrap errors to the editor.
-void pyodideReadyPromise.catch(() => {});
+void executorReadyPromise.catch(() => {});
 
 export class PyWorker {
     async ready() {
-        await pyodideReadyPromise;
+        return (await executorReadyPromise).supportsInterrupts;
+    }
+
+    async cancel(executionId: number) {
+        (await executorReadyPromise).cancel(executionId);
     }
 
     async run(
@@ -45,21 +51,27 @@ export class PyWorker {
         const getTime = createTimestamp();
         try {
             const pyodide = await pyodideReadyPromise;
-            const message = await this.execute(pyodide, {
-                id,
-                code,
-                filename,
-                clientId,
-                executionId,
-                packages,
-                showPackageLogs,
-                sendMessage,
-                getTime
-            });
-            return {
-                message: { type: 'log', message, id, timeStamp: getTime() },
-                reusable: this.canReuse(pyodide)
-            };
+            const executor = await executorReadyPromise;
+            executor.begin(executionId);
+            try {
+                const outcome = await this.execute(pyodide, executor, {
+                    id,
+                    code,
+                    filename,
+                    clientId,
+                    executionId,
+                    packages,
+                    showPackageLogs,
+                    sendMessage,
+                    getTime
+                });
+                return {
+                    message: { ...outcome, id, timeStamp: getTime() },
+                    reusable: this.canReuse(pyodide)
+                };
+            } finally {
+                executor.finish(executionId);
+            }
         } catch (error: unknown) {
             return {
                 message: {
@@ -73,7 +85,11 @@ export class PyWorker {
         }
     }
 
-    private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
+    private async execute(
+        pyodide: PyodideAPI,
+        executor: PythonExecutor,
+        execution: Execution
+    ): Promise<{ type: 'log' | 'error'; message: string }> {
         const { id, code, filename, clientId, executionId } = execution;
         pyodide.registerComlink(Comlink);
         registerJsModule(pyodide, 'tdev', {
@@ -96,13 +112,20 @@ export class PyWorker {
                         __file__: fname,
                         __package__: undefined
                     })
-                );
+                ) as PyProxy;
             } finally {
                 dict.destroy();
             }
             restoreInput = configureInput(pyodide, { id, clientId, executionId });
-            result = await pyodide.runPythonAsync(code, { globals, filename: fname });
-            return result === undefined ? '' : `${result}`;
+            try {
+                result = await executor.execute(code, globals, fname);
+            } catch (error: unknown) {
+                if (error instanceof pyodide.ffi.PythonError) {
+                    return { type: 'error', message: error.message };
+                }
+                throw error;
+            }
+            return { type: 'log', message: result === undefined ? '' : `${result}` };
         } finally {
             try {
                 await finishOutput();

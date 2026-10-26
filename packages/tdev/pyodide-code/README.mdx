@@ -103,9 +103,15 @@ Die Option steht ebenfalls in `ModelMeta` zur Verfügung. Fehlgeschlagene Instal
 
 Nacheinander gestartete Skripte verwenden einen freien Worker desselben Browser-Tabs wieder. Dadurch bleiben bereits installierte Pakete und importierte Bibliotheken verfügbar. Gleichzeitig laufende Skripte erhalten jeweils einen eigenen Worker. Pro Tab bleiben höchstens zwei freie Worker erhalten; verschiedene Tabs teilen keinen Python-Interpreter.
 
-Stoppen beendet den Worker sofort. Beim nächsten Start müssen seine Pakete erneut geladen werden. Es gibt keine kooperative Unterbrechung und keine zusätzliche JSPI-Abhängigkeit.
+In Browsern mit JSPI versucht Stoppen zuerst, `time.sleep()` und asynchrone Wartepunkte zu unterbrechen. Die Bibliotheken bleiben erhalten, wenn Ausführung und Aufräumen erfolgreich enden. Python-Schleifen ohne Wartepunkte oder blockierende native Funktionen können nach einer Sekunde einen Neustart erzwingen. Ohne JSPI wird der Worker beim Stoppen sofort beendet. Nach einer solchen Beendigung müssen seine Pakete erneut geladen werden.
 
-Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, Dateien, das Arbeitsverzeichnis und anderer Interpreterzustand können zwischen Editoren erhalten bleiben. Für Fehler und noch laufende asyncio-Tasks wird der Worker verworfen. Erweiterungen müssen geplante asyncio-Callbacks und JavaScript-Timer vor Ende des Skripts selbst beenden; solche Hintergrundaktivitäten werden durch die Task-Prüfung nicht erkannt.
+Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, Dateien, das Arbeitsverzeichnis und anderer Interpreterzustand können zwischen Editoren erhalten bleiben. Normale Python-Ausnahmen während der Ausführung behalten den Worker nach erfolgreichem Aufräumen. Bei Initialisierungs- oder Aufräumfehlern und noch laufenden asyncio-Tasks wird er verworfen. Erweiterungen müssen geplante asyncio-Callbacks und JavaScript-Timer vor Ende des Skripts selbst beenden; solche Hintergrundaktivitäten werden durch die Task-Prüfung nicht erkannt.
+
+### Unterbrechungen warten auf das Ende der Ausführung
+
+Die JSPI-Unterstützung wird über Pyodides öffentliches `can_run_sync()` innerhalb eines asynchronen Python-Einstiegs erkannt. Ein Worker installiert genau einen `time.sleep`-Dispatcher; dadurch verwenden auch zwischengespeicherte `from time import sleep`-Importe den aktuellen Lauf. Seltene Argumenttypen und Wartezeiten ausserhalb des Browser-Timerbereichs werden an das native Python-Verhalten delegiert. Es gibt kein Tracing und keine Änderungen am asyncio-Scheduler.
+
+Ein gestoppter Worker bleibt seinem Lauf zugeordnet, bis Python und die IO-Bereinigung wirklich beendet sind. Erst danach kann er wiederverwendet werden. Der Abbruch-RPC allein gibt ihn nicht frei. Ein weiterer Start desselben Editors wartet darauf; nicht reagierende Worker werden durch den Timer im Main-Thread beendet.
 
 ## Interaktive Komponenten hinzufügen
 
