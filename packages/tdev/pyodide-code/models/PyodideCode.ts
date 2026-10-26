@@ -85,10 +85,13 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     sendPromptResponse() {
-        if (this.promptResponse === null) {
-            this.pyodideStore.cancelCodeExecution(this.id);
-        }
-        this.pyodideStore.sendInputResponse(this.id, this.promptResponse || '');
+        this.pyodideStore.sendInputResponse(this.id, this.promptResponse ?? '');
+        this.promptResponse = null;
+    }
+
+    @action
+    cancelPrompt() {
+        this.pyodideStore.cancelCodeExecution(this.id);
         this.promptResponse = null;
     }
 
@@ -107,6 +110,7 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     stopExecution(skipRemoteTrigger: boolean = false) {
+        this.promptResponse = null;
         this.pyodideStore.stopExecution(this.id);
         this.setRuntimeId(null);
         if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {

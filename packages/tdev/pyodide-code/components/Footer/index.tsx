@@ -50,7 +50,7 @@ const Footer = observer((props: Props) => {
                         <Button
                             icon={mdiClose}
                             onClick={() => {
-                                code.pyodideStore.cancelCodeExecution(code.id);
+                                code.cancelPrompt();
                             }}
                         />
                     </div>

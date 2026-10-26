@@ -1,43 +1,11 @@
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
 import * as Comlink from 'comlink';
-import { PY_STDIN_ROUTE } from '../config';
 import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
 import { registerJsModule } from './registerJsModule';
+import { configureInput } from './input';
 
 const pyodideReadyPromise = loadPyodide();
-
-const pyModule = {
-    getInput: (id: string, prompt: string, clientId: string, executionId: number) => {
-        const request = new XMLHttpRequest();
-        const query = new URLSearchParams({
-            id,
-            prompt: String(prompt),
-            clientId,
-            executionId: String(executionId),
-            requestId: crypto.randomUUID()
-        });
-        // Synchronous request to be intercepted by service worker
-        request.open('GET', `${PY_STDIN_ROUTE}?${query}`, false);
-        request.send(null);
-        if (request.status !== 200) {
-            throw new Error('User cancelled the input request');
-        }
-        return request.responseText;
-    }
-};
-const patchInputCode = (id: string, clientId: string, executionId: number) => `
-import sys, builtins
-import browser_input
-__prompt_str__ = ""
-def get_input(prompt=""):
-    global __prompt_str__
-    __prompt_str__ = prompt
-    s = browser_input.getInput(${JSON.stringify(id)}, prompt, ${JSON.stringify(clientId)}, ${executionId})
-    return s
-builtins.input = get_input
-sys.stdin.readline = lambda: get_input(__prompt_str__)
-`;
 
 export class PyWorker {
     async run(
@@ -82,9 +50,6 @@ export class PyWorker {
             code
         );
 
-        // patch input function to use browser_input module
-        registerJsModule(pyodide, 'browser_input', pyModule);
-
         registerJsModule(pyodide, 'tdev', {
             sendMessage: (message: Message) => {
                 sendMessage(message);
@@ -99,7 +64,7 @@ export class PyWorker {
                 sendMessage({ type: 'log', message: s, id: id, timeStamp: getTime() });
             }
         });
-        await pyodide.runPythonAsync(patchInputCode(id, clientId, executionId));
+        const restoreInput = configureInput(pyodide, { id, clientId, executionId });
         try {
             // Execute the python code in this context
             const result = await pyodide.runPythonAsync(code, { globals, filename: fname });
@@ -112,6 +77,7 @@ export class PyWorker {
         } catch (error: any) {
             return { type: 'error', message: error.message, id: id, timeStamp: getTime() };
         } finally {
+            restoreInput();
             pyodide.setStdout(undefined);
         }
     }
