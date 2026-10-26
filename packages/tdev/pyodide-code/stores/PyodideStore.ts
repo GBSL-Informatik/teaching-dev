@@ -91,8 +91,6 @@ export default class PyodideStore {
                     return;
                 }
                 const message = error instanceof Error ? error.message : String(error);
-                this.initializationState = 'error';
-                this.initializationError = message;
                 code.addLogMessage({ type: 'error', message, id: code.id, timeStamp: Date.now() });
                 this.cancelCodeExecution(code.id);
                 this.runtimes.get(code.id)?.terminate();

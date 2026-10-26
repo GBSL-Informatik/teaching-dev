@@ -19,16 +19,11 @@ export const initializeInputServiceWorker = async (baseUrl: string) => {
     }
     await waitForActivation(worker);
 
-    // Retry against the current worker while a protocol update activates.
+    // A protocol update can replace the controller during the handshake.
     for (let attempt = 0; attempt < 3; attempt++) {
-        const current = await navigator.serviceWorker.getRegistration(baseUrl);
-        const serviceWorker = current?.active || registration.active;
-        if (!serviceWorker) {
-            continue;
-        }
+        const serviceWorker = await waitForController();
         const clientId = await requestClientId(serviceWorker);
-        if (clientId) {
-            await waitForController(serviceWorker);
+        if (clientId && navigator.serviceWorker.controller === serviceWorker) {
             return { serviceWorker, clientId };
         }
     }
@@ -55,19 +50,24 @@ const waitForActivation = async (worker: ServiceWorker) => {
     }
 };
 
-const waitForController = async (worker: ServiceWorker) => {
+const waitForController = async () => {
     let handleControllerChange = () => {};
-    const control = new Promise<void>((resolve) => {
+    const control = new Promise<ServiceWorker>((resolve) => {
         handleControllerChange = () => {
-            if (navigator.serviceWorker.controller === worker) {
-                resolve();
+            const controller = navigator.serviceWorker.controller;
+            if (controller) {
+                resolve(controller);
             }
         };
         navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
         handleControllerChange();
     });
     try {
-        await withTimeout(control, STARTUP_TIMEOUT, 'Python input service worker did not take control.');
+        return await withTimeout(
+            control,
+            STARTUP_TIMEOUT,
+            'Python input service worker did not take control.'
+        );
     } finally {
         navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
     }
