@@ -1,6 +1,7 @@
 import _ from 'es-toolkit/compat';
 import type { PyodideAPI } from 'pyodide';
 import { type Context, pyodideJsModules } from '../pyodideJsModules';
+import { registerJsModule } from './registerJsModule';
 const siteModules = new Set(Object.keys(pyodideJsModules));
 const StandardPythonNamespaces = new Set([
     'xml',
@@ -96,7 +97,7 @@ export const loadPackages = async (pyodide: PyodideAPI, context: Context, code: 
             const moduleFactory = pyodideJsModules[pkg as keyof typeof pyodideJsModules];
             if (moduleFactory) {
                 const module = moduleFactory(context);
-                pyodide.registerJsModule(pkg, module);
+                registerJsModule(pyodide, pkg, module);
             }
         }
     }

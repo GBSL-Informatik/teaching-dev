@@ -3,6 +3,7 @@ import * as Comlink from 'comlink';
 import { PY_STDIN_ROUTE } from '../config';
 import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
+import { registerJsModule } from './registerJsModule';
 
 const pyodideReadyPromise = loadPyodide();
 
@@ -77,10 +78,9 @@ export class PyWorker {
         );
 
         // patch input function to use browser_input module
-        pyodide.registerJsModule('browser_input', pyModule);
+        registerJsModule(pyodide, 'browser_input', pyModule);
 
-        // TODO: move clock module to its own file/to the client
-        pyodide.registerJsModule('tdev', {
+        registerJsModule(pyodide, 'tdev', {
             sendMessage: (message: Message) => {
                 sendMessage(message);
             }
