@@ -65,7 +65,12 @@ export class PyWorker {
             return t;
         };
 
-        const context = {};
+        const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
+        const context = {
+            __name__: '__main__',
+            __file__: fname,
+            __package__: undefined
+        };
         pyodide.registerComlink(Comlink);
 
         await loadPackages(
@@ -95,7 +100,6 @@ export class PyWorker {
             }
         });
         await pyodide.runPythonAsync(patchInputCode(id, clientId, executionId));
-        const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
         try {
             // Execute the python code in this context
             const result = await pyodide.runPythonAsync(code, { globals, filename: fname });
