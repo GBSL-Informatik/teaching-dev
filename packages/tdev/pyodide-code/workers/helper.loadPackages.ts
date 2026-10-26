@@ -112,7 +112,14 @@ const installPackages = async (pyodide: PyodideAPI, packages: readonly string[],
 const loadCallbacks = (context: PackageContext) => {
     const send = (type: 'log' | 'error', message: string) => {
         if (context.showPackageLogs) {
-            context.sendMessage({ type, message, id: context.id, timeStamp: context.getTime() });
+            // Progress is best-effort; required diagnostics remain awaited.
+            void Promise.resolve()
+                .then(() =>
+                    context.sendMessage({ type, message, id: context.id, timeStamp: context.getTime() })
+                )
+                .catch((error: unknown) => {
+                    console.error('Could not deliver Python package progress.', error);
+                });
         }
     };
     return {

@@ -42,7 +42,13 @@ export default class PyodideRuntime {
             return api;
         });
         this.api = withTimeout(
-            Promise.race([ready, this.failed]),
+            Promise.race([
+                ready,
+                this.failed,
+                this.stopped.then(() => {
+                    throw new Error('Python runtime stopped.');
+                })
+            ]),
             30000,
             'Python runtime loading timed out. Check the network and retry.'
         );
