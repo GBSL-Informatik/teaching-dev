@@ -62,10 +62,11 @@ export class PyWorker {
         const globals = dict(Object.entries(context));
         dict.destroy();
         const finishOutput = captureOutput(pyodide, id, { sendMessage, getTime });
-        const restoreInput = configureInput(pyodide, { id, clientId, executionId });
+        let restoreInput: (() => void) | undefined;
         let result: unknown;
         let outcome: { type: 'log' | 'error'; message: string };
         try {
+            restoreInput = configureInput(pyodide, { id, clientId, executionId });
             // Execute the python code in this context
             result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             outcome = {
@@ -79,7 +80,7 @@ export class PyWorker {
                 await finishOutput();
             } finally {
                 try {
-                    restoreInput();
+                    restoreInput?.();
                 } finally {
                     globals.destroy();
                     if (result instanceof pyodide.ffi.PyProxy) {
