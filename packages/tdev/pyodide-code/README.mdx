@@ -99,9 +99,9 @@ Fortschrittsmeldungen beim Laden von Paketen sind standardmässig ausgeblendet. 
 
 Die Option steht ebenfalls in `ModelMeta` zur Verfügung. Fehlgeschlagene Installationen werden unabhängig davon angezeigt.
 
-## Laufzeiten wiederverwenden
+## Laufzeiten beim Stoppen behalten
 
-Nacheinander gestartete Skripte verwenden einen freien Worker desselben Browser-Tabs wieder. Dadurch bleiben bereits installierte Pakete und importierte Bibliotheken verfügbar. Gleichzeitig laufende Skripte erhalten jeweils einen eigenen Worker. Pro Tab bleiben höchstens zwei freie Worker erhalten; verschiedene Tabs teilen keinen Python-Interpreter. Skriptvariablen werden bei jeder Ausführung neu angelegt, importierte Module können ihren Zustand hingegen behalten.
+Jeder Editor verwendet seinen eigenen Worker. Bereits installierte Pakete und importierte Bibliotheken bleiben für weitere Ausführungen desselben Editors verfügbar. Pro Tab bleiben höchstens zwei freie Worker erhalten; andere Editoren und Tabs teilen diesen Python-Interpreter nicht. Skriptvariablen werden bei jeder Ausführung neu angelegt, importierte Module können ihren Zustand hingegen behalten.
 
 Beim Stoppen versucht der Worker zuerst, die Ausführung zu unterbrechen und seine Bibliotheken zu behalten. In Browsern mit WebAssembly JSPI gilt das auch für Python-Schleifen und `time.sleep()`, ohne zusätzliche Isolation-Header. Ausstehende asyncio-Tasks und geplante asyncio-Callbacks werden vor der Wiederverwendung aufgeräumt. Wenn der Worker innerhalb einer Sekunde nicht reagiert, wird er beendet. Danach muss der nächste Start die Pakete erneut laden. Das kann insbesondere bei blockierenden nativen Bibliotheken oder Browsern ohne JSPI nötig sein. Direkt über JavaScript gestartete Hintergrundaktivitäten werden nicht automatisch aufgeräumt; lokale Erweiterungen müssen diese selbst beenden.
 
