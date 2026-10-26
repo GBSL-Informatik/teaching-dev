@@ -11,9 +11,11 @@ const packageAliases = new Map([
     ['bs4', 'beautifulsoup4']
 ]);
 
+type PackageContext = Context & { id: string; showPackageLogs?: boolean };
+
 export const loadPackages = async (
     pyodide: PyodideAPI,
-    context: Context & { id: string },
+    context: PackageContext,
     code: string,
     requirements: readonly string[] = []
 ) => {
@@ -25,17 +27,17 @@ export const loadPackages = async (
         }
     }
     if (requirements.length > 0) {
-        await installPackages(pyodide, requirements);
+        await installPackages(pyodide, requirements, context);
     }
-    await loadInferredPackage(context, () => pyodide.loadPackagesFromImports(code));
+    await loadInferredPackage(context, () => pyodide.loadPackagesFromImports(code, loadCallbacks(context)));
     const missing = getMissingImports(pyodide, imports);
     const packages = new Set(missing.map((name) => packageAliases.get(name) || name));
     for (const name of packages) {
-        await loadInferredPackage(context, () => installPackages(pyodide, [name]));
+        await loadInferredPackage(context, () => installPackages(pyodide, [name], context));
     }
 };
 
-const loadInferredPackage = async (context: Context & { id: string }, load: () => Promise<unknown>) => {
+const loadInferredPackage = async (context: PackageContext, load: () => Promise<unknown>) => {
     try {
         await load();
     } catch (error: unknown) {
@@ -93,16 +95,28 @@ const getMissingImports = (pyodide: PyodideAPI, imports: string[]): string[] => 
     }
 };
 
-const installPackages = async (pyodide: PyodideAPI, packages: readonly string[]) => {
+const installPackages = async (pyodide: PyodideAPI, packages: readonly string[], context: PackageContext) => {
     const requirements = [...new Set(packages)];
-    await pyodide.loadPackage('micropip');
+    await pyodide.loadPackage('micropip', loadCallbacks(context));
     const micropip = pyodide.pyimport('micropip');
     try {
-        await micropip.install(requirements);
+        await micropip.install.callKwargs(requirements, { verbose: !!context.showPackageLogs });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
         throw new Error(`Could not install Python packages (${requirements.join(', ')}): ${message}`);
     } finally {
         micropip.destroy();
     }
+};
+
+const loadCallbacks = (context: PackageContext) => {
+    const send = (type: 'log' | 'error', message: string) => {
+        if (context.showPackageLogs) {
+            context.sendMessage({ type, message, id: context.id, timeStamp: context.getTime() });
+        }
+    };
+    return {
+        messageCallback: (message: string) => send('log', message),
+        errorCallback: (message: string) => send('error', message)
+    };
 };

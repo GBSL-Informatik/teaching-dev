@@ -11,6 +11,13 @@ import PyodideRuntime from '../models/PyodideRuntime';
 const BASE_URL = siteConfig.baseUrl || '/';
 const MAX_IDLE_RUNTIMES = 2;
 
+interface RuntimeLease {
+    runtime: PyodideRuntime;
+    executionId: number;
+    finished: Promise<void>;
+    release: () => void;
+}
+
 interface InputRequest {
     requestId: string;
     serviceWorker: ServiceWorker;
@@ -19,7 +26,8 @@ interface InputRequest {
 export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
-    private readonly runtimes = new Map<string, PyodideRuntime>();
+    private readonly runtimes = new Map<string, RuntimeLease>();
+    private readonly idleRuntimes: PyodideRuntime[] = [];
     private readonly latestExecutions = new Map<string, number>();
     private nextExecutionId = 0;
     private clientId = '';
@@ -47,6 +55,7 @@ export default class PyodideStore {
         const source = code.combinedCode;
         const title = code.title;
         const packages = [...code.meta.packages];
+        const showPackageLogs = code.meta.showPackageLogs;
         code.clearMessages();
         code.setRuntimeId(executionId);
         this.executions.set(code.id, executionId);
@@ -54,6 +63,7 @@ export default class PyodideStore {
         const stopped = new Promise<void>((resolve) => {
             this.cancellations.set(executionId, resolve);
         });
+        let lease: RuntimeLease | null = null;
         try {
             const initialized = await Promise.race([
                 this.initialize().then(() => true),
@@ -62,7 +72,11 @@ export default class PyodideStore {
             if (!initialized || this.executions.get(code.id) !== executionId) {
                 return;
             }
-            const runtime = this.runtimeFor(code.id);
+            lease = await this.acquireRuntime(code.id, executionId);
+            if (!lease) {
+                return;
+            }
+            const { runtime } = lease;
             const worker = await Promise.race([runtime.api, runtime.stopped.then(() => null)]);
             if (!worker || this.executions.get(code.id) !== executionId) {
                 return;
@@ -75,12 +89,21 @@ export default class PyodideStore {
                 })
             );
             const message = await Promise.race([
-                worker.run(code.id, source, sendMessage, title, this.clientId, executionId, packages),
+                worker.run(
+                    code.id,
+                    source,
+                    sendMessage,
+                    title,
+                    this.clientId,
+                    executionId,
+                    packages,
+                    showPackageLogs
+                ),
                 runtime.stopped,
                 runtime.failed
             ]);
             if (this.executions.get(code.id) === executionId) {
-                if (message && !(message.type === 'log' && message.message === undefined)) {
+                if (message && !(message.type === 'log' && !message.message)) {
                     this.handleMessage(code, message);
                 }
             }
@@ -94,8 +117,7 @@ export default class PyodideStore {
                 this.initializationError = message;
                 code.addLogMessage({ type: 'error', message, id: code.id, timeStamp: Date.now() });
                 this.cancelCodeExecution(code.id);
-                this.runtimes.get(code.id)?.terminate();
-                this.runtimes.delete(code.id);
+                lease?.runtime.terminate();
                 this.latestExecutions.delete(code.id);
             });
         } finally {
@@ -105,7 +127,9 @@ export default class PyodideStore {
                     this.executions.delete(code.id);
                     code.setRuntimeId(null);
                 }
-                this.releaseIdleRuntimes();
+                if (lease) {
+                    this.releaseRuntime(code.id, lease);
+                }
             });
         }
     }
@@ -122,8 +146,10 @@ export default class PyodideStore {
         }
         this.executions.delete(id);
         this.latestExecutions.delete(id);
-        this.runtimes.get(id)?.terminate();
-        this.runtimes.delete(id);
+        const lease = this.runtimes.get(id);
+        if (lease && lease.executionId === executionId) {
+            lease.runtime.interrupt(lease.executionId);
+        }
     }
 
     @action
@@ -246,11 +272,44 @@ export default class PyodideStore {
         this.awaitingInputPrompt.set(event.data.id, event.data.prompt);
     });
 
-    private runtimeFor(id: string) {
-        const runtime = this.runtimes.get(id) || new PyodideRuntime();
+    private async acquireRuntime(id: string, executionId: number): Promise<RuntimeLease | null> {
+        const previous = this.runtimes.get(id);
+        if (previous) {
+            await previous.finished;
+        }
+        if (this.executions.get(id) !== executionId) {
+            return null;
+        }
+        let runtime = this.idleRuntimes.pop();
+        while (runtime && !runtime.isUsable) {
+            runtime.terminate();
+            runtime = this.idleRuntimes.pop();
+        }
+        runtime ||= new PyodideRuntime();
+        let release!: () => void;
+        const finished = new Promise<void>((resolve) => {
+            release = resolve;
+        });
+        const lease = { runtime, executionId, finished, release };
+        this.runtimes.set(id, lease);
+        return lease;
+    }
+
+    private releaseRuntime(id: string, lease: RuntimeLease) {
+        if (this.runtimes.get(id) !== lease) {
+            return;
+        }
         this.runtimes.delete(id);
-        this.runtimes.set(id, runtime);
-        return runtime;
+        lease.runtime.finishExecution();
+        if (lease.runtime.isUsable) {
+            this.idleRuntimes.push(lease.runtime);
+        } else {
+            lease.runtime.terminate();
+        }
+        while (this.idleRuntimes.length > MAX_IDLE_RUNTIMES) {
+            this.idleRuntimes.shift()?.terminate();
+        }
+        lease.release();
     }
 
     private notifyInputWorker(
@@ -266,14 +325,6 @@ export default class PyodideStore {
     }
 
     private failInput(id: string) {
-        this.runtimes.get(id)?.fail(new Error('Python input connection failed. Run the code again.'));
-    }
-
-    private releaseIdleRuntimes() {
-        const idleRuntimes = [...this.runtimes].filter(([id]) => !this.executions.has(id));
-        for (const [id, runtime] of idleRuntimes.slice(0, -MAX_IDLE_RUNTIMES)) {
-            runtime.terminate();
-            this.runtimes.delete(id);
-        }
+        this.runtimes.get(id)?.runtime.fail(new Error('Python input connection failed. Run the code again.'));
     }
 }

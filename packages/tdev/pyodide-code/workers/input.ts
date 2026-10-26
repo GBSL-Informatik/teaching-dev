@@ -14,7 +14,9 @@ def get_input(prompt="", /):
     prompt = str(prompt)
     browser_input.setPrompt(prompt)
     try:
-        return browser_input.originalInput(prompt)
+        value = browser_input.originalInput(prompt)
+        print(value)
+        return value
     finally:
         browser_input.setPrompt("")
 builtins.input = get_input

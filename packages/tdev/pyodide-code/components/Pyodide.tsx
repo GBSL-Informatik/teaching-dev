@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 interface Props extends CodeEditorProps {
     packages?: readonly string[];
+    showPackageLogs?: boolean;
 }
 
 const Pyodide = observer((props: Props) => {
