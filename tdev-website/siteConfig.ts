@@ -111,6 +111,7 @@ const getSiteConfig: SiteConfigProvider = () => {
         },
         plugins: [
             brythonCodePluginConfig(),
+            require.resolve('@tdev/pyodide-code/plugin'),
             yamlLoaderPluginConfig,
             githubCmsPlugin({
                 pages: {},

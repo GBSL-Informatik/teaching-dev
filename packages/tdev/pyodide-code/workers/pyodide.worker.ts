@@ -1,14 +1,10 @@
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
 import * as Comlink from 'comlink';
-import type { loadPyodide } from 'pyodide';
 import { PY_STDIN_ROUTE } from '../config';
+import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
-// @ts-ignore
-importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js');
-// @ts-ignore
-let pyodideReadyPromise = (loadPyodide as typeof loadPyodide)({
-    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.29.1/full/'
-});
+
+const pyodideReadyPromise = loadPyodide();
 
 const pyModule = {
     getInput: (id: string, prompt: string) => {

@@ -230,10 +230,13 @@ Kopiere des `packages/tdev/pyodide-code`-Verzeichnis in das `tdev-website/websit
 
 import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
 
-1. Hinzufügen des `pyodide-code`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
+1. Pyodide-Plugin und Dokument-Provider im `siteConfig.ts` registrieren:
     ```ts title="siteConfig.ts"
     const getSiteConfig: SiteConfigProvider = () => {
         return {
+            plugins: [
+                require.resolve('@tdev/pyodide-code/plugin'),
+            ],
             apiDocumentProviders: [
                 require.resolve('@tdev/pyodide-code/register'),
             ]
@@ -253,3 +256,19 @@ Danach muss erneut installiert werden:
 ```bash
 yarn install
 ```
+
+## Pyodide-Version konfigurieren
+
+Die exakte `pyodide`-Abhängigkeit in `package.json` legt die Laufzeitversion fest.
+`config.ts` leitet daraus `PYODIDE_VERSION` und `PYODIDE_INDEX_URL` ab. Worker und
+Main-Thread-Hook verwenden denselben ES-Modul-Loader und dieselbe CDN-Adresse.
+Das Docusaurus-Plugin prüft beim Start, dass die Version exakt angegeben ist,
+und konfiguriert den für Pyodide erforderlichen Modul-Worker.
+
+Zum Aktualisieren auf eine neue stabile Version:
+
+```bash
+yarn workspace @tdev/pyodide-code add pyodide@<version> --exact
+```
+
+Die geänderten Dateien `package.json` und `yarn.lock` müssen gemeinsam übernommen werden.

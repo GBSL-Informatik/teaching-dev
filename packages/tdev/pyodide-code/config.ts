@@ -1,3 +1,8 @@
+import { dependencies } from './package.json';
+
+export const PYODIDE_VERSION = dependencies.pyodide;
+export const PYODIDE_INDEX_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+
 export const DOCUSAURUS_SW_SCOPE = '/' as const;
 
 export const PY_INPUT = 'PY_INPUT' as const;

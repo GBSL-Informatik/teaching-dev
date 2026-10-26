@@ -3,6 +3,7 @@ import siteConfig from '@generated/docusaurus.config';
 import SessionStorage from '@tdev-stores/utils/SessionStorage';
 import ViewStore from '@tdev-stores/ViewStores';
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
+import { ModuleWorker } from '@tdev/pyodide-code/workers/ModuleWorker';
 import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
 import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
@@ -151,9 +152,14 @@ export default class PyodideStore {
         if (this._worker) {
             this._worker.terminate();
         }
-        this._worker = new Worker(new URL('@tdev/pyodide-code/workers/pyodide.worker', import.meta.url), {
-            type: 'module'
-        });
+        this._worker = new ModuleWorker(
+            new URL(
+                /* webpackChunkName: "pyodide-worker" */
+                // Plugin uses this name to prevent worker splitting.
+                '@tdev/pyodide-code/workers/pyodide.worker',
+                import.meta.url
+            )
+        ).worker;
         return Comlink.wrap<PyWorkerApi>(this._worker);
     }
 
