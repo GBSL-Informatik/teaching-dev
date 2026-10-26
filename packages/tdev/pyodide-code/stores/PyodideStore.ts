@@ -9,6 +9,7 @@ import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../con
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
 const BASE_URL = siteConfig.baseUrl || '/';
+// Bound unused heaps while keeping a recent pair of editors warm.
 const MAX_IDLE_RUNTIMES = 2;
 
 declare module '@tdev-stores/utils/SessionStorage' {
@@ -29,6 +30,7 @@ export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
     private readonly runtimes = new Map<string, PyodideRuntime>();
+    // Delayed callbacks may arrive after completion; stop/restart invalidates them.
     private readonly latestExecutions = new Map<string, number>();
     private nextExecutionId = 0;
     private readonly initialization: Promise<void>;
