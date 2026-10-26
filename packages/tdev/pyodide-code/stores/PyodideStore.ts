@@ -1,15 +1,15 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import siteConfig from '@generated/docusaurus.config';
 import SessionStorage from '@tdev-stores/utils/SessionStorage';
-import ViewStore from '@tdev-stores/ViewStores';
+import type ViewStore from '@tdev-stores/ViewStores';
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
-import { ModuleWorker } from '@tdev/pyodide-code/workers/ModuleWorker';
 import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
 import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
-import PyodideCode from '../models/PyodideCode';
-import { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
+import type PyodideCode from '../models/PyodideCode';
+import PyodideRuntime from '../models/PyodideRuntime';
 const BASE_URL = siteConfig.baseUrl || '/';
+const MAX_IDLE_RUNTIMES = 2;
 
 declare module '@tdev-stores/utils/SessionStorage' {
     export interface StorageKey {
@@ -27,50 +27,76 @@ const TimingServiceWorker =
 
 export default class PyodideStore {
     viewStore: ViewStore;
-    _worker: Worker | null = null;
-    @observable accessor runtimeId = Date.now();
-    @observableRef accessor pyWorker: Comlink.Remote<PyWorker> | null = null;
+    readonly executions = observable.map<string, number>();
+    private readonly runtimes = new Map<string, PyodideRuntime>();
+    private readonly latestExecutions = new Map<string, number>();
+    private nextExecutionId = 0;
+    private readonly initialization: Promise<void>;
     @observableRef accessor _serviceWorkerRegistration: ServiceWorker | null = null;
     awaitingInputPrompt = observable.map<string, string | null>();
     constructor(viewStore: ViewStore) {
         this.viewStore = viewStore;
-        this.initialize();
+        this.initialization = this.registerServiceWorker();
     }
 
     @action
     async run(code: PyodideCode) {
         if (code.isExecuting) {
-            await this.recreatePyWorker();
+            this.stopExecution(code.id);
         }
-
+        const executionId = ++this.nextExecutionId;
+        const source = code.combinedCode;
+        const title = code.title;
         code.clearMessages();
-        code.setRuntimeId(this.runtimeId);
-        if (!this.pyWorker) {
-            code.addLogMessage({
-                type: 'error',
-                message: 'Python worker is not initialized.',
-                id: code.id,
-                timeStamp: Date.now()
-            });
-            return;
-        }
-        const sendMessage = Comlink.proxy(
-            action((message: Message) => {
-                this.handleMessage(code, message);
-            })
-        );
-        return this.pyWorker
-            .run(code.id, code.combinedCode, sendMessage, code.title)
-            .then((message) => {
+        code.setRuntimeId(executionId);
+        this.executions.set(code.id, executionId);
+        this.latestExecutions.set(code.id, executionId);
+        try {
+            await this.initialization;
+            if (this.executions.get(code.id) !== executionId) {
+                return;
+            }
+            const runtime = this.runtimeFor(code.id);
+            const worker = await Promise.race([runtime.api, runtime.stopped.then(() => null)]);
+            if (!worker || this.executions.get(code.id) !== executionId) {
+                return;
+            }
+            const sendMessage = Comlink.proxy(
+                action((message: Message) => {
+                    if (this.latestExecutions.get(code.id) === executionId) {
+                        this.handleMessage(code, message);
+                    }
+                })
+            );
+            const message = await Promise.race([
+                worker.run(code.id, source, sendMessage, title),
+                runtime.stopped
+            ]);
+            if (this.executions.get(code.id) === executionId) {
                 if (message && !(message.type === 'log' && message.message === undefined)) {
                     this.handleMessage(code, message);
                 }
-            })
-            .finally(() => {
-                runInAction(() => {
+            }
+        } finally {
+            runInAction(() => {
+                if (this.executions.get(code.id) === executionId) {
+                    this.executions.delete(code.id);
                     code.setRuntimeId(null);
-                });
+                }
+                this.releaseIdleRuntimes();
             });
+        }
+    }
+
+    @action
+    stopExecution(id: string) {
+        if (this.awaitingInputPrompt.has(id)) {
+            this.cancelCodeExecution(id);
+        }
+        this.executions.delete(id);
+        this.latestExecutions.delete(id);
+        this.runtimes.get(id)?.terminate();
+        this.runtimes.delete(id);
     }
 
     @action
@@ -92,7 +118,7 @@ export default class PyodideStore {
 
     @computed
     get isInitialized() {
-        return this.pyWorker !== null;
+        return this._serviceWorkerRegistration !== null;
     }
 
     @action
@@ -141,52 +167,6 @@ export default class PyodideStore {
             type: PY_INPUT,
             id,
             value
-        });
-    }
-
-    @action
-    createPyWorker() {
-        if (!ExecutionEnvironment.canUseDOM) {
-            return null;
-        }
-        if (this._worker) {
-            this._worker.terminate();
-        }
-        this._worker = new ModuleWorker(
-            new URL(
-                /* webpackChunkName: "pyodide-worker" */
-                // Plugin uses this name to prevent worker splitting.
-                '@tdev/pyodide-code/workers/pyodide.worker',
-                import.meta.url
-            )
-        ).worker;
-        return Comlink.wrap<PyWorkerApi>(this._worker);
-    }
-
-    @action
-    async recreatePyWorker() {
-        if (this.awaitingInputPrompt.size > 0) {
-            this.cancelAllCodeExecutions();
-        }
-        this.pyWorker = null;
-        this.runtimeId = Date.now(); // this will automatically stop all running scripts
-        return await this.initialize(true);
-    }
-
-    async initialize(skipSWRegistration = false) {
-        const ComPyWorker = this.createPyWorker();
-        if (!TimingServiceWorker || !ComPyWorker) {
-            console.error(
-                'Cannot initialize PyodideStore: missing service worker or worker creation failed.'
-            );
-            return;
-        }
-        if (!skipSWRegistration) {
-            await this.registerServiceWorker();
-        }
-        const pyWorker = await new ComPyWorker();
-        runInAction(() => {
-            this.pyWorker = pyWorker;
         });
     }
 
@@ -246,6 +226,21 @@ export default class PyodideStore {
             };
         } catch (error) {
             console.error('Service worker registration failed:', error);
+        }
+    }
+
+    private runtimeFor(id: string) {
+        const runtime = this.runtimes.get(id) || new PyodideRuntime();
+        this.runtimes.delete(id);
+        this.runtimes.set(id, runtime);
+        return runtime;
+    }
+
+    private releaseIdleRuntimes() {
+        const idleRuntimes = [...this.runtimes].filter(([id]) => !this.executions.has(id));
+        for (const [id, runtime] of idleRuntimes.slice(0, -MAX_IDLE_RUNTIMES)) {
+            runtime.terminate();
+            this.runtimes.delete(id);
         }
     }
 }
