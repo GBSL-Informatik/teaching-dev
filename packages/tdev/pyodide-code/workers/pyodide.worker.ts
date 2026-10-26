@@ -7,10 +7,17 @@ import { loadPackages } from './helper.loadPackages';
 const pyodideReadyPromise = loadPyodide();
 
 const pyModule = {
-    getInput: (id: string, prompt: string) => {
+    getInput: (id: string, prompt: string, clientId: string, executionId: number) => {
         const request = new XMLHttpRequest();
+        const query = new URLSearchParams({
+            id,
+            prompt: String(prompt),
+            clientId,
+            executionId: String(executionId),
+            requestId: crypto.randomUUID()
+        });
         // Synchronous request to be intercepted by service worker
-        request.open('GET', `${PY_STDIN_ROUTE}?id=${id}&prompt=${encodeURIComponent(prompt)}`, false);
+        request.open('GET', `${PY_STDIN_ROUTE}?${query}`, false);
         request.send(null);
         if (request.status !== 200) {
             throw new Error('User cancelled the input request');
@@ -18,17 +25,17 @@ const pyModule = {
         return request.responseText;
     }
 };
-const patchInputCode = (id: string) => `
+const patchInputCode = (id: string, clientId: string, executionId: number) => `
 import sys, builtins
 import browser_input
 __prompt_str__ = ""
 def get_input(prompt=""):
     global __prompt_str__
     __prompt_str__ = prompt
-    s = browser_input.getInput("${id}", prompt)
+    s = browser_input.getInput(${JSON.stringify(id)}, prompt, ${JSON.stringify(clientId)}, ${executionId})
     return s
 builtins.input = get_input
-sys.stdin.readline = lambda: browser_input.getInput("${id}", __prompt_str__)
+sys.stdin.readline = lambda: get_input(__prompt_str__)
 `;
 
 export class PyWorker {
@@ -36,7 +43,9 @@ export class PyWorker {
         id: string,
         code: string,
         sendMessage: (message: Message) => void,
-        filename = 'snippet.py'
+        filename = 'snippet.py',
+        clientId = '',
+        executionId = 0
     ): Promise<Message> {
         const pyodide = await pyodideReadyPromise;
         // Ensure unique timestamps for messages
@@ -85,7 +94,7 @@ export class PyWorker {
                 sendMessage({ type: 'log', message: s, id: id, timeStamp: getTime() });
             }
         });
-        await pyodide.runPythonAsync(patchInputCode(id));
+        await pyodide.runPythonAsync(patchInputCode(id, clientId, executionId));
         const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
         try {
             // Execute the python code in this context

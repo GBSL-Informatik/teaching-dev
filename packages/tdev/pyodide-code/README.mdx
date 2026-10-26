@@ -245,6 +245,7 @@ import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
     ```
 2. ServiceWorker hinzufügen:  
     Damit Eingaben von Benutzer:innen abgewartet werden können, braucht es einen Servie-Worker. Dieser muss direkt in den statischen Ordner [`static/pyodide.sw.js`](https://github.com/GBSL-Informatik/teaching-dev/blob/main/static/pyodide.sw.js) kopiert werden.
+    Bei Paket-Updates muss auch diese Datei aktualisiert werden, damit Frontend und ServiceWorker dasselbe Eingabeprotokoll verwenden.
     :::details[`static/pyodide.sw.js`]
     <CodeBlock language="js" title="pyodide.sw.js">
         {pyodideSW}

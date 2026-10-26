@@ -1,94 +1,97 @@
-const DOCUSAURUS_SW_SCOPE = '/';
 const PY_INPUT = 'PY_INPUT';
+const PY_CLIENT_ID = 'PY_CLIENT_ID';
 const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT';
-const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/`;
+const PY_STDIN_ROUTE = '/py-get-input/';
 const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT';
 const PY_CANCEL_ALL = 'PY_CANCEL_ALL';
 
-self.addEventListener('install', () => {
-    self.skipWaiting();
+self.addEventListener('install', (event) => {
+    event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', () => {
-    self.clients.claim();
+self.addEventListener('activate', (event) => {
+    event.waitUntil(self.clients.claim());
 });
 
-const resolvers = new Map();
+const requests = new Map();
+
+const completeRequest = (requestId, response) => {
+    const request = requests.get(requestId);
+    if (!request) {
+        return;
+    }
+    requests.delete(requestId);
+    request.resolve(response);
+};
 
 self.addEventListener('message', (event) => {
-    switch (event.data.type) {
-        case PY_INPUT:
-            const resolverArray = resolvers.get(event.data.id);
-            const resolver = resolverArray && resolverArray.shift();
-            if (!resolver) {
-                console.error('Error handling input: No resolver');
-                return;
+    const clientId = event.source?.id;
+    if (!clientId) {
+        return;
+    }
+    if (event.data.type === PY_CLIENT_ID) {
+        event.ports[0]?.postMessage({ clientId });
+        return;
+    }
+    if (event.data.type === PY_CANCEL_ALL) {
+        for (const [requestId, request] of requests) {
+            if (request.clientId === clientId) {
+                completeRequest(requestId, new Response('Run cancelled', { status: 410 }));
             }
-            resolver(new Response(event.data.value, { status: 200 }));
-            break;
-        case PY_CANCEL_INPUT:
-            const rejecterArray = resolvers.get(event.data.id);
-            const rejecter = rejecterArray && rejecterArray.shift();
-            if (!rejecter) {
-                console.error('Error handling input: No resolver');
-                return;
-            }
-            rejecter(new Response('Run cancelled', { status: 410 }));
-            break;
-        case PY_CANCEL_ALL:
-            const allResolvers = resolvers.keys();
-            for (const id of allResolvers) {
-                const rejecterArray = resolvers.get(id);
-                if (rejecterArray) {
-                    while (rejecterArray.length > 0) {
-                        const rejecter = rejecterArray.shift();
-                        if (rejecter) {
-                            rejecter(new Response('Run cancelled', { status: 410 }));
-                        }
-                    }
-                }
-            }
-            break;
-        default:
-            return;
+        }
+        return;
+    }
+    const request = requests.get(event.data.requestId);
+    if (!request || request.clientId !== clientId) {
+        return;
+    }
+    if (event.data.type === PY_INPUT) {
+        completeRequest(event.data.requestId, new Response(event.data.value, { status: 200 }));
+    } else if (event.data.type === PY_CANCEL_INPUT) {
+        completeRequest(event.data.requestId, new Response('Run cancelled', { status: 410 }));
     }
 });
 
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
-
-    if (url.pathname !== PY_STDIN_ROUTE) {
+    if (url.origin !== self.location.origin || url.pathname !== PY_STDIN_ROUTE) {
         return;
     }
-
     const id = url.searchParams.get('id');
-    if (!id) {
-        console.error('Error handling input: No id');
+    const clientId = url.searchParams.get('clientId');
+    const requestId = url.searchParams.get('requestId');
+    const executionId = Number(url.searchParams.get('executionId'));
+    if (!id || !clientId || !requestId || !Number.isSafeInteger(executionId) || executionId < 1) {
+        event.respondWith(new Response('Invalid input request', { status: 400 }));
         return;
     }
-    const prompt = url.searchParams.get('prompt');
-
+    if (requests.has(requestId)) {
+        event.respondWith(new Response('Duplicate input request', { status: 409 }));
+        return;
+    }
+    event.respondWith(
+        new Promise((resolve) => {
+            requests.set(requestId, { clientId, resolve });
+        })
+    );
     event.waitUntil(
         self.clients
-            .matchAll()
-            .then((clients) => {
-                clients.forEach((client) => {
-                    if (client.type === 'window') {
-                        client.postMessage({
-                            type: PY_AWAIT_INPUT,
-                            id,
-                            prompt
-                        });
-                    }
+            .get(clientId)
+            .then((client) => {
+                if (!client || client.type !== 'window') {
+                    completeRequest(requestId, new Response('Input owner closed', { status: 410 }));
+                    return;
+                }
+                client.postMessage({
+                    type: PY_AWAIT_INPUT,
+                    id,
+                    requestId,
+                    executionId,
+                    prompt: url.searchParams.get('prompt') || ''
                 });
             })
-            .catch((err) => console.error('Error matching clients', err))
+            .catch(() => {
+                completeRequest(requestId, new Response('Input owner unavailable', { status: 410 }));
+            })
     );
-
-    const promise = new Promise((resolve) => {
-        const resolverArray = resolvers.get(id) || [];
-        resolverArray.push(resolve);
-        resolvers.set(id, resolverArray);
-    });
-    event.respondWith(promise);
 });
