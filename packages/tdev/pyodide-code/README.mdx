@@ -77,6 +77,20 @@ print("Minimum at x =", result.x[0])
 print("Function value at minimum =", result.fun)
 ```
 
+## Python-Pakete laden
+
+Imports werden mit Pythons AST ausgewertet, auch innerhalb von Funktionen oder zusammen mit weiteren Anweisungen auf einer Zeile. Pakete aus der Pyodide-Distribution werden mit deren eingebautem Loader geladen. Bereits verfügbare Module, die Standardbibliothek und lokale JavaScript-Module lösen keine zusätzlichen PyPI-Installationen aus. Fehlgeschlagene Installationen werden im Editor angezeigt.
+
+Für zusätzliche oder versionierte Abhängigkeiten kann die `Pyodide`-Komponente eine Liste von Paketanforderungen erhalten:
+
+```tsx
+<Pyodide {...editorProps} packages={['python-slugify==8.0.4']} />
+```
+
+Diese Pakete werden vor der Ausführung installiert. So funktioniert auch `import slugify`, obwohl die Distribution `python-slugify` heisst. Die Liste steht ebenfalls als `packages` in den `ModelMeta`-Optionen zur Verfügung. Dynamisch zusammengesetzte Importnamen benötigen solche expliziten Paketanforderungen.
+
+Explizite Paketanforderungen müssen erfolgreich installiert werden. Bei fehlgeschlagenen automatisch erkannten Abhängigkeiten wird eine Diagnose angezeigt und der Python-Code trotzdem ausgeführt. Dadurch können optionale Imports weiterhin mit `try`/`except ImportError` behandelt werden.
+
 ## Interaktive Komponenten hinzufügen
 
 Das `pyodide-code`-Package kann erweitert werden - sowohl mit neuen, lokalen Pythin-Bibliotheken als auch mit interaktiven Komponenten, die in React geschrieben sind und mit Python kommunizieren können. Ein Beispiel dafür ist die interaktive Uhr-Komponente:

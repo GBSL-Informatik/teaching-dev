@@ -46,6 +46,7 @@ export default class PyodideStore {
         const executionId = ++this.nextExecutionId;
         const source = code.combinedCode;
         const title = code.title;
+        const packages = [...code.meta.packages];
         code.clearMessages();
         code.setRuntimeId(executionId);
         this.executions.set(code.id, executionId);
@@ -74,7 +75,7 @@ export default class PyodideStore {
                 })
             );
             const message = await Promise.race([
-                worker.run(code.id, source, sendMessage, title, this.clientId, executionId),
+                worker.run(code.id, source, sendMessage, title, this.clientId, executionId, packages),
                 runtime.stopped,
                 runtime.failed
             ]);

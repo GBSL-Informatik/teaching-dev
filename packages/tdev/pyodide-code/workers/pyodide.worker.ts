@@ -14,6 +14,7 @@ interface Execution extends Context {
     filename: string;
     clientId: string;
     executionId: number;
+    packages: readonly string[];
 }
 
 const pyodideReadyPromise = loadPyodide();
@@ -31,7 +32,8 @@ export class PyWorker {
         sendMessage: (message: Message) => void,
         filename = 'snippet.py',
         clientId = '',
-        executionId = 0
+        executionId = 0,
+        packages: readonly string[] = []
     ): Promise<Message> {
         const getTime = createTimestamp();
         try {
@@ -42,6 +44,7 @@ export class PyWorker {
                 filename,
                 clientId,
                 executionId,
+                packages,
                 sendMessage,
                 getTime
             });
@@ -69,7 +72,7 @@ export class PyWorker {
                     execution.sendMessage(message);
                 }
             });
-            await loadPackages(pyodide, execution, code);
+            await loadPackages(pyodide, execution, code, execution.packages);
             const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
             const dict = pyodide.globals.get('dict');
             try {
