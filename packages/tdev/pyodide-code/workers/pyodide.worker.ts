@@ -4,6 +4,7 @@ import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
 import { registerJsModule } from './registerJsModule';
 import { configureInput } from './input';
+import { captureOutput } from './output';
 
 const pyodideReadyPromise = loadPyodide();
 
@@ -59,27 +60,35 @@ export class PyWorker {
         // make a Python dictionary with the data from `context`
         const dict = pyodide.globals.get('dict');
         const globals = dict(Object.entries(context));
-        pyodide.setStdout({
-            batched: (s: string) => {
-                sendMessage({ type: 'log', message: s, id: id, timeStamp: getTime() });
-            }
-        });
+        dict.destroy();
+        const finishOutput = captureOutput(pyodide, id, { sendMessage, getTime });
         const restoreInput = configureInput(pyodide, { id, clientId, executionId });
+        let result: unknown;
+        let outcome: { type: 'log' | 'error'; message: string };
         try {
             // Execute the python code in this context
-            const result = await pyodide.runPythonAsync(code, { globals, filename: fname });
-            return {
+            result = await pyodide.runPythonAsync(code, { globals, filename: fname });
+            outcome = {
                 type: 'log',
-                message: result === undefined ? '' : `${result}`,
-                id: id,
-                timeStamp: getTime()
+                message: result === undefined ? '' : `${result}`
             };
-        } catch (error: any) {
-            return { type: 'error', message: error.message, id: id, timeStamp: getTime() };
+        } catch (error: unknown) {
+            outcome = { type: 'error', message: error instanceof Error ? error.message : String(error) };
         } finally {
-            restoreInput();
-            pyodide.setStdout(undefined);
+            try {
+                await finishOutput();
+            } finally {
+                try {
+                    restoreInput();
+                } finally {
+                    globals.destroy();
+                    if (result instanceof pyodide.ffi.PyProxy) {
+                        result.destroy();
+                    }
+                }
+            }
         }
+        return { ...outcome, id, timeStamp: getTime() };
     }
 }
 
