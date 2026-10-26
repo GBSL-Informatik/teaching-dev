@@ -273,3 +273,12 @@ yarn workspace @tdev/pyodide-code add pyodide@<version> --exact
 ```
 
 Die geänderten Dateien `package.json` und `yarn.lock` müssen gemeinsam übernommen werden.
+
+### Docusaurus- und Rspack-Updates prüfen
+
+Der `ModuleWorker`-Konstruktor, der Chunk-Name `pyodide-worker` und die Parser- und
+SplitChunks-Konfiguration in `plugin.ts` gehören zusammen. Sie erhalten den
+ES-Modul-Worker und verhindern gemeinsame Chunks, die Rspack sonst über
+`importScripts()` laden würde. Nach Updates von Docusaurus, Rspack oder Pyodide
+muss ein Produktions-Build im Browser geprüft werden: Der Worker muss als Modul
+starten und Python einschliesslich Paketimporten und Eingaben ausführen können.
