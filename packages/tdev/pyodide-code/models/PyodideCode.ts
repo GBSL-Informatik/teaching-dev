@@ -118,6 +118,20 @@ class PyodideCode extends iCode<'pyodide_code'> {
         }
     }
 
+    @action
+    resetRuntime() {
+        this.promptResponse = null;
+        this.pyodideStore.resetRuntime(this.id);
+        this.setRuntimeId(null);
+        this.clearMessages();
+        this.addLogMessage({
+            type: 'log',
+            id: this.id,
+            timeStamp: Date.now(),
+            message: 'Python wird beim nächsten Start neu initialisiert.'
+        });
+    }
+
     @computed
     get meta(): ModelMeta {
         if (this.root?.type === 'pyodide_code') {

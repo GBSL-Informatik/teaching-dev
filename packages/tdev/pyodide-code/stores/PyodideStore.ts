@@ -29,6 +29,7 @@ export default class PyodideStore {
     readonly executions = observable.map<string, number>();
     private readonly runtimes = new Map<string, RuntimeLease>();
     private readonly idleRuntimes: PyodideRuntime[] = [];
+    private readonly freshRuntimeIds = new Set<string>();
     // Delayed callbacks may arrive after completion; stop/restart invalidates them.
     private readonly latestExecutions = new Map<string, number>();
     private nextExecutionId = 0;
@@ -83,6 +84,8 @@ export default class PyodideStore {
             if (!worker || this.executions.get(code.id) !== executionId) {
                 return;
             }
+            // A failed or cancelled startup must preserve a pending reset.
+            this.freshRuntimeIds.delete(code.id);
             const sendMessage = Comlink.proxy(
                 action((message: Message) => {
                     if (this.latestExecutions.get(code.id) === executionId) {
@@ -139,7 +142,7 @@ export default class PyodideStore {
     }
 
     @action
-    stopExecution(id: string) {
+    stopExecution(id: string, options: { force?: boolean } = {}) {
         if (this.awaitingInputPrompt.has(id)) {
             this.cancelCodeExecution(id);
         }
@@ -151,9 +154,19 @@ export default class PyodideStore {
         this.executions.delete(id);
         this.latestExecutions.delete(id);
         const lease = this.runtimes.get(id);
-        if (lease && lease.executionId === executionId) {
-            lease.runtime.interrupt(lease.executionId);
+        if (lease && (options.force || lease.executionId === executionId)) {
+            if (options.force) {
+                lease.runtime.terminate();
+            } else {
+                lease.runtime.interrupt(lease.executionId);
+            }
         }
+    }
+
+    @action
+    resetRuntime(id: string) {
+        this.stopExecution(id, { force: true });
+        this.freshRuntimeIds.add(id);
     }
 
     @action
@@ -284,7 +297,7 @@ export default class PyodideStore {
         if (this.executions.get(id) !== executionId) {
             return null;
         }
-        let runtime = this.idleRuntimes.pop();
+        let runtime = this.freshRuntimeIds.has(id) ? undefined : this.idleRuntimes.pop();
         while (runtime && !runtime.isUsable) {
             runtime.terminate();
             runtime = this.idleRuntimes.pop();

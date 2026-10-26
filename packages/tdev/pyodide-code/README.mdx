@@ -113,6 +113,12 @@ Die JSPI-Unterstützung wird über Pyodides öffentliches `can_run_sync()` inner
 
 Ein gestoppter Worker bleibt seinem Lauf zugeordnet, bis Python und die IO-Bereinigung wirklich beendet sind. Erst danach kann er wiederverwendet werden. Der Abbruch-RPC allein gibt ihn nicht frei. Ein weiterer Start desselben Editors wartet darauf; nicht reagierende Worker werden durch den Timer im Main-Thread beendet.
 
+### Python manuell zurücksetzen
+
+Die Neustart-Schaltfläche im Editor beendet einen laufenden oder gerade stoppenden Worker dieses Editors sofort und entfernt dessen lokale Ausgabe und Eingabe. Der nächste Start verwendet garantiert eine neue Python-Umgebung; Pakete werden dann erneut geladen. Das gilt auch, wenn das Laden der Laufzeit fehlschlägt oder vorher abgebrochen wird. Die Schaltfläche startet selbst keinen Code und löst keine Remote-Ausführung aus. Andere Editoren und ihre Worker bleiben davon unberührt.
+
+![Python-Editor nach dem lokalen Zurücksetzen](./images/reset-runtime.png)
+
 ## Interaktive Komponenten hinzufügen
 
 Das `pyodide-code`-Package kann erweitert werden - sowohl mit neuen, lokalen Pythin-Bibliotheken als auch mit interaktiven Komponenten, die in React geschrieben sind und mit Python kommunizieren können. Ein Beispiel dafür ist die interaktive Uhr-Komponente:

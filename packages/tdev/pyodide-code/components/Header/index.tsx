@@ -1,4 +1,4 @@
-import { mdiClose } from '@mdi/js';
+import { mdiClose, mdiRestart } from '@mdi/js';
 import RunCode from '@tdev-components/documents/CodeEditor/Actions/RunCode';
 import Container from '@tdev-components/documents/CodeEditor/Editor/Header/Container';
 import Content from '@tdev-components/documents/CodeEditor/Editor/Header/Content';
@@ -15,10 +15,20 @@ const Header = observer((props: Props) => {
     if (!code) {
         return null;
     }
+    const handleResetRuntime = () => {
+        code.resetRuntime();
+    };
     return (
         <Container code={code} ignoreSlim>
             {!code.meta.slim && <Content code={code} />}
             {code.canExecute && <RunCode code={code} onExecute={() => !code.isExecuting && code.runCode()} />}
+            {code.canExecute && (
+                <Button
+                    icon={mdiRestart}
+                    title="Lokales Python zurücksetzen: nächster Start mit neuer Umgebung"
+                    onClick={handleResetRuntime}
+                />
+            )}
             {code.isExecuting && (
                 <Button
                     icon={mdiClose}
