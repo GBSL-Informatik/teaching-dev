@@ -1,14 +1,30 @@
-import { Message } from '@tdev/pyodide-code/pyodideJsModules';
+import type { Context, Message } from '@tdev/pyodide-code/pyodideJsModules';
 import * as Comlink from 'comlink';
+import type { PyodideAPI } from 'pyodide';
+import type { PyProxy } from 'pyodide/ffi';
 import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
-import { registerJsModule } from './registerJsModule';
 import { configureInput } from './input';
 import { captureOutput } from './output';
+import { registerJsModule } from './registerJsModule';
+
+interface Execution extends Context {
+    id: string;
+    code: string;
+    filename: string;
+    clientId: string;
+    executionId: number;
+}
 
 const pyodideReadyPromise = loadPyodide();
+// The ready RPC reports bootstrap errors to the editor.
+void pyodideReadyPromise.catch(() => {});
 
 export class PyWorker {
+    async ready() {
+        await pyodideReadyPromise;
+    }
+
     async run(
         id: string,
         code: string,
@@ -17,80 +33,91 @@ export class PyWorker {
         clientId = '',
         executionId = 0
     ): Promise<Message> {
-        const pyodide = await pyodideReadyPromise;
-        // Ensure unique timestamps for messages
-        let last_ts = Date.now();
-        let ts_fraction = 2;
-        const getTime = () => {
-            const now = Date.now();
-            let t = now;
-            if (last_ts === t) {
-                t = t + (1 - 1 / ts_fraction);
-                ts_fraction += 1;
-            } else {
-                last_ts = now;
-                ts_fraction = 2;
-            }
-            return t;
-        };
-
-        const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
-        const context = {
-            __name__: '__main__',
-            __file__: fname,
-            __package__: undefined
-        };
-        pyodide.registerComlink(Comlink);
-
-        await loadPackages(
-            pyodide,
-            {
+        const getTime = createTimestamp();
+        try {
+            const pyodide = await pyodideReadyPromise;
+            const message = await this.execute(pyodide, {
+                id,
+                code,
+                filename,
+                clientId,
+                executionId,
                 sendMessage,
                 getTime
-            },
-            code
-        );
-
-        registerJsModule(pyodide, 'tdev', {
-            sendMessage: (message: Message) => {
-                sendMessage(message);
-            }
-        });
-
-        // make a Python dictionary with the data from `context`
-        const dict = pyodide.globals.get('dict');
-        const globals = dict(Object.entries(context));
-        dict.destroy();
-        const finishOutput = captureOutput(pyodide, id, { sendMessage, getTime });
-        const restoreInput = configureInput(pyodide, { id, clientId, executionId });
-        let result: unknown;
-        let outcome: { type: 'log' | 'error'; message: string };
-        try {
-            // Execute the python code in this context
-            result = await pyodide.runPythonAsync(code, { globals, filename: fname });
-            outcome = {
-                type: 'log',
-                message: result === undefined ? '' : `${result}`
-            };
+            });
+            return { type: 'log', message, id, timeStamp: getTime() };
         } catch (error: unknown) {
-            outcome = { type: 'error', message: error instanceof Error ? error.message : String(error) };
+            return {
+                type: 'error',
+                message: error instanceof Error ? error.message : String(error),
+                id,
+                timeStamp: getTime()
+            };
+        }
+    }
+
+    private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
+        const { id, code, filename, clientId, executionId } = execution;
+        pyodide.registerComlink(Comlink);
+        const finishOutput = captureOutput(pyodide, id, execution);
+        let restoreInput: (() => void) | undefined;
+        let globals: PyProxy | undefined;
+        let result: unknown;
+        try {
+            registerJsModule(pyodide, 'tdev', {
+                sendMessage: (message: Message) => {
+                    execution.sendMessage(message);
+                }
+            });
+            await loadPackages(pyodide, execution, code);
+            const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
+            const dict = pyodide.globals.get('dict');
+            try {
+                globals = dict(
+                    Object.entries({
+                        __name__: '__main__',
+                        __file__: fname,
+                        __package__: undefined
+                    })
+                );
+            } finally {
+                dict.destroy();
+            }
+            restoreInput = configureInput(pyodide, { id, clientId, executionId });
+            result = await pyodide.runPythonAsync(code, { globals, filename: fname });
+            return result === undefined ? '' : `${result}`;
         } finally {
             try {
                 await finishOutput();
             } finally {
                 try {
-                    restoreInput();
+                    restoreInput?.();
                 } finally {
-                    globals.destroy();
+                    globals?.destroy();
                     if (result instanceof pyodide.ffi.PyProxy) {
                         result.destroy();
                     }
                 }
             }
         }
-        return { ...outcome, id, timeStamp: getTime() };
     }
 }
 
+const createTimestamp = () => {
+    let lastTime = Date.now();
+    let fraction = 2;
+    return () => {
+        const now = Date.now();
+        if (lastTime === now) {
+            const timestamp = now + (1 - 1 / fraction);
+            fraction += 1;
+            return timestamp;
+        }
+        lastTime = now;
+        fraction = 2;
+        return now;
+    };
+};
+
 Comlink.expose(PyWorker);
-export type PyWorkerApi = typeof PyWorker; // For type inference in main thread
+export type PyWorkerApi = typeof PyWorker;

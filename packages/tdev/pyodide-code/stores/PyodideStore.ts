@@ -1,11 +1,11 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import siteConfig from '@generated/docusaurus.config';
-import SessionStorage from '@tdev-stores/utils/SessionStorage';
 import type ViewStore from '@tdev-stores/ViewStores';
 import { Message } from '@tdev/pyodide-code/pyodideJsModules';
 import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
-import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_CLIENT_ID, PY_INPUT } from '../config';
+import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
+import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
 const BASE_URL = siteConfig.baseUrl || '/';
@@ -16,20 +16,6 @@ interface InputRequest {
     serviceWorker: ServiceWorker;
 }
 
-declare module '@tdev-stores/utils/SessionStorage' {
-    export interface StorageKey {
-        PyodideSwReloadCount: 'pyodideSwReloadCount';
-    }
-}
-
-const TimingServiceWorker =
-    ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator
-        ? navigator.serviceWorker.register(`${BASE_URL}pyodide.sw.js`, {
-              scope: BASE_URL,
-              type: 'module'
-          })
-        : null;
-
 export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
@@ -38,12 +24,18 @@ export default class PyodideStore {
     private nextExecutionId = 0;
     private clientId = '';
     private readonly inputRequests = new Map<string, InputRequest>();
-    private readonly initialization: Promise<void>;
+    private initialization: Promise<void> | null = null;
+    private readonly cancellations = new Map<number, () => void>();
+    @observable accessor initializationState: 'idle' | 'loading' | 'ready' | 'error' = 'idle';
+    @observable accessor initializationError: string | null = null;
     @observableRef accessor _serviceWorkerRegistration: ServiceWorker | null = null;
     awaitingInputPrompt = observable.map<string, string | null>();
     constructor(viewStore: ViewStore) {
         this.viewStore = viewStore;
-        this.initialization = this.registerServiceWorker();
+        if (ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', this.handleInputMessage);
+            window.addEventListener('beforeunload', () => this.cancelAllCodeExecutions());
+        }
     }
 
     @action
@@ -58,9 +50,15 @@ export default class PyodideStore {
         code.setRuntimeId(executionId);
         this.executions.set(code.id, executionId);
         this.latestExecutions.set(code.id, executionId);
+        const stopped = new Promise<void>((resolve) => {
+            this.cancellations.set(executionId, resolve);
+        });
         try {
-            await this.initialization;
-            if (this.executions.get(code.id) !== executionId) {
+            const initialized = await Promise.race([
+                this.initialize().then(() => true),
+                stopped.then(() => false)
+            ]);
+            if (!initialized || this.executions.get(code.id) !== executionId) {
                 return;
             }
             const runtime = this.runtimeFor(code.id);
@@ -77,15 +75,31 @@ export default class PyodideStore {
             );
             const message = await Promise.race([
                 worker.run(code.id, source, sendMessage, title, this.clientId, executionId),
-                runtime.stopped
+                runtime.stopped,
+                runtime.failed
             ]);
             if (this.executions.get(code.id) === executionId) {
                 if (message && !(message.type === 'log' && message.message === undefined)) {
                     this.handleMessage(code, message);
                 }
             }
+        } catch (error: unknown) {
+            runInAction(() => {
+                if (this.executions.get(code.id) !== executionId) {
+                    return;
+                }
+                const message = error instanceof Error ? error.message : String(error);
+                this.initializationState = 'error';
+                this.initializationError = message;
+                code.addLogMessage({ type: 'error', message, id: code.id, timeStamp: Date.now() });
+                this.cancelCodeExecution(code.id);
+                this.runtimes.get(code.id)?.terminate();
+                this.runtimes.delete(code.id);
+                this.latestExecutions.delete(code.id);
+            });
         } finally {
             runInAction(() => {
+                this.cancellations.delete(executionId);
                 if (this.executions.get(code.id) === executionId) {
                     this.executions.delete(code.id);
                     code.setRuntimeId(null);
@@ -99,6 +113,11 @@ export default class PyodideStore {
     stopExecution(id: string) {
         if (this.awaitingInputPrompt.has(id)) {
             this.cancelCodeExecution(id);
+        }
+        const executionId = this.executions.get(id);
+        if (executionId !== undefined) {
+            this.cancellations.get(executionId)?.();
+            this.cancellations.delete(executionId);
         }
         this.executions.delete(id);
         this.latestExecutions.delete(id);
@@ -125,7 +144,7 @@ export default class PyodideStore {
 
     @computed
     get isInitialized() {
-        return this._serviceWorkerRegistration !== null;
+        return this.initializationState === 'ready';
     }
 
     @action
@@ -136,24 +155,27 @@ export default class PyodideStore {
         }
         this.awaitingInputPrompt.delete(id);
         this.inputRequests.delete(id);
-        request.serviceWorker.postMessage({
+        const notified = this.notifyInputWorker(request.serviceWorker, {
             type: PY_CANCEL_INPUT,
             requestId: request.requestId
         });
+        if (!notified) {
+            this.failInput(id);
+        }
     }
 
     @action
     cancelAllCodeExecutions() {
-        if (!this._serviceWorkerRegistration) {
-            console.error('No service worker registration');
-            return;
+        const workers = new Set([...this.inputRequests.values()].map((request) => request.serviceWorker));
+        if (this._serviceWorkerRegistration) {
+            workers.add(this._serviceWorkerRegistration);
+        }
+        for (const id of [...this.inputRequests.keys()]) {
+            this.cancelCodeExecution(id);
         }
         this.awaitingInputPrompt.clear();
-        const workers = new Set([...this.inputRequests.values()].map((request) => request.serviceWorker));
-        workers.add(this._serviceWorkerRegistration);
-        this.inputRequests.clear();
         for (const worker of workers) {
-            worker.postMessage({ type: PY_CANCEL_ALL });
+            this.notifyInputWorker(worker, { type: PY_CANCEL_ALL });
         }
     }
 
@@ -165,83 +187,63 @@ export default class PyodideStore {
         }
         this.awaitingInputPrompt.delete(id);
         this.inputRequests.delete(id);
-        request.serviceWorker.postMessage({
+        const notified = this.notifyInputWorker(request.serviceWorker, {
             type: PY_INPUT,
             requestId: request.requestId,
             value
         });
+        if (!notified) {
+            this.failInput(id);
+        }
     }
 
-    async registerServiceWorker() {
-        if (!TimingServiceWorker) {
-            console.error('Service workers are not supported in this environment.');
+    private initialize(): Promise<void> {
+        if (this.isInitialized && this._serviceWorkerRegistration === navigator.serviceWorker.controller) {
+            return Promise.resolve();
+        }
+        if (this.initialization) {
+            return this.initialization;
+        }
+        runInAction(() => {
+            this.initializationState = 'loading';
+            this.initializationError = null;
+            this._serviceWorkerRegistration = null;
+        });
+        this.initialization = initializeInputServiceWorker(BASE_URL)
+            .then(
+                action(({ serviceWorker, clientId }) => {
+                    this._serviceWorkerRegistration = serviceWorker;
+                    this.clientId = clientId;
+                    this.initializationState = 'ready';
+                })
+            )
+            .catch(
+                action((error: unknown) => {
+                    this.initializationState = 'error';
+                    this.initializationError = error instanceof Error ? error.message : String(error);
+                    throw error;
+                })
+            )
+            .finally(() => {
+                this.initialization = null;
+            });
+        return this.initialization;
+    }
+
+    private handleInputMessage = action((event: MessageEvent) => {
+        if (event.data?.type !== PY_AWAIT_INPUT || !(event.source instanceof ServiceWorker)) {
             return;
         }
-        try {
-            const registration = await TimingServiceWorker;
-            if (!registration.active) {
-                console.warn('Service worker registration not active yet.');
-                const reloadCount = SessionStorage.get('PyodideSwReloadCount', 0) ?? 0;
-                if (reloadCount < 1) {
-                    SessionStorage.set('PyodideSwReloadCount', reloadCount + 1);
-                    window.location.reload();
-                }
-                return;
-            }
-            runInAction(() => {
-                this._serviceWorkerRegistration = registration.active!;
-            });
-            this.clientId = await this.requestClientId(registration);
-
-            registration.addEventListener('updatefound', () => {
-                const installingWorker = registration.installing;
-                if (installingWorker) {
-                    console.debug('Installing new service worker');
-                    installingWorker.addEventListener('statechange', () => {
-                        if (installingWorker.state === 'installed') {
-                            console.debug('New service worker installed');
-                            runInAction(() => {
-                                this._serviceWorkerRegistration = registration.active;
-                            });
-                        }
-                    });
-                }
-            });
-
-            window.addEventListener('beforeunload', () => {
-                if (this._serviceWorkerRegistration) {
-                    this.cancelAllCodeExecutions();
-                }
-            });
-
-            navigator.serviceWorker.onmessage = (event) => {
-                switch (event.data.type) {
-                    case PY_AWAIT_INPUT:
-                        if (!(event.source instanceof ServiceWorker)) {
-                            return;
-                        }
-                        if (this.executions.get(event.data.id) !== event.data.executionId) {
-                            event.source.postMessage({
-                                type: PY_CANCEL_INPUT,
-                                requestId: event.data.requestId
-                            });
-                            return;
-                        }
-                        const serviceWorker = event.source;
-                        runInAction(() => {
-                            this.inputRequests.set(event.data.id, {
-                                requestId: event.data.requestId,
-                                serviceWorker
-                            });
-                            this.awaitingInputPrompt.set(event.data.id, event.data.prompt);
-                        });
-                        break;
-                }
-            };
-        } catch (error) {
-            console.error('Service worker registration failed:', error);
+        if (this.executions.get(event.data.id) !== event.data.executionId) {
+            this.notifyInputWorker(event.source, { type: PY_CANCEL_INPUT, requestId: event.data.requestId });
+            return;
         }
-    }
+        this.inputRequests.set(event.data.id, {
+            requestId: event.data.requestId,
+            serviceWorker: event.source
+        });
+        this.awaitingInputPrompt.set(event.data.id, event.data.prompt);
+    });
 
     private runtimeFor(id: string) {
         const runtime = this.runtimes.get(id) || new PyodideRuntime();
@@ -250,30 +252,20 @@ export default class PyodideStore {
         return runtime;
     }
 
-    private async requestClientId(registration: ServiceWorkerRegistration): Promise<string> {
-        // Retry against the current worker while a protocol update activates.
-        for (let attempt = 0; attempt < 3; attempt++) {
-            const currentRegistration = await navigator.serviceWorker.getRegistration(BASE_URL);
-            const serviceWorker = currentRegistration?.active || registration.active;
-            if (!serviceWorker) {
-                break;
-            }
-            const clientId = await new Promise<string | null>((resolve) => {
-                const channel = new MessageChannel();
-                const finish = (value: string | null) => {
-                    clearTimeout(timeout);
-                    channel.port1.close();
-                    resolve(value);
-                };
-                const timeout = setTimeout(() => finish(null), 2000);
-                channel.port1.onmessage = (event) => finish(event.data.clientId);
-                serviceWorker.postMessage({ type: PY_CLIENT_ID }, [channel.port2]);
-            });
-            if (clientId) {
-                return clientId;
-            }
+    private notifyInputWorker(
+        worker: ServiceWorker,
+        message: { type: string; requestId?: string; value?: string }
+    ): boolean {
+        try {
+            worker.postMessage(message);
+            return true;
+        } catch {
+            return false;
         }
-        throw new Error('Python input service worker did not respond. Reload to finish updating it.');
+    }
+
+    private failInput(id: string) {
+        this.runtimes.get(id)?.fail(new Error('Python input connection failed. Run the code again.'));
     }
 
     private releaseIdleRuntimes() {
