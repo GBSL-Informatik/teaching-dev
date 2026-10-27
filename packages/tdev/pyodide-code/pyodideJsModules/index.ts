@@ -1,4 +1,5 @@
 import { siteModules } from '@tdev/pyodide-code/pyodideJsModules/siteModules';
+import type { ExtensionMessage } from '../extensions';
 
 export interface LogMessage {
     id: string;
@@ -23,6 +24,7 @@ export interface MessageTypeMap {
     log: LogMessage;
     error: ErrorMessage;
     clear: ClearMessage;
+    extension: ExtensionMessage;
 }
 
 export type MessageType = keyof MessageTypeMap;
@@ -34,7 +36,8 @@ export interface Context {
     getTime: () => number;
 }
 
-export type ModuleType = { [key in MessageType]: (ctx: Context) => object };
+/** @deprecated Configure extensions in the pyodide-code plugin instead. */
+export type ModuleType = Record<string, (ctx: Context) => object>;
 export const pyodideJsModules: Partial<ModuleType> = {
     ...siteModules
 };

@@ -8,6 +8,7 @@ import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../con
 import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
+import { handleExtensionMessage } from '../extensions/client';
 const BASE_URL = siteConfig.baseUrl || '/';
 // Bound unused heaps while keeping two recent runtimes warm.
 const MAX_IDLE_RUNTIMES = 2;
@@ -149,6 +150,9 @@ export default class PyodideStore {
     @action
     handleMessage(code: PyodideCode, message: Message) {
         switch (message.type) {
+            case 'extension':
+                handleExtensionMessage({ root: this.viewStore.root }, message);
+                break;
             case 'clear':
                 code.clearMessages();
                 break;
@@ -160,8 +164,9 @@ export default class PyodideStore {
                 code.addLogMessage(message);
                 break;
             default:
-                if ('handleMessage' in this.viewStore.root.siteStore) {
-                    this.viewStore.root.siteStore.handleMessage('pyodide', message);
+                const siteStore = this.viewStore.root.siteStore;
+                if ('handleMessage' in siteStore && typeof siteStore.handleMessage === 'function') {
+                    siteStore.handleMessage('pyodide', message);
                 }
                 break;
         }

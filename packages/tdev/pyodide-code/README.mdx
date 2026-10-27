@@ -151,123 +151,104 @@ while True:
 ```
 </CodeShowcase>
 
-### Implementations-Details
+### Erweiterungen registrieren
 
-Die Implementierung kann im Seitenspezifischen [`./website`](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website)-Ordner nachvollzogen werden. Die wesentlichen Teile sind:
+Eine Erweiterung hat zwei getrennte Einstiegspunkte: `worker.ts` stellt Python-Module bereit, `client.ts` verarbeitet deren Nachrichten im Browser. Beide verwenden denselben Payload-Typ aus `protocol.ts`. React-Komponenten und MobX-Stores bleiben normale Bestandteile der Website.
 
-- Nachrichten, die von Pyodide empfangen werden, werden an den `siteStore#handleMessage` weitergeleitet und können so beliebig verarbeitet werden.
-- Die Python `clock`-Bibliothek wird über `./website/packages/pyodide-code/pyodideJsModules/siteModules.ts` registriert und stellt die `use_clock`-Funktion zur Verfügung.
-    :::details[`siteModules.ts`]
-    ```ts
-    import type { ModuleType } from '@tdev/pyodide-code/pyodideJsModules';
-    /**
-    * this file is to add custom pyodide js modules for the teaching-dev website
-    * ensure to remove this file from the updateTdev.config.yaml to avoid overwriting
-    */
+Die Einstiegspunkte werden explizit im bestehenden Pyodide-Plugin konfiguriert:
 
-    declare module '@tdev/pyodide-code/pyodideJsModules' {
-        export interface MessageTypeMap {
-            clock: {
-                type: 'clock';
-                id: string;
-                clockType: 'hours' | 'minutes' | 'seconds';
-                value: number;
-                timeStamp: number;
-            };
-        }
-    }
+```ts title="siteConfig.ts"
+import type { PluginOptions } from '@tdev/pyodide-code/plugin';
 
-    export const siteModules: Partial<ModuleType> = {
-        clock: (ctx) => {
-            const { sendMessage, getTime } = ctx;
-            return {
-                use_clock: (id: string) => {
-                    let hours = 0;
-                    let minutes = 0;
-                    let seconds = 0;
-                    return {
-                        get minutes() {
-                            return minutes;
-                        },
-                        get hours() {
-                            return hours;
-                        },
-                        get seconds() {
-                            return seconds;
-                        },
-                        reset: () => {
-                            hours = 0;
-                            minutes = 0;
-                            seconds = 0;
-                            ['hours', 'minutes', 'seconds'].forEach((clockType) => {
-                                sendMessage({
-                                    type: 'clock',
-                                    clockType: clockType as 'hours' | 'minutes' | 'seconds',
-                                    value: 0,
-                                    id: id,
-                                    timeStamp: getTime()
-                                });
-                            });
-                        },
-                        set_time: (h: number, m: number, s: number) => {
-                            hours = h;
-                            minutes = m;
-                            seconds = s;
-                            [
-                                ['hours', h],
-                                ['minutes', m],
-                                ['seconds', s]
-                            ].forEach(([clockType, value]) => {
-                                sendMessage({
-                                    type: 'clock',
-                                    clockType: clockType as 'hours' | 'minutes' | 'seconds',
-                                    value: value as number,
-                                    id: id,
-                                    timeStamp: getTime()
-                                });
-                            });
-                        },
-                        set_hours: (deg: number) => {
-                            hours = deg;
-                            sendMessage({
-                                type: 'clock',
-                                clockType: 'hours',
-                                value: deg,
-                                id: id,
-                                timeStamp: getTime()
-                            });
-                        },
-                        set_minutes: (deg: number) => {
-                            minutes = deg;
-                            sendMessage({
-                                type: 'clock',
-                                clockType: 'minutes',
-                                value: deg,
-                                id: id,
-                                timeStamp: getTime()
-                            });
-                        },
-                        set_seconds: (deg: number) => {
-                            seconds = deg;
-                            sendMessage({
-                                type: 'clock',
-                                clockType: 'seconds',
-                                value: deg,
-                                id: id,
-                                timeStamp: getTime()
-                            });
-                        }
-                    };
+plugins: [
+    [
+        require.resolve('@tdev/pyodide-code/plugin'),
+        {
+            extensions: [
+                {
+                    name: 'clock',
+                    worker: require.resolve('./website/pyodide/clock/worker'),
+                    client: require.resolve('./website/pyodide/clock/client')
                 }
-            };
-        }
-    };
+            ]
+        } satisfies PluginOptions
+    ]
+]
+```
 
-    ```
-    :::
-- In `./website/packages/pyodide-code/models/Clock.ts` wird ein MobX-Modell für die Uhr definiert. Es kann über `@tdev/pyodide-code/models/Clock` importiert und in React-Komponenten verwendet werden.
-- In `./website/packages/pyodide-code/components/Clock` wird die eigentliche Uhr-Komponente implementiert, die das `Clock`-Modell verwendet, um die Zeiger zu positionieren.
-- In `./website/stores/ClockStore.ts` wird ein MobX-Store definiert, der die verschiedenen Uhren verwaltet und die Nachrichten von Pyodide verarbeitet. Dieser Store wird im `./website/stores/SiteStore.ts` registriert und initialisiert.
+Die Namen der Erweiterungen müssen eindeutig sein. `require.resolve()` liefert absolute Dateipfade; relative Einstiegspfade in den Optionen werden relativ zum Docusaurus-Seitenverzeichnis aufgelöst. Die Konfiguration enthält nur Dateipfade und Namen, keine React-Komponenten oder Store-Instanzen. Nach Änderungen an der Erweiterungsliste muss der Entwicklungsserver neu gestartet werden.
+
+Das Plugin erzeugt getrennte Registries für Worker und Browser. Es braucht weder ein Alias-Override von Package-Dateien noch eine globale Registrierung beim App-Start. `worker.ts` darf keine React-, DOM- oder Store-Abhängigkeiten importieren; gemeinsame Payload-Typen werden mit `import type` eingebunden.
+
+### Uhr: gemeinsamer Vertrag
+
+```ts title="website/pyodide/clock/protocol.ts"
+export interface ClockTime {
+    hours: number;
+    minutes: number;
+    seconds: number;
+}
+
+export type ClockUpdate = Partial<ClockTime>;
+```
+
+Alle Winkel sind in Grad angegeben. Eine Nachricht kann einzelne Zeiger oder die ganze Uhr ändern. Die beiden Einstiegspunkte verwenden `ClockUpdate` als Typparameter; dieser gemeinsame Typ ersetzt die bisherige globale `MessageTypeMap`-Erweiterung. Die Typen prüfen den selbst geschriebenen Worker und Handler, es gibt keine automatische Laufzeitvalidierung des Payloads.
+
+### Uhr: Python-Modul im Worker
+
+import clockWorkerSource from '!!raw-loader!@tdev/pyodide/clock/worker.ts';
+
+<CodeBlock language="ts" title="website/pyodide/clock/worker.ts">
+    {clockWorkerSource}
+</CodeBlock>
+
+`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind, hier `clock`. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die internen Namen `tdev` und `browser_input` werden mit einer Fehlermeldung abgelehnt.
+
+Der Factory-Kontext bietet:
+
+- `editorId`: die ID des ausführenden Editors.
+- `send(targetId, payload)`: sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein, beispielsweise ein Objekt aus Zahlen, Strings und Arrays.
+
+Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports wie `importlib.import_module('clock')`. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
+
+### Uhr: Browser-Handler und React
+
+import clockClientSource from '!!raw-loader!@tdev/pyodide/clock/client.ts';
+
+<CodeBlock language="ts" title="website/pyodide/clock/client.ts">
+    {clockClientSource}
+</CodeBlock>
+
+`defineClientExtension<Payload>()` erhält einen synchronen Handler. Der Kontext enthält den aktuellen `root`-Store. Die Nachricht enthält `editorId`, `targetId`, `timeStamp` und `payload`. Der Handler läuft innerhalb einer MobX-Action; er aktualisiert die bestehenden Website-Stores.
+
+Die Uhr verwendet weiterhin den [ClockStore](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/stores/ClockStore.ts), das [Clock-Modell](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/packages/pyodide-code/models/Clock.ts) und die [React-Komponente](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/packages/pyodide-code/components/Clock/index.tsx). Nur der Store muss im `SiteStore` vorhanden sein; ein `handleMessage`-Override ist nicht nötig. Die Komponente kann wie bisher unabhängig vom Editor im MDX platziert werden:
+
+```mdx
+import Clock from '@tdev/packages/pyodide-code/components/Clock';
+
+<Clock clockId="sbb-uhr" />
+```
+
+Python verwendet weiterhin `from clock import use_clock` und dieselbe Ziel-ID. Mehrere Komponenten oder Editoren können absichtlich dieselbe Ziel-ID verwenden; die Ziel-IDs gelten für den gemeinsamen Website-Store, nicht nur für einen Editor.
+
+### Zustand und Lebensdauer
+
+Die Browser-Stores gehören weiterhin der Website und leben mit deren Root-Store. Der Zustand der Uhr bleibt nach Ende oder Abbruch eines Skripts erhalten; ein Neustart setzt ihn nicht automatisch zurück. Ein unbekanntes Ziel wird beim ersten Update im `ClockStore` angelegt, auch wenn noch keine React-Komponente dafür angezeigt wird.
+
+Jeder Aufruf von `use_clock()` erzeugt einen eigenen Python-Handle mit zunächst lokalen Nullwerten. Seine Getter lesen die letzten Werte dieses Handles, nicht den Browser-Store und nicht andere Handles. `set_seconds()` ändert im Browser nur den Sekundenzeiger. `reset()` setzt alle Zeiger zurück. Diese Erweiterung bietet keine Rückfragen vom Browser an Python.
+
+Worker können zwischen Editoren wiederverwendet werden. Die registrierten JavaScript-Module erhalten pro Ausführung einen neuen Kontext. Bereits importierte Python-Hilfsmodule können jedoch alte Referenzen auf Module oder Handles behalten; deren Cache wird nicht rekursiv geleert. Solche Hilfsmodule sollen das Modul oder die Factory innerhalb der pro Ausführung aufgerufenen Funktion neu importieren und erst dann Handles anfordern. Ein auf Modulebene gespeichertes `from clock import use_clock` bleibt sonst an den alten, bereits geschlossenen Kontext gebunden.
+
+Erweiterungen müssen eigene Timer und Hintergrundaufgaben vor Ende des Skripts beenden. Nachrichten nach Abschluss werden verworfen. **Abbrechen** beendet den Worker; ausstehende Nachrichten einer abgebrochenen oder ersetzten Ausführung werden durch die bestehende Ausführungsprüfung ignoriert. Das Framework stellt keine automatische Ressourcenverwaltung oder Hintergrunddienste für Erweiterungen bereit.
+
+### Migration bestehender Erweiterungen
+
+Die bisherige `pyodideJsModules/siteModules.ts`-Erweiterung und die Weiterleitung eigener Nachrichtentypen an `SiteStore.handleMessage` bleiben zur Migration verfügbar. Für neue Erweiterungen wird die explizite Plugin-Konfiguration empfohlen.
+
+1. Payload-Typen in eine gemeinsame Datei verschieben.
+2. Die Python-Factory mit `defineWorkerExtension` exportieren und `send(targetId, payload)` verwenden.
+3. Die Browser-Verarbeitung mit `defineClientExtension` exportieren und beide Einstiegspunkte konfigurieren.
+4. Den alten Registry-Eintrag, die `MessageTypeMap`-Erweiterung und den bisherigen `SiteStore`-Handler entfernen. Dasselbe Python-Modul darf nicht gleichzeitig über beide Mechanismen registriert sein.
 
 
 ## Installation

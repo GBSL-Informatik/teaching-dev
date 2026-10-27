@@ -1,4 +1,6 @@
 import type { Context, Message } from '@tdev/pyodide-code/pyodideJsModules';
+import { pyodideJsModules } from '@tdev/pyodide-code/pyodideJsModules';
+import registeredExtensions from '@tdev-pyodide/worker-extensions';
 import * as Comlink from 'comlink';
 import type { PyodideAPI } from 'pyodide';
 import type { PyProxy } from 'pyodide/ffi';
@@ -8,6 +10,7 @@ import { configureInput } from './input';
 import { captureOutput } from './output';
 import { registerJsModule } from './registerJsModule';
 import { configureShell } from './shell';
+import { createWorkerExtensions } from '../extensions/worker';
 
 interface Execution extends Context {
     id: string;
@@ -79,13 +82,20 @@ export class PyWorker {
                 execution.sendMessage(message);
             }
         });
-        await this.preparePackages(pyodide, execution);
-        const output = captureOutput(pyodide, id, execution);
+        const extensions = createWorkerExtensions(
+            execution,
+            registeredExtensions,
+            Object.keys(pyodideJsModules)
+        );
+        let output: ReturnType<typeof captureOutput> | undefined;
         let restoreInput: (() => void) | undefined;
         let restoreShell: (() => void) | undefined;
         let globals: PyProxy | undefined;
         let result: unknown;
         try {
+            extensions.register(pyodide);
+            await this.preparePackages(pyodide, execution);
+            output = captureOutput(pyodide, id, execution);
             const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
             const dict = pyodide.globals.get('dict');
             try {
@@ -105,17 +115,21 @@ export class PyWorker {
             return result === undefined ? '' : `${result}`;
         } finally {
             try {
-                await output.finish();
+                await output?.finish();
             } finally {
                 try {
-                    restoreShell?.();
+                    await extensions.finish();
                 } finally {
                     try {
-                        restoreInput?.();
+                        restoreShell?.();
                     } finally {
-                        globals?.destroy();
-                        if (result instanceof pyodide.ffi.PyProxy) {
-                            result.destroy();
+                        try {
+                            restoreInput?.();
+                        } finally {
+                            globals?.destroy();
+                            if (result instanceof pyodide.ffi.PyProxy) {
+                                result.destroy();
+                            }
                         }
                     }
                 }

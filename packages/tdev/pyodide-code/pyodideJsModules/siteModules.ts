@@ -1,8 +1,8 @@
 import type { ModuleType } from '@tdev/pyodide-code/pyodideJsModules';
 
 /**
- * this file is to add custom pyodide js modules for the teaching-dev website
- * ensure to remove this file from the updateTdev.config.yaml to avoid overwriting
+ * @deprecated Configure worker/client entries through the pyodide-code plugin.
+ * Existing website overrides remain supported during migration.
  */
 
 // declare module '@tdev/pyodide-code/pyodideJsModules' {
