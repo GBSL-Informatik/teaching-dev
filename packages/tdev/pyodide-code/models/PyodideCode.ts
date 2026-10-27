@@ -61,7 +61,7 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @computed
     get isExecuting(): boolean {
-        return this.runtimeId === this.pyodideStore.runtimeId;
+        return this.runtimeId !== null && this.pyodideStore.executions.get(this.id) === this.runtimeId;
     }
 
     @computed
@@ -85,11 +85,13 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     sendPromptResponse() {
-        if (this.promptResponse === null) {
-            this.pyodideStore.cancelCodeExecution(this.id);
-        }
-        this.pyodideStore.sendInputResponse(this.id, this.promptResponse || '');
+        this.pyodideStore.sendInputResponse(this.id, this.promptResponse ?? '');
         this.promptResponse = null;
+    }
+
+    @action
+    cancelPrompt() {
+        this.stopExecution();
     }
 
     @action
@@ -107,7 +109,9 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     stopExecution(skipRemoteTrigger: boolean = false) {
-        this.pyodideStore.recreatePyWorker();
+        this.promptResponse = null;
+        this.pyodideStore.stopExecution(this.id);
+        this.setRuntimeId(null);
         if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
             this.triggerRemoteAction({ action: 'stopExecution' });
         }

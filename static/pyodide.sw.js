@@ -1,94 +1,133 @@
-const DOCUSAURUS_SW_SCOPE = '/';
 const PY_INPUT = 'PY_INPUT';
+const PY_CLIENT_ID = 'PY_CLIENT_ID';
 const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT';
-const PY_STDIN_ROUTE = `${DOCUSAURUS_SW_SCOPE}py-get-input/`;
+const PY_STDIN_ROUTE = '/py-get-input/';
 const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT';
 const PY_CANCEL_ALL = 'PY_CANCEL_ALL';
+const INPUT_POLL_TIMEOUT = 10000;
+const INPUT_RECONNECT_TIMEOUT = 60000;
 
-self.addEventListener('install', () => {
-    self.skipWaiting();
+self.addEventListener('install', (event) => {
+    event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', () => {
-    self.clients.claim();
+self.addEventListener('activate', (event) => {
+    event.waitUntil(self.clients.claim());
 });
 
-const resolvers = new Map();
+const requests = new Map();
+
+const completeRequest = (requestId, response) => {
+    const request = requests.get(requestId);
+    if (!request || request.response) {
+        return;
+    }
+    if (!request.resolve) {
+        // Preserve replies and cancellation received between polls.
+        request.response = response;
+        return;
+    }
+    clearTimeout(request.timer);
+    requests.delete(requestId);
+    request.resolve(response);
+};
+
+const pollInput = (requestId, request) => {
+    clearTimeout(request.timer);
+    if (request.response) {
+        requests.delete(requestId);
+        return request.response;
+    }
+    return new Promise((resolve) => {
+        request.resolve = resolve;
+        // Keep each fetch below browser service-worker event time limits.
+        request.timer = setTimeout(() => {
+            request.resolve = null;
+            request.timer = setTimeout(() => requests.delete(requestId), INPUT_RECONNECT_TIMEOUT);
+            resolve(new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } }));
+        }, INPUT_POLL_TIMEOUT);
+    });
+};
 
 self.addEventListener('message', (event) => {
-    switch (event.data.type) {
-        case PY_INPUT:
-            const resolverArray = resolvers.get(event.data.id);
-            const resolver = resolverArray && resolverArray.shift();
-            if (!resolver) {
-                console.error('Error handling input: No resolver');
-                return;
+    const clientId = event.source?.id;
+    if (!clientId) {
+        return;
+    }
+    if (event.data.type === PY_CLIENT_ID) {
+        event.ports[0]?.postMessage({ clientId });
+        return;
+    }
+    if (event.data.type === PY_CANCEL_ALL) {
+        for (const [requestId, request] of requests) {
+            if (request.clientId === clientId) {
+                completeRequest(requestId, new Response('Run cancelled', { status: 410 }));
             }
-            resolver(new Response(event.data.value, { status: 200 }));
-            break;
-        case PY_CANCEL_INPUT:
-            const rejecterArray = resolvers.get(event.data.id);
-            const rejecter = rejecterArray && rejecterArray.shift();
-            if (!rejecter) {
-                console.error('Error handling input: No resolver');
-                return;
-            }
-            rejecter(new Response('Run cancelled', { status: 410 }));
-            break;
-        case PY_CANCEL_ALL:
-            const allResolvers = resolvers.keys();
-            for (const id of allResolvers) {
-                const rejecterArray = resolvers.get(id);
-                if (rejecterArray) {
-                    while (rejecterArray.length > 0) {
-                        const rejecter = rejecterArray.shift();
-                        if (rejecter) {
-                            rejecter(new Response('Run cancelled', { status: 410 }));
-                        }
-                    }
-                }
-            }
-            break;
-        default:
-            return;
+        }
+        return;
+    }
+    const request = requests.get(event.data.requestId);
+    if (!request || request.clientId !== clientId) {
+        return;
+    }
+    if (event.data.type === PY_INPUT) {
+        completeRequest(
+            event.data.requestId,
+            new Response(event.data.value, { status: 200, headers: { 'Cache-Control': 'no-store' } })
+        );
+    } else if (event.data.type === PY_CANCEL_INPUT) {
+        completeRequest(event.data.requestId, new Response('Run cancelled', { status: 410 }));
     }
 });
 
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
-
-    if (url.pathname !== PY_STDIN_ROUTE) {
+    if (url.origin !== self.location.origin || url.pathname !== PY_STDIN_ROUTE) {
         return;
     }
-
     const id = url.searchParams.get('id');
-    if (!id) {
-        console.error('Error handling input: No id');
+    const clientId = url.searchParams.get('clientId');
+    const requestId = url.searchParams.get('requestId');
+    const executionId = Number(url.searchParams.get('executionId'));
+    if (!id || !clientId || !requestId || !Number.isSafeInteger(executionId) || executionId < 1) {
+        event.respondWith(new Response('Invalid input request', { status: 400 }));
         return;
     }
-    const prompt = url.searchParams.get('prompt');
-
+    const existingRequest = requests.get(requestId);
+    if (existingRequest) {
+        if (
+            existingRequest.clientId !== clientId ||
+            existingRequest.id !== id ||
+            existingRequest.executionId !== executionId ||
+            existingRequest.resolve
+        ) {
+            event.respondWith(new Response('Conflicting input request', { status: 409 }));
+            return;
+        }
+        event.respondWith(pollInput(requestId, existingRequest));
+        return;
+    }
+    const request = { clientId, id, executionId, resolve: null, response: null, timer: null };
+    requests.set(requestId, request);
+    event.respondWith(pollInput(requestId, request));
     event.waitUntil(
         self.clients
-            .matchAll()
-            .then((clients) => {
-                clients.forEach((client) => {
-                    if (client.type === 'window') {
-                        client.postMessage({
-                            type: PY_AWAIT_INPUT,
-                            id,
-                            prompt
-                        });
-                    }
+            .get(clientId)
+            .then((client) => {
+                if (!client || client.type !== 'window') {
+                    completeRequest(requestId, new Response('Input owner closed', { status: 410 }));
+                    return;
+                }
+                client.postMessage({
+                    type: PY_AWAIT_INPUT,
+                    id,
+                    requestId,
+                    executionId,
+                    prompt: url.searchParams.get('prompt') || ''
                 });
             })
-            .catch((err) => console.error('Error matching clients', err))
+            .catch(() => {
+                completeRequest(requestId, new Response('Input owner unavailable', { status: 410 }));
+            })
     );
-
-    const promise = new Promise((resolve) => {
-        const resolverArray = resolvers.get(id) || [];
-        resolverArray.push(resolve);
-        resolvers.set(id, resolverArray);
-    });
-    event.respondWith(promise);
 });

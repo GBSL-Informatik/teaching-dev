@@ -1,112 +1,175 @@
-import { Message } from '@tdev/pyodide-code/pyodideJsModules';
+import type { Context, Message } from '@tdev/pyodide-code/pyodideJsModules';
 import * as Comlink from 'comlink';
-import type { loadPyodide } from 'pyodide';
-import { PY_STDIN_ROUTE } from '../config';
+import type { PyodideAPI } from 'pyodide';
+import type { PyProxy } from 'pyodide/ffi';
+import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
-// @ts-ignore
-importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js');
-// @ts-ignore
-let pyodideReadyPromise = (loadPyodide as typeof loadPyodide)({
-    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.29.1/full/'
-});
+import { configureInput } from './input';
+import { captureOutput } from './output';
+import { registerJsModule } from './registerJsModule';
+import { configureShell } from './shell';
 
-const pyModule = {
-    getInput: (id: string, prompt: string) => {
-        const request = new XMLHttpRequest();
-        // Synchronous request to be intercepted by service worker
-        request.open('GET', `${PY_STDIN_ROUTE}?id=${id}&prompt=${encodeURIComponent(prompt)}`, false);
-        request.send(null);
-        if (request.status !== 200) {
-            throw new Error('User cancelled the input request');
-        }
-        return request.responseText;
-    }
-};
-const patchInputCode = (id: string) => `
-import sys, builtins
-import browser_input
-__prompt_str__ = ""
-def get_input(prompt=""):
-    global __prompt_str__
-    __prompt_str__ = prompt
-    s = browser_input.getInput("${id}", prompt)
-    return s
-builtins.input = get_input
-sys.stdin.readline = lambda: browser_input.getInput("${id}", __prompt_str__)
-`;
+interface Execution extends Context {
+    id: string;
+    code: string;
+    filename: string;
+    clientId: string;
+    executionId: number;
+    packages: readonly string[];
+}
+
+export interface ExecutionResult {
+    message: Message;
+    reusable: boolean;
+}
+
+const pyodideReadyPromise = loadPyodide({ stdout: () => {}, stderr: () => {} });
+// The ready RPC reports bootstrap errors to the editor.
+void pyodideReadyPromise.catch(() => {});
 
 export class PyWorker {
+    async ready() {
+        await pyodideReadyPromise;
+    }
+
     async run(
         id: string,
         code: string,
         sendMessage: (message: Message) => void,
-        filename = 'snippet.py'
-    ): Promise<Message> {
-        const pyodide = await pyodideReadyPromise;
-        // Ensure unique timestamps for messages
-        let last_ts = Date.now();
-        let ts_fraction = 2;
-        const getTime = () => {
-            const now = Date.now();
-            let t = now;
-            if (last_ts === t) {
-                t = t + (1 - 1 / ts_fraction);
-                ts_fraction += 1;
-            } else {
-                last_ts = now;
-                ts_fraction = 2;
-            }
-            return t;
-        };
-
-        const context = {};
-        pyodide.registerComlink(Comlink);
-
-        await loadPackages(
-            pyodide,
-            {
+        filename = 'snippet.py',
+        clientId = '',
+        executionId = 0,
+        packages: readonly string[] = []
+    ): Promise<ExecutionResult> {
+        const getTime = createTimestamp();
+        try {
+            const pyodide = await pyodideReadyPromise;
+            const message = await this.execute(pyodide, {
+                id,
+                code,
+                filename,
+                clientId,
+                executionId,
+                packages,
                 sendMessage,
                 getTime
-            },
-            code
-        );
-
-        // patch input function to use browser_input module
-        pyodide.registerJsModule('browser_input', pyModule);
-
-        // TODO: move clock module to its own file/to the client
-        pyodide.registerJsModule('tdev', {
-            sendMessage: (message: Message) => {
-                sendMessage(message);
-            }
-        });
-
-        // make a Python dictionary with the data from `context`
-        const dict = pyodide.globals.get('dict');
-        const globals = dict(Object.entries(context));
-        pyodide.setStdout({
-            batched: (s: string) => {
-                sendMessage({ type: 'log', message: s, id: id, timeStamp: getTime() });
-            }
-        });
-        await pyodide.runPythonAsync(patchInputCode(id));
-        const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
-        try {
-            // Execute the python code in this context
-            const result = await pyodide.runPythonAsync(code, { globals, filename: fname });
+            });
             return {
-                type: 'log',
-                message: result === undefined ? '' : `${result}`,
-                id: id,
-                timeStamp: getTime()
+                message: { type: 'log', message, id, timeStamp: getTime() },
+                reusable: this.canReuse(pyodide)
             };
-        } catch (error: any) {
-            return { type: 'error', message: error.message, id: id, timeStamp: getTime() };
+        } catch (error: unknown) {
+            return {
+                message: {
+                    type: 'error',
+                    message: error instanceof Error ? error.message : String(error),
+                    id,
+                    timeStamp: getTime()
+                },
+                reusable: false
+            };
+        }
+    }
+
+    private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
+        const { id, code, filename, clientId, executionId } = execution;
+        pyodide.registerComlink(Comlink);
+        registerJsModule(pyodide, 'tdev', {
+            sendMessage: (message: Message) => {
+                execution.sendMessage(message);
+            }
+        });
+        await this.preparePackages(pyodide, execution);
+        const output = captureOutput(pyodide, id, execution);
+        let restoreInput: (() => void) | undefined;
+        let restoreShell: (() => void) | undefined;
+        let globals: PyProxy | undefined;
+        let result: unknown;
+        try {
+            const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
+            const dict = pyodide.globals.get('dict');
+            try {
+                globals = dict(
+                    Object.entries({
+                        __name__: '__main__',
+                        __file__: fname,
+                        __package__: undefined
+                    })
+                );
+            } finally {
+                dict.destroy();
+            }
+            restoreInput = configureInput(pyodide, { id, clientId, executionId });
+            restoreShell = configureShell(pyodide, output.clear);
+            result = await pyodide.runPythonAsync(code, { globals, filename: fname });
+            return result === undefined ? '' : `${result}`;
         } finally {
-            pyodide.setStdout(undefined);
+            try {
+                await output.finish();
+            } finally {
+                try {
+                    restoreShell?.();
+                } finally {
+                    try {
+                        restoreInput?.();
+                    } finally {
+                        globals?.destroy();
+                        if (result instanceof pyodide.ffi.PyProxy) {
+                            result.destroy();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async preparePackages(pyodide: PyodideAPI, execution: Execution) {
+        const output = captureOutput(pyodide, execution.id, {
+            getTime: execution.getTime,
+            sendMessage: (message) => {
+                if (message.type === 'error') {
+                    console.error(message.message);
+                } else if (message.type === 'log') {
+                    console.log(message.message);
+                }
+            }
+        });
+        try {
+            await loadPackages(pyodide, execution, execution.code, execution.packages);
+        } finally {
+            await output.finish();
+        }
+    }
+
+    private canReuse(pyodide: PyodideAPI): boolean {
+        try {
+            // Keep runtimes with unfinished tasks out of the shared idle pool.
+            return (
+                pyodide.runPython(
+                    'not __import__("asyncio").all_tasks(loop=__import__("asyncio").get_event_loop())'
+                ) === true
+            );
+        } catch {
+            return false;
         }
     }
 }
 
+const createTimestamp = () => {
+    let lastTime = Date.now();
+    let fraction = 2;
+    return () => {
+        const now = Date.now();
+        if (lastTime === now) {
+            const timestamp = now + (1 - 1 / fraction);
+            fraction += 1;
+            return timestamp;
+        }
+        lastTime = now;
+        fraction = 2;
+        return now;
+    };
+};
+
 Comlink.expose(PyWorker);
-export type PyWorkerApi = typeof PyWorker; // For type inference in main thread
+export type PyWorkerApi = typeof PyWorker;

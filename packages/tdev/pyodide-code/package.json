@@ -5,7 +5,7 @@
     "types": "index.ts",
     "dependencies": {
         "comlink": "^4.4.2",
-        "pyodide": "^0.29.3"
+        "pyodide": "314.0.7"
     },
     "devDependencies": {
         "@docusaurus/core": "*",

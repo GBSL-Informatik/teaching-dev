@@ -15,18 +15,13 @@ const Header = observer((props: Props) => {
     if (!code) {
         return null;
     }
+    const handleRun = () => !code.isExecuting && code.runCode();
+    const handleStop = () => code.stopExecution();
     return (
         <Container code={code} ignoreSlim>
             {!code.meta.slim && <Content code={code} />}
-            {code.canExecute && <RunCode code={code} onExecute={() => !code.isExecuting && code.runCode()} />}
-            {code.isExecuting && (
-                <Button
-                    icon={mdiClose}
-                    onClick={() => {
-                        code.stopExecution();
-                    }}
-                />
-            )}
+            {code.canExecute && <RunCode code={code} onExecute={handleRun} />}
+            {code.isExecuting && <Button icon={mdiClose} title="Ausführung abbrechen" onClick={handleStop} />}
         </Container>
     );
 });

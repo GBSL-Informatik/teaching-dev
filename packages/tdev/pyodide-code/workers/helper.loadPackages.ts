@@ -1,118 +1,115 @@
-import _ from 'es-toolkit/compat';
 import type { PyodideAPI } from 'pyodide';
 import { type Context, pyodideJsModules } from '../pyodideJsModules';
+import { registerJsModule } from './registerJsModule';
+
 const siteModules = new Set(Object.keys(pyodideJsModules));
-const StandardPythonNamespaces = new Set([
-    'xml',
-    'http',
-    'urllib',
-    'email',
-    'concurrent',
-    'importlib',
-    'logging',
-    'tkinter',
-    'unittest',
-    'asyncio'
+const internalModules = new Set(['tdev', 'browser_input']);
+const packageAliases = new Map([
+    ['PIL', 'Pillow'],
+    ['cv2', 'opencv-python'],
+    ['sklearn', 'scikit-learn'],
+    ['bs4', 'beautifulsoup4']
 ]);
 
-const PluginAliases: Record<string, string> = {
-    PIL: 'Pillow',
-    cv2: 'opencv-python',
-    sklearn: 'scikit-learn',
-    bs4: 'beautifulsoup4'
+const PACKAGE_LOAD_CALLBACKS = {
+    messageCallback: (message: string) => console.log(message),
+    errorCallback: (message: string) => console.error(message)
 };
 
-const StandardPythonPackages = new Set([
-    'ast',
-    'math',
-    'random',
-    'datetime',
-    'json',
-    're',
-    'sys',
-    'os',
-    'functools',
-    'itertools',
-    'collections',
-    'typing',
-    'time',
-    'threading',
-    'subprocess',
-    'pathlib',
-    'shutil',
-    'tempfile',
-    'hashlib',
-    'hmac',
-    'base64',
-    'struct',
-    'socket',
-    'ssl',
-    'copy',
-    'csv',
-    'pickle',
-    'enum',
-    'configparser',
-    'inspect',
-    'traceback',
-    'glob',
-    'bisect',
-    'heapq',
-    'queue',
-    'weakref',
-    'argparse',
-    'string',
-    'sysconfig',
-    'pkgutil'
-]);
+type PackageContext = Context & { id: string };
 
-const resolvePackageName = (pkg: string): string => {
-    return PluginAliases[pkg] || pkg;
-};
-
-const getPackageImports = (code: string): string[] => {
-    const importStatements = code.split('\n').filter((line) => /^import |^from /.test(line));
-    const importPackages = importStatements.flatMap((line) => {
-        const match = line.match(/^import (?<names>.+)|^from (?<name>\S+) /);
-        if (match) {
-            if (match.groups?.names) {
-                return match.groups.names.split(',').map((n) => n.trim().split(' ')[0].split('.')[0]);
-            } else if (match.groups?.name && !match.groups.name.startsWith('.')) {
-                return [match.groups.name.split('.')[0]];
-            }
-        }
-        return [];
-    });
-    return importPackages
-        .filter((pkg) => !StandardPythonPackages.has(pkg) && !StandardPythonNamespaces.has(pkg))
-        .map(resolvePackageName);
-};
-
-export const loadPackages = async (pyodide: PyodideAPI, context: Context, code: string) => {
-    const importPackages = getPackageImports(code);
-    const packages = _.groupBy(importPackages, (p) => (siteModules.has(p) ? 'site' : 'micropip'));
-    const sitePkgs = packages['site'] || [];
-    if (sitePkgs.length > 0) {
-        for (const pkg of sitePkgs) {
-            const moduleFactory = pyodideJsModules[pkg as keyof typeof pyodideJsModules];
-            if (moduleFactory) {
-                const module = moduleFactory(context);
-                pyodide.registerJsModule(pkg, module);
-            }
+export const loadPackages = async (
+    pyodide: PyodideAPI,
+    context: PackageContext,
+    code: string,
+    requirements: readonly string[] = []
+) => {
+    const imports = getImports(pyodide, code);
+    for (const name of imports) {
+        const factory = pyodideJsModules[name as keyof typeof pyodideJsModules];
+        if (siteModules.has(name) && factory) {
+            registerJsModule(pyodide, name, factory(context));
         }
     }
-    const micropipPkgs = packages['micropip'] || [];
-    if (micropipPkgs.length > 0) {
-        await pyodide.loadPackage('micropip');
-        const micropip = pyodide.pyimport('micropip');
-        await Promise.all(
-            micropipPkgs.map(async (pkg) => {
-                try {
-                    await micropip.install(pkg);
-                } catch (e) {
-                    // Package not found, ignore
-                    console.warn(`Package ${pkg} could not be loaded:`, e);
-                }
-            })
-        );
+    if (requirements.length > 0) {
+        await installPackages(pyodide, requirements);
+    }
+    await loadInferredPackage(context, () => pyodide.loadPackagesFromImports(code, PACKAGE_LOAD_CALLBACKS));
+    const missing = getMissingImports(pyodide, imports);
+    const packages = new Set(missing.map((name) => packageAliases.get(name) || name));
+    for (const name of packages) {
+        await loadInferredPackage(context, () => installPackages(pyodide, [name]));
+    }
+};
+
+const loadInferredPackage = async (context: PackageContext, load: () => Promise<unknown>) => {
+    try {
+        await load();
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        await context.sendMessage({
+            type: 'error',
+            message: `Automatic Python package loading failed: ${message}`,
+            id: context.id,
+            timeStamp: context.getTime()
+        });
+    }
+};
+
+const getImports = (pyodide: PyodideAPI, code: string): string[] => {
+    const findImports = pyodide.pyimport('pyodide.code.find_imports');
+    try {
+        const imports = findImports(code);
+        try {
+            const names: string[] = imports.toJs();
+            return [...new Set(names.map((name) => name.split('.')[0]).filter(Boolean))];
+        } finally {
+            imports.destroy();
+        }
+    } finally {
+        findImports.destroy();
+    }
+};
+
+const getMissingImports = (pyodide: PyodideAPI, imports: string[]): string[] => {
+    const stdlib = pyodide.pyimport('sys.stdlib_module_names');
+    const modules = pyodide.pyimport('sys.modules');
+    const findSpec = pyodide.pyimport('importlib.util.find_spec');
+    try {
+        const standardNames: Set<string> = stdlib.toJs();
+        return imports.filter((name) => {
+            if (
+                siteModules.has(name) ||
+                internalModules.has(name) ||
+                standardNames.has(name) ||
+                modules.has(name)
+            ) {
+                return false;
+            }
+            const spec = findSpec(name);
+            if (!spec) {
+                return true;
+            }
+            spec.destroy();
+            return false;
+        });
+    } finally {
+        findSpec.destroy();
+        modules.destroy();
+        stdlib.destroy();
+    }
+};
+
+const installPackages = async (pyodide: PyodideAPI, packages: readonly string[]) => {
+    const requirements = [...new Set(packages)];
+    await pyodide.loadPackage('micropip', PACKAGE_LOAD_CALLBACKS);
+    const micropip = pyodide.pyimport('micropip');
+    try {
+        await micropip.install.callKwargs(requirements, { verbose: true });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Could not install Python packages (${requirements.join(', ')}): ${message}`);
+    } finally {
+        micropip.destroy();
     }
 };

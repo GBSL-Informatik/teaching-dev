@@ -8,8 +8,10 @@ sidebar_position: 50
 ---
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
-import CodeBlock from '@theme/CodeBlock';
 import Clock from '@tdev/packages/pyodide-code/components/Clock';
+import Pyodide from '@tdev/pyodide-code/components/Pyodide';
+
+import CodeBlock from '@theme/CodeBlock';
 
 # pyodide-code
 
@@ -28,6 +30,22 @@ for i in range(10):
     print(i, i*i, i**3)
     sleep(1)
 ```
+
+## Ausgabe löschen
+
+`os.system('clear')` und `os.system('cls')` löschen die bisherige Ausgabe des aktuellen Editors. Nachfolgende Ausgaben erscheinen wieder im leeren Logfenster. Beide Befehle geben `0` zurück. Diese Unterstützung gilt für die beiden Löschbefehle; eine allgemeine Betriebssystem-Shell steht im Browser nicht zur Verfügung.
+
+```py live_pyo hideWarning title=Ausgabe_löschen
+from os import system
+from time import sleep
+
+for i in range(5):
+    system('clear')
+    print(i)
+    sleep(1)
+```
+
+Es ist immer nur die aktuelle Ausgabe sichtbar.
 
 ## Fibonacci
 ```py live_pyo id=d5d60431-5589-4d38-9c8c-9b563194f5cc title=Fibonacci_ohne_Rekursion
@@ -76,6 +94,37 @@ result = optimize.minimize(func, x0=0)
 print("Minimum at x =", result.x[0])
 print("Function value at minimum =", result.fun)
 ```
+
+## Python-Pakete laden
+
+Imports werden mit Pythons AST ausgewertet, auch innerhalb von Funktionen oder zusammen mit weiteren Anweisungen auf einer Zeile. Pakete aus der Pyodide-Distribution werden mit deren eingebautem Loader geladen. Bereits verfügbare Module, die Standardbibliothek und lokale JavaScript-Module lösen keine zusätzlichen PyPI-Installationen aus. Fehlgeschlagene Installationen werden im Editor angezeigt.
+
+Für zusätzliche oder versionierte Abhängigkeiten kann die `Pyodide`-Komponente eine Liste von Paketanforderungen erhalten:
+
+
+<CodeShowcase lang="tsx" imports={[`import Pyodide from '@tdev/packages/pyodide-code/components/Pyodide';`]}>
+export const code = `from slugify import slugify\n
+print(slugify("C'est déjà l'été.", algorithm='modern'))
+print(slugify('影師嗎', backend='text-unidecode', algorithm='modern'))`;
+
+<Pyodide showLineNumbers code={code} packages={['python-slugify==9.1.3']} id="32553b77-e5eb-4736-aa35-9fdaa7ce8b5d" />
+</CodeShowcase>
+
+Diese Pakete werden vor der Ausführung installiert. So funktioniert auch `import slugify`, obwohl die Distribution `python-slugify` heisst. Die Liste steht ebenfalls als `packages` in den `ModelMeta`-Optionen zur Verfügung. Dynamisch zusammengesetzte Importnamen benötigen solche expliziten Paketanforderungen.
+
+Explizite Paketanforderungen müssen erfolgreich installiert werden. Bei fehlgeschlagenen automatisch erkannten Abhängigkeiten wird eine Diagnose angezeigt und der Python-Code trotzdem ausgeführt. Dadurch können optionale Imports weiterhin mit `try`/`except ImportError` behandelt werden.
+
+Fortschrittsmeldungen beim Laden von Paketen erscheinen ausschliesslich in der Entwicklerkonsole des Browsers. Fehlgeschlagene Installationen werden weiterhin im Editor angezeigt.
+
+## Freie Worker wiederverwenden
+
+Nacheinander gestartete Skripte verwenden einen freien Worker desselben Browser-Tabs wieder. Dadurch bleiben bereits installierte Pakete und importierte Bibliotheken verfügbar. Gleichzeitig laufende Skripte erhalten jeweils einen eigenen Worker. Pro Tab bleiben höchstens zwei freie Worker erhalten; verschiedene Tabs teilen keinen Python-Interpreter.
+
+Python-Fehler behalten den geladenen Worker beim jeweiligen Editor. Beim nächsten Start wird derselbe Worker wiederverwendet.
+
+**Abbrechen** beendet den Worker sofort und initialisiert einen Ersatz. Das gilt auch beim Abbrechen einer Eingabe und stoppt Endlosschleifen zuverlässig. Andere gleichzeitig laufende Skripte behalten ihre Worker. Das abgebrochene Skript wird nicht automatisch erneut ausgeführt; seine Pakete müssen beim nächsten Start erneut geladen werden.
+
+Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, Dateien, das Arbeitsverzeichnis und anderer Interpreterzustand können zwischen Editoren erhalten bleiben. Worker mit noch laufenden asyncio-Tasks bleiben ebenfalls beim jeweiligen Editor. Erweiterungen müssen geplante asyncio-Callbacks und JavaScript-Timer vor Ende des Skripts selbst beenden; solche Hintergrundaktivitäten werden durch die Task-Prüfung nicht erkannt. Ein ausgefallener Worker wird beim nächsten Start eines Skripts ersetzt.
 
 ## Interaktive Komponenten hinzufügen
 
@@ -230,10 +279,13 @@ Kopiere des `packages/tdev/pyodide-code`-Verzeichnis in das `tdev-website/websit
 
 import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
 
-1. Hinzufügen des `pyodide-code`-Package zu den `apiDocumentProviders` im `siteConfig.ts`:
+1. Pyodide-Plugin und Dokument-Provider im `siteConfig.ts` registrieren:
     ```ts title="siteConfig.ts"
     const getSiteConfig: SiteConfigProvider = () => {
         return {
+            plugins: [
+                require.resolve('@tdev/pyodide-code/plugin'),
+            ],
             apiDocumentProviders: [
                 require.resolve('@tdev/pyodide-code/register'),
             ]
@@ -242,6 +294,7 @@ import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
     ```
 2. ServiceWorker hinzufügen:  
     Damit Eingaben von Benutzer:innen abgewartet werden können, braucht es einen Servie-Worker. Dieser muss direkt in den statischen Ordner [`static/pyodide.sw.js`](https://github.com/GBSL-Informatik/teaching-dev/blob/main/static/pyodide.sw.js) kopiert werden.
+    Bei Paket-Updates muss auch diese Datei aktualisiert werden, damit Frontend und ServiceWorker dasselbe Eingabeprotokoll verwenden.
     :::details[`static/pyodide.sw.js`]
     <CodeBlock language="js" title="pyodide.sw.js">
         {pyodideSW}
@@ -253,3 +306,28 @@ Danach muss erneut installiert werden:
 ```bash
 yarn install
 ```
+
+## Pyodide-Version konfigurieren
+
+Die exakte `pyodide`-Abhängigkeit in `package.json` legt die Laufzeitversion fest.
+`config.ts` leitet daraus `PYODIDE_VERSION` und `PYODIDE_INDEX_URL` ab. Worker und
+Main-Thread-Hook verwenden denselben ES-Modul-Loader und dieselbe CDN-Adresse.
+Das Docusaurus-Plugin prüft beim Start, dass die Version exakt angegeben ist,
+und konfiguriert den für Pyodide erforderlichen Modul-Worker.
+
+Zum Aktualisieren auf eine neue stabile Version:
+
+```bash
+yarn workspace @tdev/pyodide-code add pyodide@<version> --exact
+```
+
+Die geänderten Dateien `package.json` und `yarn.lock` müssen gemeinsam übernommen werden.
+
+### Docusaurus- und Rspack-Updates prüfen
+
+Der `ModuleWorker`-Konstruktor, der Chunk-Name `pyodide-worker` und die Parser- und
+SplitChunks-Konfiguration in `plugin.ts` gehören zusammen. Sie erhalten den
+ES-Modul-Worker und verhindern gemeinsame Chunks, die Rspack sonst über
+`importScripts()` laden würde. Nach Updates von Docusaurus, Rspack oder Pyodide
+muss ein Produktions-Build im Browser geprüft werden: Der Worker muss als Modul
+starten und Python einschliesslich Paketimporten und Eingaben ausführen können.
