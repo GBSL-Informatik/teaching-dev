@@ -65,6 +65,16 @@ class PyodideCode extends iCode<'pyodide_code'> {
     }
 
     @computed
+    get isCancelling(): boolean {
+        return this.isExecuting && this.pyodideStore.runtimeRecovery.get(this.id) === 'cancelled';
+    }
+
+    @computed
+    get canRecreateRuntime(): boolean {
+        return this.isExecuting || this.pyodideStore.runtimeRecovery.has(this.id);
+    }
+
+    @computed
     get pyodideStore() {
         return this.store.root.viewStore.useStore('pyodideStore');
     }
@@ -91,8 +101,7 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     cancelPrompt() {
-        this.pyodideStore.cancelCodeExecution(this.id);
-        this.promptResponse = null;
+        this.stopExecution();
     }
 
     @action
@@ -110,12 +119,27 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     stopExecution(skipRemoteTrigger: boolean = false) {
+        if (this.isExecuting && !this.isCancelling) {
+            this.addLogMessage({
+                type: 'log',
+                message:
+                    'Abbruch angefordert. Falls das Skript weiterläuft, kannst du mit «Python neu starten» die Ausführung beenden.',
+                id: this.id,
+                timeStamp: Date.now()
+            });
+        }
         this.promptResponse = null;
         this.pyodideStore.stopExecution(this.id);
-        this.setRuntimeId(null);
         if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
             this.triggerRemoteAction({ action: 'stopExecution' });
         }
+    }
+
+    @action
+    recreateRuntime() {
+        this.promptResponse = null;
+        this.pyodideStore.recreateRuntime(this.id);
+        this.setRuntimeId(null);
     }
 
     @computed

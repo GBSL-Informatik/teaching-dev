@@ -49,6 +49,8 @@ export default class PyodideRuntime {
             30000,
             'Python runtime loading timed out. Check the network and retry.'
         );
+        // Manual recreation warms the worker before the next execution observes loading failures.
+        void this.api.catch(() => {});
     }
 
     terminate() {

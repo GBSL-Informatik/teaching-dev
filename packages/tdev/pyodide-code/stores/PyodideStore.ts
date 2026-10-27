@@ -20,6 +20,7 @@ interface InputRequest {
 export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
+    readonly runtimeRecovery = observable.map<string, 'error' | 'cancelled' | 'unfinished'>();
     private readonly runtimes = new Map<string, PyodideRuntime>();
     private readonly idleRuntimes: PyodideRuntime[] = [];
     // Delayed callbacks may arrive after completion; stop/restart invalidates them.
@@ -43,8 +44,8 @@ export default class PyodideStore {
 
     @action
     async run(code: PyodideCode) {
-        if (code.isExecuting) {
-            this.stopExecution(code.id);
+        if (this.executions.has(code.id)) {
+            return;
         }
         const executionId = ++this.nextExecutionId;
         const source = code.combinedCode;
@@ -55,6 +56,7 @@ export default class PyodideStore {
         code.setRuntimeId(executionId);
         this.executions.set(code.id, executionId);
         this.latestExecutions.set(code.id, executionId);
+        this.runtimeRecovery.delete(code.id);
         const stopped = new Promise<void>((resolve) => {
             this.cancellations.set(executionId, resolve);
         });
@@ -64,13 +66,20 @@ export default class PyodideStore {
                 this.initialize().then(() => true),
                 stopped.then(() => false)
             ]);
-            if (!initialized || this.executions.get(code.id) !== executionId) {
+            if (!initialized || this.latestExecutions.get(code.id) !== executionId) {
                 return;
             }
             runtime = this.runtimeFor(code.id);
-            const worker = await Promise.race([runtime.api, runtime.stopped.then(() => null)]);
-            if (!worker || this.executions.get(code.id) !== executionId) {
+            const worker = await Promise.race([
+                runtime.api,
+                runtime.stopped.then(() => null),
+                stopped.then(() => null)
+            ]);
+            if (!worker || this.latestExecutions.get(code.id) !== executionId) {
                 return;
+            }
+            if (!runtime.isUsable) {
+                throw new Error('Python worker failed. Restart Python to retry.');
             }
             const sendMessage = Comlink.proxy(
                 action((message: Message) => {
@@ -93,25 +102,26 @@ export default class PyodideStore {
                 runtime.stopped,
                 runtime.failed
             ]);
-            if (result && !result.reusable) {
-                runtime.terminate();
-            }
-            if (result && this.executions.get(code.id) === executionId) {
-                const { message } = result;
-                if (!(message.type === 'log' && !message.message)) {
-                    this.handleMessage(code, message);
+            runInAction(() => {
+                if (result && this.latestExecutions.get(code.id) === executionId) {
+                    const { message } = result;
+                    if (!result.reusable) {
+                        this.runtimeRecovery.set(code.id, 'unfinished');
+                    }
+                    if (!(message.type === 'log' && !message.message)) {
+                        this.handleMessage(code, message);
+                    }
                 }
-            }
+            });
         } catch (error: unknown) {
             runInAction(() => {
-                if (this.executions.get(code.id) !== executionId) {
+                if (this.latestExecutions.get(code.id) !== executionId) {
                     return;
                 }
                 const message = error instanceof Error ? error.message : String(error);
                 code.addLogMessage({ type: 'error', message, id: code.id, timeStamp: Date.now() });
                 this.cancelCodeExecution(code.id);
-                this.runtimes.get(code.id)?.terminate();
-                this.runtimes.delete(code.id);
+                this.runtimeRecovery.set(code.id, 'error');
                 this.latestExecutions.delete(code.id);
             });
         } finally {
@@ -130,18 +140,27 @@ export default class PyodideStore {
 
     @action
     stopExecution(id: string) {
+        const executionId = this.executions.get(id);
+        if (executionId === undefined) {
+            return;
+        }
+        this.runtimeRecovery.set(id, 'cancelled');
+        this.latestExecutions.delete(id);
         if (this.awaitingInputPrompt.has(id)) {
             this.cancelCodeExecution(id);
         }
-        const executionId = this.executions.get(id);
-        if (executionId !== undefined) {
-            this.cancellations.get(executionId)?.();
-            this.cancellations.delete(executionId);
-        }
+        this.cancellations.get(executionId)?.();
+        // A running RPC keeps ownership until it settles; cancellation cannot interrupt CPU-bound Python.
+    }
+
+    @action
+    recreateRuntime(id: string) {
+        this.stopExecution(id);
         this.executions.delete(id);
         this.latestExecutions.delete(id);
         this.runtimes.get(id)?.terminate();
-        this.runtimes.delete(id);
+        this.runtimes.set(id, new PyodideRuntime());
+        this.runtimeRecovery.delete(id);
     }
 
     @action
@@ -151,6 +170,7 @@ export default class PyodideStore {
                 code.addLogMessage(message);
                 break;
             case 'error':
+                this.runtimeRecovery.set(code.id, 'error');
                 code.addLogMessage(message);
                 break;
             default:
@@ -253,7 +273,8 @@ export default class PyodideStore {
         if (event.data?.type !== PY_AWAIT_INPUT || !(event.source instanceof ServiceWorker)) {
             return;
         }
-        if (this.executions.get(event.data.id) !== event.data.executionId) {
+        const { id, executionId } = event.data;
+        if (this.executions.get(id) !== executionId || this.latestExecutions.get(id) !== executionId) {
             this.notifyInputWorker(event.source, { type: PY_CANCEL_INPUT, requestId: event.data.requestId });
             return;
         }
@@ -265,12 +286,11 @@ export default class PyodideStore {
     });
 
     private runtimeFor(id: string) {
-        let runtime = this.idleRuntimes.pop();
-        while (runtime && !runtime.isUsable) {
-            runtime.terminate();
-            runtime = this.idleRuntimes.pop();
+        const retainedRuntime = this.runtimes.get(id);
+        if (retainedRuntime) {
+            return retainedRuntime;
         }
-        runtime ||= new PyodideRuntime();
+        const runtime = this.idleRuntimes.pop() || new PyodideRuntime();
         this.runtimes.set(id, runtime);
         return runtime;
     }
@@ -279,10 +299,11 @@ export default class PyodideStore {
         if (this.runtimes.get(id) !== runtime) {
             return;
         }
-        this.runtimes.delete(id);
-        if (runtime.isUsable) {
-            this.idleRuntimes.push(runtime);
+        if (this.runtimeRecovery.has(id) || !runtime.isUsable) {
+            return;
         }
+        this.runtimes.delete(id);
+        this.idleRuntimes.push(runtime);
         while (this.idleRuntimes.length > MAX_IDLE_RUNTIMES) {
             this.idleRuntimes.shift()?.terminate();
         }
@@ -301,6 +322,6 @@ export default class PyodideStore {
     }
 
     private failInput(id: string) {
-        this.runtimes.get(id)?.fail(new Error('Python input connection failed. Run the code again.'));
+        this.runtimes.get(id)?.fail(new Error('Python input connection failed. Restart Python to retry.'));
     }
 }

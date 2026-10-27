@@ -103,9 +103,11 @@ Die Option steht ebenfalls in `ModelMeta` zur Verfügung. Fehlgeschlagene Instal
 
 Nacheinander gestartete Skripte verwenden einen freien Worker desselben Browser-Tabs wieder. Dadurch bleiben bereits installierte Pakete und importierte Bibliotheken verfügbar. Gleichzeitig laufende Skripte erhalten jeweils einen eigenen Worker. Pro Tab bleiben höchstens zwei freie Worker erhalten; verschiedene Tabs teilen keinen Python-Interpreter.
 
-Stoppen beendet den Worker sofort. Beim nächsten Start müssen seine Pakete erneut geladen werden. Es gibt keine kooperative Unterbrechung und keine zusätzliche JSPI-Abhängigkeit.
+Fehler und abgebrochene Eingaben behalten den geladenen Worker beim jeweiligen Editor. Beim nächsten Start wird derselbe Worker wiederverwendet. Mit **Python neu starten** kann der Benutzer den Worker selbst ersetzen; diese Schaltfläche erscheint während der Ausführung sowie nach Fehlern oder einem Abbruch. Sie beendet die aktuelle Ausführung und lädt Python neu, ohne das Skript automatisch auszuführen. Pakete müssen danach erneut geladen werden.
 
-Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, Dateien, das Arbeitsverzeichnis und anderer Interpreterzustand können zwischen Editoren erhalten bleiben. Für Fehler und noch laufende asyncio-Tasks wird der Worker verworfen. Erweiterungen müssen geplante asyncio-Callbacks und JavaScript-Timer vor Ende des Skripts selbst beenden; solche Hintergrundaktivitäten werden durch die Task-Prüfung nicht erkannt.
+**Abbrechen** schliesst offene Eingaben und unterdrückt weitere Ausgaben des Skripts. Es gibt keine kooperative Unterbrechung: Rechnet ein Skript weiter, bleibt der Worker bis zu dessen Ende belegt. Für Endlosschleifen steht **Python neu starten** zur Verfügung. Bis zum Ende oder Neustart kann im selben Editor kein weiteres Skript gestartet werden.
+
+Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, Dateien, das Arbeitsverzeichnis und anderer Interpreterzustand können zwischen Editoren erhalten bleiben. Worker mit noch laufenden asyncio-Tasks bleiben ebenfalls beim jeweiligen Editor und können manuell neu gestartet werden. Erweiterungen müssen geplante asyncio-Callbacks und JavaScript-Timer vor Ende des Skripts selbst beenden; solche Hintergrundaktivitäten werden durch die Task-Prüfung nicht erkannt. Ein ausgefallener Worker wird erst durch **Python neu starten** ersetzt.
 
 ## Interaktive Komponenten hinzufügen
 
