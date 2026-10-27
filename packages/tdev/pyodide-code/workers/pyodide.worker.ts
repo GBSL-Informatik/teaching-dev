@@ -132,7 +132,7 @@ export class PyWorker {
 
     private canReuse(pyodide: PyodideAPI): boolean {
         try {
-            // Discard unfinished tasks instead of patching the Python scheduler.
+            // check if there are any unfinished tasks in the event loop, if so, we cannot reuse the runtime.
             return (
                 pyodide.runPython(
                     'not __import__("asyncio").all_tasks(loop=__import__("asyncio").get_event_loop())'
