@@ -8,8 +8,10 @@ sidebar_position: 50
 ---
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
-import CodeBlock from '@theme/CodeBlock';
 import Clock from '@tdev/packages/pyodide-code/components/Clock';
+import Pyodide from '@tdev/pyodide-code/components/Pyodide';
+
+import CodeBlock from '@theme/CodeBlock';
 
 # pyodide-code
 
@@ -83,9 +85,14 @@ Imports werden mit Pythons AST ausgewertet, auch innerhalb von Funktionen oder z
 
 Für zusätzliche oder versionierte Abhängigkeiten kann die `Pyodide`-Komponente eine Liste von Paketanforderungen erhalten:
 
-```tsx
-<Pyodide {...editorProps} packages={['python-slugify==8.0.4']} />
-```
+
+<CodeShowcase lang="tsx" imports={[`import Pyodide from '@tdev/packages/pyodide-code/components/Pyodide';`]}>
+export const code = `from slugify import slugify\n
+print(slugify("C'est déjà l'été.", algorithm='modern'))
+print(slugify('影師嗎', backend='text-unidecode', algorithm='modern'))`;
+
+<Pyodide showLineNumbers code={code} packages={['python-slugify==9.1.3']} id="32553b77-e5eb-4736-aa35-9fdaa7ce8b5d" />
+</CodeShowcase>
 
 Diese Pakete werden vor der Ausführung installiert. So funktioniert auch `import slugify`, obwohl die Distribution `python-slugify` heisst. Die Liste steht ebenfalls als `packages` in den `ModelMeta`-Optionen zur Verfügung. Dynamisch zusammengesetzte Importnamen benötigen solche expliziten Paketanforderungen.
 
