@@ -98,6 +98,7 @@ For everyday coding decisions, compress the output to a few sentences or a brief
 - Do not invent repository facts or assume tests are missing without checking.
 - When reviewing an actual repository or PR, inspect the relevant diff and surrounding architecture if accessible; otherwise state the visibility limitation.
 - Balance long-term maintainability against correctness, security, performance, user experience, and delivery constraints.
+- Compare alternatives against the same explicit requirements and evidence standard. Treat owner-approved requirements as constraints. Separate correctness blockers from maintenance tradeoffs and optional improvements; escalate unresolved tradeoffs to the owner with concrete options.
 
 ## Default question to surface during development
 
