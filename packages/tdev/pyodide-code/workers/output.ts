@@ -1,13 +1,11 @@
 import type { PyodideAPI } from 'pyodide';
-import type { Context } from '../pyodideJsModules';
+import type { Context, Message } from '../pyodideJsModules';
 
 export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context) => {
     const pending = new Set<Promise<void>>();
     let deliveryError: unknown;
-    const send = (type: 'log' | 'error', message: string) => {
-        const delivery = Promise.resolve(
-            context.sendMessage({ type, message, id, timeStamp: context.getTime() })
-        );
+    const send = (message: Message) => {
+        const delivery = Promise.resolve(context.sendMessage(message));
         pending.add(delivery);
         delivery.then(
             () => pending.delete(delivery),
@@ -17,12 +15,16 @@ export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context)
             }
         );
     };
-    const stdout = createOutputWriter((message) => send('log', message));
-    const stderr = createOutputWriter((message) => send('error', message));
+    const stdout = createOutputWriter((message) =>
+        send({ type: 'log', message, id, timeStamp: context.getTime() })
+    );
+    const stderr = createOutputWriter((message) =>
+        send({ type: 'error', message, id, timeStamp: context.getTime() })
+    );
     pyodide.setStdout(stdout);
     pyodide.setStderr(stderr);
 
-    return async () => {
+    const finish = async () => {
         try {
             pyodide.runPython('__import__("sys").stdout.flush(); __import__("sys").stderr.flush()');
         } finally {
@@ -34,6 +36,15 @@ export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context)
         await Promise.all([...pending]);
         if (deliveryError !== undefined) {
             throw deliveryError;
+        }
+    };
+
+    return {
+        finish,
+        clear() {
+            stdout.flush();
+            stderr.flush();
+            send({ type: 'clear', id, timeStamp: context.getTime() });
         }
     };
 };

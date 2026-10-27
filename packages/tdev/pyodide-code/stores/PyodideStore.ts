@@ -149,6 +149,9 @@ export default class PyodideStore {
     @action
     handleMessage(code: PyodideCode, message: Message) {
         switch (message.type) {
+            case 'clear':
+                code.clearMessages();
+                break;
             case 'log':
                 code.addLogMessage(message);
                 break;

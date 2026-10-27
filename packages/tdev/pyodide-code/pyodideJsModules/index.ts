@@ -13,9 +13,16 @@ export interface ErrorMessage {
     message: string;
 }
 
+export interface ClearMessage {
+    id: string;
+    timeStamp: number;
+    type: 'clear';
+}
+
 export interface MessageTypeMap {
     log: LogMessage;
     error: ErrorMessage;
+    clear: ClearMessage;
 }
 
 export type MessageType = keyof MessageTypeMap;

@@ -7,6 +7,7 @@ import { loadPackages } from './helper.loadPackages';
 import { configureInput } from './input';
 import { captureOutput } from './output';
 import { registerJsModule } from './registerJsModule';
+import { configureShell } from './shell';
 
 interface Execution extends Context {
     id: string;
@@ -79,8 +80,9 @@ export class PyWorker {
             }
         });
         await this.preparePackages(pyodide, execution);
-        const finishOutput = captureOutput(pyodide, id, execution);
+        const output = captureOutput(pyodide, id, execution);
         let restoreInput: (() => void) | undefined;
+        let restoreShell: (() => void) | undefined;
         let globals: PyProxy | undefined;
         let result: unknown;
         try {
@@ -98,18 +100,23 @@ export class PyWorker {
                 dict.destroy();
             }
             restoreInput = configureInput(pyodide, { id, clientId, executionId });
+            restoreShell = configureShell(pyodide, output.clear);
             result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             return result === undefined ? '' : `${result}`;
         } finally {
             try {
-                await finishOutput();
+                await output.finish();
             } finally {
                 try {
-                    restoreInput?.();
+                    restoreShell?.();
                 } finally {
-                    globals?.destroy();
-                    if (result instanceof pyodide.ffi.PyProxy) {
-                        result.destroy();
+                    try {
+                        restoreInput?.();
+                    } finally {
+                        globals?.destroy();
+                        if (result instanceof pyodide.ffi.PyProxy) {
+                            result.destroy();
+                        }
                     }
                 }
             }
@@ -117,7 +124,7 @@ export class PyWorker {
     }
 
     private async preparePackages(pyodide: PyodideAPI, execution: Execution) {
-        const finishOutput = captureOutput(pyodide, execution.id, {
+        const output = captureOutput(pyodide, execution.id, {
             getTime: execution.getTime,
             sendMessage: (message) => {
                 if (message.type === 'error') {
@@ -130,7 +137,7 @@ export class PyWorker {
         try {
             await loadPackages(pyodide, execution, execution.code, execution.packages);
         } finally {
-            await finishOutput();
+            await output.finish();
         }
     }
 

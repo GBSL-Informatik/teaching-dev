@@ -31,6 +31,22 @@ for i in range(10):
     sleep(1)
 ```
 
+## Ausgabe löschen
+
+`os.system('clear')` und `os.system('cls')` löschen die bisherige Ausgabe des aktuellen Editors. Nachfolgende Ausgaben erscheinen wieder im leeren Logfenster. Beide Befehle geben `0` zurück. Diese Unterstützung gilt für die beiden Löschbefehle; eine allgemeine Betriebssystem-Shell steht im Browser nicht zur Verfügung.
+
+```py live_pyo hideWarning title=Ausgabe_löschen
+from os import system
+from time import sleep
+
+for i in range(5):
+    system('clear')
+    print(i)
+    sleep(1)
+```
+
+Es ist immer nur die aktuelle Ausgabe sichtbar.
+
 ## Fibonacci
 ```py live_pyo id=d5d60431-5589-4d38-9c8c-9b563194f5cc title=Fibonacci_ohne_Rekursion
 def fibonacci(n):
