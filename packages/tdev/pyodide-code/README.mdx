@@ -91,13 +91,7 @@ Diese Pakete werden vor der Ausführung installiert. So funktioniert auch `impor
 
 Explizite Paketanforderungen müssen erfolgreich installiert werden. Bei fehlgeschlagenen automatisch erkannten Abhängigkeiten wird eine Diagnose angezeigt und der Python-Code trotzdem ausgeführt. Dadurch können optionale Imports weiterhin mit `try`/`except ImportError` behandelt werden.
 
-Fortschrittsmeldungen beim Laden von Paketen sind standardmässig ausgeblendet. Mit `showPackageLogs` werden sie in der Ausgabe des Editors angezeigt:
-
-```tsx
-<Pyodide {...editorProps} showPackageLogs packages={['python-slugify==8.0.4']} />
-```
-
-Die Option steht ebenfalls in `ModelMeta` zur Verfügung. Fehlgeschlagene Installationen werden unabhängig davon angezeigt.
+Fortschrittsmeldungen beim Laden von Paketen erscheinen ausschliesslich in der Entwicklerkonsole des Browsers. Fehlgeschlagene Installationen werden weiterhin im Editor angezeigt.
 
 ## Freie Worker wiederverwenden
 

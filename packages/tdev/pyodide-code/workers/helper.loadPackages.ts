@@ -11,7 +11,12 @@ const packageAliases = new Map([
     ['bs4', 'beautifulsoup4']
 ]);
 
-type PackageContext = Context & { id: string; showPackageLogs?: boolean };
+const PACKAGE_LOAD_CALLBACKS = {
+    messageCallback: (message: string) => console.log(message),
+    errorCallback: (message: string) => console.error(message)
+};
+
+type PackageContext = Context & { id: string };
 
 export const loadPackages = async (
     pyodide: PyodideAPI,
@@ -27,13 +32,13 @@ export const loadPackages = async (
         }
     }
     if (requirements.length > 0) {
-        await installPackages(pyodide, requirements, context);
+        await installPackages(pyodide, requirements);
     }
-    await loadInferredPackage(context, () => pyodide.loadPackagesFromImports(code, loadCallbacks(context)));
+    await loadInferredPackage(context, () => pyodide.loadPackagesFromImports(code, PACKAGE_LOAD_CALLBACKS));
     const missing = getMissingImports(pyodide, imports);
     const packages = new Set(missing.map((name) => packageAliases.get(name) || name));
     for (const name of packages) {
-        await loadInferredPackage(context, () => installPackages(pyodide, [name], context));
+        await loadInferredPackage(context, () => installPackages(pyodide, [name]));
     }
 };
 
@@ -95,35 +100,16 @@ const getMissingImports = (pyodide: PyodideAPI, imports: string[]): string[] => 
     }
 };
 
-const installPackages = async (pyodide: PyodideAPI, packages: readonly string[], context: PackageContext) => {
+const installPackages = async (pyodide: PyodideAPI, packages: readonly string[]) => {
     const requirements = [...new Set(packages)];
-    await pyodide.loadPackage('micropip', loadCallbacks(context));
+    await pyodide.loadPackage('micropip', PACKAGE_LOAD_CALLBACKS);
     const micropip = pyodide.pyimport('micropip');
     try {
-        await micropip.install.callKwargs(requirements, { verbose: !!context.showPackageLogs });
+        await micropip.install.callKwargs(requirements, { verbose: true });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
         throw new Error(`Could not install Python packages (${requirements.join(', ')}): ${message}`);
     } finally {
         micropip.destroy();
     }
-};
-
-const loadCallbacks = (context: PackageContext) => {
-    const send = (type: 'log' | 'error', message: string) => {
-        if (context.showPackageLogs) {
-            // Progress is best-effort; required diagnostics remain awaited.
-            void Promise.resolve()
-                .then(() =>
-                    context.sendMessage({ type, message, id: context.id, timeStamp: context.getTime() })
-                )
-                .catch((error: unknown) => {
-                    console.error('Could not deliver Python package progress.', error);
-                });
-        }
-    };
-    return {
-        messageCallback: (message: string) => send('log', message),
-        errorCallback: (message: string) => send('error', message)
-    };
 };

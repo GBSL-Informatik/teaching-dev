@@ -15,7 +15,6 @@ interface Execution extends Context {
     clientId: string;
     executionId: number;
     packages: readonly string[];
-    showPackageLogs: boolean;
 }
 
 export interface ExecutionResult {
@@ -39,8 +38,7 @@ export class PyWorker {
         filename = 'snippet.py',
         clientId = '',
         executionId = 0,
-        packages: readonly string[] = [],
-        showPackageLogs = false
+        packages: readonly string[] = []
     ): Promise<ExecutionResult> {
         const getTime = createTimestamp();
         try {
@@ -52,7 +50,6 @@ export class PyWorker {
                 clientId,
                 executionId,
                 packages,
-                showPackageLogs,
                 sendMessage,
                 getTime
             });
@@ -120,13 +117,20 @@ export class PyWorker {
     }
 
     private async preparePackages(pyodide: PyodideAPI, execution: Execution) {
-        const finishOutput = execution.showPackageLogs
-            ? captureOutput(pyodide, execution.id, execution)
-            : undefined;
+        const finishOutput = captureOutput(pyodide, execution.id, {
+            getTime: execution.getTime,
+            sendMessage: (message) => {
+                if (message.type === 'error') {
+                    console.error(message.message);
+                } else if (message.type === 'log') {
+                    console.log(message.message);
+                }
+            }
+        });
         try {
             await loadPackages(pyodide, execution, execution.code, execution.packages);
         } finally {
-            await finishOutput?.();
+            await finishOutput();
         }
     }
 
