@@ -89,7 +89,6 @@ const createInputReader = (pyodide: PyodideAPI, context: InputContext, getPrompt
 };
 
 const requestInput = (context: InputContext, prompt: string): string | null => {
-    const request = new XMLHttpRequest();
     const query = new URLSearchParams({
         id: context.id,
         clientId: context.clientId,
@@ -97,14 +96,20 @@ const requestInput = (context: InputContext, prompt: string): string | null => {
         prompt,
         requestId: crypto.randomUUID()
     });
-    // The service worker holds this synchronous request until the user replies.
-    request.open('GET', `${PY_STDIN_ROUTE}?${query}`, false);
-    request.send(null);
-    if (request.status === 410) {
-        return null;
+    while (true) {
+        const request = new XMLHttpRequest();
+        // Renew bounded waits without changing the logical input request.
+        request.open('GET', `${PY_STDIN_ROUTE}?${query}`, false);
+        request.send(null);
+        if (request.status === 204) {
+            continue;
+        }
+        if (request.status === 410) {
+            return null;
+        }
+        if (request.status !== 200) {
+            throw new Error(`Python input request failed: HTTP ${request.status}`);
+        }
+        return request.responseText;
     }
-    if (request.status !== 200) {
-        throw new Error(`Python input request failed: HTTP ${request.status}`);
-    }
-    return request.responseText;
 };

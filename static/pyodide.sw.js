@@ -4,6 +4,8 @@ const PY_AWAIT_INPUT = 'PY_AWAIT_INPUT';
 const PY_STDIN_ROUTE = '/py-get-input/';
 const PY_CANCEL_INPUT = 'PY_CANCEL_INPUT';
 const PY_CANCEL_ALL = 'PY_CANCEL_ALL';
+const INPUT_POLL_TIMEOUT = 10000;
+const INPUT_RECONNECT_TIMEOUT = 60000;
 
 self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting());
@@ -17,11 +19,34 @@ const requests = new Map();
 
 const completeRequest = (requestId, response) => {
     const request = requests.get(requestId);
-    if (!request) {
+    if (!request || request.response) {
         return;
     }
+    if (!request.resolve) {
+        // Preserve replies and cancellation received between polls.
+        request.response = response;
+        return;
+    }
+    clearTimeout(request.timer);
     requests.delete(requestId);
     request.resolve(response);
+};
+
+const pollInput = (requestId, request) => {
+    clearTimeout(request.timer);
+    if (request.response) {
+        requests.delete(requestId);
+        return request.response;
+    }
+    return new Promise((resolve) => {
+        request.resolve = resolve;
+        // Keep each fetch below browser service-worker event time limits.
+        request.timer = setTimeout(() => {
+            request.resolve = null;
+            request.timer = setTimeout(() => requests.delete(requestId), INPUT_RECONNECT_TIMEOUT);
+            resolve(new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } }));
+        }, INPUT_POLL_TIMEOUT);
+    });
 };
 
 self.addEventListener('message', (event) => {
@@ -46,7 +71,10 @@ self.addEventListener('message', (event) => {
         return;
     }
     if (event.data.type === PY_INPUT) {
-        completeRequest(event.data.requestId, new Response(event.data.value, { status: 200 }));
+        completeRequest(
+            event.data.requestId,
+            new Response(event.data.value, { status: 200, headers: { 'Cache-Control': 'no-store' } })
+        );
     } else if (event.data.type === PY_CANCEL_INPUT) {
         completeRequest(event.data.requestId, new Response('Run cancelled', { status: 410 }));
     }
@@ -65,15 +93,23 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(new Response('Invalid input request', { status: 400 }));
         return;
     }
-    if (requests.has(requestId)) {
-        event.respondWith(new Response('Duplicate input request', { status: 409 }));
+    const existingRequest = requests.get(requestId);
+    if (existingRequest) {
+        if (
+            existingRequest.clientId !== clientId ||
+            existingRequest.id !== id ||
+            existingRequest.executionId !== executionId ||
+            existingRequest.resolve
+        ) {
+            event.respondWith(new Response('Conflicting input request', { status: 409 }));
+            return;
+        }
+        event.respondWith(pollInput(requestId, existingRequest));
         return;
     }
-    event.respondWith(
-        new Promise((resolve) => {
-            requests.set(requestId, { clientId, resolve });
-        })
-    );
+    const request = { clientId, id, executionId, resolve: null, response: null, timer: null };
+    requests.set(requestId, request);
+    event.respondWith(pollInput(requestId, request));
     event.waitUntil(
         self.clients
             .get(clientId)
