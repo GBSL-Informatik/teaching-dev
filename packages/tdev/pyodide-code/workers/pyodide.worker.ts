@@ -37,7 +37,7 @@ export class PyWorker {
     async run(
         id: string,
         code: string,
-        sendMessage: (message: Message) => void,
+        sendMessage: Context['sendMessage'],
         filename = 'snippet.py',
         clientId = '',
         executionId = 0,

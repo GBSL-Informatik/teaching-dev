@@ -1,25 +1,14 @@
 import type { PyodideAPI } from 'pyodide';
-import type { Context, Message } from '../messages';
+import type { Context } from '../messages';
+import { createMessageDelivery } from './messageDelivery';
 
 export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context) => {
-    const pending = new Set<Promise<void>>();
-    let deliveryError: unknown;
-    const send = (message: Message) => {
-        const delivery = Promise.resolve(context.sendMessage(message));
-        pending.add(delivery);
-        delivery.then(
-            () => pending.delete(delivery),
-            (error: unknown) => {
-                deliveryError = error;
-                pending.delete(delivery);
-            }
-        );
-    };
+    const delivery = createMessageDelivery((message) => context.sendMessage(message));
     const stdout = createOutputWriter((message) =>
-        send({ type: 'log', message, id, timeStamp: context.getTime() })
+        delivery.send({ type: 'log', message, id, timeStamp: context.getTime() })
     );
     const stderr = createOutputWriter((message) =>
-        send({ type: 'error', message, id, timeStamp: context.getTime() })
+        delivery.send({ type: 'error', message, id, timeStamp: context.getTime() })
     );
     pyodide.setStdout(stdout);
     pyodide.setStderr(stderr);
@@ -33,10 +22,7 @@ export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context)
             pyodide.setStdout(undefined);
             pyodide.setStderr(undefined);
         }
-        await Promise.all([...pending]);
-        if (deliveryError !== undefined) {
-            throw deliveryError;
-        }
+        await delivery.finish();
     };
 
     return {
@@ -44,7 +30,7 @@ export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context)
         clear() {
             stdout.flush();
             stderr.flush();
-            send({ type: 'clear', id, timeStamp: context.getTime() });
+            delivery.send({ type: 'clear', id, timeStamp: context.getTime() });
         }
     };
 };

@@ -22,6 +22,6 @@ export interface ClearMessage {
 export type Message = LogMessage | ErrorMessage | ClearMessage | ExtensionMessage;
 
 export interface Context {
-    sendMessage: (message: Message) => void;
+    sendMessage: (message: Message) => void | Promise<void>;
     getTime: () => number;
 }

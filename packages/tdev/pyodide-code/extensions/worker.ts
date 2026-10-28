@@ -2,14 +2,13 @@ import type { PyodideAPI } from 'pyodide';
 import type { Context } from '../messages';
 import type { RegisteredExtension, WorkerExtension } from './index';
 import { registerJsModule } from '../workers/registerJsModule';
+import { createMessageDelivery } from '../workers/messageDelivery';
 
 export const createWorkerExtensions = (
     context: Context & { id: string },
     extensions: readonly RegisteredExtension<WorkerExtension>[]
 ) => {
-    const pending = new Set<Promise<void>>();
-    let deliveryError: unknown;
-    let deliveryFailed = false;
+    const delivery = createMessageDelivery((message) => context.sendMessage(message));
     let isActive = true;
 
     const register = (pyodide: PyodideAPI) => {
@@ -21,25 +20,14 @@ export const createWorkerExtensions = (
                     if (!isActive) {
                         return;
                     }
-                    const delivery = Promise.resolve(
-                        context.sendMessage({
-                            type: 'extension',
-                            extension: name,
-                            id: context.id,
-                            targetId,
-                            timeStamp: context.getTime(),
-                            payload
-                        })
-                    );
-                    pending.add(delivery);
-                    delivery.then(
-                        () => pending.delete(delivery),
-                        (error: unknown) => {
-                            deliveryFailed = true;
-                            deliveryError = error;
-                            pending.delete(delivery);
-                        }
-                    );
+                    delivery.send({
+                        type: 'extension',
+                        extension: name,
+                        id: context.id,
+                        targetId,
+                        timeStamp: context.getTime(),
+                        payload
+                    });
                 }
             });
             for (const [moduleName, module] of Object.entries(modules)) {
@@ -54,10 +42,7 @@ export const createWorkerExtensions = (
 
     const finish = async () => {
         isActive = false;
-        await Promise.allSettled([...pending]);
-        if (deliveryFailed) {
-            throw deliveryError;
-        }
+        await delivery.finish();
     };
 
     return { register, finish };
