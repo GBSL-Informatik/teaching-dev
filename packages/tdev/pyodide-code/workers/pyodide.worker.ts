@@ -1,5 +1,4 @@
-import type { Context, Message } from '@tdev/pyodide-code/pyodideJsModules';
-import { pyodideJsModules } from '@tdev/pyodide-code/pyodideJsModules';
+import type { Context, Message } from '../messages';
 import registeredExtensions from '@tdev-pyodide/worker-extensions';
 import * as Comlink from 'comlink';
 import type { PyodideAPI } from 'pyodide';
@@ -8,7 +7,6 @@ import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
 import { configureInput } from './input';
 import { captureOutput } from './output';
-import { registerJsModule } from './registerJsModule';
 import { configureShell } from './shell';
 import { createWorkerExtensions } from '../extensions/worker';
 
@@ -77,16 +75,7 @@ export class PyWorker {
     private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
         const { id, code, filename, clientId, executionId } = execution;
         pyodide.registerComlink(Comlink);
-        registerJsModule(pyodide, 'tdev', {
-            sendMessage: (message: Message) => {
-                execution.sendMessage(message);
-            }
-        });
-        const extensions = createWorkerExtensions(
-            execution,
-            registeredExtensions,
-            Object.keys(pyodideJsModules)
-        );
+        const extensions = createWorkerExtensions(execution, registeredExtensions);
         let output: ReturnType<typeof captureOutput> | undefined;
         let restoreInput: (() => void) | undefined;
         let restoreShell: (() => void) | undefined;

@@ -1,12 +1,11 @@
 import type { PyodideAPI } from 'pyodide';
-import type { Context } from '../pyodideJsModules';
+import type { Context } from '../messages';
 import type { RegisteredExtension, WorkerExtension } from './index';
 import { registerJsModule } from '../workers/registerJsModule';
 
 export const createWorkerExtensions = (
     context: Context & { id: string },
-    extensions: readonly RegisteredExtension<WorkerExtension>[],
-    legacyModuleNames: readonly string[] = []
+    extensions: readonly RegisteredExtension<WorkerExtension>[]
 ) => {
     const pending = new Set<Promise<void>>();
     let deliveryError: unknown;
@@ -14,7 +13,7 @@ export const createWorkerExtensions = (
     let isActive = true;
 
     const register = (pyodide: PyodideAPI) => {
-        const moduleNames = new Set(['tdev', 'browser_input', ...legacyModuleNames]);
+        const moduleNames = new Set(['browser_input']);
         for (const { name, extension } of extensions) {
             const modules = extension.createModules({
                 editorId: context.id,

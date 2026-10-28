@@ -1,5 +1,5 @@
 import type { PyodideAPI } from 'pyodide';
-import type { Context, Message } from '../pyodideJsModules';
+import type { Context, Message } from '../messages';
 
 export const captureOutput = (pyodide: PyodideAPI, id: string, context: Context) => {
     const pending = new Set<Promise<void>>();

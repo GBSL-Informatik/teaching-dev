@@ -192,7 +192,7 @@ export interface ClockTime {
 export type ClockUpdate = Partial<ClockTime>;
 ```
 
-Alle Winkel sind in Grad angegeben. Eine Nachricht kann einzelne Zeiger oder die ganze Uhr ändern. Die beiden Einstiegspunkte verwenden `ClockUpdate` als Typparameter; dieser gemeinsame Typ ersetzt die bisherige globale `MessageTypeMap`-Erweiterung. Die Typen prüfen den selbst geschriebenen Worker und Handler, es gibt keine automatische Laufzeitvalidierung des Payloads.
+Alle Winkel sind in Grad angegeben. Eine Nachricht kann einzelne Zeiger oder die ganze Uhr ändern. Die beiden Einstiegspunkte verwenden `ClockUpdate` als Typparameter. Die Typen prüfen den selbst geschriebenen Worker und Handler, es gibt keine automatische Laufzeitvalidierung des Payloads.
 
 ### Uhr: Python-Modul im Worker
 
@@ -202,7 +202,7 @@ import clockWorkerSource from '!!raw-loader!@tdev/pyodide/clock/worker.ts';
     {clockWorkerSource}
 </CodeBlock>
 
-`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind, hier `clock`. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die internen Namen `tdev` und `browser_input` werden mit einer Fehlermeldung abgelehnt.
+`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind, hier `clock`. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und der interne Name `browser_input` werden mit einer Fehlermeldung abgelehnt.
 
 Der Factory-Kontext bietet:
 
@@ -240,15 +240,6 @@ Jeder Aufruf von `use_clock()` erzeugt einen eigenen Python-Handle mit zunächst
 Worker können zwischen Editoren wiederverwendet werden. Die registrierten JavaScript-Module erhalten pro Ausführung einen neuen Kontext. Bereits importierte Python-Hilfsmodule können jedoch alte Referenzen auf Module oder Handles behalten; deren Cache wird nicht rekursiv geleert. Solche Hilfsmodule sollen das Modul oder die Factory innerhalb der pro Ausführung aufgerufenen Funktion neu importieren und erst dann Handles anfordern. Ein auf Modulebene gespeichertes `from clock import use_clock` bleibt sonst an den alten, bereits geschlossenen Kontext gebunden.
 
 Erweiterungen müssen eigene Timer und Hintergrundaufgaben vor Ende des Skripts beenden. Nachrichten nach Abschluss werden verworfen. **Abbrechen** beendet den Worker; ausstehende Nachrichten einer abgebrochenen oder ersetzten Ausführung werden durch die bestehende Ausführungsprüfung ignoriert. Das Framework stellt keine automatische Ressourcenverwaltung oder Hintergrunddienste für Erweiterungen bereit.
-
-### Migration bestehender Erweiterungen
-
-Die bisherige `pyodideJsModules/siteModules.ts`-Erweiterung und die Weiterleitung eigener Nachrichtentypen an `SiteStore.handleMessage` bleiben zur Migration verfügbar. Für neue Erweiterungen wird die explizite Plugin-Konfiguration empfohlen.
-
-1. Payload-Typen in eine gemeinsame Datei verschieben.
-2. Die Python-Factory mit `defineWorkerExtension` exportieren und `send(targetId, payload)` verwenden.
-3. Die Browser-Verarbeitung mit `defineClientExtension` exportieren und beide Einstiegspunkte konfigurieren.
-4. Den alten Registry-Eintrag, die `MessageTypeMap`-Erweiterung und den bisherigen `SiteStore`-Handler entfernen. Dasselbe Python-Modul darf nicht gleichzeitig über beide Mechanismen registriert sein.
 
 
 ## Installation

@@ -1,7 +1,7 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import siteConfig from '@generated/docusaurus.config';
 import type ViewStore from '@tdev-stores/ViewStores';
-import { Message } from '@tdev/pyodide-code/pyodideJsModules';
+import type { Message } from '../messages';
 import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
 import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
@@ -162,12 +162,6 @@ export default class PyodideStore {
             case 'error':
                 this.retainedRuntimes.add(code.id);
                 code.addLogMessage(message);
-                break;
-            default:
-                const siteStore = this.viewStore.root.siteStore;
-                if ('handleMessage' in siteStore && typeof siteStore.handleMessage === 'function') {
-                    siteStore.handleMessage('pyodide', message);
-                }
                 break;
         }
     }

@@ -54,12 +54,11 @@ describe('Pyodide worker extensions', () => {
         expect(modules[0]).not.toBe(modules[1]);
     });
 
-    it.each(['tdev', 'browser_input', 'legacy'])('rejects reserved or legacy module %s', async (name) => {
-        const session = createWorkerExtensions(
-            { id: 'editor', getTime: Date.now, sendMessage: vi.fn() },
-            [{ name: 'example', extension: defineWorkerExtension(() => ({ [name]: {} })) }],
-            ['legacy']
-        );
+    it('rejects the reserved browser_input module', async () => {
+        const name = 'browser_input';
+        const session = createWorkerExtensions({ id: 'editor', getTime: Date.now, sendMessage: vi.fn() }, [
+            { name: 'example', extension: defineWorkerExtension(() => ({ [name]: {} })) }
+        ]);
         expect(() => session.register(pyodide)).toThrow(`Duplicate or reserved Pyodide module: ${name}`);
         await session.finish();
     });
