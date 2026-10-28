@@ -154,7 +154,7 @@ while True:
 
 ### Cookie-Klicker: Browser-Ereignisse in Python
 
-`@on_click(cookie)` registriert einen Handler für genau diesen Cookie. Der Handler erhält ein Ereignis mit `type`, `extension`, `target_id`, `timestamp` und `payload`. `await run()` hält das Programm aktiv, bis `webio.stop()` aufgerufen oder im Editor **Abbrechen** gedrückt wird.
+`@on_click(target)` ist ein generischer Decorator für Erweiterungs-Handles, die ihre Ereignisquelle als `events` bereitstellen. Er kann beispielsweise mit einem Button, einem anderen interaktiven Objekt oder mit `@on_click(cookie)` für den folgenden Cookie verwendet werden. Dafür sind weder eine gemeinsame Basisklasse noch Cookie-spezifische Funktionen in `webio` nötig. Der Handler erhält ein Ereignis mit `type`, `extension`, `target_id`, `timestamp` und `payload`. `await run()` hält das Programm aktiv, bis `webio.stop()` aufgerufen oder im Editor **Abbrechen** gedrückt wird.
 
 Der Store verwaltet für jede `cookieId` ein eigenes MobX-Modell. Mehrere Cookies können unabhängig gesteuert werden; mehrere Ansichten derselben ID teilen dasselbe Modell.
 
@@ -250,6 +250,8 @@ Der Factory-Kontext bietet:
 - `editorId`: die ID des ausführenden Editors.
 - `send(targetId, payload)`: sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein, beispielsweise ein Objekt aus Zahlen, Strings und Arrays.
 - `events.source(targetId)`: erzeugt einen Ereignisquellen-Deskriptor, der an die aktuelle Ausführung gebunden ist. Ein Python-Handle kann ihn als `events` bereitstellen. `webio.run()` meldet die Quellen seiner registrierten Handler an; ein Browser-Store sendet Ereignisse mit `pyodideStore.events.emit(source, { type, payload })` an den aktiven Controller.
+
+Alle interaktiven Handles verwenden denselben Vertrag: Ihre `events`-Eigenschaft enthält den mit `context.events.source(targetId)` erzeugten Deskriptor. `@on_click(handle)` entspricht `@on_event('click', source=handle.events)` und benötigt keine Kenntnis des Erweiterungstyps. Verhalten und Zustand des Handles bleiben in der jeweiligen Erweiterung.
 
 Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports wie `importlib.import_module('clock')`. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
 

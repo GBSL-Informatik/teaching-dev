@@ -24,9 +24,9 @@ def on_event(event_type, *, source):
     return register
 
 
-def on_click(cookie):
-    """Register a handler accepting one click event from this cookie."""
-    return on_event('click', source=cookie.events)
+def on_click(target):
+    """Register a click handler for any extension handle exposing an events source."""
+    return on_event('click', source=target.events)
 
 
 def stop():
