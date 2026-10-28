@@ -1,39 +1,63 @@
-import type { Plugin } from '@docusaurus/types';
-import type { Chunk, Configuration, OptimizationSplitChunksOptions } from '@rspack/core';
+import type { LoadContext, Plugin } from '@docusaurus/types';
+import type { Chunk, Configuration } from 'webpack';
 import { PYODIDE_VERSION } from './config';
+import { createRegistrySource, resolveExtensions, type PluginOptions } from './extensions/config';
 
-const excludePyodideWorker =
-    (configuredChunks?: OptimizationSplitChunksOptions['chunks']) => (chunk: Chunk) => {
-        if (chunk.name === 'pyodide-worker') {
-            return false;
-        }
-        if (typeof configuredChunks === 'function') {
-            return configuredChunks(chunk);
-        }
-        if (configuredChunks instanceof RegExp) {
-            return configuredChunks.test(chunk.name || '');
-        }
-        if (configuredChunks === 'all') {
-            return true;
-        }
-        if (configuredChunks === 'initial') {
-            return chunk.canBeInitial();
-        }
-        return !chunk.canBeInitial();
-    };
+export type { ExtensionConfig, PluginOptions } from './extensions/config';
 
-const pyodidePlugin: Plugin = () => {
+type SplitChunksOptions = Exclude<
+    NonNullable<Configuration['optimization']>['splitChunks'],
+    false | undefined
+>;
+
+const excludePyodideWorker = (configuredChunks?: SplitChunksOptions['chunks']) => (chunk: Chunk) => {
+    if (chunk.name === 'pyodide-worker') {
+        return false;
+    }
+    if (typeof configuredChunks === 'function') {
+        return configuredChunks(chunk);
+    }
+    if (configuredChunks instanceof RegExp) {
+        return configuredChunks.test(chunk.name || '');
+    }
+    if (configuredChunks === 'all') {
+        return true;
+    }
+    if (configuredChunks === 'initial') {
+        return chunk.canBeInitial();
+    }
+    return !chunk.canBeInitial();
+};
+
+const pyodidePlugin = (context: LoadContext, options: PluginOptions = {}): Plugin => {
     if (!/^\d+\.\d+\.\d+$/.test(PYODIDE_VERSION)) {
         throw new Error(
             'Pin the pyodide dependency to an exact stable version in pyodide-code/package.json.'
         );
     }
 
+    const extensions = resolveExtensions(context.siteDir, options);
+    let registryAliases: Record<string, string> = {};
+
     return {
         name: 'pyodide-code',
+        async contentLoaded({ actions }) {
+            const worker = await actions.createData(
+                'worker-extensions.js',
+                createRegistrySource(extensions, 'worker')
+            );
+            const client = await actions.createData(
+                'client-extensions.js',
+                createRegistrySource(extensions, 'client')
+            );
+            registryAliases = {
+                '@tdev-pyodide/worker-extensions$': worker,
+                '@tdev-pyodide/client-extensions$': client
+            };
+        },
         configureWebpack(config: Configuration, isServer: boolean): Configuration {
             if (isServer) {
-                return {};
+                return { resolve: { alias: registryAliases } };
             }
             const splitChunks = config.optimization?.splitChunks;
             const configuredChunks = splitChunks ? splitChunks.chunks : undefined;
@@ -47,6 +71,7 @@ const pyodidePlugin: Plugin = () => {
             );
 
             return {
+                resolve: { alias: registryAliases },
                 module: {
                     parser: {
                         javascript: {

@@ -1,13 +1,15 @@
-import type { Context, Message } from '@tdev/pyodide-code/pyodideJsModules';
+import type { Context, Message } from '../messages';
+import registeredExtensions from '@tdev-pyodide/worker-extensions';
 import * as Comlink from 'comlink';
 import type { PyodideAPI } from 'pyodide';
 import type { PyProxy } from 'pyodide/ffi';
 import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
+import { finalizeExecution } from './finalizeExecution';
 import { configureInput } from './input';
 import { captureOutput } from './output';
-import { registerJsModule } from './registerJsModule';
 import { configureShell } from './shell';
+import { createWorkerExtensions } from '../extensions/worker';
 
 interface Execution extends Context {
     id: string;
@@ -35,7 +37,7 @@ export class PyWorker {
     async run(
         id: string,
         code: string,
-        sendMessage: (message: Message) => void,
+        sendMessage: Context['sendMessage'],
         filename = 'snippet.py',
         clientId = '',
         executionId = 0,
@@ -74,18 +76,17 @@ export class PyWorker {
     private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
         const { id, code, filename, clientId, executionId } = execution;
         pyodide.registerComlink(Comlink);
-        registerJsModule(pyodide, 'tdev', {
-            sendMessage: (message: Message) => {
-                execution.sendMessage(message);
-            }
-        });
-        await this.preparePackages(pyodide, execution);
-        const output = captureOutput(pyodide, id, execution);
+        const extensions = createWorkerExtensions(execution, registeredExtensions);
+        let output: ReturnType<typeof captureOutput> | undefined;
         let restoreInput: (() => void) | undefined;
         let restoreShell: (() => void) | undefined;
         let globals: PyProxy | undefined;
         let result: unknown;
+        const errors: unknown[] = [];
         try {
+            extensions.register(pyodide);
+            await this.preparePackages(pyodide, execution);
+            output = captureOutput(pyodide, id, execution);
             const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
             const dict = pyodide.globals.get('dict');
             try {
@@ -103,23 +104,25 @@ export class PyWorker {
             restoreShell = configureShell(pyodide, output.clear);
             result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             return result === undefined ? '' : `${result}`;
+        } catch (error: unknown) {
+            errors.push(error);
+            throw error;
         } finally {
-            try {
-                await output.finish();
-            } finally {
-                try {
-                    restoreShell?.();
-                } finally {
-                    try {
-                        restoreInput?.();
-                    } finally {
-                        globals?.destroy();
+            await finalizeExecution(
+                [
+                    () => output?.finish(),
+                    () => extensions.finish(),
+                    () => restoreShell?.(),
+                    () => restoreInput?.(),
+                    () => globals?.destroy(),
+                    () => {
                         if (result instanceof pyodide.ffi.PyProxy) {
                             result.destroy();
                         }
                     }
-                }
-            }
+                ],
+                errors
+            );
         }
     }
 
@@ -134,10 +137,14 @@ export class PyWorker {
                 }
             }
         });
+        const errors: unknown[] = [];
         try {
             await loadPackages(pyodide, execution, execution.code, execution.packages);
+        } catch (error: unknown) {
+            errors.push(error);
+            throw error;
         } finally {
-            await output.finish();
+            await finalizeExecution([() => output.finish()], errors);
         }
     }
 

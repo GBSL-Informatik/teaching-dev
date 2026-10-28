@@ -1,9 +1,7 @@
 import type { PyodideAPI } from 'pyodide';
-import { type Context, pyodideJsModules } from '../pyodideJsModules';
-import { registerJsModule } from './registerJsModule';
+import type { Context } from '../messages';
 
-const siteModules = new Set(Object.keys(pyodideJsModules));
-const internalModules = new Set(['tdev', 'browser_input']);
+const internalModules = new Set(['browser_input']);
 const packageAliases = new Map([
     ['PIL', 'Pillow'],
     ['cv2', 'opencv-python'],
@@ -25,12 +23,6 @@ export const loadPackages = async (
     requirements: readonly string[] = []
 ) => {
     const imports = getImports(pyodide, code);
-    for (const name of imports) {
-        const factory = pyodideJsModules[name as keyof typeof pyodideJsModules];
-        if (siteModules.has(name) && factory) {
-            registerJsModule(pyodide, name, factory(context));
-        }
-    }
     if (requirements.length > 0) {
         await installPackages(pyodide, requirements);
     }
@@ -78,12 +70,7 @@ const getMissingImports = (pyodide: PyodideAPI, imports: string[]): string[] => 
     try {
         const standardNames: Set<string> = stdlib.toJs();
         return imports.filter((name) => {
-            if (
-                siteModules.has(name) ||
-                internalModules.has(name) ||
-                standardNames.has(name) ||
-                modules.has(name)
-            ) {
+            if (internalModules.has(name) || standardNames.has(name) || modules.has(name)) {
                 return false;
             }
             const spec = findSpec(name);

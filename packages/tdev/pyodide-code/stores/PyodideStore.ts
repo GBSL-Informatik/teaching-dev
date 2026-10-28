@@ -1,13 +1,14 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import siteConfig from '@generated/docusaurus.config';
 import type ViewStore from '@tdev-stores/ViewStores';
-import { Message } from '@tdev/pyodide-code/pyodideJsModules';
+import type { Message } from '../messages';
 import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
 import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
 import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
+import { handleExtensionMessage } from '../extensions/client';
 const BASE_URL = siteConfig.baseUrl || '/';
 // Bound unused heaps while keeping two recent runtimes warm.
 const MAX_IDLE_RUNTIMES = 2;
@@ -149,6 +150,9 @@ export default class PyodideStore {
     @action
     handleMessage(code: PyodideCode, message: Message) {
         switch (message.type) {
+            case 'extension':
+                handleExtensionMessage({ root: this.viewStore.root }, message);
+                break;
             case 'clear':
                 code.clearMessages();
                 break;
@@ -158,11 +162,6 @@ export default class PyodideStore {
             case 'error':
                 this.retainedRuntimes.add(code.id);
                 code.addLogMessage(message);
-                break;
-            default:
-                if ('handleMessage' in this.viewStore.root.siteStore) {
-                    this.viewStore.root.siteStore.handleMessage('pyodide', message);
-                }
                 break;
         }
     }

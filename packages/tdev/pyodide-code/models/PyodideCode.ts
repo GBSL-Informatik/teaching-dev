@@ -1,7 +1,7 @@
 import { Document as DocumentProps, Factory } from '@tdev-api/document';
 import iCode from '@tdev-models/documents/iCode';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { ErrorMessage, LogMessage, Message } from '@tdev/pyodide-code/pyodideJsModules';
+import type { ErrorMessage, LogMessage, Message } from '../messages';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed, observable } from 'mobx';
 import { ModelMeta } from './ModelMeta';

@@ -1,6 +1,7 @@
 // This file is used to configure the teaching-dev page.
 
 import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
+import type { PluginOptions as PyodidePluginOptions } from '@tdev/pyodide-code/plugin';
 import { themes as prismThemes } from 'prism-react-renderer';
 import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
 import {
@@ -111,7 +112,18 @@ const getSiteConfig: SiteConfigProvider = () => {
         },
         plugins: [
             brythonCodePluginConfig(),
-            require.resolve('@tdev/pyodide-code/plugin'),
+            [
+                require.resolve('@tdev/pyodide-code/plugin'),
+                {
+                    extensions: [
+                        {
+                            name: 'clock',
+                            worker: require.resolve('./website/pyodide/clock/worker'),
+                            client: require.resolve('./website/pyodide/clock/client')
+                        }
+                    ]
+                } satisfies PyodidePluginOptions
+            ],
             yamlLoaderPluginConfig,
             githubCmsPlugin({
                 pages: {},
