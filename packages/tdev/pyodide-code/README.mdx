@@ -180,6 +180,8 @@ Die Namen der Erweiterungen müssen eindeutig sein. `require.resolve()` liefert 
 
 Das Plugin erzeugt getrennte Registries für Worker und Browser. Es braucht weder ein Alias-Override von Package-Dateien noch eine globale Registrierung beim App-Start. `worker.ts` darf keine React-, DOM- oder Store-Abhängigkeiten importieren; gemeinsame Payload-Typen werden mit `import type` eingebunden.
 
+Beim Laden der jeweiligen Registry wird einmalig geprüft, ob die Worker-Einträge `createModules()` und die Browser-Einträge `handleMessage()` bereitstellen. Ein ungültiger Export verhindert die Initialisierung dieser Registry; die Fehlermeldung nennt die Erweiterung und den betroffenen Einstiegspunkt.
+
 ### Uhr: gemeinsamer Vertrag
 
 ```ts title="website/pyodide/clock/protocol.ts"

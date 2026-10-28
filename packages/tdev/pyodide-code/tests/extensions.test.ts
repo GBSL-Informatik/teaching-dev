@@ -64,9 +64,44 @@ describe('Pyodide extension configuration', () => {
         );
         expect(source).toBe(
             'import extension0 from "/a/\\"clock.js";\n' +
+                "if (typeof extension0?.createModules !== 'function') {\n" +
+                '    throw new Error("Pyodide extension \\"clock\\": worker entry must default-export an object with createModules().");\n' +
+                '}\n' +
                 'export default [{ name: "clock", extension: extension0 }];'
         );
     });
+
+    it.each(['worker', 'client'] as const)(
+        'validates %s exports when the registry initializes',
+        async (side) => {
+            const entry = 'data:text/javascript,export default null;';
+            const source = createRegistrySource([{ name: 'clock', worker: entry, client: entry }], side);
+            const registryUrl = `data:text/javascript,${encodeURIComponent(source)}`;
+            const method = side === 'worker' ? 'createModules' : 'handleMessage';
+
+            await expect(import(/* @vite-ignore */ registryUrl)).rejects.toThrow(
+                `Pyodide extension "clock": ${side} entry must default-export an object with ${method}().`
+            );
+        }
+    );
+
+    it.each(['worker', 'client'] as const)(
+        'loads a valid %s registry without invoking its entry',
+        async (side) => {
+            const method = side === 'worker' ? 'createModules' : 'handleMessage';
+            const entry = `data:text/javascript,${encodeURIComponent(
+                `export default { ${method}() { throw new Error('Must not run during initialization'); } };`
+            )}`;
+            const source = createRegistrySource([{ name: 'clock', worker: entry, client: entry }], side);
+            const registryUrl = `data:text/javascript,${encodeURIComponent(source)}`;
+
+            const { default: registry } = await import(/* @vite-ignore */ registryUrl);
+
+            expect(registry).toHaveLength(1);
+            expect(registry[0].name).toBe('clock');
+            expect(typeof registry[0].extension[method]).toBe('function');
+        }
+    );
 
     it('makes generated registries available to SSR and preserves browser worker configuration', async () => {
         const plugin = pyodidePlugin({ siteDir } as LoadContext, { extensions: [clock] });

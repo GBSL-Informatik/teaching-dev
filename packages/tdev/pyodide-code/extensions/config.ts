@@ -47,8 +47,17 @@ export const createRegistrySource = (extensions: ExtensionConfig[], side: 'worke
     const imports = extensions.map(
         (extension, index) => `import extension${index} from ${JSON.stringify(extension[side])};`
     );
+    const method = side === 'worker' ? 'createModules' : 'handleMessage';
+    const validations = extensions.map((extension, index) => {
+        const message = `Pyodide extension "${extension.name}": ${side} entry must default-export an object with ${method}().`;
+        return [
+            `if (typeof extension${index}?.${method} !== 'function') {`,
+            `    throw new Error(${JSON.stringify(message)});`,
+            '}'
+        ].join('\n');
+    });
     const registrations = extensions.map(
         (extension, index) => `{ name: ${JSON.stringify(extension.name)}, extension: extension${index} }`
     );
-    return [...imports, `export default [${registrations.join(', ')}];`].join('\n');
+    return [...imports, ...validations, `export default [${registrations.join(', ')}];`].join('\n');
 };
