@@ -1,12 +1,17 @@
 import type { PyodideAPI } from 'pyodide';
 import { describe, expect, it, vi } from 'vitest';
 import { defineWorkerExtension, type WorkerContext } from '../extensions';
-import { createWorkerExtensions } from '../extensions/worker';
+import { createWorkerExtensions as createExtensions } from '../extensions/worker';
 import { registerJsModule } from '../workers/registerJsModule';
 
 vi.mock('../workers/registerJsModule', () => ({ registerJsModule: vi.fn() }));
 
 const pyodide = {} as PyodideAPI;
+const createWorkerExtensions = (
+    context: Parameters<typeof createExtensions>[0],
+    extensions: Parameters<typeof createExtensions>[1]
+) =>
+    createExtensions(context, extensions, (extension, targetId) => ({ extension, targetId, executionId: 1 }));
 
 describe('Pyodide worker extensions', () => {
     it('adds transport metadata without confusing editor and target IDs', async () => {
@@ -54,8 +59,7 @@ describe('Pyodide worker extensions', () => {
         expect(modules[0]).not.toBe(modules[1]);
     });
 
-    it('rejects the reserved browser_input module', async () => {
-        const name = 'browser_input';
+    it.each(['browser_input', 'webio'])('rejects the reserved %s module', async (name) => {
         const session = createWorkerExtensions({ id: 'editor', getTime: Date.now, sendMessage: vi.fn() }, [
             { name: 'example', extension: defineWorkerExtension(() => ({ [name]: {} })) }
         ]);

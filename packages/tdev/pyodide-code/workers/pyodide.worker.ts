@@ -10,6 +10,9 @@ import { configureInput } from './input';
 import { captureOutput } from './output';
 import { configureShell } from './shell';
 import { createWorkerExtensions } from '../extensions/worker';
+import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import WorkerEventSession from './WorkerEventSession';
+import { installWebio } from './installWebio';
 
 interface Execution extends Context {
     id: string;
@@ -30,8 +33,14 @@ const pyodideReadyPromise = loadPyodide({ stdout: () => {}, stderr: () => {} });
 void pyodideReadyPromise.catch(() => {});
 
 export class PyWorker {
+    private eventSession?: WorkerEventSession;
+
     async ready() {
         await pyodideReadyPromise;
+    }
+
+    deliverEvent(event: ExecutionEvent): EventDeliveryResult {
+        return this.eventSession?.deliver(event) ?? 'inactive';
     }
 
     async run(
@@ -76,7 +85,15 @@ export class PyWorker {
     private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
         const { id, code, filename, clientId, executionId } = execution;
         pyodide.registerComlink(Comlink);
-        const extensions = createWorkerExtensions(execution, registeredExtensions);
+        const events = new WorkerEventSession(
+            execution,
+            registeredExtensions.map(({ name }) => name)
+        );
+        this.eventSession = events;
+        const extensions = createWorkerExtensions(execution, registeredExtensions, (extension, targetId) =>
+            events.source(extension, targetId)
+        );
+        let removeWebio: (() => void) | undefined;
         let output: ReturnType<typeof captureOutput> | undefined;
         let restoreInput: (() => void) | undefined;
         let restoreShell: (() => void) | undefined;
@@ -85,6 +102,7 @@ export class PyWorker {
         const errors: unknown[] = [];
         try {
             extensions.register(pyodide);
+            removeWebio = installWebio(pyodide, events);
             await this.preparePackages(pyodide, execution);
             output = captureOutput(pyodide, id, execution);
             const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
@@ -110,10 +128,15 @@ export class PyWorker {
         } finally {
             await finalizeExecution(
                 [
+                    () => events.close(),
+                    () => {
+                        this.eventSession = undefined;
+                    },
                     () => output?.finish(),
                     () => extensions.finish(),
                     () => restoreShell?.(),
                     () => restoreInput?.(),
+                    () => removeWebio?.(),
                     () => globals?.destroy(),
                     () => {
                         if (result instanceof pyodide.ffi.PyProxy) {

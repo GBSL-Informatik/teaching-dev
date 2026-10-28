@@ -120,6 +120,11 @@ const getSiteConfig: SiteConfigProvider = () => {
                             name: 'clock',
                             worker: require.resolve('./website/pyodide/clock/worker'),
                             client: require.resolve('./website/pyodide/clock/client')
+                        },
+                        {
+                            name: 'cookie_klicker',
+                            worker: require.resolve('./website/pyodide/cookie-klicker/worker'),
+                            client: require.resolve('./website/pyodide/cookie-klicker/client')
                         }
                     ]
                 } satisfies PyodidePluginOptions

@@ -9,6 +9,8 @@ import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
 import { handleExtensionMessage } from '../extensions/client';
+import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import ExtensionEventStore from './ExtensionEventStore';
 const BASE_URL = siteConfig.baseUrl || '/';
 // Bound unused heaps while keeping two recent runtimes warm.
 const MAX_IDLE_RUNTIMES = 2;
@@ -21,6 +23,7 @@ interface InputRequest {
 export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
+    readonly events = new ExtensionEventStore(this);
     private readonly retainedRuntimes = new Set<string>();
     private readonly runtimes = new Map<string, PyodideRuntime>();
     private readonly idleRuntimes: PyodideRuntime[] = [];
@@ -117,6 +120,7 @@ export default class PyodideStore {
             });
         } finally {
             runInAction(() => {
+                this.events.close(code.id, executionId);
                 this.cancellations.delete(executionId);
                 if (this.executions.get(code.id) === executionId) {
                     this.executions.delete(code.id);
@@ -136,6 +140,7 @@ export default class PyodideStore {
             return;
         }
         this.latestExecutions.delete(id);
+        this.events.close(id, executionId);
         if (this.awaitingInputPrompt.has(id)) {
             this.cancelCodeExecution(id);
         }
@@ -150,6 +155,13 @@ export default class PyodideStore {
     @action
     handleMessage(code: PyodideCode, message: Message) {
         switch (message.type) {
+            case 'event-subscriptions':
+                if (message.operation === 'close') {
+                    this.events.close(code.id, message.executionId);
+                } else {
+                    this.events.open(code, message.executionId, message.sources);
+                }
+                break;
             case 'extension':
                 handleExtensionMessage({ root: this.viewStore.root }, message);
                 break;
@@ -164,6 +176,17 @@ export default class PyodideStore {
                 code.addLogMessage(message);
                 break;
         }
+    }
+
+    async deliverEvent(event: ExecutionEvent): Promise<EventDeliveryResult> {
+        if (this.executions.get(event.editorId) !== event.executionId) {
+            return 'inactive';
+        }
+        const runtime = this.runtimes.get(event.editorId);
+        if (!runtime) {
+            return 'inactive';
+        }
+        return runtime.deliverEvent(event);
     }
 
     @computed

@@ -1,4 +1,5 @@
 import type { RootStore } from '@tdev-stores/rootStore';
+import type { ExecutionEventSource } from '../events';
 
 export interface ExtensionMessage {
     type: 'extension';
@@ -12,6 +13,9 @@ export interface ExtensionMessage {
 export interface WorkerContext<Payload> {
     editorId: string;
     send: (targetId: string, payload: Payload) => void;
+    events: {
+        source: (targetId: string) => ExecutionEventSource;
+    };
 }
 
 export interface ClientContext {
@@ -44,6 +48,7 @@ export const defineWorkerExtension = <Payload>(
     createModules: (context) =>
         createModules({
             editorId: context.editorId,
+            events: context.events,
             send: (targetId, payload) => context.send(targetId, payload)
         })
 });

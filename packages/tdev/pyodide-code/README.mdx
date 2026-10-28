@@ -10,6 +10,7 @@ sidebar_position: 50
 import CodeShowcase from '@tdev-components/CodeShowcase';
 import Clock from '@tdev/packages/pyodide-code/components/Clock';
 import Pyodide from '@tdev/pyodide-code/components/Pyodide';
+import CookieComponent from '@tdev-components/CookieComponent';
 
 import CodeBlock from '@theme/CodeBlock';
 
@@ -151,6 +152,44 @@ while True:
 ```
 </CodeShowcase>
 
+### Cookie-Klicker: Browser-Ereignisse in Python
+
+`@on_click(cookie)` registriert einen Handler für genau diesen Cookie. Der Handler erhält ein Ereignis mit `type`, `extension`, `target_id`, `timestamp` und `payload`. `await run()` hält das Programm aktiv, bis `webio.stop()` aufgerufen oder im Editor **Abbrechen** gedrückt wird.
+
+Der Store verwaltet für jede `cookieId` ein eigenes MobX-Modell. Mehrere Cookies können unabhängig gesteuert werden; mehrere Ansichten derselben ID teilen dasselbe Modell.
+
+<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev-components/CookieComponent';`]}>
+<CookieComponent cookieId="cookie-demo" />
+<CookieComponent cookieId="cookie-zwei" />
+
+```py live_pyo id=62007a34-9647-4c62-83bd-7a0f829e502a title=Cookie_Klicker
+from random import randint
+from cookie_klicker import use_cookie
+from webio import on_click, run
+
+cookie = use_cookie('cookie-demo')
+zweiter_cookie = use_cookie('cookie-zwei')
+
+@on_click(cookie)
+def drehen(event):
+    cookie.set_rotation(cookie.rotation + randint(0, 360))
+
+@on_click(zweiter_cookie)
+def schrittweise_drehen(event):
+    zweiter_cookie.set_rotation(zweiter_cookie.rotation + 30)
+
+await run()
+```
+</CodeShowcase>
+
+Der Cookie wird anklickbar, sobald das Programm seine Ereignisquellen angemeldet hat. Eine Ziel-ID kann gleichzeitig nur von einem laufenden Programm für Ereignisse verwendet werden. Ein zweiter Controller erhält eine Fehlermeldung. Nach Ende oder Abbruch werden die Zuordnungen entfernt; alte Klicks werden nicht an einen Neustart weitergegeben.
+
+`use_cookie(id)` liefert innerhalb derselben Ausführung denselben Handle zurück. Seine lokale `rotation` beginnt bei null; `set_rotation()` normalisiert den Winkel auf `[0, 360)` und aktualisiert das Browser-Modell. Ein neuer Handle verändert die bisherige Anzeige erst mit seinem ersten Update.
+
+Handler laufen nacheinander. Für absichtliche Wartezeiten kann ein Handler `async def` verwenden und `await asyncio.sleep(0.1)` aufrufen. Währenddessen können weitere Klicks empfangen werden; ihre Handler starten nach Abschluss des aktuellen Handlers. `time.sleep()`, synchrone Eingaben mit `input()` und lange Berechnungen blockieren dagegen den Empfang im Worker.
+
+Für weitere Ereignistypen steht `@on_event('typ', source=cookie.events)` zur Verfügung. `webio.stop()` beendet den Empfang nach dem aktuellen Handler. Pro Ausführung ist ein `run()`-Aufruf vorgesehen; bei einem Handler-Fehler wird das Programm mit einer Diagnose beendet. Überfüllte Ereigniswarteschlangen beenden die betroffene Ausführung ebenfalls mit einer Fehlermeldung.
+
 ### Erweiterungen registrieren
 
 Eine Erweiterung hat zwei getrennte Einstiegspunkte: `worker.ts` stellt Python-Module bereit, `client.ts` verarbeitet deren Nachrichten im Browser. Beide verwenden denselben Payload-Typ aus `protocol.ts`. React-Komponenten und MobX-Stores bleiben normale Bestandteile der Website.
@@ -210,6 +249,7 @@ Der Factory-Kontext bietet:
 
 - `editorId`: die ID des ausführenden Editors.
 - `send(targetId, payload)`: sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein, beispielsweise ein Objekt aus Zahlen, Strings und Arrays.
+- `events.source(targetId)`: erzeugt einen Ereignisquellen-Deskriptor, der an die aktuelle Ausführung gebunden ist. Ein Python-Handle kann ihn als `events` bereitstellen. `webio.run()` meldet die Quellen seiner registrierten Handler an; ein Browser-Store sendet Ereignisse mit `pyodideStore.events.emit(source, { type, payload })` an den aktiven Controller.
 
 Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports wie `importlib.import_module('clock')`. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
 
