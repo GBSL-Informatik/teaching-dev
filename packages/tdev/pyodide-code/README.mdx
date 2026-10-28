@@ -211,6 +211,8 @@ Der Factory-Kontext bietet:
 
 Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports wie `importlib.import_module('clock')`. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
 
+Schlagen sowohl die Ausführung als auch deren Abschluss fehl, erscheint der ursprüngliche Ausführungsfehler zuerst. Zusätzliche Fehler beim Zustellen von Nachrichten oder beim Aufräumen werden darunter angezeigt. Die weiteren Aufräumschritte werden auch nach einem Fehler ausgeführt.
+
 ### Uhr: Browser-Handler und React
 
 import clockClientSource from '!!raw-loader!@tdev/pyodide/clock/client.ts';

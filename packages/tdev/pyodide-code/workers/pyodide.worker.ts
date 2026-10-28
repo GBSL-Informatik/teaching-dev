@@ -5,6 +5,7 @@ import type { PyodideAPI } from 'pyodide';
 import type { PyProxy } from 'pyodide/ffi';
 import { loadPyodide } from '../loadPyodide';
 import { loadPackages } from './helper.loadPackages';
+import { finalizeExecution } from './finalizeExecution';
 import { configureInput } from './input';
 import { captureOutput } from './output';
 import { configureShell } from './shell';
@@ -81,6 +82,7 @@ export class PyWorker {
         let restoreShell: (() => void) | undefined;
         let globals: PyProxy | undefined;
         let result: unknown;
+        const errors: unknown[] = [];
         try {
             extensions.register(pyodide);
             await this.preparePackages(pyodide, execution);
@@ -102,27 +104,25 @@ export class PyWorker {
             restoreShell = configureShell(pyodide, output.clear);
             result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             return result === undefined ? '' : `${result}`;
+        } catch (error: unknown) {
+            errors.push(error);
+            throw error;
         } finally {
-            try {
-                await output?.finish();
-            } finally {
-                try {
-                    await extensions.finish();
-                } finally {
-                    try {
-                        restoreShell?.();
-                    } finally {
-                        try {
-                            restoreInput?.();
-                        } finally {
-                            globals?.destroy();
-                            if (result instanceof pyodide.ffi.PyProxy) {
-                                result.destroy();
-                            }
+            await finalizeExecution(
+                [
+                    () => output?.finish(),
+                    () => extensions.finish(),
+                    () => restoreShell?.(),
+                    () => restoreInput?.(),
+                    () => globals?.destroy(),
+                    () => {
+                        if (result instanceof pyodide.ffi.PyProxy) {
+                            result.destroy();
                         }
                     }
-                }
-            }
+                ],
+                errors
+            );
         }
     }
 
@@ -137,10 +137,14 @@ export class PyWorker {
                 }
             }
         });
+        const errors: unknown[] = [];
         try {
             await loadPackages(pyodide, execution, execution.code, execution.packages);
+        } catch (error: unknown) {
+            errors.push(error);
+            throw error;
         } finally {
-            await output.finish();
+            await finalizeExecution([() => output.finish()], errors);
         }
     }
 
