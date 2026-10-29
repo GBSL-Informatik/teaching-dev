@@ -212,11 +212,14 @@ import clockWorkerSource from '!!raw-loader!@tdev/pyodide/clock/worker.ts';
 
 Der Factory-Kontext bietet:
 
-- `editorId`: die ID des ausführenden Editors.
-- `send(targetId, payload)`: sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein, beispielsweise ein Objekt aus Zahlen, Strings und Arrays.
-- `events.source(targetId)`: erzeugt einen Ereignisquellen-Deskriptor, der an die aktuelle Ausführung gebunden ist. Ein Python-Handle kann ihn als `events` bereitstellen. `webio.run()` meldet die Quellen seiner registrierten Handler an; ein Browser-Store sendet Ereignisse mit `pyodideStore.events.emit(source, { type, payload })` an den aktiven Controller.
+`editorId`
+: ID des ausführenden Editors.
+`send(targetId, payload)`
+: Sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein.
+`events.source(targetId)`
+: Erzeugt eine Ereignisquelle für die aktuelle Ausführung. Ein Python-Handle stellt sie als `events` bereit, damit es mit den [Handlern aus `webio`](./cookie-klicker.mdx#ereignisse-verarbeiten) verwendet werden kann.
 
-Alle interaktiven Handles verwenden denselben Vertrag: Ihre `events`-Eigenschaft enthält den mit `context.events.source(targetId)` erzeugten Deskriptor. `@on_click(handle)` entspricht `@on_event('click', source=handle.events)` und benötigt keine Kenntnis des Erweiterungstyps. Verhalten und Zustand des Handles bleiben in der jeweiligen Erweiterung.
+Für den Rückweg ruft der Browser-Store `pyodideStore.events.emit({ extension, targetId }, { type, payload })` auf. `webio.run()` meldet die Quellen der registrierten Python-Handler an; Ereignisse gehen an das dafür laufende Programm.
 
 Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports wie `importlib.import_module('clock')`. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
 
