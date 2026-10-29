@@ -73,3 +73,17 @@ createOrUpdateUserPermission(documentRootId: string, user: User, access: Access)
 ## Readability over micro-optimizations
 
 Unless the code is on a hot path where performance matters, favor readability over micro-optimizations and clever one-liners. Iterating over a list several times with well-named steps is fine when the list is small.
+
+## TypeScript imports
+
+After editing `.ts` or `.tsx` files:
+- Run TypeScript's Organize Imports operation on every changed file.
+- Use the project's TypeScript version, tsconfig, and the import-organizing
+  preferences and formatting options used by VS Code.
+- Prefer an existing repository command that invokes this operation.
+  Otherwise, use a helper backed by the TypeScript language service's
+  `organizeImports` API.
+- Apply the returned edits; do not approximate the result by hand or
+  substitute another import sorter.
+- Verify that running the organizer again produces no further edits.
+- If the operation cannot be run, report that verification is incomplete.
