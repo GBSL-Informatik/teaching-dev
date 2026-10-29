@@ -2,10 +2,15 @@ import type { ExecutionEventSource } from '@tdev/pyodide-code/events';
 import type { WorkerContext } from '@tdev/pyodide-code/extensions';
 import {
     DEFAULT_SCENE_CONFIGURATION,
+    type DotSnapshot,
     type SceneConfiguration,
     type SceneSnapshot,
     type SnowflakeSnapshot
 } from './protocol';
+
+interface ColorOptions {
+    color?: string;
+}
 
 const SCENE_OPTIONS = ['width', 'height', 'background_color'];
 
@@ -14,8 +19,9 @@ export default class WorkerScene {
     private readonly context: WorkerContext<SceneSnapshot>;
     private readonly id: string;
     private readonly flakes = new Set<SnowflakeSnapshot>();
+    private readonly sceneDots = new Set<DotSnapshot>();
     private configuration: SceneConfiguration = { ...DEFAULT_SCENE_CONFIGURATION };
-    private nextSnowflakeId = 0;
+    private nextShapeId = 0;
 
     constructor(context: WorkerContext<SceneSnapshot>, id: string) {
         this.context = context;
@@ -40,6 +46,10 @@ export default class WorkerScene {
         return [...this.flakes];
     }
 
+    get dots(): DotSnapshot[] {
+        return [...this.sceneDots];
+    }
+
     configure(options: Partial<SceneConfiguration> = {}) {
         if (!options || typeof options !== 'object') {
             throw new Error('Scene configuration must contain width, height, or background_color options.');
@@ -56,23 +66,30 @@ export default class WorkerScene {
 
     reset() {
         this.flakes.clear();
+        this.sceneDots.clear();
     }
 
-    add_snowflake(x: number, y: number, size: number, speed: number): SnowflakeSnapshot {
-        const id = this.nextSnowflakeId;
-        const snowflake: SnowflakeSnapshot = {
-            get id() {
-                return id;
-            },
-            x,
-            y,
-            size,
-            speed
-        };
+    add_snowflake(
+        x: number,
+        y: number,
+        size: number,
+        speed: number,
+        options: ColorOptions = {}
+    ): SnowflakeSnapshot {
+        const snowflake = Object.assign(this.createDot(x, y, size, options), { speed });
         this.validateSnowflake(snowflake);
-        this.nextSnowflakeId += 1;
         this.flakes.add(snowflake);
         return snowflake;
+    }
+
+    add_dot(x: number, y: number, size: number, options: ColorOptions = {}): DotSnapshot {
+        const dot = this.createDot(x, y, size, options);
+        this.sceneDots.add(dot);
+        return dot;
+    }
+
+    remove_dot(dot: DotSnapshot) {
+        this.sceneDots.delete(dot);
     }
 
     remove_snowflake(snowflake: SnowflakeSnapshot) {
@@ -85,7 +102,11 @@ export default class WorkerScene {
             this.validateSnowflake(snowflake);
             return { ...snowflake };
         });
-        this.context.send(this.id, { ...this.configuration, snowflakes });
+        const dots = [...this.sceneDots].map((dot) => {
+            this.validateDot(dot);
+            return { ...dot };
+        });
+        this.context.send(this.id, { ...this.configuration, snowflakes, dots });
     }
 
     private validateConfiguration(configuration: SceneConfiguration) {
@@ -100,13 +121,36 @@ export default class WorkerScene {
         }
     }
 
+    private createDot(x: number, y: number, size: number, options: ColorOptions): DotSnapshot {
+        const id = this.nextShapeId;
+        const dot: DotSnapshot = {
+            get id() {
+                return id;
+            },
+            x,
+            y,
+            size,
+            color: options.color ?? 'white'
+        };
+        this.validateDot(dot);
+        this.nextShapeId += 1;
+        return dot;
+    }
+
+    private validateDot(dot: DotSnapshot) {
+        if (!Number.isFinite(dot.x) || !Number.isFinite(dot.y)) {
+            throw new Error('Shape coordinates must be finite numbers.');
+        }
+        if (!Number.isFinite(dot.size) || dot.size <= 0) {
+            throw new Error('Shape size must be a positive finite number.');
+        }
+        if (typeof dot.color !== 'string' || !dot.color.trim()) {
+            throw new Error('Shape color must be a non-empty CSS color string.');
+        }
+    }
+
     private validateSnowflake(snowflake: SnowflakeSnapshot) {
-        if (!Number.isFinite(snowflake.x) || !Number.isFinite(snowflake.y)) {
-            throw new Error('Snowflake coordinates must be finite numbers.');
-        }
-        if (!Number.isFinite(snowflake.size) || snowflake.size <= 0) {
-            throw new Error('Snowflake size must be a positive finite number.');
-        }
+        this.validateDot(snowflake);
         if (!Number.isFinite(snowflake.speed)) {
             throw new Error('Snowflake speed must be a finite number.');
         }

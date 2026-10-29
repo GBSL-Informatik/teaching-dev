@@ -1,4 +1,5 @@
 import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
+import { mdiSnowflake } from '@mdi/js';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -15,7 +16,7 @@ const SCROLL_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
 const SnowfallGame = observer(({ sceneId, className }: SnowfallGameProps) => {
     const store = useExtensionStore(snowfallExtension);
     const scene = store.useScene(sceneId);
-    const { width, height, background_color, snowflakes } = scene.snapshot;
+    const { width, height, background_color, snowflakes, dots } = scene.snapshot;
 
     const handleClick = (event: MouseEvent<SVGSVGElement>) => {
         event.currentTarget.focus({ preventScroll: true });
@@ -49,9 +50,19 @@ const SnowfallGame = observer(({ sceneId, className }: SnowfallGameProps) => {
                 onKeyDown={handleKeyDown}
             >
                 <rect width={width} height={height} fill={background_color} />
-                <g className={clsx(styles.snowflakes)}>
+                <g>
+                    {dots.map((dot) => (
+                        <circle key={dot.id} cx={dot.x} cy={dot.y} r={dot.size} fill={dot.color} />
+                    ))}
+                </g>
+                <g>
                     {snowflakes.map((snowflake) => (
-                        <circle key={snowflake.id} cx={snowflake.x} cy={snowflake.y} r={snowflake.size} />
+                        <path
+                            key={snowflake.id}
+                            d={mdiSnowflake}
+                            fill={snowflake.color}
+                            transform={`translate(${snowflake.x} ${snowflake.y}) scale(${snowflake.size / 12}) translate(-12 -12)`}
+                        />
                     ))}
                 </g>
             </svg>

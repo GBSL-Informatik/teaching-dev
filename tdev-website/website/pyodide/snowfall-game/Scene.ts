@@ -7,7 +7,11 @@ export default class Scene {
     readonly id: string;
     readonly store: SceneStore;
     readonly eventSource: EventSource;
-    @observableRef accessor snapshot: SceneSnapshot = { ...DEFAULT_SCENE_CONFIGURATION, snowflakes: [] };
+    @observableRef accessor snapshot: SceneSnapshot = {
+        ...DEFAULT_SCENE_CONFIGURATION,
+        snowflakes: [],
+        dots: []
+    };
 
     constructor(id: string, store: SceneStore) {
         this.id = id;

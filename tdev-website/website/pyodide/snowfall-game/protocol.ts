@@ -4,16 +4,21 @@ export interface SceneConfiguration {
     background_color: string;
 }
 
-export interface SnowflakeSnapshot {
+export interface DotSnapshot {
     readonly id: number;
     x: number;
     y: number;
     size: number;
+    color: string;
+}
+
+export interface SnowflakeSnapshot extends DotSnapshot {
     speed: number;
 }
 
 export interface SceneSnapshot extends SceneConfiguration {
     snowflakes: readonly SnowflakeSnapshot[];
+    dots: readonly DotSnapshot[];
 }
 
 export const DEFAULT_SCENE_CONFIGURATION: Readonly<SceneConfiguration> = {
