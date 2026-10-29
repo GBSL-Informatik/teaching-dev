@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MAX_PENDING_EVENTS, type ExecutionEvent } from '../events';
 import WorkerEventSession from '../workers/WorkerEventSession';
 
@@ -19,6 +19,8 @@ const click: ExecutionEvent = {
     timeStamp: 123,
     event: { type: 'click', payload: null }
 };
+
+afterEach(() => vi.useRealTimers());
 
 describe('Pyodide event sessions', () => {
     it('queues events in arrival order and wakes an idle receiver', async () => {
@@ -96,5 +98,56 @@ describe('Pyodide event sessions', () => {
         expect(() => session.nextEvent()).toThrow('Only one event receiver');
         await session.close();
         expect(await pending).toBeUndefined();
+    });
+
+    it('collects input until a frame is due and drains it in arrival order', async () => {
+        vi.useFakeTimers();
+        const { session, source } = createSession();
+        await session.open(JSON.stringify([source]));
+        const frame = session.nextFrame(30);
+        session.deliver(click);
+        await vi.advanceTimersByTimeAsync(15);
+        session.deliver({ ...click, timeStamp: 124 });
+        expect(vi.getTimerCount()).toBe(1);
+        await vi.advanceTimersByTimeAsync(15);
+        expect(await frame).toEqual([click, { ...click, timeStamp: 124 }]);
+
+        const next = session.nextFrame(30);
+        await vi.advanceTimersByTimeAsync(30);
+        expect(await next).toEqual([]);
+        await session.close();
+    });
+
+    it('cancels a pending frame on stop without leaving timers or queued input', async () => {
+        vi.useFakeTimers();
+        const { session, source } = createSession();
+        await session.open(JSON.stringify([source]));
+        const frame = session.nextFrame(1000);
+        session.deliver(click);
+        session.stop();
+        expect(await frame).toBeUndefined();
+        expect(vi.getTimerCount()).toBe(0);
+        expect(await session.nextFrame(0)).toBeUndefined();
+        expect(session.deliver(click)).toBe('inactive');
+        await session.close();
+    });
+
+    it('yields overdue frames and keeps only one receiver', async () => {
+        vi.useFakeTimers();
+        const { session, source } = createSession();
+        await session.open(JSON.stringify([source]));
+        const frame = session.nextFrame(0);
+        expect(() => session.nextEvent()).toThrow('Only one event receiver');
+        expect(() => session.nextFrame(0)).toThrow('Only one event receiver');
+        session.deliver(click);
+        expect(() => session.nextEvent()).toThrow('Only one event receiver');
+        await vi.advanceTimersByTimeAsync(0);
+        expect(await frame).toEqual([click]);
+
+        const event = session.nextEvent();
+        expect(() => session.nextFrame(0)).toThrow('Only one event receiver');
+        await session.close();
+        expect(await event).toBeUndefined();
+        expect(vi.getTimerCount()).toBe(0);
     });
 });

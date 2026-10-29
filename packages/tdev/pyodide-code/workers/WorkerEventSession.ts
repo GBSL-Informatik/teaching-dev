@@ -18,6 +18,8 @@ export default class WorkerEventSession {
     private readonly sources = new Set<string>();
     private readonly queue: ExecutionEvent[] = [];
     private receiver?: (event: ExecutionEvent | undefined) => void;
+    private frameReceiver?: (events: ExecutionEvent[] | undefined) => void;
+    private frameTimer?: ReturnType<typeof setTimeout>;
     private opened = false;
     private closed = false;
     private listening = false;
@@ -87,15 +89,36 @@ export default class WorkerEventSession {
         if (!this.listening) {
             return Promise.resolve(undefined);
         }
+        if (this.receiver || this.frameReceiver) {
+            throw new Error('Only one event receiver is allowed per execution.');
+        }
         const event = this.queue.shift();
         if (event) {
             return Promise.resolve(event);
         }
-        if (this.receiver) {
+        return new Promise((resolve) => {
+            this.receiver = resolve;
+        });
+    }
+
+    nextFrame(delayMs: number): Promise<ExecutionEvent[] | undefined> {
+        if (!this.listening) {
+            return Promise.resolve(undefined);
+        }
+        if (!Number.isFinite(delayMs) || delayMs < 0) {
+            throw new Error('A frame delay must be a finite, non-negative number.');
+        }
+        if (this.receiver || this.frameReceiver) {
             throw new Error('Only one event receiver is allowed per execution.');
         }
         return new Promise((resolve) => {
-            this.receiver = resolve;
+            this.frameReceiver = resolve;
+            // Even an overdue frame yields to browser-event delivery before continuing Python.
+            this.frameTimer = setTimeout(() => {
+                this.frameTimer = undefined;
+                this.frameReceiver = undefined;
+                resolve(this.queue.splice(0));
+            }, delayMs);
         });
     }
 
@@ -104,6 +127,10 @@ export default class WorkerEventSession {
         this.queue.length = 0;
         this.receiver?.(undefined);
         this.receiver = undefined;
+        clearTimeout(this.frameTimer);
+        this.frameTimer = undefined;
+        this.frameReceiver?.(undefined);
+        this.frameReceiver = undefined;
     }
 
     async close() {

@@ -10,6 +10,7 @@ export const installWebio = (pyodide: PyodideAPI, session: WorkerEventSession) =
         namespace.set('_bridge', {
             open: (sources: string) => session.open(sources),
             next_event: () => session.nextEvent(),
+            next_frame: (delayMs: number) => session.nextFrame(delayMs),
             stop: () => session.stop(),
             close: () => session.close()
         });

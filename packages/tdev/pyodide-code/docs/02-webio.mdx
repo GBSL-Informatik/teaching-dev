@@ -4,7 +4,7 @@ page_id: 3122a420-0743-4281-b7c0-817759055e9e
 
 # webio: Ereignisse verarbeiten
 
-Mit `webio` verarbeitet Python Browser-Ereignisse von Erweiterungen. Das Modul gehört zum Pyodide-Package. Ein vollständiges Beispiel mit Klicks und Tastatureingaben zeigt der [Cookie-Klicker](./04-cookie-klicker.mdx).
+Mit `webio` verarbeitet Python Browser-Ereignisse von Erweiterungen. Das Modul gehört zum Pyodide-Package. Der [Cookie-Klicker](./04-cookie-klicker.mdx) zeigt Ereignis-Handler; das [Schneefall-Spiel](./05-snowfall-game.mdx) verbindet Eingaben mit einer regelmässigen Spielschleife.
 
 ## Handler registrieren
 
@@ -17,12 +17,36 @@ Die Decorators aus `webio` funktionieren mit allen Erweiterungs-Handles, die ein
 `@on_event(event_type=None, *, source)`
 : Registriert einen Handler für eine Quelle oder eine Liste von Quellen. `source` ist erforderlich und muss als benanntes Argument übergeben werden. Ohne Ereignistyp sowie mit `None` oder `'*'` werden alle Ereignistypen empfangen.
 
+## Spielschleife
+
+`@gameloop(fps=30, sources=[scene])`
+: Registriert die Aktualisierungsfunktion eines Spiels. Pro Ausführung ist eine Spielschleife erlaubt. Die Registrierung erfolgt vor `await run()`.
+`fps`
+: Angestrebte Bilder pro Sekunde als endliche Zahl zwischen `1` und `120`. Langsame Aktualisierungen verringern die tatsächlich erreichte Bildrate.
+`sources`
+: Mindestens eine Ereignisquelle oder ein Erweiterungs-Handle mit `events`. Nur Ereignisse dieser Quellen erscheinen in `ctx.events`.
+
+Die Aktualisierungsfunktion erhält einen Kontext:
+
+`ctx.time`
+: Monoton verstrichene Zeit seit Beginn der Spielschleife in Millisekunden.
+`ctx.dt`
+: Tatsächlich vergangene Zeit seit dem vorherigen Bild in Sekunden. Im ersten Bild wird seit Beginn der Spielschleife gemessen.
+`ctx.frame`
+: Bildnummer, beginnend bei `1`.
+`ctx.events`
+: Tupel der seit dem vorherigen Bild empfangenen Ereignisse. Es bildet eine Momentaufnahme der Ereigniswarteschlange.
+
+Registrierte Ereignis-Handler laufen vor der Aktualisierungsfunktion. Dasselbe Ereignis bleibt auch in `ctx.events` enthalten. Verarbeite eine Spielaktion deshalb entweder im Decorator-Handler oder in der Schleife über `ctx.events`.
+
+Verspätete Bilder werden nicht nachgeholt. Eine synchrone oder asynchrone Aktualisierungsfunktion wird vollständig abgeschlossen, bevor das nächste Bild beginnt.
+
 ## Empfang starten und beenden
 
 `await run()`
-: Startet den Empfang nach der Registrierung der Handler und hält das Programm aktiv. Pro Ausführung ist nur ein Aufruf erlaubt.
+: Startet den Ereignisempfang und eine registrierte Spielschleife. Pro Ausführung ist nur ein Aufruf erlaubt.
 `webio.stop()`
-: Beendet den Empfang nach dem aktuellen Handler. Alternativ beendet **Abbrechen** im Editor die Ausführung sofort.
+: Beendet den Empfang nach dem aktuellen Handler oder der aktuellen Spielaktualisierung. Ein wartender Timer wird abgebrochen. Alternativ beendet **Abbrechen** im Editor die Ausführung sofort.
 
 ## Ereignisattribute
 
@@ -38,6 +62,8 @@ Jeder Handler erhält ein Ereignis mit folgenden Attributen:
 : Zeitpunkt des Ereignisses in Millisekunden seit der Unix-Epoche.
 `payload`
 : Ereignisspezifische Daten der Erweiterung; beim Cookie `None` für Klicks und `{'key': ...}` für Tastatureingaben.
+`x`, `y`
+: Zusätzliche Koordinatenattribute, wenn der Payload `x` beziehungsweise `y` enthält. Die Schneefall-Szene liefert damit logische Szenenkoordinaten.
 
 ## Ablauf und Grenzen
 
