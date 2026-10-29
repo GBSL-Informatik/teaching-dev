@@ -157,6 +157,9 @@ export default class PyodideStore {
     @action
     handleMessage(code: PyodideCode, message: Message) {
         switch (message.type) {
+            case 'execution-started':
+                code.markRunning(message.executionId);
+                break;
             case 'event-subscriptions':
                 if (message.operation === 'close') {
                     this.events.close(code.id, message.executionId);

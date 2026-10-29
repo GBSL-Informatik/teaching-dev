@@ -120,6 +120,7 @@ export class PyWorker {
             }
             restoreInput = configureInput(pyodide, { id, clientId, executionId });
             restoreShell = configureShell(pyodide, output.clear);
+            await execution.sendMessage({ type: 'execution-started', id, executionId });
             result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             return result === undefined ? '' : `${result}`;
         } catch (error: unknown) {

@@ -20,7 +20,19 @@ export interface ClearMessage {
     type: 'clear';
 }
 
-export type Message = LogMessage | ErrorMessage | ClearMessage | ExtensionMessage | EventSubscriptionMessage;
+export interface ExecutionStartedMessage {
+    type: 'execution-started';
+    id: string;
+    executionId: number;
+}
+
+export type Message =
+    | LogMessage
+    | ErrorMessage
+    | ClearMessage
+    | ExtensionMessage
+    | EventSubscriptionMessage
+    | ExecutionStartedMessage;
 
 export interface Context {
     sendMessage: (message: Message) => void | Promise<void>;
