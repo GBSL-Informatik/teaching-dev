@@ -1,13 +1,12 @@
 ---
 page_id: b0dc6afc-4a60-42c7-b850-f5e2e6231097
-sidebar_position: 10
 ---
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
-import CookieComponent from '@tdev/pyodide/cookie-klicker/Component';
 import Steps from '@tdev-components/Steps';
+import CookieComponent from '@tdev/pyodide/cookie-klicker/Component';
 
-# Cookie-Klicker: Browser-Ereignisse in Python
+# Cookie-Klicker
 
 Mit `webio` reagiert Python auf Klicks und Tastatureingaben aus dem Browser. Starte das Programm und klicke auf den Cookie:
 
@@ -81,33 +80,7 @@ await run()
 ```
 </CodeShowcase>
 
-## Ereignisse verarbeiten
-
-Die Decorators aus `webio` funktionieren mit allen Erweiterungs-Handles, die eine Ereignisquelle als `events` bereitstellen.
-
-`@on_click(target)`
-: Registriert einen Klick-Handler; entspricht `@on_event('click', source=target.events)`.
-`@on_key(target, key=None)`
-: Registriert einen Tastatur-Handler. Ein Tastenname wie `'ArrowLeft'` filtert die Ereignisse; `None` und `'*'` empfangen alle Tasten. Der Tastenname steht in `event.payload['key']`.
-`@on_event(event_type=None, *, source)`
-: Registriert einen Handler für eine Quelle oder eine Liste von Quellen. `source` ist erforderlich und muss als benanntes Argument übergeben werden. Ohne Ereignistyp sowie mit `None` oder `'*'` werden alle Ereignistypen empfangen.
-`await run()`
-: Startet den Empfang nach der Registrierung der Handler und hält das Programm aktiv. Pro Ausführung ist nur ein Aufruf erlaubt.
-`webio.stop()`
-: Beendet den Empfang nach dem aktuellen Handler. Alternativ beendet **Abbrechen** im Editor die Ausführung sofort.
-
-Jeder Handler erhält ein Ereignis mit folgenden Attributen:
-
-`type`
-: Ereignistyp, etwa `'click'` oder `'key'`.
-`extension`
-: Name der Erweiterung, hier `'cookie_klicker'`.
-`target_id`
-: ID der auslösenden Komponente.
-`timestamp`
-: Zeitpunkt des Ereignisses in Millisekunden seit der Unix-Epoche.
-`payload`
-: Ereignisspezifische Daten; beim Cookie `None` für Klicks und `{'key': ...}` für Tastatureingaben.
+Die [webio-Referenz](./02-webio.mdx) beschreibt die Handler, Ereignisattribute und Grenzen der Ereignisverarbeitung.
 
 ## Cookies steuern
 
@@ -125,14 +98,6 @@ Jeder Handler erhält ein Ereignis mit folgenden Attributen:
 : Lokale Farbe des Handles, anfangs `'var(--ifm-color-warning-light)'`.
 `set_color(css_farbe)`
 : Aktualisiert die Farbe, etwa mit `'#ff8800'` oder `'hsl(120, 70%, 50%)'`.
-
-## Ablauf und Grenzen
-
-Eine Ereignisquelle kann gleichzeitig nur von einem laufenden Programm abonniert werden. Ein zweites Programm erhält eine Fehlermeldung. Nach Ende oder Abbruch werden die Abonnements entfernt; alte Ereignisse werden nicht an einen Neustart weitergegeben.
-
-Handler laufen nacheinander. Für absichtliche Wartezeiten kann ein Handler `async def` verwenden und `await asyncio.sleep(0.1)` aufrufen. Währenddessen können weitere Klicks empfangen werden; ihre Handler starten nach Abschluss des aktuellen Handlers. `time.sleep()`, synchrone Eingaben mit `input()` und lange Berechnungen blockieren dagegen den Empfang im Worker.
-
-Fehler in Handlern und überfüllte Ereigniswarteschlangen beenden die betroffene Ausführung mit einer Fehlermeldung.
 
 ## Auf der eigenen Website einrichten
 

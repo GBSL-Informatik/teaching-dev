@@ -8,8 +8,8 @@ sidebar_position: 50
 ---
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
-import Pyodide from '@tdev/pyodide-code/components/Pyodide';
 import Steps from '@tdev-components/Steps';
+import Pyodide from '@tdev/pyodide-code/components/Pyodide';
 
 import CodeBlock from '@theme/CodeBlock';
 
@@ -130,22 +130,24 @@ Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, D
 
 Das `pyodide-code`-Package kann erweitert werden - sowohl mit neuen, lokalen Python-Bibliotheken als auch mit interaktiven Komponenten, die in React geschrieben sind und mit Python kommunizieren können.
 
+Mit [webio](./02-webio.mdx) reagiert Python auf Browser-Ereignisse dieser Komponenten.
+
 ### Interaktive Uhr
 
-Das [Uhr-Beispiel](./clock.mdx) zeigt, wie Python die Zeiger einer React-Komponente steuert.
+Das [Uhr-Beispiel](./03-clock.mdx) zeigt, wie Python die Zeiger einer React-Komponente steuert.
 
 ### Cookie-Klicker
 
-Das [Cookie-Klicker-Beispiel](./cookie-klicker.mdx) zeigt, wie Python mit `@on_click` und `@on_key` auf Browser-Ereignisse reagiert und mehrere Cookies unabhängig steuert.
+Das [Cookie-Klicker-Beispiel](./04-cookie-klicker.mdx) zeigt, wie Python mit `@on_click` und `@on_key` auf Browser-Ereignisse reagiert und mehrere Cookies unabhängig steuert.
 
 ### Erweiterungen registrieren
 
-Die Uhr und der Cookie-Klicker lassen sich jeweils als einzelner Ordner weitergeben. Voraussetzung ist das [installierte Pyodide-Package](#installation).
+Erweiterungen lassen sich als einzelner Ordner weitergeben. Voraussetzung ist das [installierte Pyodide-Package](#installation). Die Beispielsseiten zur [Uhr](./03-clock.mdx) und zum [Cookie-Klicker](./04-cookie-klicker.mdx) verlinken die kopierbaren Ordner.
 
 <Steps>
 
-1. Kopiere den vollständigen Erweiterungsordner nach __website/pyodide__, beispielsweise [clock](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/clock) oder [cookie-klicker](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/cookie-klicker).
-2. Ergänze die Ordner im bestehenden Pyodide-Plugin:
+1. Kopiere den vollständigen Erweiterungsordner nach __website/pyodide__.
+2. Ergänze den Ordner im bestehenden Pyodide-Plugin:
 
     ```ts title="siteConfig.ts"
     import type { PluginOptions } from '@tdev/pyodide-code/plugin';
@@ -155,8 +157,7 @@ Die Uhr und der Cookie-Klicker lassen sich jeweils als einzelner Ordner weiterge
             require.resolve('@tdev/pyodide-code/plugin'),
             {
                 extensions: [
-                    './website/pyodide/clock',
-                    './website/pyodide/cookie-klicker'
+                    './website/pyodide/meine-erweiterung'
                 ]
             } satisfies PluginOptions
         ]
@@ -171,9 +172,9 @@ Die Uhr und der Cookie-Klicker lassen sich jeweils als einzelner Ordner weiterge
 
 Jeder Erweiterungsordner enthält eine __extension.json__ mit den Einstiegspunkten:
 
-```json title="website/pyodide/clock/extension.json"
+```json title="website/pyodide/meine-erweiterung/extension.json"
 {
-    "name": "clock",
+    "name": "meine_erweiterung",
     "worker": "./worker.ts",
     "client": "./client.ts"
 }
@@ -192,29 +193,11 @@ Komponenten, Modelle, Stores und Styles gehören in denselben Erweiterungsordner
 
 Das Plugin erzeugt getrennte Registries für Worker und Browser. `worker.ts` darf keine React-, DOM- oder Store-Abhängigkeiten importieren; gemeinsame Payload-Typen werden mit `import type` eingebunden. Beim Laden wird geprüft, ob die Worker-Einträge `createModules()` und die Browser-Einträge `createStore()` sowie `handleMessage()` bereitstellen. Ein ungültiger Export verhindert die Initialisierung und nennt die betroffene Erweiterung.
 
-### Uhr: gemeinsamer Vertrag
+### Python-Module im Worker
 
-```ts title="website/pyodide/clock/protocol.ts"
-export interface ClockTime {
-    hours: number;
-    minutes: number;
-    seconds: number;
-}
+`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die reservierten Namen `browser_input` und `webio` werden mit einer Fehlermeldung abgelehnt.
 
-export type ClockUpdate = Partial<ClockTime>;
-```
-
-Alle Winkel sind in Grad angegeben. Eine Nachricht kann einzelne Zeiger oder die ganze Uhr ändern. Die beiden Einstiegspunkte verwenden `ClockUpdate` als Typparameter. Die Typen prüfen den selbst geschriebenen Worker und Handler, es gibt keine automatische Laufzeitvalidierung des Payloads.
-
-### Uhr: Python-Modul im Worker
-
-import clockWorkerSource from '!!raw-loader!@tdev/pyodide/clock/worker.ts';
-
-<CodeBlock language="ts" title="website/pyodide/clock/worker.ts">
-    {clockWorkerSource}
-</CodeBlock>
-
-`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind, hier `clock`. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die reservierten Namen `browser_input` und `webio` werden mit einer Fehlermeldung abgelehnt.
+Worker und Browser-Handler verwenden denselben Payload-Typ aus einer gemeinsamen __protocol.ts__. Die Typen prüfen den selbst geschriebenen Worker und Handler; es gibt keine automatische Laufzeitvalidierung des Payloads. Eine vollständige Umsetzung zeigt der [Worker der Uhr-Erweiterung](./03-clock.mdx#python-modul-im-worker).
 
 Der Factory-Kontext bietet:
 
@@ -223,21 +206,15 @@ Der Factory-Kontext bietet:
 `send(targetId, payload)`
 : Sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein.
 `events.source(targetId)`
-: Erzeugt eine Ereignisquelle für die aktuelle Ausführung. Ein Python-Handle stellt sie als `events` bereit, damit es mit den [Handlern aus `webio`](./cookie-klicker.mdx#ereignisse-verarbeiten) verwendet werden kann.
+: Erzeugt eine Ereignisquelle für die aktuelle Ausführung. Ein Python-Handle stellt sie als `events` bereit, damit es mit den [Handlern aus `webio`](./02-webio.mdx#handler-registrieren) verwendet werden kann.
 
 Für den Rückweg ruft der Browser-Store `context.events.emit({ extension: context.name, targetId }, { type, payload })` auf. `webio.run()` meldet die Quellen der registrierten Python-Handler an; Ereignisse gehen an das dafür laufende Programm.
 
-Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports wie `importlib.import_module('clock')`. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
+Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
 
 Schlagen sowohl die Ausführung als auch deren Abschluss fehl, erscheint der ursprüngliche Ausführungsfehler zuerst. Zusätzliche Fehler beim Zustellen von Nachrichten oder beim Aufräumen werden darunter angezeigt. Die weiteren Aufräumschritte werden auch nach einem Fehler ausgeführt.
 
-### Uhr: Browser-Handler und React
-
-import clockClientSource from '!!raw-loader!@tdev/pyodide/clock/client.ts';
-
-<CodeBlock language="ts" title="website/pyodide/clock/client.ts">
-    {clockClientSource}
-</CodeBlock>
+### Browser-Store und React
 
 `defineClientExtension<Payload, Store>()` verbindet die Store-Factory mit einem synchronen Nachrichten-Handler:
 
@@ -255,37 +232,27 @@ Der Factory-Kontext enthält:
 `events`
 : Ereignisverwaltung mit `isConnected(source)` und `emit(source, { type, payload })`. Eine Browser-Ereignisquelle hat die Form `{ extension: context.name, targetId }`.
 
-Die Nachricht enthält `editorId`, `targetId`, `timeStamp` und `payload`. Die [ClockStore](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/ClockStore.ts)- und [Clock](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/Clock.ts)-Klassen bleiben im Erweiterungsordner.
+Die Nachricht enthält:
+
+`editorId`
+: ID des ausführenden Editors.
+`targetId`
+: Ziel-ID aus dem Aufruf von `send(targetId, payload)`.
+`timeStamp`
+: Zeitpunkt der Nachricht in Millisekunden seit der Unix-Epoche.
+`payload`
+: Daten der Erweiterung mit dem gemeinsam definierten Payload-Typ.
 
 `useExtensionStore(extension)`
 : Liefert der React-Komponente die Store-Instanz ihrer exportierten Client-Definition. Eine nicht konfigurierte Erweiterung führt zu einer Fehlermeldung.
 
-```tsx title="website/pyodide/clock/Component/index.tsx"
-import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
-import clockExtension from '../client';
-
-// Innerhalb der Komponente:
-const clockStore = useExtensionStore(clockExtension);
-const clock = clockStore.useClock(clockId);
-```
-
-Die [Komponente](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/Component/index.tsx) kann unabhängig vom Editor im MDX platziert werden:
-
-```mdx
-import Clock from '@tdev/pyodide/clock/Component';
-
-<Clock clockId="sbb-uhr" />
-```
-
-Python verwendet `from clock import use_clock` und dieselbe Ziel-ID. Mehrere Komponenten mit derselben Ziel-ID teilen den Zustand im Store dieser Erweiterung.
+Die [Uhr-Erweiterung](./03-clock.mdx#browser-store-und-react) zeigt, wie Browser-Handler und React-Komponente dieselbe Store-Instanz verwenden.
 
 ### Zustand und Lebensdauer
 
-Der `PyodideStore` besitzt pro konfigurierter Erweiterung eine Browser-Store-Instanz. Diese lebt mit der Anwendung und bleibt auch beim Navigieren erhalten. Der Zustand der Uhr bleibt nach Ende oder Abbruch eines Skripts erhalten; ein Neustart setzt ihn nicht automatisch zurück. Ein unbekanntes Ziel wird beim ersten Update im `ClockStore` angelegt, auch wenn noch keine React-Komponente dafür angezeigt wird.
+Der `PyodideStore` besitzt pro konfigurierter Erweiterung eine Browser-Store-Instanz. Diese lebt mit der Anwendung und bleibt auch beim Navigieren sowie nach Ende oder Abbruch eines Skripts erhalten. Wie neue Python-Handles mit diesem Zustand umgehen, legt die Erweiterung fest; siehe [Zustand der Uhr](./03-clock.mdx#zustand-und-lebensdauer).
 
-Jeder Aufruf von `use_clock()` erzeugt einen eigenen Python-Handle mit zunächst lokalen Nullwerten. Seine Getter lesen die letzten Werte dieses Handles, nicht den Browser-Store und nicht andere Handles. `set_seconds()` ändert im Browser nur den Sekundenzeiger. `reset()` setzt alle Zeiger zurück. Diese Erweiterung bietet keine Rückfragen vom Browser an Python.
-
-Worker können zwischen Editoren wiederverwendet werden. Die registrierten JavaScript-Module erhalten pro Ausführung einen neuen Kontext. Bereits importierte Python-Hilfsmodule können jedoch alte Referenzen auf Module oder Handles behalten; deren Cache wird nicht rekursiv geleert. Solche Hilfsmodule sollen das Modul oder die Factory innerhalb der pro Ausführung aufgerufenen Funktion neu importieren und erst dann Handles anfordern. Ein auf Modulebene gespeichertes `from clock import use_clock` bleibt sonst an den alten, bereits geschlossenen Kontext gebunden.
+Worker können zwischen Editoren wiederverwendet werden. Die registrierten JavaScript-Module erhalten pro Ausführung einen neuen Kontext. Bereits importierte Python-Hilfsmodule können jedoch alte Referenzen auf Module oder Handles behalten; deren Cache wird nicht rekursiv geleert. Solche Hilfsmodule sollen das Modul oder die Factory innerhalb der pro Ausführung aufgerufenen Funktion neu importieren und erst dann Handles anfordern. Auf Modulebene gespeicherte Factory-Referenzen bleiben sonst an den alten, bereits geschlossenen Kontext gebunden.
 
 Erweiterungen müssen eigene Timer und Hintergrundaufgaben vor Ende des Skripts beenden. Nachrichten nach Abschluss werden verworfen. **Abbrechen** beendet den Worker; ausstehende Nachrichten einer abgebrochenen oder ersetzten Ausführung werden durch die bestehende Ausführungsprüfung ignoriert. Das Framework stellt keine automatische Ressourcenverwaltung oder Hintergrunddienste für Erweiterungen bereit.
 
