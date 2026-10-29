@@ -32,6 +32,7 @@ details only when needed.
 - Normally, only one component, model or store is defined per file. Multiple components per file are ok when they are small, closely related, not exported and don't have logic of their own (so no hooks, no state, no side effects). Otherwise split them into separate files and import them.
 - When a component needs to import dedicated subcomponents, put them in a folder named after the component, with an `index.tsx` and a `styles.module.scss` file.
 - When shared styles are needed, import them from the parent folder's `styles.module.scss` file. Avoid global CSS and inline styles.
+- Declare class fields explicitly. Do not use TypeScript constructor parameter properties (public, protected, private, or readonly on constructor parameters). Declare each field in the class body and assign it explicitly in the constructor.
 - Use `clsx` for conditional class names. Avoid inline styles and global CSS.
 - private methods should be located after public methods at the bottom of the class.
 
