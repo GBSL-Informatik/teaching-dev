@@ -1,0 +1,5 @@
+{
+    "name": "cookie_klicker",
+    "worker": "./worker.ts",
+    "client": "./client.ts"
+}

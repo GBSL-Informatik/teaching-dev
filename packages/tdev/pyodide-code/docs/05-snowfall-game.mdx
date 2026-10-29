@@ -1,0 +1,154 @@
+---
+page_id: 5aeee167-b38a-4c16-ad00-21aa4686a136
+---
+
+import CodeShowcase from '@tdev-components/CodeShowcase';
+import Steps from '@tdev-components/Steps';
+import SnowfallGame from '@tdev/pyodide/snowfall-game/src/components/SnowfallGame';
+
+# Schneefall-Spiel
+
+Mit `@gameloop` aktualisiert Python eine Szene regelmässig und verarbeitet dabei Browser-Ereignisse. Klicke auf eine Schneeflocke, um sie zu entfernen.
+
+<CodeShowcase lang="md" imports={[`import SnowfallGame from '@tdev/pyodide/snowfall-game/src/components/SnowfallGame';`]} collapseCode>
+<SnowfallGame sceneId="snowfall" />
+
+```py live_pyo id=8ee3ce4d-6f41-43e4-afd8-17da3141e3d6 title=Schneefall
+from os import system
+from random import randint
+from webio import gameloop, run
+from snowfall_game import use_scene
+
+scene = use_scene('snowfall')
+scene.reset()
+scene.configure(width=400, height=600, background_color='black')
+scene.render()
+last_spawn_time = -1000
+click = None
+
+def spawn_snowflake():
+    x = randint(0, int(scene.width))
+    size = randint(8, 14)
+    speed = randint(40, 100)
+    scene.add_snowflake(x, 0, size, speed, color='lightblue')
+
+def update_snowflakes(dt):
+    for snowflake in scene.snowflakes:
+        snowflake.y += snowflake.speed * dt
+        if snowflake.y > scene.height:
+            scene.remove_snowflake(snowflake)
+
+def remove_click():
+    global click
+    if click is None:
+        return
+    scene.remove_dot(click)
+    click = None
+
+def handle_click(event):
+    global click
+    remove_click()
+    click = scene.add_dot(event.x, event.y, 10, color='red')
+
+    for snowflake in scene.snowflakes:
+        distance_squared = (snowflake.x - event.x)**2 + (snowflake.y - event.y)**2
+        if distance_squared < (snowflake.size + 10)**2:
+            scene.remove_snowflake(snowflake)
+            remove_click()
+            break
+
+@gameloop(fps=120, sources=[scene])
+def update(ctx):
+    global last_spawn_time
+    if ctx.time - last_spawn_time >= 1000:
+        spawn_snowflake()
+        last_spawn_time = ctx.time
+
+    update_snowflakes(ctx.dt)
+
+    for event in ctx.events:
+        if event.type == 'click':
+            handle_click(event)
+
+    if ctx.frame % 10 == 0:
+        system('clear')
+        print(round(1/ctx.dt))
+
+    scene.render()
+
+await run()
+```
+</CodeShowcase>
+
+Die Geschwindigkeiten sind in Pixeln pro Sekunde angegeben. `ctx.dt` berücksichtigt die tatsächlich vergangene Zeit zwischen zwei Bildern. `scene.render()` überträgt alle Änderungen eines Bildes gemeinsam an den Browser. Details zum Ablauf stehen in der [webio-Referenz](./02-webio.mdx#spielschleife).
+
+## Szene, Schneeflocken und Punkte
+
+`sceneId`
+: Verbindet die React-Komponente mit `use_scene(id)`. Mehrere Ansichten derselben ID teilen ihre Anzeige.
+`use_scene(id)`
+: Liefert innerhalb derselben Ausführung denselben lokalen Handle zurück.
+`configure(width=400, height=800, background_color='black')`
+: Legt die logische Grösse und Hintergrundfarbe fest. Die Darstellung verkleinert sich bei wenig Platz proportional; Spielkoordinaten bleiben unverändert.
+`width`, `height`
+: Logische Breite und Höhe der Szene in Pixeln.
+`reset()`
+: Entfernt alle Schneeflocken und Punkte und behält die Konfiguration bei.
+`add_snowflake(x, y, size, speed, color='white')`
+: Erzeugt eine Schneeflocke mit dem SVG-Symbol `mdiSnowflake` und gibt ihren Handle zurück. `size` ist die halbe Symbolgrösse in Pixeln; `(x, y)` ist die Mitte. Die Bewegung mit `speed` legt der Python-Code fest.
+`snowflakes`
+: Momentaufnahme der aktuellen Schneeflocken. Während der Iteration können Schneeflocken entfernt werden.
+`snowflake.x`, `snowflake.y`, `snowflake.size`, `snowflake.speed`, `snowflake.color`
+: Veränderbare Eigenschaften einer Schneeflocke. Position, Grösse und Farbe werden beim nächsten `render()` sichtbar.
+`remove_snowflake(snowflake)`
+: Entfernt die angegebene Schneeflocke.
+`add_dot(x, y, size, color='white')`
+: Erzeugt einen ausgefüllten Kreis mit Mittelpunkt `(x, y)` und Radius `size` in Pixeln. Gibt seinen Handle zurück. Punkte werden vor den Schneeflocken gezeichnet.
+`dots`
+: Momentaufnahme der aktuellen Punkte. Während der Iteration können Punkte entfernt werden.
+`dot.x`, `dot.y`, `dot.size`, `dot.color`
+: Veränderbare Eigenschaften eines Punktes. Änderungen werden beim nächsten `render()` sichtbar.
+`remove_dot(dot)`
+: Entfernt den angegebenen Punkt.
+`color`
+: CSS-Farbe als Zeichenkette, beispielsweise `'white'`, `'lightblue'` oder `'#ff8800'`. Standard für Schneeflocken und Punkte: `'white'`.
+`render()`
+: Überträgt den aktuellen Zustand der ganzen Szene. Änderungen an Handles, `configure()` und `reset()` werden erst damit sichtbar.
+`events`
+: Ereignisquelle für `@gameloop`, `@on_click` und weitere Handler aus `webio`.
+
+Klick-Ereignisse enthalten `event.x` und `event.y` in logischen Szenenkoordinaten, auch bei verkleinerter Darstellung. Dieselben Werte stehen in `event.payload['x']` und `event.payload['y']`. Tastatureingaben gehen an die fokussierte Szene und enthalten den Tastennamen in `event.payload['key']`.
+
+Einzelne Punkte lassen sich unabhängig von den Schneeflocken platzieren und verändern:
+
+```py
+dot = scene.add_dot(200, 400, 6, color='#ff8800')
+dot.x += 10
+dot.color = 'yellow'
+scene.render()
+```
+
+## Zustand und Lebensdauer
+
+Die Browser-Anzeige bleibt nach Ende oder Abbruch eines Skripts erhalten. Ein neuer Python-Handle beginnt mit den Standardwerten und ohne Schneeflocken oder Punkte. Sein erster `render()` ersetzt die bisherige Anzeige. Mit `reset()` und `configure()` am Skriptanfang lässt sich der gewünschte Startzustand ausdrücklich festlegen.
+
+## Auf der eigenen Website einrichten
+
+Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
+
+<Steps>
+
+1. Kopiere den vollständigen Ordner [snowfall-game](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/snowfall-game) nach __website/pyodide/snowfall-game__.
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
+
+    ```ts title="siteConfig.ts"
+    extensions: [
+        './website/pyodide/snowfall-game'
+    ]
+    ```
+
+3. Starte den Entwicklungsserver neu. Danach kannst du das MDX-Beispiel oben verwenden.
+
+</Steps>
+
+Die __extension.json__ im kopierten Ordner legt den Namen und die Einstiegspunkte fest. Der Browser-Store wird automatisch initialisiert; der `SiteStore` deiner Website benötigt keine Ergänzungen.

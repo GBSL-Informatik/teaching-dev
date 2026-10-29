@@ -1,15 +1,14 @@
-import { Clock } from '@tdev/packages/pyodide-code/models/Clock';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import type { Clock } from '../../../models/Clock';
 import styles from '../styles.module.scss';
 
-interface Props {
+interface PointerProps {
     clock: Clock;
     type: 'hours' | 'minutes' | 'seconds';
 }
 
-const Pointer = observer((props: Props) => {
-    const { clock, type } = props;
+const Pointer = observer(({ clock, type }: PointerProps) => {
     const angle = clock[type];
     return (
         <div

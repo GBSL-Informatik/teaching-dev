@@ -1,7 +1,8 @@
 // This file is used to configure the teaching-dev page.
 
-import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
 import type { PluginOptions as PyodidePluginOptions } from '@tdev/pyodide-code/plugin';
+import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
+import path from 'node:path';
 import { themes as prismThemes } from 'prism-react-renderer';
 import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
 import {
@@ -116,11 +117,10 @@ const getSiteConfig: SiteConfigProvider = () => {
                 require.resolve('@tdev/pyodide-code/plugin'),
                 {
                     extensions: [
-                        {
-                            name: 'clock',
-                            worker: require.resolve('./website/pyodide/clock/worker'),
-                            client: require.resolve('./website/pyodide/clock/client')
-                        }
+                        path.join(__dirname, 'website/pyodide/clock'),
+                        path.join(__dirname, 'website/pyodide/cookie-klicker'),
+                        path.join(__dirname, 'website/pyodide/snowfall-game'),
+                        path.join(__dirname, 'website/pyodide/grid')
                     ]
                 } satisfies PyodidePluginOptions
             ],

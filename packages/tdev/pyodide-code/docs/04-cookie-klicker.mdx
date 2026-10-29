@@ -1,0 +1,121 @@
+---
+page_id: b0dc6afc-4a60-42c7-b850-f5e2e6231097
+---
+
+import CodeShowcase from '@tdev-components/CodeShowcase';
+import Steps from '@tdev-components/Steps';
+import CookieComponent from '@tdev/pyodide/cookie-klicker/src/components/Cookie';
+
+# Cookie-Klicker
+
+Mit `webio` reagiert Python auf Klicks und Tastatureingaben aus dem Browser. Starte das Programm und klicke auf den Cookie:
+
+<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev/pyodide/cookie-klicker/src/components/Cookie';`]}>
+<CookieComponent cookieId="cookie-einstieg" />
+
+```py live_pyo id=c7848c97-6b5e-4604-afa7-510e53d8d678 title=Auf_Klicks_reagieren
+from cookie_klicker import use_cookie
+from webio import on_click, run
+
+cookie = use_cookie('cookie-einstieg')
+
+@on_click(cookie)
+def drehen(event):
+    cookie.set_rotation(cookie.rotation + 30)
+
+await run()
+```
+</CodeShowcase>
+
+`webio` gehört zum Pyodide-Package. Die Cookie-Komponente und das Python-Modul `cookie_klicker` gehören zur kopierbaren Cookie-Erweiterung dieser Dokumentationswebsite. Für eine eigene Website ist die [Einrichtung unten](#auf-der-eigenen-website-einrichten) erforderlich.
+
+## Mehrere Cookies und Tastatureingaben
+
+Für die Pfeiltasten muss der zweite Cookie fokussiert sein, etwa durch [[Tab]] oder einen Klick.
+
+<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev/pyodide/cookie-klicker/src/components/Cookie';`]} collapseCode>
+:::flex
+<CookieComponent cookieId="cookie" />
+::br
+<CookieComponent cookieId="cookie-zwei" />
+:::
+
+```py live_pyo id=62007a34-9647-4c62-83bd-7a0f829e502a title=Cookie_Klicker
+from random import randint
+from cookie_klicker import use_cookie
+from webio import on_click, on_event, on_key, run
+
+cookie = use_cookie('cookie')
+zweiter_cookie = use_cookie('cookie-zwei')
+klicks = 0
+
+@on_event(source=[cookie.events, zweiter_cookie.events])
+def log(event):
+    print(event)
+
+@on_click(cookie)
+def drehen(event):
+    global klicks
+    klicks += 1
+    cookie.set_rotation(cookie.rotation + randint(0, 360))
+    if klicks % 3 == 0:
+        hue = randint(0, 359)
+        saturation = randint(50, 100)
+        lightness = randint(35, 65)
+        cookie.set_color(f'hsl({hue}, {saturation}%, {lightness}%)')
+
+@on_click(zweiter_cookie)
+def schrittweise_drehen(event):
+    zweiter_cookie.set_rotation(zweiter_cookie.rotation + 30)
+
+@on_key(zweiter_cookie, 'ArrowLeft')
+def nach_links_drehen(event):
+    zweiter_cookie.set_rotation(zweiter_cookie.rotation - 5)
+
+@on_key(zweiter_cookie, 'ArrowRight')
+def nach_rechts_drehen(event):
+    zweiter_cookie.set_rotation(zweiter_cookie.rotation + 5)
+
+await run()
+```
+</CodeShowcase>
+
+Die [webio-Referenz](./02-webio.mdx) beschreibt die Handler, Ereignisattribute und Grenzen der Ereignisverarbeitung.
+
+## Cookies steuern
+
+`cookieId`
+: Verbindet die React-Komponente mit `use_cookie(id)`. Mehrere Ansichten derselben ID teilen ihren Zustand.
+`use_cookie(id)`
+: Liefert innerhalb derselben Ausführung denselben Handle zurück. Ein neuer Handle verändert die bisherige Anzeige erst mit seinem ersten Update.
+`events`
+: Ereignisquelle des Handles für `@on_event`.
+`rotation`
+: Lokaler Winkel des Handles in Grad, anfangs `0`. Er liest den Browser-Zustand nicht zurück.
+`set_rotation(winkel)`
+: Normalisiert den Winkel auf `[0, 360)` und aktualisiert die Anzeige.
+`color`
+: Lokale Farbe des Handles, anfangs `'var(--ifm-color-warning-light)'`.
+`set_color(css_farbe)`
+: Aktualisiert die Farbe, etwa mit `'#ff8800'` oder `'hsl(120, 70%, 50%)'`.
+
+## Auf der eigenen Website einrichten
+
+Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
+
+<Steps>
+
+1. Kopiere den vollständigen Ordner [cookie-klicker](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/cookie-klicker) nach __website/pyodide/cookie-klicker__. Er enthält Komponenten, Styles, Browser-Store und Python-Modul.
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
+
+    ```ts title="siteConfig.ts"
+    extensions: [
+        './website/pyodide/cookie-klicker'
+    ]
+    ```
+
+3. Starte den Entwicklungsserver neu. Danach kannst du die MDX-Beispiele oben verwenden.
+
+</Steps>
+
+Die __extension.json__ im kopierten Ordner legt den Namen und die Einstiegspunkte fest. Der Browser-Store wird automatisch initialisiert; der `SiteStore` deiner Website benötigt keine Ergänzungen.

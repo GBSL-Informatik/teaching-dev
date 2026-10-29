@@ -1,0 +1,74 @@
+---
+page_id: 3122a420-0743-4281-b7c0-817759055e9e
+---
+
+# webio: Ereignisse verarbeiten
+
+Mit `webio` verarbeitet Python Browser-Ereignisse von Erweiterungen. Das Modul gehört zum Pyodide-Package. Der [Cookie-Klicker](./04-cookie-klicker.mdx) zeigt Ereignis-Handler; das [Schneefall-Spiel](./05-snowfall-game.mdx) verbindet Eingaben mit einer regelmässigen Spielschleife.
+
+## Handler registrieren
+
+Die Decorators aus `webio` funktionieren mit allen Erweiterungs-Handles, die eine Ereignisquelle als `events` bereitstellen.
+
+`@on_click(target)`
+: Registriert einen Klick-Handler; entspricht `@on_event('click', source=target.events)`.
+`@on_key(target, key=None)`
+: Registriert einen Tastatur-Handler. Ein Tastenname wie `'ArrowLeft'` filtert die Ereignisse; `None` und `'*'` empfangen alle Tasten. Der Tastenname steht in `event.payload['key']`.
+`@on_event(event_type=None, *, source)`
+: Registriert einen Handler für eine Quelle oder eine Liste von Quellen. `source` ist erforderlich und muss als benanntes Argument übergeben werden. Ohne Ereignistyp sowie mit `None` oder `'*'` werden alle Ereignistypen empfangen.
+
+## Spielschleife
+
+`@gameloop(fps=30, sources=[scene])`
+: Registriert die Aktualisierungsfunktion eines Spiels. Pro Ausführung ist eine Spielschleife erlaubt. Die Registrierung erfolgt vor `await run()`.
+`fps`
+: Angestrebte Bilder pro Sekunde als endliche Zahl zwischen `1` und `120`. Langsame Aktualisierungen verringern die tatsächlich erreichte Bildrate.
+`sources`
+: Mindestens eine Ereignisquelle oder ein Erweiterungs-Handle mit `events`. Nur Ereignisse dieser Quellen erscheinen in `ctx.events`.
+
+Die Aktualisierungsfunktion erhält einen Kontext:
+
+`ctx.time`
+: Monoton verstrichene Zeit seit Beginn der Spielschleife in Millisekunden.
+`ctx.dt`
+: Tatsächlich vergangene Zeit seit dem vorherigen Bild in Sekunden. Im ersten Bild wird seit Beginn der Spielschleife gemessen.
+`ctx.frame`
+: Bildnummer, beginnend bei `1`.
+`ctx.events`
+: Tupel der seit dem vorherigen Bild empfangenen Ereignisse. Es bildet eine Momentaufnahme der Ereigniswarteschlange.
+
+Registrierte Ereignis-Handler laufen vor der Aktualisierungsfunktion. Dasselbe Ereignis bleibt auch in `ctx.events` enthalten. Verarbeite eine Spielaktion deshalb entweder im Decorator-Handler oder in der Schleife über `ctx.events`.
+
+Verspätete Bilder werden nicht nachgeholt. Eine synchrone oder asynchrone Aktualisierungsfunktion wird vollständig abgeschlossen, bevor das nächste Bild beginnt.
+
+## Empfang starten und beenden
+
+`await run()`
+: Startet den Ereignisempfang und eine registrierte Spielschleife. Pro Ausführung ist nur ein Aufruf erlaubt.
+`webio.stop()`
+: Beendet den Empfang nach dem aktuellen Handler oder der aktuellen Spielaktualisierung. Ein wartender Timer wird abgebrochen. Alternativ beendet **Abbrechen** im Editor die Ausführung sofort.
+
+## Ereignisattribute
+
+Jeder Handler erhält ein Ereignis mit folgenden Attributen:
+
+`type`
+: Ereignistyp, etwa `'click'` oder `'key'`.
+`extension`
+: Konfigurierter Name der Erweiterung, beispielsweise `'cookie_klicker'`.
+`target_id`
+: Ziel-ID der Ereignisquelle.
+`timestamp`
+: Zeitpunkt des Ereignisses in Millisekunden seit der Unix-Epoche.
+`payload`
+: Ereignisspezifische Daten der Erweiterung; beim Cookie `None` für Klicks und `{'key': ...}` für Tastatureingaben.
+`x`, `y`
+: Zusätzliche Koordinatenattribute, wenn der Payload `x` beziehungsweise `y` enthält. Die Schneefall-Szene liefert damit logische Szenenkoordinaten.
+
+## Ablauf und Grenzen
+
+Eine Ereignisquelle kann gleichzeitig nur von einem laufenden Programm abonniert werden. Ein zweites Programm erhält eine Fehlermeldung. Nach Ende oder Abbruch werden die Abonnements entfernt; alte Ereignisse werden nicht an einen Neustart weitergegeben.
+
+Handler laufen nacheinander. Für absichtliche Wartezeiten kann ein Handler `async def` verwenden und `await asyncio.sleep(0.1)` aufrufen. Währenddessen können weitere Ereignisse empfangen werden; ihre Handler starten nach Abschluss des aktuellen Handlers. `time.sleep()`, synchrone Eingaben mit `input()` und lange Berechnungen blockieren dagegen den Empfang im Worker.
+
+Fehler in Handlern und überfüllte Ereigniswarteschlangen beenden die betroffene Ausführung mit einer Fehlermeldung.

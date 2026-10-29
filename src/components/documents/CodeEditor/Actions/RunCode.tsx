@@ -1,4 +1,4 @@
-import { mdiLoading } from '@mdi/js';
+import { mdiDownloadNetwork, mdiLoading } from '@mdi/js';
 import { CodeType } from '@tdev-api/document';
 import Button, { Color } from '@tdev-components/documents/CodeEditor/Button';
 import iCode from '@tdev-models/documents/iCode';
@@ -9,6 +9,7 @@ import styles from './styles.module.scss';
 interface Props<T extends CodeType> {
     code: iCode<T>;
     onExecute?: () => void;
+    isPreparing?: boolean;
 }
 
 const Play =
@@ -16,20 +17,26 @@ const Play =
 
 const RunCode = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
+    const isPreparing = code.isExecuting && (props.isPreparing ?? false);
+    const executionIcon = isPreparing ? mdiDownloadNetwork : mdiLoading;
+
+    const handleClick = () => {
+        if (!props.onExecute) {
+            return;
+        }
+        code.triggerRemoteAction({ action: 'runCode' });
+        props.onExecute();
+    };
+
     return (
         <Button
-            icon={code.isExecuting ? mdiLoading : Play}
-            spin={code.isExecuting}
-            color={Color.Success}
-            className={clsx(styles.runCode, code.meta.slim && styles.slim)}
+            icon={code.isExecuting ? executionIcon : Play}
+            spin={code.isExecuting && !isPreparing}
+            color={isPreparing ? Color.Link : Color.Success}
+            className={clsx(styles.runCode, code.meta.slim && styles.slim, isPreparing && styles.preparing)}
             iconSize={code.meta.slim ? '1.15em' : '1.6em'}
-            onClick={() => {
-                if (props.onExecute) {
-                    code.triggerRemoteAction({ action: 'runCode' });
-                    props.onExecute();
-                }
-            }}
-            title={`${code.title} ausführen`}
+            onClick={handleClick}
+            title={isPreparing ? `${code.title}: Python vorbereiten` : `${code.title} ausführen`}
         />
     );
 });

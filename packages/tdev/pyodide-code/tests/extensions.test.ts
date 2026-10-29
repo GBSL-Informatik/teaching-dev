@@ -1,6 +1,8 @@
 import type { LoadContext } from '@docusaurus/types';
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRegistrySource, resolveExtensions, type ExtensionConfig } from '../extensions/config';
 import pyodidePlugin from '../plugin';
 
@@ -10,6 +12,28 @@ const clock: ExtensionConfig = {
     worker: './worker.ts',
     client: './client.ts'
 };
+const temporaryDirectories: string[] = [];
+
+const createExtensionFolder = (descriptor: unknown = clock) => {
+    const temporarySite = mkdtempSync(path.join(os.tmpdir(), 'pyodide-extension-'));
+    temporaryDirectories.push(temporarySite);
+    const directory = path.join(temporarySite, 'website', 'copied-extension');
+    mkdirSync(directory, { recursive: true });
+    writeFileSync(path.join(directory, 'extension.json'), JSON.stringify(descriptor));
+    writeFileSync(path.join(directory, 'worker.ts'), "throw new Error('Must not load worker in Node');");
+    writeFileSync(
+        path.join(directory, 'client.ts'),
+        "throw new Error('Must not load browser code in Node');"
+    );
+    return { temporarySite, directory };
+};
+
+afterEach(() => {
+    for (const directory of temporaryDirectories) {
+        rmSync(directory, { recursive: true, force: true });
+    }
+    temporaryDirectories.length = 0;
+});
 
 describe('Pyodide extension configuration', () => {
     it('resolves explicit entries relative to the site directory', () => {
@@ -20,6 +44,74 @@ describe('Pyodide extension configuration', () => {
                 client: path.resolve(siteDir, clock.client)
             }
         ]);
+    });
+
+    it('resolves descriptor entries relative to a copied folder without loading browser or worker code', () => {
+        const { temporarySite, directory } = createExtensionFolder();
+
+        expect(resolveExtensions(temporarySite, { extensions: ['./website/copied-extension'] })).toEqual([
+            {
+                name: 'clock',
+                worker: path.join(directory, 'worker.ts'),
+                client: path.join(directory, 'client.ts')
+            }
+        ]);
+    });
+
+    it('keeps an extension portable when its folder is copied to a different location', () => {
+        const { temporarySite, directory } = createExtensionFolder();
+        const copiedDirectory = path.join(temporarySite, 'renamed-clock');
+        cpSync(directory, copiedDirectory, { recursive: true });
+
+        expect(resolveExtensions(temporarySite, { extensions: [copiedDirectory] })).toEqual([
+            {
+                name: 'clock',
+                worker: path.join(copiedDirectory, 'worker.ts'),
+                client: path.join(copiedDirectory, 'client.ts')
+            }
+        ]);
+    });
+
+    it('rejects duplicate names shared by descriptors and explicit entries', () => {
+        const { directory } = createExtensionFolder();
+
+        expect(() => resolveExtensions(siteDir, { extensions: [clock, directory] })).toThrow(
+            'Duplicate Pyodide extension: clock'
+        );
+    });
+
+    it('identifies a missing descriptor', () => {
+        expect(() => resolveExtensions(siteDir, { extensions: ['./missing-extension'] })).toThrow(
+            `Cannot read Pyodide extension descriptor: ${path.join(siteDir, 'missing-extension', 'extension.json')}`
+        );
+    });
+
+    it('identifies invalid descriptor JSON', () => {
+        const { temporarySite, directory } = createExtensionFolder();
+        writeFileSync(path.join(directory, 'extension.json'), '{');
+
+        expect(() => resolveExtensions(temporarySite, { extensions: [directory] })).toThrow(
+            `Invalid JSON in Pyodide extension descriptor: ${path.join(directory, 'extension.json')}`
+        );
+    });
+
+    it.each([null, [], { name: 'clock' }, { ...clock, worker: false }])(
+        'identifies an invalid descriptor shape: %j',
+        (descriptor) => {
+            const { temporarySite, directory } = createExtensionFolder(descriptor);
+
+            expect(() => resolveExtensions(temporarySite, { extensions: [directory] })).toThrow(
+                `Invalid Pyodide extension descriptor: ${path.join(directory, 'extension.json')}`
+            );
+        }
+    );
+
+    it('identifies unresolved entries inside a descriptor', () => {
+        const { temporarySite, directory } = createExtensionFolder({ ...clock, worker: './missing.ts' });
+
+        expect(() => resolveExtensions(temporarySite, { extensions: [directory] })).toThrow(
+            'Cannot resolve worker entry for Pyodide extension clock: ./missing.ts'
+        );
     });
 
     it('supports an empty registry for websites without extensions', () => {
@@ -77,10 +169,10 @@ describe('Pyodide extension configuration', () => {
             const entry = 'data:text/javascript,export default null;';
             const source = createRegistrySource([{ name: 'clock', worker: entry, client: entry }], side);
             const registryUrl = `data:text/javascript,${encodeURIComponent(source)}`;
-            const method = side === 'worker' ? 'createModules' : 'handleMessage';
+            const methods = side === 'worker' ? 'createModules()' : 'createStore() and handleMessage()';
 
             await expect(import(/* @vite-ignore */ registryUrl)).rejects.toThrow(
-                `Pyodide extension "clock": ${side} entry must default-export an object with ${method}().`
+                `Pyodide extension "clock": ${side} entry must default-export an object with ${methods}.`
             );
         }
     );
@@ -88,9 +180,12 @@ describe('Pyodide extension configuration', () => {
     it.each(['worker', 'client'] as const)(
         'loads a valid %s registry without invoking its entry',
         async (side) => {
-            const method = side === 'worker' ? 'createModules' : 'handleMessage';
+            const methods = side === 'worker' ? ['createModules'] : ['createStore', 'handleMessage'];
+            const entries = methods.map(
+                (method) => `${method}() { throw new Error('Must not run during initialization'); }`
+            );
             const entry = `data:text/javascript,${encodeURIComponent(
-                `export default { ${method}() { throw new Error('Must not run during initialization'); } };`
+                `export default { ${entries.join(', ')} };`
             )}`;
             const source = createRegistrySource([{ name: 'clock', worker: entry, client: entry }], side);
             const registryUrl = `data:text/javascript,${encodeURIComponent(source)}`;
@@ -99,9 +194,21 @@ describe('Pyodide extension configuration', () => {
 
             expect(registry).toHaveLength(1);
             expect(registry[0].name).toBe('clock');
-            expect(typeof registry[0].extension[method]).toBe('function');
+            for (const method of methods) {
+                expect(typeof registry[0].extension[method]).toBe('function');
+            }
         }
     );
+
+    it('rejects a browser entry without its store factory', async () => {
+        const entry = 'data:text/javascript,export default { handleMessage() {} };';
+        const source = createRegistrySource([{ name: 'clock', worker: entry, client: entry }], 'client');
+        const registryUrl = `data:text/javascript,${encodeURIComponent(source)}`;
+
+        await expect(import(/* @vite-ignore */ registryUrl)).rejects.toThrow(
+            'Pyodide extension "clock": client entry must default-export an object with createStore() and handleMessage().'
+        );
+    });
 
     it('makes generated registries available to SSR and preserves browser worker configuration', async () => {
         const plugin = pyodidePlugin({ siteDir } as LoadContext, { extensions: [clock] });

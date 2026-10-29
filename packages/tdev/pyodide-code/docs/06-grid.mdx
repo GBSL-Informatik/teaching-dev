@@ -1,0 +1,145 @@
+---
+page_id: 923acc02-a517-4492-9cd5-609e74aa69de
+---
+
+import CodeShowcase from '@tdev-components/CodeShowcase';
+import Steps from '@tdev-components/Steps';
+import Grid from '@tdev/pyodide/grid/src/components/Grid';
+
+# Grid
+
+Die Erweiterung `grid` stellt farbige Zellen auf einer Zeichenfläche dar. Einzelne Zellen lassen sich wie im [Brython-Modul](/docs/packages/tdev/brython-code/libraries/grid) ansprechen. Änderungen werden mit `await board.render()` gemeinsam angezeigt.
+
+<CodeShowcase lang="md" imports={[`import Grid from '@tdev/pyodide/grid/src/components/Grid';`]}>
+<Grid gridId="small-grid" />
+
+```py live_pyo id=24e6722f-243c-4c8a-9d24-8f195d5b57f7 title=Zellen_und_Text
+from grid import Grid
+
+board = Grid(4, 5, 'skyblue', grid_id='small-grid')
+board[1][2] = 'navy'
+board[1][2].text = 'A'
+board[1][2].text_color = 'white'
+board[2][4].get(1, 0).color = 'gold'
+await board.render()
+```
+</CodeShowcase>
+
+## Grosse Gitter animieren
+
+Für viele Änderungen pro Bild werden Farbwerte als Zahlen in einem zusammenhängenden Array übergeben. NumPy berechnet sie mit Array-Operationen; eine Python-Schleife über jede Zelle würde die Berechnung wieder verlangsamen. `import numpy` lädt das Paket vor der Ausführung automatisch.
+
+<CodeShowcase lang="md" imports={[`import Grid from '@tdev/pyodide/grid/src/components/Grid';`]} collapseCode>
+<Grid gridId="large-grid" />
+
+```py live_pyo id=cf6ba599-ad00-46e7-b442-4d914a109a13 title=Eine_Million_Zellen
+import numpy as np
+from os import system
+from grid import Grid
+from webio import gameloop, run
+
+colors = ['navy', 'royalblue', 'deepskyblue', 'lightcyan']
+board = Grid(1000, 1000, grid_id='large-grid', palette=colors)
+columns = np.arange(1000, dtype=np.uint16)
+state = np.empty((1000, 1000), dtype=np.uint8)
+
+@gameloop(fps=120, sources=[board])
+async def update(ctx):
+    offset = int(ctx.time / 20) % 100
+    state[:] = ((columns + offset) // 25) % len(colors)
+    board.set_cells(state)
+    if ctx.frame % 10 == 0:
+        system('clear')
+        print('FPS', round(1/ctx.dt))
+    await board.render()
+
+await run()
+```
+</CodeShowcase>
+
+Das Gitter speichert Farben als kompakte Palettenindizes. Ein Aufruf von `render()` überträgt einen vollständigen Zustand an die Zeichenfläche. Warte diesen Aufruf ab, bevor du den nächsten Zustand überträgst. Die tatsächlich erreichbare Bildrate hängt auch von der Berechnung und dem verwendeten Gerät ab; Details zur Spielschleife stehen in der [webio-Referenz](./02-webio.mdx#spielschleife).
+
+## Gitter und Zellen
+
+`Grid(rows, cols, color='', *, grid_id='grid', palette=None, scale=None)`
+: Erstellt ein Gitter mit positiven ganzzahligen Zeilen- und Spaltenzahlen. Ohne Farbe und Palette sind Zellen durchsichtig. Mit einer Palette und ohne Farbe beginnen alle Zellen bei Palettenindex `0`. Für Zellzugriffe ist NumPy nicht erforderlich.
+`gridId`, `grid_id`
+: Verbinden die React-Komponente mit dem Python-Gitter. Verwende für unabhängige Gitter unterschiedliche IDs. Standard in Python: `'grid'`.
+`palette`
+: Liste von CSS-Farben, beispielsweise `['black', 'white']`. Bei `set_cells()` entspricht `0` der ersten Farbe, `1` der zweiten Farbe usw. Einzelne Farbzuweisungen ergänzen bisher unbekannte Farben. Für lange Animationen mit wechselnden Farben ersetzt `set_cells(values, palette=colors)` die bisherige Palette, statt sie fortlaufend zu erweitern.
+`scale`
+: Positive ganzzahlige Zellgrösse in Zeichenflächenpixeln. Ohne Angabe wird das Gitter in eine Fläche von ungefähr 500 × 500 Pixeln eingepasst; jede Zelle bleibt mindestens einen Pixel gross. Die Darstellung verkleinert sich bei wenig Platz proportional.
+`rows`, `cols`, `dim_y`, `dim_x`
+: Unveränderliche Anzahl der Zeilen beziehungsweise Spalten.
+`size`
+: Tupel `(rows, cols)`.
+`board[row][col]`
+: Liefert eine leichte Ansicht einer Zelle. `board[row][col] = 'red'` ändert deren Farbe. Es werden nicht im Voraus Python-Objekte für alle Zellen angelegt.
+`cell.row`, `cell.col`
+: Zeile beziehungsweise Spalte der Zelle, beginnend bei `0`.
+`cell.color`
+: Veränderbare, vom Browser-Canvas unterstützte CSS-Farbe als Zeichenkette. Beispiele: `'red'`, `'#ff8800'`, `'rgb(20, 80, 160)'`. Mit `''` wird die Zelle durchsichtig.
+`cell.get(offset_x, offset_y)`
+: Liefert eine benachbarte Zelle. Die Ränder sind verbunden: Rechts neben der letzten Spalte liegt die erste Spalte.
+`cell.text`, `cell.text_color`, `cell.text_scale`
+: Veränderbarer Text und seine Darstellung. Standard: leerer Text, schwarze Schrift und Skalierung `0.8`. Text wird getrennt von den Zellfarben gespeichert; bei sehr kleinen Zellen ist er nicht lesbar.
+`fill(color='')`
+: Füllt alle Zellen mit einer Farbe. Text bleibt erhalten.
+`await render()`
+: Überträgt Farben und Text an alle Ansichten derselben `gridId`. Auch nach dem Füllen oder Ändern einzelner Zellen ist dieser Aufruf nötig. Ein weiterer gleichzeitiger Render-Aufruf wird abgelehnt.
+`copy(*, grid_id=None)`
+: Kopiert Zellfarben, Text und Skalierung. Ohne neue ID zeichnet die Kopie auf dieselbe Zeichenfläche.
+`to_list()`, `color_grid`, `grid`
+: Liefern die Farben als verschachtelte Python-Listen. Für grosse Gitter entstehen dabei viele Python-Werte; verwende diese Ansichten nicht für jeden Animationsschritt.
+
+## Ganze Zustände übernehmen
+
+`set_cells(values, palette=None)`
+: Übernimmt Palettenindizes aus einem zusammenhängenden zweidimensionalen Integer-Buffer, beispielsweise einem NumPy-Array mit `dtype=np.uint8`. Die Form muss `(rows, cols)` entsprechen. Unterstützt werden vorzeichenlose und vorzeichenbehaftete Integer mit höchstens 32 Bit sowie Boolean-Werte (`False` als `0`, `True` als `1`). Alle Werte müssen nichtnegativ sein und auf eine vorhandene Palettenfarbe verweisen.
+: Mit `palette` wird zugleich eine neue Farbliste gesetzt. Ohne Angabe gilt die bisherige Palette. Änderungen werden erst mit `await render()` sichtbar.
+
+Mit `np.ascontiguousarray(values)` kannst du eine nicht zusammenhängende NumPy-Ansicht vor der Übergabe umwandeln. Ein Gitter darf höchstens 16 777 216 Zellen enthalten. Die Zeichenfläche darf höchstens 8192 Pixel breit oder hoch sein und insgesamt höchstens 16 777 216 Pixel umfassen. Die Zellgrösse `scale` zählt dabei mit: Die Zeichenfläche ist `cols * scale` Pixel breit und `rows * scale` Pixel hoch.
+
+## Gitter aus Text
+
+```py
+board = Grid.from_text('''
+..x..
+.xxx.
+xxxxx
+''', {'.': 'white', 'x': 'navy', 'bg': ''}, grid_id='small-grid')
+await board.render()
+```
+
+`Grid.from_text(text, colors=None, *, grid_id='grid', scale=None)`
+: Erstellt ein Gitter aus Textzeilen. Das Dictionary ordnet Zeichen Farben zu; `bg` bestimmt die Farbe unbekannter Zeichen und aufgefüllter Zellen. Ohne Dictionary werden `s`, `1` und `x` schwarz dargestellt, die übrigen Zellen bleiben durchsichtig.
+
+## Ereignisse
+
+`events`
+: Ereignisquelle für `@gameloop`, `@on_click` und `@on_key` aus [webio](./02-webio.mdx).
+`event.payload['row']`, `event.payload['col']`
+: Zeile und Spalte einer angeklickten Zelle, beginnend bei `0`.
+`event.x`, `event.y`
+: Klickposition in Zellkoordinaten; die Werte können Nachkommastellen enthalten. Dieselben Werte stehen im Payload.
+
+Tastaturereignisse gehen an die fokussierte Zeichenfläche und enthalten den Tastennamen in `event.payload['key']`. Die zuletzt gezeichnete Ansicht bleibt nach Ende oder Abbruch eines Skripts erhalten. Ein neues Python-Gitter beginnt mit seinen eigenen Startwerten und ersetzt die Anzeige beim ersten `render()`.
+
+## Auf der eigenen Website einrichten
+
+Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
+
+<Steps>
+
+1. Kopiere den vollständigen Ordner [grid](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/grid) nach __website/pyodide/grid__.
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
+
+    ```ts title="siteConfig.ts"
+    extensions: [
+        './website/pyodide/grid'
+    ]
+    ```
+
+3. Starte den Entwicklungsserver neu. Danach kannst du die MDX-Beispiele oben verwenden.
+
+</Steps>

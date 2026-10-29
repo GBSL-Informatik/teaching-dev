@@ -16,6 +16,7 @@ export const createMessageDelivery = (sendMessage: Context['sendMessage']) => {
                 pending.delete(delivery);
             }
         );
+        return delivery;
     };
 
     const finish = async () => {

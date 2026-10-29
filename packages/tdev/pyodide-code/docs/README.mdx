@@ -1,0 +1,333 @@
+---
+page_id: e7bde0ab-c0fe-4225-8325-e4ebc22d414b
+tags:
+  - '@tdev/'
+  - python
+  - code
+sidebar_position: 50
+---
+
+import CodeShowcase from '@tdev-components/CodeShowcase';
+import Steps from '@tdev-components/Steps';
+import Pyodide from '@tdev/pyodide-code/components/Pyodide';
+
+import CodeBlock from '@theme/CodeBlock';
+
+# pyodide-code
+
+<CodeShowcase lang="md">
+```py live_pyo id=b26cde2c-5b0b-4acb-814e-9f2b3bdd29a9
+print("Hello from Pyodide!")
+```
+</CodeShowcase>
+
+## Sleep
+
+
+```py live_pyo id=82e559e8-db77-4efb-adcc-f6cd18085c9e title=Sleep_und_Ausgabe
+from time import sleep
+for i in range(10):
+    print(i, i*i, i**3)
+    sleep(1)
+```
+
+## Ausgabe löschen
+
+`os.system('clear')` und `os.system('cls')` löschen die bisherige Ausgabe des aktuellen Editors. Nachfolgende Ausgaben erscheinen wieder im leeren Logfenster. Beide Befehle geben `0` zurück. Diese Unterstützung gilt für die beiden Löschbefehle; eine allgemeine Betriebssystem-Shell steht im Browser nicht zur Verfügung.
+
+```py live_pyo hideWarning title=Ausgabe_löschen
+from os import system
+from time import sleep
+
+for i in range(5):
+    system('clear')
+    print(i)
+    sleep(1)
+```
+
+Es ist immer nur die aktuelle Ausgabe sichtbar.
+
+## Fibonacci
+```py live_pyo id=d5d60431-5589-4d38-9c8c-9b563194f5cc title=Fibonacci_ohne_Rekursion
+def fibonacci(n):
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    else:
+        seq = [0, 1]
+        for i in range(2, n):
+            seq.append(seq[-1] + seq[-2])
+        return seq
+n = int(input("fib von? "))
+print(fibonacci(n))
+```
+
+### Mit Memoization
+
+```py live_pyo id=22b0f649-9b77-4e97-9ccb-cfeb159bbde9 title=Fibonacci_mit_Memoization
+from functools import lru_cache
+
+@lru_cache
+def fibonacci(n):
+    if n in {0, 1}:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+for n in range(1, 200):
+    print(f"Fibonacci({n}) = {fibonacci(n)}")
+```
+
+## Minimierung mit SciPy
+
+```py live_pyo id=8e484282-faac-4955-b0a2-b0a2e270f765 title=Minimierung_mit_SciPy
+import numpy as np
+from scipy import optimize
+# Function to minimize: f(x) = (x - 3)^2
+def func(x):
+    return (x - 3) ** 2
+
+# Minimize using scipy.optimize
+result = optimize.minimize(func, x0=0)
+print("Minimum at x =", result.x[0])
+print("Function value at minimum =", result.fun)
+```
+
+## Python-Pakete laden
+
+Imports werden mit Pythons AST ausgewertet, auch innerhalb von Funktionen oder zusammen mit weiteren Anweisungen auf einer Zeile. Pakete aus der Pyodide-Distribution werden mit deren eingebautem Loader geladen. Bereits verfügbare Module, die Standardbibliothek und lokale JavaScript-Module lösen keine zusätzlichen PyPI-Installationen aus. Fehlgeschlagene Installationen werden im Editor angezeigt.
+
+Für zusätzliche oder versionierte Abhängigkeiten kann die `Pyodide`-Komponente eine Liste von Paketanforderungen erhalten:
+
+
+<CodeShowcase lang="tsx" imports={[`import Pyodide from '@tdev/pyodide-code/components/Pyodide';`]}>
+export const code = `from slugify import slugify\n
+print(slugify("C'est déjà l'été.", algorithm='modern'))
+print(slugify('影師嗎', backend='text-unidecode', algorithm='modern'))`;
+
+<Pyodide showLineNumbers code={code} packages={['python-slugify==9.1.3']} id="32553b77-e5eb-4736-aa35-9fdaa7ce8b5d" />
+</CodeShowcase>
+
+Diese Pakete werden vor der Ausführung installiert. So funktioniert auch `import slugify`, obwohl die Distribution `python-slugify` heisst. Die Liste steht ebenfalls als `packages` in den `ModelMeta`-Optionen zur Verfügung. Dynamisch zusammengesetzte Importnamen benötigen solche expliziten Paketanforderungen.
+
+Explizite Paketanforderungen müssen erfolgreich installiert werden. Bei fehlgeschlagenen automatisch erkannten Abhängigkeiten wird eine Diagnose angezeigt und der Python-Code trotzdem ausgeführt. Dadurch können optionale Imports weiterhin mit `try`/`except ImportError` behandelt werden.
+
+Fortschrittsmeldungen beim Laden von Paketen erscheinen ausschliesslich in der Entwicklerkonsole des Browsers. Fehlgeschlagene Installationen werden weiterhin im Editor angezeigt.
+
+## Freie Worker wiederverwenden
+
+Nacheinander gestartete Skripte verwenden einen freien Worker desselben Browser-Tabs wieder. Dadurch bleiben bereits installierte Pakete und importierte Bibliotheken verfügbar. Gleichzeitig laufende Skripte erhalten jeweils einen eigenen Worker. Pro Tab bleiben höchstens zwei freie Worker erhalten; verschiedene Tabs teilen keinen Python-Interpreter.
+
+Python-Fehler behalten den geladenen Worker beim jeweiligen Editor. Beim nächsten Start wird derselbe Worker wiederverwendet.
+
+**Abbrechen** beendet den Worker sofort und initialisiert einen Ersatz. Das gilt auch beim Abbrechen einer Eingabe und stoppt Endlosschleifen zuverlässig. Andere gleichzeitig laufende Skripte behalten ihre Worker. Das abgebrochene Skript wird nicht automatisch erneut ausgeführt; seine Pakete müssen beim nächsten Start erneut geladen werden.
+
+Skriptvariablen werden bei jeder Ausführung neu angelegt. Importierte Module, Dateien, das Arbeitsverzeichnis und anderer Interpreterzustand können zwischen Editoren erhalten bleiben. Worker mit noch laufenden asyncio-Tasks bleiben ebenfalls beim jeweiligen Editor. Erweiterungen müssen geplante asyncio-Callbacks und JavaScript-Timer vor Ende des Skripts selbst beenden; solche Hintergrundaktivitäten werden durch die Task-Prüfung nicht erkannt. Ein ausgefallener Worker wird beim nächsten Start eines Skripts ersetzt.
+
+## Interaktive Komponenten hinzufügen
+
+Das `pyodide-code`-Package kann erweitert werden - sowohl mit neuen, lokalen Python-Bibliotheken als auch mit interaktiven Komponenten, die in React geschrieben sind und mit Python kommunizieren können.
+
+Mit [webio](./02-webio.mdx) reagiert Python auf Browser-Ereignisse dieser Komponenten und aktualisiert Spiele über `@gameloop`.
+
+### Interaktive Uhr
+
+Das [Uhr-Beispiel](./03-clock.mdx) zeigt, wie Python die Zeiger einer React-Komponente steuert.
+
+### Cookie-Klicker
+
+Das [Cookie-Klicker-Beispiel](./04-cookie-klicker.mdx) zeigt, wie Python mit `@on_click` und `@on_key` auf Browser-Ereignisse reagiert und mehrere Cookies unabhängig steuert.
+
+### Schneefall-Spiel
+
+Das [Schneefall-Spiel](./05-snowfall-game.mdx) verbindet eine Spielschleife mit zeitabhängiger Bewegung und Klick-Ereignissen.
+
+### Grid
+
+Das [Grid-Beispiel](./06-grid.mdx) zeigt einzelne Zellen mit Text sowie eine Animation mit einer Million Zellen und NumPy.
+
+### Erweiterungen registrieren
+
+Erweiterungen lassen sich als einzelner Ordner weitergeben. Voraussetzung ist das [installierte Pyodide-Package](#installation). Die Beispielsseiten zur [Uhr](./03-clock.mdx) und zum [Cookie-Klicker](./04-cookie-klicker.mdx) verlinken die kopierbaren Ordner.
+
+<Steps>
+
+1. Kopiere den vollständigen Erweiterungsordner nach __website/pyodide__.
+2. Ergänze den Ordner im bestehenden Pyodide-Plugin:
+
+    ```ts title="siteConfig.ts"
+    import type { PluginOptions } from '@tdev/pyodide-code/plugin';
+
+    plugins: [
+        [
+            require.resolve('@tdev/pyodide-code/plugin'),
+            {
+                extensions: [
+                    './website/pyodide/meine-erweiterung'
+                ]
+            } satisfies PluginOptions
+        ]
+    ]
+    ```
+
+3. Starte den Entwicklungsserver neu. Die Komponenten können danach wie in den Beispielen im MDX importiert werden.
+
+</Steps>
+
+### Eigene Erweiterungen weitergeben
+
+Jeder Erweiterungsordner enthält eine __extension.json__ mit den Einstiegspunkten:
+
+```json title="website/pyodide/meine-erweiterung/extension.json"
+{
+    "name": "meine_erweiterung",
+    "worker": "./worker.ts",
+    "client": "./client.ts"
+}
+```
+
+`name`
+: Eindeutiger Name der Erweiterung für die Nachrichtenübertragung. Er ist unabhängig von den Namen der bereitgestellten Python-Module.
+`worker`
+: Einstiegspunkt für die Python-Module, relativ zum Erweiterungsordner.
+`client`
+: Einstiegspunkt für den Browser-Store und dessen Nachrichtenverarbeitung, relativ zum Erweiterungsordner.
+
+Ordnerpfade in `extensions` werden relativ zum Docusaurus-Seitenverzeichnis aufgelöst. Alternativ ist weiterhin ein Eintrag mit `name`, `worker` und `client` direkt in der Plugin-Konfiguration möglich; dessen Einstiegspfade gelten relativ zum Seitenverzeichnis oder können mit `require.resolve()` angegeben werden.
+
+Im Erweiterungsordner liegen nur __extension.json__, __client.ts__, __worker.ts__, __protocol.ts__ und __README.md__ sowie der Ordner __src__. Dort sind Komponenten und Styles unter __components__, Modelle unter __models__ und Stores unter __store__ organisiert. Weitere Ordner wie __worker__, __rendering__ und __python__ kommen nach Bedarf hinzu. Innerhalb der Erweiterung werden relative Imports verwendet. Abhängigkeiten auf Teaching Dev werden über die Framework-Aliase importiert. So benötigt die empfangende Website keine Anpassung ihres `SiteStore`.
+
+Das Plugin erzeugt getrennte Registries für Worker und Browser. `worker.ts` darf keine React-, DOM- oder Store-Abhängigkeiten importieren; gemeinsame Payload-Typen werden mit `import type` eingebunden. Beim Laden wird geprüft, ob die Worker-Einträge `createModules()` und die Browser-Einträge `createStore()` sowie `handleMessage()` bereitstellen. Ein ungültiger Export verhindert die Initialisierung und nennt die betroffene Erweiterung.
+
+### Python-Module im Worker
+
+`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die reservierten Namen `browser_input` und `webio` werden mit einer Fehlermeldung abgelehnt.
+
+Worker und Browser-Handler verwenden denselben Payload-Typ aus einer gemeinsamen __protocol.ts__. Die Typen prüfen den selbst geschriebenen Worker und Handler; es gibt keine automatische Laufzeitvalidierung des Payloads. Eine vollständige Umsetzung zeigt der [Worker der Uhr-Erweiterung](./03-clock.mdx#python-modul-im-worker).
+
+Der Factory-Kontext bietet:
+
+`editorId`
+: ID des ausführenden Editors.
+`send(targetId, payload)`
+: Sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein.
+`await sendAndWait(targetId, payload)`
+: Sendet eine Nachricht und wartet, bis der synchrone Browser-Handler sie verarbeitet hat. Verwende dies für grosse Animationszustände, damit sich keine ausstehenden Bilder ansammeln. Der Aufruf aus einer beendeten Ausführung wird abgelehnt.
+`events.source(targetId)`
+: Erzeugt eine Ereignisquelle für die aktuelle Ausführung. Ein Python-Handle stellt sie als `events` bereit, damit es mit den [Handlern aus `webio`](./02-webio.mdx#handler-registrieren) verwendet werden kann.
+
+Für den Rückweg ruft der Browser-Store `context.events.emit({ extension: context.name, targetId }, { type, payload })` auf. `webio.run()` meldet die Quellen der registrierten Python-Handler an; Ereignisse gehen an das dafür laufende Programm.
+
+Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
+
+Schlagen sowohl die Ausführung als auch deren Abschluss fehl, erscheint der ursprüngliche Ausführungsfehler zuerst. Zusätzliche Fehler beim Zustellen von Nachrichten oder beim Aufräumen werden darunter angezeigt. Die weiteren Aufräumschritte werden auch nach einem Fehler ausgeführt.
+
+`defineWorkerExtension(factory, pythonModules)`
+: Registriert zusätzlich Python-Quelltexte aus einem Dictionary mit Modulnamen und Quelltext. Das Framework-Modul `webio` und die JavaScript-Module aller Erweiterungen stehen vor den Python-Quelltexten bereit. Python-Module werden in der angegebenen Reihenfolge registriert; benötigte Python-Module müssen davor stehen. Die Quellen werden vor der Paketinstallation und dem Benutzerprogramm ausgeführt; optionale Pakete wie NumPy sollten deshalb erst in den Funktionen importiert werden, die sie benötigen. Der [Grid-Worker](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/grid/worker.ts) zeigt die Verbindung einer Python-Klasse mit einer JavaScript-Bridge.
+
+### Browser-Store und React
+
+`defineClientExtension<Payload, Store>()` verbindet die Store-Factory mit einem synchronen Nachrichten-Handler:
+
+`createStore(context)`
+: Erzeugt den Browser-Store einmal beim Initialisieren des `PyodideStore`. Die Factory darf weder einen Python-Worker starten noch DOM-Zugriffe voraussetzen, da sie auch beim Rendern auf dem Server aufgerufen wird.
+`handleMessage(store, message)`
+: Verarbeitet Nachrichten mit derselben Store-Instanz, die auch die React-Komponente verwendet. Der Handler läuft innerhalb einer MobX-Action.
+
+Der Factory-Kontext enthält:
+
+`root`
+: Root-Store der Website für benötigte Framework-Dienste.
+`name`
+: Konfigurierter Erweiterungsname. Verwende ihn beim Erzeugen von Browser-Ereignisquellen, damit die Zuordnung auch bei einem geänderten Namen stimmt.
+`events`
+: Ereignisverwaltung mit `isConnected(source)` und `emit(source, { type, payload })`. Eine Browser-Ereignisquelle hat die Form `{ extension: context.name, targetId }`.
+
+Die Nachricht enthält:
+
+`editorId`
+: ID des ausführenden Editors.
+`targetId`
+: Ziel-ID aus dem Aufruf von `send(targetId, payload)`.
+`timeStamp`
+: Zeitpunkt der Nachricht in Millisekunden seit der Unix-Epoche.
+`payload`
+: Daten der Erweiterung mit dem gemeinsam definierten Payload-Typ.
+
+`useExtensionStore(extension)`
+: Liefert der React-Komponente die Store-Instanz ihrer exportierten Client-Definition. Eine nicht konfigurierte Erweiterung führt zu einer Fehlermeldung.
+
+Die [Uhr-Erweiterung](./03-clock.mdx#browser-store-und-react) zeigt, wie Browser-Handler und React-Komponente dieselbe Store-Instanz verwenden.
+
+### Zustand und Lebensdauer
+
+Der `PyodideStore` besitzt pro konfigurierter Erweiterung eine Browser-Store-Instanz. Diese lebt mit der Anwendung und bleibt auch beim Navigieren sowie nach Ende oder Abbruch eines Skripts erhalten. Wie neue Python-Handles mit diesem Zustand umgehen, legt die Erweiterung fest; siehe [Zustand der Uhr](./03-clock.mdx#zustand-und-lebensdauer).
+
+Worker können zwischen Editoren wiederverwendet werden. Die registrierten JavaScript-Module erhalten pro Ausführung einen neuen Kontext. Bereits importierte Python-Hilfsmodule können jedoch alte Referenzen auf Module oder Handles behalten; deren Cache wird nicht rekursiv geleert. Solche Hilfsmodule sollen das Modul oder die Factory innerhalb der pro Ausführung aufgerufenen Funktion neu importieren und erst dann Handles anfordern. Auf Modulebene gespeicherte Factory-Referenzen bleiben sonst an den alten, bereits geschlossenen Kontext gebunden.
+
+Erweiterungen müssen eigene Timer und Hintergrundaufgaben vor Ende des Skripts beenden. Nachrichten nach Abschluss werden verworfen. **Abbrechen** beendet den Worker; ausstehende Nachrichten einer abgebrochenen oder ersetzten Ausführung werden durch die bestehende Ausführungsprüfung ignoriert. Das Framework stellt keine automatische Ressourcenverwaltung oder Hintergrunddienste für Erweiterungen bereit.
+
+
+## Installation
+
+:::info[`packages/tdev/pyodide-code`]
+Kopiere des `packages/tdev/pyodide-code`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder über `updateTdev.config.yaml` hinzufügen.
+:::
+
+
+import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
+
+1. Pyodide-Plugin und Dokument-Provider im `siteConfig.ts` registrieren:
+    ```ts title="siteConfig.ts"
+    const getSiteConfig: SiteConfigProvider = () => {
+        return {
+            plugins: [
+                require.resolve('@tdev/pyodide-code/plugin'),
+            ],
+            apiDocumentProviders: [
+                require.resolve('@tdev/pyodide-code/register'),
+            ]
+        };
+    };
+    ```
+2. ServiceWorker hinzufügen:  
+    Damit Eingaben von Benutzer:innen abgewartet werden können, braucht es einen Servie-Worker. Dieser muss direkt in den statischen Ordner [`static/pyodide.sw.js`](https://github.com/GBSL-Informatik/teaching-dev/blob/main/static/pyodide.sw.js) kopiert werden.
+    Bei Paket-Updates muss auch diese Datei aktualisiert werden, damit Frontend und ServiceWorker dasselbe Eingabeprotokoll verwenden.
+    :::details[`static/pyodide.sw.js`]
+    <CodeBlock language="js" title="pyodide.sw.js">
+        {pyodideSW}
+    </CodeBlock>
+    :::
+
+Danach muss erneut installiert werden:
+
+```bash
+yarn install
+```
+
+## Pyodide-Version konfigurieren
+
+Die exakte `pyodide`-Abhängigkeit in `package.json` legt die Laufzeitversion fest.
+`config.ts` leitet daraus `PYODIDE_VERSION` und `PYODIDE_INDEX_URL` ab. Worker und
+Main-Thread-Hook verwenden denselben ES-Modul-Loader und dieselbe CDN-Adresse.
+Das Docusaurus-Plugin prüft beim Start, dass die Version exakt angegeben ist,
+und konfiguriert den für Pyodide erforderlichen Modul-Worker.
+
+Zum Aktualisieren auf eine neue stabile Version:
+
+```bash
+yarn workspace @tdev/pyodide-code add pyodide@<version> --exact
+```
+
+Die geänderten Dateien `package.json` und `yarn.lock` müssen gemeinsam übernommen werden.
+
+### Docusaurus- und Rspack-Updates prüfen
+
+Der `ModuleWorker`-Konstruktor, der Chunk-Name `pyodide-worker` und die Parser- und
+SplitChunks-Konfiguration in `plugin.ts` gehören zusammen. Sie erhalten den
+ES-Modul-Worker und verhindern gemeinsame Chunks, die Rspack sonst über
+`importScripts()` laden würde. Nach Updates von Docusaurus, Rspack oder Pyodide
+muss ein Produktions-Build im Browser geprüft werden: Der Worker muss als Modul
+starten und Python einschliesslich Paketimporten und Eingaben ausführen können.

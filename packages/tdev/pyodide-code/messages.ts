@@ -1,3 +1,4 @@
+import type { EventSubscriptionMessage } from './events';
 import type { ExtensionMessage } from './extensions';
 
 export interface LogMessage {
@@ -19,7 +20,19 @@ export interface ClearMessage {
     type: 'clear';
 }
 
-export type Message = LogMessage | ErrorMessage | ClearMessage | ExtensionMessage;
+export interface ExecutionStartedMessage {
+    type: 'execution-started';
+    id: string;
+    executionId: number;
+}
+
+export type Message =
+    | LogMessage
+    | ErrorMessage
+    | ClearMessage
+    | ExtensionMessage
+    | EventSubscriptionMessage
+    | ExecutionStartedMessage;
 
 export interface Context {
     sendMessage: (message: Message) => void | Promise<void>;

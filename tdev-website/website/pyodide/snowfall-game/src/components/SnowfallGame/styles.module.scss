@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    margin-block: 1rem;
+}
+
+.scene {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    border-radius: var(--ifm-global-radius);
+
+    &:focus-visible {
+        outline: 3px solid var(--ifm-color-primary);
+        outline-offset: 4px;
+    }
+}
+
+.status {
+    color: var(--ifm-color-emphasis-700);
+    font-size: 0.875rem;
+}

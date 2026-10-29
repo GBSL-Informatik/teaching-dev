@@ -1,0 +1,5 @@
+{
+    "name": "grid",
+    "worker": "./worker.ts",
+    "client": "./client.ts"
+}
