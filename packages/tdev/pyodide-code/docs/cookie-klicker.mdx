@@ -14,7 +14,7 @@ Der Store verwaltet für jede `cookieId` ein eigenes MobX-Modell. Mehrere Cookie
 
 <CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev-components/CookieComponent';`]}>
 :::flex
-<CookieComponent cookieId="cookie-demo" />
+<CookieComponent cookieId="cookie" />
 ::br
 <CookieComponent cookieId="cookie-zwei" />
 :::
@@ -24,7 +24,7 @@ from random import randint
 from cookie_klicker import use_cookie
 from webio import on_click, on_event, on_key, run
 
-cookie = use_cookie('cookie-demo')
+cookie = use_cookie('cookie')
 zweiter_cookie = use_cookie('cookie-zwei')
 klicks = 0
 
