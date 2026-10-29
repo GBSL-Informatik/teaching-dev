@@ -23,6 +23,7 @@ from webio import on_click, on_event, on_key, run
 
 cookie = use_cookie('cookie-demo')
 zweiter_cookie = use_cookie('cookie-zwei')
+klicks = 0
 
 @on_event(source=[cookie.events, zweiter_cookie.events])
 def protokollieren(event):
@@ -30,7 +31,14 @@ def protokollieren(event):
 
 @on_click(cookie)
 def drehen(event):
+    global klicks
+    klicks += 1
     cookie.set_rotation(cookie.rotation + randint(0, 360))
+    if klicks % 3 == 0:
+        hue = randint(0, 359)
+        saturation = randint(50, 100)
+        lightness = randint(35, 65)
+        cookie.set_color(f'hsl({hue}, {saturation}%, {lightness}%)')
 
 @on_click(zweiter_cookie)
 def schrittweise_drehen(event):
@@ -54,7 +62,7 @@ Der Cookie wird anklickbar, sobald das Programm seine Ereignisquellen angemeldet
 
 `@on_key(target)` registriert einen generischen Handler für alle Tasten. Dasselbe gilt mit `None` oder `'*'` als zweitem Parameter. Ein anderer Tastenname filtert die Ereignisse, zum Beispiel `@on_key(target, 'ArrowLeft')`. Der Cookie sendet bei `keydown` den Tastennamen als `event.payload['key']`. Tastatureingaben gehen nur an den fokussierten Cookie: Wähle den zweiten Cookie mit Tab oder einem Klick aus. Die Pfeiltasten Links und Rechts drehen ihn jeweils um 5°; dabei wird das Scrollen der Seite verhindert. Enter und die Leertaste behalten ihre normale Button-Funktion.
 
-`use_cookie(id)` liefert innerhalb derselben Ausführung denselben Handle zurück. Seine lokale `rotation` beginnt bei null; `set_rotation()` normalisiert den Winkel auf `[0, 360)` und aktualisiert das Browser-Modell. Ein neuer Handle verändert die bisherige Anzeige erst mit seinem ersten Update.
+`use_cookie(id)` liefert innerhalb derselben Ausführung denselben Handle zurück. Seine lokale `rotation` beginnt bei null; `set_rotation()` normalisiert den Winkel auf `[0, 360)` und aktualisiert das Browser-Modell. `set_color(css_farbe)` ändert die Farbe des Cookies, beispielsweise mit `'hsl(120, 70%, 50%)'` oder `'#ff8800'`. Der erste Cookie erhält bei jedem dritten Klick eine zufällige HSL-Farbe. Rotation und Farbe können unabhängig voneinander aktualisiert werden. Ein neuer Handle verändert die bisherige Anzeige erst mit seinem ersten Update.
 
 Handler laufen nacheinander. Für absichtliche Wartezeiten kann ein Handler `async def` verwenden und `await asyncio.sleep(0.1)` aufrufen. Währenddessen können weitere Klicks empfangen werden; ihre Handler starten nach Abschluss des aktuellen Handlers. `time.sleep()`, synchrone Eingaben mit `input()` und lange Berechnungen blockieren dagegen den Empfang im Worker.
 

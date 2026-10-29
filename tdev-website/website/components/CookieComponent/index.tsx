@@ -41,7 +41,7 @@ const CookieComponent = observer(({ cookieId, className }: CookieComponentProps)
             >
                 <svg viewBox="0 0 200 200" aria-hidden="true" className={clsx(styles.image)}>
                     <g transform={cookie.rotationTransform}>
-                        <circle cx="100" cy="100" r="88" className={clsx(styles.dough)} />
+                        <circle cx="100" cy="100" r="88" fill={cookie.color} className={clsx(styles.dough)} />
                         {CHOCOLATE_CHIPS.map(([x, y]) => (
                             <circle key={`${x}-${y}`} cx={x} cy={y} r="10" className={clsx(styles.chip)} />
                         ))}

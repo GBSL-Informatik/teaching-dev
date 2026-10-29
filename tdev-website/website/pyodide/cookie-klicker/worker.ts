@@ -1,14 +1,18 @@
 import { defineWorkerExtension } from '@tdev/pyodide-code/extensions';
-import type { CookieUpdate } from './protocol';
+import { DEFAULT_COOKIE_COLOR, type CookieUpdate } from './protocol';
 
 export default defineWorkerExtension<CookieUpdate>((context) => {
     const createCookie = (id: string) => {
         const events = context.events.source(id);
         let rotation = 0;
+        let color = DEFAULT_COOKIE_COLOR;
         return {
             events,
             get rotation() {
                 return rotation;
+            },
+            get color() {
+                return color;
             },
             set_rotation: (value: number) => {
                 if (!Number.isFinite(value)) {
@@ -16,6 +20,13 @@ export default defineWorkerExtension<CookieUpdate>((context) => {
                 }
                 rotation = ((value % 360) + 360) % 360;
                 context.send(id, { rotation });
+            },
+            set_color: (value: string) => {
+                if (typeof value !== 'string' || !value.trim()) {
+                    throw new Error('Cookie color must be a non-empty CSS color string.');
+                }
+                color = value;
+                context.send(id, { color });
             }
         };
     };

@@ -1,7 +1,9 @@
 export const COOKIE_EXTENSION = 'cookie_klicker';
+export const DEFAULT_COOKIE_COLOR = 'var(--ifm-color-warning-light)';
 
 export interface CookieUpdate {
-    rotation: number;
+    rotation?: number;
+    color?: string;
 }
 
 export interface CookieClick {

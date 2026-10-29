@@ -1,12 +1,18 @@
 import { action, computed, observable } from 'mobx';
 import type CookieStore from '../stores/CookieStore';
-import { COOKIE_EXTENSION, type CookieClick, type CookieKey } from '../pyodide/cookie-klicker/protocol';
+import {
+    COOKIE_EXTENSION,
+    DEFAULT_COOKIE_COLOR,
+    type CookieClick,
+    type CookieKey
+} from '../pyodide/cookie-klicker/protocol';
 import type { EventSource } from '@tdev/pyodide-code/events';
 
 const CLICK_EVENT: CookieClick = { type: 'click', payload: null };
 
 export default class Cookie {
     @observable accessor rotation = 0;
+    @observable accessor color = DEFAULT_COOKIE_COLOR;
     readonly eventSource: EventSource;
 
     constructor(
@@ -29,6 +35,11 @@ export default class Cookie {
     @action
     setRotation(rotation: number) {
         this.rotation = rotation;
+    }
+
+    @action
+    setColor(color: string) {
+        this.color = color;
     }
 
     handleClick = () => {
