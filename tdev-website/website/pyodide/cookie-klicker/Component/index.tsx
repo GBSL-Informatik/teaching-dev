@@ -1,8 +1,8 @@
 import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
-import cookieExtension from '../client';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { KeyboardEvent } from 'react';
+import cookieExtension from '../client';
 import styles from './styles.module.scss';
 
 interface CookieComponentProps {

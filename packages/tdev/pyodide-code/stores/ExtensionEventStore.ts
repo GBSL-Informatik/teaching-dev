@@ -15,10 +15,13 @@ interface Subscription {
 }
 
 export default class ExtensionEventStore {
+    private readonly store: PyodideStore;
     private readonly subscriptions = observable.map<string, Subscription>([], { deep: false });
     private readonly pendingDeliveries = new Map<number, number>();
 
-    constructor(private readonly store: PyodideStore) {}
+    constructor(store: PyodideStore) {
+        this.store = store;
+    }
 
     isConnected(source: EventSource): boolean {
         return this.subscriptions.has(eventSourceKey(source));
@@ -83,15 +86,20 @@ export default class ExtensionEventStore {
             this.fail(owner, error);
             return 'inactive';
         } finally {
-            const remaining = this.pendingDeliveries.get(owner.executionId);
-            if (remaining !== undefined) {
-                if (remaining <= 1) {
-                    this.pendingDeliveries.delete(owner.executionId);
-                } else {
-                    this.pendingDeliveries.set(owner.executionId, remaining - 1);
-                }
-            }
+            this.finishDelivery(owner.executionId);
         }
+    }
+
+    private finishDelivery(executionId: number) {
+        const pending = this.pendingDeliveries.get(executionId);
+        if (pending === undefined) {
+            return;
+        }
+        if (pending <= 1) {
+            this.pendingDeliveries.delete(executionId);
+            return;
+        }
+        this.pendingDeliveries.set(executionId, pending - 1);
     }
 
     @action

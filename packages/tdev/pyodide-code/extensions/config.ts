@@ -51,6 +51,27 @@ export const resolveExtensions = (siteDir: string, options: PluginOptions): Exte
     });
 };
 
+export const createRegistrySource = (extensions: ExtensionConfig[], side: 'worker' | 'client'): string => {
+    const imports = extensions.map(
+        (extension, index) => `import extension${index} from ${JSON.stringify(extension[side])};`
+    );
+    const methods = side === 'worker' ? ['createModules'] : ['createStore', 'handleMessage'];
+    const validations = extensions.map((extension, index) => {
+        const requiredMethods = methods.map((method) => `${method}()`).join(' and ');
+        const message = `Pyodide extension "${extension.name}": ${side} entry must default-export an object with ${requiredMethods}.`;
+        const invalidMethods = methods
+            .map((method) => `typeof extension${index}?.${method} !== 'function'`)
+            .join(' || ');
+        return [`if (${invalidMethods}) {`, `    throw new Error(${JSON.stringify(message)});`, '}'].join(
+            '\n'
+        );
+    });
+    const registrations = extensions.map(
+        (extension, index) => `{ name: ${JSON.stringify(extension.name)}, extension: extension${index} }`
+    );
+    return [...imports, ...validations, `export default [${registrations.join(', ')}];`].join('\n');
+};
+
 const readExtensionDescriptor = (directory: string): ExtensionConfig => {
     const descriptorPath = path.join(directory, 'extension.json');
     let source: string;
@@ -80,25 +101,4 @@ const readExtensionDescriptor = (directory: string): ExtensionConfig => {
         );
     }
     return { name: descriptor.name, worker: descriptor.worker, client: descriptor.client };
-};
-
-export const createRegistrySource = (extensions: ExtensionConfig[], side: 'worker' | 'client'): string => {
-    const imports = extensions.map(
-        (extension, index) => `import extension${index} from ${JSON.stringify(extension[side])};`
-    );
-    const methods = side === 'worker' ? ['createModules'] : ['createStore', 'handleMessage'];
-    const validations = extensions.map((extension, index) => {
-        const requiredMethods = methods.map((method) => `${method}()`).join(' and ');
-        const message = `Pyodide extension "${extension.name}": ${side} entry must default-export an object with ${requiredMethods}.`;
-        const invalidMethods = methods
-            .map((method) => `typeof extension${index}?.${method} !== 'function'`)
-            .join(' || ');
-        return [`if (${invalidMethods}) {`, `    throw new Error(${JSON.stringify(message)});`, '}'].join(
-            '\n'
-        );
-    });
-    const registrations = extensions.map(
-        (extension, index) => `{ name: ${JSON.stringify(extension.name)}, extension: extension${index} }`
-    );
-    return [...imports, ...validations, `export default [${registrations.join(', ')}];`].join('\n');
 };

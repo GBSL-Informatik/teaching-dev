@@ -13,6 +13,8 @@ interface EventContext extends Context {
 }
 
 export default class WorkerEventSession {
+    private readonly context: EventContext;
+    private readonly extensionNames: readonly string[];
     private readonly sources = new Set<string>();
     private readonly queue: ExecutionEvent[] = [];
     private receiver?: (event: ExecutionEvent | undefined) => void;
@@ -20,10 +22,10 @@ export default class WorkerEventSession {
     private closed = false;
     private listening = false;
 
-    constructor(
-        private readonly context: EventContext,
-        private readonly extensionNames: readonly string[]
-    ) {}
+    constructor(context: EventContext, extensionNames: readonly string[]) {
+        this.context = context;
+        this.extensionNames = extensionNames;
+    }
 
     source(extension: string, targetId: string): ExecutionEventSource {
         if (this.closed) {

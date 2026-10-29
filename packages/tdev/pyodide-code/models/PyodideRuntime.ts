@@ -73,9 +73,9 @@ export default class PyodideRuntime {
             const cancel = (error?: Error) => {
                 if (error) {
                     fail(error);
-                } else {
-                    finish('inactive');
+                    return;
                 }
+                finish('inactive');
             };
             this.pendingEvents.add(cancel);
             this.api
