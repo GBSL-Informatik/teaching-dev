@@ -3,7 +3,7 @@ import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { KeyboardEvent, MouseEvent } from 'react';
-import snowfallExtension from '../client';
+import snowfallExtension from '../../../client';
 import styles from './styles.module.scss';
 
 interface SnowfallGameProps {

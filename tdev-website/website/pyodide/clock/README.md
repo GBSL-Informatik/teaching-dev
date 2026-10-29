@@ -13,7 +13,7 @@ Starte den Entwicklungsserver neu. Der Browser-Store wird automatisch angelegt; 
 ## Im Unterrichtsmaterial verwenden
 
 ```mdx
-import Clock from '@tdev/pyodide/clock/Component';
+import Clock from '@tdev/pyodide/clock/src/components/Clock';
 
 <Clock clockId="meine-uhr" />
 ```

@@ -1,7 +1,7 @@
 import type { EventSource } from '@tdev/pyodide-code/events';
 import { action, computed, observable } from 'mobx';
-import type CookieStore from './CookieStore';
-import { DEFAULT_COOKIE_COLOR, type CookieClick, type CookieKey } from './protocol';
+import { DEFAULT_COOKIE_COLOR, type CookieClick, type CookieKey } from '../../protocol';
+import type CookieStore from '../stores/CookieStore';
 
 const CLICK_EVENT: CookieClick = { type: 'click', payload: null };
 

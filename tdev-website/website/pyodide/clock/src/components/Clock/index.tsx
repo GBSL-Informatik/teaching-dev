@@ -4,7 +4,7 @@ import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import clockExtension from '../client';
+import clockExtension from '../../../client';
 import Pointer from './Pointer';
 import styles from './styles.module.scss';
 

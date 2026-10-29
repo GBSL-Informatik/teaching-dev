@@ -1,7 +1,7 @@
-import source from '!!raw-loader!./grid.py';
+import source from '!!raw-loader!./src/python/grid.py';
 import { defineWorkerExtension } from '@tdev/pyodide-code/extensions';
 import type { GridFrame } from './protocol';
-import WorkerGrid from './WorkerGrid';
+import WorkerGrid from './src/worker/WorkerGrid';
 
 export default defineWorkerExtension<GridFrame>(
     (context) => ({

@@ -1,4 +1,4 @@
-import type { GridFrame } from './protocol';
+import type { GridFrame } from '../../protocol';
 
 export default class GridRenderer {
     readonly canvas: HTMLCanvasElement;

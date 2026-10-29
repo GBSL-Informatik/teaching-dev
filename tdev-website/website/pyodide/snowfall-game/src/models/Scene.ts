@@ -1,7 +1,7 @@
 import type { EventSource } from '@tdev/pyodide-code/events';
 import { action, computed, observableRef } from 'mobx';
-import { DEFAULT_SCENE_CONFIGURATION, type SceneSnapshot } from './protocol';
-import type SceneStore from './SceneStore';
+import { DEFAULT_SCENE_CONFIGURATION, type SceneSnapshot } from '../../protocol';
+import type SceneStore from '../stores/SceneStore';
 
 export default class Scene {
     readonly id: string;

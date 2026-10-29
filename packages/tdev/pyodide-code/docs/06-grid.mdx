@@ -4,13 +4,13 @@ page_id: 923acc02-a517-4492-9cd5-609e74aa69de
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
 import Steps from '@tdev-components/Steps';
-import Grid from '@tdev/pyodide/grid/Component';
+import Grid from '@tdev/pyodide/grid/src/components/Grid';
 
 # Grid
 
 Die Erweiterung `grid` stellt farbige Zellen auf einer Zeichenfläche dar. Einzelne Zellen lassen sich wie im [Brython-Modul](/docs/packages/tdev/brython-code/libraries/grid) ansprechen. Änderungen werden mit `await board.render()` gemeinsam angezeigt.
 
-<CodeShowcase lang="md" imports={[`import Grid from '@tdev/pyodide/grid/Component';`]}>
+<CodeShowcase lang="md" imports={[`import Grid from '@tdev/pyodide/grid/src/components/Grid';`]}>
 <Grid gridId="small-grid" />
 
 ```py live_pyo id=24e6722f-243c-4c8a-9d24-8f195d5b57f7 title=Zellen_und_Text
@@ -29,7 +29,7 @@ await board.render()
 
 Für viele Änderungen pro Bild werden Farbwerte als Zahlen in einem zusammenhängenden Array übergeben. NumPy berechnet sie mit Array-Operationen; eine Python-Schleife über jede Zelle würde die Berechnung wieder verlangsamen. `import numpy` lädt das Paket vor der Ausführung automatisch.
 
-<CodeShowcase lang="md" imports={[`import Grid from '@tdev/pyodide/grid/Component';`]} collapseCode>
+<CodeShowcase lang="md" imports={[`import Grid from '@tdev/pyodide/grid/src/components/Grid';`]} collapseCode>
 <Grid gridId="large-grid" />
 
 ```py live_pyo id=cf6ba599-ad00-46e7-b442-4d914a109a13 title=Eine_Million_Zellen

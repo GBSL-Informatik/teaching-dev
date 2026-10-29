@@ -1,5 +1,5 @@
 import { action, observable, observableRef } from 'mobx';
-import { Clock } from './Clock';
+import { Clock } from '../models/Clock';
 
 class ClockStore {
     @observableRef accessor defaultClock = new Clock();

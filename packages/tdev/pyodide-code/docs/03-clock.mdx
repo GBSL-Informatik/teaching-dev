@@ -4,14 +4,14 @@ page_id: 9a511817-a51f-4195-8ce1-ecfe9ae8b541
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
 import Steps from '@tdev-components/Steps';
-import Clock from '@tdev/pyodide/clock/Component';
+import Clock from '@tdev/pyodide/clock/src/components/Clock';
 import CodeBlock from '@theme/CodeBlock';
 
 # Interaktive Uhr
 
 Python steuert die Zeiger einer React-Komponente. Alle Winkel sind in Grad angegeben.
 
-<CodeShowcase lang="md" imports={[`import Clock from '@tdev/pyodide/clock/Component';`]}>
+<CodeShowcase lang="md" imports={[`import Clock from '@tdev/pyodide/clock/src/components/Clock';`]}>
 <Clock clockId="sbb-uhr" />
 
 ```py live_pyo id=e63340b1-3821-4b70-99af-602272a48d8d title=Interaktive_Uhr
@@ -85,11 +85,11 @@ import clockClientSource from '!!raw-loader!@tdev/pyodide/clock/client.ts';
     {clockClientSource}
 </CodeBlock>
 
-Der Handler aktualisiert den [ClockStore](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/ClockStore.ts) und dessen [Clock-Modelle](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/Clock.ts). Die [React-Komponente](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/Component/index.tsx) greift innerhalb ihrer Funktion auf denselben Store zu:
+Der Handler aktualisiert den [ClockStore](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/store/ClockStore.ts) und dessen [Clock-Modelle](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/models/Clock.ts). Die [React-Komponente](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/components/Clock/index.tsx) greift innerhalb ihrer Funktion auf denselben Store zu:
 
-```tsx title="website/pyodide/clock/Component/index.tsx"
+```tsx title="website/pyodide/clock/src/components/Clock/index.tsx"
 import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
-import clockExtension from '../client';
+import clockExtension from '../../../client';
 
 const clockStore = useExtensionStore(clockExtension);
 const clock = clockStore.useClock(clockId);

@@ -6,7 +6,7 @@ import {
     type SceneConfiguration,
     type SceneSnapshot,
     type SnowflakeSnapshot
-} from './protocol';
+} from '../../protocol';
 
 interface ColorOptions {
     color?: string;

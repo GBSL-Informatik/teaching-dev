@@ -1,8 +1,8 @@
 import type { EventSource } from '@tdev/pyodide-code/events';
 import { computed } from 'mobx';
-import type GridRenderer from './GridRenderer';
-import type GridStore from './GridStore';
-import type { GridFrame } from './protocol';
+import type { GridFrame } from '../../protocol';
+import type GridRenderer from '../rendering/GridRenderer';
+import type GridStore from '../stores/GridStore';
 
 export default class Grid {
     readonly id: string;

@@ -13,7 +13,7 @@ Starte den Entwicklungsserver neu.
 ## Im Unterrichtsmaterial verwenden
 
 ```mdx
-import Grid from '@tdev/pyodide/grid/Component';
+import Grid from '@tdev/pyodide/grid/src/components/Grid';
 
 <Grid gridId="board" />
 ```

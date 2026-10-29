@@ -4,13 +4,13 @@ page_id: 5aeee167-b38a-4c16-ad00-21aa4686a136
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
 import Steps from '@tdev-components/Steps';
-import SnowfallGame from '@tdev/pyodide/snowfall-game/Component';
+import SnowfallGame from '@tdev/pyodide/snowfall-game/src/components/SnowfallGame';
 
 # Schneefall-Spiel
 
 Mit `@gameloop` aktualisiert Python eine Szene regelmässig und verarbeitet dabei Browser-Ereignisse. Klicke auf eine Schneeflocke, um sie zu entfernen.
 
-<CodeShowcase lang="md" imports={[`import SnowfallGame from '@tdev/pyodide/snowfall-game/Component';`]} collapseCode>
+<CodeShowcase lang="md" imports={[`import SnowfallGame from '@tdev/pyodide/snowfall-game/src/components/SnowfallGame';`]} collapseCode>
 <SnowfallGame sceneId="snowfall" />
 
 ```py live_pyo id=8ee3ce4d-6f41-43e4-afd8-17da3141e3d6 title=Schneefall

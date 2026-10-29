@@ -13,7 +13,7 @@ Starte den Entwicklungsserver neu. Der Browser-Store wird automatisch angelegt; 
 ## Im Unterrichtsmaterial verwenden
 
 ```mdx
-import Cookie from '@tdev/pyodide/cookie-klicker/Component';
+import Cookie from '@tdev/pyodide/cookie-klicker/src/components/Cookie';
 
 <Cookie cookieId="mein-cookie" />
 ```

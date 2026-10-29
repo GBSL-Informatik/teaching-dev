@@ -7,7 +7,7 @@ import {
     type GridCells,
     type GridFrame,
     type GridText
-} from './protocol';
+} from '../../protocol';
 
 const TRANSPARENT = 'rgba(0,0,0,0)';
 const DEFAULT_TEXT = { text: '', color: 'black', scale: 0.8 };

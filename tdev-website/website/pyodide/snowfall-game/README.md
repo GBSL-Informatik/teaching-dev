@@ -13,7 +13,7 @@ Starte den Entwicklungsserver neu. Der Browser-Store wird automatisch angelegt.
 ## Im Unterrichtsmaterial verwenden
 
 ```mdx
-import SnowfallGame from '@tdev/pyodide/snowfall-game/Component';
+import SnowfallGame from '@tdev/pyodide/snowfall-game/src/components/SnowfallGame';
 
 <SnowfallGame sceneId="snowfall" />
 ```

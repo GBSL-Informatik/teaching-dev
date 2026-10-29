@@ -197,7 +197,7 @@ Jeder Erweiterungsordner enthält eine __extension.json__ mit den Einstiegspunkt
 
 Ordnerpfade in `extensions` werden relativ zum Docusaurus-Seitenverzeichnis aufgelöst. Alternativ ist weiterhin ein Eintrag mit `name`, `worker` und `client` direkt in der Plugin-Konfiguration möglich; dessen Einstiegspfade gelten relativ zum Seitenverzeichnis oder können mit `require.resolve()` angegeben werden.
 
-Komponenten, Modelle, Stores und Styles gehören in denselben Erweiterungsordner und verwenden untereinander relative Imports. Abhängigkeiten auf Teaching Dev werden über die Framework-Aliase importiert. So benötigt die empfangende Website keine Anpassung ihres `SiteStore`.
+Im Erweiterungsordner liegen nur __extension.json__, __client.ts__, __worker.ts__, __protocol.ts__ und __README.md__ sowie der Ordner __src__. Dort sind Komponenten und Styles unter __components__, Modelle unter __models__ und Stores unter __store__ organisiert. Weitere Ordner wie __worker__, __rendering__ und __python__ kommen nach Bedarf hinzu. Innerhalb der Erweiterung werden relative Imports verwendet. Abhängigkeiten auf Teaching Dev werden über die Framework-Aliase importiert. So benötigt die empfangende Website keine Anpassung ihres `SiteStore`.
 
 Das Plugin erzeugt getrennte Registries für Worker und Browser. `worker.ts` darf keine React-, DOM- oder Store-Abhängigkeiten importieren; gemeinsame Payload-Typen werden mit `import type` eingebunden. Beim Laden wird geprüft, ob die Worker-Einträge `createModules()` und die Browser-Einträge `createStore()` sowie `handleMessage()` bereitstellen. Ein ungültiger Export verhindert die Initialisierung und nennt die betroffene Erweiterung.
 

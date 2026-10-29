@@ -1,6 +1,6 @@
 import type { ClientContext } from '@tdev/pyodide-code/extensions';
 import { action, observable } from 'mobx';
-import Scene from './Scene';
+import Scene from '../models/Scene';
 
 export default class SceneStore {
     readonly context: ClientContext;

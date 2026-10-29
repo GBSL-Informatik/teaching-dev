@@ -1,6 +1,6 @@
 import { defineWorkerExtension } from '@tdev/pyodide-code/extensions';
 import type { SceneSnapshot } from './protocol';
-import WorkerScene from './WorkerScene';
+import WorkerScene from './src/worker/WorkerScene';
 
 export default defineWorkerExtension<SceneSnapshot>((context) => {
     const scenes = new Map<string, WorkerScene>();

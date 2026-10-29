@@ -1,8 +1,8 @@
 import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
 import clsx from 'clsx';
 import { useEffect, useState, type KeyboardEvent, type MouseEvent } from 'react';
-import gridExtension from '../client';
-import GridRenderer from '../GridRenderer';
+import gridExtension from '../../../client';
+import GridRenderer from '../../rendering/GridRenderer';
 import styles from './styles.module.scss';
 
 interface GridProps {

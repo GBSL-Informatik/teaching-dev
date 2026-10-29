@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import type { Clock } from '../../Clock';
+import type { Clock } from '../../../models/Clock';
 import styles from '../styles.module.scss';
 
 interface PointerProps {

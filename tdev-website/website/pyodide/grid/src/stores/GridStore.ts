@@ -1,6 +1,6 @@
 import type { ClientContext } from '@tdev/pyodide-code/extensions';
 import { action, observable } from 'mobx';
-import Grid from './Grid';
+import Grid from '../models/Grid';
 
 export default class GridStore {
     readonly context: ClientContext;

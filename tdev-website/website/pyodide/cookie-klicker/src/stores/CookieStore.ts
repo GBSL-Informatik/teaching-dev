@@ -1,6 +1,6 @@
 import type { ClientContext } from '@tdev/pyodide-code/extensions';
 import { action, observable } from 'mobx';
-import Cookie from './Cookie';
+import Cookie from '../models/Cookie';
 
 export default class CookieStore {
     readonly context: ClientContext;
