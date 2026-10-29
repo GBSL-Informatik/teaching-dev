@@ -24,16 +24,25 @@ _started = False
 _stopping = False
 
 
-def on_event(event_type, *, source):
-    if not isinstance(event_type, str) or not event_type:
-        raise ValueError('An event needs a non-empty type.')
+def on_event(event_type=None, *, source):
+    """Register on one or more sources; None and '*' match every event type."""
+    if event_type is None:
+        event_type = '*'
+    if not isinstance(event_type, str):
+        raise TypeError('An event type must be a string or None.')
+    if not event_type:
+        raise ValueError('An event type must not be empty; use None or omit it for all events.')
+    sources = tuple(source) if isinstance(source, (list, tuple)) else (source,)
+    if not sources:
+        raise ValueError('An event handler needs at least one source.')
 
     def register(handler):
         if _started:
             raise RuntimeError('Register handlers before calling webio.run().')
         if not callable(handler):
             raise TypeError('An event handler must be callable.')
-        _handlers.append((event_type, source, handler))
+        for event_source in sources:
+            _handlers.append((event_type, event_source, handler))
         return handler
 
     return register
@@ -104,9 +113,9 @@ async def run():
             for event_type, source, handler in _handlers:
                 if _stopping:
                     break
-                if (event.type, event.extension, event.target_id) != (
-                    event_type, source.extension, source.targetId
-                ):
+                if event_type != '*' and event.type != event_type:
+                    continue
+                if (event.extension, event.target_id) != (source.extension, source.targetId):
                     continue
                 result = handler(event)
                 if inspect.isawaitable(result):

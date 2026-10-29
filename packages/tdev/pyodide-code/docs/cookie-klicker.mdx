@@ -19,10 +19,14 @@ Der Store verwaltet für jede `cookieId` ein eigenes MobX-Modell. Mehrere Cookie
 ```py live_pyo id=62007a34-9647-4c62-83bd-7a0f829e502a title=Cookie_Klicker
 from random import randint
 from cookie_klicker import use_cookie
-from webio import on_click, on_key, run
+from webio import on_click, on_event, on_key, run
 
 cookie = use_cookie('cookie-demo')
 zweiter_cookie = use_cookie('cookie-zwei')
+
+@on_event(source=[cookie.events, zweiter_cookie.events])
+def protokollieren(event):
+    print(f'{event.target_id}: {event.type}, payload={event.payload}')
 
 @on_click(cookie)
 def drehen(event):
@@ -43,6 +47,8 @@ def nach_rechts_drehen(event):
 await run()
 ```
 </CodeShowcase>
+
+Der gemeinsame Logger gibt jedes Ereignis beider Cookies im Editor aus, einschliesslich Tasten ohne eigene Spielaktion. `@on_event(source=[cookie.events, zweiter_cookie.events])` empfängt alle Ereignistypen der angegebenen Quellen. Der optionale Ereignistyp ist standardmässig `None`; explizites `None` oder `'*'` haben dieselbe Bedeutung. `source` akzeptiert weiterhin auch eine einzelne Quelle; mit einem konkreten Ereignistyp wie `'click'` werden nur passende Ereignisse zugestellt.
 
 Der Cookie wird anklickbar, sobald das Programm seine Ereignisquellen angemeldet hat. Eine Ziel-ID kann gleichzeitig nur von einem laufenden Programm für Ereignisse verwendet werden. Ein zweiter Controller erhält eine Fehlermeldung. Nach Ende oder Abbruch werden die Zuordnungen entfernt; alte Klicks werden nicht an einen Neustart weitergegeben.
 
