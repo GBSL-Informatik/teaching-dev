@@ -30,6 +30,9 @@ const SnowfallGame = observer(({ sceneId, className }: SnowfallGameProps) => {
     };
 
     const handleKeyDown = (event: KeyboardEvent<SVGSVGElement>) => {
+        if (!scene.isConnected) {
+            return;
+        }
         if (SCROLL_KEYS.includes(event.key)) {
             event.preventDefault();
         }
