@@ -8,3 +8,10 @@ export interface CookieClick {
     type: 'click';
     payload: null;
 }
+
+export interface CookieKey {
+    type: 'key';
+    payload: {
+        key: string;
+    };
+}

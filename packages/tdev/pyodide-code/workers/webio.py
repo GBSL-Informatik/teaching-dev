@@ -29,6 +29,27 @@ def on_click(target):
     return on_event('click', source=target.events)
 
 
+def on_key(target, key=None):
+    """Register for every key with None or '*', or only the specified key."""
+    if key is None or key == '*':
+        return on_event('key', source=target.events)
+    if not isinstance(key, str) or not key:
+        raise ValueError('A key filter must be a non-empty string.')
+
+    def register(handler):
+        if not callable(handler):
+            raise TypeError('An event handler must be callable.')
+
+        def filtered(event):
+            if event.payload.get('key') == key:
+                return handler(event)
+
+        on_event('key', source=target.events)(filtered)
+        return handler
+
+    return register
+
+
 def stop():
     """Finish after the active handler, or wake an idle event receiver."""
     global _stopping

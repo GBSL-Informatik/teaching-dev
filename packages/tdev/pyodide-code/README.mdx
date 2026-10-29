@@ -165,7 +165,7 @@ Der Store verwaltet für jede `cookieId` ein eigenes MobX-Modell. Mehrere Cookie
 ```py live_pyo id=62007a34-9647-4c62-83bd-7a0f829e502a title=Cookie_Klicker
 from random import randint
 from cookie_klicker import use_cookie
-from webio import on_click, run
+from webio import on_click, on_key, run
 
 cookie = use_cookie('cookie-demo')
 zweiter_cookie = use_cookie('cookie-zwei')
@@ -178,11 +178,21 @@ def drehen(event):
 def schrittweise_drehen(event):
     zweiter_cookie.set_rotation(zweiter_cookie.rotation + 30)
 
+@on_key(zweiter_cookie, 'ArrowLeft')
+def nach_links_drehen(event):
+    zweiter_cookie.set_rotation(zweiter_cookie.rotation - 5)
+
+@on_key(zweiter_cookie, 'ArrowRight')
+def nach_rechts_drehen(event):
+    zweiter_cookie.set_rotation(zweiter_cookie.rotation + 5)
+
 await run()
 ```
 </CodeShowcase>
 
 Der Cookie wird anklickbar, sobald das Programm seine Ereignisquellen angemeldet hat. Eine Ziel-ID kann gleichzeitig nur von einem laufenden Programm für Ereignisse verwendet werden. Ein zweiter Controller erhält eine Fehlermeldung. Nach Ende oder Abbruch werden die Zuordnungen entfernt; alte Klicks werden nicht an einen Neustart weitergegeben.
+
+`@on_key(target)` registriert einen generischen Handler für alle Tasten. Dasselbe gilt mit `None` oder `'*'` als zweitem Parameter. Ein anderer Tastenname filtert die Ereignisse, zum Beispiel `@on_key(target, 'ArrowLeft')`. Der Cookie sendet bei `keydown` den Tastennamen als `event.payload['key']`. Tastatureingaben gehen nur an den fokussierten Cookie: Wähle den zweiten Cookie mit Tab oder einem Klick aus. Die Pfeiltasten Links und Rechts drehen ihn jeweils um 5°; dabei wird das Scrollen der Seite verhindert. Enter und die Leertaste behalten ihre normale Button-Funktion.
 
 `use_cookie(id)` liefert innerhalb derselben Ausführung denselben Handle zurück. Seine lokale `rotation` beginnt bei null; `set_rotation()` normalisiert den Winkel auf `[0, 360)` und aktualisiert das Browser-Modell. Ein neuer Handle verändert die bisherige Anzeige erst mit seinem ersten Update.
 

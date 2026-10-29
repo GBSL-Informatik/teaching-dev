@@ -1,6 +1,6 @@
 import { action, computed, observable } from 'mobx';
 import type CookieStore from '../stores/CookieStore';
-import { COOKIE_EXTENSION, type CookieClick } from '../pyodide/cookie-klicker/protocol';
+import { COOKIE_EXTENSION, type CookieClick, type CookieKey } from '../pyodide/cookie-klicker/protocol';
 import type { EventSource } from '@tdev/pyodide-code/events';
 
 const CLICK_EVENT: CookieClick = { type: 'click', payload: null };
@@ -34,4 +34,9 @@ export default class Cookie {
     handleClick = () => {
         void this.store.pyodideStore?.events.emit(this.eventSource, CLICK_EVENT);
     };
+
+    handleKey(key: string) {
+        const event: CookieKey = { type: 'key', payload: { key } };
+        void this.store.pyodideStore?.events.emit(this.eventSource, event);
+    }
 }

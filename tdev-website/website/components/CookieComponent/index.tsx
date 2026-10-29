@@ -1,6 +1,7 @@
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import type { KeyboardEvent } from 'react';
 import styles from './styles.module.scss';
 
 interface CookieComponentProps {
@@ -21,6 +22,12 @@ const CHOCOLATE_CHIPS = [
 const CookieComponent = observer(({ cookieId, className }: CookieComponentProps) => {
     const siteStore = useStore('siteStore');
     const cookie = siteStore.cookieStore.useCookie(cookieId);
+    const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
+        }
+        cookie.handleKey(event.key);
+    };
 
     return (
         <div className={clsx(styles.container, className)}>
@@ -30,6 +37,7 @@ const CookieComponent = observer(({ cookieId, className }: CookieComponentProps)
                 aria-label={`Cookie ${cookieId} anklicken`}
                 disabled={!cookie.isConnected}
                 onClick={cookie.handleClick}
+                onKeyDown={handleKeyDown}
             >
                 <svg viewBox="0 0 200 200" aria-hidden="true" className={clsx(styles.image)}>
                     <g transform={cookie.rotationTransform}>
