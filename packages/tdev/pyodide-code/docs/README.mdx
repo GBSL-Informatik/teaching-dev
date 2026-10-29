@@ -208,7 +208,7 @@ import clockWorkerSource from '!!raw-loader!@tdev/pyodide/clock/worker.ts';
     {clockWorkerSource}
 </CodeBlock>
 
-`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind, hier `clock`. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und der interne Name `browser_input` werden mit einer Fehlermeldung abgelehnt.
+`defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind, hier `clock`. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die reservierten Namen `browser_input` und `webio` werden mit einer Fehlermeldung abgelehnt.
 
 Der Factory-Kontext bietet:
 
