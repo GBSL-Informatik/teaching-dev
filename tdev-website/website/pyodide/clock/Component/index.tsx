@@ -1,6 +1,7 @@
 import Card from '@tdev-components/shared/Card';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
-import { useStore } from '@tdev-hooks/useStore';
+import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
+import clockExtension from '../client';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import Pointer from './Pointer';
@@ -12,8 +13,8 @@ interface Props {
 
 const Clock = observer((props: Props) => {
     const { clockId } = props;
-    const siteStore = useStore('siteStore');
-    const clock = siteStore.clockStore.useClock(clockId);
+    const clockStore = useExtensionStore(clockExtension);
+    const clock = clockStore.useClock(clockId);
     return (
         <Card
             classNames={{ body: clsx(styles.clockCard), card: clsx(styles.card) }}

@@ -4,14 +4,14 @@ sidebar_position: 10
 ---
 
 import CodeShowcase from '@tdev-components/CodeShowcase';
-import CookieComponent from '@tdev-components/CookieComponent';
+import CookieComponent from '@tdev/pyodide/cookie-klicker/Component';
 import Steps from '@tdev-components/Steps';
 
 # Cookie-Klicker: Browser-Ereignisse in Python
 
 Mit `webio` reagiert Python auf Klicks und Tastatureingaben aus dem Browser. Starte das Programm und klicke auf den Cookie:
 
-<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev-components/CookieComponent';`]}>
+<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev/pyodide/cookie-klicker/Component';`]}>
 <CookieComponent cookieId="cookie-einstieg" />
 
 ```py live_pyo id=c7848c97-6b5e-4604-afa7-510e53d8d678 title=Auf_Klicks_reagieren
@@ -28,13 +28,13 @@ await run()
 ```
 </CodeShowcase>
 
-`webio` gehört zum Pyodide-Package. Die Cookie-Komponente und das Python-Modul `cookie_klicker` sind eine Erweiterung dieser Dokumentationswebsite. Für eine eigene Website ist die [Einrichtung unten](#auf-der-eigenen-website-einrichten) erforderlich.
+`webio` gehört zum Pyodide-Package. Die Cookie-Komponente und das Python-Modul `cookie_klicker` gehören zur kopierbaren Cookie-Erweiterung dieser Dokumentationswebsite. Für eine eigene Website ist die [Einrichtung unten](#auf-der-eigenen-website-einrichten) erforderlich.
 
 ## Mehrere Cookies und Tastatureingaben
 
 Für die Pfeiltasten muss der zweite Cookie fokussiert sein, etwa durch [[Tab]] oder einen Klick.
 
-<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev-components/CookieComponent';`]} collapseCode>
+<CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev/pyodide/cookie-klicker/Component';`]} collapseCode>
 :::flex
 <CookieComponent cookieId="cookie" />
 ::br
@@ -136,39 +136,21 @@ Fehler in Handlern und überfüllte Ereigniswarteschlangen beenden die betroffen
 
 ## Auf der eigenen Website einrichten
 
-Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation). Die Cookie-Erweiterung benötigt zusätzlich die React-Komponente, ihren Browser-Zustand und die beiden Erweiterungs-Einstiegspunkte.
+Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
 
 <Steps>
 
-1. Übernimm folgende Dateien aus der Dokumentationswebsite in dieselben Unterverzeichnisse deines eigenen __website__-Ordners:
-    - [components/CookieComponent](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/components/CookieComponent), einschliesslich Stylesheet.
-    - [models/Cookie.ts](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/models/Cookie.ts) und [stores/CookieStore.ts](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/stores/CookieStore.ts).
-    - [pyodide/cookie-klicker](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/cookie-klicker) mit `worker.ts`, `client.ts` und `protocol.ts`.
-2. Ergänze im vorhandenen `SiteStore` den Cookie-Store und initialisiere ihn mit dem Root-Store:
-
-    ```ts title="website/stores/SiteStore.ts"
-    import type { RootStore } from '@tdev-stores/rootStore';
-    import CookieStore from './CookieStore';
-
-    export default class SiteStore {
-        readonly cookieStore: CookieStore;
-
-        constructor(root: RootStore) {
-            this.cookieStore = new CookieStore(root);
-        }
-    }
-    ```
-
-3. Ergänze im [Pyodide-Plugin](./README.mdx#erweiterungen-registrieren) unter `extensions` folgenden Eintrag:
+1. Kopiere den vollständigen Ordner [cookie-klicker](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/cookie-klicker) nach __website/pyodide/cookie-klicker__. Er enthält Komponenten, Styles, Browser-Store und Python-Modul.
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
 
     ```ts title="siteConfig.ts"
-    {
-        name: 'cookie_klicker',
-        worker: require.resolve('./website/pyodide/cookie-klicker/worker'),
-        client: require.resolve('./website/pyodide/cookie-klicker/client')
-    }
+    extensions: [
+        './website/pyodide/cookie-klicker'
+    ]
     ```
 
-4. Starte den Entwicklungsserver neu. Danach kannst du die MDX-Beispiele oben auf deiner Website verwenden.
+3. Starte den Entwicklungsserver neu. Danach kannst du die MDX-Beispiele oben verwenden.
 
 </Steps>
+
+Die __extension.json__ im kopierten Ordner legt den Namen und die Einstiegspunkte fest. Der Browser-Store wird automatisch initialisiert; der `SiteStore` deiner Website benötigt keine Ergänzungen.

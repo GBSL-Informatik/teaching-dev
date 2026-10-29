@@ -2,6 +2,7 @@
 
 import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
 import type { PluginOptions as PyodidePluginOptions } from '@tdev/pyodide-code/plugin';
+import path from 'node:path';
 import { themes as prismThemes } from 'prism-react-renderer';
 import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
 import {
@@ -116,16 +117,8 @@ const getSiteConfig: SiteConfigProvider = () => {
                 require.resolve('@tdev/pyodide-code/plugin'),
                 {
                     extensions: [
-                        {
-                            name: 'clock',
-                            worker: require.resolve('./website/pyodide/clock/worker'),
-                            client: require.resolve('./website/pyodide/clock/client')
-                        },
-                        {
-                            name: 'cookie_klicker',
-                            worker: require.resolve('./website/pyodide/cookie-klicker/worker'),
-                            client: require.resolve('./website/pyodide/cookie-klicker/client')
-                        }
+                        path.join(__dirname, 'website/pyodide/clock'),
+                        path.join(__dirname, 'website/pyodide/cookie-klicker')
                     ]
                 } satisfies PyodidePluginOptions
             ],

@@ -1,4 +1,4 @@
-import { Clock } from '@tdev/packages/pyodide-code/models/Clock';
+import type { Clock } from '../../Clock';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import styles from '../styles.module.scss';

@@ -1,17 +1,13 @@
-import type { RootStore } from '@tdev-stores/rootStore';
+import type { ClientContext } from '@tdev/pyodide-code/extensions';
 import { action, observable } from 'mobx';
-import Cookie from '../models/Cookie';
+import Cookie from './Cookie';
 
 export default class CookieStore {
-    readonly root: RootStore;
+    readonly context: ClientContext;
     readonly cookies = observable.map<string, Cookie>([], { deep: false });
 
-    constructor(root: RootStore) {
-        this.root = root;
-    }
-
-    get pyodideStore() {
-        return this.root.viewStore.useStore('pyodideStore');
+    constructor(context: ClientContext) {
+        this.context = context;
     }
 
     @action

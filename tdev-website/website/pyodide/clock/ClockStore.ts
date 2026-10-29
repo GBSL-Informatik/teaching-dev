@@ -1,4 +1,4 @@
-import { Clock } from '@tdev/packages/pyodide-code/models/Clock';
+import { Clock } from './Clock';
 import { action, observable, observableRef } from 'mobx';
 
 class ClockStore {

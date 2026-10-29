@@ -1,4 +1,5 @@
-import { useStore } from '@tdev-hooks/useStore';
+import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
+import cookieExtension from '../client';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { KeyboardEvent } from 'react';
@@ -20,8 +21,8 @@ const CHOCOLATE_CHIPS = [
 ];
 
 const CookieComponent = observer(({ cookieId, className }: CookieComponentProps) => {
-    const siteStore = useStore('siteStore');
-    const cookie = siteStore.cookieStore.useCookie(cookieId);
+    const cookieStore = useExtensionStore(cookieExtension);
+    const cookie = cookieStore.useCookie(cookieId);
     const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
             event.preventDefault();

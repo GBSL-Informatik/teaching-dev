@@ -8,7 +8,7 @@ import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../con
 import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
-import { handleExtensionMessage } from '../extensions/client';
+import ClientExtensions from '../extensions/client';
 import type { EventDeliveryResult, ExecutionEvent } from '../events';
 import ExtensionEventStore from './ExtensionEventStore';
 const BASE_URL = siteConfig.baseUrl || '/';
@@ -24,6 +24,7 @@ export default class PyodideStore {
     viewStore: ViewStore;
     readonly executions = observable.map<string, number>();
     readonly events = new ExtensionEventStore(this);
+    readonly extensions: ClientExtensions;
     private readonly retainedRuntimes = new Set<string>();
     private readonly runtimes = new Map<string, PyodideRuntime>();
     private readonly idleRuntimes: PyodideRuntime[] = [];
@@ -40,6 +41,7 @@ export default class PyodideStore {
     awaitingInputPrompt = observable.map<string, string | null>();
     constructor(viewStore: ViewStore) {
         this.viewStore = viewStore;
+        this.extensions = new ClientExtensions(viewStore.root, this.events);
         if (ExecutionEnvironment.canUseDOM && 'serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', this.handleInputMessage);
             window.addEventListener('beforeunload', () => this.cancelAllCodeExecutions());
@@ -163,7 +165,7 @@ export default class PyodideStore {
                 }
                 break;
             case 'extension':
-                handleExtensionMessage({ root: this.viewStore.root }, message);
+                this.extensions.handleMessage(message);
                 break;
             case 'clear':
                 code.clearMessages();
