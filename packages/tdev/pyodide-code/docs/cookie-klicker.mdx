@@ -29,8 +29,8 @@ zweiter_cookie = use_cookie('cookie-zwei')
 klicks = 0
 
 @on_event(source=[cookie.events, zweiter_cookie.events])
-def protokollieren(event):
-    print(f'{event.target_id}: {event.type}, payload={event.payload}')
+def log(event):
+    print(event)
 
 @on_click(cookie)
 def drehen(event):
