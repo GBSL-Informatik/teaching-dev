@@ -1,8 +1,23 @@
 """Execution-owned browser events for Teaching Dev."""
 
+# installWebio.ts injects _bridge into this module's globals before execution.
+# Its type declaration below informs Pylance without overwriting the injected value.
+
 import inspect
 import json
+from collections.abc import Awaitable
 from types import SimpleNamespace
+from typing import Any, Protocol
+
+
+class _EventBridge(Protocol):
+    def open(self, sources: str) -> Awaitable[None]: ...
+    def next_event(self) -> Awaitable[Any]: ...
+    def stop(self) -> None: ...
+    def close(self) -> Awaitable[None]: ...
+
+
+_bridge: _EventBridge
 
 _handlers = []
 _started = False
