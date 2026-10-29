@@ -119,7 +119,8 @@ const getSiteConfig: SiteConfigProvider = () => {
                     extensions: [
                         path.join(__dirname, 'website/pyodide/clock'),
                         path.join(__dirname, 'website/pyodide/cookie-klicker'),
-                        path.join(__dirname, 'website/pyodide/snowfall-game')
+                        path.join(__dirname, 'website/pyodide/snowfall-game'),
+                        path.join(__dirname, 'website/pyodide/grid')
                     ]
                 } satisfies PyodidePluginOptions
             ],

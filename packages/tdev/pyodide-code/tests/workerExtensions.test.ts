@@ -3,8 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { defineWorkerExtension, type WorkerContext } from '../extensions';
 import { createWorkerExtensions as createExtensions } from '../extensions/worker';
 import { registerJsModule } from '../workers/registerJsModule';
+import { registerPythonModule } from '../workers/registerPythonModule';
 
 vi.mock('../workers/registerJsModule', () => ({ registerJsModule: vi.fn() }));
+vi.mock('../workers/registerPythonModule', () => ({ registerPythonModule: vi.fn() }));
 
 const pyodide = {} as PyodideAPI;
 const createWorkerExtensions = (
@@ -14,6 +16,85 @@ const createWorkerExtensions = (
     createExtensions(context, extensions, (extension, targetId) => ({ extension, targetId, executionId: 1 }));
 
 describe('Pyodide worker extensions', () => {
+    it('registers Python sources after the JavaScript bridges', async () => {
+        const extension = defineWorkerExtension(() => ({ _bridge: {} }), { example: 'value = 42' });
+        const session = createWorkerExtensions({ id: 'editor', getTime: Date.now, sendMessage: vi.fn() }, [
+            { name: 'example', extension }
+        ]);
+        session.register(pyodide);
+        expect(registerJsModule).toHaveBeenLastCalledWith(pyodide, '_bridge', {});
+        expect(registerPythonModule).toHaveBeenLastCalledWith(pyodide, 'example', 'value = 42');
+        expect(vi.mocked(registerJsModule).mock.invocationCallOrder.at(-1)).toBeLessThan(
+            vi.mocked(registerPythonModule).mock.invocationCallOrder.at(-1)!
+        );
+        await session.finish();
+    });
+
+    it.each(['browser_input', 'webio', 'duplicate'])(
+        'rejects reserved or duplicate Python source names: %s',
+        async (name) => {
+            const extension = defineWorkerExtension(() => ({ duplicate: {} }), { [name]: '' });
+            const session = createWorkerExtensions(
+                { id: 'editor', getTime: Date.now, sendMessage: vi.fn() },
+                [{ name: 'example', extension }]
+            );
+            expect(() => session.register(pyodide)).toThrow(`Duplicate or reserved Pyodide module: ${name}`);
+            await session.finish();
+        }
+    );
+
+    it('acknowledges awaited deliveries and rejects use after execution finishes', async () => {
+        let context!: WorkerContext<number>;
+        let acknowledge!: () => void;
+        const delivery = new Promise<void>((resolve) => {
+            acknowledge = resolve;
+        });
+        const session = createWorkerExtensions(
+            { id: 'editor', getTime: Date.now, sendMessage: () => delivery },
+            [
+                {
+                    name: 'example',
+                    extension: defineWorkerExtension<number>((ctx) => {
+                        context = ctx;
+                        return {};
+                    })
+                }
+            ]
+        );
+        session.register(pyodide);
+        let delivered = false;
+        const frame = context.sendAndWait('grid', 42).then(() => {
+            delivered = true;
+        });
+        await Promise.resolve();
+        expect(delivered).toBe(false);
+        acknowledge();
+        await frame;
+        expect(delivered).toBe(true);
+        await session.finish();
+        await expect(context.sendAndWait('grid', 43)).rejects.toThrow('execution has ended');
+    });
+
+    it('propagates an awaited delivery failure without losing finalization diagnostics', async () => {
+        let context!: WorkerContext<number>;
+        const failure = new Error('renderer failed');
+        const session = createWorkerExtensions(
+            { id: 'editor', getTime: Date.now, sendMessage: () => Promise.reject(failure) },
+            [
+                {
+                    name: 'example',
+                    extension: defineWorkerExtension<number>((ctx) => {
+                        context = ctx;
+                        return {};
+                    })
+                }
+            ]
+        );
+        session.register(pyodide);
+        await expect(context.sendAndWait('grid', 42)).rejects.toBe(failure);
+        await expect(session.finish()).rejects.toBe(failure);
+    });
+
     it('adds transport metadata without confusing editor and target IDs', async () => {
         const sendMessage = vi.fn();
         const extension = defineWorkerExtension<number>((context) => ({

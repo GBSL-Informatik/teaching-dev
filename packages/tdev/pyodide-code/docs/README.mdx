@@ -144,6 +144,10 @@ Das [Cookie-Klicker-Beispiel](./04-cookie-klicker.mdx) zeigt, wie Python mit `@o
 
 Das [Schneefall-Spiel](./05-snowfall-game.mdx) verbindet eine Spielschleife mit zeitabhängiger Bewegung und Klick-Ereignissen.
 
+### Grid
+
+Das [Grid-Beispiel](./06-grid.mdx) zeigt einzelne Zellen mit Text sowie eine Animation mit einer Million Zellen und NumPy.
+
 ### Erweiterungen registrieren
 
 Erweiterungen lassen sich als einzelner Ordner weitergeben. Voraussetzung ist das [installierte Pyodide-Package](#installation). Die Beispielsseiten zur [Uhr](./03-clock.mdx) und zum [Cookie-Klicker](./04-cookie-klicker.mdx) verlinken die kopierbaren Ordner.
@@ -209,6 +213,8 @@ Der Factory-Kontext bietet:
 : ID des ausführenden Editors.
 `send(targetId, payload)`
 : Sendet eine Nachricht an den Browser-Handler dieser Erweiterung. Das Framework ergänzt Editor-ID, Erweiterungsname und Zeitstempel. Der Payload muss durch strukturiertes Klonen übertragbar sein.
+`await sendAndWait(targetId, payload)`
+: Sendet eine Nachricht und wartet, bis der synchrone Browser-Handler sie verarbeitet hat. Verwende dies für grosse Animationszustände, damit sich keine ausstehenden Bilder ansammeln. Der Aufruf aus einer beendeten Ausführung wird abgelehnt.
 `events.source(targetId)`
 : Erzeugt eine Ereignisquelle für die aktuelle Ausführung. Ein Python-Handle stellt sie als `events` bereit, damit es mit den [Handlern aus `webio`](./02-webio.mdx#handler-registrieren) verwendet werden kann.
 
@@ -217,6 +223,9 @@ Für den Rückweg ruft der Browser-Store `context.events.emit({ extension: conte
 Die Factory wird bei **jeder Ausführung** aufgerufen und ihre Module werden vor dem Python-Code registriert. Damit funktionieren auch dynamische Imports. Der Worker wartet vor Abschluss auf ausstehende Nachrichten an die Browser-Handler. Ein Handler-Fehler wird als Ausführungsfehler im Editor angezeigt. Bereits zugestellte Änderungen werden nicht zurückgerollt.
 
 Schlagen sowohl die Ausführung als auch deren Abschluss fehl, erscheint der ursprüngliche Ausführungsfehler zuerst. Zusätzliche Fehler beim Zustellen von Nachrichten oder beim Aufräumen werden darunter angezeigt. Die weiteren Aufräumschritte werden auch nach einem Fehler ausgeführt.
+
+`defineWorkerExtension(factory, pythonModules)`
+: Registriert zusätzlich Python-Quelltexte aus einem Dictionary mit Modulnamen und Quelltext. Das Framework-Modul `webio` und die JavaScript-Module aller Erweiterungen stehen vor den Python-Quelltexten bereit. Python-Module werden in der angegebenen Reihenfolge registriert; benötigte Python-Module müssen davor stehen. Die Quellen werden vor der Paketinstallation und dem Benutzerprogramm ausgeführt; optionale Pakete wie NumPy sollten deshalb erst in den Funktionen importiert werden, die sie benötigen. Der [Grid-Worker](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/grid/worker.ts) zeigt die Verbindung einer Python-Klasse mit einer JavaScript-Bridge.
 
 ### Browser-Store und React
 

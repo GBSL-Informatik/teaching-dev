@@ -14,6 +14,7 @@ export interface ExtensionMessage {
 export interface WorkerContext<Payload> {
     editorId: string;
     send: (targetId: string, payload: Payload) => void;
+    sendAndWait: (targetId: string, payload: Payload) => Promise<void>;
     events: {
         source: (targetId: string) => ExecutionEventSource;
     };
@@ -34,6 +35,7 @@ export interface ExtensionDelivery<Payload> {
 
 export interface WorkerExtension {
     createModules: (context: WorkerContext<unknown>) => Record<string, object>;
+    pythonModules?: Readonly<Record<string, string>>;
 }
 
 export interface ClientExtension<Store = unknown> {
@@ -52,13 +54,16 @@ export interface RegisteredExtension<Extension> {
 }
 
 export const defineWorkerExtension = <Payload>(
-    createModules: (context: WorkerContext<Payload>) => Record<string, object>
+    createModules: (context: WorkerContext<Payload>) => Record<string, object>,
+    pythonModules?: Readonly<Record<string, string>>
 ): WorkerExtension => ({
+    pythonModules,
     createModules: (context) =>
         createModules({
             editorId: context.editorId,
             events: context.events,
-            send: (targetId, payload) => context.send(targetId, payload)
+            send: (targetId, payload) => context.send(targetId, payload),
+            sendAndWait: (targetId, payload) => context.sendAndWait(targetId, payload)
         })
 });
 

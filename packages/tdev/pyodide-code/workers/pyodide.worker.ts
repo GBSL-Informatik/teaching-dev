@@ -101,8 +101,8 @@ export class PyWorker {
         let result: unknown;
         const errors: unknown[] = [];
         try {
-            extensions.register(pyodide);
             removeWebio = installWebio(pyodide, events);
+            extensions.register(pyodide);
             await this.preparePackages(pyodide, execution);
             output = captureOutput(pyodide, id, execution);
             const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
