@@ -3,9 +3,12 @@ import { action, observable } from 'mobx';
 import Cookie from '../models/Cookie';
 
 export default class CookieStore {
+    readonly root: RootStore;
     readonly cookies = observable.map<string, Cookie>([], { deep: false });
 
-    constructor(readonly root: RootStore) {}
+    constructor(root: RootStore) {
+        this.root = root;
+    }
 
     get pyodideStore() {
         return this.root.viewStore.useStore('pyodideStore');
