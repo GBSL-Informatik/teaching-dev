@@ -13,8 +13,11 @@ import CookieComponent from '@tdev-components/CookieComponent';
 Der Store verwaltet für jede `cookieId` ein eigenes MobX-Modell. Mehrere Cookies können unabhängig gesteuert werden; mehrere Ansichten derselben ID teilen dasselbe Modell.
 
 <CodeShowcase lang="md" imports={[`import CookieComponent from '@tdev-components/CookieComponent';`]}>
+:::flex
 <CookieComponent cookieId="cookie-demo" />
+::br
 <CookieComponent cookieId="cookie-zwei" />
+:::
 
 ```py live_pyo id=62007a34-9647-4c62-83bd-7a0f829e502a title=Cookie_Klicker
 from random import randint
