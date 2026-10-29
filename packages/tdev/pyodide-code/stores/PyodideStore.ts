@@ -5,6 +5,7 @@ import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
 import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
 import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import type { ExtensionMessage } from '../extensions';
 import ClientExtensions from '../extensions/client';
 import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
 import type { Message } from '../messages';
@@ -169,7 +170,7 @@ export default class PyodideStore {
                 }
                 break;
             case 'extension':
-                this.extensions.handleMessage(message);
+                this.handleExtensionMessage(code, message);
                 break;
             case 'clear':
                 code.clearMessages();
@@ -247,6 +248,25 @@ export default class PyodideStore {
         });
         if (!notified) {
             this.failInput(id);
+        }
+    }
+
+    private handleExtensionMessage(code: PyodideCode, message: ExtensionMessage) {
+        const executionId = this.executions.get(code.id);
+        try {
+            this.extensions.handleMessage(message);
+        } catch (error: unknown) {
+            if (executionId === undefined || this.executions.get(code.id) !== executionId) {
+                return;
+            }
+            code.addLogMessage({
+                type: 'error',
+                message: error instanceof Error ? error.message : String(error),
+                id: code.id,
+                timeStamp: Date.now()
+            });
+            this.stopExecution(code.id);
+            code.setRuntimeId(null);
         }
     }
 
