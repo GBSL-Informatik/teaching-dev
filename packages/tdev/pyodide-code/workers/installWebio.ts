@@ -1,5 +1,5 @@
-import type { PyodideAPI } from 'pyodide';
 import source from '!!raw-loader!./webio.py';
+import type { PyodideAPI } from 'pyodide';
 import type WorkerEventSession from './WorkerEventSession';
 
 export const installWebio = (pyodide: PyodideAPI, session: WorkerEventSession) => {

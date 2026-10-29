@@ -1,6 +1,6 @@
 import { defineClientExtension } from '@tdev/pyodide-code/extensions';
-import type { CookieUpdate } from './protocol';
 import CookieStore from './CookieStore';
+import type { CookieUpdate } from './protocol';
 
 export default defineClientExtension<CookieUpdate, CookieStore>({
     createStore: (context) => new CookieStore(context),

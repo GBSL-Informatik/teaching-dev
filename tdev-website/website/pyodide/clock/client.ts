@@ -1,6 +1,6 @@
 import { defineClientExtension } from '@tdev/pyodide-code/extensions';
-import type { ClockUpdate } from './protocol';
 import ClockStore from './ClockStore';
+import type { ClockUpdate } from './protocol';
 
 export default defineClientExtension<ClockUpdate, ClockStore>({
     createStore: () => new ClockStore(),

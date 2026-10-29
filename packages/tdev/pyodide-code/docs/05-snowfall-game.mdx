@@ -51,8 +51,6 @@ def handle_click(event):
     click = scene.add_dot(event.x, event.y, 10, color='red')
 
     for snowflake in scene.snowflakes:
-        if snowflake.id == click:
-            continue
         distance_squared = (snowflake.x - event.x)**2 + (snowflake.y - event.y)**2
         if distance_squared < (snowflake.size + 10)**2:
             scene.remove_snowflake(snowflake)

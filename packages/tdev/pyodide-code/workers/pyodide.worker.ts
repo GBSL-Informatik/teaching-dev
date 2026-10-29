@@ -1,18 +1,18 @@
-import type { Context, Message } from '../messages';
 import registeredExtensions from '@tdev-pyodide/worker-extensions';
 import * as Comlink from 'comlink';
 import type { PyodideAPI } from 'pyodide';
 import type { PyProxy } from 'pyodide/ffi';
+import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import { createWorkerExtensions } from '../extensions/worker';
 import { loadPyodide } from '../loadPyodide';
-import { loadPackages } from './helper.loadPackages';
+import type { Context, Message } from '../messages';
+import WorkerEventSession from './WorkerEventSession';
 import { finalizeExecution } from './finalizeExecution';
+import { loadPackages } from './helper.loadPackages';
 import { configureInput } from './input';
+import { installWebio } from './installWebio';
 import { captureOutput } from './output';
 import { configureShell } from './shell';
-import { createWorkerExtensions } from '../extensions/worker';
-import type { EventDeliveryResult, ExecutionEvent } from '../events';
-import WorkerEventSession from './WorkerEventSession';
-import { installWebio } from './installWebio';
 
 interface Execution extends Context {
     id: string;

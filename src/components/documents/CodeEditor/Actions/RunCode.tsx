@@ -19,6 +19,15 @@ const RunCode = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const isPreparing = code.isExecuting && (props.isPreparing ?? false);
     const executionIcon = isPreparing ? mdiDownloadNetwork : mdiLoading;
+
+    const handleClick = () => {
+        if (!props.onExecute) {
+            return;
+        }
+        code.triggerRemoteAction({ action: 'runCode' });
+        props.onExecute();
+    };
+
     return (
         <Button
             icon={code.isExecuting ? executionIcon : Play}
@@ -26,12 +35,7 @@ const RunCode = observer(<T extends CodeType>(props: Props<T>) => {
             color={isPreparing ? Color.Link : Color.Success}
             className={clsx(styles.runCode, code.meta.slim && styles.slim, isPreparing && styles.preparing)}
             iconSize={code.meta.slim ? '1.15em' : '1.6em'}
-            onClick={() => {
-                if (props.onExecute) {
-                    code.triggerRemoteAction({ action: 'runCode' });
-                    props.onExecute();
-                }
-            }}
+            onClick={handleClick}
             title={isPreparing ? `${code.title}: Python vorbereiten` : `${code.title} ausführen`}
         />
     );

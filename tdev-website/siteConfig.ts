@@ -1,7 +1,7 @@
 // This file is used to configure the teaching-dev page.
 
-import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
 import type { PluginOptions as PyodidePluginOptions } from '@tdev/pyodide-code/plugin';
+import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
 import path from 'node:path';
 import { themes as prismThemes } from 'prism-react-renderer';
 import githubCmsPlugin from '../packages/hfr/github-cms/plugin';

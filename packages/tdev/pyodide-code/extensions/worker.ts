@@ -1,9 +1,9 @@
 import type { PyodideAPI } from 'pyodide';
-import type { Context } from '../messages';
-import type { RegisteredExtension, WorkerExtension } from './index';
-import { registerJsModule } from '../workers/registerJsModule';
-import { createMessageDelivery } from '../workers/messageDelivery';
 import type { ExecutionEventSource } from '../events';
+import type { Context } from '../messages';
+import { createMessageDelivery } from '../workers/messageDelivery';
+import { registerJsModule } from '../workers/registerJsModule';
+import type { RegisteredExtension, WorkerExtension } from './index';
 
 export const createWorkerExtensions = (
     context: Context & { id: string },

@@ -1,8 +1,8 @@
 import { ModuleWorker } from '@tdev/pyodide-code/workers/ModuleWorker';
-import type { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 import * as Comlink from 'comlink';
-import { withTimeout } from '../helpers/withTimeout';
 import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import { withTimeout } from '../helpers/withTimeout';
+import type { PyWorker, PyWorkerApi } from '../workers/pyodide.worker';
 
 export default class PyodideRuntime {
     readonly worker: Worker;

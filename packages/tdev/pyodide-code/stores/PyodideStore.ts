@@ -1,16 +1,17 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import siteConfig from '@generated/docusaurus.config';
 import type ViewStore from '@tdev-stores/ViewStores';
-import type { Message } from '../messages';
 import * as Comlink from 'comlink';
 import { action, computed, observable, observableRef, runInAction } from 'mobx';
 import { PY_AWAIT_INPUT, PY_CANCEL_ALL, PY_CANCEL_INPUT, PY_INPUT } from '../config';
+import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import ClientExtensions from '../extensions/client';
 import { initializeInputServiceWorker } from '../helpers/inputServiceWorker';
+import type { Message } from '../messages';
 import type PyodideCode from '../models/PyodideCode';
 import PyodideRuntime from '../models/PyodideRuntime';
-import ClientExtensions from '../extensions/client';
-import type { EventDeliveryResult, ExecutionEvent } from '../events';
 import ExtensionEventStore from './ExtensionEventStore';
+
 const BASE_URL = siteConfig.baseUrl || '/';
 // Bound unused heaps while keeping two recent runtimes warm.
 const MAX_IDLE_RUNTIMES = 2;

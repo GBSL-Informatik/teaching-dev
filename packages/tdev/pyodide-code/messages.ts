@@ -1,5 +1,5 @@
-import type { ExtensionMessage } from './extensions';
 import type { EventSubscriptionMessage } from './events';
+import type { ExtensionMessage } from './extensions';
 
 export interface LogMessage {
     id: string;

@@ -1,5 +1,5 @@
-import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
 import { mdiSnowflake } from '@mdi/js';
+import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { KeyboardEvent, MouseEvent } from 'react';
