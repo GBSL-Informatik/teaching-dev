@@ -14,8 +14,6 @@ import PyodideRuntime from '../models/PyodideRuntime';
 import ExtensionEventStore from './ExtensionEventStore';
 
 const BASE_URL = siteConfig.baseUrl || '/';
-// Bound unused heaps while keeping two recent runtimes warm.
-const MAX_IDLE_RUNTIMES = 2;
 
 interface InputRequest {
     requestId: string;
@@ -29,7 +27,7 @@ export default class PyodideStore {
     readonly extensions: ClientExtensions;
     private readonly retainedRuntimes = new Set<string>();
     private readonly runtimes = new Map<string, PyodideRuntime>();
-    private readonly idleRuntimes: PyodideRuntime[] = [];
+    private idleRuntime?: PyodideRuntime;
     // Delayed callbacks may arrive after completion; stop/restart invalidates them.
     private readonly latestExecutions = new Map<string, number>();
     private nextExecutionId = 0;
@@ -325,10 +323,11 @@ export default class PyodideStore {
             return retainedRuntime;
         }
         retainedRuntime?.terminate();
-        let runtime = this.idleRuntimes.pop();
-        while (runtime && !runtime.isUsable) {
+        let runtime = this.idleRuntime;
+        this.idleRuntime = undefined;
+        if (runtime && !runtime.isUsable) {
             runtime.terminate();
-            runtime = this.idleRuntimes.pop();
+            runtime = undefined;
         }
         runtime ||= new PyodideRuntime();
         this.runtimes.set(id, runtime);
@@ -343,10 +342,8 @@ export default class PyodideStore {
             return;
         }
         this.runtimes.delete(id);
-        this.idleRuntimes.push(runtime);
-        while (this.idleRuntimes.length > MAX_IDLE_RUNTIMES) {
-            this.idleRuntimes.shift()?.terminate();
-        }
+        this.idleRuntime?.terminate();
+        this.idleRuntime = runtime;
     }
 
     private notifyInputWorker(
