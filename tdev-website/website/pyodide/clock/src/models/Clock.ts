@@ -46,4 +46,11 @@ export class Clock {
         this.setMinutes(minutesDeg);
         this.setSeconds(secondsDeg);
     }
+
+    // for brython usage
+    set_hours = this.setHours;
+    set_minutes = this.setMinutes;
+    set_seconds = this.setSeconds;
+    set_clock = this.setClock;
+    set_animation_speed = this.setAnimationSpeed;
 }
