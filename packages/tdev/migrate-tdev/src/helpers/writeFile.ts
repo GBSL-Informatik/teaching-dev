@@ -12,13 +12,18 @@ async function writeFile<T extends object>(
     noFinalNewline?: boolean
 ): Promise<void>;
 async function writeFile<T extends object>(
-    filePath: `${string}.yaml`,
+    filePath: `${string}.json`,
     data: T,
     noFinalNewline?: boolean
 ): Promise<void>;
 async function writeFile<T extends object>(
-    filePath: `${string}.yml`,
+    filePath: `${string}.yaml`,
     data: T,
+    noFinalNewline?: boolean
+): Promise<void>;
+async function writeFile<T extends string>(
+    filePath: string,
+    data: string,
     noFinalNewline?: boolean
 ): Promise<void>;
 async function writeFile<T>(filePath: string, data: T | string, noFinalNewline?: boolean): Promise<void> {

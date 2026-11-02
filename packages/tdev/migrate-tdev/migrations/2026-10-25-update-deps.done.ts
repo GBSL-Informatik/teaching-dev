@@ -108,7 +108,6 @@ const migrate: MigrationRunner = async (root, name): Promise<void> => {
     await $`git checkout main`;
     await $`git merge ${branchName}`;
     await $`git branch -d ${branchName}`;
-    await $`git push`;
 };
 
 export default migrate;
