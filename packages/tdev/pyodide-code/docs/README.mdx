@@ -132,25 +132,13 @@ Das `pyodide-code`-Package kann erweitert werden - sowohl mit neuen, lokalen Pyt
 
 Mit [webio](./02-webio.mdx) reagiert Python auf Browser-Ereignisse dieser Komponenten und aktualisiert Spiele über `@gameloop`.
 
-### Interaktive Uhr
+### Beispiele
 
-Das [Uhr-Beispiel](./03-clock.mdx) zeigt, wie Python die Zeiger einer React-Komponente steuert.
-
-### Cookie-Klicker
-
-Das [Cookie-Klicker-Beispiel](./04-cookie-klicker.mdx) zeigt, wie Python mit `@on_click` und `@on_key` auf Browser-Ereignisse reagiert und mehrere Cookies unabhängig steuert.
-
-### Schneefall-Spiel
-
-Das [Schneefall-Spiel](./05-snowfall-game.mdx) verbindet eine Spielschleife mit zeitabhängiger Bewegung und Klick-Ereignissen.
-
-### Grid
-
-Das [Grid-Beispiel](./06-grid.mdx) zeigt einzelne Zellen mit Text sowie eine Animation mit einer Million Zellen und NumPy.
+Die [Erweiterungsdokumentation](./extensions/index.md) enthält Anleitungen und Live-Beispiele für die auf dieser Website verfügbaren Erweiterungen. Weitere Beispiele zeigt die [Teaching-Dev-Dokumentation](https://teaching-dev.gbsl.website/docs/packages/tdev/pyodide-code/extensions).
 
 ### Erweiterungen registrieren
 
-Erweiterungen lassen sich als einzelner Ordner weitergeben. Voraussetzung ist das [installierte Pyodide-Package](#installation). Die Beispielsseiten zur [Uhr](./03-clock.mdx) und zum [Cookie-Klicker](./04-cookie-klicker.mdx) verlinken die kopierbaren Ordner.
+Erweiterungen lassen sich als einzelner Ordner weitergeben. Voraussetzung ist das [installierte Pyodide-Package](#installation). Die [Erweiterungsdokumentation](./extensions/index.md) enthält die Anleitungen für verfügbare Erweiterungen.
 
 <Steps>
 
@@ -184,7 +172,8 @@ Jeder Erweiterungsordner enthält eine __extension.json__ mit den Einstiegspunkt
 {
     "name": "meine_erweiterung",
     "worker": "./worker.ts",
-    "client": "./client.ts"
+    "client": "./client.ts",
+    "showcase": "./docs"
 }
 ```
 
@@ -194,10 +183,18 @@ Jeder Erweiterungsordner enthält eine __extension.json__ mit den Einstiegspunkt
 : Einstiegspunkt für die Python-Module, relativ zum Erweiterungsordner.
 `client`
 : Einstiegspunkt für den Browser-Store und dessen Nachrichtenverarbeitung, relativ zum Erweiterungsordner.
+`showcase`
+: Optionaler Pfad zu einem Dokumentationsordner innerhalb der Erweiterung, relativ zur __extension.json__. Die Seiten und zugehörigen Assets werden unter der Pyodide-Package-Dokumentation veröffentlicht, wenn die Erweiterung im Plugin konfiguriert ist. Die Inhalte werden direkt unter `pyodide-code/extensions/<name>/` veröffentlicht, ohne zusätzlichen `showcase`-Unterordner. Der Ordner benötigt eine Startseite namens __index.md__, __index.mdx__, __README.md__ oder __README.mdx__.
 
 Ordnerpfade in `extensions` werden relativ zum Docusaurus-Seitenverzeichnis aufgelöst. Alternativ ist weiterhin ein Eintrag mit `name`, `worker` und `client` direkt in der Plugin-Konfiguration möglich; dessen Einstiegspfade gelten relativ zum Seitenverzeichnis oder können mit `require.resolve()` angegeben werden.
 
-Im Erweiterungsordner liegen nur __extension.json__, __client.ts__, __worker.ts__, __protocol.ts__ und __README.md__ sowie der Ordner __src__. Dort sind Komponenten und Styles unter __components__, Modelle unter __models__ und Stores unter __store__ organisiert. Weitere Ordner wie __worker__, __rendering__ und __python__ kommen nach Bedarf hinzu. Innerhalb der Erweiterung werden relative Imports verwendet. Abhängigkeiten auf Teaching Dev werden über die Framework-Aliase importiert. So benötigt die empfangende Website keine Anpassung ihres `SiteStore`.
+Die Dokumentationssynchronisation durchsucht __website/pyodide__ und __website/packages/pyodide__ sowie ausdrücklich konfigurierte Erweiterungsordner. Ist `showcase` in der __extension.json__ gesetzt, wird ausschliesslich dieser Ordner veröffentlicht; die README im Erweiterungsordner wird nicht kopiert. Fehlt eine Registrierung im Pyodide-Plugin, wird auch der Showcase-Ordner nicht veröffentlicht. Ohne `showcase` dient eine __README.md__ oder __README.mdx__ als Dokumentation, auch ohne Registrierung. Sie muss ohne ausführbare Erweiterungsimports auskommen; die Ordner __assets__, __images__ und __img__ werden mitkopiert. Nach Änderungen der Registrierung muss der Entwicklungsserver neu gestartet werden.
+
+Die Kopien sind wie Package-Dokumentationen schreibgeschützt. Fehlt einer Seite die `page_id`, zeigt der Entwicklungsserver die ergänzende Frontmatter an. Ergänze sie in der ursprünglichen README- oder Showcase-Datei der Erweiterung; Änderungen an den synchronisierten Kopien werden beim nächsten Synchronisieren überschrieben.
+
+Kopierte Showcase-Seiten müssen Komponenten über stabile `@tdev/pyodide/...`-Aliase importieren. Relative Imports von Quellcode ausserhalb des Showcase-Ordners funktionieren nach dem Kopieren nicht.
+
+Im Erweiterungsordner liegen __extension.json__, __client.ts__, __worker.ts__, __protocol.ts__ und __README.md__ sowie der Ordner __src__ und bei Bedarf die Showcase-Dokumentation. In __src__ sind Komponenten und Styles unter __components__, Modelle unter __models__ und Stores unter __store__ organisiert. Weitere Ordner wie __worker__, __rendering__ und __python__ kommen nach Bedarf hinzu. Innerhalb der Erweiterung werden relative Imports verwendet. Abhängigkeiten auf Teaching Dev werden über die Framework-Aliase importiert. So benötigt die empfangende Website keine Anpassung ihres `SiteStore`.
 
 Das Plugin erzeugt getrennte Registries für Worker und Browser. `worker.ts` darf keine React-, DOM- oder Store-Abhängigkeiten importieren; gemeinsame Payload-Typen werden mit `import type` eingebunden. Beim Laden wird geprüft, ob die Worker-Einträge `createModules()` und die Browser-Einträge `createStore()` sowie `handleMessage()` bereitstellen. Ein ungültiger Export verhindert die Initialisierung und nennt die betroffene Erweiterung.
 
@@ -205,7 +202,7 @@ Das Plugin erzeugt getrennte Registries für Worker und Browser. `worker.ts` dar
 
 `defineWorkerExtension<Payload>()` erhält eine Factory. Diese liefert ein Objekt, dessen Schlüssel die Python-Modulnamen sind. Eine Erweiterung kann mehrere Module bereitstellen; Modulnamen und Nachrichtentypen sind unabhängig voneinander. Doppelte Modulnamen und die reservierten Namen `browser_input` und `webio` werden mit einer Fehlermeldung abgelehnt.
 
-Worker und Browser-Handler verwenden denselben Payload-Typ aus einer gemeinsamen __protocol.ts__. Die Typen prüfen den selbst geschriebenen Worker und Handler; es gibt keine automatische Laufzeitvalidierung des Payloads. Eine vollständige Umsetzung zeigt der [Worker der Uhr-Erweiterung](./03-clock.mdx#python-modul-im-worker).
+Worker und Browser-Handler verwenden denselben Payload-Typ aus einer gemeinsamen __protocol.ts__. Die Typen prüfen den selbst geschriebenen Worker und Handler; es gibt keine automatische Laufzeitvalidierung des Payloads. Vollständige Umsetzungen stehen in der [Erweiterungsdokumentation](./extensions/index.md).
 
 Der Factory-Kontext bietet:
 
@@ -259,11 +256,11 @@ Die Nachricht enthält:
 `useExtensionStore(extension)`
 : Liefert der React-Komponente die Store-Instanz ihrer exportierten Client-Definition. Eine nicht konfigurierte Erweiterung führt zu einer Fehlermeldung.
 
-Die [Uhr-Erweiterung](./03-clock.mdx#browser-store-und-react) zeigt, wie Browser-Handler und React-Komponente dieselbe Store-Instanz verwenden.
+Die Beispiele in der [Erweiterungsdokumentation](./extensions/index.md) zeigen, wie Browser-Handler und React-Komponente dieselbe Store-Instanz verwenden.
 
 ### Zustand und Lebensdauer
 
-Der `PyodideStore` besitzt pro konfigurierter Erweiterung eine Browser-Store-Instanz. Diese lebt mit der Anwendung und bleibt auch beim Navigieren sowie nach Ende oder Abbruch eines Skripts erhalten. Wie neue Python-Handles mit diesem Zustand umgehen, legt die Erweiterung fest; siehe [Zustand der Uhr](./03-clock.mdx#zustand-und-lebensdauer).
+Der `PyodideStore` besitzt pro konfigurierter Erweiterung eine Browser-Store-Instanz. Diese lebt mit der Anwendung und bleibt auch beim Navigieren sowie nach Ende oder Abbruch eines Skripts erhalten. Wie neue Python-Handles mit diesem Zustand umgehen, legt die Erweiterung fest; die [Erweiterungsdokumentation](./extensions/index.md) beschreibt das jeweilige Verhalten.
 
 Worker können zwischen Editoren wiederverwendet werden. Die registrierten JavaScript-Module erhalten pro Ausführung einen neuen Kontext. Bereits importierte Python-Hilfsmodule können jedoch alte Referenzen auf Module oder Handles behalten; deren Cache wird nicht rekursiv geleert. Solche Hilfsmodule sollen das Modul oder die Factory innerhalb der pro Ausführung aufgerufenen Funktion neu importieren und erst dann Handles anfordern. Auf Modulebene gespeicherte Factory-Referenzen bleiben sonst an den alten, bereits geschlossenen Kontext gebunden.
 

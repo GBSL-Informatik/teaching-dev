@@ -80,7 +80,7 @@ await run()
 ```
 </CodeShowcase>
 
-Die [webio-Referenz](./02-webio.mdx) beschreibt die Handler, Ereignisattribute und Grenzen der Ereignisverarbeitung.
+Die [webio-Referenz](../../02-webio.mdx) beschreibt die Handler, Ereignisattribute und Grenzen der Ereignisverarbeitung.
 
 ## Cookies steuern
 
@@ -101,12 +101,12 @@ Die [webio-Referenz](./02-webio.mdx) beschreibt die Handler, Ereignisattribute u
 
 ## Auf der eigenen Website einrichten
 
-Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
+Voraussetzung ist das [installierte Pyodide-Package](../../README.mdx#installation).
 
 <Steps>
 
 1. Kopiere den vollständigen Ordner [cookie-klicker](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/cookie-klicker) nach __website/pyodide/cookie-klicker__. Er enthält Komponenten, Styles, Browser-Store und Python-Modul.
-2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](../../README.mdx#erweiterungen-registrieren):
 
     ```ts title="siteConfig.ts"
     extensions: [

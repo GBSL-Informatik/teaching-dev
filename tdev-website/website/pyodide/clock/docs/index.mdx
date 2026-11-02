@@ -32,12 +32,12 @@ while True:
 
 ## Auf der eigenen Website einrichten
 
-Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
+Voraussetzung ist das [installierte Pyodide-Package](../../README.mdx#installation).
 
 <Steps>
 
 1. Kopiere den vollständigen Ordner [clock](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/clock) nach __website/pyodide/clock__. Er enthält Komponenten, Styles, Browser-Store und Python-Modul.
-2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](../../README.mdx#erweiterungen-registrieren):
 
     ```ts title="siteConfig.ts"
     extensions: [
@@ -53,7 +53,7 @@ Die __extension.json__ im kopierten Ordner legt den Namen und die Einstiegspunkt
 
 ## Aufbau der Erweiterung
 
-Die Uhr verwendet die allgemeine [Erweiterungs-API](./README.mdx#eigene-erweiterungen-weitergeben). Nachrichtentypen, Worker, Browser-Store und React-Komponente liegen gemeinsam im kopierbaren Ordner.
+Die Uhr verwendet die allgemeine [Erweiterungs-API](../../README.mdx#eigene-erweiterungen-weitergeben). Nachrichtentypen, Worker, Browser-Store und React-Komponente liegen gemeinsam im kopierbaren Ordner.
 
 ### Gemeinsamer Nachrichtentyp
 
@@ -85,7 +85,7 @@ import clockClientSource from '!!raw-loader!@tdev/pyodide/clock/client.ts';
     {clockClientSource}
 </CodeBlock>
 
-Der Handler aktualisiert den [ClockStore](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/store/ClockStore.ts) und dessen [Clock-Modelle](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/models/Clock.ts). Die [React-Komponente](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/components/Clock/index.tsx) greift innerhalb ihrer Funktion auf denselben Store zu:
+Der Handler aktualisiert den [ClockStore](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/stores/ClockStore.ts) und dessen [Clock-Modelle](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/models/Clock.ts). Die [React-Komponente](https://github.com/GBSL-Informatik/teaching-dev/blob/main/tdev-website/website/pyodide/clock/src/components/Clock/index.tsx) greift innerhalb ihrer Funktion auf denselben Store zu:
 
 ```tsx title="website/pyodide/clock/src/components/Clock/index.tsx"
 import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
@@ -114,4 +114,4 @@ Mehrere Komponenten mit derselben `clockId` teilen den Zustand im Browser-Store.
 
 Ein neuer Python-Handle beginnt dagegen wieder bei null und verändert die Anzeige erst mit seinem ersten Update. Die Erweiterung bietet keine Rückfragen vom Browser an Python.
 
-Für Hilfsmodule, die Handles oder Factory-Referenzen speichern, gelten die Hinweise zur [Wiederverwendung von Workern](./README.mdx#zustand-und-lebensdauer).
+Für Hilfsmodule, die Handles oder Factory-Referenzen speichern, gelten die Hinweise zur [Wiederverwendung von Workern](../../README.mdx#zustand-und-lebensdauer).

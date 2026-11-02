@@ -57,7 +57,7 @@ await run()
 ```
 </CodeShowcase>
 
-Das Gitter speichert Farben als kompakte Palettenindizes. Ein Aufruf von `render()` überträgt einen vollständigen Zustand an die Zeichenfläche. Warte diesen Aufruf ab, bevor du den nächsten Zustand überträgst. Die tatsächlich erreichbare Bildrate hängt auch von der Berechnung und dem verwendeten Gerät ab; Details zur Spielschleife stehen in der [webio-Referenz](./02-webio.mdx#spielschleife).
+Das Gitter speichert Farben als kompakte Palettenindizes. Ein Aufruf von `render()` überträgt einen vollständigen Zustand an die Zeichenfläche. Warte diesen Aufruf ab, bevor du den nächsten Zustand überträgst. Die tatsächlich erreichbare Bildrate hängt auch von der Berechnung und dem verwendeten Gerät ab; Details zur Spielschleife stehen in der [webio-Referenz](../../02-webio.mdx#spielschleife).
 
 ## Gitter und Zellen
 
@@ -117,7 +117,7 @@ await board.render()
 ## Ereignisse
 
 `events`
-: Ereignisquelle für `@gameloop`, `@on_click` und `@on_key` aus [webio](./02-webio.mdx).
+: Ereignisquelle für `@gameloop`, `@on_click` und `@on_key` aus [webio](../../02-webio.mdx).
 `event.payload['row']`, `event.payload['col']`
 : Zeile und Spalte einer angeklickten Zelle, beginnend bei `0`.
 `event.x`, `event.y`
@@ -127,12 +127,12 @@ Tastaturereignisse gehen an die fokussierte Zeichenfläche und enthalten den Tas
 
 ## Auf der eigenen Website einrichten
 
-Voraussetzung ist das [installierte Pyodide-Package](./README.mdx#installation).
+Voraussetzung ist das [installierte Pyodide-Package](../../README.mdx#installation).
 
 <Steps>
 
 1. Kopiere den vollständigen Ordner [grid](https://github.com/GBSL-Informatik/teaching-dev/tree/main/tdev-website/website/pyodide/grid) nach __website/pyodide/grid__.
-2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](./README.mdx#erweiterungen-registrieren):
+2. Ergänze den Ordner in der bestehenden `extensions`-Liste des [Pyodide-Plugins](../../README.mdx#erweiterungen-registrieren):
 
     ```ts title="siteConfig.ts"
     extensions: [

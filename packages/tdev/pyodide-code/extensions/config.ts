@@ -8,6 +8,10 @@ export interface ExtensionConfig {
     client: string;
 }
 
+export interface ExtensionDescriptor extends ExtensionConfig {
+    showcase?: string;
+}
+
 export interface PluginOptions {
     extensions?: (ExtensionConfig | string)[];
 }
@@ -72,7 +76,7 @@ export const createRegistrySource = (extensions: ExtensionConfig[], side: 'worke
     return [...imports, ...validations, `export default [${registrations.join(', ')}];`].join('\n');
 };
 
-const readExtensionDescriptor = (directory: string): ExtensionConfig => {
+export const readExtensionDescriptor = (directory: string): ExtensionDescriptor => {
     const descriptorPath = path.join(directory, 'extension.json');
     let source: string;
     try {
@@ -100,5 +104,17 @@ const readExtensionDescriptor = (directory: string): ExtensionConfig => {
             `Invalid Pyodide extension descriptor: ${descriptorPath}. Expected name, worker, and client string fields.`
         );
     }
-    return { name: descriptor.name, worker: descriptor.worker, client: descriptor.client };
+    if (!/^[a-zA-Z][\w-]*$/.test(descriptor.name)) {
+        throw new Error(`Invalid Pyodide extension name in ${descriptorPath}: ${descriptor.name}`);
+    }
+    const showcase = 'showcase' in descriptor ? descriptor.showcase : undefined;
+    if (showcase !== undefined && (typeof showcase !== 'string' || !showcase.trim())) {
+        throw new Error(`Invalid showcase in ${descriptorPath}. Expected a relative directory path.`);
+    }
+    return {
+        name: descriptor.name,
+        worker: descriptor.worker,
+        client: descriptor.client,
+        ...(showcase !== undefined ? { showcase } : {})
+    };
 };

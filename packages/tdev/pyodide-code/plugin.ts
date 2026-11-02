@@ -3,7 +3,7 @@ import type { Chunk, Configuration } from 'webpack';
 import { PYODIDE_VERSION } from './config';
 import { createRegistrySource, resolveExtensions, type PluginOptions } from './extensions/config';
 
-export type { ExtensionConfig, PluginOptions } from './extensions/config';
+export type { ExtensionConfig, ExtensionDescriptor, PluginOptions } from './extensions/config';
 
 type SplitChunksOptions = Exclude<
     NonNullable<Configuration['optimization']>['splitChunks'],

@@ -23,6 +23,6 @@ export interface SceneSnapshot extends SceneConfiguration {
 
 export const DEFAULT_SCENE_CONFIGURATION: Readonly<SceneConfiguration> = {
     width: 400,
-    height: 600,
+    height: 200,
     background_color: 'black'
 };
