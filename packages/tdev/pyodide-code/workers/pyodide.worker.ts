@@ -1,12 +1,17 @@
-import type { Context, Message } from '@tdev/pyodide-code/pyodideJsModules';
+import registeredExtensions from '@tdev-pyodide/worker-extensions';
 import * as Comlink from 'comlink';
 import type { PyodideAPI } from 'pyodide';
 import type { PyProxy } from 'pyodide/ffi';
+import type { EventDeliveryResult, ExecutionEvent } from '../events';
+import { createWorkerExtensions } from '../extensions/worker';
 import { loadPyodide } from '../loadPyodide';
+import type { Context, Message } from '../messages';
+import WorkerEventSession from './WorkerEventSession';
+import { finalizeExecution } from './finalizeExecution';
 import { loadPackages } from './helper.loadPackages';
 import { configureInput } from './input';
+import { installWebio } from './installWebio';
 import { captureOutput } from './output';
-import { registerJsModule } from './registerJsModule';
 import { configureShell } from './shell';
 
 interface Execution extends Context {
@@ -28,14 +33,20 @@ const pyodideReadyPromise = loadPyodide({ stdout: () => {}, stderr: () => {} });
 void pyodideReadyPromise.catch(() => {});
 
 export class PyWorker {
+    private eventSession?: WorkerEventSession;
+
     async ready() {
         await pyodideReadyPromise;
+    }
+
+    deliverEvent(event: ExecutionEvent): EventDeliveryResult {
+        return this.eventSession?.deliver(event) ?? 'inactive';
     }
 
     async run(
         id: string,
         code: string,
-        sendMessage: (message: Message) => void,
+        sendMessage: Context['sendMessage'],
         filename = 'snippet.py',
         clientId = '',
         executionId = 0,
@@ -74,18 +85,26 @@ export class PyWorker {
     private async execute(pyodide: PyodideAPI, execution: Execution): Promise<string> {
         const { id, code, filename, clientId, executionId } = execution;
         pyodide.registerComlink(Comlink);
-        registerJsModule(pyodide, 'tdev', {
-            sendMessage: (message: Message) => {
-                execution.sendMessage(message);
-            }
-        });
-        await this.preparePackages(pyodide, execution);
-        const output = captureOutput(pyodide, id, execution);
+        const events = new WorkerEventSession(
+            execution,
+            registeredExtensions.map(({ name }) => name)
+        );
+        this.eventSession = events;
+        const extensions = createWorkerExtensions(execution, registeredExtensions, (extension, targetId) =>
+            events.source(extension, targetId)
+        );
+        let removeWebio: (() => void) | undefined;
+        let output: ReturnType<typeof captureOutput> | undefined;
         let restoreInput: (() => void) | undefined;
         let restoreShell: (() => void) | undefined;
         let globals: PyProxy | undefined;
         let result: unknown;
+        const errors: unknown[] = [];
         try {
+            removeWebio = installWebio(pyodide, events);
+            extensions.register(pyodide);
+            await this.preparePackages(pyodide, execution);
+            output = captureOutput(pyodide, id, execution);
             const fname = filename.endsWith('.py') ? filename : `${filename}.py`;
             const dict = pyodide.globals.get('dict');
             try {
@@ -101,25 +120,33 @@ export class PyWorker {
             }
             restoreInput = configureInput(pyodide, { id, clientId, executionId });
             restoreShell = configureShell(pyodide, output.clear);
+            await execution.sendMessage({ type: 'execution-started', id, executionId });
             result = await pyodide.runPythonAsync(code, { globals, filename: fname });
             return result === undefined ? '' : `${result}`;
+        } catch (error: unknown) {
+            errors.push(error);
+            throw error;
         } finally {
-            try {
-                await output.finish();
-            } finally {
-                try {
-                    restoreShell?.();
-                } finally {
-                    try {
-                        restoreInput?.();
-                    } finally {
-                        globals?.destroy();
+            await finalizeExecution(
+                [
+                    () => events.close(),
+                    () => {
+                        this.eventSession = undefined;
+                    },
+                    () => output?.finish(),
+                    () => extensions.finish(),
+                    () => restoreShell?.(),
+                    () => restoreInput?.(),
+                    () => removeWebio?.(),
+                    () => globals?.destroy(),
+                    () => {
                         if (result instanceof pyodide.ffi.PyProxy) {
                             result.destroy();
                         }
                     }
-                }
-            }
+                ],
+                errors
+            );
         }
     }
 
@@ -134,10 +161,14 @@ export class PyWorker {
                 }
             }
         });
+        const errors: unknown[] = [];
         try {
             await loadPackages(pyodide, execution, execution.code, execution.packages);
+        } catch (error: unknown) {
+            errors.push(error);
+            throw error;
         } finally {
-            await output.finish();
+            await finalizeExecution([() => output.finish()], errors);
         }
     }
 

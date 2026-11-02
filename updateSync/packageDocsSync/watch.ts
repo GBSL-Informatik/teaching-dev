@@ -1,11 +1,14 @@
 import chokidar from 'chokidar';
+import 'dotenv/config';
 import minimist from 'minimist';
 import path from 'path';
 import packageDocsSync from '.';
 import { categoryFileLocation, getDebouncedSyncer, packageInfo, syncCategoryFile } from './actions';
+import { loadPyodideDocsSync } from './configuration';
 
 const argv = minimist(process.argv.slice(2), {
     string: ['src', 'dest'],
+    boolean: ['skip-initial'],
     alias: { src: 'packages', dest: 'out' },
     default: {
         src: 'packages'
@@ -15,16 +18,33 @@ const argv = minimist(process.argv.slice(2), {
 const PACKAGES_DIR = path.resolve(process.cwd(), argv.src);
 const DEST_ROOT = path.resolve(process.cwd(), argv.dest);
 
-const watcher = chokidar.watch(PACKAGES_DIR, { ignoreInitial: true, persistent: true });
-
 const main = async () => {
-    const { syncQueue, syncDebounced } = await getDebouncedSyncer(PACKAGES_DIR, DEST_ROOT);
-    const NODE_MODULES_TEST = /node_modules/;
-    await packageDocsSync(PACKAGES_DIR, DEST_ROOT);
+    const pyodide = await loadPyodideDocsSync(PACKAGES_DIR);
+    const extensionPaths = pyodide?.watchPaths ?? [];
+    if (!argv['skip-initial']) {
+        await packageDocsSync(PACKAGES_DIR, DEST_ROOT, pyodide);
+    }
+    const { syncQueue, syncDebounced } = await getDebouncedSyncer(
+        PACKAGES_DIR,
+        DEST_ROOT,
+        pyodide ? () => pyodide.sync(DEST_ROOT) : undefined
+    );
+    const watcher = chokidar.watch([PACKAGES_DIR, ...extensionPaths], {
+        ignoreInitial: true,
+        persistent: true,
+        ignored: /(^|[/\\])node_modules([/\\]|$)/
+    });
 
     watcher
         .on('all', async (_event, filePath) => {
-            if (NODE_MODULES_TEST.test(filePath)) {
+            const isExtension = extensionPaths.some((directory) => {
+                const relativePath = path.relative(directory, filePath);
+                return (
+                    relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath))
+                );
+            });
+            if (isExtension) {
+                syncDebounced();
                 return null;
             }
             const pkgInfo = packageInfo(filePath, PACKAGES_DIR);
@@ -39,7 +59,7 @@ const main = async () => {
             }
         })
         .on('ready', () => {
-            console.log('Watching for docs changes in packages...');
+            console.log('Watching for package and Pyodide extension documentation changes...');
         });
 };
 

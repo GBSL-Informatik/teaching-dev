@@ -1,0 +1,12 @@
+.grid {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-block: 1rem;
+    image-rendering: pixelated;
+
+    &:focus-visible {
+        outline: 3px solid var(--ifm-color-primary);
+        outline-offset: 4px;
+    }
+}

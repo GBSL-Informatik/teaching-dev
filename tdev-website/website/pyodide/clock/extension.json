@@ -1,0 +1,6 @@
+{
+    "name": "clock",
+    "worker": "./worker.ts",
+    "client": "./client.ts",
+    "showcase": "./docs"
+}

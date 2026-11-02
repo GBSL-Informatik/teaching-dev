@@ -20,7 +20,7 @@ const Header = observer((props: Props) => {
     return (
         <Container code={code} ignoreSlim>
             {!code.meta.slim && <Content code={code} />}
-            {code.canExecute && <RunCode code={code} onExecute={handleRun} />}
+            {code.canExecute && <RunCode code={code} onExecute={handleRun} isPreparing={code.isPreparing} />}
             {code.isExecuting && <Button icon={mdiClose} title="Ausführung abbrechen" onClick={handleStop} />}
         </Container>
     );

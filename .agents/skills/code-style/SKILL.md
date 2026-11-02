@@ -32,6 +32,7 @@ details only when needed.
 - Normally, only one component, model or store is defined per file. Multiple components per file are ok when they are small, closely related, not exported and don't have logic of their own (so no hooks, no state, no side effects). Otherwise split them into separate files and import them.
 - When a component needs to import dedicated subcomponents, put them in a folder named after the component, with an `index.tsx` and a `styles.module.scss` file.
 - When shared styles are needed, import them from the parent folder's `styles.module.scss` file. Avoid global CSS and inline styles.
+- Declare class fields explicitly. Do not use TypeScript constructor parameter properties (public, protected, private, or readonly on constructor parameters). Declare each field in the class body and assign it explicitly in the constructor.
 - Use `clsx` for conditional class names. Avoid inline styles and global CSS.
 - private methods should be located after public methods at the bottom of the class.
 
@@ -72,3 +73,17 @@ createOrUpdateUserPermission(documentRootId: string, user: User, access: Access)
 ## Readability over micro-optimizations
 
 Unless the code is on a hot path where performance matters, favor readability over micro-optimizations and clever one-liners. Iterating over a list several times with well-named steps is fine when the list is small.
+
+## TypeScript imports
+
+After editing `.ts` or `.tsx` files:
+- Run TypeScript's Organize Imports operation on every changed file.
+- Use the project's TypeScript version, tsconfig, and the import-organizing
+  preferences and formatting options used by VS Code.
+- Prefer an existing repository command that invokes this operation.
+  Otherwise, use a helper backed by the TypeScript language service's
+  `organizeImports` API.
+- Apply the returned edits; do not approximate the result by hand or
+  substitute another import sorter.
+- Verify that running the organizer again produces no further edits.
+- If the operation cannot be run, report that verification is incomplete.

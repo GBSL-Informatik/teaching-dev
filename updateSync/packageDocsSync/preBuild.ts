@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import minimist from 'minimist';
 import path from 'path';
 import packageDocsSync from '.';
+import { loadPyodideDocsSync } from './configuration';
 const argv = minimist(process.argv.slice(2), {
     string: ['src', 'dest'],
     alias: { src: 'packages', dest: 'out' },
@@ -15,7 +17,7 @@ const PACKAGES_DIR = path.resolve(CWD, src);
 const DEST_ROOT = path.resolve(CWD, dest);
 
 const main = async () => {
-    await packageDocsSync(PACKAGES_DIR, DEST_ROOT);
+    await packageDocsSync(PACKAGES_DIR, DEST_ROOT, await loadPyodideDocsSync(PACKAGES_DIR));
     console.log('✅ Pre-build docs sync completed.');
 };
 

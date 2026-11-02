@@ -219,63 +219,39 @@ export const getPackageDocsConfigs = async (packagesDir: string): Promise<TdevPa
     return allConfigs;
 };
 
-export const getDebouncedSyncer = async (packageDir: string, destDir: string) => {
+export const getDebouncedSyncer = async (
+    packageDir: string,
+    destDir: string,
+    afterSync?: () => Promise<void>
+) => {
     const syncQueue = new Set<PackageInfo>();
-    const PackageConfigCache: Map<string, TdevPackageConfig> = new Map();
-    getPackageDocsConfigs(packageDir).then((configs) => {
-        for (const cfg of configs) {
-            const pkgKey = `${cfg.docs.org}/${cfg.docs.package}`;
-            PackageConfigCache.set(pkgKey, cfg);
-        }
-    });
-
-    const setPackageConfig = async (pkgKey: string, newConfig?: TdevPackageConfig | null) => {
-        if (!newConfig) {
-            return false;
-        }
-        const prevConfig = PackageConfigCache.get(pkgKey);
-        if (prevConfig) {
-            const prevDocsPath = resolveDir(destDir, prevConfig.docs.org, prevConfig.docs.package);
-            const currentDocsPath = resolveDir(destDir, newConfig.docs.org, newConfig.docs.package);
-            if (prevDocsPath !== currentDocsPath) {
-                fs.rm(prevDocsPath, { recursive: true, force: true }).catch(() => {});
-            }
-        }
-        PackageConfigCache.set(pkgKey, newConfig);
-        return true;
-    };
-
+    let pendingSync = Promise.resolve();
     const syncDebounced = debounce(() => {
-        const syncTasks: Promise<string>[] = [];
+        const packages = new Map<string, PackageInfo>();
         for (const pkgInfo of syncQueue) {
-            if (!pkgInfo) {
-                continue;
-            }
-            const pkgKey = `${pkgInfo.org}/${pkgInfo.package}`;
-            if (pkgInfo.relativeSubPath === TDEV_PACKAGE_CONFIG_YML) {
-                const res = getPackageDocsConfig(packageDir, pkgInfo.org, pkgInfo.package).then(
-                    (newConfig) => {
-                        return setPackageConfig(pkgKey, newConfig).then((changed) => {
-                            if (changed) {
-                                return syncDocsFolder(newConfig!, destDir);
-                            }
-                            return Promise.resolve(`ℹ️ ${pkgKey} docs config unchanged.`);
-                        });
-                    }
-                );
-                syncTasks.push(res);
-            } else {
-                const pkgConfig = PackageConfigCache.get(pkgKey);
-                if (pkgConfig) {
-                    syncTasks.push(syncDocsFolder(pkgConfig, destDir));
-                }
-            }
+            packages.set(`${pkgInfo.org}/${pkgInfo.package}`, pkgInfo);
         }
         syncQueue.clear();
-        return Promise.all(syncTasks).then((res) => {
-            console.log(res.join('\n'));
-            return res;
-        });
+        // Package copies delete extra files, so extension docs must follow them in the same queue.
+        pendingSync = pendingSync
+            .then(async () => {
+                for (const pkgInfo of packages.values()) {
+                    const config = await getPackageDocsConfig(packageDir, pkgInfo.org, pkgInfo.package);
+                    if (config) {
+                        console.log(await syncDocsFolder(config, destDir));
+                    } else {
+                        await fs.rm(path.join(destDir, pkgInfo.org, pkgInfo.package), {
+                            recursive: true,
+                            force: true
+                        });
+                    }
+                }
+                await afterSync?.();
+            })
+            .catch((error) => {
+                console.error('Error synchronizing package documentation:', error);
+            });
+        return pendingSync;
     }, 300);
     return { syncQueue, syncDebounced };
 };

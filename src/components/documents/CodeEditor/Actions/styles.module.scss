@@ -6,6 +6,29 @@
         padding: 2px 4px;
         margin: 0px;
     }
+
+    &.preparing > svg {
+        color: var(--ifm-color-blue);
+        animation: preparationJump 900ms ease-in-out infinite;
+    }
+}
+
+@keyframes preparationJump {
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-3px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .runCode.preparing > svg {
+        animation: none;
+    }
 }
 
 html[data-theme='dark'] .runCode {
