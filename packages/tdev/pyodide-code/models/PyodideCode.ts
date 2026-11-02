@@ -116,6 +116,9 @@ class PyodideCode extends iCode<'pyodide_code'> {
 
     @action
     runCode(skipRemoteTrigger: boolean = false) {
+        if (this.isExecuting) {
+            this.stopExecution(skipRemoteTrigger);
+        }
         this.pyodideStore.run(this);
         if (this.isPresenting && this.canEdit && this.canExecute && !skipRemoteTrigger) {
             this.triggerRemoteAction({ action: 'runCode' });
