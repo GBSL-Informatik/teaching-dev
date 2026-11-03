@@ -65,6 +65,10 @@ Jeder Handler erhält ein Ereignis mit folgenden Attributen:
 `x`, `y`
 : Zusätzliche Koordinatenattribute, wenn der Payload `x` beziehungsweise `y` enthält. Die Schneefall-Szene liefert damit logische Szenenkoordinaten.
 
+Bei einem Dictionary-Payload kannst du Felder auch mit Punktnotation lesen: `event.payload.key` entspricht `event.payload['key']`. Das gilt nur für die oberste Ebene; verschachtelte Dictionaries verwendest du weiterhin mit eckigen Klammern.
+
+Vorhandene Dictionary-Attribute haben Vorrang. Bei einem Feld namens `items` liefert `event.payload.items` deshalb die Dictionary-Methode; den Feldwert erhältst du mit `event.payload['items']`. Das betrifft die Methodennamen `clear`, `copy`, `fromkeys`, `get`, `items`, `keys`, `pop`, `popitem`, `setdefault`, `update` und `values` sowie spezielle Attribute wie `__class__`. Mit eckigen Klammern kannst du auf jeden vorhandenen Schlüssel zugreifen.
+
 ## Ablauf und Grenzen
 
 Eine Ereignisquelle kann gleichzeitig nur von einem laufenden Programm abonniert werden. Ein zweites Programm erhält eine Fehlermeldung. Nach Ende oder Abbruch werden die Abonnements entfernt; alte Ereignisse werden nicht an einen Neustart weitergegeben.

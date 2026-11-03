@@ -210,15 +210,26 @@ async def _invoke(handler, argument):
 
 
 def _decode_event(data):
+    payload = data['event']['payload']
+    if isinstance(payload, dict):
+        payload = _EventPayload(payload)
     event = SimpleNamespace(
         type=data['event']['type'],
         extension=data['extension'],
         target_id=data['targetId'],
         timestamp=data['timeStamp'],
-        payload=data['event']['payload']
+        payload=payload
     )
     if isinstance(event.payload, dict):
         for coordinate in ('x', 'y'):
             if coordinate in event.payload:
                 setattr(event, coordinate, event.payload[coordinate])
     return event
+
+
+class _EventPayload(dict):
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name) from None
