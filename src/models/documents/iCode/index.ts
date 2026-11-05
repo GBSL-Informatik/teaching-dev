@@ -18,6 +18,11 @@ interface Version {
     pasted?: boolean;
 }
 
+/**
+ * Selection id of the "initial code" entry in the commit tree.
+ */
+export const INITIAL_CODE_SELECTION = 'initial';
+
 export interface CodePostUpdateMeta extends Record<string, unknown> {
     action?: 'runCode' | 'stopExecution';
 }
@@ -31,6 +36,8 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor _initialCommitsLoaded: boolean = false;
     @observable accessor showCommits: boolean = false;
     @observable accessor isCommitting: boolean = false;
+    @observable accessor selectedCommitId: string | null = null;
+    @observable accessor isPreviewingSelection: boolean = false;
 
     constructor(props: Props<T>, store: DocumentStore) {
         super(props, store);
@@ -164,6 +171,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (!this.canEdit) {
             return;
         }
+        this.selectCommit(null);
         this.codeCommitId = commit.id;
         this.setCode(commit.code);
     }
@@ -173,6 +181,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (!this.canEdit) {
             return;
         }
+        this.selectCommit(null);
         this.codeCommitId = null;
         this.setCode(this.meta.initCode);
     }
@@ -241,6 +250,40 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @action
     setShowCommits(showCommits: boolean) {
         this.showCommits = showCommits;
+        if (!showCommits) {
+            this.selectCommit(null);
+        }
+    }
+
+    /**
+     * @param selectionId a commit id, `INITIAL_CODE_SELECTION` or `null` to clear the selection
+     */
+    @action
+    selectCommit(selectionId: string | null) {
+        this.selectedCommitId = selectionId;
+        this.isPreviewingSelection = false;
+    }
+
+    @action
+    setPreviewingSelection(isPreviewing: boolean) {
+        this.isPreviewingSelection = isPreviewing;
+    }
+
+    @computed
+    get selectedCode(): string | undefined {
+        if (this.selectedCommitId === INITIAL_CODE_SELECTION) {
+            return this.meta.initCode;
+        }
+        const commit = this.store.find(this.selectedCommitId);
+        return commit?.type === 'code_commit' ? commit.code : undefined;
+    }
+
+    /**
+     * The code of the selected commit, while it is previewed (read only) in the editor.
+     */
+    @computed
+    get previewCode(): string | undefined {
+        return this.isPreviewingSelection ? this.selectedCode : undefined;
     }
 
     @action

@@ -1,17 +1,19 @@
-import Translate, { translate } from '@docusaurus/Translate';
-import { mdiBackupRestore, mdiChevronDown, mdiChevronUp } from '@mdi/js';
+import Translate from '@docusaurus/Translate';
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import type { CodeType } from '@tdev-api/document';
-import Button from '@tdev-components/documents/CodeEditor/Button';
+import { useComputed } from '@tdev-hooks/useComputed';
 import type iCode from '@tdev-models/documents/iCode';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import * as React from 'react';
+import SelectionActions from './SelectionActions';
 import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
     code: iCode<T>;
+    /** commit id or `INITIAL_CODE_SELECTION` */
+    selectionId: string;
     label: string;
     details?: string;
     createdAt?: Date;
@@ -20,33 +22,18 @@ interface Props<T extends CodeType> {
 }
 
 const CommitEntry = observer(<T extends CodeType>(props: Props<T>) => {
-    const { code, label, details, createdAt, isHead, onRestore } = props;
-    const [isExpanded, setIsExpanded] = React.useState(false);
+    const { code, selectionId, label, details, createdAt, isHead, onRestore } = props;
+    const isSelected = useComputed(() => code.selectedCommitId === selectionId, [code, selectionId]);
     const isModified = isHead && code.hasUncommittedChanges;
-    const canRestore = code.canCommit && (!isHead || isModified);
 
-    const handleToggleExpanded = () => setIsExpanded(!isExpanded);
-    const handleRestore = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        const confirmMessage = translate({
-            id: 'CodeCommits.Restore.Confirm',
-            message: 'Nicht committete Änderungen gehen verloren. Trotzdem wiederherstellen?'
-        });
-        if (code.hasUncommittedChanges && !window.confirm(confirmMessage)) {
-            return;
-        }
-        onRestore();
-    };
+    const handleSelect = () => code.selectCommit(isSelected ? null : selectionId);
 
     return (
-        <div className={clsx(styles.entry, isHead && styles.head)}>
-            <div
-                className={clsx(styles.summary, details && styles.expandable)}
-                onClick={details ? handleToggleExpanded : undefined}
-            >
+        <div className={clsx(styles.entry, isHead && styles.head, isSelected && styles.selected)}>
+            <div className={styles.summary} onClick={handleSelect}>
                 <span className={styles.dot} />
                 <span className={styles.label}>{label}</span>
-                {details && <Icon path={isExpanded ? mdiChevronUp : mdiChevronDown} size={0.7} />}
+                {details && <Icon path={isSelected ? mdiChevronUp : mdiChevronDown} size={0.7} />}
                 {createdAt && <span className={styles.date}>{formatDateTime(createdAt, true)}</span>}
                 {isHead && (
                     <span className={clsx('badge', 'badge--primary')}>
@@ -59,15 +46,9 @@ const CommitEntry = observer(<T extends CodeType>(props: Props<T>) => {
                     </span>
                 )}
                 <span className={styles.spacer} />
-                {canRestore && (
-                    <Button
-                        icon={mdiBackupRestore}
-                        onClick={handleRestore}
-                        title={translate({ id: 'CodeCommits.Entry.Restore', message: 'Wiederherstellen' })}
-                    />
-                )}
+                {isSelected && <SelectionActions code={code} isHead={isHead} onRestore={onRestore} />}
             </div>
-            {isExpanded && details && <div className={styles.details}>{details}</div>}
+            {isSelected && details && <div className={styles.details}>{details}</div>}
         </div>
     );
 });

@@ -47,8 +47,14 @@
     align-items: center;
     gap: 0.5em;
     min-height: 2em;
-    &.expandable {
-        cursor: pointer;
+    padding: 0 0.25em;
+    border-radius: var(--ifm-global-radius);
+    cursor: pointer;
+    &:hover {
+        background: var(--ifm-color-emphasis-100);
+    }
+    .selected > & {
+        background: var(--ifm-color-emphasis-200);
     }
 }
 

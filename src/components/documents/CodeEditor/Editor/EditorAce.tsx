@@ -173,8 +173,8 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                     // Mobile/Touch Devices use IME and often emit transient remove deltas during composition.
                     code.setCode(value, e.action, isComposingRef.current);
                 }}
-                readOnly={!code.canEdit || code.showRaw}
-                value={code.showRaw ? code.pristineCode : code.code}
+                readOnly={!code.canEdit || code.showRaw || code.previewCode !== undefined}
+                value={code.showRaw ? code.pristineCode : (code.previewCode ?? code.code)}
                 defaultValue={code?.code || '\n'}
                 name={code.codeId}
                 editorProps={{ $blockScrolling: true }}

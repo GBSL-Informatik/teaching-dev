@@ -20,6 +20,7 @@ const CommitNode = observer(<T extends CodeType>(props: Props<T>) => {
         <li>
             <CommitEntry
                 code={code}
+                selectionId={commit.id}
                 label={commit.title}
                 details={commit.details}
                 createdAt={commit.createdAt}
