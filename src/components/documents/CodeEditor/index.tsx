@@ -12,6 +12,7 @@ import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
+import CodeCommits from './CodeCommits';
 import CodeHistory from './CodeHistory';
 import Editor from './Editor';
 import styles from './styles.module.scss';
@@ -68,6 +69,12 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
     const { colorMode } = useCodeTheme();
     const viewStore = useStore('viewStore');
     const id = React.useId();
+    React.useEffect(() => {
+        // the dummy document is replaced once the document root is loaded
+        if (!code.isDummy) {
+            code.loadCommits();
+        }
+    }, [code]);
     if (!props.isPresentation && code.isPresenting) {
         return null;
     }
@@ -91,6 +98,7 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
                     )}
                 >
                     <Editor code={code} overrides={props.overrides} />
+                    {code.isCommitable && code.showCommits && <CodeCommits code={code} />}
                     {code.meta.hasHistory && <CodeHistory code={code} />}
                 </div>
             </div>

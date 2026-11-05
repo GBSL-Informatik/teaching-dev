@@ -154,7 +154,13 @@ export const constrainSingletonRoots = (documents: OfflineDocument[]) => {
         group.push(document);
         groups.set(key, group);
     }
-    const excluded = new Set(['dynamic_document_roots', 'mdx_comment', 'cms_text', 'script_version']);
+    const excluded = new Set([
+        'dynamic_document_roots',
+        'mdx_comment',
+        'cms_text',
+        'script_version',
+        'code_commit'
+    ]);
     const mainIds = new Set(
         [...groups.values()]
             .filter(

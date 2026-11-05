@@ -18,7 +18,7 @@ const Reset = observer(<T extends CodeType>(props: Props<T>) => {
             'Änderungen wirklich verwerfen? Dies kann nicht rückgängig gemacht werden.'
         );
         if (shouldReset) {
-            code.setCode(code.meta.initCode);
+            code.restoreInitialCode();
         }
     };
     if (!code.canEdit) {

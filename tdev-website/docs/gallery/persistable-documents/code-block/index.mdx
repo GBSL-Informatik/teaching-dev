@@ -211,6 +211,27 @@ Die Versionen des Codes werden standardmässig angezeigt. Mit dem `noHistory`-Me
   ```
 </CodeShowcase>
 
+### Commits (`commitable`)
+
+Mit dem `commitable`-Meta-String können explizite Stände des Codes als _Commits_ mit einer Beschreibung gespeichert werden. Über den :mdi[source-commit]-Knopf im Header wird die Commit-Ansicht eingeblendet. Darin können
+
+- neue Commits vom aktuellen Code erstellt werden,
+- frühere Commits oder der ursprüngliche Code wiederhergestellt werden.
+
+Wird ein früherer Commit wiederhergestellt und danach erneut committet, entsteht eine Verzweigung im Commit-Baum. Commits können nachträglich weder bearbeitet noch gelöscht werden.
+
+<CodeShowcase lang="md">
+  Ändere den Code, öffne die Commit-Ansicht und erstelle einen Commit.
+
+  ```py live_py commitable id=04d11dd0-478d-401f-a124-294a6c8ee1e7
+  print('Hello Commitable Mode')
+  ```
+</CodeShowcase>
+
+:::warning[Only in Persisted Mode]
+Der `commitable`-Modus funktioniert nur in Kombination mit dem `id`-Attribut.
+:::
+
 ### Pre- und Post-Code
 
 Mit Kommentaren lassen sich Code-Teile zu Beginn oder am Ende verstecken und auf Wunsch aufklappen. Dies ist nützlich, um den Fokus auf den Hauptteil des Codes zu legen.

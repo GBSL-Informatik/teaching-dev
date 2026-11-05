@@ -21,6 +21,7 @@ import Quiz from '@tdev-models/documents/Assessable/Quiz';
 import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import CmsText from '@tdev-models/documents/CmsText';
 import Code from '@tdev-models/documents/Code';
+import CodeCommit from '@tdev-models/documents/CodeCommit';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
@@ -67,6 +68,8 @@ export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: Do
             return new TaskState(data as DocumentProps<'task_state'>, store);
         case 'script_version':
             return new ScriptVersion(data as DocumentProps<'script_version'>, store);
+        case 'code_commit':
+            return new CodeCommit(data as DocumentProps<'code_commit'>, store);
         case 'string':
             return new String(data as DocumentProps<'string'>, store);
         case 'choice_answer':
@@ -101,6 +104,7 @@ const FactoryDefault: [DocumentType, Factory][] = [
     ['task_state', CreateDocumentModel],
     ['progress_state', CreateDocumentModel],
     ['script_version', CreateDocumentModel],
+    ['code_commit', CreateDocumentModel],
     ['string', CreateDocumentModel],
     ['choice_answer', CreateDocumentModel],
     ['quiz', CreateDocumentModel],

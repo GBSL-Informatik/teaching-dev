@@ -5,6 +5,7 @@ import type TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAns
 import iAssessable from '@tdev-models/documents/Assessable/iAssessable';
 import CmsText from '@tdev-models/documents/CmsText';
 import Code from '@tdev-models/documents/Code';
+import type CodeCommit from '@tdev-models/documents/CodeCommit';
 import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
 import File from '@tdev-models/documents/FileSystem/File';
@@ -42,6 +43,11 @@ export interface ScriptVersionData {
     pasted?: boolean;
 }
 
+export interface CodeCommitData {
+    code: string;
+    message: string;
+}
+
 export interface StringData {
     text: string;
 }
@@ -68,9 +74,18 @@ export interface QuillV2Data {
     delta: Delta;
 }
 
-export interface CodeData {
+/**
+ * Data shared by all iCode documents.
+ */
+export interface iCodeData {
     code: string;
+    /**
+     * The CodeCommit the current code is based on, `null` when based on the initial code.
+     */
+    codeCommitId?: string | null;
 }
+
+export interface CodeData extends iCodeData {}
 
 export interface SolutionData {
     /** no content needed */
@@ -146,6 +161,7 @@ export interface TypeDataMapping extends TaskableDocumentMapping, ContainerTypeD
     ['code']: CodeData;
     // TODO: rename to `code_version`
     ['script_version']: ScriptVersionData;
+    ['code_commit']: CodeCommitData;
     ['string']: StringData;
     ['quill_v2']: QuillV2Data;
     ['solution']: SolutionData;
@@ -163,7 +179,7 @@ export type AssessableType = keyof AssessableDataMapping;
 
 type KeysWithCode<T> = {
     [K in keyof T]: 'code' extends keyof T[K] ? K : never;
-}[keyof Omit<T, 'script_version'>];
+}[keyof Omit<T, 'script_version' | 'code_commit'>];
 
 export type CodeType = KeysWithCode<TypeDataMapping>;
 export interface ContainerTypeModelMapping {
@@ -193,6 +209,7 @@ export interface TypeModelMapping
     ['code']: Code;
     // TODO: rename to `code_version`?
     ['script_version']: ScriptVersion;
+    ['code_commit']: CodeCommit;
     ['string']: String;
     ['quill_v2']: QuillV2;
     ['solution']: Solution;

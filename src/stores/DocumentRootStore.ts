@@ -160,6 +160,10 @@ export class DocumentRootStore extends iStore {
     ) {
         if (this.queued.has(id)) {
             const currentConfig = this.queued.get(id);
+            if (currentConfig && currentConfig.load.documentType !== loadConfig?.documentType) {
+                // different document types are requested for the same root: load all of them at once
+                currentConfig.load.documentType = undefined;
+            }
             const needsReplacement =
                 loadConfig?.documentRoot === 'replace' && currentConfig?.load.documentRoot !== 'replace';
             if (!needsReplacement) {

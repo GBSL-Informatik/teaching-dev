@@ -1,0 +1,71 @@
+.codeCommits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ifm-spacing-vertical);
+    padding: var(--ifm-spacing-vertical) var(--ifm-spacing-horizontal);
+    border-top: 1px solid var(--ifm-color-emphasis-300);
+    background: var(--ifm-background-surface-color);
+}
+
+.commitForm {
+    display: flex;
+    gap: calc(var(--ifm-spacing-horizontal) / 2);
+}
+
+.messageInput {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--ifm-color-emphasis-400);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+}
+
+.tree {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    .tree {
+        margin-left: 0.3em;
+        padding-left: 1em;
+        border-left: 1px solid var(--ifm-color-emphasis-300);
+    }
+}
+
+.entry {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 2em;
+    &.head .label {
+        font-weight: var(--ifm-font-weight-bold);
+    }
+}
+
+.dot {
+    flex-shrink: 0;
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: var(--ifm-color-emphasis-500);
+    .head & {
+        background: var(--ifm-color-primary);
+    }
+}
+
+.label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.date {
+    flex-shrink: 0;
+    font-size: var(--ifm-font-size-small, 0.8em);
+    color: var(--ifm-color-emphasis-600);
+}
+
+.spacer {
+    flex-grow: 1;
+}

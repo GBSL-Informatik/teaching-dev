@@ -32,6 +32,7 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
     readonly hideWarning: boolean;
     readonly theme?: string;
     readonly versioned: boolean;
+    readonly commitable: boolean;
 
     constructor(type: T, props: Partial<MetaInit>) {
         super(type, props);
@@ -44,6 +45,7 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
         this.versioned = !!props.versioned;
         this.slim = !!props.slim;
         this.hasHistory = this.versioned && !this.slim && !props.noHistory;
+        this.commitable = !!props.commitable && !this.slim;
         this.showLineNumbers = props.showLineNumbers !== undefined ? props.showLineNumbers : true;
         this.minLines = props.minLines;
         this.maxLines = props.maxLines || 25;
