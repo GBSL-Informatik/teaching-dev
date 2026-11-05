@@ -1,5 +1,3 @@
-@use 'sass:list';
-
 .codeCommits {
     display: flex;
     flex-direction: column;
@@ -39,14 +37,6 @@
     align-items: stretch;
 }
 
-$lane-colors: (
-    var(--ifm-color-primary),
-    var(--ifm-color-success),
-    var(--ifm-color-warning),
-    var(--ifm-color-danger),
-    var(--ifm-color-info)
-);
-
 .graph {
     display: flex;
     flex-direction: column;
@@ -56,11 +46,34 @@ $lane-colors: (
         fill: none;
         stroke-width: 2;
     }
-    @for $i from 0 to list.length($lane-colors) {
-        .lane#{$i} {
-            stroke: list.nth($lane-colors, $i + 1);
-            fill: list.nth($lane-colors, $i + 1);
-        }
+    /* `color` is picked up by the dots via `currentColor`, lines and paths must stay unfilled */
+    .lane0 {
+        color: var(--ifm-color-primary);
+        stroke: var(--ifm-color-primary);
+    }
+    .lane1 {
+        color: var(--ifm-color-success);
+        stroke: var(--ifm-color-success);
+    }
+    .lane2 {
+        color: var(--ifm-color-warning);
+        stroke: var(--ifm-color-warning);
+    }
+    .lane3 {
+        color: var(--ifm-color-danger);
+        stroke: var(--ifm-color-danger);
+    }
+    .lane4 {
+        color: var(--ifm-color-info);
+        stroke: var(--ifm-color-info);
+    }
+    .dot {
+        fill: currentColor;
+        stroke-width: 0;
+    }
+    .headDot {
+        stroke: var(--ifm-background-surface-color);
+        stroke-width: 2;
     }
 }
 
@@ -77,15 +90,6 @@ $lane-colors: (
         inset: 0;
         display: block;
     }
-}
-
-.dot {
-    stroke-width: 0;
-}
-
-.headDot {
-    stroke: var(--ifm-background-surface-color);
-    stroke-width: 2;
 }
 
 .content {
