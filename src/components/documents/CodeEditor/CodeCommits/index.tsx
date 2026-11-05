@@ -13,11 +13,11 @@ interface Props<T extends CodeType> {
 const CodeCommits = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     React.useEffect(() => {
-        code.loadCommits();
+        code.commits.load();
     }, [code]);
     return (
         <div className={styles.codeCommits}>
-            {code.canCommit && <CommitForm code={code} />}
+            {code.commits.canCommit && <CommitForm code={code} />}
             <CommitGraph code={code} />
         </div>
     );

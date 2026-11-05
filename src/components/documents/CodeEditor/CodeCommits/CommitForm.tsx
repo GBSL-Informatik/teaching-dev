@@ -12,14 +12,15 @@ interface Props<T extends CodeType> {
 const CommitForm = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
     const [message, setMessage] = React.useState('');
-    const canSubmit = code.hasUncommittedChanges && message.trim().length > 0 && !code.isCommitting;
+    const canSubmit =
+        code.commits.hasUncommittedChanges && message.trim().length > 0 && !code.commits.isCommitting;
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value);
     const handleCommit = () => {
         if (!canSubmit) {
             return;
         }
-        code.createCommit(message).then((commit) => {
+        code.commits.create(message).then((commit) => {
             if (commit) {
                 setMessage('');
             }

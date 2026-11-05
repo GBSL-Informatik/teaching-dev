@@ -28,7 +28,7 @@ class ScriptVersion extends iDocument<'script_version'> {
         if (!code) {
             return 0;
         }
-        return code.versions.indexOf(this) + 1;
+        return code.versions.items.indexOf(this) + 1;
     }
 
     get pasted() {

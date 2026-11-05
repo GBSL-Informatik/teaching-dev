@@ -10,7 +10,7 @@ interface Props<T extends CodeType> {
 
 const CommitGraph = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
-    const { rows, laneCount } = code.commitGraph;
+    const { rows, laneCount } = code.commits.graph;
     return (
         <div className={styles.commitGraph}>
             {rows.map((row) => (

@@ -35,7 +35,7 @@ export class CodeCommitsView {
      */
     previewCode<T extends CodeType>(code: iCode<T>): string | undefined {
         const nodeId = this.previewedNodeIds.get(code.id);
-        return nodeId ? code.codeOf(nodeId) : undefined;
+        return nodeId ? code.commits.codeOf(nodeId) : undefined;
     }
 
     @action
@@ -72,9 +72,9 @@ export class CodeCommitsView {
     @action
     restore<T extends CodeType>(code: iCode<T>, commit?: CodeCommit) {
         if (commit) {
-            code.restoreCommit(commit);
+            code.commits.restore(commit);
         } else {
-            code.restoreInitialCode();
+            code.commits.restoreInitial();
         }
         this.clearSelection(code);
     }

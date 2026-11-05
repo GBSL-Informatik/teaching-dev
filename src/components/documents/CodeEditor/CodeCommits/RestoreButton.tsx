@@ -13,12 +13,12 @@ interface Props<T extends CodeType> {
 
 const RestoreButton = observer(<T extends CodeType>(props: Props<T>) => {
     const { code, isHead, onRestore } = props;
-    const canRestore = code.canCommit && (!isHead || code.hasUncommittedChanges);
+    const canRestore = code.commits.canCommit && (!isHead || code.commits.hasUncommittedChanges);
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         const confirmMessage = 'Nicht committete Änderungen gehen verloren. Trotzdem wiederherstellen?';
-        if (code.hasUncommittedChanges && !window.confirm(confirmMessage)) {
+        if (code.commits.hasUncommittedChanges && !window.confirm(confirmMessage)) {
             return;
         }
         onRestore();
