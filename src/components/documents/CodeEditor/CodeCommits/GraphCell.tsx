@@ -11,13 +11,26 @@ const LANE_COLOR_COUNT = 5;
 const laneX = (lane: number) => lane * LANE_WIDTH + LANE_WIDTH / 2;
 const laneClass = (lane: number) => styles[`lane${lane % LANE_COLOR_COUNT}`];
 
+const CORNER_RADIUS = LANE_WIDTH / 2;
+
 /**
- * S-curve from the top of `fromLane` into the dot on `toLane`.
+ * Path from the top of `fromLane` into the dot on `toLane`:
+ * straight down, a rounded corner and then horizontally into the dot.
  */
 const mergePath = (fromLane: number, toLane: number) => {
     const fromX = laneX(fromLane);
     const toX = laneX(toLane);
-    return `M ${fromX} 0 C ${fromX} ${DOT_Y}, ${toX} 0, ${toX} ${DOT_Y}`;
+    if (fromX === toX) {
+        return `M ${fromX} 0 L ${toX} ${DOT_Y}`;
+    }
+    const direction = toX < fromX ? -1 : 1;
+    const cornerEndX = fromX + direction * CORNER_RADIUS;
+    return [
+        `M ${fromX} 0`,
+        `L ${fromX} ${DOT_Y - CORNER_RADIUS}`,
+        `Q ${fromX} ${DOT_Y} ${cornerEndX} ${DOT_Y}`,
+        `L ${toX} ${DOT_Y}`
+    ].join(' ');
 };
 
 interface Props {

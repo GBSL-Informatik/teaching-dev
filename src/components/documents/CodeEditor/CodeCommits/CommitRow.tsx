@@ -9,7 +9,8 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import GraphCell from './GraphCell';
-import SelectionActions from './SelectionActions';
+import PreviewButton from './PreviewButton';
+import RestoreButton from './RestoreButton';
 import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
@@ -42,7 +43,6 @@ const CommitRow = observer(<T extends CodeType>(props: Props<T>) => {
             <GraphCell row={row} laneCount={laneCount} isHead={isHead} />
             <div className={styles.content}>
                 <div className={styles.summary} onClick={handleSelect}>
-                    {commit && <code className={styles.hash}>{commit.id.slice(0, 7)}</code>}
                     {isHead && (
                         <span className={clsx('badge', 'badge--primary')}>
                             <Translate id="CodeCommits.Entry.Head">HEAD</Translate>
@@ -55,7 +55,8 @@ const CommitRow = observer(<T extends CodeType>(props: Props<T>) => {
                     )}
                     <span className={styles.title}>{title}</span>
                     {commit && <span className={styles.date}>{formatDateTime(commit.createdAt, true)}</span>}
-                    {isSelected && <SelectionActions code={code} isHead={isHead} onRestore={handleRestore} />}
+                    {isSelected && <RestoreButton code={code} isHead={isHead} onRestore={handleRestore} />}
+                    <PreviewButton code={code} selectionId={selectionId} />
                 </div>
                 {isSelected && commit?.details && <div className={styles.details}>{commit.details}</div>}
             </div>
