@@ -1,4 +1,5 @@
 import { CodeType, Document as DocumentProps, ScriptVersionData, TypeDataMapping } from '@tdev-api/document';
+import { CommitGraph, GraphNode, layoutCommitGraph } from '@tdev-models/helpers/commitGraph';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
@@ -22,6 +23,13 @@ interface Version {
  * Selection id of the "initial code" entry in the commit tree.
  */
 export const INITIAL_CODE_SELECTION = 'initial';
+
+/**
+ * A node of the commit graph: a commit, or the initial code (without a commit).
+ */
+export interface CommitGraphNode extends GraphNode {
+    commit?: CodeCommit;
+}
 
 export interface CodePostUpdateMeta extends Record<string, unknown> {
     action?: 'runCode' | 'stopExecution';
@@ -216,9 +224,17 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         );
     }
 
-    @computed({ equals: compareShallow })
-    get rootCommits(): CodeCommit[] {
-        return this.commits.filter((commit) => !commit.parentId);
+    @computed
+    get commitGraph(): CommitGraph<CommitGraphNode> {
+        const commitIds = new Set(this.commits.map((commit) => commit.id));
+        const commitNodes = [...this.commits].reverse().map((commit) => {
+            // root commits and commits with an unknown parent are drawn on top of the initial code
+            const parentId =
+                commit.parentId && commitIds.has(commit.parentId) ? commit.parentId : INITIAL_CODE_SELECTION;
+            return { id: commit.id, parentId: parentId, commit: commit };
+        });
+        const initialNode = { id: INITIAL_CODE_SELECTION, parentId: null };
+        return layoutCommitGraph([...commitNodes, initialNode]);
     }
 
     @computed

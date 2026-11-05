@@ -1,8 +1,7 @@
 import type { CodeCommitData, Document as DocumentProps } from '@tdev-api/document';
 import iDocument from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
-import { orderBy } from 'es-toolkit/array';
-import { compareShallow, computed } from 'mobx';
+import { computed } from 'mobx';
 
 class CodeCommit extends iDocument<'code_commit'> {
     constructor(props: DocumentProps<'code_commit'>, store: DocumentStore) {
@@ -33,12 +32,6 @@ class CodeCommit extends iDocument<'code_commit'> {
     @computed
     get details() {
         return this.message.split('\n').slice(1).join('\n').trim();
-    }
-
-    @computed({ equals: compareShallow })
-    get childCommits(): CodeCommit[] {
-        const childCommits = this.children.filter((doc) => doc.type === 'code_commit');
-        return orderBy(childCommits, ['createdAt'], ['asc']);
     }
 }
 

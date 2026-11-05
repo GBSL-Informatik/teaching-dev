@@ -2,7 +2,7 @@ import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 import { observer } from 'mobx-react-lite';
 import CommitForm from './CommitForm';
-import CommitTree from './CommitTree';
+import CommitGraph from './CommitGraph';
 import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
@@ -14,7 +14,7 @@ const CodeCommits = observer(<T extends CodeType>(props: Props<T>) => {
     return (
         <div className={styles.codeCommits}>
             {code.canCommit && <CommitForm code={code} />}
-            <CommitTree code={code} />
+            <CommitGraph code={code} />
         </div>
     );
 });
