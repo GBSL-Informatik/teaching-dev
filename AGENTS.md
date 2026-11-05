@@ -81,6 +81,8 @@ Use mobx for state management and only use local reactish component state for co
 Task-specific instructions live in skills, following the [Agent Skills](https://agentskills.io) format. Read the matching `SKILL.md` before starting one of these tasks:
 
 - [`code-style`](.agents/skills/code-style/SKILL.md) - Write or modify code that humans can easily review
+- [`mdx-docs`](.agents/skills/mdx-docs/SKILL.md) - Write or edit Markdown and MDX documentation using Teaching Dev conventions
+- [`long-term-maintainability-reviewer`](.agents/skills/long-term-maintainability-reviewer/SKILL.md) - Challenge design choices during planning, refactoring, and pull-request reviews
 
 ## Testing Guidelines
 
