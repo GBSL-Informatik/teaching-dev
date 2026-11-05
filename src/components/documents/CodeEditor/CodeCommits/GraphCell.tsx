@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import styles from './styles.module.scss';
 
 const LANE_WIDTH = 16;
+// must match the `min-height` of `.summary` in styles.module.scss
 const ROW_HEIGHT = 32;
 const DOT_Y = ROW_HEIGHT / 2;
 const LANE_COLOR_COUNT = 5;

@@ -34,7 +34,7 @@ export const CodeEditor = observer((props: Props) => {
     const componentStore = useStore('componentStore');
     const [type] = React.useState(componentStore.matchCodeBlockType(props.liveCodeType));
     const [meta] = React.useState(componentStore.createEditorMeta(type, props));
-    const code = useFirstMainDocument(id, meta, true, {}, meta.versioned ? meta.type : undefined);
+    const code = useFirstMainDocument(id, meta, true, {}, meta.loadsMainDocumentOnly ? meta.type : undefined);
     React.useEffect(() => {
         if (code && code.meta?.slim) {
             code.setCode(props.code);
@@ -98,7 +98,9 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
                     )}
                 >
                     <Editor code={code} overrides={props.overrides} />
-                    {code.isCommitable && code.showCommits && <CodeCommits code={code} />}
+                    {code.isCommitable && viewStore.codeCommitsView.isPanelOpen(code) && (
+                        <CodeCommits code={code} />
+                    )}
                     {code.meta.hasHistory && <CodeHistory code={code} />}
                 </div>
             </div>

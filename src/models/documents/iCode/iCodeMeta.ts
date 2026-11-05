@@ -56,6 +56,14 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
         this.theme = props.theme;
     }
 
+    /**
+     * Versioned code blocks load only their main document with the page,
+     * their versions and commits are loaded separately.
+     */
+    get loadsMainDocumentOnly() {
+        return this.versioned;
+    }
+
     @computed
     get defaultData(): TypeDataMapping[T] {
         return {

@@ -20,9 +20,9 @@ interface Version {
 }
 
 /**
- * Selection id of the "initial code" entry in the commit tree.
+ * Id of the "initial code" node in the commit graph: the root of all commits.
  */
-export const INITIAL_CODE_SELECTION = 'initial';
+export const INITIAL_CODE_ID = 'initial';
 
 /**
  * A node of the commit graph: a commit, or the initial code (without a commit).
@@ -42,10 +42,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor isPasted: boolean = false;
     @observable accessor codeCommitId: string | null;
     @observable accessor _initialCommitsLoaded: boolean = false;
-    @observable accessor showCommits: boolean = false;
     @observable accessor isCommitting: boolean = false;
-    @observable accessor selectedCommitId: string | null = null;
-    @observable accessor previewCommitId: string | null = null;
 
     constructor(props: Props<T>, store: DocumentStore) {
         super(props, store);
@@ -179,7 +176,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (!this.canEdit) {
             return;
         }
-        this.closeCommitSelection();
         this.codeCommitId = commit.id;
         this.setCode(commit.code);
     }
@@ -189,7 +185,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (!this.canEdit) {
             return;
         }
-        this.closeCommitSelection();
         this.codeCommitId = null;
         this.setCode(this.meta.initCode);
     }
@@ -200,8 +195,8 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             return;
         }
         this._initialCommitsLoaded = true;
-        // without `versioned`, the whole document root (incl. the commits) is loaded already
-        if (!this.isVersioned) {
+        if (!this.meta.loadsMainDocumentOnly) {
+            // the commits were loaded together with the document root
             return;
         }
         this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
@@ -230,17 +225,26 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         const commitNodes = [...this.commits].reverse().map((commit) => {
             // root commits and commits with an unknown parent are drawn on top of the initial code
             const parentId =
-                commit.parentId && commitIds.has(commit.parentId) ? commit.parentId : INITIAL_CODE_SELECTION;
-            return { id: commit.id, parentId: parentId, commit: commit };
+                commit.parentId && commitIds.has(commit.parentId) ? commit.parentId : INITIAL_CODE_ID;
+            return { id: commit.id, parentId, commit };
         });
-        const initialNode = { id: INITIAL_CODE_SELECTION, parentId: null };
+        const initialNode = { id: INITIAL_CODE_ID, parentId: null };
         return layoutCommitGraph([...commitNodes, initialNode]);
+    }
+
+    /**
+     * @param nodeId a commit id or `INITIAL_CODE_ID`
+     */
+    codeOf(nodeId: string): string | undefined {
+        if (nodeId === INITIAL_CODE_ID) {
+            return this.meta.initCode;
+        }
+        return this.findCommit(nodeId)?.code;
     }
 
     @computed
     get headCommit(): CodeCommit | undefined {
-        const commit = this.store.find(this.codeCommitId);
-        return commit?.type === 'code_commit' ? commit : undefined;
+        return this.findCommit(this.codeCommitId);
     }
 
     @computed
@@ -261,42 +265,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             !this.root?.isDummy &&
             !this.store.root.userStore.isUserSwitched
         );
-    }
-
-    @action
-    setShowCommits(showCommits: boolean) {
-        this.showCommits = showCommits;
-        if (!showCommits) {
-            this.closeCommitSelection();
-        }
-    }
-
-    /**
-     * @param selectionId a commit id, `INITIAL_CODE_SELECTION` or `null` to clear the selection
-     */
-    @action
-    selectCommit(selectionId: string | null) {
-        this.selectedCommitId = selectionId;
-    }
-
-    /**
-     * @param selectionId a commit id, `INITIAL_CODE_SELECTION` or `null` to end the preview
-     */
-    @action
-    previewCommit(selectionId: string | null) {
-        this.previewCommitId = selectionId;
-    }
-
-    /**
-     * The code of the previewed commit, displayed read only in the editor.
-     */
-    @computed
-    get previewCode(): string | undefined {
-        if (this.previewCommitId === INITIAL_CODE_SELECTION) {
-            return this.meta.initCode;
-        }
-        const commit = this.store.find(this.previewCommitId);
-        return commit?.type === 'code_commit' ? commit.code : undefined;
     }
 
     @action
@@ -449,8 +417,7 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         const data: TypeDataMapping[T] = {
             code: this.code
         };
-        // only persist the field for documents that ever had a commit
-        if (this.codeCommitId || 'codeCommitId' in this._pristine) {
+        if (this.isCommitable) {
             data.codeCommitId = this.codeCommitId;
         }
         return data;
@@ -464,10 +431,9 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         return new iCodeMeta(this.type, { code: '' });
     }
 
-    @action
-    private closeCommitSelection() {
-        this.selectCommit(null);
-        this.previewCommit(null);
+    private findCommit(id: string | null): CodeCommit | undefined {
+        const document = this.store.find(id);
+        return document?.type === 'code_commit' ? document : undefined;
     }
 
     @action

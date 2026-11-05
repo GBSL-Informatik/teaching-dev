@@ -1,6 +1,7 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import type { CodeType } from '@tdev-api/document';
 import { useComputed } from '@tdev-hooks/useComputed';
+import { useStore } from '@tdev-hooks/useStore';
 import type iCode from '@tdev-models/documents/iCode';
 import type { CommitGraphNode } from '@tdev-models/documents/iCode';
 import type { GraphRow } from '@tdev-models/helpers/commitGraph';
@@ -21,19 +22,20 @@ interface Props<T extends CodeType> {
 
 const CommitRow = observer(<T extends CodeType>(props: Props<T>) => {
     const { code, row, laneCount } = props;
-    const { commit } = row.node;
-    const selectionId = row.node.id;
-    const isSelected = useComputed(() => code.selectedCommitId === selectionId, [code, selectionId]);
+    const { codeCommitsView } = useStore('viewStore');
+    const { id: nodeId, commit } = row.node;
+    const isSelected = useComputed(
+        () => codeCommitsView.isSelected(code, nodeId),
+        [codeCommitsView, code, nodeId]
+    );
     const isHead = useComputed(() => code.codeCommitId === (commit?.id ?? null), [code, commit]);
     const isModified = isHead && code.hasUncommittedChanges;
 
-    const handleSelect = () => code.selectCommit(isSelected ? null : selectionId);
-    const handleRestore = React.useCallback(() => {
-        if (!commit) {
-            return code.restoreInitialCode();
-        }
-        code.restoreCommit(commit);
-    }, [code, commit]);
+    const handleSelect = () => codeCommitsView.toggleSelection(code, nodeId);
+    const handleRestore = React.useCallback(
+        () => codeCommitsView.restore(code, commit),
+        [codeCommitsView, code, commit]
+    );
 
     const title =
         commit?.title ?? translate({ id: 'CodeCommits.Graph.InitialCode', message: 'Ursprünglicher Code' });
@@ -56,7 +58,7 @@ const CommitRow = observer(<T extends CodeType>(props: Props<T>) => {
                     <span className={styles.title}>{title}</span>
                     {commit && <span className={styles.date}>{formatDateTime(commit.createdAt, true)}</span>}
                     {isSelected && <RestoreButton code={code} isHead={isHead} onRestore={handleRestore} />}
-                    <PreviewButton code={code} selectionId={selectionId} />
+                    <PreviewButton code={code} nodeId={nodeId} />
                 </div>
                 {isSelected && commit?.details && <div className={styles.details}>{commit.details}</div>}
             </div>
