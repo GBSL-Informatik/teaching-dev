@@ -1,4 +1,3 @@
-import { translate } from '@docusaurus/Translate';
 import { mdiEye, mdiEyeOff } from '@mdi/js';
 import type { CodeType } from '@tdev-api/document';
 import Button, { Color } from '@tdev-components/documents/CodeEditor/Button';
@@ -32,14 +31,7 @@ const PreviewButton = observer(<T extends CodeType>(props: Props<T>) => {
             icon={isPreviewed ? mdiEyeOff : mdiEye}
             onClick={handleClick}
             color={isPreviewed ? Color.Primary : Color.Secondary}
-            title={
-                isPreviewed
-                    ? translate({ id: 'CodeCommits.Preview.Hide', message: 'Vorschau beenden' })
-                    : translate({
-                          id: 'CodeCommits.Preview.Show',
-                          message: 'Code anzeigen (schreibgeschützt)'
-                      })
-            }
+            title={isPreviewed ? 'Vorschau beenden' : 'Code anzeigen (schreibgeschützt)'}
         />
     );
 });

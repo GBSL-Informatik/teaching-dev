@@ -1,4 +1,3 @@
-import { translate } from '@docusaurus/Translate';
 import { mdiBackupRestore } from '@mdi/js';
 import type { CodeType } from '@tdev-api/document';
 import Button from '@tdev-components/documents/CodeEditor/Button';
@@ -18,10 +17,7 @@ const RestoreButton = observer(<T extends CodeType>(props: Props<T>) => {
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const confirmMessage = translate({
-            id: 'CodeCommits.Restore.Confirm',
-            message: 'Nicht committete Änderungen gehen verloren. Trotzdem wiederherstellen?'
-        });
+        const confirmMessage = 'Nicht committete Änderungen gehen verloren. Trotzdem wiederherstellen?';
         if (code.hasUncommittedChanges && !window.confirm(confirmMessage)) {
             return;
         }
@@ -31,13 +27,7 @@ const RestoreButton = observer(<T extends CodeType>(props: Props<T>) => {
     if (!canRestore) {
         return null;
     }
-    return (
-        <Button
-            icon={mdiBackupRestore}
-            onClick={handleClick}
-            title={translate({ id: 'CodeCommits.Entry.Restore', message: 'Wiederherstellen' })}
-        />
-    );
+    return <Button icon={mdiBackupRestore} onClick={handleClick} title="Wiederherstellen" />;
 });
 
 export default RestoreButton;

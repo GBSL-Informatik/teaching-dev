@@ -1,4 +1,3 @@
-import Translate, { translate } from '@docusaurus/Translate';
 import type { CodeType } from '@tdev-api/document';
 import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
@@ -37,24 +36,15 @@ const CommitRow = observer(<T extends CodeType>(props: Props<T>) => {
         [codeCommitsView, code, commit]
     );
 
-    const title =
-        commit?.title ?? translate({ id: 'CodeCommits.Graph.InitialCode', message: 'Ursprünglicher Code' });
+    const title = commit?.title ?? 'Ursprünglicher Code';
 
     return (
         <div className={clsx(styles.row, isHead && styles.head, isSelected && styles.selected)}>
             <GraphCell row={row} laneCount={laneCount} isHead={isHead} />
             <div className={styles.content}>
                 <div className={styles.summary} onClick={handleSelect}>
-                    {isHead && (
-                        <span className={clsx('badge', 'badge--primary')}>
-                            <Translate id="CodeCommits.Entry.Head">HEAD</Translate>
-                        </span>
-                    )}
-                    {isModified && (
-                        <span className={clsx('badge', 'badge--warning')}>
-                            <Translate id="CodeCommits.Entry.Modified">Geändert</Translate>
-                        </span>
-                    )}
+                    {isHead && <span className={clsx('badge', 'badge--primary')}>HEAD</span>}
+                    {isModified && <span className={clsx('badge', 'badge--warning')}>Geändert</span>}
                     <span className={styles.title}>{title}</span>
                     {commit && <span className={styles.date}>{formatDateTime(commit.createdAt, true)}</span>}
                     {isSelected && <RestoreButton code={code} isHead={isHead} onRestore={handleRestore} />}

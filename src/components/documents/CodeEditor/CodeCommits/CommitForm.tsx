@@ -1,4 +1,3 @@
-import Translate, { translate } from '@docusaurus/Translate';
 import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 import clsx from 'clsx';
@@ -34,10 +33,7 @@ const CommitForm = observer(<T extends CodeType>(props: Props<T>) => {
                 rows={2}
                 value={message}
                 onChange={handleChange}
-                placeholder={translate({
-                    id: 'CodeCommits.Form.Placeholder',
-                    message: 'Beschreibung der Änderungen'
-                })}
+                placeholder="Beschreibung der Änderungen"
             />
             <button
                 type="button"
@@ -45,7 +41,7 @@ const CommitForm = observer(<T extends CodeType>(props: Props<T>) => {
                 onClick={handleCommit}
                 disabled={!canSubmit}
             >
-                <Translate id="CodeCommits.Form.Submit">Commit</Translate>
+                Commit
             </button>
         </div>
     );

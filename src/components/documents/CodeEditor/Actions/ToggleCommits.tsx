@@ -1,4 +1,3 @@
-import { translate } from '@docusaurus/Translate';
 import { mdiSourceCommit } from '@mdi/js';
 import type { CodeType } from '@tdev-api/document';
 import Button, { Color } from '@tdev-components/documents/CodeEditor/Button';
@@ -20,11 +19,7 @@ const ToggleCommits = observer(<T extends CodeType>(props: Props<T>) => {
             icon={mdiSourceCommit}
             onClick={handleClick}
             color={isOpen ? Color.Primary : Color.Secondary}
-            title={
-                isOpen
-                    ? translate({ id: 'CodeCommits.Toggle.Hide', message: 'Commits ausblenden' })
-                    : translate({ id: 'CodeCommits.Toggle.Show', message: 'Commits anzeigen' })
-            }
+            title={isOpen ? 'Commits ausblenden' : 'Commits anzeigen'}
         />
     );
 });
