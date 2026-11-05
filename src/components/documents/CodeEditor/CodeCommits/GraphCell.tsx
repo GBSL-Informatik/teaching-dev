@@ -1,4 +1,4 @@
-import type { CommitGraphNode } from '@tdev-models/documents/iCode';
+import type { CommitGraphNode } from '@tdev-models/documents/iCode/CodeCommits';
 import type { GraphRow } from '@tdev-models/helpers/commitGraph';
 import clsx from 'clsx';
 import styles from './styles.module.scss';

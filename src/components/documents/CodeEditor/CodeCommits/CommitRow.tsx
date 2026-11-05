@@ -2,7 +2,7 @@ import type { CodeType } from '@tdev-api/document';
 import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
 import type iCode from '@tdev-models/documents/iCode';
-import type { CommitGraphNode } from '@tdev-models/documents/iCode';
+import type { CommitGraphNode } from '@tdev-models/documents/iCode/CodeCommits';
 import type { GraphRow } from '@tdev-models/helpers/commitGraph';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import clsx from 'clsx';
@@ -28,7 +28,7 @@ const CommitRow = observer(<T extends CodeType>(props: Props<T>) => {
         [codeCommitsView, code, nodeId]
     );
     const isHead = useComputed(() => code.codeCommitId === (commit?.id ?? null), [code, commit]);
-    const isModified = isHead && code.hasUncommittedChanges;
+    const isModified = isHead && code.commits.hasUncommittedChanges;
 
     const handleSelect = () => codeCommitsView.toggleSelection(code, nodeId);
     const handleRestore = React.useCallback(
