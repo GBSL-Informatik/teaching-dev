@@ -3,6 +3,7 @@ import type { RootStore } from '@tdev-stores/rootStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { AdminView } from './AdminView';
+import { CodeCommitsView } from './CodeCommitsView';
 import { FileTreeView } from './FileTreeView';
 import { PermissionsControlView } from './PermissionsControlView';
 
@@ -16,6 +17,7 @@ export default class ViewStore {
     @observableRef accessor permissionControl: PermissionsControlView = null as any;
     @observableRef accessor adminView: AdminView = null as any;
     @observableRef accessor fileTreeView: FileTreeView = null as any;
+    @observableRef accessor codeCommitsView: CodeCommitsView = null as any;
 
     @observable accessor fullscreenTargetId: string | null = null;
     @observable accessor isPageVisible: boolean = true;
@@ -27,6 +29,7 @@ export default class ViewStore {
         this.permissionControl = new PermissionsControlView(store);
         this.adminView = new AdminView(store);
         this.fileTreeView = new FileTreeView(store);
+        this.codeCommitsView = new CodeCommitsView(store);
     }
 
     @action
@@ -34,6 +37,7 @@ export default class ViewStore {
         this.permissionControl = new PermissionsControlView(this.root);
         this.adminView = new AdminView(this.root);
         this.fileTreeView.cleanup();
+        this.codeCommitsView.cleanup();
     }
 
     @action

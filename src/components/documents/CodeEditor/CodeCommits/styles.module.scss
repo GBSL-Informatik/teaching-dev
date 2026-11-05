@@ -1,0 +1,140 @@
+.codeCommits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ifm-spacing-vertical);
+    padding: var(--ifm-spacing-vertical) var(--ifm-spacing-horizontal);
+    border-top: 1px solid var(--ifm-color-emphasis-300);
+    background: var(--ifm-background-surface-color);
+}
+
+.commitForm {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(var(--ifm-spacing-horizontal) / 2);
+}
+
+.messageInput {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--ifm-color-emphasis-400);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.commitGraph {
+    display: flex;
+    flex-direction: column;
+    max-height: 20em;
+    overflow-y: auto;
+}
+
+.row {
+    display: flex;
+    align-items: stretch;
+}
+
+.graph {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    line,
+    path {
+        fill: none;
+        stroke-width: 2;
+    }
+    /* `color` is picked up by the dots via `currentColor`, lines and paths must stay unfilled */
+    .lane0 {
+        color: var(--ifm-color-primary);
+        stroke: var(--ifm-color-primary);
+    }
+    .lane1 {
+        color: var(--ifm-color-success);
+        stroke: var(--ifm-color-success);
+    }
+    .lane2 {
+        color: var(--ifm-color-warning);
+        stroke: var(--ifm-color-warning);
+    }
+    .lane3 {
+        color: var(--ifm-color-danger);
+        stroke: var(--ifm-color-danger);
+    }
+    .lane4 {
+        color: var(--ifm-color-info);
+        stroke: var(--ifm-color-info);
+    }
+    .dot {
+        fill: currentColor;
+        stroke-width: 0;
+    }
+    .headDot {
+        stroke: var(--ifm-background-surface-color);
+        stroke-width: 2;
+    }
+}
+
+.graphHead {
+    display: block;
+    flex-shrink: 0;
+}
+
+.graphTail {
+    position: relative;
+    flex-grow: 1;
+    svg {
+        position: absolute;
+        inset: 0;
+        display: block;
+    }
+}
+
+.content {
+    flex-grow: 1;
+    min-width: 0;
+    padding-left: 0.25em;
+}
+
+.summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    /* must match ROW_HEIGHT in GraphCell.tsx */
+    min-height: 32px;
+    padding: 0 0.25em;
+    border-radius: var(--ifm-global-radius);
+    cursor: pointer;
+    &:hover {
+        background: var(--ifm-color-emphasis-100);
+    }
+    .selected & {
+        background: var(--ifm-color-emphasis-200);
+    }
+}
+
+.title {
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    .head & {
+        font-weight: var(--ifm-font-weight-bold);
+    }
+}
+
+.details {
+    margin: 0 0 0.5em 0.5em;
+    white-space: pre-wrap;
+    font-size: var(--ifm-font-size-small, 0.8em);
+    color: var(--ifm-color-emphasis-700);
+}
+
+.date {
+    flex-shrink: 0;
+    font-size: var(--ifm-font-size-small, 0.8em);
+    color: var(--ifm-color-emphasis-600);
+}

@@ -1,3 +1,4 @@
+import { useStore } from '@tdev-hooks/useStore';
 // ace editor must be imported before ace-builds/*
 import AceEditor from 'react-ace';
 // rest
@@ -43,6 +44,8 @@ interface Props<T extends CodeType> {
 
 const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
+    const { codeCommitsView } = useStore('viewStore');
+    const previewCode = codeCommitsView.previewCode(code);
     const eRef = React.useRef<AceEditor>(null);
     const isComposingRef = React.useRef(false);
     const resizeRef = React.useRef<{
@@ -173,8 +176,8 @@ const EditorAce = observer(<T extends CodeType>(props: Props<T>) => {
                     // Mobile/Touch Devices use IME and often emit transient remove deltas during composition.
                     code.setCode(value, e.action, isComposingRef.current);
                 }}
-                readOnly={!code.canEdit || code.showRaw}
-                value={code.showRaw ? code.pristineCode : code.code}
+                readOnly={!code.canEdit || code.showRaw || previewCode !== undefined}
+                value={code.showRaw ? code.pristineCode : (previewCode ?? code.code)}
                 defaultValue={code?.code || '\n'}
                 name={code.codeId}
                 editorProps={{ $blockScrolling: true }}

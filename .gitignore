@@ -27,3 +27,7 @@ yarn-error.log*
 /tmp-assets
 .codex
 *.gitignore.*
+
+# Claude Code skills symlink (-> .agents/skills)
+# `ln -s .agents/skills .claude/skills`
+.claude/skills

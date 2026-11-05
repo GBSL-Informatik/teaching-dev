@@ -119,6 +119,12 @@ const PYTHON_PROPS: GenericPropery[] = [
         description: 'Jede Sekunde eine Version abspeichern.'
     },
     {
+        name: 'commitable',
+        type: 'checkbox',
+        required: false,
+        description: 'Commits erstellen und wiederherstellen.'
+    },
+    {
         name: 'noHistory',
         type: 'checkbox',
         required: false,

@@ -13,6 +13,7 @@ export interface MetaProps {
     noReset: boolean;
     noDownload: boolean;
     versioned: boolean;
+    commitable: boolean;
     noHistory: boolean;
     noCompare: boolean;
     maxLines?: number;
@@ -116,6 +117,7 @@ const CodeBlockWrapper = (props: Props & MetaProps): React.ReactNode => {
                             slim={!!metaProps.slim}
                             showLineNumbers={!(!!metaProps.slim && !/\n/.test(code))}
                             versioned={!!metaProps.versioned}
+                            commitable={!!metaProps.commitable}
                             noHistory={!!metaProps.noHistory}
                             noCompare={!!metaProps.noCompare}
                             hideWarning={!!metaProps.hideWarning}

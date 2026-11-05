@@ -1,9 +1,11 @@
 import { CodeType, Document as DocumentProps, ScriptVersionData, TypeDataMapping } from '@tdev-api/document';
+import { CommitGraph, GraphNode, layoutCommitGraph } from '@tdev-models/helpers/commitGraph';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { throttle } from 'es-toolkit/function';
-import { action, computed, observable } from 'mobx';
+import { action, compareShallow, computed, observable } from 'mobx';
+import CodeCommit from '../CodeCommit';
 import ScriptVersion from '../ScriptVersion';
 import iCodeMeta from './iCodeMeta';
 
@@ -17,6 +19,18 @@ interface Version {
     pasted?: boolean;
 }
 
+/**
+ * Id of the "initial code" node in the commit graph: the root of all commits.
+ */
+export const INITIAL_CODE_ID = 'initial';
+
+/**
+ * A node of the commit graph: a commit, or the initial code (without a commit).
+ */
+export interface CommitGraphNode extends GraphNode {
+    commit?: CodeCommit;
+}
+
 export interface CodePostUpdateMeta extends Record<string, unknown> {
     action?: 'runCode' | 'stopExecution';
 }
@@ -26,10 +40,14 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     @observable accessor _initialVersionsLoaded: boolean = false;
     @observable accessor showRaw: boolean = false;
     @observable accessor isPasted: boolean = false;
+    @observable accessor codeCommitId: string | null;
+    @observable accessor _initialCommitsLoaded: boolean = false;
+    @observable accessor isCommitting: boolean = false;
 
     constructor(props: Props<T>, store: DocumentStore) {
         super(props, store);
         this.code = props.data?.code ?? this.meta.initCode;
+        this.codeCommitId = props.data?.codeCommitId ?? null;
     }
 
     @computed
@@ -129,7 +147,127 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
     });
 
     @action
+    createCommit(message: string) {
+        const trimmedMessage = message.trim();
+        if (!this.canCommit || !trimmedMessage || this.isCommitting) {
+            return Promise.resolve(undefined);
+        }
+        this.isCommitting = true;
+        return this.store
+            .create({
+                documentRootId: this.documentRootId,
+                parentId: this.codeCommitId,
+                type: 'code_commit',
+                data: { code: this.code, message: trimmedMessage }
+            })
+            .then(
+                action((commit) => {
+                    this.isCommitting = false;
+                    if (commit) {
+                        this.setCodeCommitId(commit.id);
+                    }
+                    return commit;
+                })
+            );
+    }
+
+    @action
+    restoreCommit(commit: CodeCommit) {
+        if (!this.canEdit) {
+            return;
+        }
+        this.codeCommitId = commit.id;
+        this.setCode(commit.code);
+    }
+
+    @action
+    restoreInitialCode() {
+        if (!this.canEdit) {
+            return;
+        }
+        this.codeCommitId = null;
+        this.setCode(this.meta.initCode);
+    }
+
+    @action
+    loadCommits() {
+        if (this._initialCommitsLoaded || !this.isCommitable) {
+            return;
+        }
+        this._initialCommitsLoaded = true;
+        this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
+            documentType: 'code_commit',
+            skipCreate: true,
+            documentRoot: false,
+            groupPermissions: false,
+            userPermissions: false
+        });
+    }
+
+    @computed({ equals: compareShallow })
+    get commits(): CodeCommit[] {
+        return orderBy(
+            (this.root?.documents || []).filter(
+                (doc) => doc.type === 'code_commit' && doc.authorId === this.authorId
+            ) as CodeCommit[],
+            ['createdAt'],
+            ['asc']
+        );
+    }
+
+    @computed
+    get commitGraph(): CommitGraph<CommitGraphNode> {
+        const commitIds = new Set(this.commits.map((commit) => commit.id));
+        const commitNodes = [...this.commits].reverse().map((commit) => {
+            // root commits and commits with an unknown parent are drawn on top of the initial code
+            const parentId =
+                commit.parentId && commitIds.has(commit.parentId) ? commit.parentId : INITIAL_CODE_ID;
+            return { id: commit.id, parentId, commit };
+        });
+        const initialNode = { id: INITIAL_CODE_ID, parentId: null };
+        return layoutCommitGraph([...commitNodes, initialNode]);
+    }
+
+    /**
+     * @param nodeId a commit id or `INITIAL_CODE_ID`
+     */
+    codeOf(nodeId: string): string | undefined {
+        if (nodeId === INITIAL_CODE_ID) {
+            return this.meta.initCode;
+        }
+        return this.findCommit(nodeId)?.code;
+    }
+
+    @computed
+    get headCommit(): CodeCommit | undefined {
+        return this.findCommit(this.codeCommitId);
+    }
+
+    @computed
+    get hasUncommittedChanges() {
+        const isHeadLoading = !!this.codeCommitId && !this.headCommit;
+        if (isHeadLoading) {
+            return false;
+        }
+        const headCode = this.headCommit?.code ?? this.meta.initCode;
+        return this.code !== headCode;
+    }
+
+    @computed
+    get canCommit() {
+        return (
+            this.isCommitable &&
+            this.canEdit &&
+            !this.root?.isDummy &&
+            !this.store.root.userStore.isUserSwitched
+        );
+    }
+
+    @action
     setData(data: Props<T>['data'], from: Source, updatedAt?: Date): void {
+        if ('codeCommitId' in data) {
+            this.codeCommitId = data.codeCommitId ?? null;
+        }
         if ('code' in data) {
             if (from === Source.LOCAL) {
                 this.setCode(data.code);
@@ -203,6 +341,10 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         return this.meta.versioned;
     }
 
+    get isCommitable() {
+        return this.meta.commitable;
+    }
+
     get _pristineCode() {
         return this.meta.initCode;
     }
@@ -271,6 +413,9 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         const data: TypeDataMapping[T] = {
             code: this.code
         };
+        if (this.isCommitable) {
+            data.codeCommitId = this.codeCommitId;
+        }
         return data;
     }
 
@@ -280,6 +425,17 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             return this.root.meta as iCodeMeta<T>;
         }
         return new iCodeMeta(this.type, { code: '' });
+    }
+
+    private findCommit(id: string | null): CodeCommit | undefined {
+        const document = this.store.find(id);
+        return document?.type === 'code_commit' ? document : undefined;
+    }
+
+    @action
+    private setCodeCommitId(codeCommitId: string) {
+        this.codeCommitId = codeCommitId;
+        this.save();
     }
 }
 

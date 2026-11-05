@@ -32,6 +32,7 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
     readonly hideWarning: boolean;
     readonly theme?: string;
     readonly versioned: boolean;
+    readonly commitable: boolean;
 
     constructor(type: T, props: Partial<MetaInit>) {
         super(type, props);
@@ -44,6 +45,7 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
         this.versioned = !!props.versioned;
         this.slim = !!props.slim;
         this.hasHistory = this.versioned && !this.slim && !props.noHistory;
+        this.commitable = !!props.commitable && !this.slim;
         this.showLineNumbers = props.showLineNumbers !== undefined ? props.showLineNumbers : true;
         this.minLines = props.minLines;
         this.maxLines = props.maxLines || 25;
@@ -52,6 +54,14 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
         this.canDownload = !(props.noDownload || false);
         this.hideWarning = !!props.hideWarning;
         this.theme = props.theme;
+    }
+
+    /**
+     * Versioned and commitable code blocks load only their main document with the page,
+     * their versions and commits are loaded lazily.
+     */
+    get loadsMainDocumentOnly() {
+        return this.versioned || this.commitable;
     }
 
     @computed

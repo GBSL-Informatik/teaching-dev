@@ -14,6 +14,7 @@ import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 import DownloadCode from '../../Actions/DownloadCode';
 import ShowRaw from '../../Actions/ShowRaw';
+import ToggleCommits from '../../Actions/ToggleCommits';
 import styles from './styles.module.scss';
 
 interface Props<T extends CodeType> {
@@ -56,6 +57,7 @@ const Content = observer(<T extends CodeType>(props: Props<T>) => {
             )}
             <div className={clsx(styles.spacer)} />
             <SyncStatus model={code} />
+            {code.isCommitable && !code.root?.isDummy && <ToggleCommits code={code} />}
             {code.hasEdits && code.meta.isResettable && <Reset code={code} />}
             {code.meta.canDownload && <DownloadCode code={code} />}
             {code.hasEdits && code.meta.canCompare && <ShowRaw code={code} />}

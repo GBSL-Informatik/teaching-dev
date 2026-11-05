@@ -1,8 +1,7 @@
+import type { iCodeData } from '@tdev-api/document';
 import PyodideCode from './models/PyodideCode';
 import type PyodideStore from './stores/PyodideStore';
-export interface PyodideData {
-    code: string;
-}
+export interface PyodideData extends iCodeData {}
 
 declare module '@tdev-api/document' {
     export interface TypeDataMapping {
