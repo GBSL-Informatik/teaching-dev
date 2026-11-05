@@ -1,3 +1,5 @@
+@use 'sass:list';
+
 .codeCommits {
     display: flex;
     flex-direction: column;
@@ -54,10 +56,10 @@ $lane-colors: (
         fill: none;
         stroke-width: 2;
     }
-    @for $i from 0 to length($lane-colors) {
+    @for $i from 0 to list.length($lane-colors) {
         .lane#{$i} {
-            stroke: nth($lane-colors, $i + 1);
-            fill: nth($lane-colors, $i + 1);
+            stroke: list.nth($lane-colors, $i + 1);
+            fill: list.nth($lane-colors, $i + 1);
         }
     }
 }
