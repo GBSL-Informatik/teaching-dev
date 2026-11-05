@@ -20,7 +20,8 @@ const CommitNode = observer(<T extends CodeType>(props: Props<T>) => {
         <li>
             <CommitEntry
                 code={code}
-                label={commit.message}
+                label={commit.title}
+                details={commit.details}
                 createdAt={commit.createdAt}
                 isHead={isHead}
                 onRestore={handleRestore}

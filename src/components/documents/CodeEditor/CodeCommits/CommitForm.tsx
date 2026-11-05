@@ -15,9 +15,8 @@ const CommitForm = observer(<T extends CodeType>(props: Props<T>) => {
     const [message, setMessage] = React.useState('');
     const canSubmit = code.hasUncommittedChanges && message.trim().length > 0 && !code.isCommitting;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value);
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value);
+    const handleCommit = () => {
         if (!canSubmit) {
             return;
         }
@@ -29,10 +28,10 @@ const CommitForm = observer(<T extends CodeType>(props: Props<T>) => {
     };
 
     return (
-        <form className={styles.commitForm} onSubmit={handleSubmit}>
-            <input
+        <div className={styles.commitForm}>
+            <textarea
                 className={styles.messageInput}
-                type="text"
+                rows={2}
                 value={message}
                 onChange={handleChange}
                 placeholder={translate({
@@ -41,13 +40,14 @@ const CommitForm = observer(<T extends CodeType>(props: Props<T>) => {
                 })}
             />
             <button
-                type="submit"
+                type="button"
                 className={clsx('button', 'button--primary', 'button--sm')}
+                onClick={handleCommit}
                 disabled={!canSubmit}
             >
                 <Translate id="CodeCommits.Form.Submit">Commit</Translate>
             </button>
-        </form>
+        </div>
     );
 });
 

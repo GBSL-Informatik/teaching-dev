@@ -25,6 +25,16 @@ class CodeCommit extends iDocument<'code_commit'> {
         return this.data.message;
     }
 
+    @computed
+    get title() {
+        return this.message.split('\n')[0];
+    }
+
+    @computed
+    get details() {
+        return this.message.split('\n').slice(1).join('\n').trim();
+    }
+
     @computed({ equals: compareShallow })
     get childCommits(): CodeCommit[] {
         const childCommits = this.children.filter((doc) => doc.type === 'code_commit');
