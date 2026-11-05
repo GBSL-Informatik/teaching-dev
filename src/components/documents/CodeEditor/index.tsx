@@ -69,12 +69,6 @@ const CodeEditorComponent = observer(<T extends CodeType>(props: ScriptProps<T>)
     const { colorMode } = useCodeTheme();
     const viewStore = useStore('viewStore');
     const id = React.useId();
-    React.useEffect(() => {
-        // the dummy document is replaced once the document root is loaded
-        if (!code.isDummy) {
-            code.loadCommits();
-        }
-    }, [code]);
     if (!props.isPresentation && code.isPresenting) {
         return null;
     }

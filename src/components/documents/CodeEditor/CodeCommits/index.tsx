@@ -1,6 +1,7 @@
 import type { CodeType } from '@tdev-api/document';
 import type iCode from '@tdev-models/documents/iCode';
 import { observer } from 'mobx-react-lite';
+import * as React from 'react';
 import CommitForm from './CommitForm';
 import CommitGraph from './CommitGraph';
 import styles from './styles.module.scss';
@@ -11,6 +12,9 @@ interface Props<T extends CodeType> {
 
 const CodeCommits = observer(<T extends CodeType>(props: Props<T>) => {
     const { code } = props;
+    React.useEffect(() => {
+        code.loadCommits();
+    }, [code]);
     return (
         <div className={styles.codeCommits}>
             {code.canCommit && <CommitForm code={code} />}

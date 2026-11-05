@@ -57,11 +57,11 @@ class iCodeMeta<T extends CodeType> extends TypeMeta<T> {
     }
 
     /**
-     * Versioned code blocks load only their main document with the page,
-     * their versions and commits are loaded separately.
+     * Versioned and commitable code blocks load only their main document with the page,
+     * their versions and commits are loaded lazily.
      */
     get loadsMainDocumentOnly() {
-        return this.versioned;
+        return this.versioned || this.commitable;
     }
 
     @computed

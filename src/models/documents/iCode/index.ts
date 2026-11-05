@@ -195,10 +195,6 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             return;
         }
         this._initialCommitsLoaded = true;
-        if (!this.meta.loadsMainDocumentOnly) {
-            // the commits were loaded together with the document root
-            return;
-        }
         this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
             documentType: 'code_commit',
             skipCreate: true,
