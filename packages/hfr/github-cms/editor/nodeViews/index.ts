@@ -16,7 +16,7 @@ import Image from './Image';
 import InlineAtom from './InlineAtom';
 import InlineMath from './InlineMath';
 import JsxFlow from './JsxFlow';
-import LeafDirective from './LeafDirective';
+import LeafDirective, { leafDirectiveClassName } from './LeafDirective';
 import { reactNodeView } from './ReactNodeView';
 import TextDirective from './TextDirective';
 
@@ -58,7 +58,10 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
         className: () => 'cms-jsx'
     }),
     jsx_flow_void: reactNodeView(document, { component: JsxFlow, className: () => 'cms-jsx' }),
-    leaf_directive: reactNodeView(document, { component: LeafDirective, className: () => 'cms-jsx' }),
+    leaf_directive: reactNodeView(document, {
+        component: LeafDirective,
+        className: leafDirectiveClassName
+    }),
     footnote_definition: reactNodeView(document, {
         component: FootnoteDefinition,
         hasContent: true,

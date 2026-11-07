@@ -1,5 +1,5 @@
 import { lift, setBlockType, wrapIn } from 'prosemirror-commands';
-import type { Attrs, Node, NodeType } from 'prosemirror-model';
+import { type Attrs, Fragment, type Node, type NodeType } from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
 import { type Command, type EditorState, TextSelection } from 'prosemirror-state';
 import { findTable, selectedRect, TableMap } from 'prosemirror-tables';
@@ -29,22 +29,32 @@ export const setCurrentBlockType = (type: BlockType): Command => {
 };
 
 /**
- * Inserts a block node after the current block and places the cursor inside of it.
+ * Inserts block nodes after the block at the cursor, within the innermost container
+ * accepting them (e.g. inside a directive), and places the cursor inside the first inserted node.
+ * An empty paragraph at the cursor is replaced.
  */
-export const insertBlock = (node: Node): Command => {
+export const insertBlock = (content: Node | Node[]): Command => {
     return (state, dispatch) => {
+        const fragment = Fragment.from(content);
         const { $from } = state.selection;
-        const insertPos = $from.depth > 0 ? $from.after(1) : $from.pos;
         const isEmptyParagraph = $from.parent.type === nodes.paragraph && $from.parent.content.size === 0;
-        if (!dispatch) {
+        for (let depth = $from.depth; depth > 0; depth--) {
+            const container = $from.node(depth - 1);
+            const index = $from.index(depth - 1);
+            const replaceCurrent = isEmptyParagraph && depth === $from.depth;
+            const [from, to] = replaceCurrent ? [index, index + 1] : [index + 1, index + 1];
+            if (!container.canReplace(from, to, fragment)) {
+                continue;
+            }
+            if (dispatch) {
+                const pos = replaceCurrent ? $from.before(depth) : $from.after(depth);
+                const end = replaceCurrent ? $from.after(depth) : pos;
+                const tr = state.tr.replaceWith(pos, end, fragment);
+                dispatch(tr.setSelection(TextSelection.near(tr.doc.resolve(pos + 1))).scrollIntoView());
+            }
             return true;
         }
-        const tr = isEmptyParagraph
-            ? state.tr.replaceWith($from.before(), $from.after(), node)
-            : state.tr.insert(insertPos, node);
-        const nodePos = isEmptyParagraph ? $from.before() : insertPos;
-        dispatch(tr.setSelection(TextSelection.near(tr.doc.resolve(nodePos + 1))).scrollIntoView());
-        return true;
+        return false;
     };
 };
 

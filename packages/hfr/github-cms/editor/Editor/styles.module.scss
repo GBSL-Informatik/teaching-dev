@@ -72,14 +72,12 @@
         .cms-directive--details {
             background: var(--ifm-color-info-contrast-background);
         }
-        .cms-directive--flex > .cms-node-view-content,
-        .cms-directive--cards > .cms-node-view-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1em;
-            > * {
-                flex: 1 1 12em;
-            }
+        /* the items of :::cards and :::flex are stacked, separated by ::br */
+        .cms-item-break {
+            margin: 0.5em 0;
+            padding-top: 0.2em;
+            border-top: 2px dashed var(--ifm-color-primary-lighter);
+            color: var(--ifm-color-primary-darker);
         }
 
         /* definition lists, see `plugins/deflist.ts` */

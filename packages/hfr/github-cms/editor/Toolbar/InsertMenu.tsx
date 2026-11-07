@@ -1,10 +1,12 @@
 import {
     mdiArrowExpandDown,
+    mdiCardsOutline,
     mdiCardTextOutline,
     mdiCheckboxOutline,
     mdiCodeBraces,
     mdiEmoticonOutline,
     mdiFileDocumentEditOutline,
+    mdiFormatPageBreak,
     mdiFormTextbox,
     mdiImageOutline,
     mdiInformationOutline,
@@ -15,7 +17,8 @@ import {
     mdiPlusBoxOutline,
     mdiProgressCheck,
     mdiTab,
-    mdiTable
+    mdiTable,
+    mdiViewColumnOutline
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
@@ -43,13 +46,15 @@ import styles from './styles.module.scss';
 
 const { nodes } = schema;
 
-interface MenuItem {
+interface MenuItemBase {
     label: string;
     icon: string;
-    /** creates the node to insert, evaluated when the item is chosen */
-    create: () => Node;
-    inline?: boolean;
 }
+
+/** the content is created when the item is chosen */
+type MenuItem =
+    | (MenuItemBase & { inline: true; create: () => Node })
+    | (MenuItemBase & { inline?: false; create: () => Node | Node[] });
 
 const paragraph = (text?: string) => nodes.paragraph.create(null, text ? schema.text(text) : null);
 
@@ -57,6 +62,17 @@ const directive = (name: string, label?: string) => {
     const content = label
         ? [nodes.directive_label.create(null, schema.text(label)), paragraph()]
         : [paragraph()];
+    return createNode(nodes.container_directive, { name }, content);
+};
+
+const itemBreak = () => nodes.leaf_directive.create({ name: 'br' });
+
+/** `:::cards` or `:::flex`, the items are separated by `::br` */
+const itemsDirective = (name: string, items: string[]) => {
+    const content = items.flatMap((item, idx) => {
+        const paragraphNode = paragraph(item);
+        return idx === 0 ? [paragraphNode] : [itemBreak(), paragraphNode];
+    });
     return createNode(nodes.container_directive, { name }, content);
 };
 
@@ -78,7 +94,18 @@ const BLOCKS: MenuItem[] = [
         create: () => nodes.math_block.create(null, schema.text('\\LaTeX'))
     },
     { label: 'Trennlinie', icon: mdiMinus, create: () => nodes.thematic_break.create() },
-    { label: 'Details', icon: mdiArrowExpandDown, create: () => directive('details', 'Details') }
+    { label: 'Details', icon: mdiArrowExpandDown, create: () => directive('details', 'Details') },
+    { label: 'Karten', icon: mdiCardsOutline, create: () => itemsDirective('cards', ['Karte 1', 'Karte 2']) },
+    {
+        label: 'Spalten',
+        icon: mdiViewColumnOutline,
+        create: () => itemsDirective('flex', ['Spalte 1', 'Spalte 2'])
+    },
+    {
+        label: 'Nächste Karte/Spalte (::br)',
+        icon: mdiFormatPageBreak,
+        create: () => [itemBreak(), paragraph()]
+    }
 ];
 
 const INLINE: MenuItem[] = [
@@ -157,8 +184,7 @@ const InsertMenu = observer(({ document }: { document: MdxDocument }) => {
     const [showImageDialog, setShowImageDialog] = React.useState(false);
 
     const handleInsert = (item: MenuItem) => {
-        const node = item.create();
-        document.run(item.inline ? insertInline(node) : insertBlock(node));
+        document.run(item.inline ? insertInline(item.create()) : insertBlock(item.create()));
         ref.current?.close();
     };
 
