@@ -1,0 +1,35 @@
+.imageDialog {
+    max-height: 80vh;
+    max-width: 95vw;
+    width: 35em;
+    .body {
+        overflow-y: auto;
+        .fileUpload {
+            margin-bottom: 1em;
+        }
+        .srcInput {
+            margin-bottom: 1em;
+        }
+    }
+    .preview {
+        .previewImage {
+            max-height: 12em;
+            width: 100%;
+            object-fit: contain;
+            cursor: pointer;
+            border: 3px dashed var(--ifm-color-success);
+            border-radius: var(--ifm-card-border-radius);
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            box-shadow: var(--ifm-global-shadow-md);
+            &:hover {
+                box-shadow: var(--ifm-global-shadow-tl);
+            }
+        }
+    }
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+}

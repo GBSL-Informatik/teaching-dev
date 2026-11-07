@@ -1,0 +1,21 @@
+.card {
+    width: 35em;
+    max-width: 95vw;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.rows {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto auto;
+    gap: 0.4em;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+.expression {
+    font-family: var(--ifm-font-family-monospace);
+}
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5em;
+}

@@ -1,0 +1,23 @@
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 1.8em;
+    font-size: 0.85em;
+    cursor: pointer;
+    user-select: none;
+    .title {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        font-family: var(--ifm-font-family-monospace);
+        opacity: 0.8;
+    }
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.2em;
+        cursor: default;
+    }
+}

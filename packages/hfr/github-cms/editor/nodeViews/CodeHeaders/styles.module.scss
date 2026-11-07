@@ -1,0 +1,16 @@
+.header {
+    padding: 0.1em 0.4em;
+    background: var(--ifm-color-emphasis-200);
+    border-top-left-radius: var(--ifm-code-border-radius);
+    border-top-right-radius: var(--ifm-code-border-radius);
+    .lang {
+        width: 7em;
+    }
+    .meta {
+        width: 14em;
+    }
+}
+.preview {
+    padding: 0.5em;
+    overflow-x: auto;
+}

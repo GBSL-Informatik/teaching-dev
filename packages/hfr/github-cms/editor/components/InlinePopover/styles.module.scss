@@ -1,0 +1,10 @@
+.card {
+    width: 25em;
+    max-width: 90vw;
+    box-shadow: var(--ifm-global-shadow-tl);
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+    }
+}
