@@ -10,7 +10,7 @@ Das CMS ist aktuell noch in der Entwicklungsphase und kann noch Fehler oder Unvo
 
 ## Konzept
 
-Das CMS verwendet den [MdxEditor](https://mdxeditor.dev/) von [Petyo Ivanov](https://github.com/petyosi) und basiert auf dem [Lexical-Editor](https://lexical.dev/) von Meta aufgebaut. Die Anbindung an Github wird mit dem offiziellen [Octokit](https://github.com/octokit) vorgenommen, wobei für die Github-Anmeldung und die Zugriffstoken für Repositories die [Teaching-Dev API](https://github.com/GBSL-Informatik/teaching-api/pull/30) verwendet wird.
+Das CMS ist im Package __packages/hfr/github-cms__ umgesetzt. Der visuelle Editor basiert auf [ProseMirror](https://prosemirror.net/), der Zustand wird mit MobX verwaltet. Die Anbindung an Github wird mit dem offiziellen [Octokit](https://github.com/octokit) vorgenommen, wobei für die Github-Anmeldung und die Zugriffstoken für Repositories die [Teaching-Dev API](https://github.com/GBSL-Informatik/teaching-api/pull/30) verwendet wird.
 
 Dies ermöglicht es, dass direkt aus dem CMS heraus Änderungen an den Markdown-Dateien vorgenommen werden können. Da Octokit die Limitation mitbringt, dass nur eine Datei auf einmal bearbeitet werden kann, lassen sich übers CMS auch Branches erstellen und Pull-Requests erstellen - und Bonus: auch Mergen 🥳.
 
@@ -64,24 +64,38 @@ Bilder können ohne überprüfung, ob sie noch in einem Dokument verwendet werde
 :::
 
 
-### Plugins
+### Editor
 
-Für viele Erweiterungen wurden Plugins geschrieben. Die Plugins sind grundsätzlich an zwei Orten zu suchen:
+Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 
-1. Unter `@tdev-components/Cms/MdxEditor/plugins` - alles was direkt mit dem MdxEditor zu tun hat und nicht auf einem Remark-Plugin basiert.
-2. Unter `@tdev-plugins/remark-*/mdx-editor-plugin` - alles was auf einem Remark-Plugin basiert liefert auch gleich das entsprechende MdxEditor-Plugin mit.
+`markdown/`
+: Wandelt MDX in ein ProseMirror-Dokument um und zurück. Geparst wird mit `mdast-util-from-markdown` und denselben Syntax-Erweiterungen wie in Teaching-Dev (MDX, GFM, Direktiven, Mathematik, Frontmatter).
+: Unveränderte Knoten werden mit ihrem ursprünglichen Markdown geschrieben. Wird eine Datei ohne Änderungen gespeichert, entsteht kein Diff, und eine Änderung betrifft nur die bearbeiteten Zeilen.
+`schema/`
+: Das ProseMirror-Schema. Verschachtelte Komponenten (Admonitions, Details, JSX-Elemente) sind normale Knoten mit Block-Inhalt. Das ganze Dokument wird in einem einzigen Editor mit einer Auswahl und einem Undo-Verlauf bearbeitet.
+: Was der Editor nicht darstellen kann (z.B. `import`-Anweisungen oder `{Ausdrücke}`), bleibt als Quelltext erhalten und kann direkt bearbeitet werden.
+`models/MdxDocument.ts`
+: Hält den ProseMirror-Zustand als MobX-Observable. Toolbar und Node-Views beobachten den Zustand, Änderungen werden verzögert als Markdown in die Datei geschrieben.
+`nodeViews/`
+: React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet.
+
+Kann eine Datei nicht als MDX geparst werden, wird sie im Quelltext-Editor geöffnet.
+
+#### Neue Syntax unterstützen
+
+1. Knoten oder Markierung im Schema (`schema/index.ts`) ergänzen.
+2. Die Umwandlung in `markdown/parse.ts` und `markdown/serialize.ts` ergänzen.
+3. Optional eine Node-View in `nodeViews/` hinzufügen und in `nodeViews/index.ts` registrieren.
+
+Die Tests in __editor/markdown/tests__ prüfen unter anderem, dass alle Markdown-Dateien dieses Repositories unverändert bleiben, wenn sie geöffnet und wieder gespeichert werden.
 
 ## Todos
 
 - [ ] Installationsanleitung schreiben
 - [ ] Generischer Attribute-Editor fürs Frontmatter verwenden
 - [ ] Medien-Upload (aktuell nur für Bilder umgesetzt)
-- [ ] Keyboard-Events handeln, wenn innerhalb einer selbst geschriebenen Komponente
-    - [ ] KBD Node: 2x Leerschlag = aus dem KBD-Node raus
-    - [ ] BOX Node: 2x Leerschlag = aus dem BOX-Node raus
-    - [ ] Admonitions: ArrowUp = neuer Absatz vorher, falls zuoberst und kein Absatz vorher
-    - [ ] Admonitions: ArrowDown = neuer Absatz, falls zuunterst und kein Absatz nachher
 - [ ] Deflist Komponente hinzufügen
+- [ ] Vorschau für Medien-Direktiven (`::youtube`, `::pdf`, ...)
 - [ ] Darkmode
 - [ ] Ansichts-Einstellungen speichern (Richtext / Markdown)
 
@@ -139,33 +153,4 @@ const config: Config = {
 };
 ```
 
-```json title="package.json"
-{
-    
-    "dependencies": {
-        "@lexical/clipboard": "^0.23.1",
-        "@lexical/link": "^0.23.1",
-        "@lexical/list": "^0.23.1",
-        "@lexical/markdown": "^0.23.1",
-        "@lexical/react": "^0.23.1",
-        "@lexical/rich-text": "^0.23.1",
-        "@lexical/selection": "^0.23.1",
-        "@lexical/utils": "^0.23.1",
-        "@mdxeditor/editor": "^3.24.0",
-        "@octokit/rest": "^21.1.0",
-        "browser-image-compression": "^2.0.2",
-        "mdast-util-gfm-footnote": "^2.1.0",
-        "mdast-util-math": "^3.0.0",
-        "micromark-extension-math": "^3.1.0",
-        "react-katex": "^3.0.1",
-        "react-select": "^5.9.0",
-    },
-    "devDependencies": {
-        "@types/react-dom": "^19.0.3",
-        "@types/react-katex": "^3.0.4",
-    },
-    "peerDependencies": {
-        "react-hook-form": "*"
-    },
-}
-```
+Die Abhängigkeiten sind in __packages/hfr/github-cms/package.json__ festgelegt und werden mit `yarn install` installiert.
