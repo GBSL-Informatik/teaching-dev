@@ -7,10 +7,6 @@
         "svg-parser": "^2.1.0"
     },
     "devDependencies": {
-        "@docusaurus/core": "*",
-        "@docusaurus/module-type-aliases": "*",
-        "@types/node": "*",
-        "vitest": "*",
         "@types/svg-parser": "^2.0.6"
     },
     "peerDependencies": {

@@ -12,12 +12,12 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn run prepare_archive [classNames]
+pnpm run prepare_archive [classNames]
 
 examples:
 
-yarn run prepare_archive 30Gx --domain=archive.user.com          // prepares archive for a single class
-yarn run prepare_archive 30Ga,30Gx --domain=archive.user.com     // prepares archive for multiple classes
+pnpm run prepare_archive 30Gx --domain=archive.user.com          // prepares archive for a single class
+pnpm run prepare_archive 30Ga,30Gx --domain=archive.user.com     // prepares archive for multiple classes
 `);
     exit(0);
 }

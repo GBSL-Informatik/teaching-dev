@@ -6,11 +6,7 @@
     "dependencies": {
         "@hpcc-js/wasm-graphviz": "^1.21.2"
     },
-    "devDependencies": {
-        "vitest": "*",
-        "@docusaurus/module-type-aliases": "*",
-        "@docusaurus/core": "*"
-    },
+    "devDependencies": {},
     "peerDependencies": {
         "@tdev/core": "1.0.0"
     }

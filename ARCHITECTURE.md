@@ -6,7 +6,7 @@ Teaching-Dev (tdev) is a static frontend codebase used together with the [teachi
 
 Teaching-Dev's frontend is a React application on top of [Docusaurus](https://docusaurus.io/). It uses [MobX](https://mobx.js.org/) for state management and [Infima](https://infima.dev/) for styling components with scss-modules. Unless global, state logic and styles are always co-located with React components together with their subcomponents to make the component tree easier to manage.
 
-Teaching-Dev is a framework for building educational platforms. It provides a set of React components, hooks, and stores to build a platform that can be used by multiple developers/teachers. The platform is built using TypeScript, React, MobX, and Yarn workspaces.
+Teaching-Dev is a framework for building educational platforms. It provides a set of React components, hooks, and stores to build a platform that can be used by multiple developers/teachers. The platform is built using TypeScript, React, MobX, and pnpm workspaces.
 
 ```
 .

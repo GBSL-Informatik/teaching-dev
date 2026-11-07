@@ -41,8 +41,8 @@ fi
 
 git checkout -b $BRANCH
 
-yarn workspace @tdev/material-sync sync
-yarn workspace @tdev/material-sync prepareArchive "$VERSIONS_CSV" --domain="$DOMAIN"
+pnpm --filter @tdev/material-sync run sync
+pnpm --filter @tdev/material-sync run prepareArchive "$VERSIONS_CSV" --domain="$DOMAIN"
 
 # inform the user, that now he can make additional changes to the archive versions, e.g. modify landing page or edit the .env file,
 # before committing the changes and building the static site
@@ -52,7 +52,7 @@ read -r answer
 if [[ "$answer" != "y" ]]; then
   echo "Aborting. Steps to do manually:"
   echo "1. git add . && git commit -m \"Prepare archive for versions: $VERSIONS_CSV\""
-  echo "2. yarn run docusaurus build"
+  echo "2. pnpm run docusaurus build"
   echo "3. git push origin $BRANCH"
   echo "4. cd build && git init . && git add . && git commit -m \"initial commit\" && git branch -M main && git remote add origin $REMOTE_URL"
   echo "5. git push -u origin main --force"
@@ -64,7 +64,7 @@ fi
 git add .
 git commit -m "Prepare archive for versions: $VERSIONS_CSV"
 
-yarn run docusaurus build
+pnpm run docusaurus build
 
 # only after a successful build, push the branch and tags to the remote repository
 git push origin $BRANCH --force

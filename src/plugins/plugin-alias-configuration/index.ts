@@ -44,7 +44,7 @@ const aliasConfigurationPlugin: Plugin = (context: LoadContext, options?: { webs
                         /** original tdev source */
                         '@tdev-original': [path.resolve(cwd, './src'), path.resolve(cwd, './packages/tdev')]
                     },
-                    // "symlinks: false" would support to resolve symlinks in monorepos, but breaks yarn workspaces :/
+                    // "symlinks: false" would support to resolve symlinks in monorepos, but breaks the symlinked pnpm node_modules
                     symlinks: true
                 },
                 watchOptions: {

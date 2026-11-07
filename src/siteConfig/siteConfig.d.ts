@@ -1,10 +1,11 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
-import type { PluginConfig, PluginOptions, RouteConfig } from '@docusaurus/types';
+import type { PluginConfig, RouteConfig } from '@docusaurus/types';
 import { ConfigTransformer } from './transformers';
 
 import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-blog';
 import type { Options as DocsPluginOptions } from '@docusaurus/plugin-content-docs';
 import type { Options as PagesPluginOptions } from '@docusaurus/plugin-content-pages';
+import type { Pluggable } from 'unified';
 import type { DeepPartial } from 'utility-types';
 export type ShowEditThisPage = 'always' | 'never' | 'loggedIn' | 'teachers' | 'admins';
 export type EditThisPageOption = 'github' | 'github-dev' | 'cms';
@@ -184,13 +185,13 @@ export interface SiteConfig {
     themes?: PluginConfig[];
 
     /** List of plugins to be loaded before the default remark plugins. */
-    beforeDefaultRemarkPlugins?: PluginOptions[];
+    beforeDefaultRemarkPlugins?: Pluggable[];
 
     /** List of remark plugins to be loaded. */
-    remarkPlugins?: PluginOptions[];
+    remarkPlugins?: Pluggable[];
 
     /** List of rehype plugins to be loaded. */
-    rehypePlugins?: PluginOptions[];
+    rehypePlugins?: Pluggable[];
 
     /** docusaurus markdown config */
     markdown?: DeepPartial<MarkdownConfig>;

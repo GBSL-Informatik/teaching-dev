@@ -9,7 +9,7 @@ import type {
 
 import type * as Preset from '@docusaurus/preset-classic';
 import type { Config, OnBrokenMarkdownImagesFunction } from '@docusaurus/types';
-import { GlobExcludeDefault } from '@docusaurus/utils';
+import { GlobExcludeDefault } from '@docusaurus/glob';
 import { resolveEditUrl } from '@tdev/material-sync/src/helpers/resolveEditUrl';
 import { remarkPdfPluginConfig } from '@tdev/remark-pdf';
 import type { TdevCustomFields } from '@tdev/siteConfig/TdevCustomFields';
@@ -43,7 +43,8 @@ import {
   sassPluginConfig,
   sentryPluginConfig,
   socketIoNoDepWarningsPluginConfig,
-  stackblitzRspackTargetPluginConfig
+  stackblitzRspackTargetPluginConfig,
+  swcDecoratorsPluginConfig
 } from './src/siteConfig/pluginConfigs';
 import { applyTransformers } from './src/siteConfig/transformers';
 import { withSiteConfig } from './src/siteConfig/withSiteConfig';
@@ -56,6 +57,10 @@ const OFFLINE_API =
     : process.env.OFFLINE_API === 'indexedDB'
       ? 'indexedDB'
       : !!process.env.OFFLINE_API || process.env.CODESPACES === 'true';
+
+if (process.env.NETLIFY) {
+  process.env.DOCUSAURUS_NO_PERSISTENT_CACHE = 'true';
+}
 
 const GH_OAUTH_CLIENT_ID = process.env.GH_OAUTH_CLIENT_ID;
 const DEFAULT_TEST_USER = process.env.DEFAULT_TEST_USER?.trim();
@@ -158,44 +163,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
         tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
       } satisfies TdevCustomFields,
       future: {
-        v4: true,    
-        faster: {
-          /**
-           * no config options for swcJsLoader so far.
-           * Instead configure it over the jsLoader in the next step
-           */
-          swcJsLoader: false,
-          swcJsMinimizer: true,
-          swcHtmlMinimizer: true,
-          lightningCssMinimizer: true,
-          rspackBundler: true,
-          rspackPersistentCache: process.env.NETLIFY ? false : true,
-          mdxCrossCompilerCache: true,
-          ssgWorkerThreads: true
-        },
-        experimental_vcs: 'default-v2',
         // experimental_router: 'hash'
-      },
-      webpack: {
-        jsLoader: (isServer) => {
-          const defaultOptions = require('@docusaurus/faster').getSwcLoaderOptions({ isServer });
-          return {
-            loader: 'builtin:swc-loader', // (only works with Rspack)
-            options: {
-              ...defaultOptions,
-              jsc: {
-                parser: {
-                  ...defaultOptions.jsc.parser,
-                  decorators: true
-                },
-                transform: {
-                  ...defaultOptions.jsc.transform,
-                  decoratorVersion: '2022-03'
-                }
-              }
-            }
-          };
-        }
       },
 
       // Even if you don't use internationalization, you can use this field to set
@@ -381,6 +349,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
       } satisfies Preset.ThemeConfig,
       plugins: [
         sassPluginConfig,
+        swcDecoratorsPluginConfig,
         dynamicRouterPluginConfig(siteConfig),
         stackblitzRspackTargetPluginConfig(),
         rsDoctorPluginConfig,

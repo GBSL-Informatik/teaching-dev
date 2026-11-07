@@ -100,7 +100,7 @@ Das `@tdev/material-sync` ignoriert alle Dateien, die ein `.nosync.`, `.sync.` i
 Um das Material entsprechend der Konfiguration im `material.config.yaml` in die jeweiligen Klassenordner zu kopieren, muss folgender Befehl ausgeführt werden:
 
 ```bash
-yarn run sync
+pnpm run sync
 ```
 
 :::details[Scripts in package.json]
@@ -108,14 +108,14 @@ Folgende Einträge können in der `package.json` hinzugefügt werden, um die Nut
 ```json
 {
     "scripts": {
-        "sync": "yarn workspace @tdev/material-sync sync",
-        "remove": "yarn workspace @tdev/material-sync run remove",
-        "postremove": "yarn workspace @tdev/material-sync sync",
-        "precleanup": "yarn workspace @tdev/material-sync restore",
-        "cleanup": "yarn workspace @tdev/material-sync cleanup",
-        "addClass": "yarn workspace @tdev/material-sync run addClass",
-        "add": "yarn workspace @tdev/material-sync run add",
-        "postadd": "yarn workspace @tdev/material-sync sync"
+        "sync": "pnpm --filter @tdev/material-sync run sync",
+        "remove": "pnpm --filter @tdev/material-sync run run remove",
+        "postremove": "pnpm --filter @tdev/material-sync run sync",
+        "precleanup": "pnpm --filter @tdev/material-sync run restore",
+        "cleanup": "pnpm --filter @tdev/material-sync run cleanup",
+        "addClass": "pnpm --filter @tdev/material-sync run run addClass",
+        "add": "pnpm --filter @tdev/material-sync run run add",
+        "postadd": "pnpm --filter @tdev/material-sync run sync"
     }
 }
 ```
@@ -125,7 +125,7 @@ Zudem muss sichergestellt werden, dass die Dokumente vor einem Build synchronisi
 ```json
 {
     "scripts": {
-        "prebuild": "yarn workspace @tdev/material-sync sync"        
+        "prebuild": "pnpm --filter @tdev/material-sync run sync"        
     }
 }
 ```
@@ -142,11 +142,11 @@ Um die Inhalte für Klassen leichter zu konfigurieren, kann über die Kommandoze
 
 ```bash
 # add /OF-BYOD-Basics to 28Ga & 28Gb as /OF-BYOD-Basics
-yarn run add docs/OF-BYOD-Basics/ --to="28Ga,28Gb"   
+pnpm run add docs/OF-BYOD-Basics/ --to="28Ga,28Gb"   
 # add /OF-BYOD-Basics to 28Ga & 28Gb as /01-BYOD
-yarn run add docs/OF-BYOD-Basics/ --to="28Ga,28Gb" --as="01-BYOD" 
+pnpm run add docs/OF-BYOD-Basics/ --to="28Ga,28Gb" --as="01-BYOD" 
 # ignoriert _category_.json und alle .txt-Dateien im Quellordner
-yarn run add docs/OF-BYOD-Basics/ --to="28Ga,28Gb" --as="01-BYOD" --ignore="_category_.json,*.txt"
+pnpm run add docs/OF-BYOD-Basics/ --to="28Ga,28Gb" --as="01-BYOD" --ignore="_category_.json,*.txt"
 ```
 
 :::tip[Autovervollständigung von Pfaden]
@@ -158,7 +158,7 @@ Bash ermöglich das Autovervollständigen von Pfaden und Dateinamen mit der [[ta
 Das Material wird entsprechend der Konfiguration im `material.config.yaml` in die jeweiligen Klassenordner kopiert. Dies kann über die Kommandozeile wie folgt ausgeführt werden:
 
 ```bash
-yarn run sync
+pnpm run sync
 ```
 
 ### [Dev] Material aufräumen
@@ -166,14 +166,14 @@ yarn run sync
 Um im Entwicklungsprozess die Aufstartzeit zu verkürzen, können die übers `material.config.yaml` konfigurierten Inhalte in den Klassenordnern gelöscht werden. Dies kann über die Kommandozeile wie folgt ausgeführt werden:
 
 ```bash
-yarn run cleanup
+pnpm run cleanup
 ```
 
 ### Material aus der Konfiguration entfernen
 Um Inhalte aus der Konfiguration zu entfernen, kann über die Kommandozeile wie folgt vorgegangen werden:
 
 ```bash
-yarn run remove docs/OF-BYOD-Basics/ --from="28Ga,28Gb"
+pnpm run remove docs/OF-BYOD-Basics/ --from="28Ga,28Gb"
 ```
 
 Alternativ können auch die entsprechenden Zeilen aus dem `material.config.yaml` gelöscht werden.
@@ -183,13 +183,13 @@ Alternativ können auch die entsprechenden Zeilen aus dem `material.config.yaml`
 Um eine neue Klasse hinzuzufügen, kann über die Kommandozeile wie folgt vorgegangen werden:
 
 ```bash
-yarn run addClass 30Ga
+pnpm run addClass 30Ga
 ```
 
 oder für mehrere Klassen gleichzeitig:
 
 ```bash
-yarn run addClass 30Ga,30Gb,30Gc
+pnpm run addClass 30Ga,30Gb,30Gc
 ```
 
 ## Archiv-Seite vorbereiten
@@ -197,9 +197,9 @@ yarn run addClass 30Ga,30Gb,30Gc
 Um ein Archiv für Klassen zu erstellen (freeze der Inhalte), soll die Seite nur für die ausgewählten Klassen gebuildet werden.
 
 1. neuer Branch erstellen
-2. `yarn workspace @tdev/material-sync sync` ausführen
-3. `yarn workspace @tdev/material-sync prepareArchive "28Gb,28Gj" --domain="inf.28.gbsl.website` aufrufen
-4. `BUILD_ARCHIVE=true yarn run docusaurus build` ausführen
+2. `pnpm --filter @tdev/material-sync run sync` ausführen
+3. `pnpm --filter @tdev/material-sync run prepareArchive "28Gb,28Gj" --domain="inf.28.gbsl.website` aufrufen
+4. `BUILD_ARCHIVE=true pnpm run docusaurus build` ausführen
 5. Build-Ordner hochladen (z.B. auf GitHub Pages)
     ```bash
     cd build

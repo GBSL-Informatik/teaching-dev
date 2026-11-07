@@ -85,7 +85,7 @@ User werden beim Einloggen automatisch einer oder mehrere [SocketIO-Räumen](htt
 
 ## Erweiterbarkeit
 
-Teaching-Dev ist so konzipiert, dass es leicht erweiterbar ist. Die Architektur ermöglicht es, neue Funktionen hinzuzufügen, ohne die bestehende Funktionalität zu beeinträchtigen. Dies wird durch die Verwendung zum einen von Webpack Aliases und zum anderen durch die Verwendung von Yarn Workspaces erreicht.
+Teaching-Dev ist so konzipiert, dass es leicht erweiterbar ist. Die Architektur ermöglicht es, neue Funktionen hinzuzufügen, ohne die bestehende Funktionalität zu beeinträchtigen. Dies wird durch die Verwendung zum einen von Webpack Aliases und zum anderen durch die Verwendung von pnpm Workspaces erreicht.
 
 Die grundsätzliche Ordnerstruktur von Teaching-Dev ist wie folgt aufgebaut:
 
@@ -135,9 +135,9 @@ Teaching-Dev implementiert dadurch eine Art "Fallback"-Mechanismus, der es ermö
 
 Dadurch kann die Website-Entwicklung von der Entwicklung der Kernfunktionen getrennt werden. Solange keine Änderungen im `src`-Ordner und- oder im `packages`-Ordner vorgenommen werden, kann die Website unabhängig von der Kernentwicklung weiterentwickelt werden und stets die neuste Version von Teaching-Dev verwenden.
 
-### Yarn Workspaces
+### pnpm Workspaces
 
-Mit Yarn Workspaces ist es möglich, Bibliotheken für eigene Erweiterungen zu verwenden, ohne diese im `package.json` von Teaching-Dev zu definieren. Dies ermöglicht
+Mit pnpm Workspaces ist es möglich, Bibliotheken für eigene Erweiterungen zu verwenden, ohne diese im `package.json` von Teaching-Dev zu definieren. Dies ermöglicht
 - einfaches Synchronisieren mit Teaching-Dev
 - einfaches übernehmen von Funktionen, die eine andere Teaching-Dev-Instanz entwickelt hat
 - einfache Entwicklung von Teaching-Dev Erweiterungen, indem die Abhängigkeiten in der `package.json` des jeweiligen Pakets definiert werden können.
@@ -268,5 +268,5 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 Im Projekt ist [@docusaurus/plugin-rsdoctor](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-rsdoctor) als dev dependency installiert. Dieses Plugin hilft bei der Analyse von Performance-Problemen und kann beim Aufsuchen von kritischen (langsamen) Code-Teilen helfen.
 
 ```bash
-RSDOCTOR=true yarn run build
+RSDOCTOR=true pnpm run build
 ```

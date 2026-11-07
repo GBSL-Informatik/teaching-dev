@@ -9,6 +9,7 @@ import type { LeafDirective } from 'mdast-util-directive';
 import path from 'path';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
+import type { Pluggable } from 'unified';
 import { getAnswerDocumentType } from '../components/Answer/helper.answer';
 import codeAsAttributePlugin from '../plugins/remark-code-as-attribute/plugin';
 import defboxPlugin from '../plugins/remark-code-defbox/plugin';
@@ -27,7 +28,7 @@ import pagePlugin from '../plugins/remark-page/plugin';
 import strongPlugin, { transformer as captionVisitor } from '../plugins/remark-strong/plugin';
 import transformAssessableComponentsPlugin from '../plugins/remark-transform-assessable-components/plugin';
 
-export const flexCardsPluginConfig = [
+export const flexCardsPluginConfig: Pluggable = [
     flexCardsPlugin,
     {
         wrapInCardImage: (node: Node) => {
@@ -36,7 +37,7 @@ export const flexCardsPluginConfig = [
     }
 ];
 
-export const deflistPluginConfig = [
+export const deflistPluginConfig: Pluggable = [
     deflistPlugin,
     {
         tagNames: {
@@ -45,7 +46,7 @@ export const deflistPluginConfig = [
     }
 ];
 
-export const codeAsAttributePluginConfig = [
+export const codeAsAttributePluginConfig: Pluggable = [
     codeAsAttributePlugin,
     {
         components: [
@@ -121,7 +122,7 @@ export const defaultImageDevSrcTransformer = () => {
     };
 };
 
-export const imagePluginConfig = [
+export const imagePluginConfig: Pluggable = [
     imagePlugin,
     {
         tagNames: {
@@ -150,9 +151,9 @@ export const fileTreesPluginConfig = fileTreesPlugin;
 
 export const defboxPluginConfig = defboxPlugin;
 
-export const strongPluginConfig = [strongPlugin, { className: 'boxed' }];
+export const strongPluginConfig: Pluggable = [strongPlugin, { className: 'boxed' }];
 
-export const mdiPluginConfig = [
+export const mdiPluginConfig: Pluggable = [
     mdiPlugin,
     {
         colorMapping: {
@@ -173,7 +174,7 @@ export const kbdPluginConfig = kbdPlugin;
 
 export const remarkMathPluginConfig = remarkMath;
 
-export const enumerateAnswersPluginConfig = [
+export const enumerateAnswersPluginConfig: Pluggable = [
     enumerateAnswersPlugin,
     {
         componentsToEnumerate: ['Answer', 'TaskState', 'SelfCheckTaskState', 'ProgressState']
@@ -182,7 +183,7 @@ export const enumerateAnswersPluginConfig = [
 
 export const pdfPluginConfig = pdfPlugin;
 
-export const pagePluginConfig = [pagePlugin, {}];
+export const pagePluginConfig: Pluggable = [pagePlugin, {}];
 
 export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
     components: [
@@ -269,11 +270,11 @@ export const PageIndexPluginDefaultOptions: PageIndexPluginOptions = {
         }
     }
 };
-export const pageIndexPluginConfig = [pageIndexPlugin, PageIndexPluginDefaultOptions];
+export const pageIndexPluginConfig: Pluggable = [pageIndexPlugin, PageIndexPluginDefaultOptions];
 
 export const graphvizPluginConfig = graphvizPlugin;
 
-export const commentPluginConfig = [
+export const commentPluginConfig: Pluggable = [
     commentPlugin,
     {
         commentableJsxFlowElements: ['DefHeading', 'figcaption', 'String'],
@@ -282,7 +283,7 @@ export const commentPluginConfig = [
     }
 ];
 
-export const linkAnnotationPluginConfig = [
+export const linkAnnotationPluginConfig: Pluggable = [
     linkAnnotationPlugin,
     {
         prefix: '👉',
@@ -290,7 +291,7 @@ export const linkAnnotationPluginConfig = [
     }
 ];
 
-export const transformAssessablePluginConfig = [
+export const transformAssessablePluginConfig: Pluggable = [
     transformAssessableComponentsPlugin,
     {
         QuizComponentName: 'Quiz',
@@ -308,7 +309,7 @@ export const transformAssessablePluginConfig = [
 
 export const rehypeKatexPluginConfig = rehypeKatex;
 
-export const recommendedBeforeDefaultRemarkPlugins = [
+export const recommendedBeforeDefaultRemarkPlugins: Pluggable[] = [
     fileTreesPluginConfig,
     graphvizPluginConfig,
     deflistPluginConfig,
@@ -318,7 +319,7 @@ export const recommendedBeforeDefaultRemarkPlugins = [
     defboxPluginConfig
 ];
 
-export const recommendedRemarkPlugins = [
+export const recommendedRemarkPlugins: Pluggable[] = [
     strongPluginConfig,
     mdiPluginConfig,
     mediaPluginConfig,
@@ -334,4 +335,4 @@ export const recommendedRemarkPlugins = [
     codeAsAttributePluginConfig
 ];
 
-export const recommendedRehypePlugins = [rehypeKatexPluginConfig];
+export const recommendedRehypePlugins: Pluggable[] = [rehypeKatexPluginConfig];

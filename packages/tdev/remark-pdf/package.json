@@ -4,13 +4,10 @@
     "main": "index.ts",
     "types": "index.ts",
     "dependencies": {
+        "pdfjs-dist": "4.8.69",
         "react-pdf": "^9.2.1"
     },
-    "devDependencies": {
-        "vitest": "*",
-        "@docusaurus/module-type-aliases": "*",
-        "@docusaurus/core": "*"
-    },
+    "devDependencies": {},
     "peerDependencies": {
         "@tdev/core": "1.0.0"
     }

@@ -1,24 +1,16 @@
-import type { CurrentBundler, PluginConfig } from '@docusaurus/types';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
+import { getCopyPlugin } from '@docusaurus/bundler';
+import type { PluginConfig } from '@docusaurus/types';
 import path from 'path';
 
 const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
 
 const pdfjs_cMapsDir = path.join(pdfjsDistPath, 'cmaps');
 
-const getCopyPlugin = (currentBundler: CurrentBundler): typeof CopyWebpackPlugin => {
-    if (currentBundler.name === 'rspack') {
-        // @ts-expect-error: this exists only in Rspack
-        return currentBundler.instance.CopyRspackPlugin;
-    }
-    return CopyWebpackPlugin;
-};
-
-export const remarkPdfPluginConfig = (() => {
+export const remarkPdfPluginConfig = (async (context) => {
+    const CopyPlugin = await getCopyPlugin({ currentBundler: context.currentBundler });
     return {
         name: 'pdfjs-copy-dependencies',
-        configureWebpack(config, isServer, { currentBundler }) {
-            const Plugin = getCopyPlugin(currentBundler);
+        configureWebpack() {
             return {
                 resolve: {
                     alias: {
@@ -26,7 +18,7 @@ export const remarkPdfPluginConfig = (() => {
                     }
                 },
                 plugins: [
-                    new Plugin({
+                    new CopyPlugin({
                         patterns: [
                             {
                                 from: pdfjs_cMapsDir,
