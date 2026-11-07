@@ -5,6 +5,7 @@ import 'prosemirror-tables/style/tables.css';
 import 'prosemirror-view/style/prosemirror.css';
 import { EditorView } from 'prosemirror-view';
 import React from 'react';
+import MdxDiff from '../components/MdxDiff';
 import type MdxDocument from '../models/MdxDocument';
 import { createNodeViews } from '../nodeViews';
 import Toolbar from '../Toolbar';
@@ -43,10 +44,18 @@ const Editor = observer(({ document }: Props) => {
         };
     }, [mount, document]);
 
+    React.useEffect(() => {
+        if (!document.showDiff) {
+            document.view?.focus();
+        }
+    }, [document.showDiff]);
+
     return (
         <div className={clsx(styles.editor)}>
             <Toolbar document={document} />
-            <div ref={setMount} className={clsx(styles.content)} />
+            {/* the editor stays mounted while the diff is shown to keep its state (e.g. the selection) */}
+            <div ref={setMount} className={clsx(styles.content, document.showDiff && styles.hidden)} />
+            {document.showDiff && <MdxDiff file={document.file} />}
             <NodeViewPortals document={document} />
         </div>
     );

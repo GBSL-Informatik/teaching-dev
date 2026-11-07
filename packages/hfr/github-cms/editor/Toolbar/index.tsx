@@ -1,6 +1,7 @@
 import {
     mdiCodeJson,
     mdiCodeTags,
+    mdiFileCompare,
     mdiFormatBold,
     mdiFormatItalic,
     mdiFormatListBulleted,
@@ -65,11 +66,13 @@ const MARK_BUTTONS = [
     markButton(schema.marks.code, mdiCodeTags, 'Code (Strg+E)')
 ];
 
-const Toolbar = observer(({ document }: Props) => {
+/**
+ * The controls to edit the document, hidden while the diff is shown.
+ */
+const EditingTools = observer(({ document }: Props) => {
     const blockType = currentBlockType(document.state);
     return (
-        <div className={clsx(styles.toolbar)}>
-            <Actions file={document.file} />
+        <>
             <div className={clsx(styles.group)}>
                 <Button
                     icon={mdiUndo}
@@ -130,7 +133,26 @@ const Toolbar = observer(({ document }: Props) => {
             </div>
             <InsertMenu document={document} />
             {document.isInside(schema.nodes.table) && <TableActions document={document} />}
+        </>
+    );
+});
+
+const Toolbar = observer(({ document }: Props) => {
+    return (
+        <div className={clsx(styles.toolbar)}>
+            <Actions file={document.file} />
+            {!document.showDiff && <EditingTools document={document} />}
             <div className={clsx(styles.spacer)} />
+            <Button
+                icon={mdiFileCompare}
+                size={SIZE_S}
+                title={document.showDiff ? 'Zurück zum Editor' : 'Änderungen anzeigen'}
+                text="Diff"
+                iconSide="left"
+                active={document.showDiff}
+                disabled={!document.showDiff && !document.file.isDirty}
+                onClick={() => document.setShowDiff(!document.showDiff)}
+            />
             <Button
                 icon={mdiCodeJson}
                 size={SIZE_S}

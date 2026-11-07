@@ -21,6 +21,8 @@ class MdxDocument {
     readonly file: File;
     @observableRef accessor state: EditorState;
     @observableRef accessor view: EditorView | null = null;
+    /** shows the changes of the markdown source instead of the editor */
+    @observable accessor showDiff = false;
 
     /** React content of the node views, rendered as portals by the editor component */
     readonly portals = observable.map<string, ReactPortal>({}, { deep: false });
@@ -35,6 +37,14 @@ class MdxDocument {
         const { doc, trailing } = parseMarkdown(file.content);
         this.trailing = trailing;
         this.state = EditorState.create({ doc, plugins: createPlugins() });
+    }
+
+    @action
+    setShowDiff(showDiff: boolean) {
+        if (showDiff) {
+            this.flush();
+        }
+        this.showDiff = showDiff;
     }
 
     @action
