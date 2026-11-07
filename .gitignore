@@ -27,3 +27,6 @@ yarn-error.log*
 /tmp-assets
 .codex
 *.gitignore.*
+
+# `ln -s .agents/skills .claude/skills`
+.claude/skills
