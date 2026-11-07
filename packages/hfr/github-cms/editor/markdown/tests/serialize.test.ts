@@ -74,6 +74,15 @@ Edit *me* please
         expect(result).toBe('Press [[Ctrl]] and __this__ key. Done\n');
     });
 
+    it('moves whitespace out of formatting marks', () => {
+        const result = edit('Text\n', (tr) => {
+            const end = endOfTextblock(tr.doc, 'Text');
+            tr.insert(end, schema.text(' bold ', [schema.marks.strong.create()]));
+            tr.insert(end + 6, schema.text('after'));
+        });
+        expect(result).toBe('Text **bold** after\n');
+    });
+
     it('renumbers ordered lists when an item is removed', () => {
         const source = '3. first\n4. second\n5. third\n';
         const result = edit(source, (tr) => {

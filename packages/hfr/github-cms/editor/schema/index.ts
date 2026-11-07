@@ -78,7 +78,7 @@ const nodes = {
         content: 'list_item+',
         attrs: { tight: { default: true }, bullet: { default: '-' } },
         parseDOM: [{ tag: 'ul' }],
-        toDOM: () => ['ul', 0]
+        toDOM: (node) => ['ul', { 'data-tight': node.attrs.tight }, 0]
     },
 
     ordered_list: {
@@ -86,7 +86,7 @@ const nodes = {
         content: 'list_item+',
         attrs: { tight: { default: true }, start: { default: 1 }, delimiter: { default: '.' } },
         parseDOM: [{ tag: 'ol', getAttrs: (dom) => ({ start: Number(dom.getAttribute('start') || 1) }) }],
-        toDOM: (node) => ['ol', { start: node.attrs.start }, 0]
+        toDOM: (node) => ['ol', { start: node.attrs.start, 'data-tight': node.attrs.tight }, 0]
     },
 
     list_item: {
@@ -285,8 +285,8 @@ const marks = {
         parseDOM: [{ tag: 'kbd' }],
         toDOM: () => ['kbd', 0]
     },
+    /** inline code can be combined with other marks, e.g. *`emphasized code`* */
     code: {
-        excludes: '_',
         code: true,
         parseDOM: [{ tag: 'code' }],
         toDOM: () => ['code', 0]

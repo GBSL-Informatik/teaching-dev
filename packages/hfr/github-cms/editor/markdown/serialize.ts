@@ -190,7 +190,7 @@ class ProseMirrorToMarkdown {
             }
             (open.at(-1)?.children ?? root).push(this.inlineNode(child));
         });
-        return root;
+        return moveWhitespaceOutOfMarks(root);
     }
 
     private inlineNode(node: Node): PhrasingContent {
@@ -238,6 +238,40 @@ const markToMdast = (mark: Mark): MdastParent => {
         default:
             throw new Error(`Unknown mark "${mark.type.name}"`);
     }
+};
+
+const FORMATTING_TYPES = new Set(['strong', 'emphasis', 'delete', 'box', 'kbd']);
+
+/**
+ * Markdown formatting can not start or end with whitespace (`** bold**` is not bold),
+ * so leading and trailing whitespace is moved out of the formatting.
+ */
+const moveWhitespaceOutOfMarks = (nodes: PhrasingContent[]): PhrasingContent[] => {
+    return nodes.flatMap((node): PhrasingContent[] => {
+        if (!('children' in node)) {
+            return [node];
+        }
+        node.children = moveWhitespaceOutOfMarks(node.children);
+        if (!FORMATTING_TYPES.has(node.type)) {
+            return [node];
+        }
+        const first = node.children[0];
+        const leading = first?.type === 'text' ? first.value.match(/^\s+/)?.[0] : undefined;
+        if (first?.type === 'text' && leading) {
+            first.value = first.value.slice(leading.length);
+        }
+        const last = node.children.at(-1);
+        const trailing = last?.type === 'text' ? last.value.match(/\s+$/)?.[0] : undefined;
+        if (last?.type === 'text' && trailing) {
+            last.value = last.value.slice(0, -trailing.length);
+        }
+        node.children = node.children.filter((child) => child.type !== 'text' || child.value);
+        return [
+            ...(leading ? [{ type: 'text', value: leading } as const] : []),
+            ...(node.children.length > 0 ? [node] : []),
+            ...(trailing ? [{ type: 'text', value: trailing } as const] : [])
+        ];
+    });
 };
 
 const childrenOf = (node: Node): Node[] => {
