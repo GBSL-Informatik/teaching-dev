@@ -7,9 +7,39 @@
 }
 
 .content {
-    padding: 1em 1.5em;
+    position: relative;
+    padding: 1em 1.5em 1em 2em;
     &.hidden {
         display: none;
+    }
+    /* created by the drag handle plugin, see `plugins/dragHandle.ts` */
+    :global(.cms-drag-handle) {
+        position: absolute;
+        transform: translate(calc(-100% - 2px), -50%);
+        display: flex;
+        width: 1.2em;
+        height: 1.5em;
+        border-radius: var(--ifm-global-radius);
+        color: var(--ifm-color-emphasis-700);
+        cursor: grab;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease-in-out;
+        svg {
+            width: 100%;
+            fill: currentColor;
+        }
+        &:hover {
+            background: var(--ifm-color-emphasis-200);
+            color: var(--ifm-color-emphasis-900);
+        }
+        &:active {
+            cursor: grabbing;
+        }
+    }
+    :global(.cms-drag-handle--visible) {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
 

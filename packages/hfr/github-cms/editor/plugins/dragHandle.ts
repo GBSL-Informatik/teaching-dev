@@ -1,0 +1,153 @@
+import { mdiDragVertical } from '@mdi/js';
+import type { Node } from 'prosemirror-model';
+import { NodeSelection, Plugin, type PluginView } from 'prosemirror-state';
+import type { EditorView } from 'prosemirror-view';
+import { schema } from '../schema';
+
+const { nodes } = schema;
+
+/** blocks inside these nodes can be moved, e.g. a paragraph inside an admonition */
+const CONTAINERS = new Set([
+    nodes.doc,
+    nodes.blockquote,
+    nodes.container_directive,
+    nodes.jsx_flow,
+    nodes.footnote_definition
+]);
+/** must stay the first child of their parent */
+const NOT_DRAGGABLE = new Set([nodes.frontmatter, nodes.directive_label]);
+
+const isDraggable = (node: Node, parent: Node) => {
+    if (NOT_DRAGGABLE.has(node.type)) {
+        return false;
+    }
+    return node.type === nodes.list_item || (node.isBlock && CONTAINERS.has(parent.type));
+};
+
+interface Block {
+    pos: number;
+    dom: HTMLElement;
+}
+
+/**
+ * The innermost draggable block at the given coordinates.
+ */
+const blockAt = (view: EditorView, left: number, top: number): Block | undefined => {
+    const coords = view.posAtCoords({ left, top });
+    if (!coords) {
+        return undefined;
+    }
+    const { doc } = view.state;
+    const candidates: number[] = [];
+    if (coords.inside >= 0) {
+        candidates.push(coords.inside);
+    }
+    const $pos = doc.resolve(coords.pos);
+    for (let depth = $pos.depth; depth > 0; depth--) {
+        candidates.push($pos.before(depth));
+    }
+    for (const pos of candidates) {
+        const $block = doc.resolve(pos);
+        const node = $block.nodeAfter;
+        const dom = view.nodeDOM(pos);
+        if (node && dom instanceof HTMLElement && isDraggable(node, $block.parent)) {
+            return { pos, dom };
+        }
+    }
+    return undefined;
+};
+
+const createHandle = () => {
+    const handle = document.createElement('div');
+    handle.className = 'cms-drag-handle';
+    handle.draggable = true;
+    handle.title = 'Ziehen, um den Block zu verschieben';
+    handle.innerHTML = `<svg viewBox="0 0 24 24"><path d="${mdiDragVertical}" /></svg>`;
+    return handle;
+};
+
+/**
+ * Shows a grab handle left of the hovered block. Dragging the handle moves the block,
+ * using the drag and drop handling of ProseMirror (drop cursor, undo).
+ */
+class DragHandleView implements PluginView {
+    private readonly handle = createHandle();
+    private block: Block | undefined;
+
+    constructor(private readonly view: EditorView) {
+        const container = view.dom.parentElement!;
+        container.appendChild(this.handle);
+        container.addEventListener('mousemove', this.handleMouseMove);
+        container.addEventListener('mouseleave', this.hide);
+        this.handle.addEventListener('dragstart', this.handleDragStart);
+        this.handle.addEventListener('dragend', this.handleDragEnd);
+    }
+
+    private handleMouseMove = (event: MouseEvent) => {
+        if (event.target === this.handle || this.handle.contains(event.target as HTMLElement)) {
+            return;
+        }
+        const block = blockAt(this.view, event.clientX, event.clientY);
+        if (!block) {
+            return this.hide();
+        }
+        this.show(block);
+    };
+
+    private show(block: Block) {
+        this.block = block;
+        const container = this.handle.parentElement!.getBoundingClientRect();
+        const rect = block.dom.getBoundingClientRect();
+        // list items are aligned with their list, so the handle does not cover the bullet
+        const left =
+            block.dom.tagName === 'LI' ? block.dom.parentElement!.getBoundingClientRect().left : rect.left;
+        const lineHeight = parseFloat(getComputedStyle(block.dom).lineHeight) || 24;
+        this.handle.style.top = `${rect.top - container.top + Math.min(lineHeight, rect.height) / 2}px`;
+        this.handle.style.left = `${left - container.left}px`;
+        this.handle.classList.add('cms-drag-handle--visible');
+    }
+
+    private hide = () => {
+        this.block = undefined;
+        this.handle.classList.remove('cms-drag-handle--visible');
+    };
+
+    private handleDragStart = (event: DragEvent) => {
+        const pos = this.block?.pos;
+        if (pos === undefined || !event.dataTransfer) {
+            return;
+        }
+        const { view } = this;
+        const selection = NodeSelection.create(view.state.doc, pos);
+        view.dispatch(view.state.tr.setSelection(selection));
+        const slice = selection.content();
+        const { dom, text } = view.serializeForClipboard(slice);
+        event.dataTransfer.clearData();
+        event.dataTransfer.setData('text/html', dom.innerHTML);
+        event.dataTransfer.setData('text/plain', text);
+        event.dataTransfer.effectAllowed = 'copyMove';
+        event.dataTransfer.setDragImage(this.block!.dom, 0, 0);
+        // ProseMirror removes the selected block when the slice is dropped
+        view.dragging = { slice, move: true };
+    };
+
+    private handleDragEnd = () => {
+        this.view.dragging = null;
+        this.hide();
+    };
+
+    update(view: EditorView, previous: { doc: Node }) {
+        if (!view.state.doc.eq(previous.doc)) {
+            this.hide();
+        }
+    }
+
+    destroy() {
+        const container = this.handle.parentElement;
+        container?.removeEventListener('mousemove', this.handleMouseMove);
+        container?.removeEventListener('mouseleave', this.hide);
+        this.handle.remove();
+    }
+}
+
+export const dragHandle = () => new Plugin({ view: (view) => new DragHandleView(view) });
