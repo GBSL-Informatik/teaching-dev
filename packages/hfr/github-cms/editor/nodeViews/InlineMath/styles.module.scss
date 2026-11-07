@@ -1,0 +1,10 @@
+.math {
+    cursor: pointer;
+    border-radius: var(--ifm-global-radius);
+    &.selected {
+        outline: 2px solid var(--ifm-color-primary);
+    }
+}
+.input {
+    font-family: var(--ifm-font-family-monospace);
+}

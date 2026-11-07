@@ -1,0 +1,43 @@
+.toolbar {
+    position: sticky;
+    top: var(--cms-toolbar-top-offset, var(--ifm-navbar-height));
+    z-index: var(--ifm-z-index-dropdown);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.3em 0.5em;
+    background: var(--ifm-background-surface-color);
+    border-bottom: 1px solid var(--ifm-color-emphasis-300);
+    .group {
+        display: flex;
+        align-items: center;
+        gap: 0.1em;
+    }
+    .spacer {
+        flex-grow: 1;
+    }
+}
+.menu {
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+    overflow-y: auto;
+    min-width: 14em;
+    .menuTitle {
+        font-size: 0.75em;
+        text-transform: uppercase;
+        color: var(--ifm-color-emphasis-600);
+        padding: 0.4em 0.5em 0.1em;
+    }
+}
+.linkCard {
+    width: 25em;
+    max-width: 90vw;
+    .linkActions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5em;
+        margin-top: 0.5em;
+    }
+}

@@ -1,0 +1,121 @@
+.editor {
+    margin: 0 1px 1em 1px;
+    box-shadow: var(--ifm-global-shadow-md);
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+}
+
+.content {
+    padding: 1em 1.5em;
+}
+
+/**
+ * Styles of the document. Node views and nodes rendered by their `toDOM` spec use
+ * plain class names (`cms-*`), since ProseMirror creates their DOM outside of React.
+ */
+.prosemirror {
+    min-height: 60vh;
+    outline: none;
+    white-space: pre-wrap;
+
+    :global {
+        .cms-node-view-content > :last-child {
+            margin-bottom: 0;
+        }
+
+        .cms-directive {
+            margin-bottom: var(--ifm-spacing-vertical);
+            padding: 0.3em 1em 1em 1em;
+            &:not(.alert) {
+                border: 1px dashed var(--ifm-color-emphasis-500);
+                border-radius: var(--ifm-global-radius);
+            }
+            .cms-directive-label {
+                font-weight: var(--ifm-font-weight-bold);
+                margin-bottom: 0.5em;
+            }
+        }
+        .cms-directive--details {
+            background: var(--ifm-color-info-contrast-background);
+        }
+        .cms-directive--flex > .cms-node-view-content,
+        .cms-directive--cards > .cms-node-view-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+            > * {
+                flex: 1 1 12em;
+            }
+        }
+
+        .cms-jsx {
+            margin-bottom: var(--ifm-spacing-vertical);
+            padding: 0.2em 0.8em;
+            border-left: 3px solid var(--ifm-color-primary);
+            background: var(--ifm-color-emphasis-100);
+            border-radius: var(--ifm-global-radius);
+            > .cms-node-view-content {
+                padding: 0.3em 0 0.5em 0;
+            }
+        }
+
+        .cms-footnote-definition {
+            font-size: 0.9em;
+            margin-bottom: var(--ifm-spacing-vertical);
+        }
+
+        .cms-code-block {
+            margin-bottom: var(--ifm-spacing-vertical);
+            border-radius: var(--ifm-code-border-radius);
+            background: var(--ifm-pre-background);
+            .cm-editor {
+                padding: 0.3em 0;
+                font-family: var(--ifm-font-family-monospace);
+                font-size: var(--ifm-code-font-size);
+                &.cm-focused {
+                    outline: 1px solid var(--ifm-color-primary);
+                }
+            }
+        }
+
+        .ProseMirror-selectednode {
+            outline: 2px solid var(--ifm-color-primary);
+        }
+
+        table {
+            display: table;
+            width: auto;
+            td,
+            th {
+                min-width: 4em;
+                vertical-align: top;
+            }
+            .selectedCell::after {
+                background: var(--ifm-color-primary-lightest);
+                opacity: 0.3;
+            }
+        }
+
+        [data-tight='true'] > li > p {
+            margin-bottom: 0;
+        }
+
+        li[data-checked='true']::marker {
+            content: '☑ ';
+        }
+        li[data-checked='false']::marker {
+            content: '☐ ';
+        }
+
+        strong.boxed {
+            border: 1px solid currentColor;
+            border-radius: var(--ifm-global-radius);
+            padding: 0 0.2em;
+        }
+
+        kbd {
+            font-size: 0.85em;
+        }
+    }
+}
