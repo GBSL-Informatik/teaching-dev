@@ -52,6 +52,11 @@ const nodes = {
     paragraph: {
         group: 'block',
         content: 'inline*',
+        /**
+         * keep soft line breaks (`\n`) when ProseMirror reads typed text back from the DOM,
+         * otherwise they are collapsed to spaces (and e.g. definition lists break)
+         */
+        whitespace: 'pre',
         parseDOM: [{ tag: 'p' }],
         toDOM: () => ['p', 0]
     },
