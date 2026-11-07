@@ -1,7 +1,5 @@
-import * as MdiIcons from '@mdi/js';
 import Icon from '@mdi/react';
 import TextInput from '@tdev-components/shared/TextInput';
-import { camelCased, captialize } from '@tdev-plugins/helpers';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import AttributesEditor from '../../components/AttributesEditor';
@@ -9,14 +7,11 @@ import {
     directiveAttributesToRows,
     rowsToDirectiveAttributes
 } from '../../components/AttributesEditor/conversions';
+import IconPicker from '../../components/IconPicker';
+import { mdiPath } from '../../components/IconPicker/mdiIcons';
 import InlinePopover from '../../components/InlinePopover';
 import type { NodeViewProps } from '../ReactNodeView';
 import styles from './styles.module.scss';
-
-const mdiPath = (iconName: string): string | undefined => {
-    const key = `mdi${captialize(camelCased(iconName))}`;
-    return (MdiIcons as Record<string, string>)[key];
-};
 
 /**
  * `:name[label]{attributes}` - `:mdi[icon-name]` is rendered as the icon.
@@ -26,14 +21,18 @@ const TextDirective = observer(({ handle }: NodeViewProps) => {
     const iconPath = name === 'mdi' ? mdiPath(label) : undefined;
     return (
         <InlinePopover
-            title={`:${name}`}
+            title={name === 'mdi' ? 'Icon' : `:${name}`}
             trigger={
                 <span className={clsx(styles.directive, handle.selected && styles.selected)}>
                     {iconPath ? <Icon path={iconPath} size="1.25em" /> : `:${name}[${label}]`}
                 </span>
             }
         >
-            <TextInput label="Label" value={label} onChange={(label) => handle.updateAttrs({ label })} />
+            {name === 'mdi' ? (
+                <IconPicker value={label} onSelect={(label) => handle.updateAttrs({ label })} />
+            ) : (
+                <TextInput label="Label" value={label} onChange={(label) => handle.updateAttrs({ label })} />
+            )}
             <AttributesEditor
                 title={`Attribute von :${name}`}
                 rows={directiveAttributesToRows(attributes)}

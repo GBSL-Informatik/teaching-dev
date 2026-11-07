@@ -1,6 +1,16 @@
+/* fixed and positioned by `useFloatingPlacement`, no transform: it would break fixed children */
+.popover {
+    position: fixed;
+    z-index: calc(var(--ifm-z-index-fixed) + 1);
+    /* invisible until placed, but still focusable (unlike `visibility: hidden`) */
+    &.measuring {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
 .card {
     width: 25em;
-    max-width: 90vw;
+    max-width: calc(100vw - 16px);
     box-shadow: var(--ifm-global-shadow-tl);
     .body {
         display: flex;
