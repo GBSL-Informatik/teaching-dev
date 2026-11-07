@@ -9,6 +9,7 @@ import type { Command, Plugin } from 'prosemirror-state';
 import { goToNextCell, tableEditing } from 'prosemirror-tables';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
+import { deflist, enterInDeflist } from './deflist';
 import { dragHandle } from './dragHandle';
 import { uuidMarker } from './uuidMarker';
 
@@ -30,7 +31,7 @@ const editorKeymap = keymap({
     'Mod-k': toggleMark(marks.kbd),
     'Shift-Enter': insertHardBreak,
     'Mod-Enter': insertHardBreak,
-    Enter: splitListItem(nodes.list_item),
+    Enter: chainCommands(enterInDeflist, splitListItem(nodes.list_item)),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
     'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),
     ArrowLeft: arrowIntoCode('left'),
@@ -78,5 +79,6 @@ export const createPlugins = (): Plugin[] => [
     gapCursor(),
     dragHandle(),
     uuidMarker(),
+    deflist(),
     tableEditing()
 ];

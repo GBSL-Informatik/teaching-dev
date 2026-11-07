@@ -82,6 +82,22 @@
             }
         }
 
+        /* definition lists, see `plugins/deflist.ts` */
+        .cms-dt {
+            font-weight: var(--ifm-font-weight-bold);
+        }
+        .cms-dd-marker {
+            display: inline-block;
+            width: 1.5em;
+            color: var(--ifm-color-emphasis-400);
+        }
+        .cms-directive.cms-directive--dd {
+            margin-left: 1.5em;
+            border-style: solid;
+            border-width: 0 0 0 2px;
+            border-radius: 0;
+        }
+
         .cms-jsx {
             margin-bottom: var(--ifm-spacing-vertical);
             padding: 0.2em 0.8em;
