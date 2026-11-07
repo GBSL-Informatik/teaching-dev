@@ -1,4 +1,8 @@
-import { requireDefaultMdastNode, toJsxAttribute, transformAttributes } from '@tdev/core/src/plugins/helpers';
+import {
+    requireDefaultMdastNode,
+    toJsxAttribute,
+    transformAttributes
+} from '../../../../src/plugins/helpers';
 import { Root, Text } from 'mdast';
 import type { MdxJsxFlowElement, MdxjsEsm } from 'mdast-util-mdx';
 import path from 'path';

@@ -5,10 +5,10 @@ import { getCommitMessage } from '../src/helpers/commitMessages';
 const migrate: MigrationRunner = async (root, name, ts, conf, argv): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
-    await $`yarn run updateTdev`;
+    await $`pnpm run updateTdev`;
     await $`rm -rf node_modules`;
-    await $`rm yarn.lock`;
-    await $`yarn install`;
+    await $`rm pnpm-lock.yaml`;
+    await $`pnpm install`;
 
     await $`git add .`;
 

@@ -7,7 +7,6 @@ import useCodeTheme from '@tdev-hooks/useCodeTheme';
 import type iCode from '@tdev-models/documents/iCode';
 import 'ace-builds/esm-resolver';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import 'ace-builds/webpack-resolver';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';

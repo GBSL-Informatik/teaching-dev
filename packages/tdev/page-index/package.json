@@ -3,10 +3,8 @@
     "version": "1.0.0",
     "main": "index.ts",
     "types": "index.ts",
-    "dependencies": { },
+    "dependencies": {},
     "devDependencies": {
-        "@docusaurus/core": "*",
-        "@docusaurus/module-type-aliases": "*",
         "@types/better-sqlite3": "^9.6.0",
         "better-sqlite3": "^13.0.3"
     },

@@ -34,4 +34,5 @@ trackedElements:
 watchedElements:
     - .babel.config.js
     - package.json
+    - pnpm-workspace.yaml
     - .env.example

@@ -34,7 +34,7 @@ tdevPages:
 Eine Migration kann mit folgendem Befehl gestartet werden. Alle Migrationen im Ordner `migrations`, die nicht mit `.done.ts` enden, werden in aufsteigender Reihenfolge ausgeführt. Nach erfolgreicher Migration wird die Migrationsdatei in `.done.ts` umbenannt, um zu verhindern, dass sie erneut ausgeführt werden.
 
 ```bash
-yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--done]] [[--branch="branch-name"]]
+pnpm --filter @tdev/migrate-tdev run migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--done]] [[--branch="branch-name"]]
 ```
 
 `--only`
@@ -49,12 +49,12 @@ yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip=
 
 #### Beispiele:
 ```bash
-yarn workspace @tdev/migrate-tdev migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
-yarn workspace @tdev/migrate-tdev migrate --only="inf-abc"             # --> migrates only inf-abc
-yarn workspace @tdev/migrate-tdev migrate --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
-yarn workspace @tdev/migrate-tdev migrate --only="inf-"                # --> migrates only pages with "inf-" in the path
-yarn workspace @tdev/migrate-tdev migrate --skip="inf-abc,inf-ccd"     # --> migrates all projects, except inf-abc and inf-ccd
-yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
+pnpm --filter @tdev/migrate-tdev run migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-abc"             # --> migrates only inf-abc
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-"                # --> migrates only pages with "inf-" in the path
+pnpm --filter @tdev/migrate-tdev run migrate --skip="inf-abc,inf-ccd"     # --> migrates all projects, except inf-abc and inf-ccd
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
 ```
 
 ### Aktionen ausführen
@@ -62,20 +62,20 @@ yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> for
 Eine Aktion ist wie eine Migration, aber sie kann beliebig oft ausgeführt werden und wird nicht in `.done.ts` umbenannt. Aktionen werden im Ordner `actions` abgelegt und können mit folgendem Befehl ausgeführt werden:
 
 ```bash
-yarn workspace @tdev/migrate-tdev runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]] [[-m "apply patch #123"]]
+pnpm --filter @tdev/migrate-tdev run runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]] [[-m "apply patch #123"]]
 ```
 
 Einige Aktionen sind bereits vorhanden:
 
 `format  [[-m|--message]]`
-: formatiert das Projekt mit `yarn format` und committet+pushed die Änderungen.
+: formatiert das Projekt mit `pnpm format` und committet+pushed die Änderungen.
 : Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
 `updateTdev [[--format]] [[-m|--message]]`
-: führt `yarn run updateTdev` aus, installiert mögliche Package-Updates und committet+pushed die Änderungen.
+: führt `pnpm run updateTdev` aus, installiert mögliche Package-Updates und committet+pushed die Änderungen.
 : Optional kann `--format` angegeben werden, um das Projekt nach dem Update zu formatieren.
 : Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
 `reinstall  [[-m|--message]]`
-: entfernt `node_modules` und `yarn.lock`, installiert alle Pakete neu und committet+pushed die Änderungen.
+: entfernt `node_modules` und `pnpm-lock.yaml`, installiert alle Pakete neu und committet+pushed die Änderungen.
 : Optional kann `--message` oder `-m` angegeben werden, um eine benutzerdefinierte Commit-Nachricht zu verwenden.
 `git.status`
 : zeigt den aktuellen Git-Status an.
@@ -85,15 +85,15 @@ Einige Aktionen sind bereits vorhanden:
 #### Beispiele:
 ```bash
 # --> führt updateTdev aus und committet+pushed die Änderungen mit der Nachricht "[tdev] https://github.com/GBSL-Informatik/teaching-dev/pull/331"
-yarn workspace @tdev/migrate-tdev runAction updateTdev -m "https://github.com/GBSL-Informatik/teaching-dev/pull/331"
+pnpm --filter @tdev/migrate-tdev run runAction updateTdev -m "https://github.com/GBSL-Informatik/teaching-dev/pull/331"
 # --> + formatiert das Projekt nach dem Update
-yarn workspace @tdev/migrate-tdev runAction updateTdev --format -m "https://github.com/GBSL-Informatik/teaching-dev/pull/331"
-yarn workspace @tdev/migrate-tdev runAction updateTdev --only="inf-abc,inf-ccd"  # --> nur für die Projekte inf-abc und inf-ccd
-yarn workspace @tdev/migrate-tdev runAction updateTdev --skip="inf-zyx"          # --> für alle im migrateTdev.config.yaml gelisteten Projekte, ausser inf-zyx 
-yarn workspace @tdev/migrate-tdev runAction format                               # --> formatiert die Projekte
-yarn workspace @tdev/migrate-tdev runAction format -m "fix formatting"           # --> + eigene Commit-Nachricht: "[tdev] fix formatting"
-yarn workspace @tdev/migrate-tdev runAction reinstall                            # --> rm node_modules, yarn.lock, install, commit, push
-yarn workspace @tdev/migrate-tdev runAction git.status                           # --> zeigt den aktuellen Git-Status an
+pnpm --filter @tdev/migrate-tdev run runAction updateTdev --format -m "https://github.com/GBSL-Informatik/teaching-dev/pull/331"
+pnpm --filter @tdev/migrate-tdev run runAction updateTdev --only="inf-abc,inf-ccd"  # --> nur für die Projekte inf-abc und inf-ccd
+pnpm --filter @tdev/migrate-tdev run runAction updateTdev --skip="inf-zyx"          # --> für alle im migrateTdev.config.yaml gelisteten Projekte, ausser inf-zyx 
+pnpm --filter @tdev/migrate-tdev run runAction format                               # --> formatiert die Projekte
+pnpm --filter @tdev/migrate-tdev run runAction format -m "fix formatting"           # --> + eigene Commit-Nachricht: "[tdev] fix formatting"
+pnpm --filter @tdev/migrate-tdev run runAction reinstall                            # --> rm node_modules, pnpm-lock.yaml, install, commit, push
+pnpm --filter @tdev/migrate-tdev run runAction git.status                           # --> zeigt den aktuellen Git-Status an
 ```
 
 ## Migrationen
@@ -112,7 +112,7 @@ export default migrate;
 
 ### Shell-Befehle ausführen
 
-Mit der Bibliothek `execa` können Shell-Befehle direkt ausgeführt werden und somit bspw. auf `git`, `yarn` oder gängige CLI-Tools zugegriffen werden.
+Mit der Bibliothek `execa` können Shell-Befehle direkt ausgeführt werden und somit bspw. auf `git`, `pnpm` oder gängige CLI-Tools zugegriffen werden.
 
 Eine minimale Migration, die ein Projekt formatiert, alle Änderungen commited und pusht, sieht wie folgt aus:
 
@@ -122,7 +122,7 @@ import { execa } from 'execa';
 
 const migrate: MigrationRunner = async (root): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
-    await $`yarn format`
+    await $`pnpm format`
     await $`git add .`;
     await $`git commit -m ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
@@ -135,7 +135,7 @@ export default migrate;
 
 Oft müssen Pakete in den Teaching-Dev Projekten aktualisiert werden. Mit der Funktion `updatePackages` können Pakete installiert, aktualisiert oder entfernt werden. Die Funktion nimmt ein Objekt mit den zu installierenden, zu aktualisierenden und zu entfernenden Paketen entgegen.
 
-Im Beispiel werden die Pakete `mobx` und `mobx-react-lite` aktualisiert, die `devDependencies` `prettier` installiert und das Paket `@mdxeditor/editor` entfernt. Es wird direkt das `package.json` modifiziert und nicht mit `yarn add/upgrade` die Pakete installiert, da es oftmals schneller ist und keine Konflikte im `yarn.lock` entstehen. 
+Im Beispiel werden die Pakete `mobx` und `mobx-react-lite` aktualisiert, die `devDependencies` `prettier` installiert und das Paket `@mdxeditor/editor` entfernt. Es wird direkt das `package.json` modifiziert und nicht mit `pnpm add/update` die Pakete installiert, da es oftmals schneller ist und keine Konflikte im `pnpm-lock.yaml` entstehen. 
 
 ```ts
 import { MigrationRunner } from '../src/constants';
@@ -164,8 +164,8 @@ const migrate: MigrationRunner = async (root): Promise<void> => {
     );
     await writePackageJson(root, pkg);
     await $`rm -rf node_modules`;
-    await $`rm yarn.lock`;
-    await $`yarn install`;
+    await $`rm pnpm-lock.yaml`;
+    await $`pnpm install`;
 
     await $`git commit -am ${'[tdev] Migrate TDEV'}`;
     await $`git push`;
@@ -202,7 +202,7 @@ const migrate: MigrationRunner = async (root): Promise<void> => {
         }
     ]);
     await writeUpdateTdevConfig(root, config);
-    await $`yarn run updateTdev`;
+    await $`pnpm run updateTdev`;
 
     await $`git commit -am ${'[tdev] Migrate TDEV'}`;
     await $`git push`;

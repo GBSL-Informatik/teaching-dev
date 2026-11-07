@@ -3,6 +3,7 @@ import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
 import aliasConfigurationPlugin from '../plugins/plugin-alias-configuration';
 import dynamicRouterPlugin, { Config as DynamicRouteConfig } from '../plugins/plugin-dynamic-routes';
 import stackblitzRspackTarget from '../plugins/plugin-stackblitz-rspack-target';
+import swcDecorators from '../plugins/plugin-swc-decorators';
 import { SiteConfig } from './siteConfig';
 
 // TODO: Consider bundling default / recommended plugins.
@@ -21,6 +22,8 @@ export const dynamicRouterPluginConfig: (siteConfig: SiteConfig) => PluginConfig
         ]
     } satisfies DynamicRouteConfig
 ];
+
+export const swcDecoratorsPluginConfig: PluginConfig = swcDecorators;
 
 export const stackblitzRspackTargetPluginConfig: () => PluginConfig = () => stackblitzRspackTarget;
 

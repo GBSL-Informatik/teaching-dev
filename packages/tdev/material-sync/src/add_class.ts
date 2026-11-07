@@ -12,13 +12,13 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn run add_class [className]
+pnpm run add_class [className]
 
 examples:
 
-yarn run addClass 30Gx              // adds a new class to 'versioned_docs', 'versioned_sidebar' and to 'material.config.yaml'
-yarn run addClass 30Ga,30Gx
-yarn run addClass "30Ga, 30Gx"
+pnpm run addClass 30Gx              // adds a new class to 'versioned_docs', 'versioned_sidebar' and to 'material.config.yaml'
+pnpm run addClass 30Ga,30Gx
+pnpm run addClass "30Ga, 30Gx"
 `);
     exit(0);
 }

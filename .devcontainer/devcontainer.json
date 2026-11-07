@@ -27,11 +27,12 @@
     "remoteEnv": {
         "OFFLINE_API": "true"
     },
-    "postStartCommand": "yarn install",
+    "postStartCommand": "pnpm install",
     "forwardPorts": [3000],
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "24.13"
+            "version": "26.13",
+            "pnpmVersion": "12.18.0"
         }
     },
     "runArgs": ["--network=host"]

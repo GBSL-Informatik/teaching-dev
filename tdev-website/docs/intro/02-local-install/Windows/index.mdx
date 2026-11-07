@@ -31,16 +31,16 @@ Falls aktuell eine Node-Version installiert ist, muss diese zuerst deinstalliert
 5. Powershell im Terminal öffnen (oder neu starten) und Node installieren:
     ```bash
     nvm --version # sicherstellen dass nvm installiert ist
-    nvm install 24.18.0
-    nvm use 24.18.0
+    nvm install 26.13.0
+    nvm use 26.13.0
     ```
     :::tip[Unterschied zu Unix]
     Unter Windows bleibt die zuletzt genutzte Node-Version aktiv, bis eine andere Version mit `nvm use <version>` ausgewählt wird. `nvm alias default <version>` ist unter Windows nicht verfügbar.
     :::
     ![](./images/nvm-install.png)
-6. yarn installieren:
+6. pnpm installieren:
     ```bash
-    npm install --global yarn
+    npm install --global pnpm
     ```
     ![](./images/add-yarn.png)
 </Steps>

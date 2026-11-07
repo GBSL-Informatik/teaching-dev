@@ -7,12 +7,7 @@
         "comlink": "^4.4.2",
         "pyodide": "314.0.7"
     },
-    "devDependencies": {
-        "@docusaurus/core": "*",
-        "@docusaurus/module-type-aliases": "*",
-        "@types/node": "*",
-        "vitest": "*"
-    },
+    "devDependencies": {},
     "peerDependencies": {
         "@mdi/js": "*",
         "@mdi/react": "*",

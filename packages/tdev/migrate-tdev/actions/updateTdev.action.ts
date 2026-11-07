@@ -6,10 +6,10 @@ import { hasUncommittedChanges } from '../src/helpers/gitHelpers';
 const migrate: MigrationRunner = async (root, name, ts, conf, argv): Promise<void> => {
     const $ = execa({ stdio: 'inherit' });
 
-    await $`yarn run updateTdev`;
-    await $`yarn install`;
+    await $`pnpm run updateTdev`;
+    await $`pnpm install`;
     if (argv.format) {
-        await $`yarn format`;
+        await $`pnpm format`;
     }
     const hasChanged = await hasUncommittedChanges();
     if (!hasChanged) {

@@ -10,11 +10,11 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn run cleanup
+pnpm run cleanup
 
 examples:
 
-yarn run cleanup
+pnpm run cleanup
 `);
     process.exit(0);
 }

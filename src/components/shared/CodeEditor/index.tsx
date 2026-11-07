@@ -10,7 +10,6 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/mode-svg';
 import 'ace-builds/src-noconflict/theme-dracula';
-import 'ace-builds/webpack-resolver';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';

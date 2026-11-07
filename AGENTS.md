@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-Teaching Dev is a Docusaurus teaching platform using React, TypeScript, MobX, and Yarn workspaces.
+Teaching Dev is a Docusaurus teaching platform using React, TypeScript, MobX, and pnpm workspaces.
 
 - `src/` contains shared components, hooks, models, stores, API clients, themes, and remark plugins.
 - `packages/` contains workspace packages, scoped to either the platform `packages/tdev/` or individual devs, e.g. `packages/hfr/`.
@@ -28,15 +28,15 @@ You're an expert in the following areas:
 
 ## Build, Test, and Development Commands
 
-Use Node.js 24.13 or newer (`.nvmrc` pins 24.13.0) and Yarn. Run commands from the repository root.
+Use Node.js 26.13 or newer (`.nvmrc` pins 26.13.0) and pnpm (version pinned in `packageManager`). Run commands from the repository root.
 
-- `yarn install`: install workspace dependencies.
-- `yarn run start`: start Docusaurus and the package-documentation watcher.
-- `yarn build`: synchronize materials and package documentation, then build the static site.
-- `yarn serve`: preview the production build.
-- `yarn typecheck`: run TypeScript checks.
-- `yarn test --run`: run Vitest once with V8 coverage; `yarn test` enables watch mode.
-- `yarn format:check` / `yarn format`: check or apply Prettier formatting.
+- `pnpm install`: install workspace dependencies.
+- `pnpm run start`: start Docusaurus and the package-documentation watcher.
+- `pnpm build`: synchronize materials and package documentation, then build the static site.
+- `pnpm serve`: preview the production build.
+- `pnpm typecheck`: run TypeScript checks.
+- `pnpm test --run`: run Vitest once with V8 coverage; `pnpm test` enables watch mode.
+- `pnpm format:check` / `pnpm format`: check or apply Prettier formatting.
 
 ## General Guidelines
 
