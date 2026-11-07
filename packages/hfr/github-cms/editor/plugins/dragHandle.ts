@@ -84,7 +84,7 @@ class DragHandleView implements PluginView {
     }
 
     private handleMouseMove = (event: MouseEvent) => {
-        if (event.target === this.handle || this.handle.contains(event.target as HTMLElement)) {
+        if (this.handle.contains(event.target as HTMLElement) || this.isInGutter(event)) {
             return;
         }
         const block = blockAt(this.view, event.clientX, event.clientY);
@@ -93,6 +93,22 @@ class DragHandleView implements PluginView {
         }
         this.show(block);
     };
+
+    /**
+     * Whether the pointer is between the handle and the content of the current block.
+     * On its way to the handle of a nested block, the pointer crosses the padding of the
+     * parent block, which must not move the handle to the parent block.
+     */
+    private isInGutter(event: MouseEvent) {
+        if (!this.block) {
+            return false;
+        }
+        const block = this.block.dom.getBoundingClientRect();
+        const handle = this.handle.getBoundingClientRect();
+        const isBesideBlock =
+            event.clientY >= Math.min(block.top, handle.top) && event.clientY <= block.bottom;
+        return isBesideBlock && event.clientX >= handle.left && event.clientX < block.left;
+    }
 
     private show(block: Block) {
         this.block = block;
