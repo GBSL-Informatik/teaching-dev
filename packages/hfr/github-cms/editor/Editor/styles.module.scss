@@ -159,7 +159,9 @@
             }
         }
 
+        /* docusaurus renders tight lists without paragraphs, prosemirror always has one */
         [data-tight='true'] > li > p {
+            margin-top: 0;
             margin-bottom: 0;
         }
 
