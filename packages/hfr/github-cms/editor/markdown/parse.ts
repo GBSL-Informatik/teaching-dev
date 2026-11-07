@@ -17,6 +17,7 @@ import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-uti
 import type { MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import type { Mark, Node } from 'prosemirror-model';
 import { type ContainerFormat, type DirectiveAttributes, type JsxAttribute, schema } from '../schema';
+import { groupKbd } from './kbd';
 import { countLineBreaks, dedent, setOrigin } from './origin';
 import { parseMdx, stringifyMdast } from './syntax';
 
@@ -25,8 +26,6 @@ export interface ParsedMarkdown {
     /** whitespace after the last node, usually a single line break */
     trailing: string;
 }
-
-const KBD_REGEX = /\[\[(.+?)\]\]/g;
 
 /**
  * Converts mdx source to a ProseMirror document.
@@ -210,13 +209,15 @@ class MdastToProseMirror {
     }
 
     private inline(children: PhrasingContent[], marks: readonly Mark[] = []): Node[] {
-        return children.flatMap((child) => this.phrasing(child, marks));
+        return groupKbd(children).flatMap((child) => this.phrasing(child, marks));
     }
 
     private phrasing(node: PhrasingContent, marks: readonly Mark[]): Node[] {
         switch (node.type) {
             case 'text':
-                return this.textWithKbd(node.value, marks);
+                return this.text(node.value, marks);
+            case 'kbd':
+                return this.inline(node.children, schema.marks.kbd.create().addToSet(marks));
             case 'strong':
                 const isBox = this.sourceOf(node).startsWith('__');
                 const mark = isBox ? schema.marks.box.create() : schema.marks.strong.create();
@@ -258,21 +259,6 @@ class MdastToProseMirror {
             attributes: directiveAttributes(node)
         };
         return schema.nodes.text_directive.create(attrs, null, marks);
-    }
-
-    /**
-     * Splits `[[Ctrl]]` sequences into text with a kbd mark, as `remark-kbd` does at build time.
-     */
-    private textWithKbd(value: string, marks: readonly Mark[]): Node[] {
-        const result: Node[] = [];
-        let lastIndex = 0;
-        for (const match of value.matchAll(KBD_REGEX)) {
-            result.push(...this.text(value.slice(lastIndex, match.index), marks));
-            result.push(...this.text(match[1], schema.marks.kbd.create().addToSet(marks)));
-            lastIndex = match.index + match[0].length;
-        }
-        result.push(...this.text(value.slice(lastIndex), marks));
-        return result;
     }
 
     private text(value: string, marks?: readonly Mark[]): Node[] {

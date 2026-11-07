@@ -74,6 +74,22 @@ Edit *me* please
         expect(result).toBe('Press [[Ctrl]] and __this__ key. Done\n');
     });
 
+    it('recognizes kbd content spanning several nodes', () => {
+        const source = 'Press [[Ctrl + :mdi[keyboard-return]]] to send.\n';
+        const { doc } = parseMarkdown(source);
+        const icon = findNode(doc, 'text_directive').node;
+        expect(icon.marks.map((mark) => mark.type.name)).toEqual(['kbd']);
+        expect(doc.textContent).toBe('Press Ctrl +  to send.');
+
+        const result = edit(source, (tr) => tr.insertText('!', endOfTextblock(tr.doc, 'Press')));
+        expect(result).toBe('Press [[Ctrl + :mdi[keyboard-return]]] to send.!\n');
+    });
+
+    it('keeps unmatched kbd brackets as text', () => {
+        const result = edit('A [[ without end\n', (tr) => tr.insertText('!', endOfTextblock(tr.doc, 'A')));
+        expect(result).toBe('A \\[\\[ without end!\n');
+    });
+
     it('moves whitespace out of formatting marks', () => {
         const result = edit('Text\n', (tr) => {
             const end = endOfTextblock(tr.doc, 'Text');
