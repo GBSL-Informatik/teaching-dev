@@ -137,6 +137,34 @@ Edit *me* please
         `);
     });
 
+    it('self-closes a jsx element with empty content', () => {
+        const result = edit('<String id="abc" />\n', (tr) => {
+            // what "Inhalt hinzufügen" does, without typing any content
+            const { node, pos } = findNode(tr.doc, 'jsx_flow_void');
+            const element = schema.nodes.jsx_flow.create(node.attrs, schema.nodes.paragraph.create());
+            tr.replaceWith(pos, pos + node.nodeSize, element);
+        });
+        expect(result).toBe('<String id="abc" />\n');
+    });
+
+    it('self-closes a jsx element when its content is removed', () => {
+        const source = `<BrowserWindow
+    url="https://gbsl.ch"
+>
+    Some content
+</BrowserWindow>
+`;
+        const result = edit(source, (tr) => {
+            const { pos } = findNode(tr.doc, 'paragraph');
+            tr.delete(pos + 1, endOfTextblock(tr.doc, 'Some content'));
+        });
+        expect(result).toMatchInlineSnapshot(`
+          "<BrowserWindow
+              url="https://gbsl.ch" />
+          "
+        `);
+    });
+
     it('keeps the indentation of jsx children when a child is edited', () => {
         const source = `<Steps>
     1. First

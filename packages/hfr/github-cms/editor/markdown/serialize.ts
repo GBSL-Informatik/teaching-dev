@@ -156,12 +156,19 @@ class ProseMirrorToMarkdown {
         return this.container(opening, children, fence, format);
     }
 
+    /**
+     * An element without content is written as self-closing tag, e.g. `<String />`.
+     */
     private jsxFlow(node: Node) {
         const { name, attributes } = node.attrs;
         const format: ContainerFormat = node.attrs.format ?? DEFAULT_JSX_FORMAT;
         const opening = format.openingTag ?? `<${name}${jsxAttributes(attributes)}>`;
-        const children = this.blocks(childrenOf(node), 2, format.childIndent);
-        return this.container(opening, children, `</${name}>`, format);
+        const children = childrenOf(node);
+        if (children.every(isEmptyBlock)) {
+            return `${opening.replace(/\s*\/?>$/, '')} />`;
+        }
+        const content = this.blocks(children, 2, format.childIndent);
+        return this.container(opening, content, `</${name}>`, format);
     }
 
     private container(opening: string, children: string, closing: string, format: ContainerFormat) {
