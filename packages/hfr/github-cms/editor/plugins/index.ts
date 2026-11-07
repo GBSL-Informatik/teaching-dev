@@ -10,6 +10,7 @@ import { goToNextCell, tableEditing } from 'prosemirror-tables';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { dragHandle } from './dragHandle';
+import { uuidMarker } from './uuidMarker';
 
 const { nodes, marks } = schema;
 
@@ -76,5 +77,6 @@ export const createPlugins = (): Plugin[] => [
     dropCursor({ color: 'var(--ifm-color-primary)', width: 2 }),
     gapCursor(),
     dragHandle(),
+    uuidMarker(),
     tableEditing()
 ];

@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
 import NodeToolbar from '../../components/NodeToolbar';
+import UuidAttributes from '../../components/UuidAttributes';
 import { type ContainerFormat, schema } from '../../schema';
 import type { NodeViewProps } from '../ReactNodeView';
 
@@ -25,6 +26,7 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
 
     return (
         <NodeToolbar handle={handle} title={isVoid ? `<${name} />` : `<${name}>`}>
+            <UuidAttributes handle={handle} />
             {isVoid && (
                 <Button
                     icon={mdiTextBoxPlusOutline}

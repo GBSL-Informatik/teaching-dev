@@ -6,6 +6,7 @@ import {
     rowsToDirectiveAttributes
 } from '../../components/AttributesEditor/conversions';
 import NodeToolbar from '../../components/NodeToolbar';
+import UuidAttributes from '../../components/UuidAttributes';
 import type { NodeViewProps } from '../ReactNodeView';
 
 /**
@@ -15,6 +16,7 @@ const LeafDirective = observer(({ handle }: NodeViewProps) => {
     const { name, label, attributes } = handle.node.attrs;
     return (
         <NodeToolbar handle={handle} title={`::${name}`}>
+            <UuidAttributes handle={handle} />
             <TextInput
                 value={label}
                 placeholder="Label"

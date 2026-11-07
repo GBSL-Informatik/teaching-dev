@@ -17,6 +17,7 @@ import type { EditorView, NodeView, NodeViewConstructor } from 'prosemirror-view
 import React from 'react';
 import { createPortal } from 'react-dom';
 import type MdxDocument from '../models/MdxDocument';
+import { codeMirrorUuidMarker } from './codeMirrorUuidMarker';
 import { NodeViewHandle, type NodeViewProps } from './ReactNodeView';
 
 interface Options {
@@ -64,6 +65,7 @@ class CodeMirrorNodeView implements NodeView {
                 drawSelection(),
                 syntaxHighlighting(defaultHighlightStyle),
                 CodeMirror.lineWrapping,
+                codeMirrorUuidMarker,
                 this.languageConf.of([]),
                 CodeMirror.updateListener.of((update) => this.forwardUpdate(update))
             ]

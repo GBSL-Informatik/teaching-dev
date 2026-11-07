@@ -10,6 +10,7 @@ import {
     rowsToDirectiveAttributes
 } from '../../components/AttributesEditor/conversions';
 import NodeToolbar from '../../components/NodeToolbar';
+import UuidAttributes from '../../components/UuidAttributes';
 import { schema } from '../../schema';
 import type { NodeViewProps } from '../ReactNodeView';
 import { ADMONITION_TYPES } from './admonitionTypes';
@@ -53,6 +54,7 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
 
     return (
         <NodeToolbar handle={handle} title={`:::${name}`}>
+            <UuidAttributes handle={handle} />
             {isAdmonition(name) && (
                 <SelectInput
                     options={[...ADMONITION_TYPES]}
