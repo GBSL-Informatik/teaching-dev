@@ -1,6 +1,6 @@
 import { action, observable, observableRef } from 'mobx';
 import type { Attrs, Node } from 'prosemirror-model';
-import { NodeSelection } from 'prosemirror-state';
+import { NodeSelection, TextSelection } from 'prosemirror-state';
 import type { EditorView, NodeView, NodeViewConstructor, ViewMutationRecord } from 'prosemirror-view';
 import React from 'react';
 import { createPortal } from 'react-dom';
@@ -45,13 +45,18 @@ export class NodeViewHandle {
         dispatch(state.tr.setNodeMarkup(pos, undefined, { ...this.node.attrs, ...attrs }));
     }
 
+    /**
+     * Replaces this node and places the cursor at the start of the new node.
+     */
     replaceWith(node: Node) {
         const pos = this.getPos();
         if (pos === undefined) {
             return;
         }
         const { state, dispatch } = this.document;
-        dispatch(state.tr.replaceWith(pos, pos + this.node.nodeSize, node));
+        const tr = state.tr.replaceWith(pos, pos + this.node.nodeSize, node);
+        dispatch(tr.setSelection(TextSelection.near(tr.doc.resolve(pos + 1))));
+        this.document.view?.focus();
     }
 
     remove() {

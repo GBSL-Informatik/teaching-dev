@@ -97,6 +97,10 @@
             }
         }
 
+        [data-tight='true'] > li > p {
+            margin-bottom: 0;
+        }
+
         li[data-checked='true']::marker {
             content: '☑ ';
         }

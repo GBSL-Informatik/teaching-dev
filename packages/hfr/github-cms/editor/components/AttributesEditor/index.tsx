@@ -38,7 +38,8 @@ const AttributesEditor = (props: Props) => {
     };
     const handleRemove = (idx: number) => setRows((current) => current.filter((_, i) => i !== idx));
     const handleAdd = () => setRows((current) => [...current, { name: '', value: '', isExpression: false }]);
-    const handleApply = () => {
+    const handleApply = (event?: React.KeyboardEvent) => {
+        event?.preventDefault();
         props.onApply(rows.filter((row) => row.name.trim()));
         ref.current?.close();
     };
@@ -63,7 +64,7 @@ const AttributesEditor = (props: Props) => {
                 footer={
                     <>
                         <Button text="Abbrechen" onClick={() => ref.current?.close()} />
-                        <Button text="Übernehmen" color="green" onClick={handleApply} />
+                        <Button text="Übernehmen" color="green" onClick={() => handleApply()} />
                     </>
                 }
             >

@@ -30,7 +30,9 @@ const LinkButton = observer(({ document }: { document: MdxDocument }) => {
             />
         );
     }
-    const handleApply = () => {
+    const handleApply = (event?: React.KeyboardEvent) => {
+        // the editor gets focused, the enter key must not reach it
+        event?.preventDefault();
         if (href) {
             document.run(setLink(href));
         }
@@ -54,7 +56,7 @@ const LinkButton = observer(({ document }: { document: MdxDocument }) => {
                 <TextInput label="URL" value={href} onChange={setHref} onEnter={handleApply} noSpellCheck />
                 <div className={clsx(styles.linkActions)}>
                     <Button text="Abbrechen" onClick={() => ref.current?.close()} />
-                    <Button text="Übernehmen" color="green" onClick={handleApply} disabled={!href} />
+                    <Button text="Übernehmen" color="green" onClick={() => handleApply()} disabled={!href} />
                 </div>
             </Card>
         </Popup>
