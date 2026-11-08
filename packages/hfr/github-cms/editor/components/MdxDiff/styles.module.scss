@@ -1,21 +1,23 @@
 .diff {
     padding: 0.5em;
-    font-size: 0.85em;
-    overflow-x: auto;
     .options {
         display: flex;
         justify-content: flex-end;
         margin-bottom: 0.5em;
     }
-    table {
-        display: table;
-        width: 100%;
+    .titles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        font-weight: var(--ifm-font-weight-semibold);
     }
-    pre {
-        background: none;
-        padding: 0;
-        margin: 0;
-        white-space: pre-wrap;
+    :global {
+        .cm-editor {
+            font-family: var(--ifm-font-family-monospace);
+            font-size: var(--ifm-code-font-size);
+            &.cm-focused {
+                outline: none;
+            }
+        }
     }
 }
 .noChanges {

@@ -7,6 +7,7 @@
         "@codemirror/commands": "^6.2.4",
         "@codemirror/language": "^6.10.0",
         "@codemirror/language-data": "^6.5.1",
+        "@codemirror/merge": "^6.12.3",
         "@codemirror/state": "^6.4.0",
         "@codemirror/view": "^6.23.0",
         "@octokit/rest": "^21.1.0",

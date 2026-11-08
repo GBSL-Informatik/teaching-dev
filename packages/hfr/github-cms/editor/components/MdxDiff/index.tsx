@@ -5,8 +5,8 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import DiffViewer, { DiffMethod } from 'react-diff-viewer-continued';
 import type File from '../../../models/File';
+import { createSplitDiff, createUnifiedDiff } from './createDiffView';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -14,11 +14,25 @@ interface Props {
 }
 
 /**
- * Shows the changes of the markdown source since the file was loaded or last saved.
+ * Shows the changes of the source since the file was loaded or last saved.
+ * Each change can be reverted.
  */
 const MdxDiff = observer(({ file }: Props) => {
     const { colorMode } = useColorMode();
     const [splitView, setSplitView] = React.useState(true);
+    const [mount, setMount] = React.useState<HTMLDivElement | null>(null);
+
+    React.useEffect(() => {
+        if (!mount) {
+            return;
+        }
+        const isDark = colorMode === 'dark';
+        const view = splitView
+            ? createSplitDiff(mount, file, isDark)
+            : createUnifiedDiff(mount, file, isDark);
+        return () => view.destroy();
+    }, [mount, file, splitView, colorMode]);
+
     if (!file.isDirty) {
         return <div className={clsx(styles.noChanges)}>Keine Änderungen</div>;
     }
@@ -33,17 +47,13 @@ const MdxDiff = observer(({ file }: Props) => {
                     onClick={() => setSplitView(!splitView)}
                 />
             </div>
-            <DiffViewer
-                oldValue={file._pristine}
-                newValue={file.content}
-                splitView={splitView}
-                leftTitle="Gespeichert"
-                rightTitle="Bearbeitet"
-                compareMethod={DiffMethod.WORDS}
-                showDiffOnly
-                extraLinesSurroundingDiff={2}
-                useDarkTheme={colorMode === 'dark'}
-            />
+            {splitView && (
+                <div className={clsx(styles.titles)}>
+                    <span>Gespeichert</span>
+                    <span>Bearbeitet</span>
+                </div>
+            )}
+            <div ref={setMount} />
         </div>
     );
 });

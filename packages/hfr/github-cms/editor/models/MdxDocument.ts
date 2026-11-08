@@ -27,7 +27,7 @@ class MdxDocument {
     /** React content of the node views, rendered as portals by the editor component */
     readonly portals = observable.map<string, ReactPortal>({}, { deep: false });
 
-    private readonly trailing: string;
+    private trailing: string;
 
     /**
      * @throws when the content of the file is not valid mdx
@@ -43,6 +43,8 @@ class MdxDocument {
     setShowDiff(showDiff: boolean) {
         if (showDiff) {
             this.flush();
+        } else {
+            this.reloadRevertedChanges();
         }
         this.showDiff = showDiff;
     }
@@ -119,6 +121,25 @@ class MdxDocument {
     @action
     removePortal(key: string) {
         this.portals.delete(key);
+    }
+
+    /**
+     * Changes reverted in the diff are only written to the file: the document is parsed again.
+     * When the result is not valid mdx (e.g. half of a component was reverted), the source editor is shown.
+     */
+    @action
+    private reloadRevertedChanges() {
+        if (this.file.content === this.markdown) {
+            return;
+        }
+        try {
+            const { doc, trailing } = parseMarkdown(this.file.content);
+            this.trailing = trailing;
+            this.state = EditorState.create({ doc, plugins: createPlugins() });
+            this.view?.updateState(this.state);
+        } catch {
+            this.file.setPreventMdxEditor(true);
+        }
     }
 }
 
