@@ -1,7 +1,8 @@
 .toolbar {
     position: sticky;
     top: var(--cms-toolbar-top-offset, var(--ifm-navbar-height));
-    z-index: var(--ifm-z-index-dropdown);
+    /* above the dropdowns in the document (e.g. the admonition type), below the navbar */
+    z-index: calc(var(--ifm-z-index-dropdown) + 1);
     display: flex;
     align-items: center;
     gap: 0.5em;
