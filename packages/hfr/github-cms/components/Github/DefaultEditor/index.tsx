@@ -5,6 +5,7 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import SourceEditor from '../../../editor/SourceEditor';
 import File from '../../../models/File';
 import Actions from '../../MdxEditor/toolbar/Actions';
 import styles from './styles.module.scss';
@@ -33,12 +34,16 @@ const DefaultEditor = observer((props: Props) => {
                     />
                 )}
             </div>
-            <CodeEditor
-                lang={file.extension}
-                defaultValue={file.content}
-                maxLines={60}
-                onChange={action((code) => file.setContent(code))}
-            />
+            {file.isMarkdown ? (
+                <SourceEditor file={file} />
+            ) : (
+                <CodeEditor
+                    lang={file.extension}
+                    defaultValue={file.content}
+                    maxLines={60}
+                    onChange={action((code) => file.setContent(code))}
+                />
+            )}
         </div>
     );
 });

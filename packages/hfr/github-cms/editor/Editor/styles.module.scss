@@ -1,3 +1,5 @@
+@use '../uuid';
+
 .editor {
     margin: 0 1px 1em 1px;
     box-shadow: var(--ifm-global-shadow-md);
@@ -136,34 +138,7 @@
             }
         }
 
-        /* uuids, see `plugins/uuidMarker.ts` and `nodeViews/codeMirrorUuidMarker.ts` */
-        .cms-uuid {
-            background: var(--ifm-color-warning-contrast-background);
-            border-bottom: 1px dashed var(--ifm-color-warning-dark);
-            border-radius: 2px;
-        }
-        .cms-uuid-regenerate {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 1.2em;
-            height: 1.2em;
-            margin-left: 0.15em;
-            padding: 0;
-            vertical-align: middle;
-            border: 1px solid var(--ifm-color-warning-dark);
-            border-radius: 50%;
-            background: var(--ifm-background-surface-color);
-            color: var(--ifm-color-warning-darkest);
-            cursor: pointer;
-            svg {
-                width: 0.85em;
-                fill: currentColor;
-            }
-            &:hover {
-                background: var(--ifm-color-warning-contrast-background);
-            }
-        }
+        @include uuid.marker;
 
         .ProseMirror-selectednode {
             outline: 2px solid var(--ifm-color-primary);
