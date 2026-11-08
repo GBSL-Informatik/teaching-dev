@@ -23,7 +23,7 @@ const Image = observer(({ handle }: NodeViewProps) => {
     const resolvedSrc = asset?.type === 'bin_file' ? asset.src : src;
     const { caption } = splitAlt(alt);
 
-    const [figure, setFigure] = React.useState<HTMLSpanElement | null>(null);
+    const [frame, setFrame] = React.useState<HTMLSpanElement | null>(null);
     /** the width while the image is resized, it is written to the alt text when done */
     const [resizeWidth, setResizeWidth] = React.useState<number | null>(null);
     const altWidth = widthOption(alt);
@@ -37,13 +37,12 @@ const Image = observer(({ handle }: NodeViewProps) => {
     return (
         <>
             <span
-                ref={setFigure}
                 className={clsx(styles.figure, handle.selected && styles.selected, width && styles.sized)}
                 style={width ? { width } : undefined}
             >
-                <span className={clsx(styles.frame)}>
+                <span ref={setFrame} className={clsx(styles.frame)}>
                     <img src={resolvedSrc} alt={caption} className={clsx(styles.image)} />
-                    <ResizeHandles target={figure} onResize={setResizeWidth} onResizeEnd={handleResizeEnd} />
+                    <ResizeHandles target={frame} onResize={setResizeWidth} onResizeEnd={handleResizeEnd} />
                     <span className={clsx(styles.settings)}>
                         <InlinePopover
                             title="Bild"
