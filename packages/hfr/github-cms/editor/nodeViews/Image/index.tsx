@@ -10,11 +10,10 @@ import { useAssetFile } from '../../../components/MdxEditor/hooks/useAssetFile';
 import ImageDialog from '../../components/ImageDialog';
 import InlinePopover from '../../components/InlinePopover';
 import type { NodeViewProps } from '../ReactNodeView';
-import { splitAlt } from './altText';
+import { cssWidth, splitAlt, widthOption, withWidthOption } from './altText';
 import Caption from './Caption';
 import ResizeHandles from './ResizeHandles';
 import styles from './styles.module.scss';
-import { cssWidth, widthOption, withWidthOption } from './widthOption';
 
 const Image = observer(({ handle }: NodeViewProps) => {
     const { src, alt } = handle.node.attrs;
