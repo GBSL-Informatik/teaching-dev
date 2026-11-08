@@ -1,18 +1,19 @@
-import { baseKeymap, toggleMark } from 'prosemirror-commands';
-import { history, redo, undo } from 'prosemirror-history';
+import { baseKeymap } from 'prosemirror-commands';
+import { history } from 'prosemirror-history';
 import { InputRule, inputRules } from 'prosemirror-inputrules';
 import { keymap } from 'prosemirror-keymap';
 import { EditorState, type Transaction } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import type { ReactPortal } from 'react';
 import { parseCaption, serializeCaption } from '../../markdown/caption';
+import { historyKeys, markKeys } from '../../plugins/sharedKeys';
 import { captionSchema } from '../../schema/caption';
 import InlineAtom from '../InlineAtom';
 import InlineMath from '../InlineMath';
 import { type NodeViewEditor, reactNodeView } from '../ReactNodeView';
 import TextDirective from '../TextDirective';
 
-const { marks, nodes } = captionSchema;
+const { nodes } = captionSchema;
 
 /** captions are a single line: line breaks and new paragraphs are ignored */
 const ignore = () => true;
@@ -26,14 +27,8 @@ const createPlugins = () => [
     inputRules({ rules: [mdiIconRule] }),
     history(),
     keymap({
-        'Mod-z': undo,
-        'Shift-Mod-z': redo,
-        'Mod-y': redo,
-        'Mod-b': toggleMark(marks.strong),
-        'Mod-i': toggleMark(marks.emphasis),
-        'Mod-e': toggleMark(marks.code),
-        'Mod-u': toggleMark(marks.box),
-        'Mod-k': toggleMark(marks.kbd),
+        ...historyKeys,
+        ...markKeys(captionSchema),
         Enter: ignore,
         'Shift-Enter': ignore,
         'Mod-Enter': ignore

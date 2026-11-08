@@ -1,7 +1,7 @@
-import { baseKeymap, chainCommands, exitCode, setBlockType, toggleMark } from 'prosemirror-commands';
+import { baseKeymap, chainCommands, exitCode, setBlockType } from 'prosemirror-commands';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
-import { history, redo, undo } from 'prosemirror-history';
+import { history } from 'prosemirror-history';
 import { InputRule, inputRules, textblockTypeInputRule, wrappingInputRule } from 'prosemirror-inputrules';
 import { keymap } from 'prosemirror-keymap';
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list';
@@ -11,9 +11,10 @@ import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
+import { historyKeys, markKeys } from './sharedKeys';
 import { uuidMarker } from './uuidMarker';
 
-const { nodes, marks } = schema;
+const { nodes } = schema;
 
 const insertHardBreak: Command = chainCommands(exitCode, (state, dispatch) => {
     dispatch?.(state.tr.replaceSelectionWith(nodes.hard_break.create()).scrollIntoView());
@@ -21,14 +22,8 @@ const insertHardBreak: Command = chainCommands(exitCode, (state, dispatch) => {
 });
 
 const editorKeymap = keymap({
-    'Mod-z': undo,
-    'Shift-Mod-z': redo,
-    'Mod-y': redo,
-    'Mod-b': toggleMark(marks.strong),
-    'Mod-i': toggleMark(marks.emphasis),
-    'Mod-e': toggleMark(marks.code),
-    'Mod-u': toggleMark(marks.box),
-    'Mod-k': toggleMark(marks.kbd),
+    ...historyKeys,
+    ...markKeys(schema),
     'Shift-Enter': insertHardBreak,
     'Mod-Enter': insertHardBreak,
     Enter: chainCommands(enterInDeflist, splitListItem(nodes.list_item)),
