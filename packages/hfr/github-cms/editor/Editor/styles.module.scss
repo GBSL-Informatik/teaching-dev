@@ -182,3 +182,29 @@
         }
     }
 }
+
+/* small screens: less space around the content and inside nested blocks */
+@media screen and (max-width: 620px) {
+    .editor {
+        margin: 0 0 1em 0;
+    }
+    .content {
+        /* the drag handle needs the space on the left */
+        padding: 0.5em 0.5em 0.5em 1.4em;
+    }
+    .prosemirror {
+        min-height: 40vh;
+        :global {
+            .cms-directive {
+                padding: 0.2em 0.5em 0.5em 0.5em;
+            }
+            .cms-jsx {
+                padding: 0.2em 0.4em;
+            }
+            ul,
+            ol {
+                padding-left: 1.2em;
+            }
+        }
+    }
+}
