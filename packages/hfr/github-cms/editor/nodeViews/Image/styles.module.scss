@@ -8,12 +8,67 @@
     &.selected {
         outline: 2px solid var(--ifm-color-primary);
     }
+    .frame {
+        position: relative;
+        max-width: 100%;
+    }
     .image {
+        display: block;
         max-width: 100%;
         max-height: 30em;
+    }
+    /* the width is set by `--width=` or while resizing */
+    &.sized {
+        .frame,
+        .image {
+            width: 100%;
+        }
+        .image {
+            max-height: none;
+        }
     }
     .caption {
         font-size: 0.85em;
         color: var(--ifm-color-emphasis-700);
+    }
+
+    .handle {
+        position: absolute;
+        width: 0.7em;
+        height: 0.7em;
+        border: 1px solid var(--ifm-background-color);
+        border-radius: 2px;
+        background: var(--ifm-color-primary);
+        opacity: 0;
+        touch-action: none;
+        transition: opacity 0.15s ease-in-out;
+        &.nw,
+        &.se {
+            cursor: nwse-resize;
+        }
+        &.ne,
+        &.sw {
+            cursor: nesw-resize;
+        }
+        &.nw,
+        &.ne {
+            top: -0.35em;
+        }
+        &.sw,
+        &.se {
+            bottom: -0.35em;
+        }
+        &.nw,
+        &.sw {
+            left: -0.35em;
+        }
+        &.ne,
+        &.se {
+            right: -0.35em;
+        }
+    }
+    &:hover .handle,
+    &.selected .handle {
+        opacity: 1;
     }
 }
