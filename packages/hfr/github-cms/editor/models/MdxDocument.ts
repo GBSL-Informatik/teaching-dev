@@ -6,9 +6,18 @@ import type { EditorView } from 'prosemirror-view';
 import type { ReactPortal } from 'react';
 import type File from '../../models/File';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
+import type { NodeViewEditor } from '../nodeViews/ReactNodeView';
 import { createPlugins } from '../plugins';
 
 const SYNC_DELAY_MS = 300;
+
+/**
+ * @throws when the content is not valid mdx
+ */
+const parseDocument = (content: string) => {
+    const { doc, trailing } = parseMarkdown(content);
+    return { state: EditorState.create({ doc, plugins: createPlugins() }), trailing };
+};
 
 /**
  * The editing session of a markdown file.
@@ -17,7 +26,7 @@ const SYNC_DELAY_MS = 300;
  * so toolbar buttons and node views simply observe the parts of the state they need.
  * Changes are written back to the file (debounced) as markdown.
  */
-class MdxDocument {
+class MdxDocument implements NodeViewEditor {
     readonly file: File;
     @observableRef accessor state: EditorState;
     @observableRef accessor view: EditorView | null = null;
@@ -34,9 +43,9 @@ class MdxDocument {
      */
     constructor(file: File) {
         this.file = file;
-        const { doc, trailing } = parseMarkdown(file.content);
+        const { state, trailing } = parseDocument(file.content);
+        this.state = state;
         this.trailing = trailing;
-        this.state = EditorState.create({ doc, plugins: createPlugins() });
     }
 
     @action
@@ -133,9 +142,9 @@ class MdxDocument {
             return;
         }
         try {
-            const { doc, trailing } = parseMarkdown(this.file.content);
+            const { state, trailing } = parseDocument(this.file.content);
+            this.state = state;
             this.trailing = trailing;
-            this.state = EditorState.create({ doc, plugins: createPlugins() });
             this.view?.updateState(this.state);
         } catch {
             this.file.setPreventMdxEditor(true);
