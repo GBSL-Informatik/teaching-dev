@@ -56,6 +56,16 @@ export class NodeViewHandle {
         dispatch(state.tr.setNodeMarkup(pos, undefined, { ...this.node.attrs, ...attrs }));
     }
 
+    /** inserts the node at the start of the content of this node, e.g. the label of a directive */
+    prependChild(node: Node) {
+        const pos = this.getPos();
+        if (pos === undefined) {
+            return;
+        }
+        const { state, dispatch } = this.editor;
+        dispatch(state.tr.insert(pos + 1, node));
+    }
+
     /**
      * Replaces this node and places the cursor at the start of the new node.
      */

@@ -43,13 +43,7 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
     const hasLabel = handle.node.firstChild?.type === schema.nodes.directive_label;
 
     const handleAddLabel = () => {
-        const pos = handle.pos;
-        if (pos === undefined) {
-            return;
-        }
-        const { state, dispatch } = handle.editor;
-        const label = schema.nodes.directive_label.create(null, schema.text('Titel'));
-        dispatch(state.tr.insert(pos + 1, label));
+        handle.prependChild(schema.nodes.directive_label.create(null, schema.text('Titel')));
     };
 
     return (
