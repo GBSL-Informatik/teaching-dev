@@ -9,7 +9,7 @@ import type { Command, Plugin } from 'prosemirror-state';
 import { goToNextCell, tableEditing } from 'prosemirror-tables';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
-import { deflist, enterInDeflist } from './deflist';
+import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
 import { uuidMarker } from './uuidMarker';
 
@@ -66,7 +66,8 @@ const markdownInputRules = inputRules({
                 return null;
             }
             return state.tr.replaceRangeWith($start.before(), $start.after(), nodes.thematic_break.create());
-        })
+        }),
+        startDefinitionRule
     ]
 });
 

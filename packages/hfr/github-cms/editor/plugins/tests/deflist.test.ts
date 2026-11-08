@@ -1,7 +1,7 @@
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
 import { parseMarkdown } from '../../markdown';
-import { decorationsOf, enterInDeflist } from '../deflist';
+import { decorationsOf, enterInDeflist, startDefinition } from '../deflist';
 
 /** the decorated text of each class */
 const decorated = (source: string) => {
@@ -107,5 +107,28 @@ describe('enter in a definition list', () => {
 
     it('does nothing outside of definition lists', () => {
         expect(enterInDeflist(stateAtEnd('Just text\n'))).toBe(false);
+    });
+});
+
+describe('typing `: ` after a line break', () => {
+    /** the cursor is after the `:` at the end of the first paragraph, as when the space is typed */
+    const typeSpace = (source: string) => {
+        const { doc } = parseMarkdown(source);
+        const end = doc.firstChild!.nodeSize - 1;
+        const state = EditorState.create({ doc });
+        const tr = startDefinition(state, end - 2, end);
+        return tr && state.apply(tr).doc.firstChild!.textContent;
+    };
+
+    it('replaces the line break with a soft line break to start a definition', () => {
+        expect(typeSpace('Term\\\n:\n')).toBe('Term\n: ');
+    });
+
+    it('needs a term before the line break', () => {
+        expect(typeSpace('\\\n:\n')).toBeNull();
+    });
+
+    it('ignores colons without a line break before them', () => {
+        expect(typeSpace('Term:\n')).toBeNull();
     });
 });

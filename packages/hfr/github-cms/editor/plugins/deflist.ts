@@ -1,5 +1,6 @@
+import { InputRule } from 'prosemirror-inputrules';
 import type { Node } from 'prosemirror-model';
-import { type Command, Plugin } from 'prosemirror-state';
+import { type Command, type EditorState, Plugin } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
 import { schema } from '../schema';
 
@@ -116,6 +117,28 @@ export const enterInDeflist: Command = (state, dispatch) => {
     dispatch(state.tr.insertText('\n').scrollIntoView());
     return true;
 };
+
+/**
+ * Typing `: ` after a line break (shift+enter) starts a definition: the line break becomes a
+ * soft line break, since the lines of a definition list must be in the same paragraph.
+ * @param start the position of the line break
+ * @param end the position of the cursor, after the `:`
+ */
+export const startDefinition = (state: EditorState, start: number, end: number) => {
+    const isAfterLineBreak = state.doc.nodeAt(start)?.type === schema.nodes.hard_break;
+    const $start = state.doc.resolve(start);
+    const hasTerm = start > $start.start();
+    if (!isAfterLineBreak || !hasTerm || $start.parent.type !== schema.nodes.paragraph) {
+        return null;
+    }
+    return state.tr.insertText('\n: ', start, end);
+};
+
+/** input rules represent inline nodes (e.g. line breaks) by `INLINE_NODE` */
+export const startDefinitionRule = new InputRule(
+    new RegExp(`${INLINE_NODE}:[ \t]$`),
+    (state, _match, start, end) => startDefinition(state, start, end)
+);
 
 /**
  * Renders definition lists (`remark-deflist`) like a definition list: bold terms and indented
