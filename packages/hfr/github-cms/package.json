@@ -11,6 +11,7 @@
         "@codemirror/state": "^6.4.0",
         "@codemirror/view": "^6.23.0",
         "@octokit/rest": "^21.1.0",
+        "katex": "^0.16.47",
         "mdast-util-directive": "^3.0.0",
         "mdast-util-from-markdown": "^2.0.0",
         "mdast-util-frontmatter": "^2.0.0",
