@@ -21,3 +21,15 @@
         cursor: default;
     }
 }
+.modal {
+    width: 30em;
+    max-width: 95vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    .modalBody {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5em;
+    }
+}
