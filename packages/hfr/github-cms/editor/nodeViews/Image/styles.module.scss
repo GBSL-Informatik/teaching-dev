@@ -11,19 +11,16 @@
         position: relative;
         max-width: 100%;
     }
+    /* the natural size of the image, but not wider than the page */
     .image {
         display: block;
         max-width: 100%;
-        max-height: 30em;
     }
     /* the width is set by `--width=` or while resizing */
     &.sized {
         .frame,
         .image {
             width: 100%;
-        }
-        .image {
-            max-height: none;
         }
     }
     .caption {
