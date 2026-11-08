@@ -30,9 +30,34 @@ export const rawImageAlt = (imageSource: string): string | undefined => {
 };
 
 /**
- * The markdown of an image, the alt text is written as it is (not escaped).
+ * The markdown of an image. The markdown of the alt text is kept, only brackets
+ * which would end the alt text early are escaped.
  */
 export const imageMarkdown = (src: string, alt: string, title: string | null) => {
     const withoutAlt = stringifyMdast({ type: 'image', url: src, alt: '', title });
-    return `![${alt}${withoutAlt.slice('!['.length)}`;
+    return `![${escapeUnbalancedBrackets(alt)}${withoutAlt.slice('!['.length)}`;
+};
+
+/**
+ * Balanced brackets (e.g. `[[Ctrl]]` or `:mdi[robot]`) are allowed in the alt text, an unmatched
+ * `]` would end it and an unmatched `[` would extend it, so both are escaped.
+ */
+const escapeUnbalancedBrackets = (alt: string) => {
+    const unmatched = new Set<number>();
+    const openBrackets: number[] = [];
+    for (let idx = 0; idx < alt.length; idx++) {
+        const char = alt[idx];
+        if (char === '\\') {
+            idx++;
+        } else if (char === '[') {
+            openBrackets.push(idx);
+        } else if (char === ']' && openBrackets.pop() === undefined) {
+            unmatched.add(idx);
+        }
+    }
+    openBrackets.forEach((idx) => unmatched.add(idx));
+    return alt
+        .split('')
+        .map((char, idx) => (unmatched.has(idx) ? `\\${char}` : char))
+        .join('');
 };
