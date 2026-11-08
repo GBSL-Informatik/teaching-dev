@@ -24,8 +24,7 @@ interface Props {
 const NodeToolbar = observer((props: Props) => {
     const { handle } = props;
     const [toolbar, setToolbar] = React.useState<HTMLDivElement | null>(null);
-    const [controls, setControls] = React.useState<HTMLSpanElement | null>(null);
-    const isCompact = useIsCompact(toolbar, controls);
+    const { isCompact, contentRef } = useIsCompact(toolbar);
 
     const allControls = (
         <>
@@ -51,11 +50,7 @@ const NodeToolbar = observer((props: Props) => {
         >
             <span className={clsx(styles.title)}>{props.title}</span>
             {/* events from the modal bubble through the portal: they must not select the node */}
-            <span
-                ref={isCompact ? undefined : setControls}
-                className={clsx(styles.controls)}
-                onClick={(e) => e.stopPropagation()}
-            >
+            <span ref={contentRef} className={clsx(styles.controls)} onClick={(e) => e.stopPropagation()}>
                 {isCompact ? <ControlsModal title={props.title}>{allControls}</ControlsModal> : allControls}
             </span>
         </div>
