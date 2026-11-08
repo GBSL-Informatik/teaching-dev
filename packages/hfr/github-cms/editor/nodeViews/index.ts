@@ -3,7 +3,9 @@ import type { NodeViewConstructor } from 'prosemirror-view';
 import type MdxDocument from '../models/MdxDocument';
 import type { NodeName } from '../schema';
 import {
+    codeBlockClassName,
     CodeBlockHeader,
+    CodeBlockPreview,
     FrontmatterHeader,
     MathBlockHeader,
     MathBlockPreview,
@@ -29,23 +31,24 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
     code_block: codeMirrorNodeView(document, {
         language: (node) => node.attrs.lang,
         header: CodeBlockHeader,
-        className: 'cms-code-block'
+        footer: CodeBlockPreview,
+        className: codeBlockClassName
     }),
     math_block: codeMirrorNodeView(document, {
         language: () => 'latex',
         header: MathBlockHeader,
         footer: MathBlockPreview,
-        className: 'cms-code-block'
+        className: () => 'cms-code-block'
     }),
     frontmatter: codeMirrorNodeView(document, {
         language: () => 'yaml',
         header: FrontmatterHeader,
-        className: 'cms-code-block'
+        className: () => 'cms-code-block'
     }),
     raw_block: codeMirrorNodeView(document, {
         language: rawBlockLanguage,
         header: RawBlockHeader,
-        className: 'cms-code-block'
+        className: () => 'cms-code-block'
     }),
     container_directive: reactNodeView(document, {
         component: ContainerDirective,

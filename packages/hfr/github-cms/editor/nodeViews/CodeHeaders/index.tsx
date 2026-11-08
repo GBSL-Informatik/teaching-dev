@@ -1,9 +1,11 @@
 import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import type { Node } from 'prosemirror-model';
 import React from 'react';
 import NodeToolbar from '../../components/NodeToolbar';
 import { renderMath } from '../InlineMath';
+import MermaidPreview from '../MermaidPreview';
 import type { NodeViewProps } from '../ReactNodeView';
 import styles from './styles.module.scss';
 
@@ -29,6 +31,19 @@ export const CodeBlockHeader = observer(({ handle }: NodeViewProps) => {
             />
         </NodeToolbar>
     );
+});
+
+const isMermaid = (node: Node) => node.attrs.lang === 'mermaid';
+
+/** mermaid diagrams are edited next to their preview */
+export const codeBlockClassName = (node: Node) =>
+    isMermaid(node) ? 'cms-code-block cms-code-block--split' : 'cms-code-block';
+
+export const CodeBlockPreview = observer(({ handle }: NodeViewProps) => {
+    if (!isMermaid(handle.node)) {
+        return null;
+    }
+    return <MermaidPreview code={handle.node.textContent} />;
 });
 
 export const MathBlockHeader = observer(({ handle }: NodeViewProps) => {

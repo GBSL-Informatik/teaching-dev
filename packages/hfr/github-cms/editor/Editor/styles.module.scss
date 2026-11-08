@@ -137,6 +137,15 @@
                 }
             }
         }
+        /* the code on the left, the preview (e.g. a mermaid diagram) on the right, see `nodeViews/CodeHeaders` */
+        .cms-code-block--split {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            /* the header */
+            > :first-child {
+                grid-column: 1 / -1;
+            }
+        }
 
         @include uuid.marker;
 
@@ -204,6 +213,9 @@
             ul,
             ol {
                 padding-left: 1.2em;
+            }
+            .cms-code-block--split {
+                grid-template-columns: minmax(0, 1fr);
             }
         }
     }

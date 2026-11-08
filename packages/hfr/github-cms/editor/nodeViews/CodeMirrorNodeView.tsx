@@ -3,10 +3,10 @@ import { defaultHighlightStyle, LanguageDescription, syntaxHighlighting } from '
 import { languages } from '@codemirror/language-data';
 import { Compartment } from '@codemirror/state';
 import {
-    drawSelection,
     EditorView as CodeMirror,
-    type KeyBinding,
     keymap as codeMirrorKeymap,
+    drawSelection,
+    type KeyBinding,
     type ViewUpdate
 } from '@codemirror/view';
 import { exitCode } from 'prosemirror-commands';
@@ -27,7 +27,7 @@ interface Options {
     header?: React.ComponentType<NodeViewProps>;
     /** rendered below the code, e.g. a preview */
     footer?: React.ComponentType<NodeViewProps>;
-    className?: string;
+    className?: (node: Node) => string;
 }
 
 let portalCounter = 0;
@@ -71,7 +71,7 @@ class CodeMirrorNodeView implements NodeView {
             ]
         });
         this.dom = window.document.createElement('div');
-        this.dom.className = `cms-code-node ${options.className ?? ''}`;
+        this.updateClassName();
         this.addComponent(options.header);
         this.dom.appendChild(this.codeMirror.dom);
         this.addComponent(options.footer);
@@ -88,6 +88,10 @@ class CodeMirrorNodeView implements NodeView {
         const key = `code-node-view-${portalCounter++}`;
         this.portalKeys.push(key);
         this.document.addPortal(key, createPortal(<Component handle={this.handle} />, container, key));
+    }
+
+    private updateClassName() {
+        this.dom.className = `cms-code-node ${this.options.className?.(this.node) ?? ''}`;
     }
 
     private async loadLanguage() {
@@ -188,6 +192,7 @@ class CodeMirrorNodeView implements NodeView {
         }
         this.node = node;
         this.handle.setNode(node);
+        this.updateClassName();
         this.loadLanguage();
         if (this.updating) {
             return true;

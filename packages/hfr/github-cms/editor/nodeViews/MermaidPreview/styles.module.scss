@@ -1,0 +1,13 @@
+.preview {
+    height: 100%;
+    padding: 0.5em;
+    overflow: auto;
+    background: var(--ifm-background-color);
+    .error {
+        margin: 0;
+        background: none;
+        color: var(--ifm-color-danger-dark);
+        font-size: 0.8em;
+        white-space: pre-wrap;
+    }
+}
