@@ -6,11 +6,10 @@ import { drawSelection, EditorView, keymap, lineNumbers } from '@codemirror/view
 import type File from '../../models/File';
 import { codeMirrorUuidMarker } from '../nodeViews/codeMirrorUuidMarker';
 
-/** mdx is not known to `@codemirror/language-data` */
-const loadLanguage = async (fileName: string) => {
-    const description =
-        LanguageDescription.matchFilename(languages, fileName) ??
-        LanguageDescription.matchLanguageName(languages, 'markdown');
+const loadLanguage = async (file: File) => {
+    // mdx is not known to `@codemirror/language-data`
+    const fallback = file.isMarkdown ? LanguageDescription.matchLanguageName(languages, 'markdown') : null;
+    const description = LanguageDescription.matchFilename(languages, file.name) ?? fallback;
     return description ? description.load() : [];
 };
 
@@ -38,7 +37,7 @@ export const createSourceView = (parent: HTMLElement, file: File) => {
             })
         ]
     });
-    loadLanguage(file.name).then((support) => {
+    loadLanguage(file).then((support) => {
         const isDestroyed = !view.dom.isConnected;
         if (isDestroyed) {
             return;

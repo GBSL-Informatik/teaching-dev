@@ -10,8 +10,8 @@ interface Props {
 }
 
 /**
- * Edits the markdown source of a file. Like in the visual editor, uuids are highlighted
- * and can be replaced with a new one.
+ * Edits the source of a text file, e.g. markdown or typescript. Like in the visual editor,
+ * uuids are highlighted and can be replaced with a new one.
  */
 const SourceEditor = observer(({ file }: Props) => {
     const [mount, setMount] = React.useState<HTMLDivElement | null>(null);

@@ -1,9 +1,7 @@
 import { mdiLanguageMarkdown } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import CodeEditor from '@tdev-components/shared/CodeEditor';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
-import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import SourceEditor from '../../../editor/SourceEditor';
 import File from '../../../models/File';
@@ -34,16 +32,7 @@ const DefaultEditor = observer((props: Props) => {
                     />
                 )}
             </div>
-            {file.isMarkdown ? (
-                <SourceEditor file={file} />
-            ) : (
-                <CodeEditor
-                    lang={file.extension}
-                    defaultValue={file.content}
-                    maxLines={60}
-                    onChange={action((code) => file.setContent(code))}
-                />
-            )}
+            <SourceEditor file={file} />
         </div>
     );
 });
