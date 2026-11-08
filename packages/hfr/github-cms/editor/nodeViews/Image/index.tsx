@@ -1,6 +1,7 @@
-import { mdiImageEditOutline } from '@mdi/js';
+import { mdiCog, mdiImageEditOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import TextInput from '@tdev-components/shared/TextInput';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -36,42 +37,35 @@ const Image = observer(({ handle }: NodeViewProps) => {
 
     return (
         <>
-            <InlinePopover
-                title="Bild"
-                trigger={
-                    <span
-                        ref={setFigure}
-                        className={clsx(
-                            styles.figure,
-                            handle.selected && styles.selected,
-                            width && styles.sized
-                        )}
-                        style={width ? { width } : undefined}
-                    >
-                        <span className={clsx(styles.frame)}>
-                            <img src={resolvedSrc} alt={caption} className={clsx(styles.image)} />
-                            <ResizeHandles
-                                target={figure}
-                                onResize={setResizeWidth}
-                                onResizeEnd={handleResizeEnd}
-                            />
-                        </span>
-                        {caption && <span className={clsx(styles.caption)}>{caption}</span>}
-                    </span>
-                }
+            <span
+                ref={setFigure}
+                className={clsx(styles.figure, handle.selected && styles.selected, width && styles.sized)}
+                style={width ? { width } : undefined}
             >
-                <TextInput
-                    label="Bildunterschrift und Optionen (z.B. --width=20em)"
-                    value={alt}
-                    onChange={(alt) => handle.updateAttrs({ alt })}
-                />
-                <Button
-                    icon={mdiImageEditOutline}
-                    text="Bild ändern"
-                    iconSide="left"
-                    onClick={() => setShowDialog(true)}
-                />
-            </InlinePopover>
+                <span className={clsx(styles.frame)}>
+                    <img src={resolvedSrc} alt={caption} className={clsx(styles.image)} />
+                    <ResizeHandles target={figure} onResize={setResizeWidth} onResizeEnd={handleResizeEnd} />
+                    <span className={clsx(styles.settings)}>
+                        <InlinePopover
+                            title="Bild"
+                            trigger={<Button icon={mdiCog} size={SIZE_S} title="Bild bearbeiten" />}
+                        >
+                            <TextInput
+                                label="Bildunterschrift und Optionen (z.B. --width=20em)"
+                                value={alt}
+                                onChange={(alt) => handle.updateAttrs({ alt })}
+                            />
+                            <Button
+                                icon={mdiImageEditOutline}
+                                text="Bild ändern"
+                                iconSide="left"
+                                onClick={() => setShowDialog(true)}
+                            />
+                        </InlinePopover>
+                    </span>
+                </span>
+                {caption && <span className={clsx(styles.caption)}>{caption}</span>}
+            </span>
             <Popup
                 open={showDialog}
                 onClose={() => setShowDialog(false)}

@@ -62,8 +62,6 @@ const ResizeHandles = ({ target, onResize, onResizeEnd }: Props) => {
                     // handled here, not by prosemirror, see `ReactNodeView.stopEvent`
                     data-stop-event
                     onPointerDown={(event) => handlePointerDown(event, corner)}
-                    // the click at the end of the drag must not open the popover
-                    onClick={(event) => event.stopPropagation()}
                 />
             ))}
         </>
