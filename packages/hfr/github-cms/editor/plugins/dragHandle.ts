@@ -71,16 +71,31 @@ const createHandle = () => {
  * using the drag and drop handling of ProseMirror (drop cursor, undo).
  */
 class DragHandleView implements PluginView {
+    private readonly view: EditorView;
     private readonly handle = createHandle();
     private block: Block | undefined;
 
-    constructor(private readonly view: EditorView) {
+    constructor(view: EditorView) {
+        this.view = view;
         const container = view.dom.parentElement!;
         container.appendChild(this.handle);
         container.addEventListener('mousemove', this.handleMouseMove);
         container.addEventListener('mouseleave', this.hide);
         this.handle.addEventListener('dragstart', this.handleDragStart);
         this.handle.addEventListener('dragend', this.handleDragEnd);
+    }
+
+    update(view: EditorView, previous: { doc: Node }) {
+        if (!view.state.doc.eq(previous.doc)) {
+            this.hide();
+        }
+    }
+
+    destroy() {
+        const container = this.handle.parentElement;
+        container?.removeEventListener('mousemove', this.handleMouseMove);
+        container?.removeEventListener('mouseleave', this.hide);
+        this.handle.remove();
     }
 
     private handleMouseMove = (event: MouseEvent) => {
@@ -151,19 +166,6 @@ class DragHandleView implements PluginView {
         this.view.dragging = null;
         this.hide();
     };
-
-    update(view: EditorView, previous: { doc: Node }) {
-        if (!view.state.doc.eq(previous.doc)) {
-            this.hide();
-        }
-    }
-
-    destroy() {
-        const container = this.handle.parentElement;
-        container?.removeEventListener('mousemove', this.handleMouseMove);
-        container?.removeEventListener('mouseleave', this.hide);
-        this.handle.remove();
-    }
 }
 
 export const dragHandle = () => new Plugin({ view: (view) => new DragHandleView(view) });

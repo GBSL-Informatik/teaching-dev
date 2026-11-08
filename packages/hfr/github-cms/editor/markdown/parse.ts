@@ -41,7 +41,11 @@ export const parseMarkdown = (source: string): ParsedMarkdown => {
 };
 
 class MdastToProseMirror {
-    constructor(private readonly source: string) {}
+    private readonly source: string;
+
+    constructor(source: string) {
+        this.source = source;
+    }
 
     root(root: Root): Node {
         return schema.topNodeType.createAndFill(null, this.blocks(root.children))!;

@@ -40,6 +40,10 @@ let portalCounter = 0;
  */
 class CodeMirrorNodeView implements NodeView {
     readonly dom: HTMLElement;
+    private readonly view: EditorView;
+    private readonly getPos: () => number | undefined;
+    private readonly document: MdxDocument;
+    private readonly options: Options;
     private readonly codeMirror: CodeMirror;
     private readonly languageConf = new Compartment();
     private readonly handle: NodeViewHandle;
@@ -51,11 +55,15 @@ class CodeMirrorNodeView implements NodeView {
 
     constructor(
         node: Node,
-        private readonly view: EditorView,
-        private readonly getPos: () => number | undefined,
-        private readonly document: MdxDocument,
-        private readonly options: Options
+        view: EditorView,
+        getPos: () => number | undefined,
+        document: MdxDocument,
+        options: Options
     ) {
+        this.view = view;
+        this.getPos = getPos;
+        this.document = document;
+        this.options = options;
         this.node = node;
         this.handle = new NodeViewHandle(node, document, getPos);
         this.codeMirror = new CodeMirror({
@@ -76,6 +84,46 @@ class CodeMirrorNodeView implements NodeView {
         this.dom.appendChild(this.codeMirror.dom);
         this.addComponent(options.footer);
         this.loadLanguage();
+    }
+
+    update(node: Node) {
+        if (node.type !== this.node.type) {
+            return false;
+        }
+        this.node = node;
+        this.handle.setNode(node);
+        this.updateClassName();
+        this.loadLanguage();
+        if (this.updating) {
+            return true;
+        }
+        const newText = node.textContent;
+        const currentText = this.codeMirror.state.doc.toString();
+        if (newText === currentText) {
+            return true;
+        }
+        this.replaceChangedText(currentText, newText);
+        return true;
+    }
+
+    setSelection(anchor: number, head: number) {
+        this.codeMirror.focus();
+        this.updating = true;
+        this.codeMirror.dispatch({ selection: { anchor, head } });
+        this.updating = false;
+    }
+
+    selectNode() {
+        this.codeMirror.focus();
+    }
+
+    stopEvent() {
+        return true;
+    }
+
+    destroy() {
+        this.codeMirror.destroy();
+        this.portalKeys.forEach((key) => this.document.removePortal(key));
     }
 
     private addComponent(Component?: React.ComponentType<NodeViewProps>) {
@@ -133,10 +181,29 @@ class CodeMirrorNodeView implements NodeView {
         this.view.dispatch(tr);
     }
 
-    setSelection(anchor: number, head: number) {
-        this.codeMirror.focus();
+    /**
+     * Applies a change from ProseMirror to CodeMirror. Only the changed range is replaced,
+     * so the cursor in CodeMirror stays where it is.
+     */
+    private replaceChangedText(currentText: string, newText: string) {
+        let start = 0;
+        let currentEnd = currentText.length;
+        let newEnd = newText.length;
+        while (start < currentEnd && currentText.charCodeAt(start) === newText.charCodeAt(start)) {
+            start++;
+        }
+        while (
+            currentEnd > start &&
+            newEnd > start &&
+            currentText.charCodeAt(currentEnd - 1) === newText.charCodeAt(newEnd - 1)
+        ) {
+            currentEnd--;
+            newEnd--;
+        }
         this.updating = true;
-        this.codeMirror.dispatch({ selection: { anchor, head } });
+        this.codeMirror.dispatch({
+            changes: { from: start, to: currentEnd, insert: newText.slice(start, newEnd) }
+        });
         this.updating = false;
     }
 
@@ -184,57 +251,6 @@ class CodeMirrorNodeView implements NodeView {
         this.view.dispatch(this.view.state.tr.setSelection(selection).scrollIntoView());
         this.view.focus();
         return true;
-    }
-
-    update(node: Node) {
-        if (node.type !== this.node.type) {
-            return false;
-        }
-        this.node = node;
-        this.handle.setNode(node);
-        this.updateClassName();
-        this.loadLanguage();
-        if (this.updating) {
-            return true;
-        }
-        const newText = node.textContent;
-        const currentText = this.codeMirror.state.doc.toString();
-        if (newText === currentText) {
-            return true;
-        }
-        let start = 0;
-        let currentEnd = currentText.length;
-        let newEnd = newText.length;
-        while (start < currentEnd && currentText.charCodeAt(start) === newText.charCodeAt(start)) {
-            start++;
-        }
-        while (
-            currentEnd > start &&
-            newEnd > start &&
-            currentText.charCodeAt(currentEnd - 1) === newText.charCodeAt(newEnd - 1)
-        ) {
-            currentEnd--;
-            newEnd--;
-        }
-        this.updating = true;
-        this.codeMirror.dispatch({
-            changes: { from: start, to: currentEnd, insert: newText.slice(start, newEnd) }
-        });
-        this.updating = false;
-        return true;
-    }
-
-    selectNode() {
-        this.codeMirror.focus();
-    }
-
-    stopEvent() {
-        return true;
-    }
-
-    destroy() {
-        this.codeMirror.destroy();
-        this.portalKeys.forEach((key) => this.document.removePortal(key));
     }
 }
 

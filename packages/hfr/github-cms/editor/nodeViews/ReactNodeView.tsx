@@ -24,13 +24,13 @@ export interface NodeViewEditor {
 export class NodeViewHandle {
     @observableRef accessor node: Node;
     @observable accessor selected = false;
+    readonly editor: NodeViewEditor;
+    private readonly getPos: () => number | undefined;
 
-    constructor(
-        node: Node,
-        readonly editor: NodeViewEditor,
-        private readonly getPos: () => number | undefined
-    ) {
+    constructor(node: Node, editor: NodeViewEditor, getPos: () => number | undefined) {
         this.node = node;
+        this.editor = editor;
+        this.getPos = getPos;
     }
 
     get pos() {
@@ -114,13 +114,10 @@ class ReactNodeView implements NodeView {
     private readonly component: HTMLElement;
     private readonly handle: NodeViewHandle;
     private readonly portalKey = `node-view-${portalCounter++}`;
+    private readonly options: Options;
 
-    constructor(
-        node: Node,
-        getPos: () => number | undefined,
-        editor: NodeViewEditor,
-        private readonly options: Options
-    ) {
+    constructor(node: Node, getPos: () => number | undefined, editor: NodeViewEditor, options: Options) {
+        this.options = options;
         const tag = node.isInline ? 'span' : 'div';
         this.handle = new NodeViewHandle(node, editor, getPos);
         this.dom = window.document.createElement(tag);
@@ -147,11 +144,6 @@ class ReactNodeView implements NodeView {
         this.handle.setNode(node);
         this.updateClassName(node);
         return true;
-    }
-
-    private updateClassName(node: Node) {
-        const selected = this.handle.selected ? 'ProseMirror-selectednode' : '';
-        this.dom.className = `cms-node-view ${this.options.className?.(node) ?? ''} ${selected}`;
     }
 
     selectNode() {
@@ -187,6 +179,11 @@ class ReactNodeView implements NodeView {
 
     destroy() {
         this.handle.editor.removePortal(this.portalKey);
+    }
+
+    private updateClassName(node: Node) {
+        const selected = this.handle.selected ? 'ProseMirror-selectednode' : '';
+        this.dom.className = `cms-node-view ${this.options.className?.(node) ?? ''} ${selected}`;
     }
 }
 
