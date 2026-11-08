@@ -27,8 +27,33 @@
         }
     }
     .caption {
+        align-self: stretch;
+        min-width: 8em;
         font-size: 0.85em;
         color: var(--ifm-color-emphasis-700);
+        text-align: center;
+        cursor: text;
+        :global {
+            .cms-caption-editor {
+                outline: none;
+                p {
+                    margin: 0;
+                }
+            }
+            /* the placeholder of an empty caption, visible when the image is hovered or selected */
+            .cms-caption-editor p:has(> br.ProseMirror-trailingBreak:only-child)::before {
+                content: 'Bildunterschrift';
+                color: var(--ifm-color-emphasis-500);
+                opacity: 0;
+            }
+        }
+    }
+    &:hover,
+    &.selected,
+    .caption:focus-within {
+        :global(.cms-caption-editor p:has(> br.ProseMirror-trailingBreak:only-child))::before {
+            opacity: 1;
+        }
     }
 
     .handle {

@@ -1,7 +1,7 @@
 import { mdiCog, mdiImageEditOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import TextInput from '@tdev-components/shared/TextInput';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -10,19 +10,18 @@ import { useAssetFile } from '../../../components/MdxEditor/hooks/useAssetFile';
 import ImageDialog from '../../components/ImageDialog';
 import InlinePopover from '../../components/InlinePopover';
 import type { NodeViewProps } from '../ReactNodeView';
+import { splitAlt } from './altText';
+import Caption from './Caption';
 import ResizeHandles from './ResizeHandles';
 import styles from './styles.module.scss';
 import { cssWidth, widthOption, withWidthOption } from './widthOption';
-
-/** image options like `--width=20em` in the alt text are handled by `remark-images` */
-const OPTIONS_REGEX = /(^|\s+)--[\w-]+(=\S+)?/g;
 
 const Image = observer(({ handle }: NodeViewProps) => {
     const { src, alt } = handle.node.attrs;
     const [showDialog, setShowDialog] = React.useState(false);
     const asset = useAssetFile(src);
     const resolvedSrc = asset?.type === 'bin_file' ? asset.src : src;
-    const caption = alt.replace(OPTIONS_REGEX, '').trim();
+    const { caption } = splitAlt(alt);
 
     const [figure, setFigure] = React.useState<HTMLSpanElement | null>(null);
     /** the width while the image is resized, it is written to the alt text when done */
@@ -64,7 +63,7 @@ const Image = observer(({ handle }: NodeViewProps) => {
                         </InlinePopover>
                     </span>
                 </span>
-                {caption && <span className={clsx(styles.caption)}>{caption}</span>}
+                <Caption handle={handle} />
             </span>
             <Popup
                 open={showDialog}
