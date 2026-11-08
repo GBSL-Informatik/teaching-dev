@@ -1,10 +1,21 @@
 import { action, observable, observableRef } from 'mobx';
 import type { Attrs, Node } from 'prosemirror-model';
-import { NodeSelection, TextSelection } from 'prosemirror-state';
+import { type EditorState, NodeSelection, TextSelection, type Transaction } from 'prosemirror-state';
 import type { EditorView, NodeView, NodeViewConstructor, ViewMutationRecord } from 'prosemirror-view';
-import React from 'react';
+import React, { type ReactPortal } from 'react';
 import { createPortal } from 'react-dom';
-import type MdxDocument from '../models/MdxDocument';
+
+/**
+ * The editor of a node view: the document or a nested editor, e.g. of an image caption.
+ * The React content of all node views is rendered as portals by the document.
+ */
+export interface NodeViewEditor {
+    readonly state: EditorState;
+    readonly view: EditorView | null;
+    dispatch(tr: Transaction): void;
+    addPortal(key: string, portal: ReactPortal): void;
+    removePortal(key: string): void;
+}
 
 /**
  * The interface between a ProseMirror node view and its React component.
@@ -16,7 +27,7 @@ export class NodeViewHandle {
 
     constructor(
         node: Node,
-        readonly document: MdxDocument,
+        readonly editor: NodeViewEditor,
         private readonly getPos: () => number | undefined
     ) {
         this.node = node;
@@ -41,7 +52,7 @@ export class NodeViewHandle {
         if (pos === undefined) {
             return;
         }
-        const { state, dispatch } = this.document;
+        const { state, dispatch } = this.editor;
         dispatch(state.tr.setNodeMarkup(pos, undefined, { ...this.node.attrs, ...attrs }));
     }
 
@@ -53,10 +64,10 @@ export class NodeViewHandle {
         if (pos === undefined) {
             return;
         }
-        const { state, dispatch } = this.document;
+        const { state, dispatch } = this.editor;
         const tr = state.tr.replaceWith(pos, pos + this.node.nodeSize, node);
         dispatch(tr.setSelection(TextSelection.near(tr.doc.resolve(pos + 1))));
-        this.document.view?.focus();
+        this.editor.view?.focus();
     }
 
     remove() {
@@ -64,9 +75,9 @@ export class NodeViewHandle {
         if (pos === undefined) {
             return;
         }
-        const { state, dispatch } = this.document;
+        const { state, dispatch } = this.editor;
         dispatch(state.tr.delete(pos, pos + this.node.nodeSize));
-        this.document.view?.focus();
+        this.editor.view?.focus();
     }
 
     select() {
@@ -74,7 +85,7 @@ export class NodeViewHandle {
         if (pos === undefined) {
             return;
         }
-        const { state, dispatch } = this.document;
+        const { state, dispatch } = this.editor;
         dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)));
     }
 }
@@ -107,11 +118,11 @@ class ReactNodeView implements NodeView {
     constructor(
         node: Node,
         getPos: () => number | undefined,
-        document: MdxDocument,
+        editor: NodeViewEditor,
         private readonly options: Options
     ) {
         const tag = node.isInline ? 'span' : 'div';
-        this.handle = new NodeViewHandle(node, document, getPos);
+        this.handle = new NodeViewHandle(node, editor, getPos);
         this.dom = window.document.createElement(tag);
         this.updateClassName(node);
         this.component = window.document.createElement(tag);
@@ -123,7 +134,7 @@ class ReactNodeView implements NodeView {
             this.dom.appendChild(this.contentDOM);
         }
         const Component = options.component;
-        document.addPortal(
+        editor.addPortal(
             this.portalKey,
             createPortal(<Component handle={this.handle} />, this.component, this.portalKey)
         );
@@ -162,7 +173,9 @@ class ReactNodeView implements NodeView {
         if (!target || !this.component.contains(target)) {
             return false;
         }
-        return !!target.closest('input, textarea, select, button, [data-stop-event]');
+        // node views can be nested, e.g. icons in the caption editor of an image
+        const interactive = target.closest('input, textarea, select, button, [data-stop-event]');
+        return !!interactive && this.component.contains(interactive);
     }
 
     ignoreMutation(mutation: ViewMutationRecord) {
@@ -173,11 +186,11 @@ class ReactNodeView implements NodeView {
     }
 
     destroy() {
-        this.handle.document.removePortal(this.portalKey);
+        this.handle.editor.removePortal(this.portalKey);
     }
 }
 
-export const reactNodeView = (document: MdxDocument, options: Options): NodeViewConstructor => {
+export const reactNodeView = (editor: NodeViewEditor, options: Options): NodeViewConstructor => {
     return (node: Node, _view: EditorView, getPos: () => number | undefined) =>
-        new ReactNodeView(node, getPos, document, options);
+        new ReactNodeView(node, getPos, editor, options);
 };

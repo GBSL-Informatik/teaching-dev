@@ -23,7 +23,12 @@ const Caption = observer(({ handle }: NodeViewProps) => {
             const { options } = splitAlt(handle.node.attrs.alt);
             handle.updateAttrs({ alt: joinAlt(markdown, options) });
         };
-        const view = new CaptionView(mount, splitAlt(handle.node.attrs.alt).caption, handleChange);
+        const view = new CaptionView(
+            mount,
+            splitAlt(handle.node.attrs.alt).caption,
+            handle.editor,
+            handleChange
+        );
         setCaptionView(view);
         return () => view.destroy();
     }, [mount, handle]);
