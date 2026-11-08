@@ -77,7 +77,14 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 `models/MdxDocument.ts`
 : Hält den ProseMirror-Zustand als MobX-Observable. Toolbar und Node-Views beobachten den Zustand, Änderungen werden verzögert als Markdown in die Datei geschrieben.
 `nodeViews/`
-: React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet.
+: React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet, Mermaid-Diagramme neben ihrer Vorschau.
+: Bildunterschriften werden in einem eigenen, verschachtelten ProseMirror-Editor bearbeitet und als Markdown in den Alt-Text geschrieben (`nodeViews/Image/CaptionView.ts`).
+`plugins/`
+: ProseMirror-Plugins: Tastenkürzel, Markdown-Kürzel, Ziehgriff für Blöcke, Definitionslisten und UUID-Markierungen.
+`SourceEditor/`
+: Bearbeitet den Quelltext einer Datei mit CodeMirror, z.B. für `.ts`-Dateien oder wenn der visuelle Editor ausgeschaltet ist.
+`components/MdxDiff/`
+: Zeigt die Änderungen seit dem letzten Speichern (nebeneinander oder untereinander). Einzelne Änderungen können rückgängig gemacht werden, der visuelle Editor lädt die Datei danach neu.
 
 Kann eine Datei nicht als MDX geparst werden, wird sie im Quelltext-Editor geöffnet.
 
@@ -94,7 +101,6 @@ Die Tests in __editor/markdown/tests__ prüfen unter anderem, dass alle Markdown
 - [ ] Installationsanleitung schreiben
 - [ ] Generischer Attribute-Editor fürs Frontmatter verwenden
 - [ ] Medien-Upload (aktuell nur für Bilder umgesetzt)
-- [ ] Deflist Komponente hinzufügen
 - [ ] Vorschau für Medien-Direktiven (`::youtube`, `::pdf`, ...)
 - [ ] Darkmode
 - [ ] Ansichts-Einstellungen speichern (Richtext / Markdown)
