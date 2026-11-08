@@ -17,6 +17,7 @@ import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-uti
 import type { MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import type { Mark, Node } from 'prosemirror-model';
 import { type ContainerFormat, type DirectiveAttributes, type JsxAttribute, schema } from '../schema';
+import { rawImageAlt } from './imageAlt';
 import { groupKbd } from './kbd';
 import { countLineBreaks, dedent, setOrigin } from './origin';
 import { parseMdx, stringifyMdast } from './syntax';
@@ -234,7 +235,8 @@ class MdastToProseMirror {
             case 'break':
                 return [schema.nodes.hard_break.create()];
             case 'image':
-                const image = { src: node.url, alt: node.alt ?? '', title: node.title ?? null };
+                const alt = rawImageAlt(this.sourceOf(node)) ?? node.alt ?? '';
+                const image = { src: node.url, alt, title: node.title ?? null };
                 return [this.withOrigin(node, schema.nodes.image.create(image, null, marks))];
             case 'inlineMath':
                 return [

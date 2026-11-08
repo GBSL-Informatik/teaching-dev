@@ -1,6 +1,7 @@
 import type { PhrasingContent, TableRow } from 'mdast';
 import type { Mark, Node } from 'prosemirror-model';
 import type { ContainerFormat, DirectiveAttributes, JsxAttribute } from '../schema';
+import { imageMarkdown } from './imageAlt';
 import { originalMarkdown, originalSeparator } from './origin';
 import { stringifyMdast } from './syntax';
 
@@ -214,7 +215,8 @@ class ProseMirrorToMarkdown {
             case 'hard_break':
                 return { type: 'break' };
             case 'image':
-                return { type: 'image', url: node.attrs.src, alt: node.attrs.alt, title: node.attrs.title };
+                const { src, alt, title } = node.attrs;
+                return { type: 'verbatim', value: imageMarkdown(src, alt, title) };
             case 'math_inline':
                 return { type: 'inlineMath', value: node.attrs.value };
             case 'footnote_reference':

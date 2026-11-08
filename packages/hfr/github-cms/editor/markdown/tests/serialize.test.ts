@@ -1,8 +1,8 @@
 import type { Node } from 'prosemirror-model';
 import { EditorState, type Transaction } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
-import { schema } from '../../schema';
 import { parseMarkdown, serializeMarkdown } from '..';
+import { schema } from '../../schema';
 
 /**
  * Parses `source`, applies the edit and returns the serialized result.
@@ -224,5 +224,25 @@ Text with {bar} and <Foo inline />.
 `;
         const result = edit(source, (tr) => tr.insertText('!', endOfTextblock(tr.doc, 'Text with')));
         expect(result).toBe(source.replace('/>.', '/>.!'));
+    });
+});
+
+describe('image captions', () => {
+    const resize = (source: string) =>
+        edit(source, (tr) => {
+            const { node, pos } = findNode(tr.doc, 'image');
+            tr.setNodeMarkup(pos, null, { ...node.attrs, alt: `${node.attrs.alt} --width=200px` });
+        });
+
+    it('keeps the markdown of the alt text', () => {
+        expect(resize('![**Fig. 1** a [[Ctrl]] key](./cat.png)\n')).toBe(
+            '![**Fig. 1** a [[Ctrl]] key --width=200px](./cat.png)\n'
+        );
+    });
+
+    it('keeps escaped brackets in the alt text', () => {
+        expect(resize('![a \\] b](./cat.png "Title")\n')).toBe(
+            '![a \\] b --width=200px](./cat.png "Title")\n'
+        );
     });
 });
