@@ -3,46 +3,44 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import type { NodeViewProps } from '../ReactNodeView';
 import { joinAlt, splitAlt } from './altText';
-import { CaptionView } from './CaptionView';
 import styles from './styles.module.scss';
 
+interface Editing {
+    text: string;
+    /** the options when the input was focused, so typed text never moves into them while typing */
+    options: string[];
+}
+
 /**
- * Edits the caption of an image in place. The caption is the alt text without the image options,
- * which are kept when the caption changes.
+ * Edits the caption of an image as plain text (markdown). The caption is the alt text without
+ * the image options, which are kept as they are.
  */
 const Caption = observer(({ handle }: NodeViewProps) => {
     const { caption } = splitAlt(handle.node.attrs.alt);
-    const [mount, setMount] = React.useState<HTMLSpanElement | null>(null);
-    const [captionView, setCaptionView] = React.useState<CaptionView | null>(null);
+    // the stored caption is trimmed, the typed text (e.g. a trailing space) is shown while editing
+    const [editing, setEditing] = React.useState<Editing | null>(null);
 
-    React.useEffect(() => {
-        if (!mount) {
+    const handleFocus = () => {
+        setEditing({ text: caption, options: splitAlt(handle.node.attrs.alt).options });
+    };
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!editing) {
             return;
         }
-        const handleChange = (markdown: string) => {
-            const { options } = splitAlt(handle.node.attrs.alt);
-            handle.updateAttrs({ alt: joinAlt(markdown, options) });
-        };
-        const view = new CaptionView(
-            mount,
-            splitAlt(handle.node.attrs.alt).caption,
-            handle.editor,
-            handleChange
-        );
-        setCaptionView(view);
-        return () => view.destroy();
-    }, [mount, handle]);
-
-    React.useEffect(() => {
-        captionView?.setMarkdown(caption);
-    }, [captionView, caption]);
+        const text = event.target.value;
+        setEditing({ ...editing, text });
+        handle.updateAttrs({ alt: joinAlt(text, editing.options) });
+    };
 
     return (
-        // events are handled by the caption editor, not by the document, see `ReactNodeView.stopEvent`
-        <span className={clsx(styles.caption)} data-stop-event>
-            {/* prosemirror owns the attributes (e.g. the class) of the element it is mounted on */}
-            <span ref={setMount} />
-        </span>
+        <input
+            className={clsx(styles.caption)}
+            value={editing?.text ?? caption}
+            placeholder="Bildunterschrift"
+            onFocus={handleFocus}
+            onBlur={() => setEditing(null)}
+            onChange={handleChange}
+        />
     );
 });
 

@@ -78,7 +78,7 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 : Hält den ProseMirror-Zustand als MobX-Observable. Toolbar und Node-Views beobachten den Zustand, Änderungen werden verzögert als Markdown in die Datei geschrieben.
 `nodeViews/`
 : React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet, Mermaid-Diagramme neben ihrer Vorschau.
-: Bildunterschriften werden in einem eigenen, verschachtelten ProseMirror-Editor bearbeitet und als Markdown in den Alt-Text geschrieben (`nodeViews/Image/CaptionView.ts`).
+: Bildunterschriften werden als Text (Markdown) unter dem Bild bearbeitet, die Bild-Optionen wie `--width=20em` separat in den Bild-Einstellungen. Beides wird im Alt-Text gespeichert.
 `plugins/`
 : ProseMirror-Plugins: Tastenkürzel, Markdown-Kürzel, Ziehgriff für Blöcke, Definitionslisten und UUID-Markierungen.
 `SourceEditor/`

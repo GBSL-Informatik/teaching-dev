@@ -1,7 +1,6 @@
 import { mdiCog, mdiImageEditOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -12,6 +11,7 @@ import InlinePopover from '../../components/InlinePopover';
 import type { NodeViewProps } from '../ReactNodeView';
 import { cssWidth, splitAlt, widthOption, withWidthOption } from './altText';
 import Caption from './Caption';
+import ImageOptions from './ImageOptions';
 import ResizeHandles from './ResizeHandles';
 import styles from './styles.module.scss';
 
@@ -47,11 +47,7 @@ const Image = observer(({ handle }: NodeViewProps) => {
                             title="Bild"
                             trigger={<Button icon={mdiCog} size={SIZE_S} title="Bild bearbeiten" />}
                         >
-                            <TextInput
-                                label="Bildunterschrift und Optionen (z.B. --width=20em)"
-                                value={alt}
-                                onChange={(alt) => handle.updateAttrs({ alt })}
-                            />
+                            <ImageOptions handle={handle} />
                             <Button
                                 icon={mdiImageEditOutline}
                                 text="Bild ändern"
