@@ -1,17 +1,28 @@
 import { mdiTextBoxPlusOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import type { Node } from 'prosemirror-model';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
 import { type ContainerFormat, schema } from '../../schema';
 import type { NodeViewProps } from '../ReactNodeView';
+import BrowserWindowHeader from './BrowserWindowHeader';
+import styles from './styles.module.scss';
+
+const isBrowserWindow = (node: Node) => node.attrs.name === 'BrowserWindow';
+
+/** `<BrowserWindow>` is framed like on the rendered page */
+export const jsxFlowClassName = (node: Node) =>
+    isBrowserWindow(node) ? 'cms-jsx cms-jsx--browser-window' : 'cms-jsx';
 
 /**
- * A jsx element, e.g. `<BrowserWindow>`. The component itself is not rendered (it might need
+ * A jsx element, e.g. `<Solution>`. The component itself is not rendered (it might need
  * a context only available on the page), but its attributes and children can be edited.
+ * Simple components like `<BrowserWindow>` are styled like on the page.
  */
 const JsxFlow = observer(({ handle }: NodeViewProps) => {
     const { name, attributes } = handle.node.attrs;
@@ -24,30 +35,39 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
         );
     };
 
+    const browserWindow = isBrowserWindow(handle.node);
+
     return (
-        <NodeToolbar handle={handle} title={isVoid ? `<${name} />` : `<${name}>`}>
-            <UuidAttributes handle={handle} />
-            {isVoid && (
-                <Button
-                    icon={mdiTextBoxPlusOutline}
-                    size={SIZE_S}
-                    title="Inhalt hinzufügen"
-                    onClick={handleAddChildren}
+        <>
+            <NodeToolbar
+                handle={handle}
+                title={isVoid ? `<${name} />` : `<${name}>`}
+                className={clsx(browserWindow && styles.browserWindowToolbar)}
+            >
+                <UuidAttributes handle={handle} />
+                {isVoid && (
+                    <Button
+                        icon={mdiTextBoxPlusOutline}
+                        size={SIZE_S}
+                        title="Inhalt hinzufügen"
+                        onClick={handleAddChildren}
+                    />
+                )}
+                <AttributesEditor
+                    title={`Attribute von <${name}>`}
+                    rows={jsxAttributesToRows(attributes)}
+                    allowExpressions
+                    onApply={(rows) =>
+                        handle.updateAttrs({
+                            attributes: rowsToJsxAttributes(rows, attributes),
+                            // the original opening tag is outdated
+                            format: format && { ...format, openingTag: undefined }
+                        })
+                    }
                 />
-            )}
-            <AttributesEditor
-                title={`Attribute von <${name}>`}
-                rows={jsxAttributesToRows(attributes)}
-                allowExpressions
-                onApply={(rows) =>
-                    handle.updateAttrs({
-                        attributes: rowsToJsxAttributes(rows, attributes),
-                        // the original opening tag is outdated
-                        format: format && { ...format, openingTag: undefined }
-                    })
-                }
-            />
-        </NodeToolbar>
+            </NodeToolbar>
+            {browserWindow && <BrowserWindowHeader handle={handle} />}
+        </>
     );
 });
 
