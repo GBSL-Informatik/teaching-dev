@@ -37,9 +37,7 @@ const hasLabel = (node: Node) => node.firstChild?.type === schema.nodes.directiv
 export const containerDirectiveClassName = (node: Node) => {
     const { name } = node.attrs;
     if (isAdmonition(name)) {
-        // the icon spans the title too, see `.cms-directive.alert` in the editor styles
-        const labeled = hasLabel(node) ? 'cms-directive--labeled' : '';
-        return `cms-directive alert alert--${ADMONITION_COLORS[name] ?? 'info'} ${labeled}`;
+        return `cms-directive alert alert--${ADMONITION_COLORS[name] ?? 'info'}`;
     }
     return `cms-directive cms-directive--${name}`;
 };
@@ -52,33 +50,39 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
         handle.prependChild(schema.nodes.directive_label.create(null, schema.text('Titel')));
     };
 
-    return (
+    const title = isAdmonition(name) ? (
         <>
-            {isAdmonition(name) && <AdmonitionIcon type={name} />}
-            <NodeToolbar handle={handle} title={`:::${name}`}>
-                <UuidAttributes handle={handle} />
-                {isAdmonition(name) && (
-                    <SelectInput
-                        options={[...ADMONITION_TYPES]}
-                        value={name}
-                        onChange={(name) => handle.updateAttrs({ name })}
-                    />
-                )}
-                {canAddLabel && (
-                    <Button
-                        icon={mdiFormatTitle}
-                        size={SIZE_S}
-                        title="Titel hinzufügen"
-                        onClick={handleAddLabel}
-                    />
-                )}
-                <AttributesEditor
-                    title={`Attribute von :::${name}`}
-                    rows={directiveAttributesToRows(attributes)}
-                    onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
-                />
-            </NodeToolbar>
+            <AdmonitionIcon type={name} />
+            {`:::${name}`}
         </>
+    ) : (
+        `:::${name}`
+    );
+
+    return (
+        <NodeToolbar handle={handle} title={title}>
+            <UuidAttributes handle={handle} />
+            {isAdmonition(name) && (
+                <SelectInput
+                    options={[...ADMONITION_TYPES]}
+                    value={name}
+                    onChange={(name) => handle.updateAttrs({ name })}
+                />
+            )}
+            {canAddLabel && (
+                <Button
+                    icon={mdiFormatTitle}
+                    size={SIZE_S}
+                    title="Titel hinzufügen"
+                    onClick={handleAddLabel}
+                />
+            )}
+            <AttributesEditor
+                title={`Attribute von :::${name}`}
+                rows={directiveAttributesToRows(attributes)}
+                onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
+            />
+        </NodeToolbar>
     );
 });
 
