@@ -8,14 +8,24 @@ import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
-import { type ContainerFormat, schema } from '../../schema';
+import { type ContainerFormat, type JsxAttribute, schema } from '../../schema';
 import type { NodeViewProps } from '../ReactNodeView';
 import BrowserWindowHeader from './BrowserWindowHeader';
 import styles from './styles.module.scss';
 
-const isBrowserWindow = (node: Node) => node.attrs.name === 'BrowserWindow';
+const hasAttribute = (attributes: JsxAttribute[], name: string) =>
+    attributes.some((attribute) => attribute.type !== 'spread' && attribute.name === name);
 
-/** `<BrowserWindow>` is framed like on the rendered page */
+/** `<CodeShowcase>` shows its children in a `<BrowserWindow>`, unless `noBrowserWindow` is set */
+const isBrowserWindow = (node: Node) => {
+    const { name, attributes } = node.attrs;
+    if (name === 'BrowserWindow') {
+        return true;
+    }
+    return name === 'CodeShowcase' && !hasAttribute(attributes, 'noBrowserWindow');
+};
+
+/** `<BrowserWindow>` and `<CodeShowcase>` are framed like on the rendered page */
 export const jsxFlowClassName = (node: Node) =>
     isBrowserWindow(node) ? 'cms-jsx cms-jsx--browser-window' : 'cms-jsx';
 
