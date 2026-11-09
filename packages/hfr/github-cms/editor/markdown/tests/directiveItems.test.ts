@@ -41,37 +41,63 @@ describe('items of :::cards and :::flex', () => {
         const { doc } = parseMarkdown(SOURCE);
         const items = itemsOf(doc).map(({ node }) => ({
             attributes: node.attrs.attributes,
-            explicitBreak: node.attrs.explicitBreak,
+            hasBreak: node.attrs.format.hasBreak,
             text: node.textBetween(0, node.content.size, '|')
         }));
         expect(items).toMatchInlineSnapshot(`
           [
             {
               "attributes": {},
-              "explicitBreak": false,
+              "hasBreak": false,
               "text": "First card|More of the first card",
             },
             {
               "attributes": {
                 "class": "alert alert--danger",
               },
-              "explicitBreak": true,
+              "hasBreak": true,
               "text": "Second card",
             },
             {
               "attributes": {},
-              "explicitBreak": true,
+              "hasBreak": true,
               "text": "Third card",
             },
           ]
         `);
     });
 
-    it('keeps an item starting with ::br when the first item is introduced explicitly', () => {
-        const source = ':::flex\n::br{.left}\nLeft\n::br\nRight\n:::\n';
+    it('keeps an unchanged first item starting with ::br', () => {
+        const source = ':::flex\n::br\nLeft\n::br\nRight\n:::\n';
         const { doc, trailing } = parseMarkdown(source);
-        expect(itemsOf(doc).map(({ node }) => node.attrs.explicitBreak)).toEqual([true, true]);
+        expect(itemsOf(doc).map(({ node }) => node.attrs.format.hasBreak)).toEqual([true, true]);
         expect(serializeMarkdown(doc, trailing)).toBe(source);
+    });
+
+    it('omits the ::br of an edited first item without props', () => {
+        const source = ':::flex\n::br\nLeft\n::br{.right}\nRight\n:::\n';
+        const result = edit(source, (tr) => {
+            const first = itemsOf(tr.doc)[0];
+            tr.insertText('!', first.pos + first.node.content.size);
+        });
+        expect(result).toMatchInlineSnapshot(`
+          ":::flex
+          Left!
+
+          ::br{.right}
+          Right
+          :::
+          "
+        `);
+    });
+
+    it('keeps the ::br of an edited first item with attributes', () => {
+        const source = ':::flex\n::br{.left}\nLeft\n:::\n';
+        const result = edit(source, (tr) => {
+            const first = itemsOf(tr.doc)[0];
+            tr.insertText('!', first.pos + first.node.content.size);
+        });
+        expect(result).toBe(':::flex\n::br{.left}\nLeft!\n:::\n');
     });
 
     it('rewrites only the edited item, keeping its ::br and line breaks', () => {
@@ -153,7 +179,7 @@ describe('items of :::cards and :::flex', () => {
     it('keeps empty items with their ::br', () => {
         const result = edit(SOURCE, (tr) => {
             const first = itemsOf(tr.doc)[0];
-            const emptyItem = schema.nodes.directive_item.createAndFill({ explicitBreak: false })!;
+            const emptyItem = schema.nodes.directive_item.createAndFill()!;
             tr.replaceWith(first.pos, first.pos + first.node.nodeSize, emptyItem);
         });
         expect(result).toMatchInlineSnapshot(`

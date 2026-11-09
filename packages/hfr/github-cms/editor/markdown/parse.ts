@@ -192,8 +192,7 @@ class MdastToProseMirror {
             {
                 label: itemBreak ? this.labelMarkdown(itemBreak.children) : '',
                 attributes: itemBreak ? directiveAttributes(itemBreak) : {},
-                explicitBreak: !!itemBreak,
-                format: leading ? { leading } : null
+                format: { hasBreak: !!itemBreak, leading: leading ?? undefined }
             },
             this.blocks(children)
         )!;

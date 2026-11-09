@@ -18,7 +18,7 @@ import Image from './Image';
 import InlineAtom from './InlineAtom';
 import InlineMath from './InlineMath';
 import JsxFlow, { jsxFlowClassName } from './JsxFlow';
-import DirectiveItem from './DirectiveItem';
+import DirectiveItem, { directiveItemClassName } from './DirectiveItem';
 import LeafDirective from './LeafDirective';
 import { reactNodeView } from './ReactNodeView';
 import TextDirective from './TextDirective';
@@ -64,7 +64,7 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
     directive_item: reactNodeView(document, {
         component: DirectiveItem,
         hasContent: true,
-        className: () => 'cms-directive-item'
+        className: directiveItemClassName
     }),
     jsx_flow: reactNodeView(document, {
         component: JsxFlow,

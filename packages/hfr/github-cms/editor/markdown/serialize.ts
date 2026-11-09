@@ -19,7 +19,7 @@ export const serializeMarkdown = (doc: Node, trailing: string = '\n'): string =>
 
 const DEFAULT_JSX_FORMAT: ContainerFormat = { childIndent: '  ', leading: 1, trailing: 1 };
 const DEFAULT_DIRECTIVE_FORMAT: ContainerFormat = { childIndent: '', leading: 1, trailing: 1 };
-const DEFAULT_ITEM_FORMAT: ItemFormat = { leading: 2 };
+const DEFAULT_ITEM_LEADING = 2;
 
 class ProseMirrorToMarkdown {
     /**
@@ -178,26 +178,28 @@ class ProseMirrorToMarkdown {
     }
 
     /**
-     * An item starts with `::br`. Only the first item can omit it, when it was omitted in the
-     * source too: an empty item needs it, otherwise it would vanish.
+     * An item starts with `::br`. The first item omits it, unless the `::br` has a label or
+     * attributes or the item is empty: it would vanish without.
      */
     private directiveItem(item: Node, isFirst: boolean) {
-        const { label, attributes, explicitBreak } = item.attrs;
+        const { label, attributes } = item.attrs;
+        const format: ItemFormat | null = item.attrs.format;
         const original = originalMarkdown(item);
-        // a first item without `::br` can not be moved to another position as it was
-        if (original !== undefined && (explicitBreak || isFirst)) {
+        // an item parsed without `::br` is written as it was only at the first position
+        if (original !== undefined && (isFirst || format?.hasBreak)) {
             return original;
         }
         const content = this.blocks(childrenOf(item), 2);
-        if (isFirst && !explicitBreak && content) {
+        const hasProps = label || Object.keys(attributes).length > 0;
+        if (isFirst && content && !hasProps) {
             return content;
         }
         const itemBreak = `::br${directiveLabel(label)}${directiveAttributes(attributes)}`;
         if (!content) {
             return itemBreak;
         }
-        const format: ItemFormat = item.attrs.format ?? DEFAULT_ITEM_FORMAT;
-        return `${itemBreak}${'\n'.repeat(format.leading)}${content}`;
+        const leading = format?.leading ?? DEFAULT_ITEM_LEADING;
+        return `${itemBreak}${'\n'.repeat(leading)}${content}`;
     }
 
     /**

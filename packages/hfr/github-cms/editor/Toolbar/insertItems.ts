@@ -57,7 +57,7 @@ const directive = (name: string, label?: string) => {
 };
 
 const itemsDirective = (name: string) => {
-    const item = createNode(nodes.directive_item, { explicitBreak: false }, paragraph());
+    const item = createNode(nodes.directive_item, null, paragraph());
     return createNode(nodes.items_directive, { name }, item);
 };
 

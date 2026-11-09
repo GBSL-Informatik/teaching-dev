@@ -36,8 +36,10 @@ export interface ContainerFormat {
 
 /** formatting of the original source of a `directive_item` */
 export interface ItemFormat {
+    /** whether the item started with `::br`, the first item can omit it */
+    hasBreak: boolean;
     /** line breaks between `::br` and the first child */
-    leading: number;
+    leading?: number;
 }
 
 /** the directives whose items are separated by `::br`, see `items_directive` */
@@ -161,14 +163,13 @@ const nodes = {
 
     /**
      * An item of `:::cards` or `:::flex`, it starts with `::br[label]{attributes}`.
-     * Only the first item can omit the `::br`, then `explicitBreak` is false.
+     * The first item omits a `::br` without label and attributes.
      */
     directive_item: {
         content: 'block+',
         attrs: {
             label: { default: '' },
             attributes: { default: {} },
-            explicitBreak: { default: true },
             format: { default: null }
         },
         defining: true,

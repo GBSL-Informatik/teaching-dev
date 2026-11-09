@@ -132,6 +132,14 @@
             padding-top: 0.5em;
             border-top: 2px dashed var(--ifm-color-primary-lighter);
         }
+        /* the `::br` of the first item is not saved without props, see `DirectiveItem` */
+        .cms-node-view-content > .cms-directive-item--plain:first-child,
+        .cms-directive-label + .cms-directive-item--plain {
+            > .cms-node-view-component .cms-item-break {
+                opacity: 0.45;
+                font-style: italic;
+            }
+        }
         /* like infima's `.card`, stacked instead of side by side as on the page */
         .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
             padding: 0.3em var(--ifm-card-horizontal-spacing) var(--ifm-card-vertical-spacing);
