@@ -134,6 +134,22 @@
             /* wide content (code, tables) must not widen the item beyond its flex-basis */
             min-width: 0;
         }
+        /*
+         * Attributes and classes (e.g. `{display=none}`, `.empty`) must not hide what is edited:
+         * `!important` wins over the inline styles of the attributes.
+         */
+        .cms-node-view-content.flex,
+        .cms-directive-item {
+            visibility: visible !important;
+            opacity: 1 !important;
+            content-visibility: visible !important;
+        }
+        .cms-node-view-content.flex {
+            display: flex !important;
+        }
+        .cms-directive-item {
+            display: block !important;
+        }
         .flex > .cms-directive-label {
             flex-basis: 100%;
         }
