@@ -86,6 +86,22 @@
             border-top: 2px dashed var(--ifm-color-primary-lighter);
             color: var(--ifm-color-primary-darker);
         }
+        /* like infima's `.card`, each ::br cuts the card in two with a gap of the page background */
+        .cms-directive.cms-directive--cards {
+            --cms-card-padding-x: 1em;
+            padding-inline: var(--cms-card-padding-x);
+            border: none;
+            border-radius: var(--ifm-card-border-radius);
+            background: var(--ifm-card-background-color);
+            box-shadow: var(--ifm-global-shadow-md);
+            > .cms-node-view-content > .cms-item-break {
+                /* covers the padding and the shadow of the card on both sides */
+                margin: 1em calc(-1 * var(--cms-card-padding-x) - 8px);
+                padding: 0.4em calc(var(--cms-card-padding-x) + 8px);
+                border: none;
+                background: var(--ifm-background-color);
+            }
+        }
 
         /* definition lists, see `plugins/deflist.ts` */
         .cms-dt {
@@ -214,6 +230,9 @@
             }
             .cms-jsx {
                 padding: 0.2em 0.4em;
+            }
+            .cms-directive.cms-directive--cards {
+                --cms-card-padding-x: 0.5em;
             }
             ul,
             ol {
