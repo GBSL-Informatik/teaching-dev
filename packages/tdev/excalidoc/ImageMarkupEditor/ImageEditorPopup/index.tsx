@@ -20,6 +20,9 @@ interface Props {
     /** called with the new image path after saving or restoring */
     onImageChanged?: (imagePath: string) => void;
     className?: string;
+    /** opens the popup without a button, e.g. for a new drawing */
+    open?: boolean;
+    onClose?: () => void;
 }
 
 const reportError = (action: string, error: unknown) => {
@@ -29,6 +32,7 @@ const reportError = (action: string, error: unknown) => {
 
 /**
  * A button opening the image in the excalidraw editor, in a popup.
+ * Without a button, when `open` is given.
  */
 const ImageEditorPopup = (props: Props) => {
     const ref = React.useRef<PopupActions>(null);
@@ -97,10 +101,13 @@ const ImageEditorPopup = (props: Props) => {
 
     return (
         <Popup
+            open={props.open}
             trigger={
-                <span className={clsx(props.className)}>
-                    <Button icon={mdiImageEditOutline} size={SIZE_S} title="Mit Excalidraw bearbeiten" />
-                </span>
+                props.open === undefined ? (
+                    <span className={clsx(props.className)}>
+                        <Button icon={mdiImageEditOutline} size={SIZE_S} title="Mit Excalidraw bearbeiten" />
+                    </span>
+                ) : undefined
             }
             lockScroll
             closeOnEscape={false}
@@ -110,6 +117,7 @@ const ImageEditorPopup = (props: Props) => {
             onClose={() => {
                 setExcaliState(null);
                 setStorage(null);
+                props.onClose?.();
             }}
             ref={ref}
             modal

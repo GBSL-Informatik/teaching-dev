@@ -8,6 +8,7 @@ import React from 'react';
 import DroppedImageDialog from '../components/DroppedImageDialog';
 import InsertImageDialog from '../components/InsertImageDialog';
 import MdxDiff from '../components/MdxDiff';
+import NewDrawingEditor from '../components/NewDrawingEditor';
 import SuggestionMenu from '../components/SuggestionMenu';
 import type MdxDocument from '../models/MdxDocument';
 import { createNodeViews } from '../nodeViews';
@@ -70,6 +71,7 @@ const Editor = observer(({ document }: Props) => {
             <NodeViewPortals document={document} />
             <InsertImageDialog document={document} />
             <DroppedImageDialog document={document} />
+            <NewDrawingEditor document={document} />
         </div>
     );
 });

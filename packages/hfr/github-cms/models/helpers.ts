@@ -39,3 +39,30 @@ export const convertToBase64 = (binData: Uint8Array): Promise<string> => {
         reader.onerror = (error) => reject(error);
     });
 };
+
+/** a file name git and urls handle well, e.g. `Mein Bild.png` -> `Mein-Bild.png` */
+export const sanitizeFileName = (path: string) => {
+    return (
+        path
+            // Map specific umlauts
+            .replace(/ä/g, 'ae')
+            .replace(/ö/g, 'oe')
+            .replace(/ü/g, 'ue')
+            .replace(/Ä/g, 'Ae')
+            .replace(/Ö/g, 'Oe')
+            .replace(/Ü/g, 'Ue')
+            .replace(/ß/g, 'ss')
+            .replace(/%/g, '')
+            // Rest of sanitization...
+            .replace(/\s+/g, '-')
+            // Remove special characters that Git doesn't handle well
+            // Added % to the list of removed characters
+            .replace(/[~^:?*[\]\\{}|"<%>]/g, '')
+            .replace(/[~^:?*[\]\\{}|"<>]/g, '')
+            .replace(/[\x00-\x1F\x7F]/g, '')
+            .replace(/^[./]+|[./]+$/g, '')
+            .replace(/\.git(\/|$)/g, '')
+            .replace(/\/+/g, '/')
+            .replace(/(^|\/)@/g, '$1-at-')
+    );
+};

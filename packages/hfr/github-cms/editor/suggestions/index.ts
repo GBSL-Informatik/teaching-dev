@@ -9,7 +9,7 @@ export type { Suggestion, SuggestionSource } from './types';
 
 /** the first source matching the typed text offers its suggestions */
 export const suggestionSources = (document: MdxDocument): SuggestionSource[] => [
-    quickActionSource,
+    quickActionSource(document),
     imageSource(document),
     iconSource,
     containerDirectiveSource,

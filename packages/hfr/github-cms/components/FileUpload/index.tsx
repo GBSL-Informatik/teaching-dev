@@ -10,6 +10,7 @@ import React, { useId, useState } from 'react';
 import { useCmsStore } from '../../hooks/useCmsStore';
 import BinFile from '../../models/BinFile';
 import { default as CmsFile } from '../../models/File';
+import { sanitizeFileName } from '../../models/helpers';
 import ImagePreview from '../Github/iFile/File/FilePreview/ImagePreview';
 import styles from './styles.module.scss';
 
@@ -29,32 +30,6 @@ interface Props {
     /** files to upload, e.g. dropped into the editor */
     initialFiles?: File[];
 }
-
-const sanitizeFileName = (path: string) => {
-    return (
-        path
-            // Map specific umlauts
-            .replace(/ä/g, 'ae')
-            .replace(/ö/g, 'oe')
-            .replace(/ü/g, 'ue')
-            .replace(/Ä/g, 'Ae')
-            .replace(/Ö/g, 'Oe')
-            .replace(/Ü/g, 'Ue')
-            .replace(/ß/g, 'ss')
-            .replace(/%/g, '')
-            // Rest of sanitization...
-            .replace(/\s+/g, '-')
-            // Remove special characters that Git doesn't handle well
-            // Added % to the list of removed characters
-            .replace(/[~^:?*[\]\\{}|"<%>]/g, '')
-            .replace(/[~^:?*[\]\\{}|"<>]/g, '')
-            .replace(/[\x00-\x1F\x7F]/g, '')
-            .replace(/^[./]+|[./]+$/g, '')
-            .replace(/\.git(\/|$)/g, '')
-            .replace(/\/+/g, '/')
-            .replace(/(^|\/)@/g, '$1-at-')
-    );
-};
 
 const FileUpload = observer((props: Props) => {
     const [files, setFiles] = useState<File[]>(props.initialFiles ?? []);

@@ -4,14 +4,21 @@ import type { MarkType, NodeType } from 'prosemirror-model';
 import { type Command, EditorState, type Transaction } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 import type { ReactPortal } from 'react';
+import { Asset } from '../../models/Dir';
 import type File from '../../models/File';
-import { insertInlineAt } from '../commands';
+import { insertInline, insertInlineAt } from '../commands';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import type { NodeViewEditor } from '../nodeViews/ReactNodeView';
 import { createPlugins } from '../plugins';
 import { schema } from '../schema';
 
 const SYNC_DELAY_MS = 300;
+
+interface NewDrawing {
+    /** the path of the image in the repository, e.g. `docs/images/sketch.webp` */
+    path: string;
+    mimeType: string;
+}
 
 /**
  * @throws when the content is not valid mdx
@@ -38,6 +45,8 @@ class MdxDocument implements NodeViewEditor {
     @observable accessor isImageDialogOpen = false;
     /** an image dropped into the editor, it is inserted at `pos` once it is named and uploaded */
     @observableRef accessor droppedImage: { file: globalThis.File; pos: number } | null = null;
+    /** a new excalidraw drawing, the image is created in the repository when the drawing is saved */
+    @observableRef accessor newDrawing: NewDrawing | null = null;
 
     /** React content of the node views, rendered as portals by the editor component */
     readonly portals = observable.map<string, ReactPortal>({}, { deep: false });
@@ -82,6 +91,31 @@ class MdxDocument implements NodeViewEditor {
         const { pos } = this.droppedImage;
         this.droppedImage = null;
         this.run(insertInlineAt(pos, schema.nodes.image.create({ src })));
+    }
+
+    /**
+     * Opens the excalidraw editor for a new image in `./images`.
+     * @returns false when an image with this name exists already
+     */
+    @action
+    startNewDrawing(fileName: string, mimeType: string) {
+        if (this.file.images.some((image) => image.name === fileName)) {
+            return false;
+        }
+        this.newDrawing = { path: `${this.file.imageDirPath}/${fileName}`, mimeType };
+        return true;
+    }
+
+    @action
+    setNewDrawing(newDrawing: NewDrawing | null) {
+        this.newDrawing = newDrawing;
+    }
+
+    /** inserts the saved drawing at the cursor, where the drawing was started */
+    @action
+    insertNewDrawing(imagePath: string) {
+        const fileName = imagePath.split('/').pop()!;
+        this.run(insertInline(schema.nodes.image.create({ src: `./${Asset.IMAGE}/${fileName}` })));
     }
 
     @action

@@ -9,14 +9,16 @@ import {
 } from '@mdi/js';
 import type { EditorState } from 'prosemirror-state';
 import { insertText, setCurrentBlockType, toggleBlockquote, toggleList } from '../commands';
+import type MdxDocument from '../models/MdxDocument';
 import { schema } from '../schema';
 import { ADMONITION_ITEMS, INSERT_ITEMS, insertCommand, type MenuItem } from '../Toolbar/insertItems';
 import { fuzzyFilter } from './fuzzyScore';
+import { newDrawingActions } from './newDrawing';
 import type { Suggestion, SuggestionSource } from './types';
 
 const { nodes } = schema;
 
-interface QuickAction extends Suggestion {
+export interface QuickAction extends Suggestion {
     /** additional search terms, e.g. the markdown syntax */
     keywords: string[];
 }
@@ -84,10 +86,13 @@ const QUICK_ACTIONS: QuickAction[] = [
 /**
  * `/tip`: the actions matching the query that can be applied, the best match first.
  */
-export const quickActionSource: SuggestionSource = {
-    pattern: /(?<=^|\s)\/([^\s/]{0,30})$/,
-    suggestions: (state: EditorState, query: string) => {
-        const matching = fuzzyFilter(QUICK_ACTIONS, query, (action) => [action.label, ...action.keywords]);
-        return matching.filter((action) => action.command(state));
-    }
+export const quickActionSource = (document: MdxDocument): SuggestionSource => {
+    const actions = [...QUICK_ACTIONS, ...newDrawingActions(document)];
+    return {
+        pattern: /(?<=^|\s)\/([^\s/]{0,30})$/,
+        suggestions: (state: EditorState, query: string) => {
+            const matching = fuzzyFilter(actions, query, (action) => [action.label, ...action.keywords]);
+            return matching.filter((action) => action.command(state));
+        }
+    };
 };
