@@ -2,6 +2,7 @@ import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable } from 'mobx';
 import { Position } from 'unist';
 import { CmsStore } from '../stores/CmsStore';
+import { Asset } from './Dir';
 import iFile, { FileProps } from './iFile';
 
 class File extends iFile {
@@ -85,6 +86,27 @@ class File extends iFile {
                 this.apiState = ApiState.IDLE;
             })
         );
+    }
+
+    /** `./images` next to the file, where its images are uploaded to */
+    @computed
+    get imageDirPath() {
+        return this.resolvePath(`./${Asset.IMAGE}`);
+    }
+
+    /** the images in `./images` next to the file, loaded with `loadImages` */
+    @computed
+    get images(): iFile[] {
+        return this.store
+            .findChildren(this.branch, this.imageDirPath)
+            .filter((entry): entry is Exclude<typeof entry, { type: 'dir' }> => entry.type !== 'dir')
+            .filter((entry) => entry.isImage);
+    }
+
+    @action
+    loadImages() {
+        // the directory does not exist before the first image is uploaded
+        return this.store.github?.fetchDirectory(this.branch, this.imageDirPath).catch(() => undefined);
     }
 
     @computed

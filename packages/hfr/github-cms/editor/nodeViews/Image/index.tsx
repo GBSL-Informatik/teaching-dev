@@ -13,6 +13,7 @@ import { cssWidth, splitAlt, widthOption, withWidthOption } from './altText';
 import Caption from './Caption';
 import ExcalidrawButton from './ExcalidrawButton';
 import ImageOptions from './ImageOptions';
+import ImageSource from './ImageSource';
 import ResizeHandles from './ResizeHandles';
 import styles from './styles.module.scss';
 
@@ -49,6 +50,7 @@ const Image = observer(({ handle }: NodeViewProps) => {
                             title="Bild"
                             trigger={<Button icon={mdiCog} size={SIZE_S} title="Bild bearbeiten" />}
                         >
+                            <ImageSource handle={handle} />
                             <ImageOptions handle={handle} />
                             <Button
                                 icon={mdiImageEditOutline}
