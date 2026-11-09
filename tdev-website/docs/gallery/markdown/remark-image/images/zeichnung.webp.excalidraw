@@ -5,10 +5,10 @@
     {
       "id": "TDEV-STANDALONE-DRAWING",
       "type": "rectangle",
-      "x": 0,
-      "y": 0,
-      "width": 400,
-      "height": 300,
+      "x": 135.68116826596463,
+      "y": 82.99999999999999,
+      "width": 179.65214737601906,
+      "height": 143.4203119692595,
       "strokeColor": "#1e1e1ea1",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
@@ -18,7 +18,7 @@
       "opacity": 100,
       "locked": true,
       "version": 2,
-      "versionNonce": 1299968092,
+      "versionNonce": 1299968093,
       "index": "a0",
       "isDeleted": false,
       "angle": 0,
@@ -28,7 +28,10 @@
       "roundness": null,
       "boundElements": [],
       "updated": 1794236117247,
-      "link": null
+      "link": null,
+      "customData": {
+        "exportPadding": 4
+      }
     },
     {
       "id": "EEOlqsJnf8LNO9wj9Z-zy",
@@ -55,7 +58,7 @@
       "version": 12,
       "versionNonce": 1799040988,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794236120393,
       "link": null,
       "locked": false
@@ -83,7 +86,7 @@
       "version": 3,
       "versionNonce": 825664228,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794236126747,
       "link": null,
       "locked": false,
@@ -99,10 +102,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        0.0001,
-        0.0001
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "mOJLPxJ3p8VpaDJsZYrDl",
@@ -127,7 +127,7 @@
       "version": 3,
       "versionNonce": 1031101796,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794236127356,
       "link": null,
       "locked": false,
@@ -143,10 +143,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        0.0001,
-        0.0001
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "7ALoPZoK8trHm73-TX7gu",
@@ -171,7 +168,7 @@
       "version": 25,
       "versionNonce": 811425380,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794236128535,
       "link": null,
       "locked": false,
@@ -275,10 +272,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        95.07247261379075,
-        -20.86957848590353
-      ]
+      "lastCommittedPoint": null
     }
   ],
   "files": {}
