@@ -74,7 +74,7 @@ const UserAvatar = observer((props: Props) => {
                                 <Button
                                     icon={mdiDotsVertical}
                                     size={SIZE_S}
-                                    title="Dateien, Pull Requests und Branches"
+                                    title="Pull Requests und Branches"
                                 />
                             </div>
                         }

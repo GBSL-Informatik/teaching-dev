@@ -1,7 +1,7 @@
 .cms {
     --cms-tree-view-width: 0px;
     /* the height of the sticky header, the page has no navbar */
-    --cms-toolbar-top-offset: 4px;
+    --cms-toolbar-top-offset: 8px;
 
     display: grid;
     grid-template-areas:
@@ -12,6 +12,8 @@
     min-height: 100vh;
     .header {
         grid-area: nav;
+        /* padding instead of margin: the gap stays when the header sticks to the top */
+        padding-top: 0.25rem;
         background-color: var(--ifm-background-color);
         border-top-left-radius: var(--ifm-global-radius);
         border-top-right-radius: var(--ifm-global-radius);
@@ -61,7 +63,7 @@
 
 @media screen and (min-width: 900px) {
     .cms {
-        --cms-toolbar-top-offset: 28px;
+        --cms-toolbar-top-offset: 32px;
         .header {
             position: sticky;
             top: 0;

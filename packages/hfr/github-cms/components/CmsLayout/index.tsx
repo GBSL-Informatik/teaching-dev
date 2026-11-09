@@ -1,6 +1,7 @@
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
 import { PageMetadata } from '@docusaurus/theme-common';
 import ErrorPageContent from '@theme/ErrorPageContent';
+import Footer from '@theme/Footer';
 import LayoutProvider from '@theme/Layout/Provider';
 import React from 'react';
 
@@ -9,7 +10,7 @@ interface Props {
 }
 
 /**
- * Like `@theme/Layout`, without navbar, announcement bar and footer: the editor uses the whole page.
+ * Like `@theme/Layout`, without navbar and announcement bar: the editor uses the whole screen.
  * The website can be opened from the repository overview, see `RepositoryOverview`.
  */
 const CmsLayout = ({ children }: Props) => {
@@ -17,6 +18,7 @@ const CmsLayout = ({ children }: Props) => {
         <LayoutProvider>
             <PageMetadata title="CMS" description="Github" />
             <ErrorBoundary fallback={(params) => <ErrorPageContent {...params} />}>{children}</ErrorBoundary>
+            <Footer />
         </LayoutProvider>
     );
 };

@@ -7,12 +7,11 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 import Branch from '../Branch';
-import Dir from '../iFile/Dir';
 import PR from '../PR';
 import styles from './styles.module.scss';
 
 /**
- * All files, pull requests and branches of the repository, shown in a modal.
+ * The pull requests and branches of the repository, shown in a modal.
  */
 const RepositoryOverview = observer(() => {
     const cmsStore = useCmsStore();
@@ -44,12 +43,6 @@ const RepositoryOverview = observer(() => {
                     </li>
                 ))}
             </ul>
-            <h5>Dateien</h5>
-            {cmsStore.rootDir && (
-                <ul className={clsx(styles.files)}>
-                    <Dir dir={cmsStore.rootDir} />
-                </ul>
-            )}
         </Card>
     );
 });
