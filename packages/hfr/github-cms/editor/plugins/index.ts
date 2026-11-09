@@ -17,11 +17,10 @@ import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { suggestionSources } from '../suggestions';
-import { insertItemBreak } from '../Toolbar/insertItems';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
+import { deleteEmptyDirectiveItem, enterInDirectiveItem, splitDirectiveItem } from './directiveItems';
 import { imageFiles } from './imageFiles';
-import { deleteItemBreak } from './itemBreak';
 import { markInputRules } from './markInputRules';
 import { suggestionMenu } from './suggestionMenu';
 import { uuidMarker } from './uuidMarker';
@@ -37,7 +36,7 @@ const editorKeymap = keymap({
     'Mod-z': undo,
     'Shift-Mod-z': redo,
     'Mod-y': redo,
-    Backspace: chainCommands(undoInputRule, deleteItemBreak),
+    Backspace: chainCommands(undoInputRule, deleteEmptyDirectiveItem),
     'Mod-b': toggleMark(marks.strong),
     'Mod-i': toggleMark(marks.emphasis),
     'Mod-e': toggleMark(marks.code),
@@ -45,8 +44,8 @@ const editorKeymap = keymap({
     'Mod-k': toggleMark(marks.kbd),
     'Shift-Enter': insertHardBreak,
     // like a page break in word processors: the next card or column, a line break elsewhere
-    'Mod-Enter': chainCommands(insertItemBreak, insertHardBreak),
-    Enter: chainCommands(enterInDeflist, splitListItem(nodes.list_item)),
+    'Mod-Enter': chainCommands(splitDirectiveItem, insertHardBreak),
+    Enter: chainCommands(enterInDeflist, splitListItem(nodes.list_item), enterInDirectiveItem),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
     'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),
     ArrowLeft: arrowIntoCode('left'),

@@ -2,7 +2,8 @@ import { mdiCodeBrackets, mdiInformationOutline, mdiMinusBoxOutline, mdiTextBoxO
 import { insertBlock, insertInline, insertText } from '../commands';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { schema } from '../schema';
-import { createContainerDirective, isInItemsDirective } from '../Toolbar/insertItems';
+import { splitDirectiveItem } from '../plugins/directiveItems';
+import { createContainerDirective } from '../Toolbar/insertItems';
 import { CONTAINER_DIRECTIVES, LEAF_DIRECTIVES, TEXT_DIRECTIVES } from './directiveNames';
 import { fuzzyFilter } from './fuzzyScore';
 import type { Suggestion, SuggestionSource } from './types';
@@ -19,8 +20,9 @@ const leafSuggestion = (name: string): Suggestion => ({
     label: `::${name}`,
     icon: mdiMinusBoxOutline,
     command: (state, dispatch) => {
-        if (name === 'br' && !isInItemsDirective(state)) {
-            return false;
+        // `::br` starts the next item of `:::cards` or `:::flex`, it is not a node of its own
+        if (name === 'br') {
+            return splitDirectiveItem(state, dispatch);
         }
         return insertBlock(nodes.leaf_directive.create({ name }))(state, dispatch);
     }

@@ -79,13 +79,6 @@
         .cms-directive--details {
             background: var(--ifm-color-info-contrast-background);
         }
-        /* the items of :::cards and :::flex are stacked, separated by ::br */
-        .cms-item-break {
-            margin: 0.5em 0;
-            padding-top: 0.2em;
-            border-top: 2px dashed var(--ifm-color-primary-lighter);
-            color: var(--ifm-color-primary-darker);
-        }
 
         /* the items of :::cards and :::flex are stacked, separated like by ::br */
         .cms-directive-item + .cms-directive-item {
