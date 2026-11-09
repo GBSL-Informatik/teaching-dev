@@ -55,6 +55,11 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
         hasContent: true,
         className: containerDirectiveClassName
     }),
+    items_directive: reactNodeView(document, {
+        component: ContainerDirective,
+        hasContent: true,
+        className: containerDirectiveClassName
+    }),
     jsx_flow: reactNodeView(document, {
         component: JsxFlow,
         hasContent: true,

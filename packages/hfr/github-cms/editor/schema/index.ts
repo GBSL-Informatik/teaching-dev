@@ -34,6 +34,15 @@ export interface ContainerFormat {
     trailing: number;
 }
 
+/** formatting of the original source of a `directive_item` */
+export interface ItemFormat {
+    /** line breaks between `::br` and the first child */
+    leading: number;
+}
+
+/** the directives whose items are separated by `::br`, see `items_directive` */
+export const ITEMS_DIRECTIVES = ['cards', 'flex'];
+
 const codeLikeNode = (spec: NodeSpec): NodeSpec => ({
     content: 'text*',
     marks: '',
@@ -135,6 +144,35 @@ const nodes = {
         isolating: true,
         defining: true,
         toDOM: (node) => ['div', { 'data-directive': node.attrs.name }, 0]
+    },
+
+    /**
+     * `:::cards` and `:::flex`: their items are separated by `::br` in markdown,
+     * here each item is a node, see `directive_item`.
+     */
+    items_directive: {
+        group: 'block',
+        content: 'directive_label? directive_item+',
+        attrs: { name: { default: 'cards' }, attributes: { default: {} }, format: { default: null } },
+        isolating: true,
+        defining: true,
+        toDOM: (node) => ['div', { 'data-directive': node.attrs.name }, 0]
+    },
+
+    /**
+     * An item of `:::cards` or `:::flex`, it starts with `::br[label]{attributes}`.
+     * Only the first item can omit the `::br`, then `explicitBreak` is false.
+     */
+    directive_item: {
+        content: 'block+',
+        attrs: {
+            label: { default: '' },
+            attributes: { default: {} },
+            explicitBreak: { default: true },
+            format: { default: null }
+        },
+        defining: true,
+        toDOM: () => ['div', { class: 'cms-directive-item' }, 0]
     },
 
     directive_label: {

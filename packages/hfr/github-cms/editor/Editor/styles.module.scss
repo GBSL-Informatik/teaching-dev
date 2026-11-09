@@ -87,6 +87,13 @@
             color: var(--ifm-color-primary-darker);
         }
 
+        /* the items of :::cards and :::flex are stacked, separated like by ::br */
+        .cms-directive-item + .cms-directive-item {
+            margin-top: 0.5em;
+            padding-top: 0.5em;
+            border-top: 2px dashed var(--ifm-color-primary-lighter);
+        }
+
         /* definition lists, see `plugins/deflist.ts` */
         .cms-dt {
             font-weight: var(--ifm-font-weight-bold);

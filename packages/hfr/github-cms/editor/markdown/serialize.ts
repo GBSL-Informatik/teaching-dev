@@ -1,6 +1,6 @@
 import type { PhrasingContent, TableRow } from 'mdast';
 import type { Mark, Node } from 'prosemirror-model';
-import type { ContainerFormat, DirectiveAttributes, JsxAttribute } from '../schema';
+import type { ContainerFormat, DirectiveAttributes, ItemFormat, JsxAttribute } from '../schema';
 import { imageMarkdown } from './imageAlt';
 import { originalMarkdown, originalSeparator } from './origin';
 import { stringifyMdast } from './syntax';
@@ -19,6 +19,7 @@ export const serializeMarkdown = (doc: Node, trailing: string = '\n'): string =>
 
 const DEFAULT_JSX_FORMAT: ContainerFormat = { childIndent: '  ', leading: 1, trailing: 1 };
 const DEFAULT_DIRECTIVE_FORMAT: ContainerFormat = { childIndent: '', leading: 1, trailing: 1 };
+const DEFAULT_ITEM_FORMAT: ItemFormat = { leading: 2 };
 
 class ProseMirrorToMarkdown {
     /**
@@ -76,6 +77,7 @@ class ProseMirrorToMarkdown {
             case 'table':
                 return this.table(node);
             case 'container_directive':
+            case 'items_directive':
                 return this.containerDirective(node);
             case 'leaf_directive':
                 return `::${node.attrs.name}${directiveLabel(node.attrs.label)}${directiveAttributes(node.attrs.attributes)}`;
@@ -153,8 +155,49 @@ class ProseMirrorToMarkdown {
         const format: ContainerFormat = node.attrs.format ?? DEFAULT_DIRECTIVE_FORMAT;
         const fence = ':'.repeat(Math.max(format.fence ?? 3, innerDirectiveFence(node) + 1));
         const opening = `${fence}${node.attrs.name}${directiveLabel(label)}${directiveAttributes(node.attrs.attributes)}`;
-        const children = this.blocks(hasLabel ? rest : [first, ...rest], 2, format.childIndent);
+        const content = hasLabel ? rest : [first, ...rest];
+        const children =
+            node.type.name === 'items_directive'
+                ? this.directiveItems(content, format.childIndent)
+                : this.blocks(content, 2, format.childIndent);
         return this.container(opening, children, fence, format);
+    }
+
+    /** the items of `:::cards` and `:::flex`, see `directiveItem` */
+    private directiveItems(items: Node[], indent: string) {
+        return items
+            .map((item, idx) => {
+                const markdown = indentLines(this.directiveItem(item, idx === 0), indent, true);
+                if (idx === 0) {
+                    return markdown;
+                }
+                const separator = originalSeparator(items[idx - 1], item) ?? '\n\n';
+                return `${separator}${markdown}`;
+            })
+            .join('');
+    }
+
+    /**
+     * An item starts with `::br`. Only the first item can omit it, when it was omitted in the
+     * source too: an empty item needs it, otherwise it would vanish.
+     */
+    private directiveItem(item: Node, isFirst: boolean) {
+        const { label, attributes, explicitBreak } = item.attrs;
+        const original = originalMarkdown(item);
+        // a first item without `::br` can not be moved to another position as it was
+        if (original !== undefined && (explicitBreak || isFirst)) {
+            return original;
+        }
+        const content = this.blocks(childrenOf(item), 2);
+        if (isFirst && !explicitBreak && content) {
+            return content;
+        }
+        const itemBreak = `::br${directiveLabel(label)}${directiveAttributes(attributes)}`;
+        if (!content) {
+            return itemBreak;
+        }
+        const format: ItemFormat = item.attrs.format ?? DEFAULT_ITEM_FORMAT;
+        return `${itemBreak}${'\n'.repeat(format.leading)}${content}`;
     }
 
     /**
@@ -314,7 +357,7 @@ const indentLines = (text: string, indent: string, includeFirst: boolean = false
 const innerDirectiveFence = (node: Node) => {
     let fence = 0;
     node.descendants((child) => {
-        if (child.type.name === 'container_directive') {
+        if (child.type.name === 'container_directive' || child.type.name === 'items_directive') {
             const own = child.attrs.format?.fence ?? 3;
             fence = Math.max(fence, own, innerDirectiveFence(child) + 1);
             return false;

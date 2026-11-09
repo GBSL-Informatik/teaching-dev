@@ -16,11 +16,20 @@ import type {
 import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-util-directive';
 import type { MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import type { Mark, Node } from 'prosemirror-model';
-import { type ContainerFormat, type DirectiveAttributes, type JsxAttribute, schema } from '../schema';
+import {
+    type ContainerFormat,
+    type DirectiveAttributes,
+    ITEMS_DIRECTIVES,
+    type JsxAttribute,
+    schema
+} from '../schema';
 import { rawImageAlt } from './imageAlt';
 import { groupKbd } from './kbd';
 import { countLineBreaks, dedent, setOrigin } from './origin';
 import { parseMdx, stringifyMdast } from './syntax';
+
+/** the children of a container directive */
+type FlowContent = BlockContent | DefinitionContent;
 
 export interface ParsedMarkdown {
     doc: Node;
@@ -145,14 +154,55 @@ class MdastToProseMirror {
         const content = hasLabel ? rest : node.children;
         const fence = this.sourceOf(node).match(/^:+/)?.[0].length ?? 3;
         const openingEnd = this.source.indexOf('\n', node.position?.start.offset);
-        return schema.nodes.container_directive.createAndFill(
+        const isItemsDirective = ITEMS_DIRECTIVES.includes(node.name);
+        const type = isItemsDirective ? schema.nodes.items_directive : schema.nodes.container_directive;
+        const children = isItemsDirective ? this.directiveItems(content) : this.blocks(content);
+        return type.createAndFill(
             {
                 name: node.name,
                 attributes: directiveAttributes(node),
                 format: this.containerFormat(node, content, openingEnd, { fence })
             },
-            label ? [label, ...this.blocks(content)] : this.blocks(content)
+            label ? [label, ...children] : children
         )!;
+    }
+
+    /** each `::br` starts a new item, the first item can omit it */
+    private directiveItems(children: FlowContent[]): Node[] {
+        const items: { itemBreak: LeafDirective | null; children: FlowContent[] }[] = [];
+        for (const child of children) {
+            if (child.type === 'leafDirective' && child.name === 'br') {
+                items.push({ itemBreak: child, children: [] });
+            } else if (items.length === 0) {
+                items.push({ itemBreak: null, children: [child] });
+            } else {
+                items.at(-1)!.children.push(child);
+            }
+        }
+        return items.map(({ itemBreak, children }) => this.directiveItem(itemBreak, children));
+    }
+
+    private directiveItem(itemBreak: LeafDirective | null, children: FlowContent[]) {
+        const firstChild = children[0]?.position;
+        const leading =
+            itemBreak?.position && firstChild
+                ? countLineBreaks(this.source.slice(itemBreak.position.end.offset, firstChild.start.offset))
+                : null;
+        const item = schema.nodes.directive_item.createAndFill(
+            {
+                label: itemBreak ? this.labelMarkdown(itemBreak.children) : '',
+                attributes: itemBreak ? directiveAttributes(itemBreak) : {},
+                explicitBreak: !!itemBreak,
+                format: leading ? { leading } : null
+            },
+            this.blocks(children)
+        )!;
+        const start = (itemBreak ?? children[0])?.position?.start;
+        const end = (children.at(-1) ?? itemBreak)?.position?.end;
+        if (start && end) {
+            setOrigin(item, this.source, { start, end });
+        }
+        return item;
     }
 
     private leafDirective(node: LeafDirective) {

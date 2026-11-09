@@ -11,6 +11,8 @@ const CONTAINERS = new Set([
     nodes.doc,
     nodes.blockquote,
     nodes.container_directive,
+    nodes.items_directive,
+    nodes.directive_item,
     nodes.jsx_flow,
     nodes.footnote_definition
 ]);

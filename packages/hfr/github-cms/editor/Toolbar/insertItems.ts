@@ -26,7 +26,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createNode, createTable, insertBlock, insertInline } from '../commands';
 import { type ImportSpec, withImport } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
-import { type JsxAttribute, schema } from '../schema';
+import { ITEMS_DIRECTIVES, type JsxAttribute, schema } from '../schema';
 
 const { nodes } = schema;
 
@@ -57,7 +57,10 @@ const directive = (name: string, label?: string) => {
 
 const itemBreak = () => nodes.leaf_directive.create({ name: 'br' });
 
-const ITEMS_DIRECTIVES = ['cards', 'flex'];
+const itemsDirective = (name: string) => {
+    const item = createNode(nodes.directive_item, { explicitBreak: false }, paragraph());
+    return createNode(nodes.items_directive, { name }, item);
+};
 
 /** the depth of the innermost `:::cards` or `:::flex` around the cursor */
 const itemsDirectiveDepth = (state: EditorState) => {
@@ -94,6 +97,9 @@ export const insertItemBreak: Command = (state, dispatch) => {
 export const createContainerDirective = (name: string): Node => {
     if (name === 'details') {
         return directive('details', 'Details');
+    }
+    if (ITEMS_DIRECTIVES.includes(name)) {
+        return itemsDirective(name);
     }
     return directive(name);
 };
