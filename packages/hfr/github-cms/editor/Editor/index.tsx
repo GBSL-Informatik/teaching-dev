@@ -5,7 +5,7 @@ import 'prosemirror-tables/style/tables.css';
 import { EditorView } from 'prosemirror-view';
 import 'prosemirror-view/style/prosemirror.css';
 import React from 'react';
-import DroppedImageDialog from '../components/DroppedImageDialog';
+import ImageUploadDialog from '../components/ImageUploadDialog';
 import InsertImageDialog from '../components/InsertImageDialog';
 import MdxDiff from '../components/MdxDiff';
 import NewDrawingEditor from '../components/NewDrawingEditor';
@@ -70,7 +70,7 @@ const Editor = observer(({ document }: Props) => {
             {document.showDiff && <MdxDiff file={document.file} />}
             <NodeViewPortals document={document} />
             <InsertImageDialog document={document} />
-            <DroppedImageDialog document={document} />
+            <ImageUploadDialog document={document} />
             <NewDrawingEditor document={document} />
         </div>
     );

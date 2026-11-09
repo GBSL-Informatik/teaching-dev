@@ -9,29 +9,29 @@ interface Props {
 }
 
 /**
- * Asks for the name of an image dropped into the editor, uploads it to `./images` and inserts it.
+ * Asks for the name of an image dropped or pasted into the editor, uploads it to `./images` and inserts it.
  */
-const DroppedImageDialog = observer(({ document }: Props) => {
-    const { droppedImage, file } = document;
-    const handleClose = () => document.setDroppedImage(null);
+const ImageUploadDialog = observer(({ document }: Props) => {
+    const { imageToUpload, file } = document;
+    const handleClose = () => document.setImageToUpload(null);
     return (
         <Popup
-            open={!!droppedImage}
+            open={!!imageToUpload}
             onClose={handleClose}
             modal
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
         >
-            {droppedImage && (
+            {imageToUpload && (
                 <Card header={<h4>Bild hochladen</h4>}>
                     <FileUpload
-                        initialFiles={[droppedImage.file]}
+                        initialFiles={[imageToUpload.file]}
                         accept="image/*"
                         uploadDir={file.imageDirPath}
                         branch={file.branch}
                         uploadButtonLabel="Hochladen und einfügen"
                         onDiscard={handleClose}
                         onFilesUploaded={(uploaded) =>
-                            document.insertDroppedImage(file.relativePath(uploaded))
+                            document.insertUploadedImage(file.relativePath(uploaded))
                         }
                     />
                 </Card>
@@ -40,4 +40,4 @@ const DroppedImageDialog = observer(({ document }: Props) => {
     );
 });
 
-export default DroppedImageDialog;
+export default ImageUploadDialog;

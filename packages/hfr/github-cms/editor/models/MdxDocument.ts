@@ -43,8 +43,8 @@ class MdxDocument implements NodeViewEditor {
     @observable accessor showDiff = false;
     /** the dialog to insert an image, opened from the insert menu or the suggestions */
     @observable accessor isImageDialogOpen = false;
-    /** an image dropped into the editor, it is inserted at `pos` once it is named and uploaded */
-    @observableRef accessor droppedImage: { file: globalThis.File; pos: number } | null = null;
+    /** an image dropped or pasted into the editor, it is inserted at `pos` once it is named and uploaded */
+    @observableRef accessor imageToUpload: { file: globalThis.File; pos: number } | null = null;
     /** a new excalidraw drawing, the image is created in the repository when the drawing is saved */
     @observableRef accessor newDrawing: NewDrawing | null = null;
 
@@ -79,17 +79,17 @@ class MdxDocument implements NodeViewEditor {
     }
 
     @action
-    setDroppedImage(droppedImage: { file: globalThis.File; pos: number } | null) {
-        this.droppedImage = droppedImage;
+    setImageToUpload(imageToUpload: { file: globalThis.File; pos: number } | null) {
+        this.imageToUpload = imageToUpload;
     }
 
     @action
-    insertDroppedImage(src: string) {
-        if (!this.droppedImage) {
+    insertUploadedImage(src: string) {
+        if (!this.imageToUpload) {
             return;
         }
-        const { pos } = this.droppedImage;
-        this.droppedImage = null;
+        const { pos } = this.imageToUpload;
+        this.imageToUpload = null;
         this.run(insertInlineAt(pos, schema.nodes.image.create({ src })));
     }
 
