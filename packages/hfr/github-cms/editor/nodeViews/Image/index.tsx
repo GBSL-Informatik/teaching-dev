@@ -11,6 +11,7 @@ import InlinePopover from '../../components/InlinePopover';
 import type { NodeViewProps } from '../ReactNodeView';
 import { cssWidth, splitAlt, widthOption, withWidthOption } from './altText';
 import Caption from './Caption';
+import ExcalidrawButton from './ExcalidrawButton';
 import ImageOptions from './ImageOptions';
 import ResizeHandles from './ResizeHandles';
 import styles from './styles.module.scss';
@@ -43,6 +44,7 @@ const Image = observer(({ handle }: NodeViewProps) => {
                     <img src={resolvedSrc} alt={caption} className={clsx(styles.image)} />
                     <ResizeHandles target={frame} onResize={setResizeWidth} onResizeEnd={handleResizeEnd} />
                     <span className={clsx(styles.settings)}>
+                        {asset?.type === 'bin_file' && <ExcalidrawButton handle={handle} image={asset} />}
                         <InlinePopover
                             title="Bild"
                             trigger={<Button icon={mdiCog} size={SIZE_S} title="Bild bearbeiten" />}

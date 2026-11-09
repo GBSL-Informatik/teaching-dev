@@ -40,6 +40,7 @@
         "@docusaurus/module-type-aliases": "*"
     },
     "peerDependencies": {
-        "@tdev/core": "1.0.0"
+        "@tdev/core": "1.0.0",
+        "@tdev/excalidoc": "1.0.0"
     }
 }

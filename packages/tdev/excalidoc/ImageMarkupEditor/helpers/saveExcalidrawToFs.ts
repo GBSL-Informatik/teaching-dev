@@ -1,5 +1,6 @@
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import requestFileHandle from '@tdev-components/utils/localFS/requestFileHandle';
+import exportPaths from './exportPaths';
 import writeFileHandle from './writeFileHandle';
 
 /**
@@ -18,23 +19,14 @@ const saveExcalidrawToFs = async (
     blob: Blob,
     asWebp: boolean
 ): Promise<string> => {
-    let exaliExport = excaliSrc;
-    let imgExport = src;
-    const needsTransform = asWebp && !/\.webp$/i.test(src);
-    if (needsTransform) {
-        exaliExport = exaliExport.replace(
-            `${imgName}.excalidraw`,
-            `${imgName.split('.').slice(0, -1).join('.')}.webp.excalidraw`
-        );
-        imgExport = imgExport.replace(`${imgName}`, `${imgName.split('.').slice(0, -1).join('.')}.webp`);
-    }
+    const { imgExport, excaliExport, isRenamed } = exportPaths(src, excaliSrc, imgName, asWebp);
 
-    const { fileHandle, parentDir } = await requestFileHandle(root, exaliExport, 'readwrite', true);
+    const { fileHandle, parentDir } = await requestFileHandle(root, excaliExport, 'readwrite', true);
     const { fileHandle: imgFileHandle } = await requestFileHandle(root, imgExport, 'readwrite', true);
     await writeFileHandle(fileHandle, JSON.stringify(state, null, 2));
     await writeFileHandle(imgFileHandle, blob);
 
-    if (needsTransform) {
+    if (isRenamed) {
         try {
             await parentDir.removeEntry(imgName);
             await parentDir.removeEntry(`${imgName}.excalidraw`);

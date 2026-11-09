@@ -89,6 +89,7 @@
     }
     .settings {
         position: absolute;
+        display: flex;
         top: 0.3em;
         right: 0.3em;
         border-radius: var(--ifm-global-radius);

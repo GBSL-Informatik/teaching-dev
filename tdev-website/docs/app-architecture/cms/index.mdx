@@ -79,6 +79,7 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 `nodeViews/`
 : React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet, Mermaid-Diagramme neben ihrer Vorschau.
 : Bildunterschriften werden als Text (Markdown) unter dem Bild bearbeitet, die Bild-Optionen wie `--width=20em` separat in den Bild-Einstellungen. Beides wird im Alt-Text gespeichert.
+: Bilder aus dem Repository können mit Excalidraw bearbeitet werden, in jedem Browser. Wie im Dev-Modus liegt die Szene neben dem Bild in `<bild>.<ext>.excalidraw`; sie wird geladen, falls vorhanden, sonst aus dem Bild erstellt. Erst beim Speichern werden Szene und Bild auf den Branch committet (`nodeViews/Image/githubImageStorage.ts`).
 `plugins/`
 : ProseMirror-Plugins: Tastenkürzel, Markdown-Kürzel, Ziehgriff für Blöcke, Definitionslisten und UUID-Markierungen.
 `suggestions/`
