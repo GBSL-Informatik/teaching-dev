@@ -21,6 +21,7 @@ import { insertItemBreak } from '../Toolbar/insertItems';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
 import { imageFiles } from './imageFiles';
+import { deleteItemBreak } from './itemBreak';
 import { markInputRules } from './markInputRules';
 import { suggestionMenu } from './suggestionMenu';
 import { uuidMarker } from './uuidMarker';
@@ -36,7 +37,7 @@ const editorKeymap = keymap({
     'Mod-z': undo,
     'Shift-Mod-z': redo,
     'Mod-y': redo,
-    Backspace: undoInputRule,
+    Backspace: chainCommands(undoInputRule, deleteItemBreak),
     'Mod-b': toggleMark(marks.strong),
     'Mod-i': toggleMark(marks.emphasis),
     'Mod-e': toggleMark(marks.code),

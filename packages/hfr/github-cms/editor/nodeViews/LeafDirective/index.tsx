@@ -8,10 +8,8 @@ import {
 } from '../../components/AttributesEditor/conversions';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
+import { isItemBreak } from '../../plugins/itemBreak';
 import type { NodeViewProps } from '../ReactNodeView';
-
-/** `::br` separates the items of `:::cards` and `:::flex` */
-export const isItemBreak = (node: Node) => node.attrs.name === 'br';
 
 export const leafDirectiveClassName = (node: Node) => (isItemBreak(node) ? 'cms-item-break' : 'cms-jsx');
 
