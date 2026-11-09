@@ -93,7 +93,7 @@
       "version": 20,
       "versionNonce": 2059784184,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794225587327,
       "link": null,
       "locked": false,
@@ -177,16 +177,13 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        430.7936604817708,
-        -0.6349109468005736
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "CWKugpS-bqqYzllEWdDIp",
       "type": "freedraw",
-      "x": 300.3174409412202,
-      "y": 91.36507452101934,
+      "x": 247.30154894122018,
+      "y": 103.42855652101933,
       "width": 86.03175571986606,
       "height": 79.68254452659968,
       "angle": 0,
@@ -202,11 +199,11 @@
       "index": "a3",
       "roundness": null,
       "seed": 1645648520,
-      "version": 21,
-      "versionNonce": 385129464,
+      "version": 28,
+      "versionNonce": 1984161276,
       "isDeleted": false,
-      "boundElements": null,
-      "updated": 1794225588289,
+      "boundElements": [],
+      "updated": 1794226956251,
       "link": null,
       "locked": false,
       "points": [
@@ -293,10 +290,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        24.76190476190476,
-        -12.698422386532727
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "5RGiWESHI4_WVWdzwpKm-",
@@ -321,7 +315,7 @@
       "version": 24,
       "versionNonce": 447971976,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794225589050,
       "link": null,
       "locked": false,
@@ -421,10 +415,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        37.14285714285711,
-        -15.873020717075889
-      ]
+      "lastCommittedPoint": null
     }
   ],
   "files": {
