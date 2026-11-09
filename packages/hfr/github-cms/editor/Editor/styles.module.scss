@@ -86,6 +86,17 @@
             padding-top: 0.5em;
             border-top: 2px dashed var(--ifm-color-primary-lighter);
         }
+        /* like infima's `.card`, stacked instead of side by side as on the page */
+        .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
+            padding: 0.3em var(--ifm-card-horizontal-spacing) var(--ifm-card-vertical-spacing);
+            border: none;
+            border-radius: var(--ifm-card-border-radius);
+            background: var(--ifm-card-background-color);
+            box-shadow: var(--ifm-global-shadow-md);
+            & + .cms-directive-item {
+                margin-top: 1em;
+            }
+        }
 
         /* definition lists, see `plugins/deflist.ts` */
         .cms-dt {
@@ -214,6 +225,9 @@
             }
             .cms-jsx {
                 padding: 0.2em 0.4em;
+            }
+            .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
+                padding-inline: 0.5em;
             }
             ul,
             ol {
