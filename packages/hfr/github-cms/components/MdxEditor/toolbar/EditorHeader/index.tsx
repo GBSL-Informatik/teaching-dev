@@ -39,13 +39,11 @@ const EditorHeader = observer(({ file, showDiff, onToggleDiff, children }: Props
             {file.isMarkdown && (
                 // shows the view it leads to, icon only: the diff button keeps its place
                 <Button
-                    icon={file.preventMdxEditor ? mdiLanguageMarkdown : mdiCodeJson}
+                    icon={file.showsSource ? mdiLanguageMarkdown : mdiCodeJson}
                     size={SIZE_S}
-                    title={
-                        file.preventMdxEditor ? 'Visuellen Editor anzeigen' : 'Markdown-Quelltext bearbeiten'
-                    }
+                    title={file.showsSource ? 'Visuellen Editor anzeigen' : 'Markdown-Quelltext bearbeiten'}
                     // the visual editor writes its pending changes to the file when it is unmounted
-                    onClick={() => file.setPreventMdxEditor(!file.preventMdxEditor)}
+                    onClick={() => (file.showsSource ? file.showVisual() : file.showSource())}
                 />
             )}
         </div>

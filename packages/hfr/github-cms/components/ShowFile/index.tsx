@@ -34,7 +34,7 @@ const ShowFile = observer((props: Props) => {
         case 'dir':
             return <Directory dir={loadedFile} />;
         case 'file':
-            if (loadedFile.isMarkdown && !loadedFile.preventMdxEditor) {
+            if (loadedFile.isMarkdown && !loadedFile.showsSource) {
                 return <MdxEditor file={loadedFile} key={loadedFile.componentKey} />;
             }
             return <DefaultEditor file={loadedFile} key={loadedFile.componentKey} />;

@@ -19,7 +19,10 @@ class File extends iFile {
      */
     @observable accessor resetCounter = 0;
 
-    @observable accessor preventMdxEditor = false;
+    /** a markdown file is shown in the source editor instead of the visual editor */
+    @observable accessor showsSource = false;
+    /** why the source editor is shown, e.g. the file is not valid mdx. Null when chosen by the user */
+    @observable accessor sourceReason: string | null = null;
 
     constructor(props: FileProps, store: CmsStore) {
         super(props, store);
@@ -43,8 +46,16 @@ class File extends iFile {
     }
 
     @action
-    setPreventMdxEditor(prevent: boolean) {
-        this.preventMdxEditor = prevent;
+    showSource(reason: string | null = null) {
+        this.showsSource = true;
+        this.sourceReason = reason;
+    }
+
+    /** the visual editor shows the source editor again when the file is not valid mdx */
+    @action
+    showVisual() {
+        this.showsSource = false;
+        this.sourceReason = null;
     }
 
     /**

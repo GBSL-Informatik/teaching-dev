@@ -206,8 +206,8 @@ class MdxDocument implements NodeViewEditor {
             this.state = state;
             this.trailing = trailing;
             this.view?.updateState(this.state);
-        } catch {
-            this.file.setPreventMdxEditor(true);
+        } catch (error) {
+            this.file.showSource(error instanceof Error ? error.message : String(error));
         }
     }
 }
