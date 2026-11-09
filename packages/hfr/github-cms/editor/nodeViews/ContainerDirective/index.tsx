@@ -12,6 +12,7 @@ import {
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
 import { schema } from '../../schema';
+import { CONTAINER_DIRECTIVES_WITHOUT_LABEL } from '../../suggestions/directiveNames';
 import type { NodeViewProps } from '../ReactNodeView';
 import { ADMONITION_TYPES } from './admonitionTypes';
 
@@ -41,6 +42,7 @@ export const containerDirectiveClassName = (node: Node) => {
 const ContainerDirective = observer(({ handle }: NodeViewProps) => {
     const { name, attributes } = handle.node.attrs;
     const hasLabel = handle.node.firstChild?.type === schema.nodes.directive_label;
+    const canAddLabel = !hasLabel && !CONTAINER_DIRECTIVES_WITHOUT_LABEL.includes(name);
 
     const handleAddLabel = () => {
         handle.prependChild(schema.nodes.directive_label.create(null, schema.text('Titel')));
@@ -56,7 +58,7 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
                     onChange={(name) => handle.updateAttrs({ name })}
                 />
             )}
-            {!hasLabel && (
+            {canAddLabel && (
                 <Button
                     icon={mdiFormatTitle}
                     size={SIZE_S}
