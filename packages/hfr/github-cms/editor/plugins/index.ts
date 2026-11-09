@@ -17,6 +17,7 @@ import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { suggestionSources } from '../suggestions';
+import { insertItemBreak } from '../Toolbar/insertItems';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
 import { imageFiles } from './imageFiles';
@@ -42,7 +43,8 @@ const editorKeymap = keymap({
     'Mod-u': toggleMark(marks.box),
     'Mod-k': toggleMark(marks.kbd),
     'Shift-Enter': insertHardBreak,
-    'Mod-Enter': insertHardBreak,
+    // like a page break in word processors: the next card or column, a line break elsewhere
+    'Mod-Enter': chainCommands(insertItemBreak, insertHardBreak),
     Enter: chainCommands(enterInDeflist, splitListItem(nodes.list_item)),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
     'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),

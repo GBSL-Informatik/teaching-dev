@@ -21,7 +21,7 @@ import {
     mdiViewGridOutline
 } from '@mdi/js';
 import type { Node } from 'prosemirror-model';
-import type { Command, EditorState } from 'prosemirror-state';
+import { type Command, type EditorState, TextSelection } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
 import { createNode, createTable, insertBlock, insertInline } from '../commands';
 import { type ImportSpec, withImport } from '../imports';
@@ -59,38 +59,43 @@ const itemBreak = () => nodes.leaf_directive.create({ name: 'br' });
 
 const ITEMS_DIRECTIVES = ['cards', 'flex'];
 
-export const isInItemsDirective = (state: EditorState) => {
+/** the depth of the innermost `:::cards` or `:::flex` around the cursor */
+const itemsDirectiveDepth = (state: EditorState) => {
     const { $from } = state.selection;
     for (let depth = $from.depth; depth > 0; depth--) {
         const node = $from.node(depth);
         if (node.type === nodes.container_directive && ITEMS_DIRECTIVES.includes(node.attrs.name)) {
-            return true;
+            return depth;
         }
     }
-    return false;
+    return null;
 };
 
-/** `:::cards` or `:::flex`, the items are separated by `::br` */
-const itemsDirective = (name: string, items: string[]) => {
-    const content = items.flatMap((item, idx) => {
-        const paragraphNode = paragraph(item);
-        return idx === 0 ? [paragraphNode] : [itemBreak(), paragraphNode];
-    });
-    return createNode(nodes.container_directive, { name }, content);
+export const isInItemsDirective = (state: EditorState) => itemsDirectiveDepth(state) !== null;
+
+/**
+ * Starts the next card or column: a `::br` and an empty paragraph after the block of
+ * `:::cards` or `:::flex` the cursor is in, e.g. after the whole list when the cursor is in a list.
+ */
+export const insertItemBreak: Command = (state, dispatch) => {
+    const depth = itemsDirectiveDepth(state);
+    if (depth === null) {
+        return false;
+    }
+    if (dispatch) {
+        const pos = state.selection.$from.after(depth + 1);
+        const tr = state.tr.insert(pos, [itemBreak(), paragraph()]);
+        dispatch(tr.setSelection(TextSelection.near(tr.doc.resolve(pos + 1))).scrollIntoView());
+    }
+    return true;
 };
 
 /** a new `:::name` directive, with the content its remark plugin expects */
 export const createContainerDirective = (name: string): Node => {
-    switch (name) {
-        case 'details':
-            return directive('details', 'Details');
-        case 'cards':
-            return itemsDirective('cards', ['Karte 1', 'Karte 2']);
-        case 'flex':
-            return itemsDirective('flex', ['Spalte 1', 'Spalte 2']);
-        default:
-            return directive(name);
+    if (name === 'details') {
+        return directive('details', 'Details');
     }
+    return directive(name);
 };
 
 const jsx = (name: string, attributes: JsxAttribute[], children?: Node[]) => {
@@ -162,7 +167,7 @@ const BLOCKS: MenuItem[] = [
         create: () => createContainerDirective('flex')
     },
     {
-        label: 'Nächste Karte/Spalte (::br)',
+        label: 'Nächste Karte/Spalte (::br, Strg+Enter)',
         icon: mdiFormatPageBreak,
         keywords: ['br'],
         create: () => [itemBreak(), paragraph()],
