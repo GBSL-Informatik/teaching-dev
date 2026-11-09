@@ -1,7 +1,5 @@
 import {
-    mdiCodeJson,
     mdiCodeTags,
-    mdiFileCompare,
     mdiFormatBold,
     mdiFormatItalic,
     mdiFormatListBulleted,
@@ -21,7 +19,7 @@ import { observer } from 'mobx-react-lite';
 import type { MarkType } from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 import { redo, undo } from 'prosemirror-history';
-import Actions from '../../components/MdxEditor/toolbar/Actions';
+import EditorHeader from '../../components/MdxEditor/toolbar/EditorHeader';
 import {
     type BlockType,
     currentBlockType,
@@ -139,30 +137,13 @@ const EditingTools = observer(({ document }: Props) => {
 
 const Toolbar = observer(({ document }: Props) => {
     return (
-        <div className={clsx(styles.toolbar)}>
-            <Actions file={document.file} />
+        <EditorHeader
+            file={document.file}
+            showDiff={document.showDiff}
+            onToggleDiff={() => document.setShowDiff(!document.showDiff)}
+        >
             {!document.showDiff && <EditingTools document={document} />}
-            <div className={clsx(styles.spacer)} />
-            <Button
-                icon={mdiFileCompare}
-                size={SIZE_S}
-                title={document.showDiff ? 'Zurück zum Editor' : 'Änderungen anzeigen'}
-                text="Diff"
-                iconSide="left"
-                active={document.showDiff}
-                disabled={!document.showDiff && !document.file.isDirty}
-                onClick={() => document.setShowDiff(!document.showDiff)}
-            />
-            <Button
-                icon={mdiCodeJson}
-                size={SIZE_S}
-                title="Markdown-Quelltext bearbeiten"
-                onClick={() => {
-                    document.flush();
-                    document.file.setPreventMdxEditor(true);
-                }}
-            />
-        </div>
+        </EditorHeader>
     );
 });
 

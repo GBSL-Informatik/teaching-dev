@@ -1,27 +1,7 @@
-.toolbar {
-    position: sticky;
-    top: var(--cms-toolbar-top-offset, var(--ifm-navbar-height));
-    /* above the dropdowns in the document (e.g. the admonition type), below the navbar */
-    z-index: calc(var(--ifm-z-index-dropdown) + 1);
+.group {
     display: flex;
     align-items: center;
-    gap: 0.5em;
-    padding: 0.3em 0.5em;
-    /* the menus are rendered in a portal, so they are not clipped by the scroll container */
-    overflow-x: auto;
-    > * {
-        flex-shrink: 0;
-    }
-    background: var(--ifm-background-surface-color);
-    border-bottom: 1px solid var(--ifm-color-emphasis-300);
-    .group {
-        display: flex;
-        align-items: center;
-        gap: 0.1em;
-    }
-    .spacer {
-        flex-grow: 1;
-    }
+    gap: 0.1em;
 }
 .menu {
     display: flex;

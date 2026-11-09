@@ -1,38 +1,31 @@
-import { mdiLanguageMarkdown } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
+import MdxDiff from '../../../editor/components/MdxDiff';
 import SourceEditor from '../../../editor/SourceEditor';
 import File from '../../../models/File';
-import Actions from '../../MdxEditor/toolbar/Actions';
+import EditorHeader from '../../MdxEditor/toolbar/EditorHeader';
 import styles from './styles.module.scss';
 
 interface Props {
     file: File;
 }
 
+/**
+ * Edits the source of a text file. The source editor is recreated after the diff is closed,
+ * so that it shows the reverted changes.
+ */
 const DefaultEditor = observer((props: Props) => {
     const { file } = props;
+    const [showDiff, setShowDiff] = React.useState(false);
     if (!file || file.type !== 'file') {
         return null;
     }
 
     return (
         <div className={clsx(styles.codeEditor)}>
-            <div className={clsx(styles.header)}>
-                <Actions file={file} />
-                <div>{file.path}</div>
-                {file.isMarkdown && (
-                    <Button
-                        icon={mdiLanguageMarkdown}
-                        color="blue"
-                        size={SIZE_S}
-                        onClick={() => file.setPreventMdxEditor(false)}
-                    />
-                )}
-            </div>
-            <SourceEditor file={file} />
+            <EditorHeader file={file} showDiff={showDiff} onToggleDiff={() => setShowDiff(!showDiff)} />
+            {showDiff ? <MdxDiff file={file} /> : <SourceEditor file={file} />}
         </div>
     );
 });
