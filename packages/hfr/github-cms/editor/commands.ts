@@ -65,13 +65,27 @@ export const insertText = (text: string): Command => {
     };
 };
 
+const canContainInline = (parent: Node) => parent.inlineContent && !parent.type.spec.code;
+
 export const insertInline = (node: Node): Command => {
     return (state, dispatch) => {
-        const { parent } = state.selection.$from;
-        if (!parent.inlineContent || parent.type.spec.code) {
+        if (!canContainInline(state.selection.$from.parent)) {
             return false;
         }
         dispatch?.(state.tr.replaceSelectionWith(node).scrollIntoView());
+        return true;
+    };
+};
+
+/** inserts the node at the text position nearest to `pos`, e.g. where an image is dropped */
+export const insertInlineAt = (pos: number, node: Node): Command => {
+    return (state, dispatch) => {
+        const $pos = state.doc.resolve(Math.min(pos, state.doc.content.size));
+        const tr = state.tr.setSelection(TextSelection.near($pos));
+        if (!canContainInline(tr.selection.$from.parent)) {
+            return false;
+        }
+        dispatch?.(tr.replaceSelectionWith(node).scrollIntoView());
         return true;
     };
 };

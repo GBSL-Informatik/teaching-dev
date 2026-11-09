@@ -5,9 +5,11 @@ import { type Command, EditorState, type Transaction } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 import type { ReactPortal } from 'react';
 import type File from '../../models/File';
+import { insertInlineAt } from '../commands';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import type { NodeViewEditor } from '../nodeViews/ReactNodeView';
 import { createPlugins } from '../plugins';
+import { schema } from '../schema';
 
 const SYNC_DELAY_MS = 300;
 
@@ -34,6 +36,8 @@ class MdxDocument implements NodeViewEditor {
     @observable accessor showDiff = false;
     /** the dialog to insert an image, opened from the insert menu or the suggestions */
     @observable accessor isImageDialogOpen = false;
+    /** an image dropped into the editor, it is inserted at `pos` once it is named and uploaded */
+    @observableRef accessor droppedImage: { file: globalThis.File; pos: number } | null = null;
 
     /** React content of the node views, rendered as portals by the editor component */
     readonly portals = observable.map<string, ReactPortal>({}, { deep: false });
@@ -63,6 +67,21 @@ class MdxDocument implements NodeViewEditor {
     @action
     setImageDialogOpen(open: boolean) {
         this.isImageDialogOpen = open;
+    }
+
+    @action
+    setDroppedImage(droppedImage: { file: globalThis.File; pos: number } | null) {
+        this.droppedImage = droppedImage;
+    }
+
+    @action
+    insertDroppedImage(src: string) {
+        if (!this.droppedImage) {
+            return;
+        }
+        const { pos } = this.droppedImage;
+        this.droppedImage = null;
+        this.run(insertInlineAt(pos, schema.nodes.image.create({ src })));
     }
 
     @action

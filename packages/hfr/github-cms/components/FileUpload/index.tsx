@@ -26,6 +26,8 @@ interface Props {
     uploadDir: string;
     branch: string;
     uploadButtonLabel: string;
+    /** files to upload, e.g. dropped into the editor */
+    initialFiles?: File[];
 }
 
 const sanitizeFileName = (path: string) => {
@@ -55,11 +57,13 @@ const sanitizeFileName = (path: string) => {
 };
 
 const FileUpload = observer((props: Props) => {
-    const [files, setFiles] = useState<File[]>([]);
+    const [files, setFiles] = useState<File[]>(props.initialFiles ?? []);
     const [isDragOver, setIsDragOver] = useState(false);
     const labelRef = React.useRef<HTMLLabelElement>(null);
     const cmsStore = useCmsStore();
-    const [uploadName, setUploadName] = React.useState('');
+    const [uploadName, setUploadName] = React.useState(() =>
+        props.initialFiles?.[0] ? sanitizeFileName(props.initialFiles[0].name) : ''
+    );
     const [compress, setCompress] = React.useState(true);
 
     const inputId = useId();
@@ -186,7 +190,8 @@ const FileUpload = observer((props: Props) => {
                                 if (files[0].type.startsWith('image/')) {
                                     const imgDir = props.uploadDir;
                                     const fName = sanitizeFileName(uploadName);
-                                    if (compress) {
+                                    // svgs are not compressed, the checkbox is not shown for them
+                                    if (compress && files[0].type !== 'image/svg+xml') {
                                         cmsStore
                                             .uploadImage(
                                                 files[0],

@@ -19,6 +19,7 @@ import { schema } from '../schema';
 import { suggestionSources } from '../suggestions';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
+import { imageDrop } from './imageDrop';
 import { markInputRules } from './markInputRules';
 import { suggestionMenu } from './suggestionMenu';
 import { uuidMarker } from './uuidMarker';
@@ -89,6 +90,7 @@ const markdownInputRules = inputRules({
 export const createPlugins = (document: MdxDocument): Plugin[] => [
     // before the keymaps, it handles enter and the arrow keys while the menu is open
     suggestionMenu(suggestionSources(document)),
+    imageDrop(document),
     markdownInputRules,
     editorKeymap,
     keymap(baseKeymap),
