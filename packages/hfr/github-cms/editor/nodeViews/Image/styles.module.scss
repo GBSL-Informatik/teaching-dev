@@ -53,15 +53,30 @@
     }
 
     .handle {
+        --handle-size: 0.7em;
         position: absolute;
-        width: 0.7em;
-        height: 0.7em;
+        width: var(--handle-size);
+        height: var(--handle-size);
         border: 1px solid var(--ifm-background-color);
         border-radius: 2px;
         background: var(--ifm-color-primary);
         opacity: 0;
+        /* hidden handles must not catch touches near the corners of the image */
+        pointer-events: none;
         touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
         transition: opacity 0.15s ease-in-out;
+        /* touch devices: a larger handle and an even larger (invisible) area to grab it */
+        @media (pointer: coarse) {
+            --handle-size: 1.1em;
+            &::after {
+                content: '';
+                position: absolute;
+                inset: -0.8em;
+            }
+        }
         &.nw,
         &.se {
             cursor: nwse-resize;
@@ -72,19 +87,19 @@
         }
         &.nw,
         &.ne {
-            top: -0.35em;
+            top: calc(var(--handle-size) / -2);
         }
         &.sw,
         &.se {
-            bottom: -0.35em;
+            bottom: calc(var(--handle-size) / -2);
         }
         &.nw,
         &.sw {
-            left: -0.35em;
+            left: calc(var(--handle-size) / -2);
         }
         &.ne,
         &.se {
-            right: -0.35em;
+            right: calc(var(--handle-size) / -2);
         }
     }
     .settings {
@@ -102,5 +117,9 @@
     &:hover .settings,
     &.selected .settings {
         opacity: 1;
+    }
+    &:hover .handle,
+    &.selected .handle {
+        pointer-events: auto;
     }
 }
