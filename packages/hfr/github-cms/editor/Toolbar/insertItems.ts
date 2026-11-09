@@ -9,7 +9,6 @@ import {
     mdiFormatPageBreak,
     mdiFormTextbox,
     mdiInformationOutline,
-    mdiLightbulbOnOutline,
     mdiMathIntegral,
     mdiMathIntegralBox,
     mdiMinus,
@@ -19,8 +18,9 @@ import {
     mdiViewColumnOutline
 } from '@mdi/js';
 import type { Node } from 'prosemirror-model';
+import type { Command, EditorState } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
-import { createNode, createTable } from '../commands';
+import { createNode, createTable, insertBlock, insertInline } from '../commands';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { type JsxAttribute, schema } from '../schema';
 
@@ -29,6 +29,8 @@ const { nodes } = schema;
 interface MenuItemBase {
     label: string;
     icon: string;
+    /** shown only where it makes sense, in addition to where the schema allows it */
+    isAvailable?: (state: EditorState) => boolean;
 }
 
 /** the content is created when the item is chosen */
@@ -46,6 +48,19 @@ const directive = (name: string, label?: string) => {
 };
 
 const itemBreak = () => nodes.leaf_directive.create({ name: 'br' });
+
+const ITEMS_DIRECTIVES = ['cards', 'flex'];
+
+const isInItemsDirective = (state: EditorState) => {
+    const { $from } = state.selection;
+    for (let depth = $from.depth; depth > 0; depth--) {
+        const node = $from.node(depth);
+        if (node.type === nodes.container_directive && ITEMS_DIRECTIVES.includes(node.attrs.name)) {
+            return true;
+        }
+    }
+    return false;
+};
 
 /** `:::cards` or `:::flex`, the items are separated by `::br` */
 const itemsDirective = (name: string, items: string[]) => {
@@ -65,7 +80,11 @@ const jsx = (name: string, attributes: JsxAttribute[], children?: Node[]) => {
 
 const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: uuidv4() });
 
+/** the type can be changed in the admonition itself */
+const DEFAULT_ADMONITION = ADMONITION_TYPES.includes('info') ? 'info' : ADMONITION_TYPES[0];
+
 const BLOCKS: MenuItem[] = [
+    { label: 'Hinweis', icon: mdiInformationOutline, create: () => directive(DEFAULT_ADMONITION) },
     { label: 'Tabelle', icon: mdiTable, create: () => createTable(3, 3) },
     { label: 'Code', icon: mdiCodeBraces, create: () => nodes.code_block.create({ lang: 'py' }) },
     {
@@ -84,7 +103,8 @@ const BLOCKS: MenuItem[] = [
     {
         label: 'Nächste Karte/Spalte (::br)',
         icon: mdiFormatPageBreak,
-        create: () => [itemBreak(), paragraph()]
+        create: () => [itemBreak(), paragraph()],
+        isAvailable: isInItemsDirective
     }
 ];
 
@@ -102,12 +122,6 @@ const INLINE: MenuItem[] = [
         inline: true
     }
 ];
-
-const ADMONITIONS: MenuItem[] = ADMONITION_TYPES.map((name) => ({
-    label: name,
-    icon: name === 'tip' ? mdiLightbulbOnOutline : mdiInformationOutline,
-    create: () => directive(name)
-}));
 
 const COMPONENTS: MenuItem[] = [
     {
@@ -152,10 +166,30 @@ const COMPONENTS: MenuItem[] = [
     }
 ];
 
-/** the items of the insert menu, grouped in sections */
-export const INSERT_SECTIONS: { title: string; items: MenuItem[] }[] = [
+interface MenuSection {
+    title: string;
+    items: MenuItem[];
+}
+
+const INSERT_SECTIONS: MenuSection[] = [
     { title: 'Blöcke', items: BLOCKS },
     { title: 'Inline', items: INLINE },
-    { title: 'Hinweise', items: ADMONITIONS },
     { title: 'Komponenten', items: COMPONENTS }
 ];
+
+export const insertCommand = (item: MenuItem): Command => {
+    return item.inline ? insertInline(item.create()) : insertBlock(item.create());
+};
+
+const canInsert = (item: MenuItem, state: EditorState) => {
+    const isAvailable = item.isAvailable?.(state) ?? true;
+    return isAvailable && insertCommand(item)(state);
+};
+
+/** the sections of the insert menu, with the items that can be inserted at the selection */
+export const availableInsertSections = (state: EditorState): MenuSection[] => {
+    return INSERT_SECTIONS.map((section) => ({
+        ...section,
+        items: section.items.filter((item) => canInsert(item, state))
+    })).filter((section) => section.items.length > 0);
+};

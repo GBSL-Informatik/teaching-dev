@@ -60,6 +60,10 @@ export const insertBlock = (content: Node | Node[]): Command => {
 
 export const insertInline = (node: Node): Command => {
     return (state, dispatch) => {
+        const { parent } = state.selection.$from;
+        if (!parent.inlineContent || parent.type.spec.code) {
+            return false;
+        }
         dispatch?.(state.tr.replaceSelectionWith(node).scrollIntoView());
         return true;
     };

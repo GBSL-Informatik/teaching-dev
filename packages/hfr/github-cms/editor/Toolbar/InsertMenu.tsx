@@ -7,11 +7,11 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
 import type { PopupActions } from 'reactjs-popup/dist/types';
-import { hasFrontmatter, insertBlock, insertFrontmatter, insertInline } from '../commands';
+import { hasFrontmatter, insertFrontmatter, insertInline } from '../commands';
 import ImageDialog from '../components/ImageDialog';
 import type MdxDocument from '../models/MdxDocument';
 import { schema } from '../schema';
-import { INSERT_SECTIONS, type MenuItem } from './insertItems';
+import { availableInsertSections, insertCommand, type MenuItem } from './insertItems';
 import styles from './styles.module.scss';
 
 const { nodes } = schema;
@@ -21,9 +21,12 @@ const InsertMenu = observer(({ document }: { document: MdxDocument }) => {
     const [showImageDialog, setShowImageDialog] = React.useState(false);
 
     const handleInsert = (item: MenuItem) => {
-        document.run(item.inline ? insertInline(item.create()) : insertBlock(item.create()));
+        document.run(insertCommand(item));
         ref.current?.close();
     };
+
+    const sections = availableInsertSections(document.state);
+    const canInsertImage = document.canRun(insertInline(nodes.image.create()));
 
     return (
         <>
@@ -40,16 +43,18 @@ const InsertMenu = observer(({ document }: { document: MdxDocument }) => {
                 arrow={false}
             >
                 <Card classNames={{ body: clsx(styles.menu) }}>
-                    <Button
-                        icon={mdiImageOutline}
-                        text="Bild"
-                        iconSide="left"
-                        onClick={() => {
-                            ref.current?.close();
-                            setShowImageDialog(true);
-                        }}
-                    />
-                    {INSERT_SECTIONS.map((section) => (
+                    {canInsertImage && (
+                        <Button
+                            icon={mdiImageOutline}
+                            text="Bild"
+                            iconSide="left"
+                            onClick={() => {
+                                ref.current?.close();
+                                setShowImageDialog(true);
+                            }}
+                        />
+                    )}
+                    {sections.map((section) => (
                         <React.Fragment key={section.title}>
                             <div className={clsx(styles.menuTitle)}>{section.title}</div>
                             {section.items.map((item) => (
