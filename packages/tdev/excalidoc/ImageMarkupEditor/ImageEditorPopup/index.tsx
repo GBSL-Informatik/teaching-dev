@@ -73,6 +73,13 @@ const ImageEditorPopup = (props: Props) => {
         }
     };
 
+    // reactjs-popup does not call `onOpen` when it is mounted with `open`, so the scene is loaded here
+    React.useEffect(() => {
+        if (props.open) {
+            handleOpen();
+        }
+    }, [props.open]);
+
     const handleSave = (state: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => {
         return runExclusively('Speichern...', async () => {
             try {
@@ -113,7 +120,7 @@ const ImageEditorPopup = (props: Props) => {
             closeOnEscape={false}
             nested
             closeOnDocumentClick={false}
-            onOpen={handleOpen}
+            onOpen={props.open === undefined ? handleOpen : undefined}
             onClose={() => {
                 setExcaliState(null);
                 setStorage(null);
