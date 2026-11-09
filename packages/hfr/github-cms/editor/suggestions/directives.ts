@@ -1,6 +1,5 @@
 import { mdiCodeBrackets, mdiInformationOutline, mdiMinusBoxOutline, mdiTextBoxOutline } from '@mdi/js';
-import type { Command } from 'prosemirror-state';
-import { insertBlock, insertInline } from '../commands';
+import { insertBlock, insertInline, insertText } from '../commands';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { schema } from '../schema';
 import { createContainerDirective, isInItemsDirective } from '../Toolbar/insertItems';
@@ -9,13 +8,6 @@ import { fuzzyFilter } from './fuzzyScore';
 import type { Suggestion, SuggestionSource } from './types';
 
 const { nodes } = schema;
-
-const insertText = (text: string): Command => {
-    return (state, dispatch) => {
-        dispatch?.(state.tr.insertText(text));
-        return true;
-    };
-};
 
 const containerSuggestion = (name: string): Suggestion => ({
     label: `:::${name}`,

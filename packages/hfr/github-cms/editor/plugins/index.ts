@@ -13,8 +13,10 @@ import { keymap } from 'prosemirror-keymap';
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list';
 import type { Command, Plugin } from 'prosemirror-state';
 import { goToNextCell, tableEditing } from 'prosemirror-tables';
+import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
+import { suggestionSources } from '../suggestions';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
 import { markInputRules } from './markInputRules';
@@ -83,9 +85,10 @@ const markdownInputRules = inputRules({
     ]
 });
 
-export const createPlugins = (): Plugin[] => [
+/** the document provides what plugins need beyond the state, e.g. the images next to the file */
+export const createPlugins = (document: MdxDocument): Plugin[] => [
     // before the keymaps, it handles enter and the arrow keys while the menu is open
-    suggestionMenu(),
+    suggestionMenu(suggestionSources(document)),
     markdownInputRules,
     editorKeymap,
     keymap(baseKeymap),

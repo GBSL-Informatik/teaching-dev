@@ -8,7 +8,7 @@ import {
 } from 'prosemirror-state';
 import { Mapping } from 'prosemirror-transform';
 import type { EditorView } from 'prosemirror-view';
-import { SUGGESTION_SOURCES, type Suggestion, type SuggestionSource } from '../suggestions';
+import type { Suggestion, SuggestionSource } from '../suggestions';
 
 /** the typed text a source offers suggestions for, e.g. `/tip` */
 export interface TypedQuery {
@@ -35,15 +35,16 @@ export const suggestionMenuKey = new PluginKey<SuggestionMenuState>('suggestionM
 
 /**
  * Typing e.g. `/` or `:::` opens a menu of suggestions, filtered by the text typed after it.
- * The suggestions come from the `SUGGESTION_SOURCES`, the menu is rendered by the `SuggestionMenu` component.
+ * The first source matching the typed text offers its suggestions.
+ * The menu is rendered by the `SuggestionMenu` component.
  */
-export const suggestionMenu = () => {
+export const suggestionMenu = (sources: SuggestionSource[]) => {
     return new Plugin<SuggestionMenuState>({
         key: suggestionMenuKey,
         state: {
             init: () => CLOSED,
             apply: (tr, previous, _oldState, newState) => {
-                const typed = findTypedQuery(newState);
+                const typed = findTypedQuery(newState, sources);
                 if (!typed) {
                     return CLOSED;
                 }
@@ -97,13 +98,16 @@ export const applySuggestion = (typed: TypedQuery, suggestion: Suggestion): Comm
         const tr = state.tr.delete(typed.from, typed.to);
         let suggestionTr: Transaction | undefined;
         const isApplied = suggestion.command(state.apply(tr), (applied) => (suggestionTr = applied));
-        if (!isApplied || !suggestionTr || !dispatch) {
+        if (!isApplied || !dispatch) {
             return isApplied;
         }
 
-        // the suggestion was applied to the state without the typed text, which is `tr.doc`
-        suggestionTr.steps.forEach((step) => tr.step(step));
-        tr.setSelection(suggestionTr.selection.map(tr.doc, new Mapping()));
+        // e.g. opening a dialog does not change the document, only the typed text is removed
+        if (suggestionTr) {
+            // the suggestion was applied to the state without the typed text, which is `tr.doc`
+            suggestionTr.steps.forEach((step) => tr.step(step));
+            tr.setSelection(suggestionTr.selection.map(tr.doc, new Mapping()));
+        }
         dispatch(tr.scrollIntoView());
         return true;
     };
@@ -144,13 +148,13 @@ const handleMenuKey = (view: EditorView, event: KeyboardEvent): boolean => {
     }
 };
 
-const findTypedQuery = (state: EditorState): TypedQuery | null => {
+const findTypedQuery = (state: EditorState, sources: SuggestionSource[]): TypedQuery | null => {
     const $cursor = state.selection instanceof TextSelection ? state.selection.$cursor : null;
     if (!$cursor || $cursor.parent.type.spec.code || $cursor.marks().some((mark) => mark.type.spec.code)) {
         return null;
     }
     const textBefore = $cursor.parent.textBetween(0, $cursor.parentOffset, undefined, '￼');
-    for (const source of SUGGESTION_SOURCES) {
+    for (const source of sources) {
         const match = source.pattern.exec(textBefore);
         if (match) {
             return { source, from: $cursor.pos - match[0].length, to: $cursor.pos, query: match[1] };

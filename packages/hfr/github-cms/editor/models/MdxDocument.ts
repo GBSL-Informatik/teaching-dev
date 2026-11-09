@@ -14,9 +14,9 @@ const SYNC_DELAY_MS = 300;
 /**
  * @throws when the content is not valid mdx
  */
-const parseDocument = (content: string) => {
+const parseDocument = (content: string, document: MdxDocument) => {
     const { doc, trailing } = parseMarkdown(content);
-    return { state: EditorState.create({ doc, plugins: createPlugins() }), trailing };
+    return { state: EditorState.create({ doc, plugins: createPlugins(document) }), trailing };
 };
 
 /**
@@ -32,6 +32,8 @@ class MdxDocument implements NodeViewEditor {
     @observableRef accessor view: EditorView | null = null;
     /** shows the changes of the markdown source instead of the editor */
     @observable accessor showDiff = false;
+    /** the dialog to insert an image, opened from the insert menu or the suggestions */
+    @observable accessor isImageDialogOpen = false;
 
     /** React content of the node views, rendered as portals by the editor component */
     readonly portals = observable.map<string, ReactPortal>({}, { deep: false });
@@ -43,7 +45,7 @@ class MdxDocument implements NodeViewEditor {
      */
     constructor(file: File) {
         this.file = file;
-        const { state, trailing } = parseDocument(file.content);
+        const { state, trailing } = parseDocument(file.content, this);
         this.state = state;
         this.trailing = trailing;
     }
@@ -56,6 +58,11 @@ class MdxDocument implements NodeViewEditor {
             this.reloadRevertedChanges();
         }
         this.showDiff = showDiff;
+    }
+
+    @action
+    setImageDialogOpen(open: boolean) {
+        this.isImageDialogOpen = open;
     }
 
     @action
@@ -142,7 +149,7 @@ class MdxDocument implements NodeViewEditor {
             return;
         }
         try {
-            const { state, trailing } = parseDocument(this.file.content);
+            const { state, trailing } = parseDocument(this.file.content, this);
             this.state = state;
             this.trailing = trailing;
             this.view?.updateState(this.state);

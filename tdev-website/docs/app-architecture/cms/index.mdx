@@ -85,6 +85,7 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 `suggestions/`
 : Vorschläge, die beim Tippen erscheinen. Jede Quelle erkennt den getippten Text an einem regulären Ausdruck:
 : `/tip` zeigt die Schnellaktionen: die Einträge des Menüs «Einfügen», die Hinweis-Typen sowie Titel, Listen und Zitate.
+: `![` (oder `/bild`) zeigt die Bilder in `./images` neben der Datei mit einer Vorschau, «Anderes Bild...» öffnet den Dialog zum Hochladen oder Auswählen.
 : `:::`, `::` und `:` zeigen die registrierten Direktiven (`directiveNames.ts`, Hinweis-Typen aus der Docusaurus-Konfiguration). `:mdi` führt weiter zu `:mdi[`, wo ein Icon mit Vorschau ausgewählt wird.
 : Das Menü wird mit den Pfeiltasten bedient, [[Enter]] wendet den Vorschlag an, [[Esc]] schliesst das Menü. Das Plugin `plugins/suggestionMenu.ts` verwaltet den Zustand, `components/SuggestionMenu/` zeigt das Menü an.
 : Eine neue Direktive eines Remark-Plugins wird in `suggestions/directiveNames.ts` ergänzt.

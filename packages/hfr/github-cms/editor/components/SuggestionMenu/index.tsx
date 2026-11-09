@@ -62,7 +62,7 @@ const SuggestionMenu = observer(({ document, container }: Props) => {
                         document.run(applySuggestion(menu.typed, suggestion));
                     }}
                 >
-                    <Icon path={suggestion.icon} size="1.1em" />
+                    {suggestion.preview ?? <Icon path={suggestion.icon} size="1.1em" />}
                     {suggestion.label}
                 </div>
             ))}

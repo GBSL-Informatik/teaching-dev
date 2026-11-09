@@ -4,10 +4,11 @@ import {
     mdiFormatHeader3,
     mdiFormatListBulleted,
     mdiFormatListNumbered,
-    mdiFormatQuoteClose
+    mdiFormatQuoteClose,
+    mdiImageOutline
 } from '@mdi/js';
 import type { EditorState } from 'prosemirror-state';
-import { setCurrentBlockType, toggleBlockquote, toggleList } from '../commands';
+import { insertText, setCurrentBlockType, toggleBlockquote, toggleList } from '../commands';
 import { schema } from '../schema';
 import { ADMONITION_ITEMS, INSERT_ITEMS, insertCommand, type MenuItem } from '../Toolbar/insertItems';
 import { fuzzyFilter } from './fuzzyScore';
@@ -56,6 +57,13 @@ const FORMATS: QuickAction[] = [
         icon: mdiFormatQuoteClose,
         keywords: ['>', 'quote', 'blockquote'],
         command: toggleBlockquote
+    },
+    {
+        label: 'Bild',
+        icon: mdiImageOutline,
+        keywords: ['![', 'image', 'img'],
+        // continues with the images to choose from, see `imageSource`
+        command: insertText('![')
     }
 ];
 

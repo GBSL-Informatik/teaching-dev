@@ -58,6 +58,13 @@ export const insertBlock = (content: Node | Node[]): Command => {
     };
 };
 
+export const insertText = (text: string): Command => {
+    return (state, dispatch) => {
+        dispatch?.(state.tr.insertText(text));
+        return true;
+    };
+};
+
 export const insertInline = (node: Node): Command => {
     return (state, dispatch) => {
         const { parent } = state.selection.$from;

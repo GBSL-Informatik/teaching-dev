@@ -5,6 +5,7 @@ import 'prosemirror-tables/style/tables.css';
 import { EditorView } from 'prosemirror-view';
 import 'prosemirror-view/style/prosemirror.css';
 import React from 'react';
+import InsertImageDialog from '../components/InsertImageDialog';
 import MdxDiff from '../components/MdxDiff';
 import SuggestionMenu from '../components/SuggestionMenu';
 import type MdxDocument from '../models/MdxDocument';
@@ -46,6 +47,11 @@ const Editor = observer(({ document }: Props) => {
     }, [mount, document]);
 
     React.useEffect(() => {
+        // suggested when typing `![`, see `suggestions/images.tsx`
+        document.file.loadImages();
+    }, [document]);
+
+    React.useEffect(() => {
         if (!document.showDiff) {
             document.view?.focus();
         }
@@ -61,6 +67,7 @@ const Editor = observer(({ document }: Props) => {
             </div>
             {document.showDiff && <MdxDiff file={document.file} />}
             <NodeViewPortals document={document} />
+            <InsertImageDialog document={document} />
         </div>
     );
 });

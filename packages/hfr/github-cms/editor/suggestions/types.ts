@@ -1,9 +1,12 @@
 import type { Command, EditorState } from 'prosemirror-state';
+import type React from 'react';
 
 export interface Suggestion {
     /** unique within the suggestions of a source */
     label: string;
     icon: string;
+    /** shown instead of the icon, e.g. a thumbnail of an image */
+    preview?: React.ReactNode;
     /** applied to the state without the typed text */
     command: Command;
 }
