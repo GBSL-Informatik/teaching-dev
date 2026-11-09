@@ -81,6 +81,10 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 : Bildunterschriften werden als Text (Markdown) unter dem Bild bearbeitet, die Bild-Optionen wie `--width=20em` separat in den Bild-Einstellungen. Beides wird im Alt-Text gespeichert.
 `plugins/`
 : ProseMirror-Plugins: Tastenkürzel, Markdown-Kürzel, Ziehgriff für Blöcke, Definitionslisten und UUID-Markierungen.
+`Toolbar/insertItems.ts`
+: Die Einträge des Menüs «Einfügen». Ein Eintrag wird nur angezeigt, wenn er an der aktuellen Position eingefügt werden kann, z.B. `::br` nur innerhalb von `:::cards` oder `:::flex`.
+`imports.ts`
+: Ergänzt beim Einfügen einer Komponente die `import`-Anweisung am Anfang der Datei. Ist der Name bereits importiert, bleibt der bestehende Import unverändert.
 `SourceEditor/`
 : Bearbeitet den Quelltext einer Datei mit CodeMirror, z.B. für `.ts`-Dateien oder wenn der visuelle Editor ausgeschaltet ist.
 `components/MdxDiff/`
@@ -95,6 +99,19 @@ Kann eine Datei nicht als MDX geparst werden, wird sie im Quelltext-Editor geöf
 3. Optional eine Node-View in `nodeViews/` hinzufügen und in `nodeViews/index.ts` registrieren.
 
 Die Tests in __editor/markdown/tests__ prüfen unter anderem, dass alle Markdown-Dateien dieses Repositories unverändert bleiben, wenn sie geöffnet und wieder gespeichert werden.
+
+#### Komponente im Menü «Einfügen» anbieten
+
+Einen Eintrag in `COMPONENTS` in `Toolbar/insertItems.ts` ergänzen. Komponenten, die nicht in `src/theme/MDXComponents.tsx` registriert sind, brauchen einen `requiredImport`:
+
+```ts
+{
+    label: 'Browser-Fenster',
+    icon: mdiApplicationOutline,
+    create: () => jsx('BrowserWindow', [], [paragraph('Inhalt')]),
+    requiredImport: { name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' }
+}
+```
 
 ## Todos
 

@@ -1,4 +1,5 @@
 import {
+    mdiApplicationOutline,
     mdiArrowExpandDown,
     mdiCardsOutline,
     mdiCardTextOutline,
@@ -6,6 +7,7 @@ import {
     mdiCodeBraces,
     mdiEmoticonOutline,
     mdiFileDocumentEditOutline,
+    mdiFormatListNumbered,
     mdiFormatPageBreak,
     mdiFormTextbox,
     mdiInformationOutline,
@@ -15,12 +17,14 @@ import {
     mdiProgressCheck,
     mdiTab,
     mdiTable,
-    mdiViewColumnOutline
+    mdiViewColumnOutline,
+    mdiViewGridOutline
 } from '@mdi/js';
 import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
 import { createNode, createTable, insertBlock, insertInline } from '../commands';
+import { type ImportSpec, withImport } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { type JsxAttribute, schema } from '../schema';
 
@@ -31,6 +35,8 @@ interface MenuItemBase {
     icon: string;
     /** shown only where it makes sense, in addition to where the schema allows it */
     isAvailable?: (state: EditorState) => boolean;
+    /** added to the imports of the document, unless the name is already imported */
+    requiredImport?: ImportSpec;
 }
 
 /** the content is created when the item is chosen */
@@ -76,6 +82,11 @@ const jsx = (name: string, attributes: JsxAttribute[], children?: Node[]) => {
         return nodes.jsx_flow_void.create({ name, attributes });
     }
     return createNode(nodes.jsx_flow, { name, attributes }, children);
+};
+
+const orderedList = (items: string[]) => {
+    const listItems = items.map((item) => createNode(nodes.list_item, null, paragraph(item)));
+    return createNode(nodes.ordered_list, null, listItems);
 };
 
 const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: uuidv4() });
@@ -163,6 +174,24 @@ const COMPONENTS: MenuItem[] = [
                     )
                 ]
             )
+    },
+    {
+        label: 'Browser-Fenster',
+        icon: mdiApplicationOutline,
+        create: () => jsx('BrowserWindow', [], [paragraph('Inhalt')]),
+        requiredImport: { name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' }
+    },
+    {
+        label: 'Schritte',
+        icon: mdiFormatListNumbered,
+        create: () => jsx('Steps', [], [orderedList(['Schritt 1', 'Schritt 2'])]),
+        requiredImport: { name: 'Steps', source: '@tdev-components/Steps' }
+    },
+    {
+        label: 'Unterseiten (Karten)',
+        icon: mdiViewGridOutline,
+        create: () => jsx('DocCardList', []),
+        requiredImport: { name: 'DocCardList', source: '@theme/DocCardList' }
     }
 ];
 
@@ -178,7 +207,8 @@ const INSERT_SECTIONS: MenuSection[] = [
 ];
 
 export const insertCommand = (item: MenuItem): Command => {
-    return item.inline ? insertInline(item.create()) : insertBlock(item.create());
+    const command = item.inline ? insertInline(item.create()) : insertBlock(item.create());
+    return item.requiredImport ? withImport(command, item.requiredImport) : command;
 };
 
 const canInsert = (item: MenuItem, state: EditorState) => {
