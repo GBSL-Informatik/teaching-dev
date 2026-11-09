@@ -71,9 +71,55 @@
                 border: 1px dashed var(--ifm-color-emphasis-500);
                 border-radius: var(--ifm-global-radius);
             }
+            /* the line shows where the title ends and the content starts */
             .cms-directive-label {
                 font-weight: var(--ifm-font-weight-bold);
                 margin-bottom: 0.5em;
+                padding-bottom: 0.2em;
+                border-bottom: 1px solid var(--ifm-alert-border-color, var(--ifm-color-emphasis-300));
+            }
+        }
+        /*
+         * The icon of an admonition spans its toolbar and its title. Toolbar, title and the other
+         * blocks are laid out in the grid of the admonition: their wrappers have no box of their own.
+         */
+        .cms-directive.alert {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            column-gap: 0.6em;
+            > .cms-node-view-component,
+            > .cms-node-view-content {
+                display: contents;
+            }
+            > .cms-node-view-component > :not(.cms-admonition-icon) {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            > .cms-node-view-content > * {
+                grid-column: 1 / -1;
+            }
+            > .cms-node-view-content > .cms-directive-label {
+                grid-column: 2;
+                grid-row: 2;
+            }
+            .cms-admonition-icon {
+                position: relative;
+                grid-column: 1;
+                grid-row: 1;
+                width: 1.4em;
+                color: var(--ifm-alert-foreground-color);
+                /* sized by the rows it spans, it does not make them taller */
+                svg {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    fill: currentColor;
+                }
+            }
+            &.cms-directive--labeled .cms-admonition-icon {
+                grid-row: 1 / span 2;
+                width: 2.2em;
             }
         }
         .cms-directive--details {

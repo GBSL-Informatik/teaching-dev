@@ -133,6 +133,7 @@ class ReactNodeView implements NodeView {
         this.dom = window.document.createElement(tag);
         this.updateClassName(node);
         this.component = window.document.createElement(tag);
+        this.component.className = 'cms-node-view-component';
         this.component.contentEditable = 'false';
         this.dom.appendChild(this.component);
         if (options.hasContent) {
