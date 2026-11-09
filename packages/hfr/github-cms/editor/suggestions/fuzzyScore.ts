@@ -41,3 +41,14 @@ export const fuzzyScore = (query: string, terms: string[]): number => {
     const scores = terms.map((term) => termScore(normalizedQuery, normalize(term)));
     return Math.max(0, ...scores);
 };
+
+/**
+ * The items matching the query, the best match first. Items matching equally well keep their order.
+ */
+export const fuzzyFilter = <T>(items: T[], query: string, termsOf: (item: T) => string[]): T[] => {
+    return items
+        .map((item) => ({ item, score: fuzzyScore(query, termsOf(item)) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(({ item }) => item);
+};

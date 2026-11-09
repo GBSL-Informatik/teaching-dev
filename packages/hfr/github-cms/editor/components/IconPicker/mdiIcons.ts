@@ -48,7 +48,8 @@ export const mdiPath = (name: string): string | undefined => {
 };
 
 /**
- * Icons whose name contains the query: the exact match first, then icons starting with the query.
+ * Icons whose name contains the query: the exact match first, then icons starting with the query,
+ * the shortest name first (`robot` before `robber` and `robot-angry`).
  */
 export const searchIcons = (query: string): MdiIcon[] => {
     const normalized = query.trim().toLowerCase().replace(/\s+/g, '-');
@@ -57,7 +58,9 @@ export const searchIcons = (query: string): MdiIcon[] => {
     }
     const matches = icons().filter((icon) => icon.name.includes(normalized));
     const exact = matches.filter((icon) => icon.name === normalized);
-    const startsWith = matches.filter((icon) => icon.name !== normalized && icon.name.startsWith(normalized));
+    const startsWith = matches
+        .filter((icon) => icon.name !== normalized && icon.name.startsWith(normalized))
+        .sort((a, b) => a.name.length - b.name.length);
     const contains = matches.filter((icon) => !icon.name.startsWith(normalized));
     return [...exact, ...startsWith, ...contains].slice(0, MAX_RESULTS);
 };

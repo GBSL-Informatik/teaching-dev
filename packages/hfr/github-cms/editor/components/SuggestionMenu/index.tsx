@@ -4,11 +4,11 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type MdxDocument from '../../models/MdxDocument';
 import {
-    applyQuickAction,
-    availableQuickActions,
-    selectedQuickActionIndex,
-    slashMenuKey
-} from '../../plugins/slashMenu';
+    applySuggestion,
+    availableSuggestions,
+    selectedSuggestionIndex,
+    suggestionMenuKey
+} from '../../plugins/suggestionMenu';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -24,34 +24,34 @@ const scrollIntoView = (element: HTMLElement | null) => {
 };
 
 /**
- * The quick actions of the typed `/query`, below the slash.
- * The keyboard is handled by the `slashMenu` plugin.
+ * The suggestions for the typed text (e.g. `/tip` or `:::`), below the text.
+ * The keyboard is handled by the `suggestionMenu` plugin.
  */
-const SlashMenu = observer(({ document, container }: Props) => {
+const SuggestionMenu = observer(({ document, container }: Props) => {
     // null while the menu is closed, so typing does not re-render the menu
     const menu = useComputed(() => {
-        const { query, selectedIndex } = slashMenuKey.getState(document.state) ?? {};
-        if (!query) {
+        const { typed, selectedIndex } = suggestionMenuKey.getState(document.state) ?? {};
+        if (!typed) {
             return null;
         }
-        return { query, selectedIndex, actions: availableQuickActions(document.state, query) };
+        return { typed, selectedIndex, suggestions: availableSuggestions(document.state, typed) };
     }, [document]);
 
     const view = document.view;
-    if (!menu || menu.actions.length === 0 || !view || !container || document.showDiff) {
+    if (!menu || menu.suggestions.length === 0 || !view || !container || document.showDiff) {
         return null;
     }
 
-    const slash = view.coordsAtPos(menu.query.from);
+    const typedStart = view.coordsAtPos(menu.typed.from);
     const bounds = container.getBoundingClientRect();
-    const position = { top: slash.bottom - bounds.top + GAP_PX, left: slash.left - bounds.left };
-    const selectedIndex = selectedQuickActionIndex(menu.selectedIndex ?? 0, menu.actions.length);
+    const position = { top: typedStart.bottom - bounds.top + GAP_PX, left: typedStart.left - bounds.left };
+    const selectedIndex = selectedSuggestionIndex(menu.selectedIndex ?? 0, menu.suggestions.length);
 
     return (
         <div className={clsx(styles.menu)} style={position} role="listbox">
-            {menu.actions.map((action, index) => (
+            {menu.suggestions.map((suggestion, index) => (
                 <div
-                    key={action.label}
+                    key={suggestion.label}
                     ref={index === selectedIndex ? scrollIntoView : undefined}
                     className={clsx(styles.item, index === selectedIndex && styles.selected)}
                     role="option"
@@ -59,15 +59,15 @@ const SlashMenu = observer(({ document, container }: Props) => {
                     onMouseDown={(event) => {
                         // keep the focus (and the selection) in the editor
                         event.preventDefault();
-                        document.run(applyQuickAction(menu.query, action));
+                        document.run(applySuggestion(menu.typed, suggestion));
                     }}
                 >
-                    <Icon path={action.icon} size="1.1em" />
-                    {action.label}
+                    <Icon path={suggestion.icon} size="1.1em" />
+                    {suggestion.label}
                 </div>
             ))}
         </div>
     );
 });
 
-export default SlashMenu;
+export default SuggestionMenu;

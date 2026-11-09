@@ -59,7 +59,7 @@ const itemBreak = () => nodes.leaf_directive.create({ name: 'br' });
 
 const ITEMS_DIRECTIVES = ['cards', 'flex'];
 
-const isInItemsDirective = (state: EditorState) => {
+export const isInItemsDirective = (state: EditorState) => {
     const { $from } = state.selection;
     for (let depth = $from.depth; depth > 0; depth--) {
         const node = $from.node(depth);
@@ -77,6 +77,20 @@ const itemsDirective = (name: string, items: string[]) => {
         return idx === 0 ? [paragraphNode] : [itemBreak(), paragraphNode];
     });
     return createNode(nodes.container_directive, { name }, content);
+};
+
+/** a new `:::name` directive, with the content its remark plugin expects */
+export const createContainerDirective = (name: string): Node => {
+    switch (name) {
+        case 'details':
+            return directive('details', 'Details');
+        case 'cards':
+            return itemsDirective('cards', ['Karte 1', 'Karte 2']);
+        case 'flex':
+            return itemsDirective('flex', ['Spalte 1', 'Spalte 2']);
+        default:
+            return directive(name);
+    }
 };
 
 const jsx = (name: string, attributes: JsxAttribute[], children?: Node[]) => {
@@ -100,7 +114,7 @@ const admonitionItem = (type: string, label: string): MenuItem => ({
     label,
     icon: mdiInformationOutline,
     keywords: ['admonition', type],
-    create: () => directive(type)
+    create: () => createContainerDirective(type)
 });
 
 /** offered by the quick actions only, the insert menu has a single admonition */
@@ -133,19 +147,19 @@ const BLOCKS: MenuItem[] = [
         label: 'Details',
         icon: mdiArrowExpandDown,
         keywords: ['aufklappen', 'collapse'],
-        create: () => directive('details', 'Details')
+        create: () => createContainerDirective('details')
     },
     {
         label: 'Karten',
         icon: mdiCardsOutline,
         keywords: ['cards'],
-        create: () => itemsDirective('cards', ['Karte 1', 'Karte 2'])
+        create: () => createContainerDirective('cards')
     },
     {
         label: 'Spalten',
         icon: mdiViewColumnOutline,
         keywords: ['flex', 'columns'],
-        create: () => itemsDirective('flex', ['Spalte 1', 'Spalte 2'])
+        create: () => createContainerDirective('flex')
     },
     {
         label: 'Nächste Karte/Spalte (::br)',

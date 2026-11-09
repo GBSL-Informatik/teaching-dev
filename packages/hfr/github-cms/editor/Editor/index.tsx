@@ -6,7 +6,7 @@ import { EditorView } from 'prosemirror-view';
 import 'prosemirror-view/style/prosemirror.css';
 import React from 'react';
 import MdxDiff from '../components/MdxDiff';
-import SlashMenu from '../components/SlashMenu';
+import SuggestionMenu from '../components/SuggestionMenu';
 import type MdxDocument from '../models/MdxDocument';
 import { createNodeViews } from '../nodeViews';
 import Toolbar from '../Toolbar';
@@ -57,7 +57,7 @@ const Editor = observer(({ document }: Props) => {
             {/* the editor stays mounted while the diff is shown to keep its state (e.g. the selection) */}
             <div className={clsx(styles.contentArea)}>
                 <div ref={setMount} className={clsx(styles.content, document.showDiff && styles.hidden)} />
-                <SlashMenu document={document} container={mount} />
+                <SuggestionMenu document={document} container={mount} />
             </div>
             {document.showDiff && <MdxDiff file={document.file} />}
             <NodeViewPortals document={document} />

@@ -6,20 +6,18 @@ import {
     mdiFormatListNumbered,
     mdiFormatQuoteClose
 } from '@mdi/js';
-import type { Command, EditorState } from 'prosemirror-state';
+import type { EditorState } from 'prosemirror-state';
 import { setCurrentBlockType, toggleBlockquote, toggleList } from '../commands';
 import { schema } from '../schema';
 import { ADMONITION_ITEMS, INSERT_ITEMS, insertCommand, type MenuItem } from '../Toolbar/insertItems';
-import { fuzzyScore } from './fuzzyScore';
+import { fuzzyFilter } from './fuzzyScore';
+import type { Suggestion, SuggestionSource } from './types';
 
 const { nodes } = schema;
 
-export interface QuickAction {
-    label: string;
-    icon: string;
+interface QuickAction extends Suggestion {
     /** additional search terms, e.g. the markdown syntax */
     keywords: string[];
-    command: Command;
 }
 
 const FORMATS: QuickAction[] = [
@@ -76,14 +74,12 @@ const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 /**
- * The actions matching the query that can be applied to the state, the best match first.
+ * `/tip`: the actions matching the query that can be applied, the best match first.
  */
-export const matchingQuickActions = (state: EditorState, query: string): QuickAction[] => {
-    return QUICK_ACTIONS.map((action) => ({
-        action,
-        score: fuzzyScore(query, [action.label, ...action.keywords])
-    }))
-        .filter(({ action, score }) => score > 0 && action.command(state))
-        .sort((a, b) => b.score - a.score)
-        .map(({ action }) => action);
+export const quickActionSource: SuggestionSource = {
+    pattern: /(?<=^|\s)\/([^\s/]{0,30})$/,
+    suggestions: (state: EditorState, query: string) => {
+        const matching = fuzzyFilter(QUICK_ACTIONS, query, (action) => [action.label, ...action.keywords]);
+        return matching.filter((action) => action.command(state));
+    }
 };
