@@ -2,7 +2,13 @@ import { baseKeymap, chainCommands, exitCode, setBlockType, toggleMark } from 'p
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { history, redo, undo } from 'prosemirror-history';
-import { InputRule, inputRules, textblockTypeInputRule, wrappingInputRule } from 'prosemirror-inputrules';
+import {
+    InputRule,
+    inputRules,
+    textblockTypeInputRule,
+    undoInputRule,
+    wrappingInputRule
+} from 'prosemirror-inputrules';
 import { keymap } from 'prosemirror-keymap';
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list';
 import type { Command, Plugin } from 'prosemirror-state';
@@ -11,6 +17,7 @@ import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
+import { markInputRules } from './markInputRules';
 import { uuidMarker } from './uuidMarker';
 
 const { nodes, marks } = schema;
@@ -24,6 +31,7 @@ const editorKeymap = keymap({
     'Mod-z': undo,
     'Shift-Mod-z': redo,
     'Mod-y': redo,
+    Backspace: undoInputRule,
     'Mod-b': toggleMark(marks.strong),
     'Mod-i': toggleMark(marks.emphasis),
     'Mod-e': toggleMark(marks.code),
@@ -45,7 +53,9 @@ const editorKeymap = keymap({
 });
 
 /**
- * Markdown shortcuts: typing markdown syntax at the start of a line creates the corresponding node.
+ * Markdown shortcuts: typing markdown syntax at the start of a line creates the corresponding node,
+ * typing inline syntax such as `**bold**` applies the corresponding mark.
+ * Backspace right after a shortcut restores the typed text.
  */
 const markdownInputRules = inputRules({
     rules: [
@@ -67,7 +77,8 @@ const markdownInputRules = inputRules({
             }
             return state.tr.replaceRangeWith($start.before(), $start.after(), nodes.thematic_break.create());
         }),
-        startDefinitionRule
+        startDefinitionRule,
+        ...markInputRules
     ]
 });
 
