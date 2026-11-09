@@ -1,11 +1,8 @@
-import Layout from '@theme/Layout';
-
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import { matchPath, Redirect, useLocation } from '@docusaurus/router';
 import siteConfig from '@generated/docusaurus.config';
 import Loader from '@tdev-components/Loader';
 import { useStore } from '@tdev-hooks/useStore';
-import Details from '@theme/Details';
 import clsx from 'clsx';
 import type { Location } from 'history';
 import { reaction } from 'mobx';
@@ -15,8 +12,7 @@ import { useCmsNavigator } from '../hooks/useCmsNavigator';
 import { useCmsStore } from '../hooks/useCmsStore';
 import { useGithubAccess } from '../hooks/useGithubAccess';
 import { FileNavigation } from '../stores/CmsStore';
-import Branch from './Github/Branch';
-import PR from './Github/PR';
+import CmsLayout from './CmsLayout';
 import Directory from './MdxEditor/Directory';
 import EditorNav from './MdxEditor/EditorNav';
 import { useLoadedFile } from './MdxEditor/hooks/useLoadedFile';
@@ -50,8 +46,6 @@ const CmsLandingPage = observer(() => {
     if (access === 'loading' || !settings || !cmsStore.github || !entry) {
         return <Loader label="Laden..." />;
     }
-    const { github } = cmsStore;
-
     return (
         <main className={clsx(styles.cms, viewStore.showFileTree && styles.showFileTree)}>
             <div className={clsx(styles.header)}>
@@ -69,35 +63,6 @@ const CmsLandingPage = observer(() => {
             </div>
             <div className={clsx(styles.content)}>
                 <ShowFile file={entry} />
-            </div>
-            <div className={clsx(styles.footer)}>
-                <Details summary={'Files'}>
-                    <h4>Files</h4>
-                    <Directory dir={cmsStore.rootDir} />
-                </Details>
-                <Details summary={'PRs'}>
-                    <h4>PRs und Branches</h4>
-                    <ul>
-                        {github.PRs.map((pr, idx) => {
-                            return (
-                                <li key={pr.number}>
-                                    <PR pr={pr} />
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <ul>
-                        {github.branches
-                            .filter((b) => !b.PR)
-                            .map((branch, idx) => {
-                                return (
-                                    <li key={branch.name}>
-                                        <Branch branch={branch} />
-                                    </li>
-                                );
-                            })}
-                    </ul>
-                </Details>
             </div>
         </main>
     );
@@ -165,13 +130,13 @@ const Cms = observer(() => {
         return config;
     }, [cmsStore.repoOwner, cmsStore.repoName]);
     return (
-        <Layout title={`CMS`} description="Github">
+        <CmsLayout>
             <BrowserOnly fallback={<Loader />}>
                 {() => {
                     return <WithFileToEdit initialConfig={initialConfig} />;
                 }}
             </BrowserOnly>
-        </Layout>
+        </CmsLayout>
     );
 });
 

@@ -1,15 +1,15 @@
 .cms {
     --cms-tree-view-width: 0px;
-    --cms-toolbar-top-offset: 64px;
+    /* the height of the sticky header, the page has no navbar */
+    --cms-toolbar-top-offset: 4px;
 
     display: grid;
     grid-template-areas:
         'nav nav'
-        'fileTree content'
-        'fileTree footer';
+        'fileTree content';
     grid-template-columns: var(--cms-tree-view-width) minmax(10em, 1fr);
-    grid-template-rows: auto 1fr auto;
-    min-height: 60vh;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
     .header {
         grid-area: nav;
         background-color: var(--ifm-background-color);
@@ -38,9 +38,6 @@
     .content {
         grid-area: content;
     }
-    .footer {
-        grid-area: footer;
-    }
     &.showFileTree {
         --cms-tree-view-width: 300px;
     }
@@ -64,10 +61,10 @@
 
 @media screen and (min-width: 900px) {
     .cms {
-        --cms-toolbar-top-offset: 88px;
+        --cms-toolbar-top-offset: 28px;
         .header {
             position: sticky;
-            top: 60px;
+            top: 0;
             z-index: var(--ifm-z-index-dropdown);
         }
     }
