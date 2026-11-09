@@ -8,6 +8,7 @@ import {
 import NodeToolbar from '../../components/NodeToolbar';
 import { directiveAttributes } from '../../markdown/serialize';
 import type { NodeViewProps } from '../ReactNodeView';
+import { directiveItemClassName as flexItemClassName } from './flexLayout';
 
 const hasProps = (node: Node) => !!node.attrs.label || Object.keys(node.attrs.attributes).length > 0;
 
@@ -15,8 +16,10 @@ const hasProps = (node: Node) => !!node.attrs.label || Object.keys(node.attrs.at
  * The first item omits a `::br` without props when it is saved, it is grayed out then.
  * Whether an item is the first one is left to css: a node view is not updated when it becomes the first.
  */
-export const directiveItemClassName = (node: Node) =>
-    hasProps(node) ? 'cms-directive-item' : 'cms-directive-item cms-directive-item--plain';
+export const directiveItemClassName = (node: Node) => {
+    const plain = hasProps(node) ? '' : 'cms-directive-item--plain';
+    return `cms-directive-item ${plain} ${flexItemClassName(node)}`;
+};
 
 /**
  * An item of `:::cards` or `:::flex`, the toolbar shows the `::br` it starts with.

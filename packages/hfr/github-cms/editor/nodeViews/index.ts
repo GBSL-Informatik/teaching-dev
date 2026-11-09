@@ -19,6 +19,7 @@ import InlineAtom from './InlineAtom';
 import InlineMath from './InlineMath';
 import JsxFlow, { jsxFlowClassName } from './JsxFlow';
 import DirectiveItem, { directiveItemClassName } from './DirectiveItem';
+import { directiveItemStyle, itemsDirectiveContent } from './DirectiveItem/flexLayout';
 import LeafDirective from './LeafDirective';
 import { reactNodeView } from './ReactNodeView';
 import TextDirective from './TextDirective';
@@ -59,12 +60,14 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
     items_directive: reactNodeView(document, {
         component: ContainerDirective,
         hasContent: true,
-        className: containerDirectiveClassName
+        className: containerDirectiveClassName,
+        content: itemsDirectiveContent
     }),
     directive_item: reactNodeView(document, {
         component: DirectiveItem,
         hasContent: true,
-        className: directiveItemClassName
+        className: directiveItemClassName,
+        style: directiveItemStyle
     }),
     jsx_flow: reactNodeView(document, {
         component: JsxFlow,

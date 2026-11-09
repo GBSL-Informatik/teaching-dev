@@ -104,12 +104,29 @@ export interface NodeViewProps {
     handle: NodeViewHandle;
 }
 
+/** css properties in camel case (`flexBasis`) or custom properties (`--name`) */
+export type NodeStyle = Record<string, string>;
+
 interface Options {
     component: React.ComponentType<NodeViewProps>;
     /** whether the node has editable content (rendered after the component) */
     hasContent?: boolean;
     className?: (node: Node) => string;
+    /** inline styles computed from the attributes, e.g. the layout set in markdown */
+    style?: (node: Node) => NodeStyle;
+    /** class names and inline styles of the element holding the editable content */
+    content?: (node: Node) => { className?: string; style?: NodeStyle };
 }
+
+const applyStyle = (element: HTMLElement, style: NodeStyle = {}) => {
+    element.removeAttribute('style');
+    for (const [property, value] of Object.entries(style)) {
+        const name = property.startsWith('--')
+            ? property
+            : property.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+        element.style.setProperty(name, value);
+    }
+};
 
 let portalCounter = 0;
 
@@ -131,16 +148,15 @@ class ReactNodeView implements NodeView {
         const tag = node.isInline ? 'span' : 'div';
         this.handle = new NodeViewHandle(node, editor, getPos);
         this.dom = window.document.createElement(tag);
-        this.updateClassName(node);
         this.component = window.document.createElement(tag);
         this.component.className = 'cms-node-view-component';
         this.component.contentEditable = 'false';
         this.dom.appendChild(this.component);
         if (options.hasContent) {
             this.contentDOM = window.document.createElement('div');
-            this.contentDOM.className = 'cms-node-view-content';
             this.dom.appendChild(this.contentDOM);
         }
+        this.updateDom(node);
         const Component = options.component;
         editor.addPortal(
             this.portalKey,
@@ -153,7 +169,7 @@ class ReactNodeView implements NodeView {
             return false;
         }
         this.handle.setNode(node);
-        this.updateClassName(node);
+        this.updateDom(node);
         return true;
     }
 
@@ -192,9 +208,15 @@ class ReactNodeView implements NodeView {
         this.handle.editor.removePortal(this.portalKey);
     }
 
-    private updateClassName(node: Node) {
+    private updateDom(node: Node) {
         const selected = this.handle.selected ? 'ProseMirror-selectednode' : '';
         this.dom.className = `cms-node-view ${this.options.className?.(node) ?? ''} ${selected}`;
+        applyStyle(this.dom, this.options.style?.(node));
+        if (this.contentDOM) {
+            const content = this.options.content?.(node);
+            this.contentDOM.className = `cms-node-view-content ${content?.className ?? ''}`;
+            applyStyle(this.contentDOM, content?.style);
+        }
     }
 }
 

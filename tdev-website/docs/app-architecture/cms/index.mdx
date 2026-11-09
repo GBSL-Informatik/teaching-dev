@@ -74,7 +74,7 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 `schema/`
 : Das ProseMirror-Schema. Verschachtelte Komponenten (Admonitions, Details, JSX-Elemente) sind normale Knoten mit Block-Inhalt. Das ganze Dokument wird in einem einzigen Editor mit einer Auswahl und einem Undo-Verlauf bearbeitet.
 : Was der Editor nicht darstellen kann (z.B. `import`-Anweisungen oder `{Ausdrücke}`), bleibt als Quelltext erhalten und kann direkt bearbeitet werden.
-: Die Elemente von `:::cards` und `:::flex` sind eigene Knoten (`directive_item`), im Markdown werden sie durch `::br` getrennt. Beim ersten Element wird ein `::br` ohne Attribute weggelassen, im Editor wird es ausgegraut angezeigt. Unveränderte Elemente behalten ihr ursprüngliches Markdown.
+: Die Elemente von `:::cards` und `:::flex` sind eigene Knoten (`directive_item`), im Markdown werden sie durch `::br` getrennt. Beim ersten Element wird ein `::br` ohne Attribute weggelassen, im Editor wird es ausgegraut angezeigt. Die Elemente werden wie auf der Seite nebeneinander angezeigt, mit denselben Klassen und Stilen (`columns`, `minWidth`, `flexBasis`, ...) wie im Remark-Plugin (`src/plugins/remark-flex-cards/flexOptions.ts`). Unveränderte Elemente behalten ihr ursprüngliches Markdown.
 `models/MdxDocument.ts`
 : Hält den ProseMirror-Zustand als MobX-Observable. Toolbar und Node-Views beobachten den Zustand, Änderungen werden verzögert als Markdown in die Datei geschrieben.
 `nodeViews/`

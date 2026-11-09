@@ -126,11 +126,21 @@
             background: var(--ifm-color-info-contrast-background);
         }
 
-        /* the items of :::cards and :::flex are stacked, separated like by ::br */
-        .cms-directive-item + .cms-directive-item {
-            margin-top: 0.5em;
-            padding-top: 0.5em;
-            border-top: 2px dashed var(--ifm-color-primary-lighter);
+        /*
+         * The items of :::cards and :::flex are laid out by the site css (`div.flex > div.item`),
+         * with the styles of the attributes, see `nodeViews/DirectiveItem/flexLayout.ts`.
+         */
+        .cms-directive-item {
+            /* wide content (code, tables) must not widen the item beyond its flex-basis */
+            min-width: 0;
+        }
+        .flex > .cms-directive-label {
+            flex-basis: 100%;
+        }
+        /* `::br` between the items of :::flex, the cards are separated by their gap */
+        .cms-directive--flex > .cms-node-view-content > .cms-directive-item + .cms-directive-item {
+            padding-left: 0.4em;
+            border-left: 1px solid var(--ifm-color-emphasis-300);
         }
         /* the `::br` of the first item is not saved without props, see `DirectiveItem` */
         .cms-node-view-content > .cms-directive-item--plain:first-child,
@@ -140,16 +150,12 @@
                 font-style: italic;
             }
         }
-        /* like infima's `.card`, stacked instead of side by side as on the page */
+        /* like infima's `.card` */
         .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
             padding: 0.3em var(--ifm-card-horizontal-spacing) var(--ifm-card-vertical-spacing);
-            border: none;
             border-radius: var(--ifm-card-border-radius);
             background: var(--ifm-card-background-color);
             box-shadow: var(--ifm-global-shadow-md);
-            & + .cms-directive-item {
-                margin-top: 1em;
-            }
         }
 
         /* definition lists, see `plugins/deflist.ts` */
