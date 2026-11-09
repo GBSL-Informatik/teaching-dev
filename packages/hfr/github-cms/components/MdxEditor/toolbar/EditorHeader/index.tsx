@@ -1,4 +1,4 @@
-import { mdiCodeJson, mdiFileCompare } from '@mdi/js';
+import { mdiCodeJson, mdiFileCompare, mdiLanguageMarkdown } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
@@ -37,15 +37,13 @@ const EditorHeader = observer(({ file, showDiff, onToggleDiff, children }: Props
                 onClick={onToggleDiff}
             />
             {file.isMarkdown && (
+                // shows the view it leads to, icon only: the diff button keeps its place
                 <Button
-                    icon={mdiCodeJson}
+                    icon={file.preventMdxEditor ? mdiLanguageMarkdown : mdiCodeJson}
                     size={SIZE_S}
                     title={
                         file.preventMdxEditor ? 'Visuellen Editor anzeigen' : 'Markdown-Quelltext bearbeiten'
                     }
-                    text="Quelltext"
-                    iconSide="left"
-                    active={file.preventMdxEditor}
                     // the visual editor writes its pending changes to the file when it is unmounted
                     onClick={() => file.setPreventMdxEditor(!file.preventMdxEditor)}
                 />
