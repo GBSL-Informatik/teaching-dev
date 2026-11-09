@@ -10,9 +10,9 @@ import CodeShowcase from '@tdev-components/CodeShowcase';
 
 Bilder können im Markdown-Style eingebunden werden. Der `alt`-Text wird automatisch als Bildunterschrift hinzugefügt, wobei zusätzliche Eigenschaften wie die Breite oder Höhe des Bildes zuerst extrahiert werden. Zudem wird eine Quellenangabe hinzugefügt, falls sich beim Bildpfad ein gleichnamiges `.json`-File befindet, welches die Bildinformationen enthält.asdf
 
-:::flex
+![Hallo --width=157px](./images/zeichnung.png)
+
 ![--width=321px](./images/zeichnung.webp)
-:::
 
 ```md
 ![Streetfood Festival --width=300px](../images/street-food.jpg)
@@ -35,7 +35,10 @@ mit einem gleichnamigen `.json`-File:
 </CodeShowcase>
 
 ## Inlining der Quellenangabe
-Wenn keine Bildunterschrift angegeben wird, wird die Quellenangabe automatisch _inlined_ (also in das Bild hineinverschoben):
+
+:mdi[feather]{spin}
+
+Wenn keine Bildunterschrift angegeben wird, wird die Quellenangabe automatisch *inlined* (also in das Bild hineinverschoben):
 
 <CodeShowcase lang="md">
 ![--width=450px](../images/street-food.jpg)
