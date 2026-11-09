@@ -18,6 +18,7 @@ import { schema } from '../schema';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { dragHandle } from './dragHandle';
 import { markInputRules } from './markInputRules';
+import { slashMenu } from './slashMenu';
 import { uuidMarker } from './uuidMarker';
 
 const { nodes, marks } = schema;
@@ -83,6 +84,8 @@ const markdownInputRules = inputRules({
 });
 
 export const createPlugins = (): Plugin[] => [
+    // before the keymaps, it handles enter and the arrow keys while the menu is open
+    slashMenu(),
     markdownInputRules,
     editorKeymap,
     keymap(baseKeymap),

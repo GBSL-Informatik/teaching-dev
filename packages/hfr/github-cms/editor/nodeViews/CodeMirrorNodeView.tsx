@@ -268,6 +268,10 @@ export const arrowIntoCode = (direction: 'left' | 'right' | 'up' | 'down'): Comm
         }
         const side = direction === 'left' || direction === 'up' ? -1 : 1;
         const { $head } = state.selection;
+        // e.g. a gap cursor between top-level blocks, which has no block to step out of
+        if ($head.depth === 0) {
+            return false;
+        }
         const next = Selection.near(state.doc.resolve(side > 0 ? $head.after() : $head.before()), side);
         if (!next.$head?.parent.type.spec.code) {
             return false;

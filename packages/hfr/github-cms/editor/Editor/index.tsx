@@ -2,10 +2,11 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import 'prosemirror-gapcursor/style/gapcursor.css';
 import 'prosemirror-tables/style/tables.css';
-import 'prosemirror-view/style/prosemirror.css';
 import { EditorView } from 'prosemirror-view';
+import 'prosemirror-view/style/prosemirror.css';
 import React from 'react';
 import MdxDiff from '../components/MdxDiff';
+import SlashMenu from '../components/SlashMenu';
 import type MdxDocument from '../models/MdxDocument';
 import { createNodeViews } from '../nodeViews';
 import Toolbar from '../Toolbar';
@@ -54,7 +55,10 @@ const Editor = observer(({ document }: Props) => {
         <div className={clsx(styles.editor)}>
             <Toolbar document={document} />
             {/* the editor stays mounted while the diff is shown to keep its state (e.g. the selection) */}
-            <div ref={setMount} className={clsx(styles.content, document.showDiff && styles.hidden)} />
+            <div className={clsx(styles.contentArea)}>
+                <div ref={setMount} className={clsx(styles.content, document.showDiff && styles.hidden)} />
+                <SlashMenu document={document} container={mount} />
+            </div>
             {document.showDiff && <MdxDiff file={document.file} />}
             <NodeViewPortals document={document} />
         </div>

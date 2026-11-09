@@ -8,6 +8,11 @@
     background: var(--ifm-background-color);
 }
 
+/* the slash menu is positioned relative to the content */
+.contentArea {
+    position: relative;
+}
+
 .content {
     position: relative;
     padding: 1em 1.5em 1em 2em;

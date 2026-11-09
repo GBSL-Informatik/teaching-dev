@@ -35,6 +35,8 @@ interface MenuItemBase {
     icon: string;
     /** shown only where it makes sense, in addition to where the schema allows it */
     isAvailable?: (state: EditorState) => boolean;
+    /** additional search terms of the quick actions, e.g. the markdown syntax */
+    keywords?: string[];
     /** added to the imports of the document, unless the name is already imported */
     requiredImport?: ImportSpec;
 }
@@ -94,26 +96,61 @@ const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value:
 /** the type can be changed in the admonition itself */
 const DEFAULT_ADMONITION = ADMONITION_TYPES.includes('info') ? 'info' : ADMONITION_TYPES[0];
 
+const admonitionItem = (type: string, label: string): MenuItem => ({
+    label,
+    icon: mdiInformationOutline,
+    keywords: ['admonition', type],
+    create: () => directive(type)
+});
+
+/** offered by the quick actions only, the insert menu has a single admonition */
+export const ADMONITION_ITEMS: MenuItem[] = ADMONITION_TYPES.filter(
+    (type) => type !== DEFAULT_ADMONITION
+).map((type) => admonitionItem(type, `Hinweis: ${type}`));
+
 const BLOCKS: MenuItem[] = [
-    { label: 'Hinweis', icon: mdiInformationOutline, create: () => directive(DEFAULT_ADMONITION) },
-    { label: 'Tabelle', icon: mdiTable, create: () => createTable(3, 3) },
-    { label: 'Code', icon: mdiCodeBraces, create: () => nodes.code_block.create({ lang: 'py' }) },
+    admonitionItem(DEFAULT_ADMONITION, 'Hinweis'),
+    { label: 'Tabelle', icon: mdiTable, keywords: ['table'], create: () => createTable(3, 3) },
+    {
+        label: 'Code',
+        icon: mdiCodeBraces,
+        keywords: ['```', 'codeblock'],
+        create: () => nodes.code_block.create({ lang: 'py' })
+    },
     {
         label: 'Mathe-Block',
         icon: mdiMathIntegralBox,
+        keywords: ['$$', 'math', 'latex', 'formel'],
         create: () => nodes.math_block.create(null, schema.text('\\LaTeX'))
     },
-    { label: 'Trennlinie', icon: mdiMinus, create: () => nodes.thematic_break.create() },
-    { label: 'Details', icon: mdiArrowExpandDown, create: () => directive('details', 'Details') },
-    { label: 'Karten', icon: mdiCardsOutline, create: () => itemsDirective('cards', ['Karte 1', 'Karte 2']) },
+    {
+        label: 'Trennlinie',
+        icon: mdiMinus,
+        keywords: ['---', 'hr', 'linie'],
+        create: () => nodes.thematic_break.create()
+    },
+    {
+        label: 'Details',
+        icon: mdiArrowExpandDown,
+        keywords: ['aufklappen', 'collapse'],
+        create: () => directive('details', 'Details')
+    },
+    {
+        label: 'Karten',
+        icon: mdiCardsOutline,
+        keywords: ['cards'],
+        create: () => itemsDirective('cards', ['Karte 1', 'Karte 2'])
+    },
     {
         label: 'Spalten',
         icon: mdiViewColumnOutline,
+        keywords: ['flex', 'columns'],
         create: () => itemsDirective('flex', ['Spalte 1', 'Spalte 2'])
     },
     {
         label: 'Nächste Karte/Spalte (::br)',
         icon: mdiFormatPageBreak,
+        keywords: ['br'],
         create: () => [itemBreak(), paragraph()],
         isAvailable: isInItemsDirective
     }
@@ -123,12 +160,14 @@ const INLINE: MenuItem[] = [
     {
         label: 'Mathe',
         icon: mdiMathIntegral,
+        keywords: ['$', 'math', 'latex', 'formel'],
         create: () => nodes.math_inline.create({ value: '\\LaTeX' }),
         inline: true
     },
     {
         label: 'Icon',
         icon: mdiEmoticonOutline,
+        keywords: ['mdi', 'emoji'],
         create: () => nodes.text_directive.create({ name: 'mdi', label: 'robot' }),
         inline: true
     }
@@ -137,22 +176,31 @@ const INLINE: MenuItem[] = [
 const COMPONENTS: MenuItem[] = [
     {
         label: 'Antwort (Text)',
+        keywords: ['answer'],
         icon: mdiCardTextOutline,
         create: () => jsx('Answer', [{ type: 'attribute', name: 'type', value: 'text' }, idAttribute()])
     },
     {
         label: 'Antwort (Zeile)',
+        keywords: ['answer'],
         icon: mdiFormTextbox,
         create: () => jsx('Answer', [{ type: 'attribute', name: 'type', value: 'string' }, idAttribute()])
     },
     {
         label: 'Antwort (Status)',
+        keywords: ['answer'],
         icon: mdiCheckboxOutline,
         create: () => jsx('Answer', [{ type: 'attribute', name: 'type', value: 'state' }, idAttribute()])
     },
-    { label: 'Aufgabenstatus', icon: mdiProgressCheck, create: () => jsx('TaskState', [idAttribute()]) },
+    {
+        label: 'Aufgabenstatus',
+        icon: mdiProgressCheck,
+        keywords: ['taskstate'],
+        create: () => jsx('TaskState', [idAttribute()])
+    },
     {
         label: 'Lösung',
+        keywords: ['solution'],
         icon: mdiFileDocumentEditOutline,
         create: () => jsx('Solution', [idAttribute()], [paragraph('Lösung')])
     },
@@ -177,18 +225,21 @@ const COMPONENTS: MenuItem[] = [
     },
     {
         label: 'Browser-Fenster',
+        keywords: ['browserwindow'],
         icon: mdiApplicationOutline,
         create: () => jsx('BrowserWindow', [], [paragraph('Inhalt')]),
         requiredImport: { name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' }
     },
     {
         label: 'Schritte',
+        keywords: ['steps', 'anleitung'],
         icon: mdiFormatListNumbered,
         create: () => jsx('Steps', [], [orderedList(['Schritt 1', 'Schritt 2'])]),
         requiredImport: { name: 'Steps', source: '@tdev-components/Steps' }
     },
     {
         label: 'Unterseiten (Karten)',
+        keywords: ['doccardlist'],
         icon: mdiViewGridOutline,
         create: () => jsx('DocCardList', []),
         requiredImport: { name: 'DocCardList', source: '@theme/DocCardList' }
@@ -206,20 +257,25 @@ const INSERT_SECTIONS: MenuSection[] = [
     { title: 'Komponenten', items: COMPONENTS }
 ];
 
-export const insertCommand = (item: MenuItem): Command => {
-    const command = item.inline ? insertInline(item.create()) : insertBlock(item.create());
-    return item.requiredImport ? withImport(command, item.requiredImport) : command;
-};
+/** the items of all sections */
+export const INSERT_ITEMS: MenuItem[] = INSERT_SECTIONS.flatMap((section) => section.items);
 
-const canInsert = (item: MenuItem, state: EditorState) => {
-    const isAvailable = item.isAvailable?.(state) ?? true;
-    return isAvailable && insertCommand(item)(state);
+/** inserts the item, the content is created anew on each call */
+export const insertCommand = (item: MenuItem): Command => {
+    return (state, dispatch, view) => {
+        if (item.isAvailable && !item.isAvailable(state)) {
+            return false;
+        }
+        const insert = item.inline ? insertInline(item.create()) : insertBlock(item.create());
+        const command = item.requiredImport ? withImport(insert, item.requiredImport) : insert;
+        return command(state, dispatch, view);
+    };
 };
 
 /** the sections of the insert menu, with the items that can be inserted at the selection */
 export const availableInsertSections = (state: EditorState): MenuSection[] => {
     return INSERT_SECTIONS.map((section) => ({
         ...section,
-        items: section.items.filter((item) => canInsert(item, state))
+        items: section.items.filter((item) => insertCommand(item)(state))
     })).filter((section) => section.items.length > 0);
 };
