@@ -570,7 +570,11 @@ class Github {
                             if (current) {
                                 const file = Github.NewFileModel(resContent, binContent, this.store);
                                 this._addFileEntry(branch, file);
-                                file.setEditing(true);
+                                // keep editing a saved file, but do not open other updated files
+                                // (e.g. the image and sidecar saved by the excalidraw editor)
+                                if (current.isEditing) {
+                                    file.setEditing(true);
+                                }
                                 return file;
                             }
                             break;
