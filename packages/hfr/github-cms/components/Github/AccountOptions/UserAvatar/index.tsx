@@ -1,4 +1,4 @@
-import { mdiAccountCircle, mdiAlertDecagram, mdiCheckDecagram } from '@mdi/js';
+import { mdiAccountCircle, mdiAlertDecagram, mdiCheckDecagram, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import Avatar from '@tdev-components/shared/Avatar';
 import Button from '@tdev-components/shared/Button';
@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import Popup from 'reactjs-popup';
 import AccountOptions from '..';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
+import RepositoryOverview from '../../RepositoryOverview';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -54,18 +55,36 @@ const UserAvatar = observer((props: Props) => {
                 }
             />
             {props.showOptions && (
-                <Popup
-                    trigger={
-                        <div>
-                            <Button icon={mdiAccountCircle} size={SIZE_S} />
-                        </div>
-                    }
-                    modal
-                    on="click"
-                    overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
-                >
-                    <AccountOptions />
-                </Popup>
+                <div className={clsx(styles.options)}>
+                    <Popup
+                        trigger={
+                            <div>
+                                <Button icon={mdiAccountCircle} size={SIZE_S} title="Github Account" />
+                            </div>
+                        }
+                        modal
+                        on="click"
+                        overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
+                    >
+                        <AccountOptions />
+                    </Popup>
+                    <Popup
+                        trigger={
+                            <div>
+                                <Button
+                                    icon={mdiDotsVertical}
+                                    size={SIZE_S}
+                                    title="Dateien, Pull Requests und Branches"
+                                />
+                            </div>
+                        }
+                        modal
+                        on="click"
+                        overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
+                    >
+                        <RepositoryOverview />
+                    </Popup>
+                </div>
             )}
         </div>
     );
