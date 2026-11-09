@@ -12,6 +12,8 @@ import { useIsCompact } from './useIsCompact';
 interface Props {
     handle: NodeViewHandle;
     title: React.ReactNode;
+    /** the title shortens itself (e.g. with an ellipsis), so it gives way to the controls */
+    shrinkTitle?: boolean;
     children?: React.ReactNode;
     className?: string;
 }
@@ -48,7 +50,7 @@ const NodeToolbar = observer((props: Props) => {
             className={clsx(styles.toolbar, props.className)}
             onClick={() => handle.select()}
         >
-            <span className={clsx(styles.title)}>{props.title}</span>
+            <span className={clsx(styles.title, props.shrinkTitle && styles.shrink)}>{props.title}</span>
             {/* events from the modal bubble through the portal: they must not select the node */}
             <span ref={contentRef} className={clsx(styles.controls)} onClick={(e) => e.stopPropagation()}>
                 {isCompact ? <ControlsModal title={props.title}>{allControls}</ControlsModal> : allControls}

@@ -13,6 +13,9 @@
         gap: 0.4em;
         font-family: var(--ifm-font-family-monospace);
         opacity: 0.8;
+        &.shrink {
+            min-width: 0;
+        }
     }
     .controls {
         display: flex;

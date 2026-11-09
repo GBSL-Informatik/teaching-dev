@@ -11,6 +11,7 @@ import UuidAttributes from '../../components/UuidAttributes';
 import { type ContainerFormat, type JsxAttribute, schema } from '../../schema';
 import type { NodeViewProps } from '../ReactNodeView';
 import BrowserWindowHeader from './BrowserWindowHeader';
+import JsxTitle from './JsxTitle';
 import styles from './styles.module.scss';
 
 const hasAttribute = (attributes: JsxAttribute[], name: string) =>
@@ -51,7 +52,8 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
         <>
             <NodeToolbar
                 handle={handle}
-                title={isVoid ? `<${name} />` : `<${name}>`}
+                title={<JsxTitle handle={handle} isVoid={isVoid} />}
+                shrinkTitle
                 className={clsx(browserWindow && styles.browserWindowToolbar)}
             >
                 <UuidAttributes handle={handle} />
