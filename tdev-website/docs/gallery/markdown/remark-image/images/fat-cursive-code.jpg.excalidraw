@@ -93,7 +93,7 @@
       "version": 56,
       "versionNonce": 644111452,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1794228338266,
       "link": null,
       "locked": false,
@@ -377,57 +377,7 @@
         0
       ],
       "simulatePressure": false,
-      "lastCommittedPoint": [
-        -88.90625,
-        7.786458333333314
-      ]
-    },
-    {
-      "id": "hG9XdwENKbqE9jMY3B2K2",
-      "type": "freedraw",
-      "x": 32.249993642171205,
-      "y": 719.4584299723308,
-      "width": 0.0001,
-      "height": 0.0001,
-      "angle": 0,
-      "strokeColor": "#e03131",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 4,
-      "strokeStyle": "solid",
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": null,
-      "index": "a3",
-      "roundness": null,
-      "seed": 760257252,
-      "version": 3,
-      "versionNonce": 144107996,
-      "isDeleted": false,
-      "boundElements": null,
-      "updated": 1794228340664,
-      "link": null,
-      "locked": false,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          0.0001,
-          0.0001
-        ]
-      ],
-      "pressures": [
-        1,
-        0
-      ],
-      "simulatePressure": false,
-      "lastCommittedPoint": [
-        0.0001,
-        0.0001
-      ]
+      "lastCommittedPoint": null
     }
   ],
   "files": {
