@@ -3,6 +3,7 @@ import type { Node } from 'prosemirror-model';
 import { type Command, EditorState, TextSelection } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
 import { parseMarkdown, serializeMarkdown } from '../../markdown';
+import { withoutSpacesAtCursor } from '../../commands';
 import { schema } from '../../schema';
 import { deleteEmptyDirectiveItem, enterInDirectiveItem, splitDirectiveItem } from '../directiveItems';
 
@@ -48,7 +49,11 @@ const withEmptyParagraph = (doc: Node) => {
 
 describe('splitDirectiveItem', () => {
     it('moves the text after the cursor into a new item, without the spaces at the split', () => {
-        const result = run(splitDirectiveItem, CARDS, positionIn(CARDS, 'First card', 6));
+        const result = run(
+            withoutSpacesAtCursor(splitDirectiveItem),
+            CARDS,
+            positionIn(CARDS, 'First card', 6)
+        );
         expect(result.markdown).toMatchInlineSnapshot(`
           ":::cards
           First

@@ -13,6 +13,7 @@ import { keymap } from 'prosemirror-keymap';
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list';
 import type { Command, Plugin } from 'prosemirror-state';
 import { goToNextCell, tableEditing } from 'prosemirror-tables';
+import { withoutSpacesAtCursor } from '../commands';
 import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
@@ -44,8 +45,13 @@ const editorKeymap = keymap({
     'Mod-k': toggleMark(marks.kbd),
     'Shift-Enter': insertHardBreak,
     // like a page break in word processors: the next card or column, a line break elsewhere
-    'Mod-Enter': chainCommands(splitDirectiveItem, insertHardBreak),
-    Enter: chainCommands(enterInDeflist, splitListItem(nodes.list_item), enterInDirectiveItem),
+    'Mod-Enter': chainCommands(withoutSpacesAtCursor(splitDirectiveItem), insertHardBreak),
+    Enter: chainCommands(
+        enterInDeflist,
+        withoutSpacesAtCursor(splitListItem(nodes.list_item)),
+        enterInDirectiveItem,
+        withoutSpacesAtCursor(baseKeymap.Enter)
+    ),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
     'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),
     ArrowLeft: arrowIntoCode('left'),

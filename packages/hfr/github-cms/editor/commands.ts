@@ -1,7 +1,7 @@
 import { lift, setBlockType, wrapIn } from 'prosemirror-commands';
 import { type Attrs, Fragment, type Node, type NodeType } from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
-import { type Command, type EditorState, TextSelection } from 'prosemirror-state';
+import { type Command, type EditorState, Selection, TextSelection } from 'prosemirror-state';
 import { findTable, selectedRect, TableMap } from 'prosemirror-tables';
 import { schema } from './schema';
 
@@ -26,6 +26,46 @@ export const setCurrentBlockType = (type: BlockType): Command => {
         return setBlockType(nodes.heading, { level: Number(type.slice('heading'.length)) });
     }
     return setBlockType(nodes[type as 'paragraph' | 'code_block']);
+};
+
+/** the spaces and tabs directly before and after the cursor, within its textblock */
+const spacesAroundCursor = (state: EditorState) => {
+    const { $from, empty } = state.selection;
+    if (!empty || !$from.parent.isTextblock) {
+        return null;
+    }
+    const { parent, parentOffset, pos } = $from;
+    // inline nodes count as one character, as in the positions
+    const before = parent.textBetween(0, parentOffset, undefined, '\ufffc');
+    const after = parent.textBetween(parentOffset, parent.content.size, undefined, '\ufffc');
+    const spacesBefore = before.match(/[ \t]*$/)![0].length;
+    const spacesAfter = after.match(/^[ \t]*/)![0].length;
+    if (spacesBefore + spacesAfter === 0) {
+        return null;
+    }
+    return { from: pos - spacesBefore, to: pos + spacesAfter };
+};
+
+/**
+ * Runs a command splitting the textblock at the cursor (e.g. Enter) without the spaces at the
+ * cursor: at the start or end of a paragraph, markdown would escape them (`&#x20;`).
+ */
+export const withoutSpacesAtCursor = (split: Command): Command => {
+    return (state, dispatch, view) => {
+        const spaces = spacesAroundCursor(state);
+        if (!spaces) {
+            return split(state, dispatch, view);
+        }
+        const tr = state.tr.delete(spaces.from, spaces.to);
+        return split(state.apply(tr), (splitTr) => {
+            splitTr.steps.forEach((step) => tr.step(step));
+            tr.setSelection(Selection.fromJSON(tr.doc, splitTr.selection.toJSON()));
+            if (splitTr.storedMarks) {
+                tr.setStoredMarks(splitTr.storedMarks);
+            }
+            dispatch?.(tr.scrollIntoView());
+        });
+    };
 };
 
 /**

@@ -1,11 +1,5 @@
 import type { ResolvedPos } from 'prosemirror-model';
-import {
-    type Command,
-    type EditorState,
-    Selection,
-    TextSelection,
-    type Transaction
-} from 'prosemirror-state';
+import { type Command, type EditorState, Selection, TextSelection } from 'prosemirror-state';
 import { canSplit } from 'prosemirror-transform';
 import { schema } from '../schema';
 
@@ -24,20 +18,6 @@ const itemDepth = ($pos: ResolvedPos) => {
 export const isInDirectiveItem = (state: EditorState) => itemDepth(state.selection.$from) !== null;
 
 /**
- * Spaces at the start or end of a paragraph would be escaped in markdown (`&#x20;`),
- * they have no meaning there anyway.
- */
-const deleteSpacesAroundCursor = (tr: Transaction) => {
-    const { parent, parentOffset, pos } = tr.selection.$from;
-    // inline nodes count as one character, as in the positions
-    const before = parent.textBetween(0, parentOffset, undefined, '\ufffc');
-    const after = parent.textBetween(parentOffset, parent.content.size, undefined, '\ufffc');
-    const spacesBefore = before.length - before.trimEnd().length;
-    const spacesAfter = after.length - after.trimStart().length;
-    tr.delete(pos - spacesBefore, pos + spacesAfter);
-};
-
-/**
  * Starts the next card or column at the cursor: what follows the cursor moves into a new item.
  * At the start of a block, the whole block moves. Where nothing would remain in the
  * current item, an empty item is added after it instead.
@@ -51,7 +31,6 @@ export const splitDirectiveItem: Command = (state, dispatch) => {
         return true;
     }
     const tr = state.tr.deleteSelection();
-    deleteSpacesAroundCursor(tr);
     const $pos = tr.selection.$from;
     const [splitPos, splitDepth] =
         $pos.parentOffset === 0 ? [$pos.before(), $pos.depth - depth] : [$pos.pos, $pos.depth - depth + 1];
