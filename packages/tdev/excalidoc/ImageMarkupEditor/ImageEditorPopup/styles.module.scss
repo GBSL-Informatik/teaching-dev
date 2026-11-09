@@ -5,6 +5,7 @@
         align-items: center;
     }
     .body {
+        position: relative;
         width: 90vw;
         height: 80vh;
         :global(.excalidraw) {
@@ -22,6 +23,15 @@
                     }
                 }
             }
+        }
+        .busy {
+            position: absolute;
+            inset: 0;
+            z-index: var(--ifm-z-index-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--ifm-background-color) 70%, transparent);
         }
     }
 }

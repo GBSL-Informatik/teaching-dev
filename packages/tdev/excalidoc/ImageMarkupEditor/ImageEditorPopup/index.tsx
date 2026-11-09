@@ -1,5 +1,6 @@
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { mdiClose, mdiImageEditOutline } from '@mdi/js';
+import Loader from '@tdev-components/Loader';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
@@ -33,6 +34,25 @@ const ImageEditorPopup = (props: Props) => {
     const ref = React.useRef<PopupActions>(null);
     const [storage, setStorage] = React.useState<ExcalidrawImageStorage | null>(null);
     const [excaliState, setExcaliState] = React.useState<ExcalidrawInitialDataState | null>(null);
+    /** shown while saving or restoring, the editor is covered meanwhile */
+    const [busyLabel, setBusyLabel] = React.useState<string | null>(null);
+    // a ref, since a second click on save can arrive before the state is updated
+    const isBusy = React.useRef(false);
+
+    /** runs the task unless another one is running, e.g. when save is clicked twice */
+    const runExclusively = async (label: string, task: () => Promise<void>) => {
+        if (isBusy.current) {
+            return;
+        }
+        isBusy.current = true;
+        setBusyLabel(label);
+        try {
+            await task();
+        } finally {
+            isBusy.current = false;
+            setBusyLabel(null);
+        }
+    };
 
     const handleOpen = async () => {
         const opened = await props.openStorage();
@@ -49,26 +69,30 @@ const ImageEditorPopup = (props: Props) => {
         }
     };
 
-    const handleSave = async (state: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => {
-        try {
-            const imagePath = await storage!.save(state, blob, asWebp);
-            props.onImageChanged?.(imagePath);
-            ref.current?.close();
-        } catch (error) {
-            reportError('saving', error);
-        }
-    };
-
-    const handleRestore = async () => {
-        try {
-            const imagePath = await storage!.restore();
-            if (imagePath) {
+    const handleSave = (state: ExcalidrawInitialDataState, blob: Blob, asWebp: boolean) => {
+        return runExclusively('Speichern...', async () => {
+            try {
+                const imagePath = await storage!.save(state, blob, asWebp);
                 props.onImageChanged?.(imagePath);
                 ref.current?.close();
+            } catch (error) {
+                reportError('saving', error);
             }
-        } catch (error) {
-            reportError('restoring', error);
-        }
+        });
+    };
+
+    const handleRestore = () => {
+        return runExclusively('Wiederherstellen...', async () => {
+            try {
+                const imagePath = await storage!.restore();
+                if (imagePath) {
+                    props.onImageChanged?.(imagePath);
+                    ref.current?.close();
+                }
+            } catch (error) {
+                reportError('restoring', error);
+            }
+        });
     };
 
     return (
@@ -97,7 +121,12 @@ const ImageEditorPopup = (props: Props) => {
                 header={
                     <div className={clsx(styles.header)}>
                         <h3>Bild bearbeiten</h3>
-                        <Button icon={mdiClose} text="Schliessen" onClick={() => ref.current?.close()} />
+                        <Button
+                            icon={mdiClose}
+                            text="Schliessen"
+                            disabled={!!busyLabel}
+                            onClick={() => ref.current?.close()}
+                        />
                     </div>
                 }
             >
@@ -109,6 +138,11 @@ const ImageEditorPopup = (props: Props) => {
                         onSave={handleSave}
                         onRestore={handleRestore}
                     />
+                )}
+                {busyLabel && (
+                    <div className={clsx(styles.busy)}>
+                        <Loader label={busyLabel} />
+                    </div>
                 )}
             </Card>
         </Popup>
