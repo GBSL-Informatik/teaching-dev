@@ -36,7 +36,7 @@ const Actions = observer((props: Props) => {
     const { github } = cmsStore;
     const { file } = props;
     const ref = React.useRef<PopupActions>(null);
-    const [saveState, setSaveState] = React.useState<ApiState>(ApiState.IDLE);
+    const saveState = file.apiState;
     const isSmallScreen = useIsMobileView(SMALL_SCREEN_WIDTH);
     if (!github) {
         return null;

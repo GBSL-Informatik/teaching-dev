@@ -92,11 +92,11 @@ class File extends iFile {
     @action
     save(commitMessage?: string) {
         this.apiState = ApiState.SYNCING;
-        this.store.github?.saveFile(this, commitMessage).catch(
-            action(() => {
-                this.apiState = ApiState.IDLE;
-            })
-        );
+        // a saved file is usually replaced by a new model, but not when the response is unexpected
+        const handleDone = action(() => {
+            this.apiState = ApiState.IDLE;
+        });
+        this.store.github?.saveFile(this, commitMessage).then(handleDone, handleDone);
     }
 
     /** `./images` next to the file, where its images are uploaded to */
