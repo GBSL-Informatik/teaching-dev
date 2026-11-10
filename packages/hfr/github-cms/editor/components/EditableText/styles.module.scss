@@ -1,0 +1,9 @@
+.editableText {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+    &.empty {
+        opacity: 0.6;
+    }
+}

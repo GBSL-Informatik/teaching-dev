@@ -3,11 +3,18 @@
     background: var(--ifm-color-emphasis-200);
     border-top-left-radius: var(--ifm-code-border-radius);
     border-top-right-radius: var(--ifm-code-border-radius);
-    .lang {
-        width: 7em;
-    }
-    .meta {
-        width: 14em;
+    /* only the meta string gives way, the language stays readable */
+    .fence {
+        display: flex;
+        gap: 1ch;
+        min-width: 0;
+        .fenceStart {
+            flex-shrink: 0;
+            display: flex;
+        }
+        .meta {
+            opacity: 0.75;
+        }
     }
 }
 .preview {
