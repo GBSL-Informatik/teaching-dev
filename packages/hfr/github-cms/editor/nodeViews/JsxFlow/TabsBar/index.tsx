@@ -1,3 +1,6 @@
+import { mdiTab, mdiViewAgendaOutline } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useComputed } from '@tdev-hooks/useComputed';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -23,17 +26,20 @@ const activeTabIndex = (tabs: TabItemChild[], selectedChild: number | null, last
 /**
  * The tab items of `<Tabs>` as tabs, like on the page: only the active tab item is shown,
  * see `ReactNodeView`. The active tab follows the cursor, clicking a tab moves the cursor into it.
+ * A switch shows all tab items below each other, to reorder them with drag and drop.
  */
 const TabsBar = observer(({ handle }: NodeViewProps) => {
     const selectedChild = useComputed(() => handle.childIndexOfSelection(), [handle]);
     const [lastActive, setLastActive] = React.useState<number | null>(null);
+    const [isOutlined, setIsOutlined] = React.useState(false);
     const tabs = tabItems(handle.node);
     const activeChild = activeTabIndex(tabs, selectedChild, lastActive);
 
     React.useEffect(() => {
         setLastActive(activeChild);
-        handle.setActiveChild(activeChild);
-    }, [handle, activeChild]);
+        // outlined, all tab items are shown and can be reordered with drag and drop
+        handle.setActiveChild(isOutlined ? null : activeChild);
+    }, [handle, activeChild, isOutlined]);
     React.useEffect(() => () => handle.setActiveChild(null), [handle]);
 
     const handleApply = (tab: TabItemChild, values: Record<string, string>) => {
@@ -46,17 +52,28 @@ const TabsBar = observer(({ handle }: NodeViewProps) => {
 
     return (
         // the tabs handle their clicks themselves, ProseMirror must not select the node
-        <ul className={clsx('tabs', styles.tabsBar)} role="tablist" data-stop-event>
-            {tabs.map((tab) => (
-                <Tab
-                    key={tab.index}
-                    tabItem={tab.node}
-                    isActive={tab.index === activeChild}
-                    onSelect={() => handle.focusChild(tab.index)}
-                    onApply={(values) => handleApply(tab, values)}
-                />
-            ))}
-        </ul>
+        <div className={clsx(styles.tabsBar)} data-stop-event>
+            {!isOutlined && (
+                <ul className={clsx('tabs', styles.tabs)} role="tablist">
+                    {tabs.map((tab) => (
+                        <Tab
+                            key={tab.index}
+                            tabItem={tab.node}
+                            isActive={tab.index === activeChild}
+                            onSelect={() => handle.focusChild(tab.index)}
+                            onApply={(values) => handleApply(tab, values)}
+                        />
+                    ))}
+                </ul>
+            )}
+            <Button
+                icon={isOutlined ? mdiTab : mdiViewAgendaOutline}
+                size={SIZE_S}
+                title={isOutlined ? 'Als Tabs anzeigen' : 'Untereinander anzeigen, um die Tabs zu sortieren'}
+                className={clsx(styles.layoutSwitch)}
+                onClick={() => setIsOutlined(!isOutlined)}
+            />
+        </div>
     );
 });
 
