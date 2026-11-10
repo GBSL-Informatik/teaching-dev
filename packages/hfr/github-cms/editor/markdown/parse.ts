@@ -214,7 +214,7 @@ class MdastToProseMirror {
 
     private jsxFlow(node: MdxJsxFlowElement) {
         const indent = (node.position?.start.column ?? 1) - 1;
-        const attrs = { name: node.name ?? '', attributes: jsxAttributes(node.attributes, indent) };
+        const attrs = { name: node.name ?? '', attributes: toJsxAttributes(node.attributes, indent) };
         if (node.children.length === 0) {
             const openingTag = dedent(this.sourceOf(node), indent);
             return schema.nodes.jsx_flow_void.create({
@@ -357,7 +357,7 @@ const directiveAttributes = (
 /**
  * Multiline expressions are dedented by the indentation of the element, it is added again when serialized.
  */
-const jsxAttributes = (
+export const toJsxAttributes = (
     attributes: (MdxJsxAttribute | MdxJsxExpressionAttribute)[],
     indent: number
 ): JsxAttribute[] => {

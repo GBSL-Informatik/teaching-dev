@@ -17,7 +17,7 @@ export const serializeMarkdown = (doc: Node, trailing: string = '\n'): string =>
     return `${body}${trailing}`;
 };
 
-const DEFAULT_JSX_FORMAT: ContainerFormat = { childIndent: '  ', leading: 1, trailing: 1 };
+export const DEFAULT_JSX_FORMAT: ContainerFormat = { childIndent: '  ', leading: 1, trailing: 1 };
 const DEFAULT_DIRECTIVE_FORMAT: ContainerFormat = { childIndent: '', leading: 1, trailing: 1 };
 const DEFAULT_ITEM_LEADING = 2;
 
