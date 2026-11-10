@@ -46,7 +46,15 @@ const CodeBlockHeader = observer(({ handle }: NodeViewProps) => {
             />
         </span>
     );
-    return <NodeToolbar handle={handle} title={title} shrinkTitle className={clsx(styles.header)} />;
+    return (
+        <NodeToolbar
+            handle={handle}
+            actionsWhenActive
+            title={title}
+            shrinkTitle
+            className={clsx(styles.header)}
+        />
+    );
 });
 
 export default CodeBlockHeader;

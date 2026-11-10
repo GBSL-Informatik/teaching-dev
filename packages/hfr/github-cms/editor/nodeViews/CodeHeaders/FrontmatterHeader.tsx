@@ -5,7 +5,14 @@ import type { NodeViewProps } from '../ReactNodeView';
 import styles from './styles.module.scss';
 
 const FrontmatterHeader = observer(({ handle }: NodeViewProps) => {
-    return <NodeToolbar handle={handle} title="--- Frontmatter" className={clsx(styles.header)} />;
+    return (
+        <NodeToolbar
+            handle={handle}
+            actionsWhenActive
+            title="--- Frontmatter"
+            className={clsx(styles.header)}
+        />
+    );
 });
 
 export default FrontmatterHeader;

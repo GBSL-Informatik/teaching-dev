@@ -14,7 +14,12 @@ const RAW_BLOCK_TITLES: Record<string, string> = {
 const RawBlockHeader = observer(({ handle }: NodeViewProps) => {
     const { kind } = handle.node.attrs;
     return (
-        <NodeToolbar handle={handle} title={RAW_BLOCK_TITLES[kind] ?? kind} className={clsx(styles.header)} />
+        <NodeToolbar
+            handle={handle}
+            actionsWhenActive
+            title={RAW_BLOCK_TITLES[kind] ?? kind}
+            className={clsx(styles.header)}
+        />
     );
 });
 

@@ -5,7 +5,14 @@ import type { NodeViewProps } from '../ReactNodeView';
 import styles from './styles.module.scss';
 
 const MathBlockHeader = observer(({ handle }: NodeViewProps) => {
-    return <NodeToolbar handle={handle} title="$$ Mathematik" className={clsx(styles.header)} />;
+    return (
+        <NodeToolbar
+            handle={handle}
+            actionsWhenActive
+            title="$$ Mathematik"
+            className={clsx(styles.header)}
+        />
+    );
 });
 
 export default MathBlockHeader;
