@@ -17,8 +17,9 @@ const EditorNav = observer((props: Props) => {
     const cmsStore = useCmsStore();
     const { activeEntry, viewStore } = cmsStore;
     const [nav, setNav] = React.useState<HTMLDivElement | null>(null);
-    useReportVisibility(nav);
     const isMobile = useIsMobileView(900);
+    // on large screens, the nav sticks to the top, see `components/styles.module.scss`
+    useReportVisibility(isMobile ? nav : null);
     React.useEffect(() => {
         viewStore.setShowFileTree(!isMobile);
     }, [isMobile, viewStore]);

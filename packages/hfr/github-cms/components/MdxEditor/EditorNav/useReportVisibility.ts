@@ -1,12 +1,19 @@
 import React from 'react';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 
-/* the nav counts as hidden when it is behind the sticky editor toolbar */
-const TOOLBAR_HEIGHT = '-48px';
+/**
+ * The editor toolbar sticks at this offset, see `components/styles.module.scss`.
+ * Above it, the scrolled content is still visible.
+ */
+const toolbarTopOffset = (element: HTMLElement) => {
+    const offset = getComputedStyle(element).getPropertyValue('--cms-toolbar-top-offset').trim();
+    return offset || '0px';
+};
 
 /**
- * Reports to the view store whether the element is on the screen: when it is not,
- * the editor toolbar shows the file tree toggle, see `EditorHeader`.
+ * Reports to the view store whether the element is on the screen: when it has vanished
+ * completely (behind the sticky editor toolbar or out of the screen), the editor toolbar
+ * shows the file tree toggle, see `EditorHeader`.
  */
 const useReportVisibility = (element: HTMLElement | null) => {
     const { viewStore } = useCmsStore();
@@ -16,7 +23,7 @@ const useReportVisibility = (element: HTMLElement | null) => {
         }
         const observer = new IntersectionObserver(
             ([entry]) => viewStore.setIsEditorNavVisible(entry.isIntersecting),
-            { rootMargin: `${TOOLBAR_HEIGHT} 0px 0px 0px` }
+            { rootMargin: `-${toolbarTopOffset(element)} 0px 0px 0px` }
         );
         observer.observe(element);
         return () => {
