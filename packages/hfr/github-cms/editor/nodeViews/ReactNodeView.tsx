@@ -1,4 +1,4 @@
-import { action, observable, observableRef } from 'mobx';
+import { action, autorun, type IReactionDisposer, observable, observableRef } from 'mobx';
 import type { Attrs, Node } from 'prosemirror-model';
 import { type EditorState, NodeSelection, TextSelection, type Transaction } from 'prosemirror-state';
 import type { EditorView, NodeView, NodeViewConstructor, ViewMutationRecord } from 'prosemirror-view';
@@ -24,6 +24,8 @@ export interface NodeViewEditor {
 export class NodeViewHandle {
     @observableRef accessor node: Node;
     @observable accessor selected = false;
+    /** the child shown of all tab items in the content, e.g. the active tab of `<Tabs>` */
+    @observable accessor activeChild: number | null = null;
     readonly editor: NodeViewEditor;
     private readonly getPos: () => number | undefined;
 
@@ -47,6 +49,11 @@ export class NodeViewHandle {
         this.selected = selected;
     }
 
+    @action
+    setActiveChild(index: number | null) {
+        this.activeChild = index;
+    }
+
     /** whether the node is selected or the selection is within its content, e.g. the cursor */
     containsSelection() {
         const pos = this.getPos();
@@ -55,6 +62,23 @@ export class NodeViewHandle {
         }
         const { from, to } = this.editor.state.selection;
         return from >= pos && to <= pos + this.node.nodeSize;
+    }
+
+    /** the index of the child containing the selection, `null` when it is outside of the content */
+    childIndexOfSelection() {
+        const pos = this.getPos();
+        if (pos === undefined) {
+            return null;
+        }
+        const { from } = this.editor.state.selection;
+        let found: number | null = null;
+        this.node.forEach((child, offset, index) => {
+            const start = pos + 1 + offset;
+            if (from >= start && from < start + child.nodeSize) {
+                found = index;
+            }
+        });
+        return found;
     }
 
     updateAttrs(attrs: Attrs) {
@@ -90,6 +114,27 @@ export class NodeViewHandle {
         this.editor.view?.focus();
     }
 
+    updateChildAttrs(index: number, attrs: Attrs) {
+        const childPos = this.childPos(index);
+        if (childPos === undefined) {
+            return;
+        }
+        const { state, dispatch } = this.editor;
+        const child = this.node.child(index);
+        dispatch(state.tr.setNodeMarkup(childPos, undefined, { ...child.attrs, ...attrs }));
+    }
+
+    /** places the cursor at the start of the child, e.g. to show a tab */
+    focusChild(index: number) {
+        const childPos = this.childPos(index);
+        if (childPos === undefined) {
+            return;
+        }
+        const { state, dispatch } = this.editor;
+        dispatch(state.tr.setSelection(TextSelection.near(state.doc.resolve(childPos + 1))));
+        this.editor.view?.focus();
+    }
+
     remove() {
         const pos = this.getPos();
         if (pos === undefined) {
@@ -107,6 +152,18 @@ export class NodeViewHandle {
         }
         const { state, dispatch } = this.editor;
         dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)));
+    }
+
+    private childPos(index: number) {
+        const pos = this.getPos();
+        if (pos === undefined || index >= this.node.childCount) {
+            return undefined;
+        }
+        let childPos = pos + 1;
+        for (let i = 0; i < index; i++) {
+            childPos += this.node.child(i).nodeSize;
+        }
+        return childPos;
     }
 }
 
@@ -152,6 +209,7 @@ class ReactNodeView implements NodeView {
     private readonly handle: NodeViewHandle;
     private readonly portalKey = `node-view-${portalCounter++}`;
     private readonly options: Options;
+    private readonly disposeActiveChild?: IReactionDisposer;
 
     constructor(node: Node, getPos: () => number | undefined, editor: NodeViewEditor, options: Options) {
         this.options = options;
@@ -165,6 +223,7 @@ class ReactNodeView implements NodeView {
         if (options.hasContent) {
             this.contentDOM = window.document.createElement('div');
             this.dom.appendChild(this.contentDOM);
+            this.disposeActiveChild = autorun(() => this.updateActiveChild());
         }
         this.updateDom(node);
         const Component = options.component;
@@ -211,11 +270,26 @@ class ReactNodeView implements NodeView {
         if (mutation.type === 'selection') {
             return false;
         }
+        // e.g. `data-active-child`: the attributes of the content element are no document changes
+        if (mutation.type === 'attributes' && mutation.target === this.contentDOM) {
+            return true;
+        }
         return !this.contentDOM?.contains(mutation.target);
     }
 
     destroy() {
+        this.disposeActiveChild?.();
         this.handle.editor.removePortal(this.portalKey);
+    }
+
+    /** the other tab items are hidden by css, see `Editor/styles.module.scss` */
+    private updateActiveChild() {
+        const { activeChild } = this.handle;
+        if (activeChild === null) {
+            this.contentDOM!.removeAttribute('data-active-child');
+            return;
+        }
+        this.contentDOM!.setAttribute('data-active-child', String(activeChild));
     }
 
     private updateDom(node: Node) {

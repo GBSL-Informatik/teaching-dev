@@ -9,12 +9,15 @@ import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/Attri
 import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
+import { withJsxAttributes } from '../../jsxAttributes';
 import { jsxOpeningTagOf, parseJsxOpeningTag, withJsxOpeningTag } from '../../markdown/jsxOpeningTag';
 import { jsxAttributes } from '../../markdown/serialize';
-import { type ContainerFormat, type JsxAttribute, schema } from '../../schema';
+import { type JsxAttribute, schema } from '../../schema';
+import { isTabItem, isTabs } from '../../tabs';
 import type { NodeViewProps } from '../ReactNodeView';
 import BrowserWindowHeader from './BrowserWindowHeader';
 import styles from './styles.module.scss';
+import TabsBar from './TabsBar';
 
 const hasAttribute = (attributes: JsxAttribute[], name: string) =>
     attributes.some((attribute) => attribute.type !== 'spread' && attribute.name === name);
@@ -29,8 +32,15 @@ const isBrowserWindow = (node: Node) => {
 };
 
 /** `<BrowserWindow>` and `<CodeShowcase>` are framed like on the rendered page */
-export const jsxFlowClassName = (node: Node) =>
-    isBrowserWindow(node) ? 'cms-jsx cms-jsx--browser-window' : 'cms-jsx';
+export const jsxFlowClassName = (node: Node) => {
+    if (isBrowserWindow(node)) {
+        return 'cms-jsx cms-jsx--browser-window';
+    }
+    if (isTabItem(node)) {
+        return 'cms-jsx cms-jsx--tab-item';
+    }
+    return 'cms-jsx';
+};
 
 /**
  * A jsx element, e.g. `<Solution>`. The component itself is not rendered (it might need
@@ -39,7 +49,6 @@ export const jsxFlowClassName = (node: Node) =>
  */
 const JsxFlow = observer(({ handle }: NodeViewProps) => {
     const { name, attributes } = handle.node.attrs;
-    const format: ContainerFormat | null = handle.node.attrs.format;
     const isVoid = handle.node.type === schema.nodes.jsx_flow_void;
 
     const handleAddChildren = () => {
@@ -56,11 +65,7 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
             rows={jsxAttributesToRows(attributes)}
             allowExpressions
             onApply={(rows) =>
-                handle.updateAttrs({
-                    attributes: rowsToJsxAttributes(rows, attributes),
-                    // the original opening tag is outdated
-                    format: format && { ...format, openingTag: undefined }
-                })
+                handle.updateAttrs(withJsxAttributes(handle.node, rowsToJsxAttributes(rows, attributes)))
             }
         />
     );
@@ -95,6 +100,7 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
                 )}
             </NodeToolbar>
             {browserWindow && <BrowserWindowHeader handle={handle} />}
+            {isTabs(handle.node) && <TabsBar handle={handle} />}
         </>
     );
 });

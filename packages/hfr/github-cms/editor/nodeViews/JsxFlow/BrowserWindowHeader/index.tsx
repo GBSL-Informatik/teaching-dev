@@ -5,11 +5,16 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { stringAttribute, withStringAttributes } from '../../../jsxAttributes';
-import type { ContainerFormat, JsxAttribute } from '../../../schema';
+import StringAttributesForm, { type Field } from '../../../components/StringAttributesForm';
+import { stringAttribute, withJsxAttributes, withStringAttributes } from '../../../jsxAttributes';
+import type { JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
-import AddressEditor, { type Address } from './AddressEditor';
 import styles from './styles.module.scss';
+
+const ADDRESS_FIELDS: Field[] = [
+    { name: 'url', title: 'Die angezeigte Adresse (url)' },
+    { name: 'href', title: 'Der Link der Adresse (href)' }
+];
 
 /**
  * The header of `<BrowserWindow>`, as it is rendered on the page.
@@ -18,25 +23,21 @@ import styles from './styles.module.scss';
 const BrowserWindowHeader = observer(({ handle }: NodeViewProps) => {
     const [isEditing, setIsEditing] = React.useState(false);
     const attributes: JsxAttribute[] = handle.node.attrs.attributes;
-    const format: ContainerFormat | null = handle.node.attrs.format;
     const url = stringAttribute(attributes, 'url');
     const href = stringAttribute(attributes, 'href');
 
-    const handleApply = (address: Address) => {
-        const updated = withStringAttributes(attributes, { url: address.url, href: address.href });
+    const handleApply = (values: Record<string, string>) => {
+        const updated = withStringAttributes(attributes, values);
         if (updated === attributes) {
             return;
         }
-        handle.updateAttrs({
-            attributes: updated,
-            // the original opening tag is outdated
-            format: format && { ...format, openingTag: undefined }
-        });
+        handle.updateAttrs(withJsxAttributes(handle.node, updated));
     };
 
     const addressBar = isEditing ? (
-        <AddressEditor
-            address={{ url: url ?? '', href: href ?? '' }}
+        <StringAttributesForm
+            fields={ADDRESS_FIELDS}
+            values={{ url: url ?? '', href: href ?? '' }}
             onApply={handleApply}
             onClose={() => setIsEditing(false)}
         />

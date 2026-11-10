@@ -13,7 +13,27 @@ const isJsx = (node: Node, name: string) => node.type === nodes.jsx_flow && node
 export const isTabs = (node: Node) => isJsx(node, 'Tabs');
 export const isTabItem = (node: Node) => isJsx(node, 'TabItem');
 
-export const tabItems = (tabs: Node) => tabs.children.filter(isTabItem);
+export interface TabItemChild {
+    node: Node;
+    /** the index among all children of the tabs */
+    index: number;
+}
+
+export const tabItems = (tabs: Node): TabItemChild[] => {
+    const items: TabItemChild[] = [];
+    tabs.forEach((node, _offset, index) => {
+        if (isTabItem(node)) {
+            items.push({ node, index });
+        }
+    });
+    return items;
+};
+
+/** the label of the tab, its value when it has no label */
+export const tabLabel = (tabItem: Node) => {
+    const attributes: JsxAttribute[] = tabItem.attrs.attributes;
+    return stringAttribute(attributes, 'label') || stringAttribute(attributes, 'value') || '';
+};
 
 export const createTabItem = (value: string, label: string) => {
     const attributes: JsxAttribute[] = [
@@ -28,7 +48,7 @@ export const createTabItem = (value: string, label: string) => {
 
 /** a tab item with a value not used by the other items of the tabs */
 const nextTabItem = (tabs: Node) => {
-    const values = tabItems(tabs).map((item) => stringAttribute(item.attrs.attributes, 'value'));
+    const values = tabItems(tabs).map((item) => stringAttribute(item.node.attrs.attributes, 'value'));
     let number = values.length + 1;
     while (values.includes(`tab${number}`)) {
         number++;

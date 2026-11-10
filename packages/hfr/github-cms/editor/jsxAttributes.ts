@@ -1,4 +1,5 @@
-import type { JsxAttribute } from './schema';
+import type { Node } from 'prosemirror-model';
+import type { ContainerFormat, JsxAttribute } from './schema';
 
 const hasName = (attribute: JsxAttribute, name: string) =>
     attribute.type !== 'spread' && attribute.name === name;
@@ -37,4 +38,13 @@ export const withStringAttributes = (attributes: JsxAttribute[], values: Record<
         const isUnchanged = value === (stringAttribute(attributes, name) ?? '');
         return isUnchanged ? result : withStringAttribute(result, name, value);
     }, attributes);
+};
+
+/**
+ * The attrs of a jsx node with new attributes. The opening tag as written in the source is
+ * outdated, the tag is written anew when the document is saved.
+ */
+export const withJsxAttributes = (node: Node, attributes: JsxAttribute[]) => {
+    const format: ContainerFormat | null = node.attrs.format;
+    return { attributes, format: format && { ...format, openingTag: undefined } };
 };

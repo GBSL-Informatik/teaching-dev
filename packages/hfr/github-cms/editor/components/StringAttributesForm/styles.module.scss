@@ -1,0 +1,16 @@
+.form {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    margin-block: -0.2em;
+    input {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 0.1em 0.4em;
+        font: inherit;
+        color: inherit;
+        background: transparent;
+        border: 1px solid var(--ifm-color-emphasis-400);
+        border-radius: var(--ifm-global-radius);
+    }
+}

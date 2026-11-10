@@ -178,6 +178,14 @@
             }
         }
 
+        /* only the active tab of `<Tabs>` is shown, see `nodeViews/JsxFlow/TabsBar` */
+        @for $index from 0 through 49 {
+            .cms-node-view-content[data-active-child='#{$index}']
+                > .cms-jsx--tab-item:not(:nth-child(#{$index + 1})) {
+                display: none;
+            }
+        }
+
         .cms-footnote-definition {
             font-size: 0.9em;
             margin-bottom: var(--ifm-spacing-vertical);
