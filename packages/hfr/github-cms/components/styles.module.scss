@@ -39,6 +39,8 @@
     }
     .content {
         grid-area: content;
+        /* wide content (e.g. a table) scrolls instead of widening the grid, see `tableView` */
+        min-width: 0;
     }
     &.showFileTree {
         --cms-tree-view-width: 300px;

@@ -220,6 +220,15 @@
             outline: 2px solid var(--ifm-color-primary);
         }
 
+        /* see `nodeViews/tableView.ts` */
+        .cms-table-scroll {
+            max-width: 100%;
+            overflow-x: auto;
+            margin-bottom: var(--ifm-spacing-vertical);
+            > table {
+                margin-bottom: 0;
+            }
+        }
         table {
             display: table;
             width: auto;

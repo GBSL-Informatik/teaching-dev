@@ -13,15 +13,16 @@ import {
 } from './CodeHeaders';
 import { codeMirrorNodeView } from './CodeMirrorNodeView';
 import ContainerDirective, { containerDirectiveClassName } from './ContainerDirective';
+import DirectiveItem, { directiveItemClassName } from './DirectiveItem';
+import { directiveItemStyle, itemsDirectiveContent } from './DirectiveItem/flexLayout';
 import FootnoteDefinition from './FootnoteDefinition';
 import Image from './Image';
 import InlineAtom from './InlineAtom';
 import InlineMath from './InlineMath';
 import JsxFlow, { jsxFlowClassName } from './JsxFlow';
-import DirectiveItem, { directiveItemClassName } from './DirectiveItem';
-import { directiveItemStyle, itemsDirectiveContent } from './DirectiveItem/flexLayout';
 import LeafDirective from './LeafDirective';
 import { reactNodeView } from './ReactNodeView';
+import { tableView } from './tableView';
 import TextDirective from './TextDirective';
 
 const rawBlockLanguage = (node: Node) => (node.attrs.kind === 'html' ? 'html' : 'jsx');
@@ -84,6 +85,7 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
         hasContent: true,
         className: () => 'cms-footnote-definition'
     }),
+    table: tableView,
     image: reactNodeView(document, { component: Image }),
     math_inline: reactNodeView(document, { component: InlineMath }),
     text_directive: reactNodeView(document, { component: TextDirective }),
