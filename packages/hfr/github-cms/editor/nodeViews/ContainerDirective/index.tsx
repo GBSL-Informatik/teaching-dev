@@ -9,8 +9,11 @@ import {
     directiveAttributesToRows,
     rowsToDirectiveAttributes
 } from '../../components/AttributesEditor/conversions';
+import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
+import { directiveHeadOf, parseDirectiveHead } from '../../markdown/directiveHead';
+import { directiveAttributes } from '../../markdown/serialize';
 import { schema } from '../../schema';
 import { CONTAINER_DIRECTIVES_WITHOUT_LABEL } from '../../suggestions/directiveNames';
 import type { NodeViewProps } from '../ReactNodeView';
@@ -50,17 +53,23 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
         handle.prependChild(schema.nodes.directive_label.create(null, schema.text('Titel')));
     };
 
-    const title = isAdmonition(name) ? (
-        <>
-            <AdmonitionIcon type={name} />
-            {`:::${name}`}
-        </>
-    ) : (
-        `:::${name}`
+    const title = (
+        <EditableTag
+            tag={
+                <>
+                    {isAdmonition(name) && <AdmonitionIcon type={name} />}
+                    {`:::${name}`}
+                </>
+            }
+            attributes={directiveAttributes(attributes)}
+            source={directiveHeadOf(handle.node)}
+            parse={(text) => parseDirectiveHead(text, handle.node)}
+            onApply={(head) => handle.updateAttrs(head)}
+        />
     );
 
     return (
-        <NodeToolbar handle={handle} title={title}>
+        <NodeToolbar handle={handle} title={title} shrinkTitle>
             <UuidAttributes handle={handle} />
             {isAdmonition(name) && (
                 <SelectInput

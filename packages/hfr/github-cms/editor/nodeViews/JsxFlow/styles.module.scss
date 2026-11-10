@@ -3,19 +3,3 @@
     padding: 0.2em 0.8em 0 0.8em;
     background: var(--ifm-color-emphasis-200);
 }
-
-/* only the attributes give way, the tag name stays readable */
-.title {
-    display: flex;
-    min-width: 0;
-    white-space: pre;
-    .tag {
-        flex-shrink: 0;
-    }
-    .attributes {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        opacity: 0.75;
-    }
-}

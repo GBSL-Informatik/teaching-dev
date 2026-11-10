@@ -6,12 +6,14 @@ import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
+import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
+import { jsxOpeningTagOf, parseJsxOpeningTag, withJsxOpeningTag } from '../../markdown/jsxOpeningTag';
+import { jsxAttributes } from '../../markdown/serialize';
 import { type ContainerFormat, type JsxAttribute, schema } from '../../schema';
 import type { NodeViewProps } from '../ReactNodeView';
 import BrowserWindowHeader from './BrowserWindowHeader';
-import JsxTitle from './JsxTitle';
 import styles from './styles.module.scss';
 
 const hasAttribute = (attributes: JsxAttribute[], name: string) =>
@@ -52,7 +54,16 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
         <>
             <NodeToolbar
                 handle={handle}
-                title={<JsxTitle handle={handle} isVoid={isVoid} />}
+                title={
+                    <EditableTag
+                        tag={`<${name}`}
+                        attributes={jsxAttributes(attributes)}
+                        end={isVoid ? ' />' : '>'}
+                        source={jsxOpeningTagOf(handle.node)}
+                        parse={(text) => parseJsxOpeningTag(text, handle.node)}
+                        onApply={(tag) => handle.updateAttrs(withJsxOpeningTag(handle.node, tag))}
+                    />
+                }
                 shrinkTitle
                 className={clsx(browserWindow && styles.browserWindowToolbar)}
             >

@@ -160,7 +160,7 @@ class MdastToProseMirror {
         return type.createAndFill(
             {
                 name: node.name,
-                attributes: directiveAttributes(node),
+                attributes: toDirectiveAttributes(node),
                 format: this.containerFormat(node, content, openingEnd, { fence })
             },
             label ? [label, ...children] : children
@@ -191,7 +191,7 @@ class MdastToProseMirror {
         const item = schema.nodes.directive_item.createAndFill(
             {
                 label: itemBreak ? this.labelMarkdown(itemBreak.children) : '',
-                attributes: itemBreak ? directiveAttributes(itemBreak) : {},
+                attributes: itemBreak ? toDirectiveAttributes(itemBreak) : {},
                 format: { hasBreak: !!itemBreak, leading: leading ?? undefined }
             },
             this.blocks(children)
@@ -208,7 +208,7 @@ class MdastToProseMirror {
         return schema.nodes.leaf_directive.create({
             name: node.name,
             label: this.labelMarkdown(node.children),
-            attributes: directiveAttributes(node)
+            attributes: toDirectiveAttributes(node)
         });
     }
 
@@ -311,7 +311,7 @@ class MdastToProseMirror {
         const attrs = {
             name: node.name,
             label: this.labelMarkdown(node.children),
-            attributes: directiveAttributes(node)
+            attributes: toDirectiveAttributes(node)
         };
         return schema.nodes.text_directive.create(attrs, null, marks);
     }
@@ -344,7 +344,7 @@ class MdastToProseMirror {
     }
 }
 
-const directiveAttributes = (
+export const toDirectiveAttributes = (
     node: ContainerDirective | LeafDirective | TextDirective
 ): DirectiveAttributes => {
     const attributes: DirectiveAttributes = {};
