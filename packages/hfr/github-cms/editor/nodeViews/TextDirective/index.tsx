@@ -11,6 +11,7 @@ import IconPicker from '../../components/IconPicker';
 import { mdiPath } from '../../components/IconPicker/mdiIcons';
 import InlinePopover from '../../components/InlinePopover';
 import type { NodeViewProps } from '../ReactNodeView';
+import { mdiIconProps } from './mdiIconProps';
 import styles from './styles.module.scss';
 
 /**
@@ -24,7 +25,7 @@ const TextDirective = observer(({ handle }: NodeViewProps) => {
             title={name === 'mdi' ? 'Icon' : `:${name}`}
             trigger={
                 <span className={clsx(styles.directive, handle.selected && styles.selected)}>
-                    {iconPath ? <Icon path={iconPath} size="1.25em" /> : `:${name}[${label}]`}
+                    {iconPath ? <Icon path={iconPath} {...mdiIconProps(attributes)} /> : `:${name}[${label}]`}
                 </span>
             }
         >

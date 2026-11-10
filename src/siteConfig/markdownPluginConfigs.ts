@@ -21,6 +21,7 @@ import flexCardsPlugin from '../plugins/remark-flex-cards/plugin';
 import imagePlugin, { CaptionVisitor } from '../plugins/remark-images/plugin';
 import kbdPlugin from '../plugins/remark-kbd/plugin';
 import linkAnnotationPlugin from '../plugins/remark-link-annotation/plugin';
+import { MDI_PLUGIN_OPTIONS } from '../plugins/remark-mdi/options';
 import mdiPlugin from '../plugins/remark-mdi/plugin';
 import mediaPlugin from '../plugins/remark-media/plugin';
 import pagePlugin from '../plugins/remark-page/plugin';
@@ -152,20 +153,7 @@ export const defboxPluginConfig = defboxPlugin;
 
 export const strongPluginConfig = [strongPlugin, { className: 'boxed' }];
 
-export const mdiPluginConfig = [
-    mdiPlugin,
-    {
-        colorMapping: {
-            green: 'var(--ifm-color-success)',
-            red: 'var(--ifm-color-danger)',
-            orange: 'var(--ifm-color-warning)',
-            yellow: '#edcb5a',
-            blue: '#3578e5',
-            cyan: '#01f0bc'
-        },
-        defaultSize: '1.25em'
-    }
-];
+export const mdiPluginConfig = [mdiPlugin, MDI_PLUGIN_OPTIONS];
 
 export const mediaPluginConfig = mediaPlugin;
 
