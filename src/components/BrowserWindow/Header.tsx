@@ -6,10 +6,12 @@ import styles from './styles.module.css';
 interface Props {
     url?: string;
     href?: string;
+    /** replaces the content of the address bar, e.g. with an editor */
+    addressBar?: React.ReactNode;
 }
 
 const Header = (props: Props): React.ReactNode => {
-    const { url, href } = props;
+    const { url, href, addressBar } = props;
     return (
         <div className={styles.browserWindowHeader}>
             <div className={styles.buttons}>
@@ -18,13 +20,14 @@ const Header = (props: Props): React.ReactNode => {
                 <span className={styles.dot} style={{ background: '#58cb42' }} />
             </div>
             <div className={clsx(styles.browserWindowAddressBar, href && styles.href, 'text--truncate')}>
-                {href ? (
-                    <a href={href} target="_blank">
-                        {url ?? href}
-                    </a>
-                ) : (
-                    <>{url || 'http://localhost:3000'}</>
-                )}
+                {addressBar ??
+                    (href ? (
+                        <a href={href} target="_blank">
+                            {url ?? href}
+                        </a>
+                    ) : (
+                        <>{url || 'http://localhost:3000'}</>
+                    ))}
             </div>
             <div className={styles.browserWindowMenuIcon}>
                 <div>
