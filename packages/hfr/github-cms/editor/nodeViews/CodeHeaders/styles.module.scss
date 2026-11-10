@@ -4,7 +4,9 @@
     border-top-left-radius: var(--ifm-code-border-radius);
     border-top-right-radius: var(--ifm-code-border-radius);
     /* only the meta string gives way, the language stays readable */
+    /* grows, so the meta string can be edited in the whole free space */
     .fence {
+        flex-grow: 1;
         display: flex;
         align-items: center;
         gap: 0.5em;
