@@ -33,6 +33,10 @@ const isBrowserWindow = (node: Node) => {
 
 /** `<BrowserWindow>` and `<CodeShowcase>` are framed like on the rendered page */
 export const jsxFlowClassName = (node: Node) => {
+    // the content of solutions is only shown to teachers, see `Editor/index.tsx`
+    if (node.attrs.name === 'Solution') {
+        return 'cms-jsx cms-jsx--solution';
+    }
     if (isBrowserWindow(node)) {
         return 'cms-jsx cms-jsx--browser-window';
     }

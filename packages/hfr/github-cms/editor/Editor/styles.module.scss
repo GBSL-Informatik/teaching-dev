@@ -19,6 +19,18 @@
     &.hidden {
         display: none;
     }
+    &.hideSolutions :global(.cms-jsx--solution) {
+        > :global(.cms-node-view-content) {
+            display: none;
+        }
+        &::after {
+            content: 'Inhalt nur für Lehrpersonen sichtbar';
+            display: block;
+            padding: 0.3em 0 0.5em 0;
+            font-style: italic;
+            color: var(--ifm-color-emphasis-600);
+        }
+    }
     /* created by the drag handle plugin, see `plugins/dragHandle.ts` */
     :global(.cms-drag-handle) {
         position: absolute;

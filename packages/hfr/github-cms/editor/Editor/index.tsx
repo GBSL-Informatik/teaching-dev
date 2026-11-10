@@ -1,3 +1,4 @@
+import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import 'prosemirror-gapcursor/style/gapcursor.css';
@@ -29,6 +30,9 @@ const NodeViewPortals = observer(({ document }: Props) => {
 
 const Editor = observer(({ document }: Props) => {
     const [mount, setMount] = React.useState<HTMLDivElement | null>(null);
+    const userStore = useStore('userStore');
+    // not a protection: students still see the solutions in the markdown source
+    const hideSolutions = !userStore.current?.hasElevatedAccess;
 
     React.useEffect(() => {
         if (!mount) {
@@ -64,7 +68,14 @@ const Editor = observer(({ document }: Props) => {
             <Toolbar document={document} />
             {/* the editor stays mounted while the diff is shown to keep its state (e.g. the selection) */}
             <div className={clsx(styles.contentArea)}>
-                <div ref={setMount} className={clsx(styles.content, document.showDiff && styles.hidden)} />
+                <div
+                    ref={setMount}
+                    className={clsx(
+                        styles.content,
+                        document.showDiff && styles.hidden,
+                        hideSolutions && styles.hideSolutions
+                    )}
+                />
                 <SuggestionMenu document={document} container={mount} />
             </div>
             {document.showDiff && <MdxDiff file={document.file} />}
