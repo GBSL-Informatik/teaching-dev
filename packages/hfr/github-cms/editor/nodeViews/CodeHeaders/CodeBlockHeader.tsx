@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import EditableText from '../../components/EditableText';
 import NodeToolbar from '../../components/NodeToolbar';
 import type { NodeViewProps } from '../ReactNodeView';
+import MetaUuids from './MetaUuids';
 import styles from './styles.module.scss';
 
 const validateLanguage = (lang: string) => {
@@ -53,7 +54,9 @@ const CodeBlockHeader = observer(({ handle }: NodeViewProps) => {
             title={title}
             shrinkTitle
             className={clsx(styles.header)}
-        />
+        >
+            <MetaUuids handle={handle} />
+        </NodeToolbar>
     );
 });
 

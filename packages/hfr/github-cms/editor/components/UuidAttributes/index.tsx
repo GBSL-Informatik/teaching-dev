@@ -1,12 +1,8 @@
-import { mdiRefresh } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import { SIZE_XS } from '@tdev-components/shared/iconSizes';
-import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { NodeViewHandle } from '../../nodeViews/ReactNodeView';
 import type { ContainerFormat, DirectiveAttributes, JsxAttribute } from '../../schema';
 import { isUuidV4, newUuid } from '../../uuid';
-import styles from './styles.module.scss';
+import UuidBadge from '../UuidBadge';
 
 interface Props {
     handle: NodeViewHandle;
@@ -57,15 +53,12 @@ const UuidAttributes = observer(({ handle }: Props) => {
     return (
         <>
             {uuidAttributes(attributes).map(([name, uuid]) => (
-                <span key={name} className={clsx(styles.uuid, 'cms-uuid')} title={uuid}>
-                    {name}: {uuid.slice(0, 8)}…
-                    <Button
-                        icon={mdiRefresh}
-                        size={SIZE_XS}
-                        title="Neue UUID generieren"
-                        onClick={() => handleRegenerate(name, uuid)}
-                    />
-                </span>
+                <UuidBadge
+                    key={name}
+                    name={name}
+                    uuid={uuid}
+                    onRegenerate={() => handleRegenerate(name, uuid)}
+                />
             ))}
         </>
     );
