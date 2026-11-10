@@ -12,20 +12,20 @@ import {
     mdiUndo
 } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import SelectInput from '@tdev-components/shared/SelectInput';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import SelectInput from '@tdev-components/shared/SelectInput';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import type { MarkType } from 'prosemirror-model';
-import { toggleMark } from 'prosemirror-commands';
 import { redo, undo } from 'prosemirror-history';
+import type { MarkType } from 'prosemirror-model';
 import EditorHeader from '../../components/MdxEditor/toolbar/EditorHeader';
 import {
     type BlockType,
     currentBlockType,
     setCurrentBlockType,
     toggleBlockquote,
-    toggleList
+    toggleList,
+    toggleMarkOnWord
 } from '../commands';
 import type MdxDocument from '../models/MdxDocument';
 import { schema } from '../schema';
@@ -52,7 +52,7 @@ const markButton = (mark: MarkType, icon: string, title: string) => ({
     mark,
     icon,
     title,
-    command: toggleMark(mark)
+    command: toggleMarkOnWord(mark)
 });
 
 const MARK_BUTTONS = [

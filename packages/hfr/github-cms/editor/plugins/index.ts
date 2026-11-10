@@ -1,4 +1,4 @@
-import { baseKeymap, chainCommands, exitCode, setBlockType, toggleMark } from 'prosemirror-commands';
+import { baseKeymap, chainCommands, exitCode, setBlockType } from 'prosemirror-commands';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { history, redo, undo } from 'prosemirror-history';
@@ -13,14 +13,14 @@ import { keymap } from 'prosemirror-keymap';
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list';
 import type { Command, Plugin } from 'prosemirror-state';
 import { goToNextCell, tableEditing } from 'prosemirror-tables';
-import { withoutSpacesAtCursor } from '../commands';
+import { toggleMarkOnWord, withoutSpacesAtCursor } from '../commands';
 import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { suggestionSources } from '../suggestions';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
-import { dragHandle } from './dragHandle';
 import { deleteEmptyDirectiveItem, enterInDirectiveItem, splitDirectiveItem } from './directiveItems';
+import { dragHandle } from './dragHandle';
 import { imageFiles } from './imageFiles';
 import { markInputRules } from './markInputRules';
 import { suggestionMenu } from './suggestionMenu';
@@ -38,11 +38,11 @@ const editorKeymap = keymap({
     'Shift-Mod-z': redo,
     'Mod-y': redo,
     Backspace: chainCommands(undoInputRule, deleteEmptyDirectiveItem),
-    'Mod-b': toggleMark(marks.strong),
-    'Mod-i': toggleMark(marks.emphasis),
-    'Mod-e': toggleMark(marks.code),
-    'Mod-u': toggleMark(marks.box),
-    'Mod-k': toggleMark(marks.kbd),
+    'Mod-b': toggleMarkOnWord(marks.strong),
+    'Mod-i': toggleMarkOnWord(marks.emphasis),
+    'Mod-e': toggleMarkOnWord(marks.code),
+    'Mod-u': toggleMarkOnWord(marks.box),
+    'Mod-k': toggleMarkOnWord(marks.kbd),
     'Shift-Enter': insertHardBreak,
     // like a page break in word processors: the next card or column, a line break elsewhere
     'Mod-Enter': chainCommands(withoutSpacesAtCursor(splitDirectiveItem), insertHardBreak),

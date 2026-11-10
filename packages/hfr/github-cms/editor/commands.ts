@@ -1,5 +1,5 @@
-import { lift, setBlockType, wrapIn } from 'prosemirror-commands';
-import { type Attrs, Fragment, type Node, type NodeType } from 'prosemirror-model';
+import { lift, setBlockType, toggleMark, wrapIn } from 'prosemirror-commands';
+import { type Attrs, Fragment, type MarkType, type Node, type NodeType } from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
 import { type Command, type EditorState, Selection, TextSelection } from 'prosemirror-state';
 import { findTable, selectedRect, TableMap } from 'prosemirror-tables';
@@ -158,6 +158,48 @@ export const toggleBlockquote: Command = (state, dispatch, view) => {
         }
     }
     return wrapIn(nodes.blockquote)(state, dispatch, view);
+};
+
+const WORD_BEFORE = /[\p{L}\p{N}_]*$/u;
+const WORD_AFTER = /^[\p{L}\p{N}_]*/u;
+
+/** the word at the cursor, when the cursor is inside the word or at its start or end */
+const wordAtCursor = (state: EditorState) => {
+    const { $from, empty } = state.selection;
+    if (!empty || !$from.parent.isTextblock) {
+        return null;
+    }
+    const { parent, parentOffset, pos } = $from;
+    // inline nodes count as one character, as in the positions
+    const before = parent.textBetween(0, parentOffset, undefined, '\ufffc');
+    const after = parent.textBetween(parentOffset, parent.content.size, undefined, '\ufffc');
+    const lengthBefore = before.match(WORD_BEFORE)![0].length;
+    const lengthAfter = after.match(WORD_AFTER)![0].length;
+    if (lengthBefore + lengthAfter === 0) {
+        return null;
+    }
+    return { from: pos - lengthBefore, to: pos + lengthAfter };
+};
+
+/**
+ * Like `toggleMark`, but without a selection, the mark is toggled on the word at the cursor.
+ */
+export const toggleMarkOnWord = (markType: MarkType): Command => {
+    const toggle = toggleMark(markType);
+    return (state, dispatch, view) => {
+        const word = wordAtCursor(state);
+        if (!word || !state.selection.$from.parent.type.allowsMarkType(markType)) {
+            return toggle(state, dispatch, view);
+        }
+        if (dispatch) {
+            const { from, to } = word;
+            const tr = state.doc.rangeHasMark(from, to, markType)
+                ? state.tr.removeMark(from, to, markType)
+                : state.tr.addMark(from, to, markType.create());
+            dispatch(tr.scrollIntoView());
+        }
+        return true;
+    };
 };
 
 export const setLink = (href: string): Command => {

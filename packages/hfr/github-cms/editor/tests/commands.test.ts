@@ -2,8 +2,9 @@ import { baseKeymap } from 'prosemirror-commands';
 import type { Node } from 'prosemirror-model';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
-import { withoutSpacesAtCursor } from '../commands';
+import { toggleMarkOnWord, withoutSpacesAtCursor } from '../commands';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
+import { schema } from '../schema';
 
 const enter = withoutSpacesAtCursor(baseKeymap.Enter);
 
@@ -39,5 +40,48 @@ describe('withoutSpacesAtCursor', () => {
         const { doc } = parseMarkdown('Text  here\n');
         const state = EditorState.create({ doc, selection: TextSelection.create(doc, 6) });
         expect(withoutSpacesAtCursor(() => false)(state, () => undefined)).toBe(false);
+    });
+});
+
+describe('toggleMarkOnWord', () => {
+    const italic = toggleMarkOnWord(schema.marks.emphasis);
+
+    /** toggles italic with the cursor after the first occurrence of `before` */
+    const toggleItalicAt = (source: string, before: string) => {
+        const { doc } = parseMarkdown(source);
+        const cursor = 1 + doc.textContent.indexOf(before) + before.length;
+        let state = EditorState.create({ doc, selection: TextSelection.create(doc, cursor) });
+        italic(state, (tr) => {
+            state = state.apply(tr);
+        });
+        return serializeMarkdown(state.doc);
+    };
+
+    it('makes the word at the cursor italic', () => {
+        expect(toggleItalicAt('one foo two\n', 'one fo')).toBe('one *foo* two\n');
+    });
+
+    it('applies to the word at its start and its end', () => {
+        expect(toggleItalicAt('one foo two\n', 'one ')).toBe('one *foo* two\n');
+        expect(toggleItalicAt('one foo two\n', 'one foo')).toBe('one *foo* two\n');
+    });
+
+    it('removes italic from an italic word', () => {
+        expect(toggleItalicAt('one *foo* two\n', 'one fo')).toBe('one foo two\n');
+    });
+
+    it('treats umlauts and digits as part of the word', () => {
+        expect(toggleItalicAt('ein Äpfel2 hier\n', 'ein Äp')).toBe('ein *Äpfel2* hier\n');
+    });
+
+    it('stores the mark for the next input between spaces', () => {
+        const { doc } = parseMarkdown('one  two\n');
+        const state = EditorState.create({ doc, selection: TextSelection.create(doc, 5) });
+        let next = state;
+        italic(state, (tr) => {
+            next = state.apply(tr);
+        });
+        expect(serializeMarkdown(next.doc)).toBe('one  two\n');
+        expect(next.storedMarks?.map((mark) => mark.type.name)).toEqual(['emphasis']);
     });
 });
