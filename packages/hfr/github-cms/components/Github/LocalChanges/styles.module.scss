@@ -5,6 +5,12 @@
         display: flex;
         align-items: center;
         gap: 0.4em;
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2em;
+            text-align: left;
+        }
         .name {
             font-weight: var(--ifm-font-weight-semibold);
             overflow-wrap: anywhere;
@@ -13,6 +19,21 @@
             margin-left: auto;
             color: var(--ifm-color-emphasis-700);
             white-space: nowrap;
+        }
+    }
+    .files {
+        list-style: none;
+        padding-left: 1.6em;
+        .file {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            text-align: left;
+            color: var(--ifm-link-color);
+            overflow-wrap: anywhere;
+            &:hover {
+                text-decoration: underline;
+            }
         }
     }
 }

@@ -11,10 +11,15 @@ import LocalChanges from '../LocalChanges';
 import PR from '../PR';
 import styles from './styles.module.scss';
 
+interface Props {
+    /** closes the modal, e.g. after a changed file is opened */
+    onClose?: () => void;
+}
+
 /**
  * The local changes, pull requests and branches of the repository, shown in a modal.
  */
-const RepositoryOverview = observer(() => {
+const RepositoryOverview = observer(({ onClose }: Props) => {
     const cmsStore = useCmsStore();
     const { github } = cmsStore;
     if (!github) {
@@ -31,7 +36,7 @@ const RepositoryOverview = observer(() => {
                 <Icon path={mdiHome} size={SIZE_S} />
                 Zur Website
             </Link>
-            <LocalChanges />
+            <LocalChanges onNavigate={onClose} />
             <h5>Pull Requests und Branches</h5>
             <ul>
                 {github.PRs.map((pr) => (

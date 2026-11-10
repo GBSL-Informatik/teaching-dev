@@ -5,7 +5,9 @@ import Button from '@tdev-components/shared/Button';
 import { SIZE_S, SIZE_XS } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import Popup from 'reactjs-popup';
+import type { PopupActions } from 'reactjs-popup/dist/types';
 import AccountOptions from '..';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
 import RepositoryOverview from '../../RepositoryOverview';
@@ -18,6 +20,7 @@ interface Props {
 const UserAvatar = observer((props: Props) => {
     const cmsStore = useCmsStore();
     const { github } = cmsStore;
+    const overviewRef = React.useRef<PopupActions>(null);
 
     if (!github?.user) {
         return null;
@@ -69,6 +72,7 @@ const UserAvatar = observer((props: Props) => {
                         <AccountOptions />
                     </Popup>
                     <Popup
+                        ref={overviewRef}
                         trigger={
                             <div>
                                 <Button
@@ -82,7 +86,7 @@ const UserAvatar = observer((props: Props) => {
                         on="click"
                         overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
                     >
-                        <RepositoryOverview />
+                        <RepositoryOverview onClose={() => overviewRef.current?.close()} />
                     </Popup>
                 </div>
             )}

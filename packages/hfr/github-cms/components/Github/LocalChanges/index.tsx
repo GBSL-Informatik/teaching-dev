@@ -1,18 +1,21 @@
-import { mdiDeleteEmpty, mdiSourceBranch, mdiTrashCan, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
+import { mdiDeleteEmpty } from '@mdi/js';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '../../../hooks/useCmsStore';
+import BranchChanges from './BranchChanges';
 import styles from './styles.module.scss';
 
-const documentCount = (count: number) => (count === 1 ? '1 Dokument' : `${count} Dokumente`);
+interface Props {
+    /** called after navigating to a changed file, e.g. to close the modal */
+    onNavigate?: () => void;
+}
 
 /**
  * The branches with unsaved changes kept in the browser, see `DraftStore`.
  */
-const LocalChanges = observer(() => {
+const LocalChanges = observer(({ onNavigate }: Props) => {
     const { drafts, activeBranchName } = useCmsStore();
     const branches = drafts.changedBranches;
     if (branches.length === 0) {
@@ -24,25 +27,8 @@ const LocalChanges = observer(() => {
         <>
             <h5>Lokale Änderungen</h5>
             <ul className={clsx(styles.branches)}>
-                {branches.map(({ branch, count }) => (
-                    <li key={branch} className={clsx(styles.branch)}>
-                        <Icon path={mdiSourceBranch} size={SIZE_S} />
-                        <span className={clsx(styles.name)}>{branch}</span>
-                        {branch === activeBranchName && (
-                            <span className={clsx('badge', 'badge--primary')}>aktuell</span>
-                        )}
-                        <span className={clsx(styles.count)}>{documentCount(count)}</span>
-                        <Confirm
-                            icon={mdiTrashCanOutline}
-                            confirmIcon={mdiTrashCan}
-                            text={null}
-                            title={`Lokale Änderungen in ${branch} verwerfen`}
-                            confirmText="Verwerfen?"
-                            confirmColor="red"
-                            size={SIZE_S}
-                            onConfirm={() => drafts.discardBranch(branch)}
-                        />
-                    </li>
+                {branches.map((changes) => (
+                    <BranchChanges key={changes.branch} changes={changes} onNavigate={onNavigate} />
                 ))}
             </ul>
             {hasOtherBranches && (

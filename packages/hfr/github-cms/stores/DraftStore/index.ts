@@ -6,8 +6,8 @@ import { type Draft, DraftDb, type DraftLocation } from './draftDb';
 
 export interface BranchChanges {
     branch: string;
-    /** the number of files with unsaved changes */
-    count: number;
+    /** the files with unsaved changes, sorted */
+    paths: string[];
 }
 
 const draftKey = ({ repo, branch, path }: DraftLocation) => `${repo}:${branch}:${path}`;
@@ -49,11 +49,11 @@ export class DraftStore {
 
     @computed
     get changedBranches(): BranchChanges[] {
-        const counts = new Map<string, number>();
-        for (const { branch } of this.repoDrafts) {
-            counts.set(branch, (counts.get(branch) ?? 0) + 1);
+        const pathsByBranch = new Map<string, string[]>();
+        for (const { branch, path } of this.repoDrafts) {
+            pathsByBranch.set(branch, [...(pathsByBranch.get(branch) ?? []), path]);
         }
-        return [...counts].map(([branch, count]) => ({ branch, count }));
+        return [...pathsByBranch].map(([branch, paths]) => ({ branch, paths: paths.sort() }));
     }
 
     /** saves the changes of the file while it is dirty, removes them otherwise */
