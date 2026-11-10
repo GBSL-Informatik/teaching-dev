@@ -68,8 +68,16 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
         />
     );
 
+    const settings = (
+        <AttributesEditor
+            title={`Attribute von :::${name}`}
+            rows={directiveAttributesToRows(attributes)}
+            onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
+        />
+    );
+
     return (
-        <NodeToolbar handle={handle} title={title} shrinkTitle>
+        <NodeToolbar handle={handle} settings={settings} actionsWhenActive title={title} shrinkTitle>
             <UuidAttributes handle={handle} />
             {isAdmonition(name) && (
                 <SelectInput
@@ -86,11 +94,6 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
                     onClick={handleAddLabel}
                 />
             )}
-            <AttributesEditor
-                title={`Attribute von :::${name}`}
-                rows={directiveAttributesToRows(attributes)}
-                onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
-            />
         </NodeToolbar>
     );
 });

@@ -50,10 +50,27 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
 
     const browserWindow = isBrowserWindow(handle.node);
 
+    const settings = (
+        <AttributesEditor
+            title={`Attribute von <${name}>`}
+            rows={jsxAttributesToRows(attributes)}
+            allowExpressions
+            onApply={(rows) =>
+                handle.updateAttrs({
+                    attributes: rowsToJsxAttributes(rows, attributes),
+                    // the original opening tag is outdated
+                    format: format && { ...format, openingTag: undefined }
+                })
+            }
+        />
+    );
+
     return (
         <>
             <NodeToolbar
                 handle={handle}
+                settings={settings}
+                actionsWhenActive
                 title={
                     <EditableTag
                         tag={`<${name}`}
@@ -76,18 +93,6 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
                         onClick={handleAddChildren}
                     />
                 )}
-                <AttributesEditor
-                    title={`Attribute von <${name}>`}
-                    rows={jsxAttributesToRows(attributes)}
-                    allowExpressions
-                    onApply={(rows) =>
-                        handle.updateAttrs({
-                            attributes: rowsToJsxAttributes(rows, attributes),
-                            // the original opening tag is outdated
-                            format: format && { ...format, openingTag: undefined }
-                        })
-                    }
-                />
             </NodeToolbar>
             {browserWindow && <BrowserWindowHeader handle={handle} />}
         </>

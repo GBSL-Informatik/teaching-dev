@@ -1,6 +1,7 @@
 import { mdiClose, mdiCloseBox } from '@mdi/js';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { useComputed } from '@tdev-hooks/useComputed';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
@@ -15,6 +16,10 @@ interface Props {
     /** the title shortens itself (e.g. with an ellipsis), so it gives way to the controls */
     shrinkTitle?: boolean;
     children?: React.ReactNode;
+    /** e.g. the attributes editor, shown next to the remove button */
+    settings?: React.ReactNode;
+    /** the settings and the remove button are only shown while the node contains the selection */
+    actionsWhenActive?: boolean;
     className?: string;
 }
 
@@ -27,10 +32,12 @@ const NodeToolbar = observer((props: Props) => {
     const { handle } = props;
     const [toolbar, setToolbar] = React.useState<HTMLDivElement | null>(null);
     const { isCompact, contentRef } = useIsCompact(toolbar);
+    const containsSelection = useComputed(() => handle.containsSelection(), [handle]);
+    const showActions = !props.actionsWhenActive || containsSelection;
 
-    const allControls = (
+    const actions = (
         <>
-            {props.children}
+            {props.settings}
             <Confirm
                 icon={mdiClose}
                 confirmIcon={mdiCloseBox}
@@ -41,6 +48,12 @@ const NodeToolbar = observer((props: Props) => {
                 size={SIZE_S}
                 onConfirm={() => handle.remove()}
             />
+        </>
+    );
+    const allControls = (
+        <>
+            {props.children}
+            {showActions && actions}
         </>
     );
 

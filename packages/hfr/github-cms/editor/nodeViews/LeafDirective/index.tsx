@@ -17,9 +17,19 @@ import type { NodeViewProps } from '../ReactNodeView';
  */
 const LeafDirective = observer(({ handle }: NodeViewProps) => {
     const { name, label, attributes } = handle.node.attrs;
+    const settings = (
+        <AttributesEditor
+            title={`Attribute von ::${name}`}
+            rows={directiveAttributesToRows(attributes)}
+            onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
+        />
+    );
+
     return (
         <NodeToolbar
             handle={handle}
+            settings={settings}
+            actionsWhenActive
             title={
                 <EditableTag
                     tag={`::${name}`}
@@ -37,11 +47,6 @@ const LeafDirective = observer(({ handle }: NodeViewProps) => {
                 placeholder="Label"
                 noAutoFocus
                 onChange={(label) => handle.updateAttrs({ label })}
-            />
-            <AttributesEditor
-                title={`Attribute von ::${name}`}
-                rows={directiveAttributesToRows(attributes)}
-                onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
             />
         </NodeToolbar>
     );

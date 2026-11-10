@@ -47,6 +47,16 @@ export class NodeViewHandle {
         this.selected = selected;
     }
 
+    /** whether the node is selected or the selection is within its content, e.g. the cursor */
+    containsSelection() {
+        const pos = this.getPos();
+        if (pos === undefined) {
+            return false;
+        }
+        const { from, to } = this.editor.state.selection;
+        return from >= pos && to <= pos + this.node.nodeSize;
+    }
+
     updateAttrs(attrs: Attrs) {
         const pos = this.getPos();
         if (pos === undefined) {

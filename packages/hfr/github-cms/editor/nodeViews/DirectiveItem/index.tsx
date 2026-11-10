@@ -26,17 +26,21 @@ export const directiveItemClassName = (node: Node) => {
  */
 const DirectiveItem = observer(({ handle }: NodeViewProps) => {
     const { attributes } = handle.node.attrs;
+    const settings = (
+        <AttributesEditor
+            title="Attribute von ::br"
+            rows={directiveAttributesToRows(attributes)}
+            onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
+        />
+    );
+
     return (
         <NodeToolbar
             handle={handle}
+            settings={settings}
+            actionsWhenActive
             title={<span className="cms-item-break">{`::br${directiveAttributes(attributes)}`}</span>}
-        >
-            <AttributesEditor
-                title="Attribute von ::br"
-                rows={directiveAttributesToRows(attributes)}
-                onApply={(rows) => handle.updateAttrs({ attributes: rowsToDirectiveAttributes(rows) })}
-            />
-        </NodeToolbar>
+        />
     );
 });
 
