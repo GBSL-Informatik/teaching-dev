@@ -3,7 +3,21 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: pre;
+    /* a small dashed pill, which invites to fill it in */
     &.empty {
-        opacity: 0.6;
+        align-self: center;
+        margin: 0 0.2em;
+        padding: 0 0.4em;
+        font-family: var(--ifm-font-family-base);
+        font-size: 0.8em;
+        font-style: italic;
+        line-height: 1.5;
+        color: var(--ifm-color-emphasis-600);
+        border: 1px dashed var(--ifm-color-emphasis-400);
+        border-radius: var(--ifm-global-radius);
+        &:hover {
+            color: var(--ifm-color-emphasis-800);
+            border-color: var(--ifm-color-emphasis-600);
+        }
     }
 }

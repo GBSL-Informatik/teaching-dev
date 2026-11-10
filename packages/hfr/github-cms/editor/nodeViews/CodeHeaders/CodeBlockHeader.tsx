@@ -30,13 +30,16 @@ const CodeBlockHeader = observer(({ handle }: NodeViewProps) => {
                 <EditableText
                     value={lang}
                     label="Sprache"
+                    placeholder="Sprache"
                     validate={validateLanguage}
                     onApply={(lang) => handle.updateAttrs({ lang })}
                 />
             </span>
+            <span className={clsx(styles.divider)} />
             <EditableText
                 value={meta}
                 label="Meta"
+                placeholder="Meta, z.B. title=..."
                 validate={validateMeta}
                 className={clsx(styles.meta)}
                 onApply={(meta) => handle.updateAttrs({ meta })}
