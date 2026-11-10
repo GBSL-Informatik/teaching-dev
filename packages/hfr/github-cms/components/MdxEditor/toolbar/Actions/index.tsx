@@ -9,6 +9,7 @@ import Button from '@tdev-components/shared/Button';
 import { Confirm } from '@tdev-components/shared/Button/Confirm';
 import Card from '@tdev-components/shared/Card';
 import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
+import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import { ApiState } from '@tdev-stores/iStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -21,6 +22,10 @@ import NewBranch from '../../../Github/Branch/NewBranch';
 import Save from './Save';
 import styles from './styles.module.scss';
 
+const SMALL_SCREEN_WIDTH = 620;
+const SAVE_BUTTON_WIDTH = 82;
+const SAVE_ICON_WIDTH = 30;
+
 export interface Props {
     file: File;
     onNeedsRefresh?: () => void;
@@ -32,12 +37,13 @@ const Actions = observer((props: Props) => {
     const { file } = props;
     const ref = React.useRef<PopupActions>(null);
     const [saveState, setSaveState] = React.useState<ApiState>(ApiState.IDLE);
+    const isSmallScreen = useIsMobileView(SMALL_SCREEN_WIDTH);
     if (!github) {
         return null;
     }
     return (
         <div className={clsx(styles.actions, 'button-group')}>
-            <Save file={file} className={clsx(styles.button)} apiState={saveState} />
+            <Save file={file} className={clsx(styles.button)} apiState={saveState} iconOnly={isSmallScreen} />
             <Popup
                 ref={ref}
                 trigger={
@@ -55,7 +61,8 @@ const Actions = observer((props: Props) => {
                 keepTooltipInside="#__docusaurus"
                 position={['bottom left']}
                 arrow={false}
-                offsetX={-82}
+                // aligns the options with the left edge of the save button
+                offsetX={isSmallScreen ? -SAVE_ICON_WIDTH : -SAVE_BUTTON_WIDTH}
                 offsetY={0}
                 nested
             >
