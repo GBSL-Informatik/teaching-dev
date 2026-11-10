@@ -1,4 +1,5 @@
 import ErrorBoundary from '@docusaurus/ErrorBoundary';
+import Head from '@docusaurus/Head';
 import { PageMetadata } from '@docusaurus/theme-common';
 import ErrorPageContent from '@theme/ErrorPageContent';
 import Footer from '@theme/Footer';
@@ -17,6 +18,16 @@ const CmsLayout = ({ children }: Props) => {
     return (
         <LayoutProvider>
             <PageMetadata title="CMS" description="Github" />
+            <Head>
+                {/*
+                 * Chrome on Android keeps the layout viewport behind the keyboard, so the sticky
+                 * toolbar scrolls out of sight. See https://developer.chrome.com/blog/viewport-resize-behavior
+                 */}
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
+                />
+            </Head>
             <ErrorBoundary fallback={(params) => <ErrorPageContent {...params} />}>{children}</ErrorBoundary>
             <Footer />
         </LayoutProvider>
