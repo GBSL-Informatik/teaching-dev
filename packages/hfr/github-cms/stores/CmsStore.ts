@@ -3,12 +3,11 @@ import {
     logout as apiGithubLogout,
     githubToken as apiGithubToken,
     load as apiLoadSettings,
-    update as apiUpdateSettings,
     CmsSettings,
     FullCmsSettings
 } from '@tdev-api/cms';
 import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
-import iStore from '@tdev-stores/iStore';
+import iStore, { ApiState } from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
 import imageCompression from 'browser-image-compression';
@@ -16,30 +15,32 @@ import _ from 'es-toolkit/compat';
 import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import BinFile from '../models/BinFile';
+import { type CmsLocation, SITE_REPOSITORY } from '../models/cmsLocation';
 import Dir from '../models/Dir';
 import { default as FileModel } from '../models/File';
 import FileStub from '../models/FileStub';
 import Github from '../models/Github';
 import iEntry from '../models/iEntry';
 import iFile from '../models/iFile';
-import PartialSettings, { REFRESH_THRESHOLD } from '../models/PartialSettings';
+import PartialSettings from '../models/PartialSettings';
 import Settings from '../models/Settings';
 import { DraftStore } from './DraftStore';
 import { default as CmsViewStore } from './ViewStore';
+import { VisitStore } from './VisitStore';
 
 const { organizationName, projectName } = siteConfig;
 if (!organizationName || !projectName) {
     throw new Error('"organizationName" and "projectName" must be set in docusaurus.config.ts');
 }
 
-export interface FileNavigation {
-    repoOwner: string;
-    repoName: string;
-    branch?: string;
-    fileToEdit?: string | null;
+/** a navigation requested by the store, applied to the url by `useRequestedNavigation` */
+export interface NavigationRequest {
+    location: CmsLocation;
+    /** e.g. to replace an invalid location in the history */
+    replace: boolean;
 }
 
-export class CmsStore extends iStore<'logout' | `update-settings` | `load-settings` | `load-token`> {
+export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> {
     readonly rootViewStore: ViewStore;
     @observable accessor repoOwner: string = organizationName!;
     @observable accessor repoName: string = projectName!;
@@ -48,9 +49,13 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
     @observableRef accessor github: Github | undefined;
     @observableRef accessor viewStore: CmsViewStore;
     readonly drafts: DraftStore;
+    readonly visits = new VisitStore();
 
     @observable accessor initialized = false;
-    @observable accessor requestedNavigation: FileNavigation | undefined = undefined;
+    @observableRef accessor requestedNavigation: NavigationRequest | undefined = undefined;
+    /** the location of the url, see `open` */
+    @observable accessor activeBranchName: string | undefined = undefined;
+    @observable accessor activeFilePath = '';
 
     constructor(store: ViewStore) {
         super();
@@ -58,36 +63,28 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
         this.rootViewStore = store;
         this.drafts = new DraftStore(this);
         reaction(
-            () => [this.activeBranchName, this.github] as [string | undefined, Github | undefined],
-            action(([branch, github]) => {
+            () => [this.repoKey, this.activeBranchName, this.github] as const,
+            ([repo, branch, github]) => {
                 if (branch && github) {
-                    const { defaultBranchName } = github;
                     github.fetchDirectory(branch).catch((err) => {
-                        console.log(`invalid branch, resetting to default: ${defaultBranchName}`, err);
-                        if (defaultBranchName) {
-                            this.setBranch(defaultBranchName);
-                        } else {
-                            this.settings?.clearLocation();
+                        console.log(`invalid branch ${branch}, opening the default branch`, err);
+                        this.handleInvalidBranch(repo, branch);
+                    });
+                }
+            }
+        );
+        reaction(
+            () => [this.repoKey, this.activeBranchName, this.activeFilePath, this.github] as const,
+            ([repo, branch, path, github]) => {
+                if (path && branch && github) {
+                    const dummy = FileStub.DummyFile(path, branch, this, false);
+                    this.fetchFile(dummy).then(() => {
+                        if (dummy.apiState === ApiState.ERROR) {
+                            this.handleInvalidPath(repo, branch, path);
                         }
                     });
                 }
-            })
-        );
-        reaction(
-            () =>
-                [this.activeFilePath, this.activeBranchName, this.github] as [
-                    string | undefined,
-                    string | undefined,
-                    Github | undefined
-                ],
-            action(([fileName, branch, github]) => {
-                if (fileName && branch && github) {
-                    const dummy = FileStub.DummyFile(fileName, branch, this, false);
-                    this.fetchFile(dummy).catch(() => {
-                        this.github?._rmFileEntry(dummy);
-                    });
-                }
-            })
+            }
         );
         reaction(
             () => this.settings?.token,
@@ -108,20 +105,43 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
         return `${this.repoOwner}/${this.repoName}`;
     }
 
+    /**
+     * Opens the location of the url and remembers it, also before the login.
+     * A location without a branch is redirected to the default branch, see `CmsRoute`.
+     */
     @action
-    configureRepo(owner: string, name: string) {
-        if (this.repoOwner === owner && this.repoName === name) {
+    open(location: CmsLocation) {
+        this.configureRepo(location.repo);
+        this.visits.visit(location);
+        if (!location.branch) {
             return;
         }
-        if (this.github) {
-            this.github.reset();
+        this.activeBranchName = location.branch;
+        this.activeFilePath = location.path;
+        this.refreshTokenIfNeeded();
+    }
+
+    @action
+    navigateTo(location: CmsLocation, replace = false) {
+        this.requestedNavigation = { location, replace };
+    }
+
+    /** the default branch, once the repository is loaded */
+    defaultBranchOf(repo: string) {
+        if (repo !== this.repoKey) {
+            return undefined;
         }
-        if (this.settings) {
-            this.settings.clearLocation();
+        return this.github?.defaultBranchName;
+    }
+
+    /** e.g. a repository without access: its visits are forgotten, the site's repository is opened */
+    @action
+    handleRepoNotFound(repo: string) {
+        this.visits.forgetRepo(repo);
+        if (repo !== this.repoKey || repo === SITE_REPOSITORY) {
+            return;
         }
-        this.repoOwner = owner;
-        this.repoName = name;
-        this.github?.load();
+        this.navigateTo({ repo: SITE_REPOSITORY, path: '' }, true);
     }
 
     @action
@@ -194,17 +214,7 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
         if (this.activeBranchName === branch && this.activeFilePath === (filePath || '')) {
             return;
         }
-        this.requestedNavigation = {
-            repoOwner: this.repoOwner,
-            repoName: this.repoName,
-            branch: branch,
-            fileToEdit: filePath || ''
-        };
-    }
-
-    @computed
-    get activeBranchName() {
-        return this.settings?.activeBranchName || this.github?.defaultBranch?.name;
+        this.navigateTo({ repo: this.repoKey, branch, path: filePath || '' });
     }
 
     @computed
@@ -226,11 +236,6 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
     @computed
     get isOnDefaultBranch() {
         return !!this.activeBranch?.isDefault;
-    }
-
-    @computed
-    get activeFilePath() {
-        return this.settings?.activePath;
     }
 
     @computed
@@ -342,12 +347,12 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
 
     @computed
     get activeEntry() {
-        return this.settings?.activeEntry || this.rootDir;
+        return this.editedFile || this.rootDir;
     }
 
     @computed
     get editedFile() {
-        return this.settings?.activeEntry;
+        return this.findEntry<FileModel | BinFile | FileStub>(this.activeBranchName, this.activeFilePath);
     }
 
     @action
@@ -383,29 +388,6 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
     }
 
     @action
-    saveSettings() {
-        const { settings } = this;
-        if (!settings || !settings.isDirty) {
-            return Promise.resolve();
-        }
-        return this.withAbortController(`update-settings`, (ct) => {
-            return apiUpdateSettings(settings.dirtyProps, ct.signal)
-                .then(
-                    action(() => {
-                        settings.updatedAt = new Date();
-                        settings._pristine = settings.props;
-                        if (settings.expiresInSeconds < REFRESH_THRESHOLD) {
-                            this.loadSettings();
-                        }
-                    })
-                )
-                .catch((err) => {
-                    return this.loadSettings();
-                });
-        });
-    }
-
-    @action
     uploadImage(file: File, imagePath: string, branch: string, sha?: string, maxSizeMB: number = 1) {
         const { github } = this;
         if (!github) {
@@ -422,5 +404,49 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
                 console.log(error.message);
                 return undefined;
             });
+    }
+
+    @action
+    private configureRepo(repo: string) {
+        if (this.repoKey === repo) {
+            return;
+        }
+        const [owner, name] = repo.split('/');
+        this.github?.reset();
+        this.activeBranchName = undefined;
+        this.activeFilePath = '';
+        this.repoOwner = owner;
+        this.repoName = name;
+        this.github?.load();
+    }
+
+    /** the token is refreshed by loading the settings, see the cms api */
+    private refreshTokenIfNeeded() {
+        if (this.settings?.needsRefresh) {
+            this.loadSettings();
+        }
+    }
+
+    /** the location is forgotten, the default branch is opened (with the same path) */
+    @action
+    private handleInvalidBranch(repo: string, branch: string) {
+        if (repo !== this.repoKey || branch !== this.activeBranchName) {
+            return;
+        }
+        this.visits.forget(repo, branch);
+        const defaultBranch = this.github?.defaultBranchName;
+        if (branch === defaultBranch) {
+            return;
+        }
+        this.navigateTo({ repo, branch: defaultBranch, path: this.activeFilePath }, true);
+    }
+
+    /** the root directory of the branch is opened instead, which replaces the visit */
+    @action
+    private handleInvalidPath(repo: string, branch: string, path: string) {
+        if (repo !== this.repoKey || branch !== this.activeBranchName || path !== this.activeFilePath) {
+            return;
+        }
+        this.navigateTo({ repo, branch, path: '' }, true);
     }
 }

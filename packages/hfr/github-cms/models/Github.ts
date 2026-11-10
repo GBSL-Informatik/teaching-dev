@@ -87,6 +87,13 @@ class Github {
         const before = this.store.repoKey;
         return this.octokit.repos
             .get({ repo: this.store.repoName, owner: this.store.repoOwner, _: Date.now() })
+            .catch((err) => {
+                // github answers 404 for repositories without access, too
+                if (err.status === 404) {
+                    this.store.handleRepoNotFound(before);
+                }
+                throw err;
+            })
             .then(
                 action((res) => {
                     if (before !== this.store.repoKey) {

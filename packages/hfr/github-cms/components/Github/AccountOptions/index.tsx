@@ -70,9 +70,8 @@ const AccountOptions = observer((props: Props) => {
                             name={`${repo.owner.login}/${repo.name}`}
                             isActive={repo.name === cmsStore.repoName}
                             onClick={() => {
-                                history.push(
-                                    `/cms/${repo.owner.login}/${repo.name}?ref=${repo.default_branch}`
-                                );
+                                // opens the last visited location of the repository, see `VisitStore`
+                                history.push(`/cms/${repo.owner.login}/${repo.name}`);
                             }}
                         />
                     );
