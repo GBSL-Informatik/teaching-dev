@@ -47,7 +47,6 @@
 
 @media screen and (max-width: 620px) {
     .cms {
-        margin: 0 0.5em;
         .header {
             justify-content: flex-start;
         }
@@ -75,6 +74,16 @@
 @media screen and (max-width: 1200px) {
     .cms {
         margin: 0 1em;
+    }
+}
+
+/* after the 1200px rule: on phones, the editor uses the whole width */
+@media screen and (max-width: 620px) {
+    .cms {
+        margin: 0;
+        .header {
+            padding-inline: 0.3em;
+        }
     }
 }
 

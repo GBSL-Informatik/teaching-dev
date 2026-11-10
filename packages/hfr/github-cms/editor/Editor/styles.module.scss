@@ -255,10 +255,16 @@
 @media screen and (max-width: 620px) {
     .editor {
         margin: 0 0 1em 0;
+        border-inline: none;
+        border-radius: 0;
     }
     .content {
         /* the drag handle needs the space on the left */
-        padding: 0.5em 0.5em 0.5em 1.4em;
+        padding: 0.5em 0.3em 0.5em 1.4em;
+        :global(.cms-drag-handle) {
+            /* easier to grab with a finger */
+            height: 2em;
+        }
     }
     .prosemirror {
         min-height: 40vh;

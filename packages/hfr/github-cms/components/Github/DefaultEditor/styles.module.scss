@@ -9,3 +9,11 @@
 .warning {
     margin: 0.5em;
 }
+
+@media screen and (max-width: 620px) {
+    .codeEditor {
+        margin: 0 0 1em 0;
+        border-inline: none;
+        border-radius: 0;
+    }
+}
