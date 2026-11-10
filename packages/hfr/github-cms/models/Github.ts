@@ -251,6 +251,8 @@ class Github {
                     if (!skipCreatePr) {
                         await this.createPR(newBranch, withoutPreviewPRName(newBranch));
                     }
+                    // the changes are saved in the new branch, they are no unsaved changes of this branch
+                    file.reset();
                     this.store.triggerNavigateToFile(newBranch, file.path);
                     return true;
                 })
@@ -566,6 +568,7 @@ class Github {
                         return;
                     }
                     branchModel?.sync();
+                    this.store.drafts.remove(branch, path);
                     switch (res.status) {
                         case 200:
                             // file updated
@@ -844,6 +847,9 @@ class Github {
                 return;
             }
             this.entries.get(branch)!.remove(old);
+        }
+        if (file.type === 'file') {
+            this.store.drafts.restore(file);
         }
         this.entries.get(branch)!.push(file);
     }

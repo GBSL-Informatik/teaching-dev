@@ -7,11 +7,12 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 import Branch from '../Branch';
+import LocalChanges from '../LocalChanges';
 import PR from '../PR';
 import styles from './styles.module.scss';
 
 /**
- * The pull requests and branches of the repository, shown in a modal.
+ * The local changes, pull requests and branches of the repository, shown in a modal.
  */
 const RepositoryOverview = observer(() => {
     const cmsStore = useCmsStore();
@@ -30,6 +31,7 @@ const RepositoryOverview = observer(() => {
                 <Icon path={mdiHome} size={SIZE_S} />
                 Zur Website
             </Link>
+            <LocalChanges />
             <h5>Pull Requests und Branches</h5>
             <ul>
                 {github.PRs.map((pr) => (

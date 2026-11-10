@@ -77,7 +77,9 @@ class File extends iFile {
         this.refContent = content;
         if (isInit) {
             this._pristine = content;
+            return;
         }
+        this.store.drafts.sync(this);
     }
 
     @computed
@@ -123,6 +125,14 @@ class File extends iFile {
     @computed
     get isDirty() {
         return this.content !== this._pristine;
+    }
+
+    /** shows the unsaved changes kept in the browser, see `DraftStore` */
+    @action
+    restoreContent(content: string) {
+        this.setContent(content);
+        // remounts an open editor, which keeps its own state of the content
+        this.resetCounter++;
     }
 
     @action

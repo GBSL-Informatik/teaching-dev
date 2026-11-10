@@ -24,6 +24,7 @@ import iEntry from '../models/iEntry';
 import iFile from '../models/iFile';
 import PartialSettings, { REFRESH_THRESHOLD } from '../models/PartialSettings';
 import Settings from '../models/Settings';
+import { DraftStore } from './DraftStore';
 import { default as CmsViewStore } from './ViewStore';
 
 const { organizationName, projectName } = siteConfig;
@@ -46,6 +47,7 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
     @observableRef accessor partialSettings: PartialSettings | undefined;
     @observableRef accessor github: Github | undefined;
     @observableRef accessor viewStore: CmsViewStore;
+    readonly drafts: DraftStore;
 
     @observable accessor initialized = false;
     @observable accessor requestedNavigation: FileNavigation | undefined = undefined;
@@ -54,6 +56,7 @@ export class CmsStore extends iStore<'logout' | `update-settings` | `load-settin
         super();
         this.viewStore = new CmsViewStore(this);
         this.rootViewStore = store;
+        this.drafts = new DraftStore(this);
         reaction(
             () => [this.activeBranchName, this.github] as [string | undefined, Github | undefined],
             action(([branch, github]) => {
