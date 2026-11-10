@@ -4,7 +4,9 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { useCmsStore } from '../../../../hooks/useCmsStore';
 import type File from '../../../../models/File';
+import FileTreeToggle from '../../FileTreeToggle';
 import Actions from '../Actions';
 import styles from './styles.module.scss';
 
@@ -21,8 +23,11 @@ interface Props {
  * stay at the same place in both views.
  */
 const EditorHeader = observer(({ file, showDiff, onToggleDiff, children }: Props) => {
+    const { viewStore } = useCmsStore();
     return (
         <div className={clsx(styles.header)}>
+            {/* the breadcrumbs with the toggle scrolled out of sight */}
+            {!viewStore.isEditorNavVisible && <FileTreeToggle />}
             <Actions file={file} />
             {children}
             <div className={clsx(styles.spacer)} />
