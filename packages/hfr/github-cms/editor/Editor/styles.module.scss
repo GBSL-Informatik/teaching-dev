@@ -220,10 +220,9 @@
             outline: 2px solid var(--ifm-color-primary);
         }
 
-        /* see `nodeViews/tableView.ts` */
-        .cms-table-scroll {
+        /* scrolls horizontally (see prosemirror-tables/style/tables.css), the table has a min-width */
+        .tableWrapper {
             max-width: 100%;
-            overflow-x: auto;
             margin-bottom: var(--ifm-spacing-vertical);
             > table {
                 margin-bottom: 0;
@@ -234,7 +233,6 @@
             width: auto;
             td,
             th {
-                min-width: 4em;
                 vertical-align: top;
             }
             .selectedCell::after {

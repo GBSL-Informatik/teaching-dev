@@ -1,4 +1,5 @@
 import type { Node } from 'prosemirror-model';
+import { TableView } from 'prosemirror-tables';
 import type { NodeViewConstructor } from 'prosemirror-view';
 import type MdxDocument from '../models/MdxDocument';
 import type { NodeName } from '../schema';
@@ -22,8 +23,10 @@ import InlineMath from './InlineMath';
 import JsxFlow, { jsxFlowClassName } from './JsxFlow';
 import LeafDirective from './LeafDirective';
 import { reactNodeView } from './ReactNodeView';
-import { tableView } from './tableView';
 import TextDirective from './TextDirective';
+
+/** in px, the default of prosemirror-tables */
+const CELL_MIN_WIDTH = 100;
 
 const rawBlockLanguage = (node: Node) => (node.attrs.kind === 'html' ? 'html' : 'jsx');
 
@@ -85,7 +88,8 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
         hasContent: true,
         className: () => 'cms-footnote-definition'
     }),
-    table: tableView,
+    // in a box scrolling horizontally, with a min-width for each column
+    table: (node) => new TableView(node, CELL_MIN_WIDTH),
     image: reactNodeView(document, { component: Image }),
     math_inline: reactNodeView(document, { component: InlineMath }),
     text_directive: reactNodeView(document, { component: TextDirective }),

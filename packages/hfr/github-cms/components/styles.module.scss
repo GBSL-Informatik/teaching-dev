@@ -39,7 +39,7 @@
     }
     .content {
         grid-area: content;
-        /* wide content (e.g. a table) scrolls instead of widening the grid, see `tableView` */
+        /* wide content (e.g. a table) scrolls instead of widening the grid */
         min-width: 0;
     }
     &.showFileTree {
