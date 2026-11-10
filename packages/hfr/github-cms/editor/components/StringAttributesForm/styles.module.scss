@@ -12,5 +12,8 @@
         background: transparent;
         border: 1px solid var(--ifm-color-emphasis-400);
         border-radius: var(--ifm-global-radius);
+        &:invalid {
+            border-color: var(--ifm-color-danger);
+        }
     }
 }

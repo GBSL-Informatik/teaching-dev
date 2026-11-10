@@ -9,6 +9,8 @@ export interface Field {
     name: string;
     /** shown as tooltip, e.g. what the attribute does */
     title: string;
+    /** the form can not be applied while the field is empty */
+    required?: boolean;
 }
 
 interface Props {
@@ -21,13 +23,17 @@ interface Props {
 
 /**
  * Edits a few string attributes in place, e.g. the `url` and `href` of a `<BrowserWindow>`.
- * Enter applies, Escape cancels.
+ * Enter applies, Escape cancels. Empty fields remove their attribute, unless they are required.
  */
 const StringAttributesForm = (props: Props) => {
     const [values, setValues] = React.useState(props.values);
+    const isComplete = props.fields.every((field) => !field.required || values[field.name]?.trim());
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        if (!isComplete) {
+            return;
+        }
         props.onApply(values);
         props.onClose();
     };
@@ -46,11 +52,19 @@ const StringAttributesForm = (props: Props) => {
                     value={values[field.name] ?? ''}
                     placeholder={field.name}
                     title={field.title}
+                    required={field.required}
                     autoFocus={idx === 0}
                     onChange={(event) => setValues({ ...values, [field.name]: event.target.value })}
                 />
             ))}
-            <Button icon={mdiCheck} size={SIZE_S} type="submit" color="green" title="Übernehmen" />
+            <Button
+                icon={mdiCheck}
+                size={SIZE_S}
+                type="submit"
+                color="green"
+                title={isComplete ? 'Übernehmen' : 'Bitte alle Pflichtfelder ausfüllen'}
+                disabled={!isComplete}
+            />
             <Button icon={mdiClose} size={SIZE_S} title="Abbrechen" onClick={props.onClose} />
         </form>
     );

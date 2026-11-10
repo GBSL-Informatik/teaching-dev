@@ -12,7 +12,11 @@ import styles from './styles.module.scss';
 
 const TAB_FIELDS: Field[] = [
     { name: 'label', title: 'Die Beschriftung des Tabs (label)' },
-    { name: 'value', title: 'Der eindeutige Wert des Tabs (value)' }
+    {
+        name: 'value',
+        title: 'Der eindeutige Wert des Tabs (value), wird von Docusaurus benötigt',
+        required: true
+    }
 ];
 
 interface Props {
