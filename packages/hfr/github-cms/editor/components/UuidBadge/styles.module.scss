@@ -6,3 +6,8 @@
     font-family: var(--ifm-font-family-monospace);
     font-size: 0.85em;
 }
+.missing {
+    font-family: var(--ifm-font-family-base);
+    font-style: italic;
+    opacity: 0.7;
+}
