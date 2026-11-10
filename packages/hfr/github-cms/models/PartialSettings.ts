@@ -5,9 +5,7 @@ import { CmsStore } from '../stores/CmsStore';
 export const REFRESH_THRESHOLD = 60 * 60;
 
 /**
- * The github token of the user. The location stored by the api (`activeBranch`, `activePath`)
- * is not used: it is not scoped by repository, the visits are kept in the browser instead,
- * see `VisitStore`.
+ * The github token of the user. The opened location is kept in the browser, see `VisitStore`.
  */
 class PartialSettings {
     readonly store: CmsStore;
