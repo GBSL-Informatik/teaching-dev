@@ -17,6 +17,7 @@ import {
     mdiProgressCheck,
     mdiTab,
     mdiTable,
+    mdiTabPlus,
     mdiViewColumnOutline,
     mdiViewGridOutline
 } from '@mdi/js';
@@ -24,10 +25,11 @@ import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
 import { createNode, createTable, insertBlock, insertInline } from '../commands';
-import { isInDirectiveItem } from '../plugins/directiveItems';
 import { type ImportSpec, withImport } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
+import { isInDirectiveItem } from '../plugins/directiveItems';
 import { ITEMS_DIRECTIVES, type JsxAttribute, schema } from '../schema';
+import { createTabItem, insertTabItem } from '../tabs';
 
 const { nodes } = schema;
 
@@ -42,10 +44,11 @@ interface MenuItemBase {
     requiredImport?: ImportSpec;
 }
 
-/** the content is created when the item is chosen */
+/** the content is created when the item is chosen, or the item inserts it with its own command */
 export type MenuItem =
     | (MenuItemBase & { inline: true; create: () => Node })
-    | (MenuItemBase & { inline?: false; create: () => Node | Node[] });
+    | (MenuItemBase & { inline?: false; create: () => Node | Node[] })
+    | (MenuItemBase & { command: Command });
 
 const paragraph = (text?: string) => nodes.paragraph.create(null, text ? schema.text(text) : null);
 
@@ -200,21 +203,13 @@ const COMPONENTS: MenuItem[] = [
     {
         label: 'Tabs',
         icon: mdiTab,
-        create: () =>
-            jsx(
-                'Tabs',
-                [],
-                [
-                    jsx(
-                        'TabItem',
-                        [
-                            { type: 'attribute', name: 'value', value: 'a' },
-                            { type: 'attribute', name: 'label', value: 'A' }
-                        ],
-                        [paragraph('Inhalt')]
-                    )
-                ]
-            )
+        create: () => jsx('Tabs', [], [createTabItem('tab1', 'Tab 1')])
+    },
+    {
+        label: 'Tab hinzufügen',
+        icon: mdiTabPlus,
+        keywords: ['tabitem'],
+        command: insertTabItem
     },
     {
         label: 'Browser-Fenster',
@@ -253,13 +248,20 @@ const INSERT_SECTIONS: MenuSection[] = [
 /** the items of all sections */
 export const INSERT_ITEMS: MenuItem[] = INSERT_SECTIONS.flatMap((section) => section.items);
 
+const insertContent = (item: MenuItem): Command => {
+    if ('command' in item) {
+        return item.command;
+    }
+    return item.inline ? insertInline(item.create()) : insertBlock(item.create());
+};
+
 /** inserts the item, the content is created anew on each call */
 export const insertCommand = (item: MenuItem): Command => {
     return (state, dispatch, view) => {
         if (item.isAvailable && !item.isAvailable(state)) {
             return false;
         }
-        const insert = item.inline ? insertInline(item.create()) : insertBlock(item.create());
+        const insert = insertContent(item);
         const command = item.requiredImport ? withImport(insert, item.requiredImport) : insert;
         return command(state, dispatch, view);
     };

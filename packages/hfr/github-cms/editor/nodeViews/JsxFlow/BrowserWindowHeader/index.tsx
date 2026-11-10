@@ -5,10 +5,10 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { stringAttribute, withStringAttributes } from '../../../jsxAttributes';
 import type { ContainerFormat, JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
 import AddressEditor, { type Address } from './AddressEditor';
-import { stringAttribute, withStringAttributes } from './stringAttributes';
 import styles from './styles.module.scss';
 
 /**

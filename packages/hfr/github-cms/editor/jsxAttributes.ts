@@ -1,4 +1,4 @@
-import type { JsxAttribute } from '../../../schema';
+import type { JsxAttribute } from './schema';
 
 const hasName = (attribute: JsxAttribute, name: string) =>
     attribute.type !== 'spread' && attribute.name === name;
