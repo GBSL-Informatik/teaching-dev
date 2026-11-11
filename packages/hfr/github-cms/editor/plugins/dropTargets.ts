@@ -8,7 +8,9 @@ const DRAGGING_CLASS = 'cms-dragging';
  * Code editors and inputs in node views must not take the drop of a dragged part of the document:
  * they would insert its text, the dragged part would be copied instead of moved.
  * While dragging, their pointer events are disabled (see `Editor/styles.module.scss`),
- * so the drop goes to the node view around them, which leaves it to ProseMirror.
+ * so the drop goes to the node view around them, which leaves it to ProseMirror
+ * (see `stopEvent` in `nodeViews/CodeMirrorNodeView.tsx`). Blocks dragged with the drag handle
+ * are removed on drop by ProseMirror, see `startDragging` in `plugins/dragHandle.ts`.
  */
 class DropTargetsView implements PluginView {
     private readonly view: EditorView;

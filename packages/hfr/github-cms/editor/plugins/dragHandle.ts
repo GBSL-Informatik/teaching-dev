@@ -1,10 +1,23 @@
 import { mdiDragVertical } from '@mdi/js';
-import type { Node } from 'prosemirror-model';
+import type { Node, Slice } from 'prosemirror-model';
 import { NodeSelection, Plugin, type PluginView } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 import { schema } from '../schema';
 
 const { nodes } = schema;
+
+/**
+ * Drags `node` like ProseMirror's own `dragstart` handler: on drop, ProseMirror removes `node`, or else
+ * the selection. Selecting the block is not reliable: e.g. CodeMirror moves the selection into the code
+ * block when it gets the focus, and the block would be copied instead of moved.
+ *
+ * `node` is internal to ProseMirror (`Dragging` in prosemirror-view/src/input.ts, checked with 1.42.9):
+ * after updating prosemirror-view, check that a dragged code block is still moved and not copied.
+ */
+const startDragging = (view: EditorView, slice: Slice, node: NodeSelection) => {
+    const dragging: EditorView['dragging'] & { node: NodeSelection } = { slice, move: true, node };
+    view.dragging = dragging;
+};
 
 /** blocks inside these nodes can be moved, e.g. a paragraph inside an admonition */
 const CONTAINERS = new Set([
@@ -159,11 +172,7 @@ class DragHandleView implements PluginView {
         event.dataTransfer.setData('text/plain', text);
         event.dataTransfer.effectAllowed = 'copyMove';
         event.dataTransfer.setDragImage(this.block!.dom, 0, 0);
-        // On drop, ProseMirror removes `node` (not typed, see its own `dragstart` handler), or else
-        // the selection. Selecting the block is not reliable: e.g. CodeMirror moves the selection into
-        // the code block when it gets the focus, and the block would be copied instead of moved.
-        const dragging = { slice, move: true, node };
-        view.dragging = dragging;
+        startDragging(view, slice, node);
     };
 
     private handleDragEnd = () => {
