@@ -151,17 +151,19 @@ class DragHandleView implements PluginView {
             return;
         }
         const { view } = this;
-        const selection = NodeSelection.create(view.state.doc, pos);
-        view.dispatch(view.state.tr.setSelection(selection));
-        const slice = selection.content();
+        const node = NodeSelection.create(view.state.doc, pos);
+        const slice = node.content();
         const { dom, text } = view.serializeForClipboard(slice);
         event.dataTransfer.clearData();
         event.dataTransfer.setData('text/html', dom.innerHTML);
         event.dataTransfer.setData('text/plain', text);
         event.dataTransfer.effectAllowed = 'copyMove';
         event.dataTransfer.setDragImage(this.block!.dom, 0, 0);
-        // ProseMirror removes the selected block when the slice is dropped
-        view.dragging = { slice, move: true };
+        // On drop, ProseMirror removes `node` (not typed, see its own `dragstart` handler), or else
+        // the selection. Selecting the block is not reliable: e.g. CodeMirror moves the selection into
+        // the code block when it gets the focus, and the block would be copied instead of moved.
+        const dragging = { slice, move: true, node };
+        view.dragging = dragging;
     };
 
     private handleDragEnd = () => {

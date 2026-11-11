@@ -117,8 +117,9 @@ class CodeMirrorNodeView implements NodeView {
         this.codeMirror.focus();
     }
 
-    stopEvent() {
-        return true;
+    /** a block dragged in ProseMirror is dropped by ProseMirror, see `plugins/dropTargets.ts` */
+    stopEvent(event: Event) {
+        return !(event instanceof DragEvent && this.view.dragging);
     }
 
     destroy() {

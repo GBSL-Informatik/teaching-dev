@@ -21,6 +21,7 @@ import { suggestionSources } from '../suggestions';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { deleteEmptyDirectiveItem, enterInDirectiveItem, splitDirectiveItem } from './directiveItems';
 import { dragHandle } from './dragHandle';
+import { dropTargets } from './dropTargets';
 import { imageFiles } from './imageFiles';
 import { enterAtEndOfIsolatingNode, leaveIsolatingNode } from './isolatingNodes';
 import { markInputRules } from './markInputRules';
@@ -113,6 +114,7 @@ export const createPlugins = (document: MdxDocument): Plugin[] => [
     dropCursor({ color: 'var(--ifm-color-primary)', width: 2 }),
     gapCursor(),
     dragHandle(),
+    dropTargets(),
     uuidMarker(),
     deflist(),
     tableEditing()

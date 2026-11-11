@@ -60,6 +60,10 @@
         opacity: 1;
         pointer-events: auto;
     }
+    /* the drop of a dragged block goes to ProseMirror, see `plugins/dropTargets.ts` */
+    &:global(.cms-dragging) :is(:global(.cm-editor), input, textarea, select, button, [data-stop-event]) {
+        pointer-events: none;
+    }
 }
 
 /**
