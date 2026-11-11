@@ -215,7 +215,8 @@ class CodeMirrorNodeView implements NodeView {
             { key: 'ArrowDown', run: () => this.maybeEscape('line', 1) },
             { key: 'ArrowRight', run: () => this.maybeEscape('char', 1) },
             {
-                key: 'Ctrl-Enter',
+                // continues after the code block, like Mod-Enter after directives
+                key: 'Mod-Enter',
                 run: () => {
                     if (!exitCode(this.view.state, this.view.dispatch)) {
                         return false;

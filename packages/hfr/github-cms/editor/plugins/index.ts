@@ -22,6 +22,7 @@ import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { deleteEmptyDirectiveItem, enterInDirectiveItem, splitDirectiveItem } from './directiveItems';
 import { dragHandle } from './dragHandle';
 import { imageFiles } from './imageFiles';
+import { enterAtEndOfIsolatingNode, leaveIsolatingNode } from './isolatingNodes';
 import { markInputRules } from './markInputRules';
 import { suggestionMenu } from './suggestionMenu';
 import { uuidMarker } from './uuidMarker';
@@ -44,12 +45,18 @@ const editorKeymap = keymap({
     'Mod-u': toggleMarkOnWord(marks.box),
     'Mod-k': toggleMarkOnWord(marks.kbd),
     'Shift-Enter': insertHardBreak,
-    // like a page break in word processors: the next card or column, a line break elsewhere
-    'Mod-Enter': chainCommands(withoutSpacesAtCursor(splitDirectiveItem), insertHardBreak),
+    // like a page break in word processors: after the directive or component ending at the cursor,
+    // the next card or column, a line break elsewhere
+    'Mod-Enter': chainCommands(
+        leaveIsolatingNode,
+        withoutSpacesAtCursor(splitDirectiveItem),
+        insertHardBreak
+    ),
     Enter: chainCommands(
         enterInDeflist,
         withoutSpacesAtCursor(splitListItem(nodes.list_item)),
         enterInDirectiveItem,
+        enterAtEndOfIsolatingNode,
         withoutSpacesAtCursor(baseKeymap.Enter)
     ),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
