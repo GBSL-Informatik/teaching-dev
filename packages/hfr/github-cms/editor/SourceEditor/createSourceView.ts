@@ -3,6 +3,7 @@ import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { Compartment } from '@codemirror/state';
 import { drawSelection, EditorView, keymap, lineNumbers } from '@codemirror/view';
 import type File from '../../models/File';
+import { codeMirrorIndentation } from '../codeMirrorIndentation';
 import { loadLanguage } from '../codeMirrorLanguage';
 import { codeMirrorUuidMarker } from '../nodeViews/codeMirrorUuidMarker';
 
@@ -17,6 +18,7 @@ export const createSourceView = (parent: HTMLElement, file: File) => {
         extensions: [
             history(),
             keymap.of([...defaultKeymap, ...historyKeymap]),
+            codeMirrorIndentation,
             lineNumbers(),
             drawSelection(),
             syntaxHighlighting(defaultHighlightStyle),

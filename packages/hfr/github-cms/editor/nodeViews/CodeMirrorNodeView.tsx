@@ -16,6 +16,7 @@ import { type Command, Selection, TextSelection } from 'prosemirror-state';
 import type { EditorView, NodeView, NodeViewConstructor } from 'prosemirror-view';
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { codeMirrorIndentation } from '../codeMirrorIndentation';
 import type MdxDocument from '../models/MdxDocument';
 import { codeMirrorUuidMarker } from './codeMirrorUuidMarker';
 import { NodeViewHandle, type NodeViewProps } from './ReactNodeView';
@@ -70,6 +71,7 @@ class CodeMirrorNodeView implements NodeView {
             doc: node.textContent,
             extensions: [
                 codeMirrorKeymap.of([...this.keymap(), ...defaultKeymap]),
+                codeMirrorIndentation,
                 drawSelection(),
                 syntaxHighlighting(defaultHighlightStyle),
                 CodeMirror.lineWrapping,
