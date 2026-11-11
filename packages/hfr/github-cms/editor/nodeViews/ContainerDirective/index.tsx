@@ -33,14 +33,20 @@ const isAdmonition = (name: string) => (ADMONITION_TYPES as readonly string[]).i
 
 const hasLabel = (node: Node) => node.firstChild?.type === schema.nodes.directive_label;
 
+/** the label of `:::def` is a heading, `h3` by default, see `src/plugins/remark-code-defbox` */
+const defHeadingLevel = (node: Node) => Math.max(Math.min(Number(node.attrs.attributes.h) || 3, 6), 1);
+
 /**
- * Admonitions are styled like the rendered page, other directives (details, flex, cards...)
+ * Admonitions and `:::def` are styled like the rendered page, other directives (details, flex, cards...)
  * are shown as a generic box.
  */
 export const containerDirectiveClassName = (node: Node) => {
     const { name } = node.attrs;
     if (isAdmonition(name)) {
         return `cms-directive alert alert--${ADMONITION_COLORS[name] ?? 'info'}`;
+    }
+    if (name === 'def') {
+        return `cms-directive cms-directive--def cms-directive--h${defHeadingLevel(node)} alert alert--info`;
     }
     return `cms-directive cms-directive--${name}`;
 };
@@ -57,7 +63,7 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
         <EditableTag
             tag={
                 <>
-                    {isAdmonition(name) && <AdmonitionIcon type={name} />}
+                    {(isAdmonition(name) || name === 'def') && <AdmonitionIcon type={name} />}
                     {`:::${name}`}
                 </>
             }

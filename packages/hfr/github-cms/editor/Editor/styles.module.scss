@@ -109,6 +109,31 @@
             background: var(--ifm-color-info-contrast-background);
         }
 
+        /* like `@tdev-components/CodeDefBox`, the label is its heading */
+        .cms-directive--def {
+            --ifm-alert-border-color: rgb(30, 255, 0);
+            --ifm-alert-background-color: rgba(0, 0, 0, 0.226);
+            --ifm-alert-background-color-highlight: rgba(0, 0, 0, 0.226);
+            > .cms-node-view-content > .cms-directive-label {
+                font-family: var(--ifm-heading-font-family);
+                font-weight: var(--ifm-heading-font-weight);
+                line-height: var(--ifm-heading-line-height);
+                code {
+                    color: rgb(19, 165, 0);
+                    background-color: var(--ifm-color-secondary-dark);
+                    &:first-of-type {
+                        background-color: var(--ifm-color-primary-dark);
+                        color: var(--ifm-alert-border-color);
+                    }
+                }
+            }
+        }
+        @for $level from 1 through 6 {
+            .cms-directive--def.cms-directive--h#{$level} > .cms-node-view-content > .cms-directive-label {
+                font-size: var(--ifm-h#{$level}-font-size);
+            }
+        }
+
         /*
          * The items of :::cards and :::flex are laid out by the site css (`div.flex > div.item`),
          * with the styles of the attributes, see `nodeViews/DirectiveItem/flexLayout.ts`.
@@ -316,6 +341,16 @@
             .cms-code-block--split {
                 grid-template-columns: minmax(0, 1fr);
             }
+        }
+    }
+}
+
+:global(html[data-theme='dark']) .prosemirror :global(.cms-directive--def) {
+    --ifm-alert-background-color: var(--ifm-color-primary-darkest);
+    > :global(.cms-node-view-content) > :global(.cms-directive-label) code {
+        background-color: var(--ifm-color-primary-dark);
+        &:first-of-type {
+            background-color: var(--ifm-color-primary-lightest);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { mdiLightbulbOnOutline, mdiPencilBoxOutline, mdiScriptTextOutline } from '@mdi/js';
+import { mdiFileEyeOutline, mdiLightbulbOnOutline, mdiPencilBoxOutline, mdiScriptTextOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconDanger from '@theme/Admonition/Icon/Danger';
 import IconInfo from '@theme/Admonition/Icon/Info';
@@ -20,7 +20,9 @@ const ICONS: Record<string, React.ComponentType> = {
     aufgabe: mdiIcon(mdiPencilBoxOutline),
     definition: mdiIcon(mdiScriptTextOutline),
     finding: mdiIcon(mdiLightbulbOnOutline),
-    insight: mdiIcon(mdiLightbulbOnOutline)
+    insight: mdiIcon(mdiLightbulbOnOutline),
+    // `:::def`, see `@tdev-components/CodeDefBox/DefHeading`
+    def: mdiIcon(mdiFileEyeOutline)
 };
 
 interface Props {
