@@ -26,6 +26,8 @@ export class NodeViewHandle {
     @observable accessor selected = false;
     /** the child shown of all tab items in the content, e.g. the active tab of `<Tabs>` */
     @observable accessor activeChild: number | null = null;
+    /** e.g. while a preview is shown in place of the content */
+    @observable accessor isContentHidden = false;
     readonly editor: NodeViewEditor;
     private readonly getPos: () => number | undefined;
 
@@ -52,6 +54,11 @@ export class NodeViewHandle {
     @action
     setActiveChild(index: number | null) {
         this.activeChild = index;
+    }
+
+    @action
+    setContentHidden(isHidden: boolean) {
+        this.isContentHidden = isHidden;
     }
 
     /** whether the node is selected or the selection is within its content, e.g. the cursor */
@@ -209,7 +216,7 @@ class ReactNodeView implements NodeView {
     private readonly handle: NodeViewHandle;
     private readonly portalKey = `node-view-${portalCounter++}`;
     private readonly options: Options;
-    private readonly disposeActiveChild?: IReactionDisposer;
+    private readonly disposeContentAttributes?: IReactionDisposer;
 
     constructor(node: Node, getPos: () => number | undefined, editor: NodeViewEditor, options: Options) {
         this.options = options;
@@ -223,7 +230,7 @@ class ReactNodeView implements NodeView {
         if (options.hasContent) {
             this.contentDOM = window.document.createElement('div');
             this.dom.appendChild(this.contentDOM);
-            this.disposeActiveChild = autorun(() => this.updateActiveChild());
+            this.disposeContentAttributes = autorun(() => this.updateContentAttributes());
         }
         this.updateDom(node);
         const Component = options.component;
@@ -270,7 +277,7 @@ class ReactNodeView implements NodeView {
         if (mutation.type === 'selection') {
             return false;
         }
-        // e.g. `data-active-child`: the attributes of the content element are no document changes
+        // e.g. `data-active-child`, `hidden`: attributes of the content element are no document changes
         if (mutation.type === 'attributes' && mutation.target === this.contentDOM) {
             return true;
         }
@@ -278,13 +285,14 @@ class ReactNodeView implements NodeView {
     }
 
     destroy() {
-        this.disposeActiveChild?.();
+        this.disposeContentAttributes?.();
         this.handle.editor.removePortal(this.portalKey);
     }
 
-    /** the other tab items are hidden by css, see `Editor/styles.module.scss` */
-    private updateActiveChild() {
-        const { activeChild } = this.handle;
+    private updateContentAttributes() {
+        const { activeChild, isContentHidden } = this.handle;
+        this.contentDOM!.hidden = isContentHidden;
+        // the other tab items are hidden by css, see `Editor/styles.module.scss`
         if (activeChild === null) {
             this.contentDOM!.removeAttribute('data-active-child');
             return;

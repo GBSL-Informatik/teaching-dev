@@ -7,6 +7,7 @@ import { SKIP, visit } from 'unist-util-visit';
 import type { VFile } from 'vfile';
 import type { DirType } from '../../components/FileSystem/Dir';
 import { toJsxAttribute, toMdxJsxExpressionAttribute, transformAttributes } from '../helpers';
+import { rootDir } from './rootDir';
 
 const DIR_SOURCE = '@tdev-components/FileSystem/Dir';
 
@@ -110,13 +111,7 @@ const plugin: Plugin<[], Root> = function plugin(): Transformer<Root> {
             if (children.length === 0) {
                 fail(file, node, 'A tree list must contain at least one item.');
             }
-            const first = children[0];
-            const dir: DirType =
-                children.length === 1
-                    ? typeof first === 'string'
-                        ? { name: first, children: [] }
-                        : first
-                    : { name: '/', children };
+            const dir = rootDir(children);
             const attributes = transformAttributes(node.attributes, {}).attributes;
             const openLevel = attributes.openLevel;
             if (

@@ -1,7 +1,7 @@
 import { mdiFormatTitle } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import SelectInput from '@tdev-components/shared/SelectInput';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import SelectInput from '@tdev-components/shared/SelectInput';
 import { defHeadingDepth } from '@tdev-plugins/remark-code-defbox/headingDepth';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
@@ -20,6 +20,7 @@ import { CONTAINER_DIRECTIVES_WITHOUT_LABEL } from '../../suggestions/directiveN
 import type { NodeViewProps } from '../ReactNodeView';
 import AdmonitionIcon from './AdmonitionIcon';
 import { ADMONITION_TYPES } from './admonitionTypes';
+import FileTreePreview from './FileTreePreview';
 
 const ADMONITION_COLORS: Record<string, string> = {
     note: 'secondary',
@@ -83,24 +84,27 @@ const ContainerDirective = observer(({ handle }: NodeViewProps) => {
     );
 
     return (
-        <NodeToolbar handle={handle} settings={settings} actionsWhenActive title={title} shrinkTitle>
-            <UuidAttributes handle={handle} />
-            {isAdmonition(name) && (
-                <SelectInput
-                    options={[...ADMONITION_TYPES]}
-                    value={name}
-                    onChange={(name) => handle.updateAttrs({ name })}
-                />
-            )}
-            {canAddLabel && (
-                <Button
-                    icon={mdiFormatTitle}
-                    size={SIZE_S}
-                    title="Titel hinzufügen"
-                    onClick={handleAddLabel}
-                />
-            )}
-        </NodeToolbar>
+        <>
+            <NodeToolbar handle={handle} settings={settings} actionsWhenActive title={title} shrinkTitle>
+                <UuidAttributes handle={handle} />
+                {isAdmonition(name) && (
+                    <SelectInput
+                        options={[...ADMONITION_TYPES]}
+                        value={name}
+                        onChange={(name) => handle.updateAttrs({ name })}
+                    />
+                )}
+                {canAddLabel && (
+                    <Button
+                        icon={mdiFormatTitle}
+                        size={SIZE_S}
+                        title="Titel hinzufügen"
+                        onClick={handleAddLabel}
+                    />
+                )}
+            </NodeToolbar>
+            {name === 'tree' && <FileTreePreview handle={handle} />}
+        </>
     );
 });
 
