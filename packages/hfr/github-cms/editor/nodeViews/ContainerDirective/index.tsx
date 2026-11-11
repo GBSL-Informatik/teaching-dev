@@ -2,6 +2,7 @@ import { mdiFormatTitle } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import SelectInput from '@tdev-components/shared/SelectInput';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { defHeadingDepth } from '@tdev-plugins/remark-code-defbox/headingDepth';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
 import AttributesEditor from '../../components/AttributesEditor';
@@ -33,9 +34,6 @@ const isAdmonition = (name: string) => (ADMONITION_TYPES as readonly string[]).i
 
 const hasLabel = (node: Node) => node.firstChild?.type === schema.nodes.directive_label;
 
-/** the label of `:::def` is a heading, `h3` by default, see `src/plugins/remark-code-defbox` */
-const defHeadingLevel = (node: Node) => Math.max(Math.min(Number(node.attrs.attributes.h) || 3, 6), 1);
-
 /**
  * Admonitions and `:::def` are styled like the rendered page, other directives (details, flex, cards...)
  * are shown as a generic box.
@@ -46,7 +44,9 @@ export const containerDirectiveClassName = (node: Node) => {
         return `cms-directive alert alert--${ADMONITION_COLORS[name] ?? 'info'}`;
     }
     if (name === 'def') {
-        return `cms-directive cms-directive--def cms-directive--h${defHeadingLevel(node)} alert alert--info`;
+        // the label is a heading, see `src/plugins/remark-code-defbox`
+        const depth = defHeadingDepth(node.attrs.attributes.h);
+        return `cms-directive cms-directive--def cms-directive--h${depth} alert alert--info`;
     }
     return `cms-directive cms-directive--${name}`;
 };

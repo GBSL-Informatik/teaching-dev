@@ -1,4 +1,5 @@
 @use '../uuid';
+@use '../../../../../src/components/CodeDefBox/colors' as defBox;
 
 .editor {
     margin: 0 1px 1em 1px;
@@ -109,23 +110,13 @@
             background: var(--ifm-color-info-contrast-background);
         }
 
-        /* like `@tdev-components/CodeDefBox`, the label is its heading */
+        /* like `@tdev-components/CodeDefBox` (colors shared in its `_colors.scss`), the label is its heading */
         .cms-directive--def {
-            --ifm-alert-border-color: rgb(30, 255, 0);
-            --ifm-alert-background-color: rgba(0, 0, 0, 0.226);
-            --ifm-alert-background-color-highlight: rgba(0, 0, 0, 0.226);
+            @include defBox.colors('> .cms-node-view-content > .cms-directive-label');
             > .cms-node-view-content > .cms-directive-label {
                 font-family: var(--ifm-heading-font-family);
                 font-weight: var(--ifm-heading-font-weight);
                 line-height: var(--ifm-heading-line-height);
-                code {
-                    color: rgb(19, 165, 0);
-                    background-color: var(--ifm-color-secondary-dark);
-                    &:first-of-type {
-                        background-color: var(--ifm-color-primary-dark);
-                        color: var(--ifm-alert-border-color);
-                    }
-                }
             }
         }
         @for $level from 1 through 6 {
@@ -346,11 +337,5 @@
 }
 
 :global(html[data-theme='dark']) .prosemirror :global(.cms-directive--def) {
-    --ifm-alert-background-color: var(--ifm-color-primary-darkest);
-    > :global(.cms-node-view-content) > :global(.cms-directive-label) code {
-        background-color: var(--ifm-color-primary-dark);
-        &:first-of-type {
-            background-color: var(--ifm-color-primary-lightest);
-        }
-    }
+    @include defBox.dark-colors('> :global(.cms-node-view-content) > :global(.cms-directive-label)');
 }
