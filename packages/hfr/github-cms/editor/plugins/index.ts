@@ -24,6 +24,7 @@ import { dragHandle } from './dragHandle';
 import { dropTargets } from './dropTargets';
 import { imageFiles } from './imageFiles';
 import { enterAtEndOfIsolatingNode, leaveIsolatingNode } from './isolatingNodes';
+import { arrowOutOfCode, leaveCode } from './leaveCode';
 import { markInputRules } from './markInputRules';
 import { suggestionMenu } from './suggestionMenu';
 import { uuidMarker } from './uuidMarker';
@@ -62,8 +63,8 @@ const editorKeymap = keymap({
     ),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
     'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),
-    ArrowLeft: arrowIntoCode('left'),
-    ArrowRight: arrowIntoCode('right'),
+    ArrowLeft: chainCommands(arrowOutOfCode('left'), arrowIntoCode('left')),
+    ArrowRight: chainCommands(arrowOutOfCode('right'), arrowIntoCode('right')),
     ArrowUp: arrowIntoCode('up'),
     ArrowDown: arrowIntoCode('down'),
     'Shift-Ctrl-0': setBlockType(nodes.paragraph),
@@ -116,6 +117,7 @@ export const createPlugins = (document: MdxDocument): Plugin[] => [
     dragHandle(),
     dropTargets(),
     uuidMarker(),
+    leaveCode(),
     deflist(),
     tableEditing()
 ];

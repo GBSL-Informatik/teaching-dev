@@ -87,6 +87,7 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 : ProseMirror-Plugins: Tastenkürzel, Markdown-Kürzel, Ziehgriff für Blöcke, Definitionslisten und UUID-Markierungen.
 : In `:::cards` und `:::flex` beginnt [[Ctrl]] + [[Enter]] beim Cursor ein neues Element, ebenso [[Enter]] in einem leeren letzten Absatz. [[Backspace]] am Anfang eines Elements verbindet es mit dem vorherigen (`plugins/directiveItems.ts`).
 : Folgt auf eine Direktive, eine Komponente oder eine Tabelle ein Block ohne Text (z.B. ein Code-Block), gibt es dazwischen keine Cursor-Position. [[Ctrl]] + [[Enter]] am Ende ihres Inhalts fügt deshalb einen Absatz danach ein, ebenso [[Enter]] in einem leeren letzten Absatz (`plugins/isolatingNodes.ts`). In Code-Blöcken fügt [[Ctrl]] + [[Enter]] einen Absatz nach dem Code-Block ein.
+: Endet oder beginnt ein Textblock mit Inline-Code, verlässt der erste Druck auf [[→]] bzw. [[←]] den Code, erst der zweite wechselt in den nächsten Block, z.B. vom Titel einer `:::def` zum Inhalt (`plugins/leaveCode.ts`).
 `suggestions/`
 : Vorschläge, die beim Tippen erscheinen. Jede Quelle erkennt den getippten Text an einem regulären Ausdruck:
 : `/tip` zeigt die Schnellaktionen: die Einträge des Menüs «Einfügen», die Hinweis-Typen sowie Titel, Listen und Zitate.
