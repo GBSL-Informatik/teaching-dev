@@ -4,7 +4,7 @@ import {
     DirectiveCard,
     DirectiveFlex
 } from '../../../../../../src/plugins/remark-flex-cards/plugin';
-import { LeafDirectiveName } from '../../../../../../src/plugins/remark-media/plugin';
+import { LeafDirectiveName } from '../../../../../../src/plugins/remark-media/mediaElement';
 import { CONTAINER_DIRECTIVES, LEAF_DIRECTIVES } from '../directiveNames';
 
 describe('directive names', () => {

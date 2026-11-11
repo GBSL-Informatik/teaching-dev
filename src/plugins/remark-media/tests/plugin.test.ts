@@ -127,4 +127,38 @@ describe('#medialinks', () => {
           "
         `);
     });
+    it('can convert video directive with muted and loop', async () => {
+        const input = `
+            ::video[./bunny.mp4]{muted loop}
+        `;
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<video muted loop style={{"maxWidth":"100%"}} controls>
+            <source src={require('./bunny.mp4').default} />
+          </video>
+          "
+        `);
+    });
+    it('can convert audio directive with styles', async () => {
+        const input = `
+            ::audio[./song.mp3]{width=300px}
+        `;
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<audio controls style={{"minWidth":"300px"}}>
+            <source src={require('./song.mp3').default} type="audio/mpeg" />
+          </audio>
+          "
+        `);
+    });
+    it('can convert learningapps directive', async () => {
+        const input = `
+            ::learningapps[https://learningapps.org/1234567]{height=400px}
+        `;
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<iframe height="400px" src="https://learningapps.org/watch?app=1234567" title="Learningapps" frameBorder="0" scrolling="no" allowFullScreen style={{"width":"100%","maxWidth":"100%","height":"400px"}} />
+          "
+        `);
+    });
 });

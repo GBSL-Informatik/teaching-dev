@@ -1,4 +1,5 @@
 import TextInput from '@tdev-components/shared/TextInput';
+import { isMediaDirective } from '@tdev-plugins/remark-media/mediaElement';
 import { observer } from 'mobx-react-lite';
 import AttributesEditor from '../../components/AttributesEditor';
 import {
@@ -11,12 +12,15 @@ import UuidAttributes from '../../components/UuidAttributes';
 import { directiveHeadOf, parseDirectiveHead } from '../../markdown/directiveHead';
 import { directiveAttributes } from '../../markdown/serialize';
 import type { NodeViewProps } from '../ReactNodeView';
+import MediaPreview from './MediaPreview';
+import MediaSource from './MediaSource';
 
 /**
- * `::name[label]{attributes}`, used e.g. for media embeds like `::youtube[Title]{#id}`.
+ * `::name[label]{attributes}`. Media directives like `::youtube[url]` are shown with a preview.
  */
 const LeafDirective = observer(({ handle }: NodeViewProps) => {
     const { name, label, attributes } = handle.node.attrs;
+    const isMedia = isMediaDirective(name);
     const settings = (
         <AttributesEditor
             title={`Attribute von ::${name}`}
@@ -26,29 +30,36 @@ const LeafDirective = observer(({ handle }: NodeViewProps) => {
     );
 
     return (
-        <NodeToolbar
-            handle={handle}
-            settings={settings}
-            actionsWhenActive
-            title={
-                <EditableTag
-                    tag={`::${name}`}
-                    attributes={directiveAttributes(attributes)}
-                    source={directiveHeadOf(handle.node)}
-                    parse={(text) => parseDirectiveHead(text, handle.node)}
-                    onApply={(head) => handle.updateAttrs(head)}
-                />
-            }
-            shrinkTitle
-        >
-            <UuidAttributes handle={handle} />
-            <TextInput
-                value={label}
-                placeholder="Label"
-                noAutoFocus
-                onChange={(label) => handle.updateAttrs({ label })}
-            />
-        </NodeToolbar>
+        <>
+            <NodeToolbar
+                handle={handle}
+                settings={settings}
+                actionsWhenActive
+                title={
+                    <EditableTag
+                        tag={`::${name}`}
+                        attributes={directiveAttributes(attributes)}
+                        source={directiveHeadOf(handle.node)}
+                        parse={(text) => parseDirectiveHead(text, handle.node)}
+                        onApply={(head) => handle.updateAttrs(head)}
+                    />
+                }
+                shrinkTitle
+            >
+                <UuidAttributes handle={handle} />
+                {isMedia ? (
+                    <MediaSource handle={handle} />
+                ) : (
+                    <TextInput
+                        value={label}
+                        placeholder="Label"
+                        noAutoFocus
+                        onChange={(label) => handle.updateAttrs({ label })}
+                    />
+                )}
+            </NodeToolbar>
+            {isMedia && <MediaPreview name={name} src={label} attributes={attributes} />}
+        </>
     );
 });
 
