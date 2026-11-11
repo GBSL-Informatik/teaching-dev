@@ -1,3 +1,4 @@
+import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
 import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable } from 'mobx';
 import { Position } from 'unist';
@@ -120,6 +121,22 @@ class File extends iFile {
     loadImages() {
         // the directory does not exist before the first image is uploaded
         return this.store.github?.fetchDirectory(this.branch, this.imageDirPath).catch(() => undefined);
+    }
+
+    /** the entries of the directory at the path relative to the file, loaded with `loadDirectory` */
+    entriesAt(relDirPath: string) {
+        return this.store.findChildren(this.branch, this.resolvePath(relDirPath));
+    }
+
+    @action
+    loadDirectory(relDirPath: string) {
+        const path = trimSlashes(this.resolvePath(relDirPath));
+        const dir = this.store.findEntry(this.branch, path);
+        if (dir?.type === 'dir' && dir.isFetched) {
+            return Promise.resolve();
+        }
+        // e.g. while a path is typed, the directory may not exist
+        return this.store.github?.fetchDirectory(this.branch, path).catch(() => undefined);
     }
 
     @computed

@@ -80,6 +80,8 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 `nodeViews/`
 : React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet, Mermaid-Diagramme neben ihrer Vorschau.
 : In CodeMirror wird mit 4 Leerzeichen eingerückt, [[Tab]] und [[Shift]] + [[Tab]] rücken den Code ein und aus. Mit [[Esc]] und danach [[Tab]] verlässt der Fokus den Code (`codeMirrorIndentation.ts`).
+: `:::tree` wird wie auf der Seite als Dateibaum angezeigt. Sobald der Cursor im Block steht (oder der Baum angeklickt wird), wird die Liste bearbeitet. Eine ungültige Liste, mit der die Seite nicht gebaut werden kann, bleibt sichtbar (`nodeViews/ContainerDirective/fileTree.ts`).
+: Medien-Direktiven (`::video`, `::audio`, `::youtube`, `::circuitverse`, `::learningapps`, `::codepen`) werden mit einer Vorschau angezeigt. Das Element mit seinen Stilen und Attributen wird mit derselben Funktion erzeugt wie im Remark-Plugin (`src/plugins/remark-media/mediaElement.ts`). Relative Pfade von `::audio` und `::video` werden aus dem Repository geladen und bei der Eingabe vervollständigt.
 : Bildunterschriften werden als Text (Markdown) unter dem Bild bearbeitet, die Bild-Optionen wie `--width=20em` separat in den Bild-Einstellungen. Beides wird im Alt-Text gespeichert.
 : Bilder können aus dem Dateisystem in den Editor gezogen oder aus der Zwischenablage eingefügt werden (z.B. ein Screenshot): Nach der Eingabe des Namens werden sie nach `./images` hochgeladen und an der Stelle eingefügt (`plugins/imageFiles.ts`).
 : Bilder aus dem Repository können mit Excalidraw bearbeitet werden, in jedem Browser. Wie im Dev-Modus liegt die Szene neben dem Bild in `<bild>.<ext>.excalidraw`; sie wird geladen, falls vorhanden, sonst aus dem Bild erstellt. Erst beim Speichern werden Szene und Bild auf den Branch committet (`nodeViews/Image/githubImageStorage.ts`).
@@ -133,7 +135,7 @@ Einen Eintrag in `COMPONENTS` in `Toolbar/insertItems.ts` ergänzen. Komponenten
 - [ ] Installationsanleitung schreiben
 - [ ] Generischer Attribute-Editor fürs Frontmatter verwenden
 - [ ] Medien-Upload (aktuell nur für Bilder umgesetzt)
-- [ ] Vorschau für Medien-Direktiven (`::youtube`, `::pdf`, ...)
+- [ ] Vorschau für `::pdf`
 - [ ] Darkmode
 - [ ] Ansichts-Einstellungen speichern (Richtext / Markdown)
 
