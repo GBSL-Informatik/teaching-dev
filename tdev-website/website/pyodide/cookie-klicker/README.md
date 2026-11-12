@@ -31,4 +31,6 @@ def drehen(event):
 await run()
 ```
 
+Jedes Klickereignis enthält in `event.payload.time_since_last_click` die Zeit seit dem letzten Klick auf diesen Cookie in Sekunden. Der Zugriff mit `event.payload['time_since_last_click']` funktioniert ebenfalls. Beim ersten Klick eines Programmlaufs enthält das Ereignis `-1`.
+
 Die [Package-Dokumentation](https://github.com/GBSL-Informatik/teaching-dev/blob/main/packages/tdev/pyodide-code/docs/README.mdx) beschreibt die Erweiterungs-API.

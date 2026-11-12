@@ -1,3 +1,4 @@
+import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { useExtensionStore } from '@tdev/pyodide-code/hooks/useExtensionStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -49,7 +50,7 @@ const CookieComponent = observer(({ cookieId, className }: CookieComponentProps)
                     </g>
                 </svg>
             </button>
-            <span className={clsx(styles.label)}>{cookieId}</span>
+            <CopyBadge value={cookieId} className={clsx(styles.label)} />
             <span role="status" className={clsx(styles.status)}>
                 {cookie.isConnected ? 'Klicke auf den Cookie.' : 'Starte zuerst das Python-Programm.'}
             </span>

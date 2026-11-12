@@ -7,7 +7,9 @@ export interface CookieUpdate {
 
 export interface CookieClick {
     type: 'click';
-    payload: null;
+    payload: {
+        time_since_last_click: number;
+    };
 }
 
 export interface CookieKey {

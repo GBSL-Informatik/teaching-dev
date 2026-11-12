@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { loadPyodide, type PyodideAPI } from 'pyodide';
@@ -61,5 +62,63 @@ raise ValueError('original failure after removal')
 `
             )
         ).toThrow('original failure after removal');
+    });
+});
+
+describe('webio event payloads', () => {
+    beforeAll(() => {
+        const source = readFileSync(new URL('../workers/webio.py', import.meta.url), 'utf8');
+        registerPythonModule(pyodide, '_test_webio', source);
+        pyodide.runPython(`
+from _test_webio import _decode_event
+
+def decode_payload(payload):
+    return _decode_event({
+        'event': {'type': 'click', 'payload': payload},
+        'extension': 'example',
+        'targetId': 'target',
+        'timeStamp': 1000,
+    })
+`);
+    });
+
+    it.each([0.75, -1])('reads value %s using attributes and dictionary access', (value) => {
+        expect(
+            pyodide.runPython(`
+payload = decode_payload({'value': ${value}}).payload
+payload.value == payload['value'] == ${value}
+`)
+        ).toBe(true);
+    });
+
+    it('preserves dictionary methods and normal missing-attribute behavior', () => {
+        expect(
+            pyodide.runPython(`
+payload = decode_payload({'key': 'ArrowLeft', 'items': 42}).payload
+assert payload.key == payload.get('key') == 'ArrowLeft'
+assert dict(payload) == {'key': 'ArrowLeft', 'items': 42}
+assert callable(payload.items)
+assert payload['items'] == 42
+assert not hasattr(payload, 'missing')
+getattr(payload, 'missing', 'fallback')
+`)
+        ).toBe('fallback');
+    });
+
+    it('keeps coordinates available on both the event and its payload', () => {
+        expect(
+            pyodide.runPython(`
+event = decode_payload({'x': 10, 'y': 20})
+event.x == event.payload.x == event.payload['x'] == 10 and event.y == event.payload.y == 20
+`)
+        ).toBe(true);
+    });
+
+    it('preserves payloads that are not dictionaries', () => {
+        expect(
+            pyodide.runPython(`
+all(decode_payload(value).payload == value for value in (None, 42, 'text', [1, 2]))
+`)
+        ).toBe(true);
     });
 });
