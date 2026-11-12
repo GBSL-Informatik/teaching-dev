@@ -336,9 +336,6 @@ abstract class iDocument<Type extends DocumentType> {
                 if (this.isDirty) {
                     this._pristine = { ...this.data };
                 }
-                if (result && result.updatedAt > this.updatedAt) {
-                    this.updatedAt = result.updatedAt;
-                }
                 return true;
             })
         );
