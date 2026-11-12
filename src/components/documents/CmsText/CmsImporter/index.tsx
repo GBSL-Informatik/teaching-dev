@@ -154,14 +154,7 @@ const CmsImporter = observer((props: Props) => {
                                 />
                             </div>
                             {mode === 'edit' &&
-                                (ready ? (
-                                    <CmsTextEditor
-                                        cmsAssignments={cmsAssignments}
-                                        monospace={props.mode === 'code'}
-                                    />
-                                ) : (
-                                    <Loader />
-                                ))}
+                                (ready ? <CmsTextEditor cmsAssignments={cmsAssignments} /> : <Loader />)}
                             {mode === 'xlsx' && (
                                 <XlsxImport
                                     onDone={(data) => {

@@ -14,7 +14,6 @@ import styles from './styles.module.scss';
 interface Props {
     /** document root id -> labels */
     cmsAssignments: Record<string, string[]>;
-    monospace?: boolean;
 }
 
 const CmsTextEditor = observer((props: Props) => {
@@ -63,12 +62,7 @@ const CmsTextEditor = observer((props: Props) => {
                             <tr key={user.id}>
                                 <td className={clsx(styles.name)}>{user.name}</td>
                                 {documentRootIds.map((id) => (
-                                    <EditCell
-                                        key={id}
-                                        documentRootId={id}
-                                        userId={user.id}
-                                        monospace={props.monospace}
-                                    />
+                                    <EditCell key={id} documentRootId={id} userId={user.id} />
                                 ))}
                             </tr>
                         ))}

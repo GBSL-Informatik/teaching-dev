@@ -12,7 +12,6 @@ import styles from './styles.module.scss';
 interface Props {
     documentRootId: string;
     userId: string;
-    monospace?: boolean;
 }
 
 const EditCell = observer((props: Props) => {
@@ -39,33 +38,35 @@ const EditCell = observer((props: Props) => {
 
     return (
         <td className={clsx(styles.cell, doc.hasDraft && styles.dirty)}>
-            <textarea
-                className={clsx(styles.input, props.monospace && styles.monospace)}
-                value={text}
-                rows={text.split('\n').length}
-                onChange={handleChange}
-            />
-            {doc.hasDraft && (
-                <div className={clsx(styles.actions)}>
-                    <Button
-                        icon={mdiContentSave}
-                        title="Speichern"
-                        color="green"
-                        size={SIZE_S}
-                        onClick={handleSave}
-                        disabled={doc.isSaving}
-                        spin={doc.isSaving}
-                    />
-                    <Button
-                        icon={mdiUndo}
-                        title="Verwerfen"
-                        color="black"
-                        size={SIZE_S}
-                        onClick={handleDiscard}
-                        disabled={doc.isSaving}
-                    />
-                </div>
-            )}
+            <div className={clsx(styles.content)}>
+                <textarea
+                    className={clsx(styles.input)}
+                    value={text}
+                    rows={text.split('\n').length}
+                    onChange={handleChange}
+                />
+                {doc.hasDraft && (
+                    <div className={clsx(styles.actions)}>
+                        <Button
+                            icon={mdiContentSave}
+                            title="Speichern"
+                            color="green"
+                            size={SIZE_S}
+                            onClick={handleSave}
+                            disabled={doc.isSaving}
+                            spin={doc.isSaving}
+                        />
+                        <Button
+                            icon={mdiUndo}
+                            title="Verwerfen"
+                            color="black"
+                            size={SIZE_S}
+                            onClick={handleDiscard}
+                            disabled={doc.isSaving}
+                        />
+                    </div>
+                )}
+            </div>
         </td>
     );
 });

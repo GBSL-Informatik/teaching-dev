@@ -1,28 +1,30 @@
 .cell {
     vertical-align: top;
-    min-width: 15em;
+    min-width: 12em;
     &.dirty {
         background-color: var(--ifm-color-warning-contrast-background);
     }
+    .content {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.1em;
+    }
     .input {
-        width: 100%;
-        padding: 0.2em 0.4em;
+        flex-grow: 1;
+        min-width: 0;
+        padding: 0.1em 0.3em;
         resize: vertical;
         border: 1px solid var(--ifm-color-gray-500);
         border-radius: var(--ifm-global-radius);
-        font-family: inherit;
+        font-family: var(--ifm-font-family-monospace);
         font-size: var(--ifm-font-size-base);
         &:focus {
             border-color: var(--ifm-link-hover-color);
             outline: none;
         }
-        &.monospace {
-            font-family: var(--ifm-font-family-monospace);
-        }
     }
     .actions {
         display: flex;
-        justify-content: flex-end;
-        gap: 0.2em;
+        flex-shrink: 0;
     }
 }
