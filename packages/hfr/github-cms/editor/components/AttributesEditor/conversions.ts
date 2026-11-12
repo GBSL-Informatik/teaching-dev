@@ -1,5 +1,5 @@
 import type { DirectiveAttributes, JsxAttribute } from '../../schema';
-import type { AttributeRow } from '.';
+import type { AttributeRow } from './AttributesForm';
 
 export const jsxAttributesToRows = (attributes: JsxAttribute[]): AttributeRow[] => {
     return attributes.flatMap((attribute): AttributeRow[] => {

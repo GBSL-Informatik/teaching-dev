@@ -14,8 +14,11 @@
 .expression {
     font-family: var(--ifm-font-family-monospace);
 }
-.footer {
+.actions {
     display: flex;
-    justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.5em;
+}
+.spacer {
+    flex-grow: 1;
 }

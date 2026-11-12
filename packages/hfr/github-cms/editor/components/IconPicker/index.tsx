@@ -80,7 +80,6 @@ const IconPicker = (props: Props) => {
                 value={query}
                 placeholder="Icon suchen..."
                 spellCheck={false}
-                autoFocus
                 role="combobox"
                 aria-expanded={isOpen}
                 onChange={handleChange}
