@@ -7,8 +7,10 @@ interface Props<T> {
     value: string;
     /** the suggestions for the typed value, filtered by the caller */
     options: T[];
-    optionKey: (option: T) => string;
-    renderOption: (option: T) => React.ReactNode;
+    /** defaults to the option itself, for string options */
+    optionKey?: (option: T) => string;
+    /** defaults to the option itself, for string options */
+    renderOption?: (option: T) => React.ReactNode;
     onChange: (text: string) => void;
     onSelect: (option: T) => void;
     /** enter without a suggestion, e.g. to apply the typed text */
@@ -40,13 +42,13 @@ const scrollIntoView = (element: HTMLElement | null) => {
  * Suggestions are selected by clicking them or with the arrow keys and enter.
  */
 const Combobox = <T,>(props: Props<T>) => {
-    const { options, layout = 'list' } = props;
+    const { options, layout = 'list', optionKey = String, renderOption = String } = props;
     const id = React.useId();
     const [isOpen, setIsOpen] = React.useState(false);
     const [highlighted, setHighlighted] = React.useState(0);
     const [input, setInput] = React.useState<HTMLInputElement | null>(null);
     const [dropdown, setDropdown] = React.useState<HTMLDivElement | null>(null);
-    const placement = useFloatingPlacement(input, isOpen ? dropdown : null);
+    const placement = useFloatingPlacement(input, isOpen ? dropdown : null, true);
     const showDropdown = isOpen && (options.length > 0 || !!props.emptyText);
     // the options can change while the dropdown is open, e.g. when a directory is loaded
     const highlightedIndex = Math.min(highlighted, options.length - 1);
@@ -128,17 +130,17 @@ const Combobox = <T,>(props: Props<T>) => {
                     ref={setDropdown}
                     role="listbox"
                     className={clsx(styles.dropdown, styles[layout], !placement && styles.measuring)}
-                    style={placement ? { ...placement, minWidth: input?.offsetWidth } : undefined}
+                    style={placement ?? undefined}
                 >
                     {options.length === 0 && <div className={clsx(styles.empty)}>{props.emptyText}</div>}
                     {options.map((option, idx) => (
                         <button
-                            key={props.optionKey(option)}
+                            key={optionKey(option)}
                             ref={idx === highlightedIndex ? scrollIntoView : undefined}
                             type="button"
                             role="option"
                             aria-selected={idx === highlightedIndex}
-                            title={props.optionKey(option)}
+                            title={optionKey(option)}
                             className={clsx(
                                 styles.option,
                                 idx === highlightedIndex && styles.highlighted,
@@ -149,7 +151,7 @@ const Combobox = <T,>(props: Props<T>) => {
                             onMouseEnter={() => setHighlighted(idx)}
                             onClick={() => handleSelect(option)}
                         >
-                            {props.renderOption(option)}
+                            {renderOption(option)}
                         </button>
                     ))}
                 </div>

@@ -4,6 +4,8 @@ export interface FloatingPlacement {
     left: number;
     top?: number;
     bottom?: number;
+    /** the width of the anchor, see `matchAnchorWidth` */
+    minWidth?: number;
 }
 
 const GAP = 4;
@@ -29,9 +31,14 @@ export const placeCentered = (anchor: DOMRect, width: number, height: number): F
 /**
  * Keeps a floating element (`position: fixed`) placed at its anchor while it is open:
  * the placement is updated when the page is scrolled or resized and when the size
- * of the floating element changes.
+ * of the floating element or of the anchor changes.
+ * @param matchAnchorWidth the floating element is at least as wide as the anchor, e.g. a dropdown below an input
  */
-export const useFloatingPlacement = (anchor: HTMLElement | null, floating: HTMLElement | null) => {
+export const useFloatingPlacement = (
+    anchor: HTMLElement | null,
+    floating: HTMLElement | null,
+    matchAnchorWidth = false
+) => {
     const [placement, setPlacement] = React.useState<FloatingPlacement | null>(null);
 
     React.useLayoutEffect(() => {
@@ -40,13 +47,14 @@ export const useFloatingPlacement = (anchor: HTMLElement | null, floating: HTMLE
             return;
         }
         const update = () => {
-            setPlacement(
-                placeCentered(anchor.getBoundingClientRect(), floating.offsetWidth, floating.offsetHeight)
-            );
+            const anchorRect = anchor.getBoundingClientRect();
+            const position = placeCentered(anchorRect, floating.offsetWidth, floating.offsetHeight);
+            setPlacement(matchAnchorWidth ? { ...position, minWidth: anchorRect.width } : position);
         };
         update();
         const resizeObserver = new ResizeObserver(update);
         resizeObserver.observe(floating);
+        resizeObserver.observe(anchor);
         window.addEventListener('resize', update);
         window.addEventListener('scroll', update, true);
         return () => {
@@ -54,7 +62,7 @@ export const useFloatingPlacement = (anchor: HTMLElement | null, floating: HTMLE
             window.removeEventListener('resize', update);
             window.removeEventListener('scroll', update, true);
         };
-    }, [anchor, floating]);
+    }, [anchor, floating, matchAnchorWidth]);
 
     return placement;
 };

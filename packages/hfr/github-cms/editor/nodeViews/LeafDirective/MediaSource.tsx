@@ -14,7 +14,6 @@ const ACCEPTED_FILES: Partial<Record<string, (file: iFile) => boolean>> = {
     [LeafDirectiveName.VIDEO]: (file) => file.isVideo
 };
 
-const identity = (path: string) => path;
 const isDirectory = (path: string) => path.endsWith('/');
 
 /**
@@ -57,8 +56,6 @@ const MediaSource = observer(({ handle }: NodeViewProps) => {
         <Combobox
             value={text}
             options={options}
-            optionKey={identity}
-            renderOption={identity}
             keepsOpen={isDirectory}
             placeholder="Quelle"
             className={clsx(styles.source)}

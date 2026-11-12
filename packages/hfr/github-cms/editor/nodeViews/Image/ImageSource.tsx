@@ -4,8 +4,6 @@ import { useCmsStore } from '../../../hooks/useCmsStore';
 import Combobox from '../../components/Combobox';
 import type { NodeViewProps } from '../ReactNodeView';
 
-const identity = (path: string) => path;
-
 /**
  * Edits the `src` of the image: a relative path, suggesting the images in `./images`, or a url.
  * The `src` is updated on enter or when leaving the field: every update loads the image,
@@ -39,8 +37,6 @@ const ImageSource = observer(({ handle }: NodeViewProps) => {
             label="Quelle (z.B. ./images/bild.png oder https://...)"
             value={text}
             options={options}
-            optionKey={identity}
-            renderOption={identity}
             onChange={setText}
             onSelect={handleSelect}
             onEnter={() => handleApply()}
