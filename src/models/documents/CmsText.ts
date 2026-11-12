@@ -4,7 +4,7 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
 import { maxBy } from 'es-toolkit/compat';
-import { action, computed, observable, runInAction } from 'mobx';
+import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
     default?: string;
@@ -78,14 +78,10 @@ class CmsText extends iDocument<'cms_text'> {
         if (text === undefined || this.isSaving) {
             return false;
         }
-        const currentDate = this.updatedAt;
-        this.setData({ text: text }, Source.LOCAL, new Date());
+        this.setData({ text: text }, Source.LOCAL);
         const isSaved = !!(await this.saveNow());
         if (isSaved) {
-            this.clearDraftIfUnchanged(text);
-            runInAction(() => {
-                this.updatedAt = currentDate;
-            });
+            this.markSaved(text);
         }
         return isSaved;
     }
@@ -113,14 +109,15 @@ class CmsText extends iDocument<'cms_text'> {
     }
 
     /**
-     * The draft may have been edited while it was being saved: keep those edits.
+     * The api responds without the new updatedAt and doesn't notify the saving client, so the local time is used.
      */
     @action
-    private clearDraftIfUnchanged(savedText: string) {
-        if (this.draft !== savedText) {
-            return;
+    private markSaved(savedText: string) {
+        this.updatedAt = new Date();
+        // the draft may have been edited while it was being saved: keep those edits
+        if (this.draft === savedText) {
+            this.draft = undefined;
         }
-        this.draft = undefined;
     }
 }
 
