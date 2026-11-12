@@ -100,7 +100,7 @@ const Dir = observer((props: Props) => {
             </div>
             {(useLocalMode ? isOpen : dir.isOpen) && dir.children.length > 0 && (
                 <ul>
-                    {dir.children.map((child, idx) => {
+                    {dir.children.map((child) => {
                         if (child.type === 'dir') {
                             if (props.hideEmpty && filter && child.isFetched) {
                                 if (!child.children.find((item) => item.type === 'dir' || filter(item))) {
@@ -109,7 +109,7 @@ const Dir = observer((props: Props) => {
                             }
                             return (
                                 <Dir
-                                    key={idx}
+                                    key={child.path}
                                     dir={child}
                                     showActions={props.showActions}
                                     useLocalMode={useLocalMode}
@@ -123,7 +123,7 @@ const Dir = observer((props: Props) => {
                         if (!filter || filter(child)) {
                             return (
                                 <File
-                                    key={idx}
+                                    key={child.path}
                                     file={child}
                                     showActions={props.showActions}
                                     onSelect={props.onSelect}
