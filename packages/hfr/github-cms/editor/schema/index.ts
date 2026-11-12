@@ -167,7 +167,11 @@ const nodes = {
         content: 'directive_label? block+',
         attrs: { name: { default: 'note' }, attributes: { default: {} }, format: { default: null } },
         isolating: true,
-        defining: true,
+        /**
+         * kept when its whole content is replaced, but not pasted together with content copied from
+         * inside of it (as `defining: true` would)
+         */
+        definingAsContext: true,
         parseDOM: [clipboardRule('container_directive', 'div')],
         toDOM: (node) => ['div', { 'data-directive': node.attrs.name, ...clipboardAttrs(node) }, 0]
     },
@@ -181,7 +185,7 @@ const nodes = {
         content: 'directive_label? directive_item+',
         attrs: { name: { default: 'cards' }, attributes: { default: {} }, format: { default: null } },
         isolating: true,
-        defining: true,
+        definingAsContext: true,
         parseDOM: [clipboardRule('items_directive', 'div')],
         toDOM: (node) => ['div', { 'data-directive': node.attrs.name, ...clipboardAttrs(node) }, 0]
     },
@@ -197,14 +201,14 @@ const nodes = {
             attributes: { default: {} },
             format: { default: null }
         },
-        defining: true,
+        definingAsContext: true,
         parseDOM: [clipboardRule('directive_item', 'div')],
         toDOM: (node) => ['div', { class: 'cms-directive-item', ...clipboardAttrs(node) }, 0]
     },
 
     directive_label: {
         content: 'inline*',
-        defining: true,
+        definingAsContext: true,
         parseDOM: [clipboardRule('directive_label', 'div')],
         toDOM: (node) => ['div', { class: 'cms-directive-label', ...clipboardAttrs(node) }, 0]
     },
@@ -224,7 +228,7 @@ const nodes = {
         content: 'block+',
         attrs: { name: { default: '' }, attributes: { default: [] }, format: { default: null } },
         isolating: true,
-        defining: true,
+        definingAsContext: true,
         parseDOM: [clipboardRule('jsx_flow', 'div')],
         toDOM: (node) => ['div', { 'data-jsx': node.attrs.name, ...clipboardAttrs(node) }, 0]
     },
@@ -242,7 +246,7 @@ const nodes = {
         group: 'block',
         content: 'block+',
         attrs: { label: { default: '' } },
-        defining: true,
+        definingAsContext: true,
         toDOM: () => ['div', { class: 'cms-footnote-definition' }, 0]
     },
 
@@ -296,7 +300,9 @@ const nodes = {
         inline: true,
         atom: true,
         attrs: { value: { default: '' } },
-        toDOM: () => ['span', { class: 'cms-math-inline' }]
+        leafText: (node) => `$${node.attrs.value}$`,
+        parseDOM: [clipboardRule('math_inline', 'span')],
+        toDOM: (node) => ['span', { class: 'cms-math-inline', ...clipboardAttrs(node) }]
     },
 
     /** `:name[label]{attributes}`, e.g. `:mdi[robot]` */
