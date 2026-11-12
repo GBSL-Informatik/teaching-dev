@@ -30,7 +30,7 @@ const ImageUploadDialog = observer(({ document }: Props) => {
                         branch={file.branch}
                         uploadButtonLabel="Hochladen und einfügen"
                         onDiscard={handleClose}
-                        onFilesUploaded={(uploaded) =>
+                        onFileUploaded={(uploaded) =>
                             document.insertUploadedImage(file.relativePath(uploaded))
                         }
                     />

@@ -1,3 +1,4 @@
+import imageCompression from 'browser-image-compression';
 export const withPreviewPRName = (name: string) => {
     return name.replace('[skip ci]', '').replace('[skip netlify]', '').trim();
 };
@@ -65,4 +66,13 @@ export const sanitizeFileName = (path: string) => {
             .replace(/\/+/g, '/')
             .replace(/(^|\/)@/g, '$1-at-')
     );
+};
+
+/** svgs are not compressed: they are vector graphics */
+export const isCompressibleImage = (file: File) => {
+    return file.type.startsWith('image/') && file.type !== 'image/svg+xml';
+};
+
+export const compressImage = (file: File) => {
+    return imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 3840, useWebWorker: true });
 };

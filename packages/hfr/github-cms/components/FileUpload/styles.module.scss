@@ -39,30 +39,17 @@
         }
     }
 
-    .fileList {
+    .selectedFile {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        width: 100%;
     }
 
-    .fileItem {
+    .fileInfo {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem;
-        border-radius: var(--ifm-global-radius);
-
-        .fileInfo {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            flex: 1;
-        }
-    }
-
-    .successFile {
-        display: flex;
-        align-items: center;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
     input[type='file'] {

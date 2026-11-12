@@ -71,7 +71,7 @@ const ImageDialog = observer((props: Props) => {
             }
         >
             <FileUpload
-                onFilesUploaded={(uploaded) => handleSelect(`./${Asset.IMAGE}/${uploaded.name}`)}
+                onFileUploaded={(uploaded) => handleSelect(`./${Asset.IMAGE}/${uploaded.name}`)}
                 accept="image/*"
                 description="Bilder per Drag&Drop hochladen"
                 onFileSelected={() => setIsUploading(true)}

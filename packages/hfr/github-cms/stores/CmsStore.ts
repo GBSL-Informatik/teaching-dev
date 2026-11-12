@@ -10,7 +10,6 @@ import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
 import iStore, { ApiState } from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
-import imageCompression from 'browser-image-compression';
 import _ from 'es-toolkit/compat';
 import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { computedFn } from 'mobx-utils';
@@ -20,6 +19,7 @@ import Dir from '../models/Dir';
 import { default as FileModel } from '../models/File';
 import FileStub from '../models/FileStub';
 import Github from '../models/Github';
+import { compressImage, isCompressibleImage } from '../models/helpers';
 import iEntry from '../models/iEntry';
 import iFile from '../models/iFile';
 import PartialSettings from '../models/PartialSettings';
@@ -387,22 +387,27 @@ export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> 
         });
     }
 
+    /**
+     * Uploads a new file, images are compressed to < 1 MB when `compress` is set.
+     * Rejects when the upload fails, e.g. because the path is already taken.
+     */
     @action
-    uploadImage(file: File, imagePath: string, branch: string, sha?: string, maxSizeMB: number = 1) {
+    uploadFile(file: File, path: string, branch: string, compress: boolean) {
         const { github } = this;
         if (!github) {
             return Promise.resolve(undefined);
         }
-        return imageCompression(file, { maxSizeMB: maxSizeMB, maxWidthOrHeight: 3840, useWebWorker: true })
-            .then((compressedFile) => {
-                return compressedFile.arrayBuffer();
-            })
+        const toUpload = compress && isCompressibleImage(file) ? compressImage(file) : Promise.resolve(file);
+        return toUpload
+            .then((data) => data.arrayBuffer())
             .then((binData) => {
-                return github.createOrUpdateFile(imagePath, new Uint8Array(binData), branch, sha);
-            })
-            .catch(function (error) {
-                console.log(error.message);
-                return undefined;
+                return github.createOrUpdateFile(
+                    path,
+                    new Uint8Array(binData),
+                    branch,
+                    undefined,
+                    `Upload ${path}`
+                );
             });
     }
 
