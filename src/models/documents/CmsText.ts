@@ -3,7 +3,6 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
-import { maxBy } from 'es-toolkit/compat';
 import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
@@ -127,26 +126,6 @@ export const findMainCmsText = (documentStore: DocumentStore, documentRootId: st
         CmsText | undefined;
 };
 
-export const findCmsTextsWithDraft = (documentStore: DocumentStore, documentRootIds: string[]) => {
-    return documentRootIds
-        .flatMap((documentRootId) => documentStore.findByDocumentRoot(documentRootId))
-        .filter((doc): doc is CmsText => doc instanceof CmsText && doc.hasDraft);
-};
-
-/**
- * @returns the latest update of the user's main cms texts in the given document roots
- */
-export const findLastCmsTextUpdate = (
-    documentStore: DocumentStore,
-    documentRootIds: string[],
-    userId: string
-): Date | undefined => {
-    const updates = documentRootIds
-        .map((documentRootId) => findMainCmsText(documentStore, documentRootId, userId)?.updatedAt)
-        .filter((updatedAt) => !!updatedAt);
-    return maxBy(updates, (updatedAt) => updatedAt.getTime());
-};
-
 export const createCmsText = async (
     documentStore: DocumentStore,
     documentRootId: string,
@@ -161,29 +140,6 @@ export const createCmsText = async (
         data: { text: text }
     });
     return !!created;
-};
-
-/**
- * Updates the user's main cms text of the document root or creates it, when it does not exist yet.
- * @returns whether the text was saved successfully
- */
-export const saveCmsText = async (
-    documentStore: DocumentStore,
-    documentRootId: string,
-    userId: string,
-    text: string
-): Promise<boolean> => {
-    const doc = findMainCmsText(documentStore, documentRootId, userId);
-    if (!doc) {
-        return createCmsText(documentStore, documentRootId, userId, text);
-    }
-    doc.discardDraft();
-    const isAlreadySaved = doc.text === text && !doc.isDirty;
-    if (isAlreadySaved) {
-        return true;
-    }
-    doc.setData({ text: text }, Source.LOCAL);
-    return !!(await doc.saveNow());
 };
 
 export default CmsText;

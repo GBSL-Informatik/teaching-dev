@@ -4,7 +4,8 @@ import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/Assi
 import Button from '@tdev-components/shared/Button';
 import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { useStore } from '@tdev-hooks/useStore';
-import { saveCmsText } from '@tdev-models/documents/CmsText';
+import { createCmsText, findMainCmsText } from '@tdev-models/documents/CmsText';
+import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
 import clsx from 'clsx';
@@ -24,6 +25,29 @@ interface Props {
     toAssign: CmsTextEntries;
     mode?: 'xlsx' | 'code';
 }
+
+/**
+ * Updates the user's main cms text of the document root or creates it, when it does not exist yet.
+ * @returns whether the text was saved successfully
+ */
+const saveCmsText = async (
+    documentStore: DocumentStore,
+    documentRootId: string,
+    userId: string,
+    text: string
+): Promise<boolean> => {
+    const doc = findMainCmsText(documentStore, documentRootId, userId);
+    if (!doc) {
+        return createCmsText(documentStore, documentRootId, userId, text);
+    }
+    doc.discardDraft();
+    const isAlreadySaved = doc.text === text && !doc.isDirty;
+    if (isAlreadySaved) {
+        return true;
+    }
+    doc.setData({ text: text }, Source.LOCAL);
+    return !!(await doc.saveNow());
+};
 
 const createCmsTexts = async (
     documentStore: DocumentStore,

@@ -4,7 +4,8 @@ import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilt
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
-import { findCmsTextsWithDraft } from '@tdev-models/documents/CmsText';
+import CmsText from '@tdev-models/documents/CmsText';
+import DocumentStore from '@tdev-stores/DocumentStore';
 import clsx from 'clsx';
 import { orderBy } from 'es-toolkit/compat';
 import { observer } from 'mobx-react-lite';
@@ -18,6 +19,12 @@ interface Props {
     /** document root id -> labels */
     cmsAssignments: Record<string, string[]>;
 }
+
+const findCmsTextsWithDraft = (documentStore: DocumentStore, documentRootIds: string[]) => {
+    return documentRootIds
+        .flatMap((documentRootId) => documentStore.findByDocumentRoot(documentRootId))
+        .filter((doc): doc is CmsText => doc instanceof CmsText && doc.hasDraft);
+};
 
 const CmsTextEditor = observer((props: Props) => {
     const { cmsAssignments } = props;
