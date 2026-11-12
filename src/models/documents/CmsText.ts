@@ -177,6 +177,7 @@ export const saveCmsText = async (
     if (!doc) {
         return createCmsText(documentStore, documentRootId, userId, text);
     }
+    doc.discardDraft();
     const isAlreadySaved = doc.text === text && !doc.isDirty;
     if (isAlreadySaved) {
         return true;
