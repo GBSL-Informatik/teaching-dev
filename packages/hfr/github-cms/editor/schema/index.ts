@@ -1,4 +1,4 @@
-import { type MarkSpec, type NodeSpec, Schema } from 'prosemirror-model';
+import { type MarkSpec, type Node, type NodeSpec, Schema, type TagParseRule } from 'prosemirror-model';
 import { tableNodes } from 'prosemirror-tables';
 
 /**
@@ -44,6 +44,24 @@ export interface ItemFormat {
 
 /** the directives whose items are separated by `::br`, see `items_directive` */
 export const ITEMS_DIRECTIVES = ['cards', 'flex'];
+
+/**
+ * ProseMirror copies and pastes through html, also within the editor. Nodes write their type and
+ * attributes into the html, so that e.g. a pasted component is not reduced to its content.
+ */
+const clipboardAttrs = (node: Node) => ({
+    'data-cms-node': node.type.name,
+    'data-cms-attrs': JSON.stringify(node.attrs)
+});
+
+/** parses the html written with `clipboardAttrs` back into the node */
+const clipboardRule = (name: string, tag: string, rule: Partial<TagParseRule> = {}): TagParseRule => ({
+    ...rule,
+    tag: `${tag}[data-cms-node="${name}"]`,
+    // before the generic rules of other nodes, e.g. `pre` of code blocks
+    priority: 60,
+    getAttrs: (dom) => JSON.parse(dom.getAttribute('data-cms-attrs') || '{}')
+});
 
 const codeLikeNode = (spec: NodeSpec): NodeSpec => ({
     content: 'text*',
@@ -116,20 +134,25 @@ const nodes = {
     code_block: codeLikeNode({
         group: 'block',
         attrs: { lang: { default: '' }, meta: { default: '' } },
-        parseDOM: [{ tag: 'pre', preserveWhitespace: 'full' }],
-        toDOM: () => ['pre', ['code', 0]]
+        parseDOM: [
+            clipboardRule('code_block', 'pre', { preserveWhitespace: 'full' }),
+            { tag: 'pre', preserveWhitespace: 'full' }
+        ],
+        toDOM: (node) => ['pre', clipboardAttrs(node), ['code', 0]]
     }),
 
     math_block: codeLikeNode({
         group: 'block',
-        toDOM: () => ['pre', { class: 'cms-math' }, ['code', 0]]
+        parseDOM: [clipboardRule('math_block', 'pre', { preserveWhitespace: 'full' })],
+        toDOM: (node) => ['pre', { class: 'cms-math', ...clipboardAttrs(node) }, ['code', 0]]
     }),
 
     /** markdown the editor does not understand: esm imports, expressions, html, definitions... */
     raw_block: codeLikeNode({
         group: 'block',
         attrs: { kind: { default: 'unknown' } },
-        toDOM: () => ['pre', { class: 'cms-raw' }, ['code', 0]]
+        parseDOM: [clipboardRule('raw_block', 'pre', { preserveWhitespace: 'full' })],
+        toDOM: (node) => ['pre', { class: 'cms-raw', ...clipboardAttrs(node) }, ['code', 0]]
     }),
 
     thematic_break: {
@@ -145,7 +168,8 @@ const nodes = {
         attrs: { name: { default: 'note' }, attributes: { default: {} }, format: { default: null } },
         isolating: true,
         defining: true,
-        toDOM: (node) => ['div', { 'data-directive': node.attrs.name }, 0]
+        parseDOM: [clipboardRule('container_directive', 'div')],
+        toDOM: (node) => ['div', { 'data-directive': node.attrs.name, ...clipboardAttrs(node) }, 0]
     },
 
     /**
@@ -158,7 +182,8 @@ const nodes = {
         attrs: { name: { default: 'cards' }, attributes: { default: {} }, format: { default: null } },
         isolating: true,
         defining: true,
-        toDOM: (node) => ['div', { 'data-directive': node.attrs.name }, 0]
+        parseDOM: [clipboardRule('items_directive', 'div')],
+        toDOM: (node) => ['div', { 'data-directive': node.attrs.name, ...clipboardAttrs(node) }, 0]
     },
 
     /**
@@ -173,13 +198,15 @@ const nodes = {
             format: { default: null }
         },
         defining: true,
-        toDOM: () => ['div', { class: 'cms-directive-item' }, 0]
+        parseDOM: [clipboardRule('directive_item', 'div')],
+        toDOM: (node) => ['div', { class: 'cms-directive-item', ...clipboardAttrs(node) }, 0]
     },
 
     directive_label: {
         content: 'inline*',
         defining: true,
-        toDOM: () => ['div', { class: 'cms-directive-label' }, 0]
+        parseDOM: [clipboardRule('directive_label', 'div')],
+        toDOM: (node) => ['div', { class: 'cms-directive-label', ...clipboardAttrs(node) }, 0]
     },
 
     /** `::name[label]{attributes}` */
@@ -187,7 +214,8 @@ const nodes = {
         group: 'block',
         atom: true,
         attrs: { name: { default: '' }, label: { default: '' }, attributes: { default: {} } },
-        toDOM: (node) => ['div', { 'data-directive': node.attrs.name }]
+        parseDOM: [clipboardRule('leaf_directive', 'div')],
+        toDOM: (node) => ['div', { 'data-directive': node.attrs.name, ...clipboardAttrs(node) }]
     },
 
     /** `<Name attr="value">...children</Name>` */
@@ -197,7 +225,8 @@ const nodes = {
         attrs: { name: { default: '' }, attributes: { default: [] }, format: { default: null } },
         isolating: true,
         defining: true,
-        toDOM: (node) => ['div', { 'data-jsx': node.attrs.name }, 0]
+        parseDOM: [clipboardRule('jsx_flow', 'div')],
+        toDOM: (node) => ['div', { 'data-jsx': node.attrs.name, ...clipboardAttrs(node) }, 0]
     },
 
     /** `<Name attr="value" />` */
@@ -205,7 +234,8 @@ const nodes = {
         group: 'block',
         atom: true,
         attrs: { name: { default: '' }, attributes: { default: [] }, format: { default: null } },
-        toDOM: (node) => ['div', { 'data-jsx': node.attrs.name }]
+        parseDOM: [clipboardRule('jsx_flow_void', 'div')],
+        toDOM: (node) => ['div', { 'data-jsx': node.attrs.name, ...clipboardAttrs(node) }]
     },
 
     footnote_definition: {
@@ -275,7 +305,8 @@ const nodes = {
         inline: true,
         atom: true,
         attrs: { name: { default: '' }, label: { default: '' }, attributes: { default: {} } },
-        toDOM: (node) => ['span', { 'data-directive': node.attrs.name }]
+        parseDOM: [clipboardRule('text_directive', 'span')],
+        toDOM: (node) => ['span', { 'data-directive': node.attrs.name, ...clipboardAttrs(node) }]
     },
 
     footnote_reference: {
