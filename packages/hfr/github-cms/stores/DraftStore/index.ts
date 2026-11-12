@@ -1,6 +1,7 @@
 import { action, computed, observable, reaction } from 'mobx';
 import type File from '../../models/File';
 import FileStub from '../../models/FileStub';
+import { isSameOrInside } from '../../models/helpers';
 import type { CmsStore } from '../CmsStore';
 import { type Draft, DraftDb, type DraftLocation } from './draftDb';
 
@@ -99,6 +100,11 @@ export class DraftStore {
         }
         this.drafts.delete(key);
         this.db.delete(draft).catch(logError);
+    }
+
+    /** whether the file or the files inside the folder at `path` have unsaved changes */
+    hasDraftsIn(branch: string, path: string) {
+        return this.draftsOfBranch(branch).some((draft) => isSameOrInside(draft.path, path));
     }
 
     /** discards the changes of the branch, including the changes of its loaded files */

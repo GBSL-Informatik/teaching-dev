@@ -9,7 +9,7 @@ import Dir from './Dir';
 import { default as FileModel } from './File';
 import FileStub from './FileStub';
 import PR from './PR';
-import { convertToBase64, isBinaryFile, withoutPreviewPRName } from './helpers';
+import { convertToBase64, isBinaryFile, isSameOrInside, movedPath, withoutPreviewPRName } from './helpers';
 import { FileStubProps, iFile } from './iFile';
 
 export type GhRepo = GhTypes['repos']['get']['response']['data'];
@@ -307,6 +307,33 @@ class Github {
             });
     }
 
+    /**
+     * Moves a file or folder in one commit, e.g. to rename it.
+     * Unsaved changes are not moved: their drafts are stored by path, see `DraftStore`.
+     */
+    @action
+    moveEntry(entry: FileModel | BinFile | FileStub | Dir, newPath: string) {
+        const { branch, path } = entry;
+        if (this.store.drafts.hasDraftsIn(branch, path)) {
+            return Promise.reject(new Error('Ungespeicherte Änderungen zuerst speichern oder verwerfen.'));
+        }
+        return entry
+            .withApiState(() => this.commitMove(entry, newPath))
+            .then(
+                action(() => {
+                    this._rmEntriesIn(branch, path);
+                    this.store.findBranch(branch)?.sync();
+                    if (branch === this.store.activeBranchName) {
+                        this.store.triggerNavigateToFile(
+                            branch,
+                            movedPath(this.store.activeFilePath, path, newPath)
+                        );
+                    }
+                    return this._fetchIntoTree(branch, newPath);
+                })
+            );
+    }
+
     @action
     rebaseBranch(branch: string, to: string) {
         // octokit has no "rebase" action, so do a merge
@@ -596,7 +623,7 @@ class Github {
                             const file = Github.NewFileModel(resContent, binContent, this.store);
                             this._addFileEntry(branch, file);
                             if (!file.dir) {
-                                this._fetchCreatedDirectories(file);
+                                this._fetchIntoTree(branch, file.path);
                             }
                             return file;
                     }
@@ -605,18 +632,19 @@ class Github {
     }
 
     /**
-     * Loads the folders created together with a file, e.g. `foo` of a new file `foo/bar.png`,
-     * and opens them to show the file.
+     * Loads a new entry into the tree, e.g. after it was created or moved, together with its new folders,
+     * e.g. `foo` of a new file `foo/bar.png`. Opens the folders to show the entry.
      */
     @action
-    _fetchCreatedDirectories(file: FileModel | BinFile | FileStub) {
-        const ancestors = file.tree.slice(0, -1);
-        const closestDir = ancestors.filter((entry) => !!entry).pop() as Dir;
-        // `fetchDirectoryTree` only loads the content of the new folders: the first new folder
-        // itself is part of the content of the closest existing folder
-        return this.fetchDirectory(file.branch, trimSlashes(closestDir.path))
-            .then(() => this.fetchDirectoryTree(file, true))
-            .catch((err) => console.error('Error fetching the new folders of', file.path, err));
+    _fetchIntoTree(branch: string, path: string) {
+        const entry = FileStub.DummyFile(path, branch, this.store);
+        const ancestors = entry.tree.slice(0, -1);
+        const closestDir = ancestors.filter((ancestor) => !!ancestor).pop() as Dir;
+        // `fetchDirectoryTree` only loads the content of the new folders: the entry, or the first
+        // new folder, is part of the content of the closest existing folder
+        return this.fetchDirectory(branch, trimSlashes(closestDir.path))
+            .then(() => this.fetchDirectoryTree(entry, true))
+            .catch((err) => console.error('Error fetching', path, err));
     }
 
     @action
@@ -891,6 +919,18 @@ class Github {
         this.entries.get(file.branch)!.remove(file);
     }
 
+    /**
+     * Removes the entry and, for a folder, its content only from the entries map - like `_rmFileEntry`.
+     */
+    @action
+    _rmEntriesIn(branch: string, path: string) {
+        const entries = this.entries.get(branch);
+        if (!entries) {
+            return;
+        }
+        entries.filter((entry) => isSameOrInside(entry.path, path)).forEach((entry) => entries.remove(entry));
+    }
+
     @action
     _addBranchEntry(branch: Branch) {
         const current = this.branches.find((b) => b.name === branch.name);
@@ -907,6 +947,42 @@ class Github {
             this.PRs.remove(current);
         }
         this.PRs.push(pr);
+    }
+
+    /**
+     * Commits the move with the git data api: a single commit, the content is not downloaded.
+     * See https://docs.github.com/en/rest/git/trees#create-a-tree
+     */
+    private async commitMove(entry: FileModel | BinFile | FileStub | Dir, newPath: string) {
+        const repo = { owner: this.store.repoOwner, repo: this.store.repoName };
+        const ref = `heads/${entry.branch}`;
+        // the contents api does not tell the mode, executable files and symlinks become regular files
+        const { mode, type } =
+            entry.type === 'dir'
+                ? ({ mode: '040000', type: 'tree' } as const)
+                : ({ mode: '100644', type: 'blob' } as const);
+
+        const { data: head } = await this.octokit.git.getRef({ ...repo, ref });
+        const { data: headCommit } = await this.octokit.git.getCommit({
+            ...repo,
+            commit_sha: head.object.sha
+        });
+        const { data: tree } = await this.octokit.git.createTree({
+            ...repo,
+            base_tree: headCommit.tree.sha,
+            tree: [
+                { path: entry.path, mode, type, sha: null },
+                { path: newPath, mode, type, sha: entry.sha }
+            ]
+        });
+        const { data: commit } = await this.octokit.git.createCommit({
+            ...repo,
+            message: `Move ${entry.path} to ${newPath}`,
+            tree: tree.sha,
+            parents: [head.object.sha]
+        });
+        // fails when the branch changed in the meantime, the move is not applied then
+        await this.octokit.git.updateRef({ ...repo, ref, sha: commit.sha });
     }
 }
 

@@ -76,3 +76,16 @@ export const isCompressibleImage = (file: File) => {
 export const compressImage = (file: File) => {
     return imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 3840, useWebWorker: true });
 };
+
+/** whether `path` is the entry at `entryPath` or inside of it, e.g. `foo/bar.png` is inside `foo` */
+export const isSameOrInside = (path: string, entryPath: string) => {
+    return path === entryPath || path.startsWith(`${entryPath}/`);
+};
+
+/** the path after the entry at `from` was moved to `to`, e.g. `foo/bar.png` -> `baz/bar.png` */
+export const movedPath = (path: string, from: string, to: string) => {
+    if (!isSameOrInside(path, from)) {
+        return path;
+    }
+    return `${to}${path.slice(from.length)}`;
+};

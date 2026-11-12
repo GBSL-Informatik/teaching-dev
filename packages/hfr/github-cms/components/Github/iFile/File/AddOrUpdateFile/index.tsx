@@ -75,7 +75,6 @@ const AddOrUpdateFile = observer((props: Props) => {
                             !name ||
                             name === props.file?.name ||
                             apiState !== ApiState.IDLE ||
-                            (props.file && props.file.mustBeFetched) ||
                             !cmsStore.canModifyActiveBranch
                         }
                         color={isUpdate ? 'orange' : 'green'}
