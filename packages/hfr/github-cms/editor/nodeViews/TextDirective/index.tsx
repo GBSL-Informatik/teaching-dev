@@ -41,7 +41,7 @@ const TextDirective = observer(({ handle }: NodeViewProps) => {
             {isMdi ? (
                 <>
                     <IconPicker value={label} onSelect={handleLabelChange} />
-                    <AttributesForm rows={rows} onApply={handleApplyAttributes} />
+                    <AttributesForm rows={rows} onApply={handleApplyAttributes} applyOnClose />
                 </>
             ) : (
                 <>

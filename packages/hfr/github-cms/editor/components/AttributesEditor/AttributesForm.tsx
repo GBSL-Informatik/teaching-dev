@@ -20,7 +20,12 @@ interface Props {
     onCancel?: () => void;
     /** jsx supports expressions, directives only support strings */
     allowExpressions?: boolean;
+    /** changes which are not applied yet are applied when the form is closed, e.g. with its popover */
+    applyOnClose?: boolean;
 }
+
+const withName = (rows: AttributeRow[]) => rows.filter((row) => row.name.trim());
+const isSame = (a: AttributeRow[], b: AttributeRow[]) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
  * Edits the attributes of a jsx element or directive. The changes are applied at once,
@@ -28,6 +33,24 @@ interface Props {
  */
 const AttributesForm = (props: Props) => {
     const [rows, setRows] = React.useState<AttributeRow[]>(props.rows);
+    const appliedRows = React.useRef(withName(props.rows));
+
+    const apply = () => {
+        appliedRows.current = withName(rows);
+        props.onApply(appliedRows.current);
+    };
+
+    // reads the latest rows when the form is unmounted. After the node is removed, applying does nothing.
+    const applyPending = React.useEffectEvent(() => {
+        if (!isSame(withName(rows), appliedRows.current)) {
+            apply();
+        }
+    });
+    React.useEffect(() => {
+        if (props.applyOnClose) {
+            return () => applyPending();
+        }
+    }, [props.applyOnClose]);
 
     const handleChange = (idx: number, change: Partial<AttributeRow>) => {
         setRows((current) => current.map((row, i) => (i === idx ? { ...row, ...change } : row)));
@@ -36,7 +59,7 @@ const AttributesForm = (props: Props) => {
     const handleAdd = () => setRows((current) => [...current, { name: '', value: '', isExpression: false }]);
     const handleApply = (event?: React.KeyboardEvent) => {
         event?.preventDefault();
-        props.onApply(rows.filter((row) => row.name.trim()));
+        apply();
     };
 
     return (
