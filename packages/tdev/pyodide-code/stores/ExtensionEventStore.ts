@@ -27,6 +27,14 @@ export default class ExtensionEventStore {
         return this.subscriptions.has(eventSourceKey(source));
     }
 
+    getExecutionId(source: EventSource): number | undefined {
+        const owner = this.subscriptions.get(eventSourceKey(source));
+        if (!owner || this.store.executions.get(owner.code.id) !== owner.executionId) {
+            return;
+        }
+        return owner.executionId;
+    }
+
     @action
     open(code: PyodideCode, executionId: number, sources: readonly ExecutionEventSource[]) {
         if (this.store.executions.get(code.id) !== executionId) {

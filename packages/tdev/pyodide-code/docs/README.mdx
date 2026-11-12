@@ -240,7 +240,7 @@ Der Factory-Kontext enthält:
 `name`
 : Konfigurierter Erweiterungsname. Verwende ihn beim Erzeugen von Browser-Ereignisquellen, damit die Zuordnung auch bei einem geänderten Namen stimmt.
 `events`
-: Ereignisverwaltung mit `isConnected(source)` und `emit(source, { type, payload })`. Eine Browser-Ereignisquelle hat die Form `{ extension: context.name, targetId }`.
+: Ereignisverwaltung mit `isConnected(source)`, `getExecutionId(source)` und `emit(source, { type, payload })`. `getExecutionId` liefert die Kennung der laufenden Ausführung, an die Ereignisse dieser Quelle gehen, oder `undefined`. Damit kann eine Erweiterung Zustand pro Programmlauf zurücksetzen. Eine Browser-Ereignisquelle hat die Form `{ extension: context.name, targetId }`.
 
 Die Nachricht enthält:
 
