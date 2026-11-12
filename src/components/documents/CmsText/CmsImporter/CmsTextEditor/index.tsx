@@ -1,6 +1,5 @@
 import { mdiContentSaveAll, mdiLoading, mdiSortAscending, mdiSortDescending, mdiUndo } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
-import CopyBadge from '@tdev-components/shared/CopyBadge';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useComputed } from '@tdev-hooks/useComputed';
@@ -67,13 +66,8 @@ const CmsTextEditor = observer((props: Props) => {
                                 />
                             </th>
                             {documentRootIds.map((id) => (
-                                <th key={id}>
-                                    <CopyBadge
-                                        value={id}
-                                        label={cmsAssignments[id][0] ?? id}
-                                        title={`documentRootId kopieren: ${id}`}
-                                        color="blue"
-                                    />
+                                <th key={id} title={id}>
+                                    {cmsAssignments[id][0] ?? id}
                                 </th>
                             ))}
                             <th>Aktualisiert</th>
