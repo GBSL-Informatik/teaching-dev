@@ -325,8 +325,8 @@
             .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
                 padding-inline: 0.5em;
             }
-            ul,
-            ol {
+            /* without specificity: lists of components, e.g. `<Steps>`, keep their own padding */
+            :where(ul, ol) {
                 padding-left: 1.2em;
             }
             .cms-code-block--split {
