@@ -78,7 +78,7 @@ class CmsText extends iDocument<'cms_text'> {
         if (text === undefined || this.isSaving) {
             return false;
         }
-        this.setData({ text: text }, Source.LOCAL);
+        this.setData({ text: text }, Source.LOCAL, new Date());
         const isSaved = !!(await this.saveNow());
         if (isSaved) {
             this.clearDraftIfUnchanged(text);
