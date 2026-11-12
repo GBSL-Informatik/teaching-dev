@@ -161,6 +161,15 @@ export class NodeViewHandle {
         dispatch(state.tr.setSelection(NodeSelection.create(state.doc, pos)));
     }
 
+    /**
+     * Selects the node and moves the focus to ProseMirror, e.g. away from a code block edited before,
+     * so that copying or cutting applies to the selected node.
+     */
+    selectAndFocus() {
+        this.select();
+        this.editor.view?.focus();
+    }
+
     private childPos(index: number) {
         const pos = this.getPos();
         if (pos === undefined || index >= this.node.childCount) {

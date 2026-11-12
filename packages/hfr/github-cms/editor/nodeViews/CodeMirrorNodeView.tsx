@@ -1,7 +1,7 @@
 import { defaultKeymap } from '@codemirror/commands';
 import { defaultHighlightStyle, LanguageDescription, syntaxHighlighting } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
-import { Compartment } from '@codemirror/state';
+import { Compartment, type TransactionSpec } from '@codemirror/state';
 import {
     EditorView as CodeMirror,
     keymap as codeMirrorKeymap,
@@ -96,9 +96,6 @@ class CodeMirrorNodeView implements NodeView {
         this.handle.setNode(node);
         this.updateClassName();
         this.loadLanguage();
-        if (this.updating) {
-            return true;
-        }
         const newText = node.textContent;
         const currentText = this.codeMirror.state.doc.toString();
         if (newText === currentText) {
@@ -110,9 +107,7 @@ class CodeMirrorNodeView implements NodeView {
 
     setSelection(anchor: number, head: number) {
         this.codeMirror.focus();
-        this.updating = true;
-        this.codeMirror.dispatch({ selection: { anchor, head } });
-        this.updating = false;
+        this.applyFromProseMirror({ selection: { anchor, head } });
     }
 
     /** e.g. a click on the header: the code block is selected as a whole, to copy or cut it */
@@ -183,7 +178,13 @@ class CodeMirrorNodeView implements NodeView {
 
     private forwardUpdate(update: ViewUpdate) {
         const pos = this.getPos();
-        if (this.updating || !this.codeMirror.hasFocus || pos === undefined) {
+        if (this.updating || pos === undefined) {
+            return;
+        }
+        // text changes are always forwarded (e.g. a cut while ProseMirror has the focus), otherwise
+        // both editors differ; the selection only while the user is editing in CodeMirror
+        const hasFocus = this.codeMirror.hasFocus;
+        if (!update.docChanged && !hasFocus) {
             return;
         }
         let offset = pos + 1;
@@ -203,7 +204,9 @@ class CodeMirrorNodeView implements NodeView {
             }
             offset += toB - fromB - (toA - fromA);
         });
-        tr.setSelection(TextSelection.create(tr.doc, selectionFrom, selectionTo));
+        if (hasFocus) {
+            tr.setSelection(TextSelection.create(tr.doc, selectionFrom, selectionTo));
+        }
         this.view.dispatch(tr);
     }
 
@@ -226,11 +229,19 @@ class CodeMirrorNodeView implements NodeView {
             currentEnd--;
             newEnd--;
         }
-        this.updating = true;
-        this.codeMirror.dispatch({
+        this.applyFromProseMirror({
             changes: { from: start, to: currentEnd, insert: newText.slice(start, newEnd) }
         });
-        this.updating = false;
+    }
+
+    /** applies a change from ProseMirror, it must not be forwarded back to ProseMirror */
+    private applyFromProseMirror(spec: TransactionSpec) {
+        this.updating = true;
+        try {
+            this.codeMirror.dispatch(spec);
+        } finally {
+            this.updating = false;
+        }
     }
 
     private keymap(): KeyBinding[] {

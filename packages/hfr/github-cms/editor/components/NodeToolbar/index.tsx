@@ -63,7 +63,7 @@ const NodeToolbar = observer((props: Props) => {
         <div
             ref={setToolbar}
             className={clsx(styles.toolbar, props.wideControls && styles.wideControls, props.className)}
-            onClick={() => handle.select()}
+            onClick={() => handle.selectAndFocus()}
         >
             <span className={clsx(styles.title, props.shrinkTitle && styles.shrink)}>{props.title}</span>
             {/* events from the modal bubble through the portal: they must not select the node */}
