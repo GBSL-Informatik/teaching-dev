@@ -1,6 +1,7 @@
 import { mdiTextBoxPlusOutline } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import stepsStyles from '@tdev-components/Steps/styles.module.scss';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
@@ -44,6 +45,14 @@ export const jsxFlowClassName = (node: Node) => {
         return 'cms-jsx cms-jsx--tab-item';
     }
     return 'cms-jsx';
+};
+
+/** the list of `<Steps>` is numbered like on the rendered page */
+export const jsxFlowContent = (node: Node) => {
+    if (node.attrs.name === 'Steps') {
+        return { className: stepsStyles.steps };
+    }
+    return {};
 };
 
 /**
