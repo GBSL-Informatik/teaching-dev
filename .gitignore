@@ -9,6 +9,7 @@ migrateTdev.config.yaml
 # Generated files
 .docusaurus
 .cache-loader
+*:Zone.Identifier
 
 # Misc
 .DS_Store
