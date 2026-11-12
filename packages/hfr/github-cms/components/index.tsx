@@ -1,5 +1,4 @@
 import BrowserOnly from '@docusaurus/BrowserOnly';
-import useIsBrowser from '@docusaurus/useIsBrowser';
 import Loader from '@tdev-components/Loader';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -13,11 +12,10 @@ import ShowFile from './ShowFile';
 import styles from './styles.module.scss';
 
 const CmsLandingPage = observer(() => {
-    const isBrowser = useIsBrowser();
     const cmsStore = useCmsStore();
     const { settings, activeEntry, viewStore } = cmsStore;
     const entry = useLoadedFile(activeEntry);
-    if (!settings || !cmsStore.github || !entry || !isBrowser) {
+    if (!settings || !cmsStore.github || !entry) {
         return <Loader label="Laden..." />;
     }
     return (
