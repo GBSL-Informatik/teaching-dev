@@ -1,6 +1,7 @@
-import { mdiContentSaveAll, mdiUndo } from '@mdi/js';
+import { mdiContentSaveAll, mdiSortAscending, mdiSortDescending, mdiUndo } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
 import { findCmsTextsWithDraft } from '@tdev-models/documents/CmsText';
@@ -11,6 +12,8 @@ import React from 'react';
 import UserRow from './UserRow';
 import styles from './styles.module.scss';
 
+type SortDirection = 'asc' | 'desc';
+
 interface Props {
     /** document root id -> labels */
     cmsAssignments: Record<string, string[]>;
@@ -20,7 +23,8 @@ const CmsTextEditor = observer((props: Props) => {
     const { cmsAssignments } = props;
     const documentStore = useStore('documentStore');
     const [isSavingAll, setIsSavingAll] = React.useState(false);
-    const users = useEditableUsers();
+    const [sortDirection, setSortDirection] = React.useState<SortDirection>('asc');
+    const users = useEditableUsers(sortDirection);
     const documentRootIds = React.useMemo(() => Object.keys(cmsAssignments), [cmsAssignments]);
     const docsWithDraft = useComputed(
         () => findCmsTextsWithDraft(documentStore, documentRootIds),
@@ -38,6 +42,9 @@ const CmsTextEditor = observer((props: Props) => {
             setIsSavingAll(false);
         }
     };
+    const handleToggleSort = () => {
+        setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    };
     const handleDiscardAll = () => {
         docsWithDraft.forEach((doc) => doc.discardDraft());
     };
@@ -49,7 +56,15 @@ const CmsTextEditor = observer((props: Props) => {
                 <table className={clsx(styles.table)}>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>
+                                <Button
+                                    text="Name"
+                                    icon={sortDirection === 'asc' ? mdiSortAscending : mdiSortDescending}
+                                    iconSide="left"
+                                    size={SIZE_S}
+                                    onClick={handleToggleSort}
+                                />
+                            </th>
                             {documentRootIds.map((id) => (
                                 <th key={id} title={id}>
                                     {cmsAssignments[id][0] ?? id}
@@ -90,11 +105,11 @@ const CmsTextEditor = observer((props: Props) => {
  * The same users as in the user selection of the code import: the students of the viewed group
  * or all managed users.
  */
-const useEditableUsers = () => {
+const useEditableUsers = (sortDirection: SortDirection) => {
     const pageStore = useStore('pageStore');
     const userStore = useStore('userStore');
     const users = pageStore.current?.viewedStudentGroup?.students || userStore.managedUsers;
-    return orderBy(users, ['name'], ['asc']);
+    return orderBy(users, ['name'], [sortDirection]);
 };
 
 export default CmsTextEditor;
