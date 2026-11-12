@@ -13,6 +13,7 @@ interface Props<T> {
     onSelect: (option: T) => void;
     /** enter without a suggestion, e.g. to apply the typed text */
     onEnter?: () => void;
+    onFocus?: () => void;
     onBlur?: () => void;
     /** the dropdown stays open after selecting the option, e.g. a directory whose files are suggested next */
     keepsOpen?: (option: T) => boolean;
@@ -60,6 +61,11 @@ const Combobox = <T,>(props: Props<T>) => {
         setHighlighted(0);
         setIsOpen(true);
         props.onChange(event.target.value);
+    };
+
+    const handleFocus = () => {
+        setIsOpen(true);
+        props.onFocus?.();
     };
 
     const handleBlur = () => {
@@ -113,7 +119,7 @@ const Combobox = <T,>(props: Props<T>) => {
                 role="combobox"
                 aria-expanded={showDropdown}
                 onChange={handleChange}
-                onFocus={() => setIsOpen(true)}
+                onFocus={handleFocus}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
             />

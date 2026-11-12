@@ -39,6 +39,13 @@ const MediaSource = observer(({ handle }: NodeViewProps) => {
         }
     };
 
+    // selects the directive, so its settings are shown while the source is edited
+    const handleFocus = () => {
+        if (!handle.containsSelection()) {
+            handle.select();
+        }
+    };
+
     const handleSelect = (path: string) => {
         setText(path);
         if (!isDirectory(path)) {
@@ -57,6 +64,7 @@ const MediaSource = observer(({ handle }: NodeViewProps) => {
             className={clsx(styles.source)}
             onChange={setText}
             onSelect={handleSelect}
+            onFocus={handleFocus}
             onEnter={() => handleApply()}
             onBlur={() => handleApply()}
         />
