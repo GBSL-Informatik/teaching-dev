@@ -4,7 +4,7 @@ import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
 import { maxBy } from 'es-toolkit/compat';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, runInAction } from 'mobx';
 
 export interface MetaInit {
     default?: string;
@@ -78,10 +78,14 @@ class CmsText extends iDocument<'cms_text'> {
         if (text === undefined || this.isSaving) {
             return false;
         }
+        const currentDate = this.updatedAt;
         this.setData({ text: text }, Source.LOCAL, new Date());
         const isSaved = !!(await this.saveNow());
         if (isSaved) {
             this.clearDraftIfUnchanged(text);
+            runInAction(() => {
+                this.updatedAt = currentDate;
+            });
         }
         return isSaved;
     }
