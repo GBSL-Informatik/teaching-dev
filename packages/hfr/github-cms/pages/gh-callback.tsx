@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useCmsStore } from '../hooks/useCmsStore';
 import { useGithubAccess } from '../hooks/useGithubAccess';
+import { consumeGithubLoginState } from '../models/githubLogin';
 import styles from './styles.module.scss';
 
 function HomepageHeader() {
@@ -27,12 +28,17 @@ const GhCallback = observer(() => {
     const access = useGithubAccess();
     const location = useLocation();
     const history = useHistory();
-    const code = new URLSearchParams(location.search).get('code');
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    const state = params.get('state');
     React.useEffect(() => {
-        if (code) {
-            cmsStore.fetchAccessToken(code);
-            history.replace('/gh-callback');
+        if (!code) {
+            return;
         }
+        if (consumeGithubLoginState(state)) {
+            cmsStore.fetchAccessToken(code);
+        }
+        history.replace('/gh-callback');
     }, [history]);
 
     if (!code) {
