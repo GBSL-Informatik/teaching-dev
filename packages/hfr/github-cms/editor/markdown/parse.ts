@@ -7,7 +7,6 @@ import type {
     List,
     ListItem,
     Nodes,
-    Paragraph,
     PhrasingContent,
     Root,
     RootContent,
@@ -26,7 +25,7 @@ import {
 import { rawImageAlt } from './imageAlt';
 import { groupKbd } from './kbd';
 import { countLineBreaks, dedent, setOrigin } from './origin';
-import { parseMdx, stringifyMdast } from './syntax';
+import { parseMdx } from './syntax';
 
 /** the children of a container directive */
 type FlowContent = BlockContent | DefinitionContent;
@@ -323,11 +322,17 @@ class MdastToProseMirror {
         return [schema.text(value, marks)];
     }
 
+    /**
+     * The label as written: stringifying its mdast would change it, e.g. `::youtube[https://...]`
+     * contains an autolink, which would become `[https://...](https://...)`.
+     */
     private labelMarkdown(children: PhrasingContent[]): string {
-        if (children.length === 0) {
+        const start = children[0]?.position?.start.offset;
+        const end = children.at(-1)?.position?.end.offset;
+        if (start === undefined || end === undefined) {
             return '';
         }
-        return stringifyMdast({ type: 'paragraph', children } satisfies Paragraph);
+        return this.source.slice(start, end);
     }
 
     private withOrigin(mdast: Nodes, node: Node) {
