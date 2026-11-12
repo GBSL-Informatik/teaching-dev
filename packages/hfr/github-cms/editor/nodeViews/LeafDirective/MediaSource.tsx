@@ -1,9 +1,9 @@
-import TextInput from '@tdev-components/shared/TextInput';
 import { LeafDirectiveName } from '@tdev-plugins/remark-media/mediaElement';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import type iFile from '../../../models/iFile';
+import Combobox from '../../components/Combobox';
 import type { NodeViewProps } from '../ReactNodeView';
 import styles from './styles.module.scss';
 import { useAssetPathOptions } from './useAssetPathOptions';
@@ -13,6 +13,9 @@ const ACCEPTED_FILES: Partial<Record<string, (file: iFile) => boolean>> = {
     [LeafDirectiveName.AUDIO]: (file) => file.isAudio,
     [LeafDirectiveName.VIDEO]: (file) => file.isVideo
 };
+
+const identity = (path: string) => path;
+const isDirectory = (path: string) => path.endsWith('/');
 
 /**
  * Edits the source of a media directive, the label of `::audio[./assets/song.mp3]`.
@@ -29,24 +32,33 @@ const MediaSource = observer(({ handle }: NodeViewProps) => {
         setText(label);
     }, [label]);
 
-    const handleApply = () => {
-        const src = text.trim();
+    const handleApply = (typed: string = text) => {
+        const src = typed.trim();
         if (src !== label) {
             handle.updateAttrs({ label: src });
         }
     };
 
+    const handleSelect = (path: string) => {
+        setText(path);
+        if (!isDirectory(path)) {
+            handleApply(path);
+        }
+    };
+
     return (
-        <TextInput
+        <Combobox
             value={text}
+            options={options}
+            optionKey={identity}
+            renderOption={identity}
+            keepsOpen={isDirectory}
             placeholder="Quelle"
             className={clsx(styles.source)}
-            options={options}
-            noSpellCheck
-            noAutoFocus
             onChange={setText}
-            onEnter={handleApply}
-            onBlur={handleApply}
+            onSelect={handleSelect}
+            onEnter={() => handleApply()}
+            onBlur={() => handleApply()}
         />
     );
 });

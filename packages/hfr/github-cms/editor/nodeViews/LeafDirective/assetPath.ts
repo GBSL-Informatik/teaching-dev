@@ -9,3 +9,6 @@ export const typedDirectory = (typed: string) => {
     const lastSlash = typed.lastIndexOf('/');
     return lastSlash < 0 ? './' : typed.slice(0, lastSlash + 1);
 };
+
+/** the typed beginning of the file or directory name, e.g. `so` of `./assets/so` */
+export const typedName = (typed: string) => typed.slice(typed.lastIndexOf('/') + 1);

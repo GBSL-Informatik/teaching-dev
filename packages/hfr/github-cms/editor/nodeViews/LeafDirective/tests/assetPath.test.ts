@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { typedDirectory } from '../assetPath';
+import { typedDirectory, typedName } from '../assetPath';
 
 describe('typedDirectory', () => {
     it.each([
@@ -18,4 +18,15 @@ describe('typedDirectory', () => {
             expect(typedDirectory(typed)).toBeNull();
         }
     );
+});
+
+describe('typedName', () => {
+    it.each([
+        ['', ''],
+        ['so', 'so'],
+        ['./', ''],
+        ['./assets/so', 'so']
+    ])('is the name of %j', (typed, name) => {
+        expect(typedName(typed)).toBe(name);
+    });
 });
