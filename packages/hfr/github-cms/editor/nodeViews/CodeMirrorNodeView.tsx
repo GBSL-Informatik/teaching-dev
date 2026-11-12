@@ -115,13 +115,35 @@ class CodeMirrorNodeView implements NodeView {
         this.updating = false;
     }
 
+    /** e.g. a click on the header: the code block is selected as a whole, to copy or cut it */
     selectNode() {
-        this.codeMirror.focus();
+        this.handle.setSelected(true);
+        this.updateClassName();
     }
 
-    /** a block dragged in ProseMirror is dropped by ProseMirror, see `plugins/dropTargets.ts` */
+    deselectNode() {
+        this.handle.setSelected(false);
+        this.updateClassName();
+    }
+
+    /**
+     * CodeMirror and the interactive elements of the header and footer handle their events themselves,
+     * other events (e.g. copying the selected code block) are handled by ProseMirror.
+     */
     stopEvent(event: Event) {
-        return !(event instanceof DragEvent && this.view.dragging);
+        // a block dragged in ProseMirror is dropped by ProseMirror, see `plugins/dropTargets.ts`
+        if (event instanceof DragEvent && this.view.dragging) {
+            return false;
+        }
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+            return false;
+        }
+        if (this.codeMirror.dom.contains(target)) {
+            return true;
+        }
+        const interactive = target.closest('input, textarea, select, button, [data-stop-event]');
+        return !!interactive && this.dom.contains(interactive);
     }
 
     destroy() {
@@ -142,7 +164,8 @@ class CodeMirrorNodeView implements NodeView {
     }
 
     private updateClassName() {
-        this.dom.className = `cms-code-node ${this.options.className?.(this.node) ?? ''}`;
+        const selected = this.handle.selected ? 'ProseMirror-selectednode' : '';
+        this.dom.className = `cms-code-node ${this.options.className?.(this.node) ?? ''} ${selected}`;
     }
 
     private async loadLanguage() {
