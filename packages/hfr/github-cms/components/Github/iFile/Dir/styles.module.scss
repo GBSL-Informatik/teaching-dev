@@ -34,5 +34,9 @@
                 display: flex;
             }
         }
+        &.dropTarget {
+            outline: 2px dashed var(--ifm-color-primary);
+            background-color: var(--ifm-color-emphasis-200);
+        }
     }
 }
