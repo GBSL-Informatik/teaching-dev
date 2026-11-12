@@ -1,6 +1,8 @@
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import Link from '@docusaurus/Link';
 import { Redirect, useHistory, useLocation } from '@docusaurus/router';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import Loader from '@tdev-components/Loader';
 import CodeBlock from '@theme/CodeBlock';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
@@ -60,4 +62,13 @@ const GhCallback = observer(() => {
         </Layout>
     );
 });
-export default GhCallback;
+
+/**
+ * The page depends on the `code` in the url, which is unknown when the page is rendered at build time:
+ * it is rendered in the browser only, otherwise hydrating it fails.
+ */
+const GhCallbackPage = () => {
+    return <BrowserOnly fallback={<Loader />}>{() => <GhCallback />}</BrowserOnly>;
+};
+
+export default GhCallbackPage;
