@@ -11,6 +11,8 @@
     }
     .input {
         flex-grow: 1;
+        /* a percentage width lets the cell shrink on narrow screens, while `cols` sets its preferred width */
+        width: 100%;
         min-width: 0;
         padding: 0.1em 0.3em;
         resize: vertical;

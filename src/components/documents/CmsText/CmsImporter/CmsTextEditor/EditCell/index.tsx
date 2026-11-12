@@ -9,6 +9,8 @@ import { observer } from 'mobx-react-lite';
 import CreateCell from '../CreateCell';
 import styles from './styles.module.scss';
 
+const MIN_COLUMNS = 20;
+
 interface Props {
     documentRootId: string;
     userId: string;
@@ -25,6 +27,8 @@ const EditCell = observer((props: Props) => {
         return <CreateCell documentRootId={documentRootId} userId={userId} />;
     }
     const text = doc.draft ?? doc.text;
+    const lines = text.split('\n');
+    const longestLine = Math.max(...lines.map((line) => line.length));
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         doc.setDraft(e.target.value);
@@ -42,7 +46,8 @@ const EditCell = observer((props: Props) => {
                 <textarea
                     className={clsx(styles.input)}
                     value={text}
-                    rows={text.split('\n').length}
+                    rows={lines.length}
+                    cols={Math.max(MIN_COLUMNS, longestLine)}
                     onChange={handleChange}
                 />
                 {doc.hasDraft && (
