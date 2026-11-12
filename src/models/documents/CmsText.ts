@@ -3,6 +3,7 @@ import { TypeMeta } from '@tdev-models/DocumentRoot';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
+import { maxBy } from 'es-toolkit/compat';
 import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
@@ -129,6 +130,20 @@ export const findCmsTextsWithDraft = (documentStore: DocumentStore, documentRoot
     return documentRootIds
         .flatMap((documentRootId) => documentStore.findByDocumentRoot(documentRootId))
         .filter((doc): doc is CmsText => doc instanceof CmsText && doc.hasDraft);
+};
+
+/**
+ * @returns the latest update of the user's main cms texts in the given document roots
+ */
+export const findLastCmsTextUpdate = (
+    documentStore: DocumentStore,
+    documentRootIds: string[],
+    userId: string
+): Date | undefined => {
+    const updates = documentRootIds
+        .map((documentRootId) => findMainCmsText(documentStore, documentRootId, userId)?.updatedAt)
+        .filter((updatedAt) => !!updatedAt);
+    return maxBy(updates, (updatedAt) => updatedAt.getTime());
 };
 
 export const createCmsText = async (

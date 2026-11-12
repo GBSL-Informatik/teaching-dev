@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { orderBy } from 'es-toolkit/compat';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import EditCell from './EditCell';
+import UserRow from './UserRow';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -55,16 +55,12 @@ const CmsTextEditor = observer((props: Props) => {
                                     {cmsAssignments[id][0] ?? id}
                                 </th>
                             ))}
+                            <th>Aktualisiert</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user) => (
-                            <tr key={user.id}>
-                                <td className={clsx(styles.name)}>{user.name}</td>
-                                {documentRootIds.map((id) => (
-                                    <EditCell key={id} documentRootId={id} userId={user.id} />
-                                ))}
-                            </tr>
+                            <UserRow key={user.id} user={user} documentRootIds={documentRootIds} />
                         ))}
                     </tbody>
                 </table>
