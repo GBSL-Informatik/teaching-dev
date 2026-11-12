@@ -31,6 +31,7 @@ const TextDirective = observer(({ handle }: NodeViewProps) => {
 
     return (
         <InlinePopover
+            onClose={() => handle.selectAndFocus()}
             title={isMdi ? 'Icon' : `:${name}`}
             trigger={
                 <span className={clsx(styles.directive, handle.selected && styles.selected)}>

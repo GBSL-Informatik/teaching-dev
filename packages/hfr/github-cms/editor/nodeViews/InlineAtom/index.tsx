@@ -17,6 +17,7 @@ const InlineAtom = observer(({ handle }: NodeViewProps) => {
     }
     return (
         <InlinePopover
+            onClose={() => handle.selectAndFocus()}
             title="MDX"
             trigger={
                 <code className={clsx(styles.atom, handle.selected && styles.selected)}>

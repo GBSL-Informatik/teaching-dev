@@ -47,6 +47,7 @@ const Image = observer(({ handle }: NodeViewProps) => {
                     <span className={clsx(styles.settings)}>
                         {asset?.type === 'bin_file' && <ExcalidrawButton handle={handle} image={asset} />}
                         <InlinePopover
+                            onClose={() => handle.selectAndFocus()}
                             title="Bild"
                             trigger={<Button icon={mdiCog} size={SIZE_S} title="Bild bearbeiten" />}
                         >

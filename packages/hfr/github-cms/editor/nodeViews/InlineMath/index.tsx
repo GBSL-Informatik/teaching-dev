@@ -19,6 +19,7 @@ const InlineMath = observer(({ handle }: NodeViewProps) => {
     const html = React.useMemo(() => renderMath(value, false), [value]);
     return (
         <InlinePopover
+            onClose={() => handle.selectAndFocus()}
             title="Mathematik"
             trigger={
                 <span
