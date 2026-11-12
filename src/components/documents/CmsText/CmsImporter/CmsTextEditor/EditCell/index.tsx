@@ -17,6 +17,7 @@ const EditCell = observer((props: Props) => {
     const { drafts, documentRootId, userId } = props;
     const draftText = drafts.draftText(documentRootId, userId);
     const isDirty = draftText !== undefined;
+    const isSaving = drafts.isSaving(documentRootId, userId);
     const text = draftText ?? drafts.savedText(documentRootId, userId);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -45,6 +46,8 @@ const EditCell = observer((props: Props) => {
                         color="green"
                         size={SIZE_S}
                         onClick={handleSave}
+                        disabled={isSaving}
+                        spin={isSaving}
                     />
                     <Button
                         icon={mdiUndo}
@@ -52,6 +55,7 @@ const EditCell = observer((props: Props) => {
                         color="black"
                         size={SIZE_S}
                         onClick={handleDiscard}
+                        disabled={isSaving}
                     />
                 </div>
             )}

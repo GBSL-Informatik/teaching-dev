@@ -18,6 +18,7 @@ const draftKey = (documentRootId: string, userId: string) => `${documentRootId}:
 class CmsTextDrafts {
     readonly documentStore: DocumentStore;
     drafts = observable.map<string, Draft>();
+    savingKeys = observable.map<string, boolean>();
 
     constructor(documentStore: DocumentStore) {
         this.documentStore = documentStore;
@@ -31,9 +32,18 @@ class CmsTextDrafts {
         return this.drafts.get(draftKey(documentRootId, userId))?.text;
     }
 
+    isSaving(documentRootId: string, userId: string): boolean {
+        return this.savingKeys.has(draftKey(documentRootId, userId));
+    }
+
     @computed
     get hasDrafts() {
         return this.drafts.size > 0;
+    }
+
+    @computed
+    get isSavingAny() {
+        return this.savingKeys.size > 0;
     }
 
     @action
@@ -71,11 +81,33 @@ class CmsTextDrafts {
     }
 
     private async saveDraft(draft: Draft) {
-        const isSaved = await saveCmsText(this.documentStore, draft.documentRootId, draft.userId, draft.text);
-        if (!isSaved) {
+        const key = draftKey(draft.documentRootId, draft.userId);
+        if (this.savingKeys.has(key)) {
             return;
         }
-        this.removeIfUnchanged(draft);
+        this.setSaving(key, true);
+        try {
+            const isSaved = await saveCmsText(
+                this.documentStore,
+                draft.documentRootId,
+                draft.userId,
+                draft.text
+            );
+            if (isSaved) {
+                this.removeIfUnchanged(draft);
+            }
+        } finally {
+            this.setSaving(key, false);
+        }
+    }
+
+    @action
+    private setSaving(key: string, isSaving: boolean) {
+        if (isSaving) {
+            this.savingKeys.set(key, true);
+            return;
+        }
+        this.savingKeys.delete(key);
     }
 
     /**

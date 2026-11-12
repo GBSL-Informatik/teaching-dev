@@ -58,6 +58,7 @@ const CmsImporter = observer((props: Props) => {
     const [table, setTable] = React.useState<string[][]>([]);
     const [assigned, setAssigned] = React.useState<AssignedColumn[]>([]);
     const [ready, setReady] = React.useState(false);
+    const [isImporting, setIsImporting] = React.useState(false);
     const [isOpen, setIsOpen] = React.useState(false);
     const reset = () => {
         setTable([]);
@@ -210,17 +211,21 @@ const CmsImporter = observer((props: Props) => {
                             <Button
                                 text={'CMS Texte erstellen'}
                                 onClick={() => {
+                                    setIsImporting(true);
                                     createCmsTexts(documentStore, table.slice(1), assigned)
                                         .then(() => {
                                             closeTooltip();
                                         })
                                         .catch((e) => {
                                             console.error(e);
+                                        })
+                                        .finally(() => {
+                                            setIsImporting(false);
                                         });
                                 }}
                                 color="primary"
-                                disabled={assigned.length === 0 || !ready}
-                                spin={!ready}
+                                disabled={assigned.length === 0 || !ready || isImporting}
+                                spin={!ready || isImporting}
                             />
                         </div>
                     </div>

@@ -6,7 +6,6 @@ import CmsTextDrafts from '@tdev-models/CmsTextDrafts';
 import clsx from 'clsx';
 import { orderBy } from 'es-toolkit/compat';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
 import EditCell from './EditCell';
 import styles from './styles.module.scss';
 
@@ -19,13 +18,11 @@ interface Props {
 
 const CmsTextEditor = observer((props: Props) => {
     const { drafts, cmsAssignments } = props;
-    const [isSaving, setIsSaving] = React.useState(false);
     const users = useEditableUsers();
     const documentRootIds = Object.keys(cmsAssignments);
 
     const handleSaveAll = () => {
-        setIsSaving(true);
-        drafts.saveAll().finally(() => setIsSaving(false));
+        drafts.saveAll();
     };
     const handleDiscardAll = () => {
         drafts.discardAll();
@@ -70,15 +67,15 @@ const CmsTextEditor = observer((props: Props) => {
                     icon={mdiUndo}
                     color="black"
                     onClick={handleDiscardAll}
-                    disabled={!drafts.hasDrafts || isSaving}
+                    disabled={!drafts.hasDrafts || drafts.isSavingAny}
                 />
                 <Button
                     text="Alle speichern"
                     icon={mdiContentSaveAll}
                     color="primary"
                     onClick={handleSaveAll}
-                    disabled={!drafts.hasDrafts || isSaving}
-                    spin={isSaving}
+                    disabled={!drafts.hasDrafts || drafts.isSavingAny}
+                    spin={drafts.isSavingAny}
                 />
             </div>
         </div>
