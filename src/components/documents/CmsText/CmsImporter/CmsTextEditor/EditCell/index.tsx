@@ -1,44 +1,51 @@
 import { mdiContentSave, mdiUndo } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
-import CmsTextDrafts from '@tdev-models/CmsTextDrafts';
+import { useComputed } from '@tdev-hooks/useComputed';
+import { useStore } from '@tdev-hooks/useStore';
+import { findMainCmsText } from '@tdev-models/documents/CmsText';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import CreateCell from '../CreateCell';
 import styles from './styles.module.scss';
 
 interface Props {
-    drafts: CmsTextDrafts;
     documentRootId: string;
     userId: string;
     monospace?: boolean;
 }
 
 const EditCell = observer((props: Props) => {
-    const { drafts, documentRootId, userId } = props;
-    const draftText = drafts.draftText(documentRootId, userId);
-    const isDirty = draftText !== undefined;
-    const isSaving = drafts.isSaving(documentRootId, userId);
-    const text = draftText ?? drafts.savedText(documentRootId, userId);
+    const { documentRootId, userId } = props;
+    const documentStore = useStore('documentStore');
+    const doc = useComputed(
+        () => findMainCmsText(documentStore, documentRootId, userId),
+        [documentStore, documentRootId, userId]
+    );
+    if (!doc) {
+        return <CreateCell documentRootId={documentRootId} userId={userId} />;
+    }
+    const text = doc.draft ?? doc.text;
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        drafts.setDraft(documentRootId, userId, e.target.value);
+        doc.setDraft(e.target.value);
     };
     const handleSave = () => {
-        drafts.save(documentRootId, userId);
+        doc.saveDraft();
     };
     const handleDiscard = () => {
-        drafts.discard(documentRootId, userId);
+        doc.discardDraft();
     };
 
     return (
-        <td className={clsx(styles.cell, isDirty && styles.dirty)}>
+        <td className={clsx(styles.cell, doc.hasDraft && styles.dirty)}>
             <textarea
                 className={clsx(styles.input, props.monospace && styles.monospace)}
                 value={text}
                 rows={text.split('\n').length}
                 onChange={handleChange}
             />
-            {isDirty && (
+            {doc.hasDraft && (
                 <div className={clsx(styles.actions)}>
                     <Button
                         icon={mdiContentSave}
@@ -46,8 +53,8 @@ const EditCell = observer((props: Props) => {
                         color="green"
                         size={SIZE_S}
                         onClick={handleSave}
-                        disabled={isSaving}
-                        spin={isSaving}
+                        disabled={doc.isSaving}
+                        spin={doc.isSaving}
                     />
                     <Button
                         icon={mdiUndo}
@@ -55,7 +62,7 @@ const EditCell = observer((props: Props) => {
                         color="black"
                         size={SIZE_S}
                         onClick={handleDiscard}
-                        disabled={isSaving}
+                        disabled={doc.isSaving}
                     />
                 </div>
             )}

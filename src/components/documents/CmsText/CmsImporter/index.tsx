@@ -4,7 +4,6 @@ import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/Assi
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
-import CmsTextDrafts from '@tdev-models/CmsTextDrafts';
 import { saveCmsText } from '@tdev-models/documents/CmsText';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
@@ -54,7 +53,6 @@ const CmsImporter = observer((props: Props) => {
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
     const [mode, setMode] = React.useState<'xlsx' | 'code' | 'edit'>(props.mode || 'xlsx');
-    const [drafts] = React.useState(() => new CmsTextDrafts(documentStore));
     const [table, setTable] = React.useState<string[][]>([]);
     const [assigned, setAssigned] = React.useState<AssignedColumn[]>([]);
     const [ready, setReady] = React.useState(false);
@@ -63,7 +61,6 @@ const CmsImporter = observer((props: Props) => {
     const reset = () => {
         setTable([]);
         setAssigned([]);
-        drafts.discardAll();
     };
     const closeTooltip = () => {
         (ref.current as any)?.close();
@@ -159,7 +156,6 @@ const CmsImporter = observer((props: Props) => {
                             {mode === 'edit' &&
                                 (ready ? (
                                     <CmsTextEditor
-                                        drafts={drafts}
                                         cmsAssignments={cmsAssignments}
                                         monospace={props.mode === 'code'}
                                     />

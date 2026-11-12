@@ -1,31 +1,46 @@
 import { mdiContentSaveAll, mdiUndo } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
+import { useComputed } from '@tdev-hooks/useComputed';
 import { useStore } from '@tdev-hooks/useStore';
-import CmsTextDrafts from '@tdev-models/CmsTextDrafts';
+import { findCmsTextsWithDraft } from '@tdev-models/documents/CmsText';
 import clsx from 'clsx';
 import { orderBy } from 'es-toolkit/compat';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import EditCell from './EditCell';
 import styles from './styles.module.scss';
 
 interface Props {
-    drafts: CmsTextDrafts;
     /** document root id -> labels */
     cmsAssignments: Record<string, string[]>;
     monospace?: boolean;
 }
 
 const CmsTextEditor = observer((props: Props) => {
-    const { drafts, cmsAssignments } = props;
+    const { cmsAssignments } = props;
+    const documentStore = useStore('documentStore');
+    const [isSavingAll, setIsSavingAll] = React.useState(false);
     const users = useEditableUsers();
-    const documentRootIds = Object.keys(cmsAssignments);
+    const documentRootIds = React.useMemo(() => Object.keys(cmsAssignments), [cmsAssignments]);
+    const docsWithDraft = useComputed(
+        () => findCmsTextsWithDraft(documentStore, documentRootIds),
+        [documentStore, documentRootIds]
+    );
+    const hasDrafts = docsWithDraft.length > 0;
 
-    const handleSaveAll = () => {
-        drafts.saveAll();
+    const handleSaveAll = async () => {
+        setIsSavingAll(true);
+        try {
+            for (const doc of docsWithDraft) {
+                await doc.saveDraft();
+            }
+        } finally {
+            setIsSavingAll(false);
+        }
     };
     const handleDiscardAll = () => {
-        drafts.discardAll();
+        docsWithDraft.forEach((doc) => doc.discardDraft());
     };
 
     return (
@@ -50,7 +65,6 @@ const CmsTextEditor = observer((props: Props) => {
                                 {documentRootIds.map((id) => (
                                     <EditCell
                                         key={id}
-                                        drafts={drafts}
                                         documentRootId={id}
                                         userId={user.id}
                                         monospace={props.monospace}
@@ -63,19 +77,19 @@ const CmsTextEditor = observer((props: Props) => {
             </div>
             <div className={clsx('button-group', 'button-group--block')}>
                 <Button
-                    text="Alle verwerfen"
+                    text={`Alle verwerfen (${docsWithDraft.length})`}
                     icon={mdiUndo}
                     color="black"
                     onClick={handleDiscardAll}
-                    disabled={!drafts.hasDrafts || drafts.isSavingAny}
+                    disabled={!hasDrafts || isSavingAll}
                 />
                 <Button
-                    text="Alle speichern"
+                    text={`Alle speichern (${docsWithDraft.length})`}
                     icon={mdiContentSaveAll}
                     color="primary"
                     onClick={handleSaveAll}
-                    disabled={!drafts.hasDrafts || drafts.isSavingAny}
-                    spin={drafts.isSavingAny}
+                    disabled={!hasDrafts || isSavingAll}
+                    spin={isSavingAll}
                 />
             </div>
         </div>
