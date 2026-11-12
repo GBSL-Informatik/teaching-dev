@@ -23,12 +23,9 @@ class CmsTextDrafts {
         this.documentStore = documentStore;
     }
 
-    savedText = computedFn(
-        function (this: CmsTextDrafts, documentRootId: string, userId: string): string {
-            return findMainCmsText(this.documentStore, documentRootId, userId)?.text ?? '';
-        },
-        { keepAlive: true }
-    );
+    savedText = computedFn(function (this: CmsTextDrafts, documentRootId: string, userId: string): string {
+        return findMainCmsText(this.documentStore, documentRootId, userId)?.text ?? '';
+    });
 
     draftText(documentRootId: string, userId: string): string | undefined {
         return this.drafts.get(draftKey(documentRootId, userId))?.text;
