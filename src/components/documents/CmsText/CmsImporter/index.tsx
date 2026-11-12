@@ -1,8 +1,8 @@
 import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiLoading, mdiPencil } from '@mdi/js';
 import Loader from '@tdev-components/Loader';
 import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
-import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
+import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { useStore } from '@tdev-hooks/useStore';
 import { saveCmsText } from '@tdev-models/documents/CmsText';
 import DocumentStore from '@tdev-stores/DocumentStore';
@@ -114,10 +114,14 @@ const CmsImporter = observer((props: Props) => {
                 <div className={clsx('card__header', styles.header)}>
                     <h3>CMS Texte erstellen</h3>
                     <div className={clsx(styles.importLabels)}>
-                        {Object.keys(cmsAssignments).map((id, idx) => (
-                            <Badge key={idx} type="primary" title={id}>
-                                {cmsAssignments[id][0] ?? id}
-                            </Badge>
+                        {Object.keys(cmsAssignments).map((id) => (
+                            <CopyBadge
+                                key={id}
+                                value={id}
+                                label={cmsAssignments[id][0] ?? id}
+                                title={`documentRootId kopieren: ${id}`}
+                                color="blue"
+                            />
                         ))}
                     </div>
                 </div>
