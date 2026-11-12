@@ -24,6 +24,11 @@ export default class Page {
 
     @observableRef accessor _primaryViewedStudentGroupName: string | undefined = undefined;
     @observableRef accessor _viewedStudentGroup: StudentGroup | undefined = undefined;
+    /**
+     * Set when the user deselects the primary group: shows all users instead of
+     * falling back to the default group of the current path.
+     */
+    @observable accessor isStudentGroupFilterCleared = false;
     documentRootConfigs: ObservableMap<string, PageConfig>;
 
     dynamicValues = observable.map<string, string>();
@@ -165,14 +170,18 @@ export default class Page {
     @action
     setPrimaryViewedStudentGroupName(name?: string) {
         this._primaryViewedStudentGroupName = name;
+        this.isStudentGroupFilterCleared = false;
     }
 
     get hasCustomViewedPrimaryStudentGroup() {
-        return !!this._primaryViewedStudentGroupName;
+        return !!this._primaryViewedStudentGroupName || this.isStudentGroupFilterCleared;
     }
 
     @computed
     get primaryViewedStudentGroup() {
+        if (this.isStudentGroupFilterCleared) {
+            return undefined;
+        }
         return this._primaryViewedStudentGroupName
             ? this.store.root.studentGroupStore.findByName(this._primaryViewedStudentGroupName)
             : this.store.root.studentGroupStore.findByName(this.primaryViewedStudentGroupName);
@@ -183,14 +192,20 @@ export default class Page {
         const isCurrent = group && this.primaryViewedStudentGroup?.id === group.id;
         const isInFocus = group && this._viewedStudentGroup?.parentIds.includes(group.id);
         if (isCurrent || isInFocus) {
-            this.setPrimaryViewedStudentGroupName(undefined);
-            this._viewedStudentGroup = undefined;
+            this.clearStudentGroupFilter();
             return;
         }
         this.setPrimaryViewedStudentGroupName(group?.name);
         if (group) {
             this._viewedStudentGroup = undefined;
         }
+    }
+
+    @action
+    clearStudentGroupFilter() {
+        this.setPrimaryViewedStudentGroupName(undefined);
+        this._viewedStudentGroup = undefined;
+        this.isStudentGroupFilterCleared = true;
     }
 
     /**

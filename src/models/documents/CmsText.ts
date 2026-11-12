@@ -2,6 +2,7 @@ import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
+import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
@@ -27,6 +28,11 @@ export class CmsTextMeta extends TypeMeta<'cms_text'> {
 
 class CmsText extends iDocument<'cms_text'> {
     @observable accessor text: string;
+    /**
+     * Unsaved edit of the text. It is kept until it is saved or discarded,
+     * also when the editing ui is closed.
+     */
+    @observable accessor draft: string | undefined = undefined;
     constructor(props: DocumentProps<'cms_text'>, store: DocumentStore) {
         super(props, store);
         this.text = props.data?.text || '';
@@ -41,6 +47,42 @@ class CmsText extends iDocument<'cms_text'> {
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @computed
+    get hasDraft() {
+        return this.draft !== undefined;
+    }
+
+    @computed
+    get isSaving() {
+        return this.state === ApiState.SYNCING;
+    }
+
+    @action
+    setDraft(text: string) {
+        this.draft = text === this.text ? undefined : text;
+    }
+
+    @action
+    discardDraft() {
+        this.draft = undefined;
+    }
+
+    /**
+     * @returns whether the draft was saved successfully
+     */
+    async saveDraft(): Promise<boolean> {
+        const text = this.draft;
+        if (text === undefined || this.isSaving) {
+            return false;
+        }
+        this.setData({ text: text }, Source.LOCAL);
+        const isSaved = !!(await this.saveNow());
+        if (isSaved) {
+            this.markSaved(text);
+        }
+        return isSaved;
     }
 
     get data(): TypeDataMapping['cms_text'] {
@@ -64,6 +106,39 @@ class CmsText extends iDocument<'cms_text'> {
     get canEdit(): boolean {
         return !!this.store.root.userStore.current?.hasElevatedAccess;
     }
+
+    /**
+     * The api responds without the new updatedAt and doesn't notify the saving client, so the local time is used.
+     */
+    @action
+    private markSaved(savedText: string) {
+        this.updatedAt = new Date();
+        // the draft may have been edited while it was being saved: keep those edits
+        if (this.draft === savedText) {
+            this.draft = undefined;
+        }
+    }
 }
+
+export const findMainCmsText = (documentStore: DocumentStore, documentRootId: string, userId: string) => {
+    const documentRoot = documentStore.root.documentRootStore.find(documentRootId);
+    return documentRoot?.allMainDocuments.find((doc) => doc.authorId === userId) as CmsText | undefined;
+};
+
+export const createCmsText = async (
+    documentStore: DocumentStore,
+    documentRootId: string,
+    userId: string,
+    text: string
+) => {
+    const created = await documentStore.create({
+        type: 'cms_text',
+        authorId: userId,
+        documentRootId: documentRootId,
+        uniqOnRoot: 'main',
+        data: { text: text }
+    });
+    return !!created;
+};
 
 export default CmsText;

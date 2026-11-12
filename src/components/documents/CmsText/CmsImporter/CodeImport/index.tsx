@@ -14,6 +14,8 @@ interface Props {
     importLabel?: string;
 }
 
+const CODE_PLACEHOLDER = "Code für alle ausgewählten Personen, z.B. print('Hallo Welt')";
+
 const CodeImport = observer((props: Props) => {
     const [code, setCode] = React.useState<string>('');
     const [selectedUserIds, setSelectedUserIds] = React.useState<string[]>([]);
@@ -31,7 +33,12 @@ const CodeImport = observer((props: Props) => {
                         className={clsx(styles.userSelect)}
                     />
                     <div className={clsx(styles.input)}>
-                        <CodeEditor aceClassName={clsx(styles.editor)} onChange={(raw) => setCode(raw)} />
+                        <CodeEditor
+                            aceClassName={clsx(styles.editor)}
+                            onChange={(raw) => setCode(raw)}
+                            defaultValue=""
+                            placeholder={CODE_PLACEHOLDER}
+                        />
                     </div>
                 </div>
             </div>

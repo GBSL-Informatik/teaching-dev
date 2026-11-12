@@ -1,0 +1,32 @@
+.cell {
+    vertical-align: top;
+    min-width: 12em;
+    &.dirty {
+        background-color: var(--ifm-color-warning-contrast-background);
+    }
+    .content {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.1em;
+    }
+    .input {
+        flex-grow: 1;
+        /* a percentage width lets the cell shrink on narrow screens, while `cols` sets its preferred width */
+        width: 100%;
+        min-width: 0;
+        padding: 0.1em 0.3em;
+        resize: vertical;
+        border: 1px solid var(--ifm-color-gray-500);
+        border-radius: var(--ifm-global-radius);
+        font-family: var(--ifm-font-family-monospace);
+        font-size: var(--ifm-font-size-base);
+        &:focus {
+            border-color: var(--ifm-link-hover-color);
+            outline: none;
+        }
+    }
+    .actions {
+        display: flex;
+        flex-shrink: 0;
+    }
+}

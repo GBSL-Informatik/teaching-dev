@@ -1,9 +1,10 @@
-import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel } from '@mdi/js';
+import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiLoading, mdiPencil } from '@mdi/js';
+import Loader from '@tdev-components/Loader';
 import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
-import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
+import CopyBadge from '@tdev-components/shared/CopyBadge';
 import { useStore } from '@tdev-hooks/useStore';
-import CmsText from '@tdev-models/documents/CmsText';
+import { createCmsText, findMainCmsText } from '@tdev-models/documents/CmsText';
 import { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
@@ -13,6 +14,7 @@ import React from 'react';
 import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import { CmsTextEntries } from '../WithCmsText';
+import CmsTextEditor from './CmsTextEditor';
 import CodeImport from './CodeImport';
 import ImportPreview from './ImportPreview';
 import styles from './styles.module.scss';
@@ -24,39 +26,38 @@ interface Props {
     mode?: 'xlsx' | 'code';
 }
 
+/**
+ * Updates the user's main cms text of the document root or creates it, when it does not exist yet.
+ * @returns whether the text was saved successfully
+ */
+const saveCmsText = async (
+    documentStore: DocumentStore,
+    documentRootId: string,
+    userId: string,
+    text: string
+): Promise<boolean> => {
+    const doc = findMainCmsText(documentStore, documentRootId, userId);
+    if (!doc) {
+        return createCmsText(documentStore, documentRootId, userId, text);
+    }
+    doc.discardDraft();
+    const isAlreadySaved = doc.text === text && !doc.isDirty;
+    if (isAlreadySaved) {
+        return true;
+    }
+    doc.setData({ text: text }, Source.LOCAL);
+    return !!(await doc.saveNow());
+};
+
 const createCmsTexts = async (
     documentStore: DocumentStore,
     table: string[][],
     assignments: AssignedColumn[]
 ) => {
-    const { documentRootStore } = documentStore.root;
-
     for (const assignment of assignments) {
-        const documentRoot = documentRootStore.find(assignment.id);
-        if (!documentRoot) {
-            continue;
-        }
-
         for (const row of table) {
             const userId = row[0];
-            const doc = documentRoot.allDocuments.find((d) => d.isMain && d.authorId === userId) as CmsText;
-
-            if (doc) {
-                // update the document with the new text when needed
-                if (doc.text !== row[assignment.idx]) {
-                    doc.setData({ text: row[assignment.idx] }, Source.LOCAL);
-                    await doc.saveNow();
-                }
-            } else {
-                // create a new document with the text
-                await documentStore.create({
-                    type: 'cms_text',
-                    authorId: userId,
-                    documentRootId: assignment.id,
-                    uniqOnRoot: 'main',
-                    data: { text: row[assignment.idx] }
-                });
-            }
+            await saveCmsText(documentStore, assignment.id, userId, row[assignment.idx]);
         }
     }
 };
@@ -75,10 +76,11 @@ const CmsImporter = observer((props: Props) => {
     const ref = React.useRef<PopupActions>(null);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
-    const [mode, setMode] = React.useState<'xlsx' | 'code'>(props.mode || 'xlsx');
+    const [mode, setMode] = React.useState<'xlsx' | 'code' | 'edit'>(props.mode || 'xlsx');
     const [table, setTable] = React.useState<string[][]>([]);
     const [assigned, setAssigned] = React.useState<AssignedColumn[]>([]);
     const [ready, setReady] = React.useState(false);
+    const [isImporting, setIsImporting] = React.useState(false);
     const [isOpen, setIsOpen] = React.useState(false);
     const reset = () => {
         setTable([]);
@@ -136,10 +138,14 @@ const CmsImporter = observer((props: Props) => {
                 <div className={clsx('card__header', styles.header)}>
                     <h3>CMS Texte erstellen</h3>
                     <div className={clsx(styles.importLabels)}>
-                        {Object.keys(cmsAssignments).map((id, idx) => (
-                            <Badge key={idx} type="primary" title={id}>
-                                {cmsAssignments[id][0] ?? id}
-                            </Badge>
+                        {Object.keys(cmsAssignments).map((id) => (
+                            <CopyBadge
+                                key={id}
+                                value={id}
+                                label={cmsAssignments[id][0] ?? id}
+                                title={`documentRootId kopieren: ${id}`}
+                                color="blue"
+                            />
                         ))}
                     </div>
                 </div>
@@ -165,15 +171,27 @@ const CmsImporter = observer((props: Props) => {
                                     active={mode === 'code'}
                                     color="blue"
                                 />
+                                <Button
+                                    icon={mdiPencil}
+                                    text={'Bearbeiten'}
+                                    onClick={() => {
+                                        setMode('edit');
+                                    }}
+                                    active={mode === 'edit'}
+                                    color="orange"
+                                />
                             </div>
-                            {mode === 'xlsx' ? (
+                            {mode === 'edit' &&
+                                (ready ? <CmsTextEditor cmsAssignments={cmsAssignments} /> : <Loader />)}
+                            {mode === 'xlsx' && (
                                 <XlsxImport
                                     onDone={(data) => {
                                         setTable(data);
                                     }}
                                     onClose={closeTooltip}
                                 />
-                            ) : (
+                            )}
+                            {mode === 'code' && (
                                 <CodeImport
                                     onDone={(data) => {
                                         setTable(data);
@@ -210,17 +228,22 @@ const CmsImporter = observer((props: Props) => {
                             <Button
                                 text={'CMS Texte erstellen'}
                                 onClick={() => {
+                                    setIsImporting(true);
                                     createCmsTexts(documentStore, table.slice(1), assigned)
                                         .then(() => {
                                             closeTooltip();
                                         })
                                         .catch((e) => {
                                             console.error(e);
+                                        })
+                                        .finally(() => {
+                                            setIsImporting(false);
                                         });
                                 }}
                                 color="primary"
-                                disabled={assigned.length === 0 || !ready}
-                                spin={!ready}
+                                disabled={assigned.length === 0 || !ready || isImporting}
+                                icon={!ready || isImporting ? mdiLoading : undefined}
+                                spin={!ready || isImporting}
                             />
                         </div>
                     </div>
