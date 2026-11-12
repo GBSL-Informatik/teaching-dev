@@ -23,6 +23,14 @@
         gap: 0.2em;
         cursor: default;
     }
+    &.wideControls {
+        .title {
+            flex-grow: 0;
+        }
+        .controls {
+            flex-grow: 1;
+        }
+    }
 }
 .modal {
     width: 30em;

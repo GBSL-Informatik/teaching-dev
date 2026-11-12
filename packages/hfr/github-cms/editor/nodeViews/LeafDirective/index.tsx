@@ -45,6 +45,7 @@ const LeafDirective = observer(({ handle }: NodeViewProps) => {
                     />
                 }
                 shrinkTitle
+                wideControls={isMedia}
             >
                 <UuidAttributes handle={handle} />
                 {isMedia ? (

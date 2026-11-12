@@ -15,6 +15,8 @@ interface Props {
     title: React.ReactNode;
     /** the title shortens itself (e.g. with an ellipsis), so it gives way to the controls */
     shrinkTitle?: boolean;
+    /** the controls take the free space instead of the title, e.g. for a source input */
+    wideControls?: boolean;
     children?: React.ReactNode;
     /** e.g. the attributes editor, shown next to the remove button */
     settings?: React.ReactNode;
@@ -60,7 +62,7 @@ const NodeToolbar = observer((props: Props) => {
     return (
         <div
             ref={setToolbar}
-            className={clsx(styles.toolbar, props.className)}
+            className={clsx(styles.toolbar, props.wideControls && styles.wideControls, props.className)}
             onClick={() => handle.select()}
         >
             <span className={clsx(styles.title, props.shrinkTitle && styles.shrink)}>{props.title}</span>

@@ -1,9 +1,11 @@
 import TextInput from '@tdev-components/shared/TextInput';
 import { LeafDirectiveName } from '@tdev-plugins/remark-media/mediaElement';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import type iFile from '../../../models/iFile';
 import type { NodeViewProps } from '../ReactNodeView';
+import styles from './styles.module.scss';
 import { useAssetPathOptions } from './useAssetPathOptions';
 
 /** the files suggested for directives with a file in the repository, the others are embedded urls */
@@ -38,6 +40,7 @@ const MediaSource = observer(({ handle }: NodeViewProps) => {
         <TextInput
             value={text}
             placeholder="Quelle"
+            className={clsx(styles.source)}
             options={options}
             noSpellCheck
             noAutoFocus
