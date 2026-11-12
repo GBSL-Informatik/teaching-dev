@@ -1,4 +1,4 @@
-import { mdiContentSaveAll, mdiSortAscending, mdiSortDescending, mdiUndo } from '@mdi/js';
+import { mdiContentSaveAll, mdiLoading, mdiSortAscending, mdiSortDescending, mdiUndo } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import PageStudentGroupFilter from '@tdev-components/shared/PageStudentGroupFilter';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
@@ -90,7 +90,7 @@ const CmsTextEditor = observer((props: Props) => {
                 />
                 <Button
                     text={`Alle speichern (${docsWithDraft.length})`}
-                    icon={mdiContentSaveAll}
+                    icon={isSavingAll ? mdiLoading : mdiContentSaveAll}
                     color="primary"
                     onClick={handleSaveAll}
                     disabled={!hasDrafts || isSavingAll}

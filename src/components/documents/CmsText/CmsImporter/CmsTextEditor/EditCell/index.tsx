@@ -1,4 +1,4 @@
-import { mdiContentSave, mdiUndo } from '@mdi/js';
+import { mdiContentSave, mdiLoading, mdiUndo } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useComputed } from '@tdev-hooks/useComputed';
@@ -48,7 +48,7 @@ const EditCell = observer((props: Props) => {
                 {doc.hasDraft && (
                     <div className={clsx(styles.actions)}>
                         <Button
-                            icon={mdiContentSave}
+                            icon={doc.isSaving ? mdiLoading : mdiContentSave}
                             title="Speichern"
                             color="green"
                             size={SIZE_S}

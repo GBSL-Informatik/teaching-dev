@@ -1,4 +1,4 @@
-import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiPencil } from '@mdi/js';
+import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiLoading, mdiPencil } from '@mdi/js';
 import Loader from '@tdev-components/Loader';
 import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
 import Badge from '@tdev-components/shared/Badge';
@@ -214,6 +214,7 @@ const CmsImporter = observer((props: Props) => {
                                 }}
                                 color="primary"
                                 disabled={assigned.length === 0 || !ready || isImporting}
+                                icon={!ready || isImporting ? mdiLoading : undefined}
                                 spin={!ready || isImporting}
                             />
                         </div>

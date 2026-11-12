@@ -1,4 +1,4 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiLoading, mdiPlus } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useStore } from '@tdev-hooks/useStore';
@@ -26,7 +26,7 @@ const CreateCell = (props: Props) => {
     return (
         <td className={clsx(styles.cell)}>
             <Button
-                icon={mdiPlus}
+                icon={isCreating ? mdiLoading : mdiPlus}
                 title="CMS Text erstellen"
                 color="blue"
                 size={SIZE_S}
