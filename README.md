@@ -9,7 +9,7 @@ Diese Seite basiert auf [Docusaurus](https://docusaurus.io/), einem modernen sta
 The tdev docs are located in the `tdev-website` folder. To start a local development server, run:
 
 ```bash
-SITE_CONFIG_PATH="tdev-website/siteConfig.ts" yarn start
+SITE_CONFIG_PATH="tdev-website/siteConfig.ts" pnpm start
 ```
 
 or add the `SITE_CONFIG_PATH` to your `.env` file.
@@ -36,7 +36,7 @@ or add the `SITE_CONFIG_PATH` to your `.env` file.
 To upgrade docusaurus, run:
 
 ```bash
-yarn upgrade @docusaurus/core@latest @docusaurus/faster@latest @docusaurus/preset-classic@latest @docusaurus/theme-classic@latest @docusaurus/theme-common@latest @docusaurus/module-type-aliases@latest @docusaurus/plugin-rsdoctor@latest @docusaurus/tsconfig@latest @docusaurus/types@latest @docusaurus/theme-mermaid@latest
+pnpm update @docusaurus/core@latest @docusaurus/bundler@latest @docusaurus/glob@latest @docusaurus/logger@latest @docusaurus/plugin-content-blog@latest @docusaurus/plugin-content-docs@latest @docusaurus/plugin-content-pages@latest @docusaurus/preset-classic@latest @docusaurus/theme-classic@latest @docusaurus/theme-common@latest @docusaurus/theme-mermaid@latest @docusaurus/utils-validation@latest @docusaurus/module-type-aliases@latest @docusaurus/plugin-rsdoctor@latest @docusaurus/tsconfig@latest @docusaurus/types@latest
 ```
 
 ### VS-Code Setup
@@ -45,7 +45,7 @@ yarn upgrade @docusaurus/core@latest @docusaurus/faster@latest @docusaurus/prese
 ## Upgrade tdev
 After detatching a fork of teaching-dev, it will be necessary to periodically update the core framework.
 
-To update to the lastest version of teaching-dev, run `yarn updateTdev` in the local repository (i.e. the detached fork). Afterwards, check the log for changes to non-tracked files and installable / upgradeable packages.
+To update to the lastest version of teaching-dev, run `pnpm updateTdev` in the local repository (i.e. the detached fork). Afterwards, check the log for changes to non-tracked files and installable / upgradeable packages.
 
 The update behavior can be customized by editing `updateTdev.config.yaml`. The following excerpt explains how the update behavior is configured:
 ```yaml

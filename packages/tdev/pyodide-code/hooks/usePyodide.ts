@@ -1,4 +1,4 @@
-import { type PyodideAPI } from 'pyodide';
+import type { PyodideAPI } from 'pyodide';
 import React from 'react';
 import { loadPyodide } from '../loadPyodide';
 

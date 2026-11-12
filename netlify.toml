@@ -1,0 +1,5 @@
+# Overrides the build settings of the Netlify UI.
+# Node.js is taken from `.nvmrc`, pnpm from the `packageManager` field in `package.json`.
+[build]
+    command = "pnpm build"
+    publish = "build"

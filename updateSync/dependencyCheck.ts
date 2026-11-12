@@ -96,18 +96,18 @@ export const calculateDependenciesDiff = (
         reportBuilder.appendLine('\n⚠️  The following additional packages should be installed:');
         depsDiff.installable.length > 0 &&
             reportBuilder.appendLine(
-                `yarn add -W ${depsDiff.installable.map((entry) => `${entry.packageName}@${entry.version}`).join(' ')}`
+                `pnpm add -w ${depsDiff.installable.map((entry) => `${entry.packageName}@${entry.version}`).join(' ')}`
             );
         devDepsDiff.installable.length > 0 &&
             reportBuilder.appendLine(
-                `yarn add -W -D ${devDepsDiff.installable.map((entry) => `${entry.packageName}@${entry.version}`).join(' ')}`
+                `pnpm add -w -D ${devDepsDiff.installable.map((entry) => `${entry.packageName}@${entry.version}`).join(' ')}`
             );
     }
 
     if (depsDiff.upgradeable.length + devDepsDiff.upgradeable.length > 0) {
         reportBuilder.appendLine('\n⬆️  The following packages can be upgraded:');
         reportBuilder.appendLine(
-            `yarn upgrade ${depsDiff.upgradeable
+            `pnpm update ${depsDiff.upgradeable
                 .concat(devDepsDiff.upgradeable)
                 .map((entry) => `${entry.packageName}@${entry.to}`)
                 .join(' ')}`
@@ -117,7 +117,7 @@ export const calculateDependenciesDiff = (
     if (depsDiff.downgradeable.length + devDepsDiff.downgradeable.length > 0) {
         reportBuilder.appendLine('\n⬇️  Consider downgrading the following packages to match teaching-dev:');
         reportBuilder.appendLine(
-            `yarn upgrade ${depsDiff.downgradeable
+            `pnpm update ${depsDiff.downgradeable
                 .concat(devDepsDiff.downgradeable)
                 .map((entry) => `${entry.packageName}@${entry.to}`)
                 .join(' ')}`

@@ -17,13 +17,13 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn run add [source] [[--to="v1,v2"]] [[--as="destination-name"]] [[--ignore="file1,file2"]]
+pnpm run add [source] [[--to="v1,v2"]] [[--as="destination-name"]] [[--ignore="file1,file2"]]
 
 examples:
 
-yarn run add docs/byod-basics/v24/ --to="24a,24b"   // --> adds /byod-basics/v24 to 24a & 24b
-yarn run add docs/byod-basics/v24/ --to="24a,24b" --as="My-Material" // --> adds /byod-basics to 24a & 24b
-yarn run add docs/byod-basics/v24/ --to="24a,24b" --as="My-Material" --ignore="_category_.json,*.txt"
+pnpm run add docs/byod-basics/v24/ --to="24a,24b"   // --> adds /byod-basics/v24 to 24a & 24b
+pnpm run add docs/byod-basics/v24/ --to="24a,24b" --as="My-Material" // --> adds /byod-basics to 24a & 24b
+pnpm run add docs/byod-basics/v24/ --to="24a,24b" --as="My-Material" --ignore="_category_.json,*.txt"
 `);
     exit(0);
 }

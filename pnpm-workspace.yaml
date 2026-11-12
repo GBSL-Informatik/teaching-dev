@@ -1,0 +1,23 @@
+packages:
+    - 'packages/**'
+
+# Workspace packages are resolved by name from the site root (e.g. `require.resolve('@tdev/excalidoc/register')`)
+publicHoistPattern:
+    - '@tdev/*'
+    - '@hfr/*'
+
+# Peer dependencies of the workspace packages (e.g. `@tdev/core`, `mobx`) are provided by the site root.
+# Installing them per package would duplicate them or, for `@tdev/core`, link the root into itself.
+autoInstallPeers: false
+
+# Docusaurus canary releases are published nightly
+minimumReleaseAgeExclude:
+    - '@docusaurus/*'
+    - serve-handler@6.1.8
+
+allowBuilds:
+    '@parcel/watcher': true
+    '@sentry/cli': true
+    canvas: false
+    es5-ext: false
+    esbuild: true

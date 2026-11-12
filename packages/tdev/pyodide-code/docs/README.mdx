@@ -301,7 +301,7 @@ import pyodideSW from '!!raw-loader!@site/static/pyodide.sw.js';
 Danach muss erneut installiert werden:
 
 ```bash
-yarn install
+pnpm install
 ```
 
 ## Pyodide-Version konfigurieren
@@ -315,10 +315,10 @@ und konfiguriert den für Pyodide erforderlichen Modul-Worker.
 Zum Aktualisieren auf eine neue stabile Version:
 
 ```bash
-yarn workspace @tdev/pyodide-code add pyodide@<version> --exact
+pnpm --filter @tdev/pyodide-code add pyodide@<version> --save-exact
 ```
 
-Die geänderten Dateien `package.json` und `yarn.lock` müssen gemeinsam übernommen werden.
+Die geänderten Dateien `package.json` und `pnpm-lock.yaml` müssen gemeinsam übernommen werden.
 
 ### Docusaurus- und Rspack-Updates prüfen
 

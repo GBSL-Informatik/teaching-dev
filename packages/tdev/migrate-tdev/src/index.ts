@@ -12,7 +12,7 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]]
+pnpm --filter @tdev/migrate-tdev run migrate [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]]
 
     --only: Comma-separated list of tdev pages to migrate (pages including the specified name in the path)
     --skip: Comma-separated list of tdev pages to skip (pages *not* including the specified name in the path)
@@ -21,11 +21,11 @@ yarn workspace @tdev/migrate-tdev migrate [[--only="inf-abc,inf-ccd"]] [[--skip=
 
 examples:
 
-yarn workspace @tdev/migrate-tdev migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
-yarn workspace @tdev/migrate-tdev migrate --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
-yarn workspace @tdev/migrate-tdev migrate --only="inf-"                # --> migrates only pages with "inf-" in the path
-yarn workspace @tdev/migrate-tdev migrate --skip="inf-abc,inf-ccd"     # --> migrates all except inf-abc and inf-ccd
-yarn workspace @tdev/migrate-tdev migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
+pnpm --filter @tdev/migrate-tdev run migrate                              # --> migrates all tdev pages listed in migrateTdev.config.yaml
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-abc,inf-ccd"     # --> migrates only inf-abc and inf-ccd
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-"                # --> migrates only pages with "inf-" in the path
+pnpm --filter @tdev/migrate-tdev run migrate --skip="inf-abc,inf-ccd"     # --> migrates all except inf-abc and inf-ccd
+pnpm --filter @tdev/migrate-tdev run migrate --only="inf-" --done         # --> forces renaming of migration file to .done.ts after successful migration
 `);
     process.exit(0);
 }

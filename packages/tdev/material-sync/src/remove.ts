@@ -19,11 +19,11 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn run remove [source] [[--from="v1,v2"]]
+pnpm run remove [source] [[--from="v1,v2"]]
 
 examples:
 
-yarn run remove docs/byod-basics/v24/ --from="24a,24b"
+pnpm run remove docs/byod-basics/v24/ --from="24a,24b"
 `);
     process.exit(0);
 }

@@ -12,7 +12,7 @@ const argv = minimist(process.argv.slice(2));
 
 if (argv.help) {
     console.log(`
-yarn workspace @tdev/migrate-tdev runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]]
+pnpm --filter @tdev/migrate-tdev run runAction <action-name> [[--only="inf-abc,inf-ccd"]] [[--skip="inf-abc,inf-ccd"]] [[--branch="branch-name"]]
 
     --only: Comma-separated list of tdev pages to migrate (pages including the specified name in the path)
     --skip: Comma-separated list of tdev pages to skip (pages *not* including the specified name in the path)
@@ -20,11 +20,11 @@ yarn workspace @tdev/migrate-tdev runAction <action-name> [[--only="inf-abc,inf-
 
 examples:
 
-yarn workspace @tdev/migrate-tdev runAction format                              # --> runs the action actions/format.action.ts for all tdev pages listed in migrateTdev.config.yaml
-yarn workspace @tdev/migrate-tdev runAction format --only="inf-abc,inf-ccd"     # --> runs the action actions/format.action.ts for only inf-abc and inf-ccd
-yarn workspace @tdev/migrate-tdev runAction format --only="inf-"                # --> runs the action actions/format.action.ts for only pages with "inf-" in the path
-yarn workspace @tdev/migrate-tdev runAction format --skip="inf-abc,inf-ccd"     # --> runs the action actions/format.action.ts for all except inf-abc and inf-ccd
-yarn workspace @tdev/migrate-tdev runAction format --branch="feature-branch"    # --> checks out the feature-branch and pulls the latest changes before running the action
+pnpm --filter @tdev/migrate-tdev run runAction format                              # --> runs the action actions/format.action.ts for all tdev pages listed in migrateTdev.config.yaml
+pnpm --filter @tdev/migrate-tdev run runAction format --only="inf-abc,inf-ccd"     # --> runs the action actions/format.action.ts for only inf-abc and inf-ccd
+pnpm --filter @tdev/migrate-tdev run runAction format --only="inf-"                # --> runs the action actions/format.action.ts for only pages with "inf-" in the path
+pnpm --filter @tdev/migrate-tdev run runAction format --skip="inf-abc,inf-ccd"     # --> runs the action actions/format.action.ts for all except inf-abc and inf-ccd
+pnpm --filter @tdev/migrate-tdev run runAction format --branch="feature-branch"    # --> checks out the feature-branch and pulls the latest changes before running the action
 `);
     process.exit(0);
 }
