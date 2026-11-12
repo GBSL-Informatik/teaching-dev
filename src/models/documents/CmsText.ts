@@ -66,4 +66,37 @@ class CmsText extends iDocument<'cms_text'> {
     }
 }
 
+export const findMainCmsText = (documentStore: DocumentStore, documentRootId: string, userId: string) => {
+    const documentRoot = documentStore.root.documentRootStore.find(documentRootId);
+    return documentRoot?.allDocuments.find((doc) => doc.isMain && doc.authorId === userId) as
+        CmsText | undefined;
+};
+
+/**
+ * Updates the user's main cms text of the document root or creates it, when it does not exist yet.
+ */
+export const saveCmsText = async (
+    documentStore: DocumentStore,
+    documentRootId: string,
+    userId: string,
+    text: string
+) => {
+    const doc = findMainCmsText(documentStore, documentRootId, userId);
+    if (!doc) {
+        await documentStore.create({
+            type: 'cms_text',
+            authorId: userId,
+            documentRootId: documentRootId,
+            uniqOnRoot: 'main',
+            data: { text: text }
+        });
+        return;
+    }
+    if (doc.text === text) {
+        return;
+    }
+    doc.setData({ text: text }, Source.LOCAL);
+    await doc.saveNow();
+};
+
 export default CmsText;

@@ -3,8 +3,7 @@ import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/Assi
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
-import CmsText from '@tdev-models/documents/CmsText';
-import { Source } from '@tdev-models/iDocument';
+import { saveCmsText } from '@tdev-models/documents/CmsText';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
 import clsx from 'clsx';
@@ -29,34 +28,10 @@ const createCmsTexts = async (
     table: string[][],
     assignments: AssignedColumn[]
 ) => {
-    const { documentRootStore } = documentStore.root;
-
     for (const assignment of assignments) {
-        const documentRoot = documentRootStore.find(assignment.id);
-        if (!documentRoot) {
-            continue;
-        }
-
         for (const row of table) {
             const userId = row[0];
-            const doc = documentRoot.allDocuments.find((d) => d.isMain && d.authorId === userId) as CmsText;
-
-            if (doc) {
-                // update the document with the new text when needed
-                if (doc.text !== row[assignment.idx]) {
-                    doc.setData({ text: row[assignment.idx] }, Source.LOCAL);
-                    await doc.saveNow();
-                }
-            } else {
-                // create a new document with the text
-                await documentStore.create({
-                    type: 'cms_text',
-                    authorId: userId,
-                    documentRootId: assignment.id,
-                    uniqOnRoot: 'main',
-                    data: { text: row[assignment.idx] }
-                });
-            }
+            await saveCmsText(documentStore, assignment.id, userId, row[assignment.idx]);
         }
     }
 };
