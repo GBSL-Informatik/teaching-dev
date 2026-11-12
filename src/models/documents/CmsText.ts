@@ -2,6 +2,7 @@ import { Document as DocumentProps, TypeDataMapping } from '@tdev-api/document';
 import { TypeMeta } from '@tdev-models/DocumentRoot';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import DocumentStore from '@tdev-stores/DocumentStore';
+import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable } from 'mobx';
 
 export interface MetaInit {
@@ -27,6 +28,11 @@ export class CmsTextMeta extends TypeMeta<'cms_text'> {
 
 class CmsText extends iDocument<'cms_text'> {
     @observable accessor text: string;
+    /**
+     * Unsaved edit of the text. It is kept until it is saved or discarded,
+     * also when the editing ui is closed.
+     */
+    @observable accessor draft: string | undefined = undefined;
     constructor(props: DocumentProps<'cms_text'>, store: DocumentStore) {
         super(props, store);
         this.text = props.data?.text || '';
@@ -41,6 +47,42 @@ class CmsText extends iDocument<'cms_text'> {
         if (updatedAt) {
             this.updatedAt = new Date(updatedAt);
         }
+    }
+
+    @computed
+    get hasDraft() {
+        return this.draft !== undefined;
+    }
+
+    @computed
+    get isSaving() {
+        return this.state === ApiState.SYNCING;
+    }
+
+    @action
+    setDraft(text: string) {
+        this.draft = text === this.text ? undefined : text;
+    }
+
+    @action
+    discardDraft() {
+        this.draft = undefined;
+    }
+
+    /**
+     * @returns whether the draft was saved successfully
+     */
+    async saveDraft(): Promise<boolean> {
+        const text = this.draft;
+        if (text === undefined || this.isSaving) {
+            return false;
+        }
+        this.setData({ text: text }, Source.LOCAL);
+        const isSaved = !!(await this.saveNow());
+        if (isSaved) {
+            this.clearDraftIfUnchanged(text);
+        }
+        return isSaved;
     }
 
     get data(): TypeDataMapping['cms_text'] {
@@ -64,12 +106,45 @@ class CmsText extends iDocument<'cms_text'> {
     get canEdit(): boolean {
         return !!this.store.root.userStore.current?.hasElevatedAccess;
     }
+
+    /**
+     * The draft may have been edited while it was being saved: keep those edits.
+     */
+    @action
+    private clearDraftIfUnchanged(savedText: string) {
+        if (this.draft !== savedText) {
+            return;
+        }
+        this.draft = undefined;
+    }
 }
 
 export const findMainCmsText = (documentStore: DocumentStore, documentRootId: string, userId: string) => {
     const documentRoot = documentStore.root.documentRootStore.find(documentRootId);
     return documentRoot?.allDocuments.find((doc) => doc.isMain && doc.authorId === userId) as
         CmsText | undefined;
+};
+
+export const findCmsTextsWithDraft = (documentStore: DocumentStore, documentRootIds: string[]) => {
+    return documentRootIds
+        .flatMap((documentRootId) => documentStore.findByDocumentRoot(documentRootId))
+        .filter((doc): doc is CmsText => doc instanceof CmsText && doc.hasDraft);
+};
+
+export const createCmsText = async (
+    documentStore: DocumentStore,
+    documentRootId: string,
+    userId: string,
+    text: string
+) => {
+    const created = await documentStore.create({
+        type: 'cms_text',
+        authorId: userId,
+        documentRootId: documentRootId,
+        uniqOnRoot: 'main',
+        data: { text: text }
+    });
+    return !!created;
 };
 
 /**
@@ -84,14 +159,7 @@ export const saveCmsText = async (
 ): Promise<boolean> => {
     const doc = findMainCmsText(documentStore, documentRootId, userId);
     if (!doc) {
-        const created = await documentStore.create({
-            type: 'cms_text',
-            authorId: userId,
-            documentRootId: documentRootId,
-            uniqOnRoot: 'main',
-            data: { text: text }
-        });
-        return !!created;
+        return createCmsText(documentStore, documentRootId, userId, text);
     }
     const isAlreadySaved = doc.text === text && !doc.isDirty;
     if (isAlreadySaved) {
