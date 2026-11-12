@@ -1,4 +1,5 @@
 import { RestEndpointMethodTypes as GhTypes, Octokit } from '@octokit/rest';
+import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
 import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, IObservableArray, observable, observableRef } from 'mobx';
 import { CmsStore } from '../stores/CmsStore';
@@ -594,10 +595,28 @@ class Github {
                             // file created
                             const file = Github.NewFileModel(resContent, binContent, this.store);
                             this._addFileEntry(branch, file);
+                            if (!file.dir) {
+                                this._fetchCreatedDirectories(file);
+                            }
                             return file;
                     }
                 })
             );
+    }
+
+    /**
+     * Loads the folders created together with a file, e.g. `foo` of a new file `foo/bar.png`,
+     * and opens them to show the file.
+     */
+    @action
+    _fetchCreatedDirectories(file: FileModel | BinFile | FileStub) {
+        const ancestors = file.tree.slice(0, -1);
+        const closestDir = ancestors.filter((entry) => !!entry).pop() as Dir;
+        // `fetchDirectoryTree` only loads the content of the new folders: the first new folder
+        // itself is part of the content of the closest existing folder
+        return this.fetchDirectory(file.branch, trimSlashes(closestDir.path))
+            .then(() => this.fetchDirectoryTree(file, true))
+            .catch((err) => console.error('Error fetching the new folders of', file.path, err));
     }
 
     @action
