@@ -76,14 +76,14 @@ const createHandle = () => {
     const handle = document.createElement('div');
     handle.className = 'cms-drag-handle';
     handle.draggable = true;
-    handle.title = 'Ziehen, um den Block zu verschieben';
+    handle.title = 'Ziehen, um den Block zu verschieben, klicken, um ihn auszuwählen';
     handle.innerHTML = `<svg viewBox="0 0 24 24"><path d="${mdiDragVertical}" /></svg>`;
     return handle;
 };
 
 /**
  * Shows a grab handle left of the hovered block. Dragging the handle moves the block,
- * using the drag and drop handling of ProseMirror (drop cursor, undo).
+ * using the drag and drop handling of ProseMirror (drop cursor, undo). Clicking it selects the block.
  */
 class DragHandleView implements PluginView {
     private readonly view: EditorView;
@@ -98,6 +98,7 @@ class DragHandleView implements PluginView {
         container.addEventListener('mouseleave', this.hide);
         this.handle.addEventListener('dragstart', this.handleDragStart);
         this.handle.addEventListener('dragend', this.handleDragEnd);
+        this.handle.addEventListener('click', this.handleClick);
     }
 
     update(view: EditorView, previous: { doc: Node }) {
@@ -173,6 +174,20 @@ class DragHandleView implements PluginView {
         event.dataTransfer.effectAllowed = 'copyMove';
         event.dataTransfer.setDragImage(this.block!.dom, 0, 0);
         startDragging(view, slice, node);
+    };
+
+    /**
+     * Selects the block, e.g. to copy, cut or delete it with the keyboard. ProseMirror gets the focus,
+     * also from a code block edited before. `click` is not fired after a drag.
+     */
+    private handleClick = () => {
+        const pos = this.block?.pos;
+        if (pos === undefined) {
+            return;
+        }
+        const { view } = this;
+        view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos)));
+        view.focus();
     };
 
     private handleDragEnd = () => {
