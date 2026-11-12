@@ -1,4 +1,3 @@
-import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import { action, observable } from 'mobx';
 import { type CmsLocation, SITE_REPOSITORY } from '../../models/cmsLocation';
 import { DEFAULT_BRANCH, type Visit, VisitDb } from './visitDb';
@@ -91,10 +90,6 @@ export class VisitStore {
     }
 
     private load() {
-        // the server renders the loader, like the browser does while hydrating, see `CmsRoute`
-        if (!ExecutionEnvironment.canUseDOM) {
-            return;
-        }
         this.db
             .getAll()
             .then(
