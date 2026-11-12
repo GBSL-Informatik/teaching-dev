@@ -1,0 +1,18 @@
+.editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ifm-paragraph-margin-bottom);
+    .tableWrapper {
+        max-height: 60vh;
+        overflow: auto;
+        .table {
+            display: table;
+            width: 100%;
+            margin-bottom: 0;
+            .name {
+                white-space: nowrap;
+                vertical-align: top;
+            }
+        }
+    }
+}

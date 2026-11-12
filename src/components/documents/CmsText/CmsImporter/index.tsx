@@ -1,8 +1,10 @@
-import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel } from '@mdi/js';
+import { mdiCodeBlockBraces, mdiDatabaseImport, mdiFileExcel, mdiPencil } from '@mdi/js';
+import Loader from '@tdev-components/Loader';
 import AssignColumns, { type AssignedColumn } from '@tdev-components/shared/AssignColumns';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
 import { useStore } from '@tdev-hooks/useStore';
+import CmsTextDrafts from '@tdev-models/CmsTextDrafts';
 import { saveCmsText } from '@tdev-models/documents/CmsText';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { ApiState } from '@tdev-stores/iStore';
@@ -12,6 +14,7 @@ import React from 'react';
 import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
 import { CmsTextEntries } from '../WithCmsText';
+import CmsTextEditor from './CmsTextEditor';
 import CodeImport from './CodeImport';
 import ImportPreview from './ImportPreview';
 import styles from './styles.module.scss';
@@ -50,7 +53,8 @@ const CmsImporter = observer((props: Props) => {
     const ref = React.useRef<PopupActions>(null);
     const userStore = useStore('userStore');
     const documentStore = useStore('documentStore');
-    const [mode, setMode] = React.useState<'xlsx' | 'code'>(props.mode || 'xlsx');
+    const [mode, setMode] = React.useState<'xlsx' | 'code' | 'edit'>(props.mode || 'xlsx');
+    const [drafts] = React.useState(() => new CmsTextDrafts(documentStore));
     const [table, setTable] = React.useState<string[][]>([]);
     const [assigned, setAssigned] = React.useState<AssignedColumn[]>([]);
     const [ready, setReady] = React.useState(false);
@@ -58,6 +62,7 @@ const CmsImporter = observer((props: Props) => {
     const reset = () => {
         setTable([]);
         setAssigned([]);
+        drafts.discardAll();
     };
     const closeTooltip = () => {
         (ref.current as any)?.close();
@@ -140,15 +145,35 @@ const CmsImporter = observer((props: Props) => {
                                     active={mode === 'code'}
                                     color="blue"
                                 />
+                                <Button
+                                    icon={mdiPencil}
+                                    text={'Bearbeiten'}
+                                    onClick={() => {
+                                        setMode('edit');
+                                    }}
+                                    active={mode === 'edit'}
+                                    color="orange"
+                                />
                             </div>
-                            {mode === 'xlsx' ? (
+                            {mode === 'edit' &&
+                                (ready ? (
+                                    <CmsTextEditor
+                                        drafts={drafts}
+                                        cmsAssignments={cmsAssignments}
+                                        monospace={props.mode === 'code'}
+                                    />
+                                ) : (
+                                    <Loader />
+                                ))}
+                            {mode === 'xlsx' && (
                                 <XlsxImport
                                     onDone={(data) => {
                                         setTable(data);
                                     }}
                                     onClose={closeTooltip}
                                 />
-                            ) : (
+                            )}
+                            {mode === 'code' && (
                                 <CodeImport
                                     onDone={(data) => {
                                         setTable(data);

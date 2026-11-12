@@ -1,0 +1,28 @@
+.cell {
+    vertical-align: top;
+    min-width: 15em;
+    &.dirty {
+        background-color: var(--ifm-color-warning-contrast-background);
+    }
+    .input {
+        width: 100%;
+        padding: 0.2em 0.4em;
+        resize: vertical;
+        border: 1px solid var(--ifm-color-gray-500);
+        border-radius: var(--ifm-global-radius);
+        font-family: inherit;
+        font-size: var(--ifm-font-size-base);
+        &:focus {
+            border-color: var(--ifm-link-hover-color);
+            outline: none;
+        }
+        &.monospace {
+            font-family: var(--ifm-font-family-monospace);
+        }
+    }
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.2em;
+    }
+}
