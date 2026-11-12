@@ -639,10 +639,12 @@ class Github {
     _fetchIntoTree(branch: string, path: string) {
         const entry = FileStub.DummyFile(path, branch, this.store);
         const ancestors = entry.tree.slice(0, -1);
-        const closestDir = ancestors.filter((ancestor) => !!ancestor).pop() as Dir;
+        // the root, when no folder of the branch is loaded yet
+        const closestDir = ancestors.filter((ancestor) => !!ancestor).pop();
+        const closestPath = closestDir ? trimSlashes(closestDir.path) : '';
         // `fetchDirectoryTree` only loads the content of the new folders: the entry, or the first
         // new folder, is part of the content of the closest existing folder
-        return this.fetchDirectory(branch, trimSlashes(closestDir.path))
+        return this.fetchDirectory(branch, closestPath)
             .then(() => this.fetchDirectoryTree(entry, true))
             .catch((err) => console.error('Error fetching', path, err));
     }
