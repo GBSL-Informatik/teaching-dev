@@ -122,8 +122,7 @@ class CmsText extends iDocument<'cms_text'> {
 
 export const findMainCmsText = (documentStore: DocumentStore, documentRootId: string, userId: string) => {
     const documentRoot = documentStore.root.documentRootStore.find(documentRootId);
-    return documentRoot?.allDocuments.find((doc) => doc.isMain && doc.authorId === userId) as
-        CmsText | undefined;
+    return documentRoot?.allMainDocuments.find((doc) => doc.authorId === userId) as CmsText | undefined;
 };
 
 export const createCmsText = async (

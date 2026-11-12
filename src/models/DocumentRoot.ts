@@ -226,6 +226,14 @@ class DocumentRoot<T extends DocumentType> {
     }
 
     /**
+     * The main documents of all authors, see #allDocuments for the access restrictions.
+     */
+    @computed
+    get allMainDocuments(): TypeModelMapping[T][] {
+        return this.allDocuments.filter((d) => d.isMain) as TypeModelMapping[T][];
+    }
+
+    /**
      * TODO: replace this placeholder to the currently viewed user
      * @default: should return the current viewed user id
      *      --> this is for users the current user id
