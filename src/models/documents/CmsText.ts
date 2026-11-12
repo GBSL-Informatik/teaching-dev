@@ -74,29 +74,31 @@ export const findMainCmsText = (documentStore: DocumentStore, documentRootId: st
 
 /**
  * Updates the user's main cms text of the document root or creates it, when it does not exist yet.
+ * @returns whether the text was saved successfully
  */
 export const saveCmsText = async (
     documentStore: DocumentStore,
     documentRootId: string,
     userId: string,
     text: string
-) => {
+): Promise<boolean> => {
     const doc = findMainCmsText(documentStore, documentRootId, userId);
     if (!doc) {
-        await documentStore.create({
+        const created = await documentStore.create({
             type: 'cms_text',
             authorId: userId,
             documentRootId: documentRootId,
             uniqOnRoot: 'main',
             data: { text: text }
         });
-        return;
+        return !!created;
     }
-    if (doc.text === text) {
-        return;
+    const isAlreadySaved = doc.text === text && !doc.isDirty;
+    if (isAlreadySaved) {
+        return true;
     }
     doc.setData({ text: text }, Source.LOCAL);
-    await doc.saveNow();
+    return !!(await doc.saveNow());
 };
 
 export default CmsText;
