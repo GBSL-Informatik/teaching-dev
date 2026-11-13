@@ -85,10 +85,8 @@ const jsx = (name: string, attributes: JsxAttribute[], children?: Node[]) => {
     return createNode(nodes.jsx_flow, { name, attributes }, children);
 };
 
-const orderedList = (items: string[]) => {
-    const listItems = items.map((item) => createNode(nodes.list_item, null, paragraph(item)));
-    return createNode(nodes.ordered_list, null, listItems);
-};
+const emptyOrderedList = () =>
+    createNode(nodes.ordered_list, null, createNode(nodes.list_item, null, paragraph()));
 
 const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: uuidv4() });
 
@@ -237,14 +235,14 @@ const COMPONENTS: MenuItem[] = [
         label: 'Schritte',
         keywords: ['steps', 'anleitung'],
         icon: mdiFormatListNumbered,
-        create: () => jsx('Steps', [], [orderedList(['Schritt 1', 'Schritt 2'])]),
+        create: () => jsx('Steps', [], [emptyOrderedList()]),
         requiredImport: { name: 'Steps', source: '@tdev-components/Steps' }
     },
     {
         label: 'Fortschritt',
         keywords: ['progressstate', 'schritte'],
         icon: mdiTimelineCheckOutline,
-        create: () => jsx('ProgressState', [idAttribute()], [orderedList(['Schritt 1', 'Schritt 2'])]),
+        create: () => jsx('ProgressState', [idAttribute()], [emptyOrderedList()]),
         requiredImport: { name: 'ProgressState', source: '@tdev-components/documents/ProgressState' }
     },
     {
