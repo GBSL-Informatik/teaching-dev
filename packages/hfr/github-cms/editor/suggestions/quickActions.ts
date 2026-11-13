@@ -14,6 +14,7 @@ import { schema } from '../schema';
 import { ADMONITION_ITEMS, INSERT_ITEMS, insertCommand, type MenuItem } from '../Toolbar/insertItems';
 import { fuzzyFilter } from './fuzzyScore';
 import { newDrawingActions } from './newDrawing';
+import { QUICK_ACTION_PATTERN } from './quickActionPattern';
 import type { Suggestion, SuggestionSource } from './types';
 
 const { nodes } = schema;
@@ -89,7 +90,7 @@ const QUICK_ACTIONS: QuickAction[] = [
 export const quickActionSource = (document: MdxDocument): SuggestionSource => {
     const actions = [...QUICK_ACTIONS, ...newDrawingActions(document)];
     return {
-        pattern: /(?<=^|\s)\/([^\s/]{0,30})$/,
+        pattern: QUICK_ACTION_PATTERN,
         suggestions: (state: EditorState, query: string) => {
             const matching = fuzzyFilter(actions, query, (action) => [action.label, ...action.keywords]);
             return matching.filter((action) => action.command(state));
