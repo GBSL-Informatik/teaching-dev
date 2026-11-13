@@ -26,6 +26,7 @@ import { imageFiles } from './imageFiles';
 import { enterAtEndOfIsolatingNode, leaveIsolatingNode } from './isolatingNodes';
 import { arrowOutOfCode, leaveCode } from './leaveCode';
 import { markInputRules } from './markInputRules';
+import { rawSelection } from './rawSelection';
 import { suggestionMenu } from './suggestionMenu';
 import { uuidMarker } from './uuidMarker';
 
@@ -118,6 +119,7 @@ export const createPlugins = (document: MdxDocument): Plugin[] => [
     dropTargets(),
     uuidMarker(),
     leaveCode(),
+    rawSelection(),
     deflist(),
     tableEditing()
 ];

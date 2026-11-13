@@ -189,12 +189,12 @@
             border-radius: 0;
         }
 
-        /* inline mdx, distinct from inline code, with a left border like the jsx blocks */
+        /* inline mdx, distinct from inline code; a click on the left border selects it, see `plugins/rawSelection.ts` */
         .cms-raw-inline {
             color: var(--ifm-color-warning-contrast-foreground);
             background: var(--ifm-color-warning-contrast-background);
             border-color: var(--ifm-color-warning-light);
-            border-left: 3px solid var(--ifm-color-warning);
+            border-left: 6px solid var(--ifm-color-warning);
         }
 
         .cms-jsx {
