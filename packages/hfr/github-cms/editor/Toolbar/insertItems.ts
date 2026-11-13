@@ -19,6 +19,7 @@ import {
     mdiTab,
     mdiTable,
     mdiTabPlus,
+    mdiTimelineCheckOutline,
     mdiViewColumnOutline,
     mdiViewGridOutline,
     mdiXml
@@ -238,6 +239,13 @@ const COMPONENTS: MenuItem[] = [
         icon: mdiFormatListNumbered,
         create: () => jsx('Steps', [], [orderedList(['Schritt 1', 'Schritt 2'])]),
         requiredImport: { name: 'Steps', source: '@tdev-components/Steps' }
+    },
+    {
+        label: 'Fortschritt',
+        keywords: ['progressstate', 'schritte'],
+        icon: mdiTimelineCheckOutline,
+        create: () => jsx('ProgressState', [idAttribute()], [orderedList(['Schritt 1', 'Schritt 2'])]),
+        requiredImport: { name: 'ProgressState', source: '@tdev-components/documents/ProgressState' }
     },
     {
         label: 'Unterseiten (Karten)',

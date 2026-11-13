@@ -47,9 +47,11 @@ export const jsxFlowClassName = (node: Node) => {
     return 'cms-jsx';
 };
 
-/** the list of `<Steps>` is numbered like on the rendered page */
+const STEPS_COMPONENTS = ['Steps', 'ProgressState'];
+
+/** numbered like `<Steps>` on the page, `<ProgressState>` too: all its steps are shown expanded */
 export const jsxFlowContent = (node: Node) => {
-    if (node.attrs.name === 'Steps') {
+    if (STEPS_COMPONENTS.includes(node.attrs.name)) {
         return { className: stepsStyles.steps };
     }
     return {};
