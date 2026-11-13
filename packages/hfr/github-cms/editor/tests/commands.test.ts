@@ -2,7 +2,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import type { Node } from 'prosemirror-model';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
-import { toggleMarkOnWord, withoutSpacesAtCursor } from '../commands';
+import { insertInlineMdx, toggleMarkOnWord, withoutSpacesAtCursor } from '../commands';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import { schema } from '../schema';
 
@@ -83,5 +83,27 @@ describe('toggleMarkOnWord', () => {
         });
         expect(serializeMarkdown(next.doc)).toBe('one  two\n');
         expect(next.storedMarks?.map((mark) => mark.type.name)).toEqual(['emphasis']);
+    });
+});
+
+describe('insertInlineMdx', () => {
+    /** inserts inline mdx after the first occurrence of `before` and types `typed` over the placeholder */
+    const insertAndTypeAt = (source: string, before: string, typed: string) => {
+        const { doc } = parseMarkdown(source);
+        const cursor = 1 + doc.textContent.indexOf(before) + before.length;
+        let state = EditorState.create({ doc, selection: TextSelection.create(doc, cursor) });
+        insertInlineMdx(state, (tr) => {
+            state = state.apply(tr);
+        });
+        state = state.apply(state.tr.insertText(typed));
+        return serializeMarkdown(state.doc);
+    };
+
+    it('inserts a span written as is, with the placeholder replaced by the typed text', () => {
+        expect(insertAndTypeAt('one two\n', 'one ', '*a*')).toBe('one <span>*a*</span>two\n');
+    });
+
+    it('replaces inline code at the cursor', () => {
+        expect(insertAndTypeAt('one `code` two\n', 'one co', 'x')).toBe('one `co`<span>x</span>`de` two\n');
     });
 });

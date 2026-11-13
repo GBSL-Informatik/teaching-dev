@@ -91,7 +91,7 @@ Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 : Folgt auf eine Direktive, eine Komponente oder eine Tabelle ein Block ohne Text (z.B. ein Code-Block), gibt es dazwischen keine Cursor-Position. [[Ctrl]] + [[Enter]] am Ende ihres Inhalts fügt deshalb einen Absatz danach ein, ebenso [[Enter]] in einem leeren letzten Absatz (`plugins/isolatingNodes.ts`). In Code-Blöcken fügt [[Ctrl]] + [[Enter]] einen Absatz nach dem Code-Block ein.
 : Endet oder beginnt ein Textblock mit Inline-Code oder Inline-MDX, verlässt der erste Druck auf [[→]] bzw. [[←]] den Code, erst der zweite wechselt in den nächsten Block, z.B. vom Titel einer `:::def` zum Inhalt (`plugins/leaveCode.ts`).
 : Zwei Leerzeichen am Ende von Inline-Code oder Inline-MDX verlassen diesen auch mitten im Absatz: Das erste Leerzeichen wird aus dem Code verschoben (`plugins/leaveCode.ts`).
-: Inline-MDX (z.B. `<Foo />` oder `{ausdruck}`) wird orange hervorgehoben und direkt im Text bearbeitet. Ein Klick auf den linken Rand wählt es ganz aus, z.B. um es zu verschieben (`plugins/rawSelection.ts`).
+: Inline-MDX (z.B. `<Foo />` oder `{ausdruck}`) wird orange hervorgehoben und direkt im Text bearbeitet. Ein Klick auf den linken Rand wählt es ganz aus, z.B. um es zu verschieben (`plugins/rawSelection.ts`). Neues Inline-MDX wird mit «Einfügen» › «MDX» oder `/mdx` als `<span>Text</span>` eingefügt.
 `suggestions/`
 : Vorschläge, die beim Tippen erscheinen. Jede Quelle erkennt den getippten Text an einem regulären Ausdruck:
 : `/tip` zeigt die Schnellaktionen: die Einträge des Menüs «Einfügen», die Hinweis-Typen sowie Titel, Listen und Zitate. Innerhalb eines offenen JSX-Tags (z.B. `<Foo />`) erscheinen sie nicht.

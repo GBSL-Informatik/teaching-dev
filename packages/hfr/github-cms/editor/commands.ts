@@ -117,6 +117,29 @@ export const insertInline = (node: Node): Command => {
     };
 };
 
+const INLINE_MDX_PLACEHOLDER = 'Text';
+const NEW_INLINE_MDX = `<span>${INLINE_MDX_PLACEHOLDER}</span>`;
+
+/**
+ * Inserts `<span>Text</span>` as inline mdx, with `Text` selected to be replaced.
+ * Not with `insertInline`: it would replace the `raw` mark by the marks at the cursor.
+ */
+export const insertInlineMdx: Command = (state, dispatch) => {
+    if (!canContainInline(state.selection.$from.parent)) {
+        return false;
+    }
+    const { from } = state.selection;
+    const placeholderStart = from + NEW_INLINE_MDX.indexOf(INLINE_MDX_PLACEHOLDER);
+    const placeholderEnd = placeholderStart + INLINE_MDX_PLACEHOLDER.length;
+    const tr = state.tr
+        .insertText(NEW_INLINE_MDX)
+        .addMark(from, from + NEW_INLINE_MDX.length, marks.raw.create());
+    dispatch?.(
+        tr.setSelection(TextSelection.create(tr.doc, placeholderStart, placeholderEnd)).scrollIntoView()
+    );
+    return true;
+};
+
 /** inserts the node at the text position nearest to `pos`, e.g. where an image is dropped */
 export const insertInlineAt = (pos: number, node: Node): Command => {
     return (state, dispatch) => {

@@ -19,12 +19,13 @@ import {
     mdiTable,
     mdiTabPlus,
     mdiViewColumnOutline,
-    mdiViewGridOutline
+    mdiViewGridOutline,
+    mdiXml
 } from '@mdi/js';
 import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
-import { createNode, createTable, insertBlock, insertInline } from '../commands';
+import { createNode, createTable, insertBlock, insertInline, insertInlineMdx } from '../commands';
 import { type ImportSpec, withImport } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { isInDirectiveItem } from '../plugins/directiveItems';
@@ -166,6 +167,12 @@ const INLINE: MenuItem[] = [
         keywords: ['mdi', 'emoji'],
         create: () => nodes.text_directive.create({ name: 'mdi', label: 'robot' }),
         inline: true
+    },
+    {
+        label: 'MDX',
+        icon: mdiXml,
+        keywords: ['<', 'jsx', 'html', 'span'],
+        command: insertInlineMdx
     }
 ];
 
