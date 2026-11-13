@@ -1,24 +1,17 @@
-import { LeafDirectiveName } from '@tdev-plugins/remark-media/mediaElement';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import type iFile from '../../../models/iFile';
 import Combobox from '../../components/Combobox';
 import type { NodeViewProps } from '../ReactNodeView';
+import { ACCEPTED_FILES } from './sourceDirectives';
 import styles from './styles.module.scss';
 import { useAssetPathOptions } from './useAssetPathOptions';
-
-/** the files suggested for directives with a file in the repository, the others are embedded urls */
-const ACCEPTED_FILES: Partial<Record<string, (file: iFile) => boolean>> = {
-    [LeafDirectiveName.AUDIO]: (file) => file.isAudio,
-    [LeafDirectiveName.VIDEO]: (file) => file.isVideo
-};
 
 const isDirectory = (path: string) => path.endsWith('/');
 
 /**
- * Edits the source of a media directive, the label of `::audio[./assets/song.mp3]`.
- * Relative paths of audio and video files are completed.
+ * Edits the source of a media directive or `::pdf`, the label of `::audio[./assets/song.mp3]`.
+ * Relative paths of audio, video and pdf files are completed.
  * It is updated on enter or when leaving the field: every update loads the preview,
  * which must not happen for each typed character.
  */

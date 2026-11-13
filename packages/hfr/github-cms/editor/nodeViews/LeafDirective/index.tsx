@@ -14,13 +14,16 @@ import { directiveAttributes } from '../../markdown/serialize';
 import type { NodeViewProps } from '../ReactNodeView';
 import MediaPreview from './MediaPreview';
 import MediaSource from './MediaSource';
+import { hasSourceLabel } from './sourceDirectives';
 
 /**
- * `::name[label]{attributes}`. Media directives like `::youtube[url]` are shown with a preview.
+ * `::name[label]{attributes}`. Media directives like `::youtube[url]` are shown with a preview,
+ * `::pdf[path]` only with the source field of the media directives.
  */
 const LeafDirective = observer(({ handle }: NodeViewProps) => {
     const { name, label, attributes } = handle.node.attrs;
     const isMedia = isMediaDirective(name);
+    const hasSource = hasSourceLabel(name);
     const settings = (
         <AttributesEditor
             title={`Attribute von ::${name}`}
@@ -45,10 +48,10 @@ const LeafDirective = observer(({ handle }: NodeViewProps) => {
                     />
                 }
                 shrinkTitle
-                wideControls={isMedia}
+                wideControls={hasSource}
             >
                 <UuidAttributes handle={handle} />
-                {isMedia ? (
+                {hasSource ? (
                     <MediaSource handle={handle} />
                 ) : (
                     <TextInput
