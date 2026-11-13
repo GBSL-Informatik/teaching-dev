@@ -1,11 +1,12 @@
+import type { Mark } from 'prosemirror-model';
 import { type Command, type EditorState, Plugin } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
-import { schema } from '../schema';
 
-const { code } = schema.marks;
+/** inline code and inline mdx */
+const isCodeMark = (mark: Mark) => !!mark.type.spec.code;
 
 /**
- * At the start or end of a textblock, the first arrow key press leaves the inline code at the cursor,
+ * At the start or end of a textblock, the first arrow key press leaves the inline code or mdx at the cursor,
  * so typed text is no longer code. Only the second press moves to the adjacent block, e.g. from the
  * label of a `:::def` to its content.
  */
@@ -16,10 +17,11 @@ export const arrowOutOfCode = (direction: 'left' | 'right'): Command => {
             return false;
         }
         const activeMarks = state.storedMarks ?? $from.marks();
-        if (!code.isInSet(activeMarks)) {
+        const codeMark = activeMarks.find(isCodeMark);
+        if (!codeMark) {
             return false;
         }
-        dispatch?.(state.tr.setStoredMarks(code.removeFromSet(activeMarks)));
+        dispatch?.(state.tr.setStoredMarks(codeMark.removeFromSet(activeMarks)));
         return true;
     };
 };
@@ -27,7 +29,9 @@ export const arrowOutOfCode = (direction: 'left' | 'right'): Command => {
 /** the cursor next to inline code it left with `arrowOutOfCode`, otherwise the browser shows it inside */
 const cursorOutsideCode = (state: EditorState) => {
     const { $from, empty } = state.selection;
-    if (!empty || !state.storedMarks || code.isInSet(state.storedMarks) || !code.isInSet($from.marks())) {
+    const { storedMarks } = state;
+    const hasLeftCode = !!storedMarks && !storedMarks.some(isCodeMark) && $from.marks().some(isCodeMark);
+    if (!empty || !hasLeftCode) {
         return DecorationSet.empty;
     }
     // the cursor is placed on the other side of the widget, which is rendered outside the code

@@ -331,10 +331,10 @@ const marks = {
     /**
      * Inline mdx or html, e.g. `<Foo />` or `{expression}`, written as is. A mark keeps it editable in place.
      * It is not serialized as a markdown mark, but first, so it is rendered as one element around other marks.
+     * Like inline code, it is left with the arrow keys, see `plugins/leaveCode.ts`.
      */
     raw: {
         code: true,
-        inclusive: false,
         excludes: 'raw code',
         parseDOM: [{ tag: 'code.cms-raw-inline', priority: 60 }],
         toDOM: () => ['code', { class: 'cms-raw-inline' }, 0]
