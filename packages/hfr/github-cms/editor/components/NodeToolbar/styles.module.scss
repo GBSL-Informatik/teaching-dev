@@ -30,6 +30,14 @@
         .controls {
             flex-grow: 1;
         }
+        /* while the title is edited (e.g. the attributes), it takes the space of the controls */
+        .title:focus-within {
+            flex-grow: 1;
+            + .controls {
+                flex-grow: 0;
+                min-width: 0;
+            }
+        }
     }
 }
 .modal {
