@@ -192,19 +192,21 @@
         /* inline mdx, distinct from inline code; a click on the left border selects it, see `plugins/rawSelection.ts` */
         .cms-raw-inline {
             --cms-raw-border-width: 6px;
-            position: relative;
             color: var(--ifm-color-warning-contrast-foreground);
             background: var(--ifm-color-warning-contrast-background);
             border-color: var(--ifm-color-warning-light);
             border-left: var(--cms-raw-border-width) solid var(--ifm-color-warning);
-            /* covers the left border of the first line, the only clickable one */
+            /*
+             * Covers the left border of the first line, the only clickable one. Not positioned absolutely:
+             * the background of a positioned inline element is painted over the caret.
+             */
             &::before {
                 content: '';
-                position: absolute;
-                top: 0;
-                left: calc(-1 * var(--cms-raw-border-width));
+                display: inline-block;
                 width: var(--cms-raw-border-width);
                 height: 1lh;
+                margin-left: calc(-1 * var(--cms-raw-border-width));
+                vertical-align: top;
                 cursor: pointer;
             }
         }
