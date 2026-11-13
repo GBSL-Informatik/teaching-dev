@@ -8,7 +8,9 @@ const RAW_BLOCK_TITLES: Record<string, string> = {
     mdxjsEsm: 'MDX import/export',
     mdxFlowExpression: 'MDX {Ausdruck}',
     html: 'HTML',
-    definition: 'Link-Definition'
+    definition: 'Link-Definition',
+    /** inserted with the insert menu, not an mdast type */
+    mdx: 'MDX'
 };
 
 const RawBlockHeader = observer(({ handle }: NodeViewProps) => {

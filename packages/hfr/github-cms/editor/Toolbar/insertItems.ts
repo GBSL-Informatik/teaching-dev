@@ -4,6 +4,7 @@ import {
     mdiCardsOutline,
     mdiCardTextOutline,
     mdiCheckboxOutline,
+    mdiCodeBlockTags,
     mdiCodeBraces,
     mdiEmoticonOutline,
     mdiFileDocumentEditOutline,
@@ -119,6 +120,13 @@ const BLOCKS: MenuItem[] = [
         icon: mdiMathIntegralBox,
         keywords: ['$$', 'math', 'latex', 'formel'],
         create: () => nodes.math_block.create(null, schema.text('\\LaTeX'))
+    },
+    {
+        label: 'MDX-Block',
+        icon: mdiCodeBlockTags,
+        keywords: ['<', 'jsx', 'html', 'div'],
+        // written as is, the next time the file is opened it is parsed like any other mdx
+        create: () => nodes.raw_block.create({ kind: 'mdx' }, schema.text('<div>\n    Text\n</div>'))
     },
     {
         label: 'Trennlinie',
