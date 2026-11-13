@@ -1,6 +1,6 @@
 import type { Mark } from 'prosemirror-model';
 import { type Command, type EditorState, Plugin } from 'prosemirror-state';
-import { Decoration, DecorationSet } from 'prosemirror-view';
+import { Decoration, DecorationSet, type EditorView } from 'prosemirror-view';
 
 /** inline code and inline mdx */
 const isCodeMark = (mark: Mark) => !!mark.type.spec.code;
@@ -26,6 +26,30 @@ export const arrowOutOfCode = (direction: 'left' | 'right'): Command => {
     };
 };
 
+/**
+ * A second space at the end of inline code or mdx leaves it: the first space is moved out of it.
+ * E.g. to continue with text after `<Foo />` in the middle of a paragraph, where the arrow keys move on.
+ */
+const spaceOutOfCode = (view: EditorView, from: number, to: number, text: string) => {
+    if (text !== ' ' || from !== to) {
+        return false;
+    }
+    const { state } = view;
+    const $pos = state.doc.resolve(from);
+    const before = $pos.nodeBefore;
+    const codeMark = before?.marks.find(isCodeMark);
+    if (!before?.text?.endsWith(' ') || !codeMark) {
+        return false;
+    }
+    const isAtEndOfCode = !codeMark.isInSet($pos.nodeAfter?.marks ?? []);
+    if (!isAtEndOfCode) {
+        return false;
+    }
+    // the cursor takes the marks of the space before it, so it is outside the code too
+    view.dispatch(state.tr.removeMark(from - 1, from, codeMark));
+    return true;
+};
+
 /** the cursor next to inline code it left with `arrowOutOfCode`, otherwise the browser shows it inside */
 const cursorOutsideCode = (state: EditorState) => {
     const { $from, empty } = state.selection;
@@ -47,4 +71,6 @@ const cursorOutsideCode = (state: EditorState) => {
     return DecorationSet.create(state.doc, [widget]);
 };
 
-export const leaveCode = () => new Plugin({ props: { decorations: cursorOutsideCode } });
+export const leaveCode = () => {
+    return new Plugin({ props: { decorations: cursorOutsideCode, handleTextInput: spaceOutOfCode } });
+};

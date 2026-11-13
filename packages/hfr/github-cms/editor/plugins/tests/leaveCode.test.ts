@@ -1,8 +1,8 @@
 import { EditorState, TextSelection } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '../../markdown';
-import { arrowOutOfCode } from '../leaveCode';
+import { parseMarkdown, serializeMarkdown } from '../../markdown';
+import { arrowOutOfCode, leaveCode } from '../leaveCode';
 
 /** the state with the cursor at the end of the only paragraph */
 const stateAtEnd = (source: string) => {
@@ -13,6 +13,35 @@ const stateAtEnd = (source: string) => {
 
 /** every position is at the end of its textblock */
 const view = { endOfTextblock: () => true } as Pick<EditorView, 'endOfTextblock'> as EditorView;
+
+/** types the text character by character at the cursor, handled by the plugin or inserted */
+const type = (initial: EditorState, text: string) => {
+    const plugin = leaveCode();
+    let state = initial;
+    const typingView = {
+        get state() {
+            return state;
+        },
+        dispatch: (tr) => {
+            state = state.apply(tr);
+        }
+    } as Pick<EditorView, 'state' | 'dispatch'> as EditorView;
+    for (const char of text) {
+        const { from, to } = state.selection;
+        const isHandled = plugin.props.handleTextInput!.call(
+            plugin,
+            typingView,
+            from,
+            to,
+            char,
+            () => state.tr
+        );
+        if (!isHandled) {
+            typingView.dispatch(state.tr.insertText(char));
+        }
+    }
+    return serializeMarkdown(state.doc, '');
+};
 
 const markNamesAtCursor = (state: EditorState) => {
     const marks = state.storedMarks ?? state.selection.$from.marks();
@@ -38,5 +67,22 @@ describe('leaving inline mdx', () => {
 
         expect(isHandled).toBe(true);
         expect(markNamesAtCursor(state)).toEqual([]);
+    });
+});
+
+describe('leaving inline code or mdx with two spaces', () => {
+    it('leaves inline mdx at the end of the textblock', () => {
+        expect(type(stateAtEnd('Text <Foo />\n'), '  next')).toBe('Text <Foo /> next');
+    });
+
+    it('leaves inline code in the middle of a paragraph', () => {
+        const { doc } = parseMarkdown('Use `a` here\n');
+        const afterCode = 1 + 'Use a'.length;
+        const state = EditorState.create({ doc, selection: TextSelection.create(doc, afterCode) });
+        expect(type(state, '  b')).toBe('Use `a` b here');
+    });
+
+    it('keeps a single space in the inline code', () => {
+        expect(type(stateAtEnd('Use `a`\n'), ' b')).toBe('Use `a b`');
     });
 });
