@@ -189,6 +189,14 @@
             border-radius: 0;
         }
 
+        /* inline mdx, distinct from inline code, with a left border like the jsx blocks */
+        .cms-raw-inline {
+            color: var(--ifm-color-warning-contrast-foreground);
+            background: var(--ifm-color-warning-contrast-background);
+            border-color: var(--ifm-color-warning-light);
+            border-left: 3px solid var(--ifm-color-warning);
+        }
+
         .cms-jsx {
             margin-bottom: var(--ifm-spacing-vertical);
             padding: 0.2em 0.8em;

@@ -302,7 +302,7 @@ class MdastToProseMirror {
                     this.withOrigin(node, schema.nodes.footnote_reference.create({ label }, null, marks))
                 ];
             default:
-                return [schema.nodes.raw_inline.create({ value: this.sourceOf(node) }, null, marks)];
+                return this.text(this.sourceOf(node), schema.marks.raw.create().addToSet(marks));
         }
     }
 

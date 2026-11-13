@@ -6,7 +6,7 @@ import { tableNodes } from 'prosemirror-tables';
  * Nested components (directives, jsx) are regular nodes with block content: there are no
  * nested editors, the whole file is one document with a single selection and undo history.
  *
- * Whatever the editor can not represent is kept as `raw_block` / `raw_inline` holding the
+ * Whatever the editor can not represent is kept as `raw_block` nodes / `raw` marks holding the
  * original markdown, so that no content is ever lost.
  */
 
@@ -321,14 +321,6 @@ const nodes = {
         atom: true,
         attrs: { label: { default: '' } },
         toDOM: (node) => ['sup', `[${node.attrs.label}]`]
-    },
-
-    raw_inline: {
-        group: 'inline',
-        inline: true,
-        atom: true,
-        attrs: { value: { default: '' } },
-        toDOM: (node) => ['code', { class: 'cms-raw' }, node.attrs.value]
     }
 } satisfies Record<string, NodeSpec>;
 
@@ -336,6 +328,17 @@ const nodes = {
  * The order of the marks defines how they are nested when serialized: the first mark is the outermost.
  */
 const marks = {
+    /**
+     * Inline mdx or html, e.g. `<Foo />` or `{expression}`, written as is. A mark keeps it editable in place.
+     * It is not serialized as a markdown mark, but first, so it is rendered as one element around other marks.
+     */
+    raw: {
+        code: true,
+        inclusive: false,
+        excludes: 'raw code',
+        parseDOM: [{ tag: 'code.cms-raw-inline', priority: 60 }],
+        toDOM: () => ['code', { class: 'cms-raw-inline' }, 0]
+    },
     link: {
         attrs: { href: { default: '' }, title: { default: null } },
         inclusive: false,

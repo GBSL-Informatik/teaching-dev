@@ -17,8 +17,8 @@ import ContainerDirective, { containerDirectiveClassName } from './ContainerDire
 import DirectiveItem, { directiveItemClassName } from './DirectiveItem';
 import { directiveItemStyle, itemsDirectiveContent } from './DirectiveItem/flexLayout';
 import FootnoteDefinition from './FootnoteDefinition';
+import FootnoteReference from './FootnoteReference';
 import Image from './Image';
-import InlineAtom from './InlineAtom';
 import InlineMath from './InlineMath';
 import JsxFlow, { jsxFlowClassName, jsxFlowContent } from './JsxFlow';
 import LeafDirective from './LeafDirective';
@@ -94,6 +94,5 @@ export const createNodeViews = (document: MdxDocument): Partial<Record<NodeName,
     image: reactNodeView(document, { component: Image }),
     math_inline: reactNodeView(document, { component: InlineMath }),
     text_directive: reactNodeView(document, { component: TextDirective }),
-    footnote_reference: reactNodeView(document, { component: InlineAtom }),
-    raw_inline: reactNodeView(document, { component: InlineAtom })
+    footnote_reference: reactNodeView(document, { component: FootnoteReference })
 });

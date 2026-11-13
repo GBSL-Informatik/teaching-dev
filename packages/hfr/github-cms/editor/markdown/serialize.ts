@@ -1,6 +1,6 @@
 import type { PhrasingContent, TableRow } from 'mdast';
 import type { Mark, Node } from 'prosemirror-model';
-import type { ContainerFormat, DirectiveAttributes, ItemFormat, JsxAttribute } from '../schema';
+import type { ContainerFormat, DirectiveAttributes, ItemFormat, JsxAttribute, MarkName } from '../schema';
 import { imageMarkdown } from './imageAlt';
 import { originalMarkdown, originalSeparator } from './origin';
 import { stringifyMdast } from './syntax';
@@ -229,7 +229,8 @@ class ProseMirrorToMarkdown {
         const root: PhrasingContent[] = [];
         const open: { mark: Mark; children: PhrasingContent[] }[] = [];
         textblock.forEach((child) => {
-            const marks = child.marks.filter((mark) => mark.type.name !== 'code');
+            // code and raw text are written by `inlineNode`
+            const marks = child.marks.filter((mark) => !mark.type.spec.code);
             let shared = 0;
             while (shared < open.length && shared < marks.length && open[shared].mark.eq(marks[shared])) {
                 shared++;
@@ -253,10 +254,7 @@ class ProseMirrorToMarkdown {
         }
         switch (node.type.name) {
             case 'text':
-                const isCode = node.marks.some((mark) => mark.type.name === 'code');
-                return isCode
-                    ? { type: 'inlineCode', value: node.text! }
-                    : { type: 'text', value: node.text! };
+                return textToMdast(node);
             case 'hard_break':
                 return { type: 'break' };
             case 'image':
@@ -276,6 +274,19 @@ class ProseMirrorToMarkdown {
         }
     }
 }
+
+const hasMark = (node: Node, name: MarkName) => node.marks.some((mark) => mark.type.name === name);
+
+const textToMdast = (node: Node): PhrasingContent => {
+    const value = node.text!;
+    if (hasMark(node, 'raw')) {
+        return { type: 'verbatim', value };
+    }
+    if (hasMark(node, 'code')) {
+        return { type: 'inlineCode', value };
+    }
+    return { type: 'text', value };
+};
 
 type MdastParent = Extract<PhrasingContent, { children: PhrasingContent[] }>;
 

@@ -225,6 +225,18 @@ Text with {bar} and <Foo inline />.
         const result = edit(source, (tr) => tr.insertText('!', endOfTextblock(tr.doc, 'Text with')));
         expect(result).toBe(source.replace('/>.', '/>.!'));
     });
+
+    it('writes inline mdx edited in place as is', () => {
+        const source = 'Text with <Foo inline /> and *more*.\n';
+        const paragraph = parseMarkdown(source).doc.child(0);
+        expect(paragraph.child(1).marks.map((mark) => mark.type.name)).toEqual(['raw']);
+
+        const result = edit(source, (tr) => {
+            const afterInline = 1 + 'Text with <Foo inline'.length;
+            tr.insertText(' a={1 * 2}', afterInline);
+        });
+        expect(result).toBe('Text with <Foo inline a={1 * 2} /> and *more*.\n');
+    });
 });
 
 describe('image captions', () => {
