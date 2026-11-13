@@ -30,15 +30,18 @@ export const arrowOutOfCode = (direction: 'left' | 'right'): Command => {
 const cursorOutsideCode = (state: EditorState) => {
     const { $from, empty } = state.selection;
     const { storedMarks } = state;
-    const hasLeftCode = !!storedMarks && !storedMarks.some(isCodeMark) && $from.marks().some(isCodeMark);
-    if (!empty || !hasLeftCode) {
+    if (!empty || !storedMarks) {
+        return DecorationSet.empty;
+    }
+    const hasLeftCode = !storedMarks.some(isCodeMark) && $from.marks().some(isCodeMark);
+    if (!hasLeftCode) {
         return DecorationSet.empty;
     }
     // the cursor is placed on the other side of the widget, which is rendered outside the code
     const side = $from.parentOffset === 0 ? 1 : -1;
     const widget = Decoration.widget($from.pos, () => document.createElement('span'), {
         side,
-        marks: state.storedMarks,
+        marks: storedMarks,
         key: `cursor-outside-code${side}`
     });
     return DecorationSet.create(state.doc, [widget]);
