@@ -125,8 +125,7 @@ const BLOCKS: MenuItem[] = [
         label: 'MDX-Block',
         icon: mdiCodeBlockTags,
         keywords: ['<', 'jsx', 'html', 'div'],
-        // written as is, the next time the file is opened it is parsed like any other mdx
-        create: () => nodes.raw_block.create({ kind: 'mdx' }, schema.text('<div>\n    Text\n</div>'))
+        create: () => jsx('div', [], [paragraph('Text')])
     },
     {
         label: 'Trennlinie',
