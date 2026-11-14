@@ -129,7 +129,8 @@ const BLOCKS: MenuItem[] = [
         label: 'MDX-Block',
         icon: mdiCodeBlockTags,
         keywords: ['<', 'jsx', 'html', 'div'],
-        create: () => jsx('div', [], [paragraph('Text')])
+        // content is added with "Inhalt hinzufügen" in its toolbar
+        create: () => jsx('div', [])
     },
     {
         label: 'MDX import/export',
