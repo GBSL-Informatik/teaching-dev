@@ -1,3 +1,4 @@
+import type { ContainerDirective, LeafDirective } from 'mdast-util-directive';
 import type { Node } from 'prosemirror-model';
 import { type DirectiveAttributes, ITEMS_DIRECTIVES, schema } from '../schema';
 import { toDirectiveAttributes } from './parse';
@@ -28,14 +29,38 @@ export const directiveHeadOf = (node: Node): string => {
 export const parseDirectiveHead = (text: string, node: Node): DirectiveHead => {
     const head = text.trim();
     const directive = isLeaf(node) ? parseLeafDirective(head) : parseContainerDirective(head);
-    if (directive.children.length > 0) {
-        throw new Error('Der Titel [...] wird nicht hier bearbeitet.');
-    }
+    rejectLabel(directive);
     const { name } = node.attrs;
     if (ITEMS_DIRECTIVES.includes(name) !== ITEMS_DIRECTIVES.includes(directive.name)) {
         throw new Error(`:::${name} kann nicht in :::${directive.name} umbenannt werden.`);
     }
     return { name: directive.name, attributes: toDirectiveAttributes(directive) };
+};
+
+/**
+ * The `::br{attributes}` an item of `:::cards` or `:::flex` starts with, without the label.
+ */
+export const itemBreakHeadOf = (item: Node): string => {
+    return `::br${directiveAttributes(item.attrs.attributes)}`;
+};
+
+/**
+ * Parses the `::br{...}` of an item typed by the user, it can not be renamed.
+ * Throws when it is not valid.
+ */
+export const parseItemBreakHead = (text: string): DirectiveAttributes => {
+    const directive = parseLeafDirective(text.trim());
+    rejectLabel(directive);
+    if (directive.name !== 'br') {
+        throw new Error(`::br kann nicht in ::${directive.name} umbenannt werden.`);
+    }
+    return toDirectiveAttributes(directive);
+};
+
+const rejectLabel = (directive: LeafDirective | ContainerDirective) => {
+    if (directive.children.length > 0) {
+        throw new Error('Der Titel [...] wird nicht hier bearbeitet.');
+    }
 };
 
 /**

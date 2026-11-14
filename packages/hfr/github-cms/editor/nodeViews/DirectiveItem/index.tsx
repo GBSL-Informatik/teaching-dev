@@ -5,7 +5,9 @@ import {
     directiveAttributesToRows,
     rowsToDirectiveAttributes
 } from '../../components/AttributesEditor/conversions';
+import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
+import { itemBreakHeadOf, parseItemBreakHead } from '../../markdown/directiveHead';
 import { directiveAttributes } from '../../markdown/serialize';
 import type { NodeViewProps } from '../ReactNodeView';
 import { directiveItemClassName as flexItemClassName } from './flexLayout';
@@ -39,7 +41,16 @@ const DirectiveItem = observer(({ handle }: NodeViewProps) => {
             handle={handle}
             settings={settings}
             actionsWhenActive
-            title={<span className="cms-item-break">{`::br${directiveAttributes(attributes)}`}</span>}
+            title={
+                <EditableTag
+                    tag={<span className="cms-item-break">::br</span>}
+                    attributes={directiveAttributes(attributes)}
+                    source={itemBreakHeadOf(handle.node)}
+                    parse={parseItemBreakHead}
+                    onApply={(attributes) => handle.updateAttrs({ attributes })}
+                />
+            }
+            shrinkTitle
         />
     );
 });

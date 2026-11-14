@@ -2,7 +2,7 @@ import type { Node } from 'prosemirror-model';
 import { EditorState } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
 import { parseMarkdown, serializeMarkdown } from '..';
-import { directiveHeadOf, parseDirectiveHead } from '../directiveHead';
+import { directiveHeadOf, itemBreakHeadOf, parseDirectiveHead, parseItemBreakHead } from '../directiveHead';
 
 const DIRECTIVE_TYPES = ['container_directive', 'items_directive', 'leaf_directive'];
 
@@ -87,6 +87,31 @@ describe('parseDirectiveHead', () => {
         expect(() => parseDirectiveHead(':::tip', directiveOf(':::cards\nA\n::br\nB\n:::\n'))).toThrowError(
             /umbenannt/
         );
+    });
+});
+
+describe('itemBreakHeadOf', () => {
+    it('returns the attributes of the ::br without its label', () => {
+        const cards = directiveOf(':::cards\nA\n::br[Label]{.red a="1"}\nB\n:::\n');
+        expect(itemBreakHeadOf(cards.child(1))).toBe('::br{.red a="1"}');
+    });
+});
+
+describe('parseItemBreakHead', () => {
+    it('parses ids, classes and attributes', () => {
+        expect(parseItemBreakHead('::br{#id .red a="1"}')).toEqual({ id: 'id', class: 'red', a: '1' });
+    });
+
+    it('reports a missing quote', () => {
+        expect(() => parseItemBreakHead('::br{a="1}')).toThrowError(/Anführungszeichen/);
+    });
+
+    it('reports a title', () => {
+        expect(() => parseItemBreakHead('::br[Label]')).toThrowError(/Titel/);
+    });
+
+    it('does not rename the ::br', () => {
+        expect(() => parseItemBreakHead('::youtube{#abc}')).toThrowError(/umbenannt/);
     });
 });
 
