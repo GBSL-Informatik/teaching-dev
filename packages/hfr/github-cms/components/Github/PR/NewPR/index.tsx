@@ -4,7 +4,6 @@ import Alert from '@tdev-components/shared/Alert';
 import Badge from '@tdev-components/shared/Badge';
 import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
-import Checkbox from '@tdev-components/shared/Checkbox';
 import TextAreaInput from '@tdev-components/shared/TextAreaInput';
 import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
@@ -12,7 +11,6 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
 import Branch from '../../../../models/Branch';
-import { withoutPreviewPRName, withPreviewPRName } from '../../../../models/helpers';
 import PR from '../../../../models/PR';
 import styles from './styles.module.scss';
 
@@ -30,7 +28,6 @@ const NewPR = observer((props: Props) => {
     const [body, setBody] = React.useState(branch.name);
     const [isCreating, setIsCreating] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
-    const [createPreview, setCreatePreview] = React.useState(false);
 
     return (
         <Card
@@ -63,10 +60,7 @@ const NewPR = observer((props: Props) => {
                                 return props.onDone();
                             }
                             setIsCreating(true);
-                            const prTitle = createPreview
-                                ? withPreviewPRName(title)
-                                : withoutPreviewPRName(title);
-                            cmsStore.github.createPR(branch.name, prTitle, body).then((pr) => {
+                            cmsStore.github.createPR(branch.name, title, body).then((pr) => {
                                 if (pr) {
                                     pr.sync(true);
                                     props.onDone(pr);
@@ -96,11 +90,6 @@ const NewPR = observer((props: Props) => {
             )}
             <TextInput value={title} onChange={setTitle} label="Titel" />
             <TextAreaInput onChange={setBody} placeholder="Beschreibung" minRows={3} label="Beschreibung" />
-            <Checkbox
-                label="Seitenvorschau erstellen?"
-                checked={createPreview}
-                onChange={(checked) => setCreatePreview(checked)}
-            />
         </Card>
     );
 });

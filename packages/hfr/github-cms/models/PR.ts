@@ -1,7 +1,6 @@
 import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable, observableRef } from 'mobx';
 import Github, { type MergeMethod } from './Github';
-import { withoutPreviewPRName, withPreviewPRName } from './helpers';
 
 type PRRef = {
     label: string;
@@ -83,20 +82,6 @@ class PR {
         this.updatedAt = new Date(props.updated_at);
         this.createdAt = new Date(props.created_at);
         this.mergedAt = props.merged_at ? new Date(props.merged_at) : null;
-    }
-
-    @computed
-    get hasPreview() {
-        return this.title === withPreviewPRName(this.title);
-    }
-
-    @action
-    setPreview(enabled: boolean) {
-        if (enabled) {
-            return this.gitProvider.updatePr(this.number, { title: withPreviewPRName(this.title) });
-        } else {
-            return this.gitProvider.updatePr(this.number, { title: withoutPreviewPRName(this.title) });
-        }
     }
 
     @computed

@@ -1,12 +1,4 @@
 import imageCompression from 'browser-image-compression';
-export const withPreviewPRName = (name: string) => {
-    return name.replace('[skip ci]', '').replace('[skip netlify]', '').trim();
-};
-
-export const withoutPreviewPRName = (name: string) => {
-    return `[skip ci] ${withPreviewPRName(name)}`;
-};
-
 export const isAudio = (fileName: string) => {
     return /(mp3|wav|ogg|m4a|wma|aac|flac|alac|aiff|opus|mid|midi)$/i.test(fileName);
 };

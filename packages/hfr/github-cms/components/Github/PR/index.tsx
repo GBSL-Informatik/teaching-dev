@@ -1,8 +1,6 @@
 import Link from '@docusaurus/Link';
 import {
     mdiCloseCircle,
-    mdiEye,
-    mdiEyeOff,
     mdiLoading,
     mdiRecordCircleOutline,
     mdiSourceBranchSync,
@@ -27,7 +25,6 @@ import styles from './styles.module.scss';
 type PRElements =
     | 'prName'
     | 'reload'
-    | 'preview'
     | 'commits'
     | 'merged'
     | 'closed'
@@ -83,20 +80,6 @@ const PR = observer((props: Props) => {
                 className={clsx(classNames?.reload)}
             />
             <div className={clsx(styles.spacer, classNames?.spacer)}></div>
-            <Button
-                icon={pr.hasPreview ? mdiEye : mdiEyeOff}
-                size={SIZE_S}
-                color={pr.hasPreview ? 'blue' : 'orange'}
-                title={
-                    pr.hasPreview
-                        ? 'Preview wird beim nächsten Speichern veröffentlicht'
-                        : 'Preview wird nicht mehr veröffentlicht'
-                }
-                onClick={() => {
-                    pr.setPreview(!pr.hasPreview);
-                }}
-                className={clsx(classNames?.preview)}
-            />
             {pr.branch && (pr.branch.aheadBy > 0 || pr.branch.behindBy > 0) && (
                 <Badge
                     noPaddingLeft

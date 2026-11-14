@@ -9,7 +9,7 @@ import Dir from './Dir';
 import { default as FileModel } from './File';
 import FileStub from './FileStub';
 import PR from './PR';
-import { convertToBase64, isBinaryFile, isSameOrInside, movedPath, withoutPreviewPRName } from './helpers';
+import { convertToBase64, isBinaryFile, isSameOrInside, movedPath } from './helpers';
 import { FileStubProps, iFile } from './iFile';
 
 export type GhRepo = GhTypes['repos']['get']['response']['data'];
@@ -283,7 +283,7 @@ class Github {
                 .then(async () => {
                     await this.createOrUpdateFile(file.path, file.content, newBranch, file.sha);
                     if (!skipCreatePr) {
-                        await this.createPR(newBranch, withoutPreviewPRName(newBranch));
+                        await this.createPR(newBranch, newBranch);
                     }
                     // the changes are saved in the new branch, they are no unsaved changes of this branch
                     file.reset();
@@ -411,39 +411,33 @@ class Github {
     @action
     mergePR(prNumber: number, method: MergeMethod = this.mergeMethods[0] ?? 'squash') {
         const pr = this.PRs.find((pr) => pr.number === prNumber);
-        let prepare: Promise<any> = Promise.resolve(undefined);
-        if (pr && !pr.hasPreview) {
-            prepare = pr.setPreview(true);
-        }
         const branchName = pr?.branchName;
         pr?.setMergeError(undefined);
-        prepare.then(() => {
-            this.octokit.pulls
-                .merge({
-                    owner: this.store.repoOwner,
-                    repo: this.store.repoName,
-                    pull_number: prNumber,
-                    merge_method: method,
-                    commit_title: `CMS: Merge #${prNumber}`
+        this.octokit.pulls
+            .merge({
+                owner: this.store.repoOwner,
+                repo: this.store.repoName,
+                pull_number: prNumber,
+                merge_method: method,
+                commit_title: `CMS: Merge #${prNumber}`
+            })
+            .then(
+                action((res) => {
+                    const pr = this.store.findPr(prNumber);
+                    if (pr) {
+                        pr.setMerged(true);
+                        pr.sync();
+                    }
+                    const bName = pr?.branchName || branchName;
+                    if (res.data.merged && bName) {
+                        this.deleteBranch(bName);
+                    }
                 })
-                .then(
-                    action((res) => {
-                        const pr = this.store.findPr(prNumber);
-                        if (pr) {
-                            pr.setMerged(true);
-                            pr.sync();
-                        }
-                        const bName = pr?.branchName || branchName;
-                        if (res.data.merged && bName) {
-                            this.deleteBranch(bName);
-                        }
-                    })
-                )
-                .catch((err) => {
-                    console.error('Error merging PR', prNumber, err);
-                    this.store.findPr(prNumber)?.setMergeError({ method, message: err.message });
-                });
-        });
+            )
+            .catch((err) => {
+                console.error('Error merging PR', prNumber, err);
+                this.store.findPr(prNumber)?.setMergeError({ method, message: err.message });
+            });
     }
 
     @action
