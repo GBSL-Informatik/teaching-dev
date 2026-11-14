@@ -6,6 +6,7 @@ import {
     mdiCheckboxOutline,
     mdiCodeBlockTags,
     mdiCodeBraces,
+    mdiCodeBracesBox,
     mdiEmoticonOutline,
     mdiFileDocumentEditOutline,
     mdiFormatListNumbered,
@@ -138,6 +139,13 @@ const BLOCKS: MenuItem[] = [
         keywords: ['import', 'export', 'esm'],
         create: () => nodes.raw_block.create({ kind: 'mdxjsEsm' }),
         isAvailable: isInTopLevelBlock
+    },
+    {
+        label: 'MDX {Ausdruck}',
+        icon: mdiCodeBracesBox,
+        keywords: ['{', 'expression', 'ausdruck', 'javascript'],
+        // an empty block would not be saved, the braces keep it an expression
+        create: () => nodes.raw_block.create({ kind: 'mdxFlowExpression' }, schema.text('{}'))
     },
     {
         label: 'Definitionsliste',
