@@ -6,23 +6,27 @@ import CodeShowcase from '@tdev-components/CodeShowcase';
 
 # Admonitions
 
+$f(x)=(du)^2$
+
+$$
+\LaTeX
+$$
+
 Als Erweiterung der Standard-Markdown-Syntax werden sog. [Admonitions](https://docusaurus.io/docs/markdown-features/admonitions), also Hinweise, die durch das Einrahmen von Text mit drei Doppelpunkten und einem Label, das den Typ angibt, erstellt werden.
 
-<CodeShowcase lang="md">
-:::note
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
+Beliebiger Inhalt mit Markdown Syntax, inkl. Erweiterungen.
 
-:::aufgabe
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
+Beliebiger Inhalt mit Markdown Syntax, inkl. Erweiterungen.
 
-:::info
-Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
-:::
+Beliebiger Inhalt mit Markdown Syntax, inkl. Erweiterungen
 
 :::tip
 Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
+:::
+
+<CodeShowcase lang="md">
+:::info
+.
 :::
 
 :::definition
@@ -47,6 +51,8 @@ Beliebiger **Inhalt** mit *Markdown* `Syntax`, inkl. __Erweiterungen__.
 ## Titel anpassen
 
 Der Titel der Admonition kann durch Hinzufügen von Text nach dem Admonition-Typ angepasst werden:
+
+/m
 
 <CodeShowcase lang="md">
 :::info[Anpassung des `Titels`]
