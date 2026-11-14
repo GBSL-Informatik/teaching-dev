@@ -37,8 +37,8 @@ class RegenerateWidget extends WidgetType {
 
 const uuidMatcher = new MatchDecorator({
     regexp: uuidV4Regex(),
-    decorate: (add, from, to) => {
-        add(from, to, Decoration.mark({ class: 'cms-uuid' }));
+    decorate: (add, from, to, match) => {
+        add(from, to, Decoration.mark({ class: 'cms-uuid', attributes: { 'data-uuid': match[0] } }));
         add(to, to, Decoration.widget({ widget: new RegenerateWidget(), side: 1 }));
     }
 });

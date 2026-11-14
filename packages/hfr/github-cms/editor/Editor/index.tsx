@@ -6,6 +6,7 @@ import 'prosemirror-tables/style/tables.css';
 import { EditorView } from 'prosemirror-view';
 import 'prosemirror-view/style/prosemirror.css';
 import React from 'react';
+import DuplicateUuids from '../components/DuplicateUuids';
 import ImageUploadDialog from '../components/ImageUploadDialog';
 import InsertImageDialog from '../components/InsertImageDialog';
 import MdxDiff from '../components/MdxDiff';
@@ -66,6 +67,7 @@ const Editor = observer(({ document }: Props) => {
     return (
         <div className={clsx(styles.editor)}>
             <Toolbar document={document} />
+            <DuplicateUuids file={document.file} />
             {/* the editor stays mounted while the diff is shown to keep its state (e.g. the selection) */}
             <div className={clsx(styles.contentArea)}>
                 <div

@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import DuplicateUuids from '../../../editor/components/DuplicateUuids';
 import MdxDiff from '../../../editor/components/MdxDiff';
 import SourceEditor from '../../../editor/SourceEditor';
 import File from '../../../models/File';
@@ -30,6 +31,7 @@ const DefaultEditor = observer((props: Props) => {
                     Die Datei kann nicht im visuellen Editor geöffnet werden: {file.sourceReason}
                 </div>
             )}
+            {file.isMarkdown && <DuplicateUuids file={file} />}
             {showDiff ? <MdxDiff file={file} /> : <SourceEditor file={file} />}
         </div>
     );

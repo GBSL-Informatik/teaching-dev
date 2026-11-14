@@ -18,7 +18,7 @@ interface Props {
  */
 const UuidBadge = ({ name, uuid, onRegenerate }: Props) => {
     return (
-        <span className={clsx(styles.uuid, 'cms-uuid')} title={uuid ?? 'keine UUID'}>
+        <span className={clsx(styles.uuid, 'cms-uuid')} title={uuid ?? 'keine UUID'} data-uuid={uuid}>
             {name}: {uuid ? `${uuid.slice(0, 8)}…` : <span className={clsx(styles.missing)}>keine UUID</span>}
             <Button
                 icon={mdiRefresh}

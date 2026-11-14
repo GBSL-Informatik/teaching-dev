@@ -17,6 +17,24 @@ export const findUuids = (text: string): { from: number; to: number }[] => {
     }));
 };
 
+export interface DuplicatedUuid {
+    uuid: string;
+    count: number;
+}
+
+/**
+ * The uuids occurring more than once in the text, e.g. the `id` of a copied component.
+ * Uuids are compared ignoring their case.
+ */
+export const duplicatedUuids = (text: string): DuplicatedUuid[] => {
+    const counts = new Map<string, number>();
+    for (const [match] of text.matchAll(uuidV4Regex())) {
+        const uuid = match.toLowerCase();
+        counts.set(uuid, (counts.get(uuid) ?? 0) + 1);
+    }
+    return [...counts].filter(([, count]) => count > 1).map(([uuid, count]) => ({ uuid, count }));
+};
+
 export const newUuid = (): string => uuidv4();
 
 /**

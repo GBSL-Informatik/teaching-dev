@@ -26,7 +26,8 @@ const uuidDecorations = (doc: Node) => {
         findUuids(node.text!).forEach(({ from, to }) => {
             const start = pos + from;
             const end = pos + to;
-            decorations.push(Decoration.inline(start, end, { class: 'cms-uuid' }));
+            const uuid = node.text!.slice(from, to);
+            decorations.push(Decoration.inline(start, end, { class: 'cms-uuid', 'data-uuid': uuid }));
             decorations.push(
                 Decoration.widget(end, (view) => createRegenerateButton(() => regenerate(view, start, end)), {
                     side: 1,
