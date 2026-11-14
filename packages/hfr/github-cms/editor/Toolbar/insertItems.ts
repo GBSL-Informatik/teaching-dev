@@ -28,7 +28,7 @@ import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
 import { createNode, createTable, insertBlock, insertInline, insertInlineMdx } from '../commands';
-import { type ImportSpec, withImport } from '../imports';
+import { type ImportSpec, withImports } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { isInDirectiveItem } from '../plugins/directiveItems';
 import { ITEMS_DIRECTIVES, type JsxAttribute, schema } from '../schema';
@@ -44,7 +44,7 @@ interface MenuItemBase {
     /** additional search terms of the quick actions, e.g. the markdown syntax */
     keywords?: string[];
     /** added to the imports of the document, unless the name is already imported */
-    requiredImport?: ImportSpec;
+    requiredImports?: ImportSpec[];
 }
 
 /** the content is created when the item is chosen, or the item inserts it with its own command */
@@ -182,6 +182,9 @@ const INLINE: MenuItem[] = [
     }
 ];
 
+const TABS_IMPORT: ImportSpec = { name: 'Tabs', source: '@theme/Tabs' };
+const TAB_ITEM_IMPORT: ImportSpec = { name: 'TabItem', source: '@theme/TabItem' };
+
 const COMPONENTS: MenuItem[] = [
     {
         label: 'Antwort (Text)',
@@ -216,41 +219,43 @@ const COMPONENTS: MenuItem[] = [
     {
         label: 'Tabs',
         icon: mdiTab,
-        create: () => jsx('Tabs', [], [createTabItem('tab1', 'Tab 1')])
+        create: () => jsx('Tabs', [], [createTabItem('tab1', 'Tab 1')]),
+        requiredImports: [TABS_IMPORT, TAB_ITEM_IMPORT]
     },
     {
         label: 'Tab hinzufügen',
         icon: mdiTabPlus,
         keywords: ['tabitem'],
-        command: insertTabItem
+        command: insertTabItem,
+        requiredImports: [TAB_ITEM_IMPORT]
     },
     {
         label: 'Browser-Fenster',
         keywords: ['browserwindow'],
         icon: mdiApplicationOutline,
         create: () => jsx('BrowserWindow', [], [paragraph('Inhalt')]),
-        requiredImport: { name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' }
+        requiredImports: [{ name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' }]
     },
     {
         label: 'Schritte',
         keywords: ['steps', 'anleitung'],
         icon: mdiFormatListNumbered,
         create: () => jsx('Steps', [], [emptyOrderedList()]),
-        requiredImport: { name: 'Steps', source: '@tdev-components/Steps' }
+        requiredImports: [{ name: 'Steps', source: '@tdev-components/Steps' }]
     },
     {
         label: 'Fortschritt',
         keywords: ['progressstate', 'schritte'],
         icon: mdiTimelineCheckOutline,
         create: () => jsx('ProgressState', [idAttribute()], [emptyOrderedList()]),
-        requiredImport: { name: 'ProgressState', source: '@tdev-components/documents/ProgressState' }
+        requiredImports: [{ name: 'ProgressState', source: '@tdev-components/documents/ProgressState' }]
     },
     {
         label: 'Unterseiten (Karten)',
         keywords: ['doccardlist'],
         icon: mdiViewGridOutline,
         create: () => jsx('DocCardList', []),
-        requiredImport: { name: 'DocCardList', source: '@theme/DocCardList' }
+        requiredImports: [{ name: 'DocCardList', source: '@theme/DocCardList' }]
     }
 ];
 
@@ -282,7 +287,7 @@ export const insertCommand = (item: MenuItem): Command => {
             return false;
         }
         const insert = insertContent(item);
-        const command = item.requiredImport ? withImport(insert, item.requiredImport) : insert;
+        const command = item.requiredImports ? withImports(insert, item.requiredImports) : insert;
         return command(state, dispatch, view);
     };
 };

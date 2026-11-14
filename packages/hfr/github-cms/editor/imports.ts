@@ -12,12 +12,14 @@ export interface ImportSpec {
 }
 
 /**
- * Runs the command and adds the import to the same transaction, so both are undone together.
+ * Runs the command and adds the imports to the same transaction, so all are undone together.
  */
-export const withImport = (command: Command, spec: ImportSpec): Command => {
+export const withImports = (command: Command, specs: ImportSpec[]): Command => {
     return (state, dispatch, view) => {
-        const dispatchWithImport = dispatch && ((tr: Transaction) => dispatch(addImport(tr, spec)));
-        return command(state, dispatchWithImport, view);
+        const addAllImports = (tr: Transaction) =>
+            specs.reduce((current, spec) => addImport(current, spec), tr);
+        const dispatchWithImports = dispatch && ((tr: Transaction) => dispatch(addAllImports(tr)));
+        return command(state, dispatchWithImports, view);
     };
 };
 

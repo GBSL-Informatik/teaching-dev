@@ -1,11 +1,12 @@
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
 import { insertBlock } from '../commands';
-import { addImport, type ImportSpec, withImport } from '../imports';
+import { addImport, type ImportSpec, withImports } from '../imports';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import { schema } from '../schema';
 
 const BROWSER_WINDOW: ImportSpec = { name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' };
+const STEPS: ImportSpec = { name: 'Steps', source: '@tdev-components/Steps' };
 
 const withBrowserWindowImport = (source: string) => {
     const { doc, trailing } = parseMarkdown(source);
@@ -58,14 +59,14 @@ describe('addImport', () => {
     });
 });
 
-describe('withImport', () => {
-    it('inserts the content and its import in a single transaction', () => {
+describe('withImports', () => {
+    it('inserts the content and its imports in a single transaction', () => {
         const { doc, trailing } = parseMarkdown('Text\n');
         let state = EditorState.create({ doc, selection: TextSelection.create(doc, 1) });
         const browserWindow = schema.nodes.jsx_flow_void.create({ name: 'BrowserWindow' });
         let transactionCount = 0;
 
-        withImport(insertBlock(browserWindow), BROWSER_WINDOW)(state, (tr) => {
+        withImports(insertBlock(browserWindow), [BROWSER_WINDOW, STEPS])(state, (tr) => {
             transactionCount++;
             state = state.apply(tr);
         });
@@ -74,6 +75,7 @@ describe('withImport', () => {
         expect(state.selection.$from.parent.type.name).not.toBe('raw_block');
         expect(serializeMarkdown(state.doc, trailing)).toMatchInlineSnapshot(`
           "import BrowserWindow from '@tdev-components/BrowserWindow';
+          import Steps from '@tdev-components/Steps';
 
           Text
 
