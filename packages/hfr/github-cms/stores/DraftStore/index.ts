@@ -20,7 +20,7 @@ const logError = (error: unknown) => console.error('Failed to persist unsaved ch
  *
  * - While a file is dirty, its content is saved as draft, see `File.setContent`.
  * - When a file is loaded from github, its draft is applied, unless the file changed on github
- *   since: then the draft is dismissed, see `restore`.
+ *   since: then the user chooses between the draft and the new version, see `outdatedDraftOf`.
  * - The files with drafts on the current branch are loaded, to apply or dismiss their drafts.
  *   Drafts of other branches are kept until their branch is opened.
  */
@@ -77,17 +77,41 @@ export class DraftStore {
 
     /**
      * Applies the draft to a file loaded from github.
-     * The draft of an outdated version of the file is dismissed.
+     * The draft of an outdated version of the file is kept until the user decides, see `outdatedDraftOf`.
      */
     @action
     restore(file: File) {
-        const draft = this.drafts.get(this.keyOf(file.branch, file.path));
+        const draft = this.draftOf(file);
         if (!draft) {
             return;
         }
-        if (draft.baseSha !== file.sha) {
+        // e.g. the changes were saved from another browser
+        if (draft.content === file.content) {
             return this.remove(file.branch, file.path);
         }
+        if (draft.baseSha !== file.sha) {
+            return;
+        }
+        file.restoreContent(draft.content);
+    }
+
+    /** the draft of a file which changed on github since the draft was saved */
+    outdatedDraftOf(file: File): Draft | undefined {
+        const draft = this.draftOf(file);
+        if (!draft || draft.baseSha === file.sha) {
+            return undefined;
+        }
+        return draft;
+    }
+
+    /** continues editing the outdated draft: saved, it replaces the changes made on github */
+    @action
+    applyOutdatedDraft(file: File) {
+        const draft = this.outdatedDraftOf(file);
+        if (!draft) {
+            return;
+        }
+        // the content is synced as a draft of the current version, which resolves the conflict
         file.restoreContent(draft.content);
     }
 
@@ -133,6 +157,10 @@ export class DraftStore {
         return this.repoDrafts.filter((draft) => draft.branch === branch);
     }
 
+    private draftOf(file: File) {
+        return this.drafts.get(this.keyOf(file.branch, file.path));
+    }
+
     private keyOf(branch: string, path: string) {
         return draftKey({ repo: this.store.repoKey, branch, path });
     }
@@ -161,7 +189,7 @@ export class DraftStore {
     }
 
     /**
-     * Loads the files with drafts, their drafts are applied or dismissed when they are added,
+     * Loads the files with drafts, their drafts are applied or kept as outdated when they are added,
      * see `Github._addFileEntry`. When a file can not be loaded, its draft is kept.
      */
     private loadFilesOfBranch(branch: string) {

@@ -70,6 +70,30 @@ const revertButtonOnly = (type: 'accept' | 'reject', action: (event: MouseEvent)
 };
 
 /**
+ * Shows `modified` with the lines removed from `original` in between, without changing the file.
+ * The language is the one of the file.
+ */
+export const createComparison = (
+    parent: HTMLElement,
+    file: File,
+    original: string,
+    modified: string,
+    isDark: boolean
+): DiffView => {
+    const language = new Compartment();
+    const view = new EditorView({
+        parent,
+        doc: modified,
+        extensions: [
+            ...readOnlyExtensions(language, isDark),
+            unifiedMergeView({ original, mergeControls: false, collapseUnchanged: COLLAPSE_UNCHANGED })
+        ]
+    });
+    applyLanguage(file, language, [view]);
+    return view;
+};
+
+/**
  * The edited version with the removed lines in between, with a button to revert each change.
  */
 export const createUnifiedDiff = (parent: HTMLElement, file: File, isDark: boolean): DiffView => {
