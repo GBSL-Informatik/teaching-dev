@@ -17,7 +17,17 @@ export type GhBranch = GhTypes['repos']['listBranches']['response']['data'][numb
 export type GhPr =
     GhTypes['pulls']['list']['response']['data'][number] | GhTypes['pulls']['create']['response']['data'];
 
+type TreeEntry = GhTypes['git']['createTree']['parameters']['tree'][number];
+
+/** writes the content to the file at `path`, or deletes the file when the content is `null` */
+export interface FileChange {
+    path: string;
+    content: string | Uint8Array<ArrayBuffer> | null;
+}
+
 const PR_PAGE_SIZE = 20;
+const BLOB_MODE = { mode: '100644', type: 'blob' } as const;
+const TREE_MODE = { mode: '040000', type: 'tree' } as const;
 type FileEntry = FileStub | BinFile | FileModel | Dir;
 
 const WritePermission = new Set(['admin', 'write']);
@@ -334,6 +344,22 @@ class Github {
             );
     }
 
+    /**
+     * Writes and deletes the files in a single commit, e.g. an image together with its excalidraw sidecar.
+     * Unlike `createOrUpdateFile`, the files are overwritten without comparing their sha.
+     */
+    @action
+    commitFiles(branch: string, message: string, changes: FileChange[]) {
+        return Promise.all(changes.map((change) => this.toTreeEntry(change)))
+            .then((treeEntries) => this.commitTree(branch, message, treeEntries))
+            .then(
+                action(() => {
+                    this.store.findBranch(branch)?.sync();
+                    return Promise.all(changes.map((change) => this._reloadChangedEntry(branch, change)));
+                })
+            );
+    }
+
     @action
     rebaseBranch(branch: string, to: string) {
         // octokit has no "rebase" action, so do a merge
@@ -376,7 +402,8 @@ class Github {
                     owner: this.store.repoOwner,
                     repo: this.store.repoName,
                     pull_number: prNumber,
-                    merge_method: 'merge', // or "squash" or "rebase"
+                    // keeps the intermediate versions, e.g. of an image saved several times, out of the history
+                    merge_method: 'squash',
                     commit_title: `CMS: Merge #${prNumber}`
                 })
                 .then(
@@ -647,6 +674,24 @@ class Github {
         return this.fetchDirectory(branch, closestPath)
             .then(() => this.fetchDirectoryTree(entry, true))
             .catch((err) => console.error('Error fetching', path, err));
+    }
+
+    /**
+     * Updates the tree after the change was committed: a written file is replaced by a stub
+     * with its new sha, its content is loaded again when it is shown.
+     */
+    @action
+    _reloadChangedEntry(branch: string, { path, content }: FileChange) {
+        this.store.drafts.remove(branch, path);
+        if (content === null) {
+            this._rmEntriesIn(branch, path);
+            return Promise.resolve();
+        }
+        const parentDir = this.store.findEntry(branch, path)?.dir;
+        if (parentDir) {
+            return this.fetchDirectory(branch, trimSlashes(parentDir.path));
+        }
+        return this._fetchIntoTree(branch, path);
     }
 
     @action
@@ -951,18 +996,37 @@ class Github {
         this.PRs.push(pr);
     }
 
+    private commitMove(entry: FileModel | BinFile | FileStub | Dir, newPath: string) {
+        // the contents api does not tell the mode, executable files and symlinks become regular files
+        const { mode, type } = entry.type === 'dir' ? TREE_MODE : BLOB_MODE;
+        return this.commitTree(entry.branch, `Move ${entry.path} to ${newPath}`, [
+            { path: entry.path, mode, type, sha: null },
+            { path: newPath, mode, type, sha: entry.sha }
+        ]);
+    }
+
+    private async toTreeEntry(change: FileChange): Promise<TreeEntry> {
+        if (change.content === null) {
+            return { path: change.path, ...BLOB_MODE, sha: null };
+        }
+        const binContent =
+            typeof change.content === 'string' ? new TextEncoder().encode(change.content) : change.content;
+        const { data: blob } = await this.octokit.git.createBlob({
+            owner: this.store.repoOwner,
+            repo: this.store.repoName,
+            content: await convertToBase64(binContent),
+            encoding: 'base64'
+        });
+        return { path: change.path, ...BLOB_MODE, sha: blob.sha };
+    }
+
     /**
-     * Commits the move with the git data api: a single commit, the content is not downloaded.
+     * Applies the changes to the tree of the branch in a single commit, with the git data api.
      * See https://docs.github.com/en/rest/git/trees#create-a-tree
      */
-    private async commitMove(entry: FileModel | BinFile | FileStub | Dir, newPath: string) {
+    private async commitTree(branch: string, message: string, changes: TreeEntry[]) {
         const repo = { owner: this.store.repoOwner, repo: this.store.repoName };
-        const ref = `heads/${entry.branch}`;
-        // the contents api does not tell the mode, executable files and symlinks become regular files
-        const { mode, type } =
-            entry.type === 'dir'
-                ? ({ mode: '040000', type: 'tree' } as const)
-                : ({ mode: '100644', type: 'blob' } as const);
+        const ref = `heads/${branch}`;
 
         const { data: head } = await this.octokit.git.getRef({ ...repo, ref });
         const { data: headCommit } = await this.octokit.git.getCommit({
@@ -972,18 +1036,15 @@ class Github {
         const { data: tree } = await this.octokit.git.createTree({
             ...repo,
             base_tree: headCommit.tree.sha,
-            tree: [
-                { path: entry.path, mode, type, sha: null },
-                { path: newPath, mode, type, sha: entry.sha }
-            ]
+            tree: changes
         });
         const { data: commit } = await this.octokit.git.createCommit({
             ...repo,
-            message: `Move ${entry.path} to ${newPath}`,
+            message,
             tree: tree.sha,
             parents: [head.object.sha]
         });
-        // fails when the branch changed in the meantime, the move is not applied then
+        // fails when the branch changed in the meantime, the changes are not applied then
         await this.octokit.git.updateRef({ ...repo, ref, sha: commit.sha });
     }
 }

@@ -9,9 +9,10 @@ import originalImageFromScene from '@tdev/excalidoc/ImageMarkupEditor/helpers/or
 import type { ExcalidrawImageStorage } from '@tdev/excalidoc/ImageMarkupEditor/storage';
 import FileStub from '../../../models/FileStub';
 import type Github from '../../../models/Github';
+import type { FileChange } from '../../../models/Github';
 
 /**
- * The images of a branch in the github repository, every write is a commit to the branch.
+ * The images of a branch in the github repository, each save or restore is a single commit to the branch.
  * Unlike in dev mode, the sidecar is not written when an image is opened, only when it is saved.
  */
 export const githubImageStorage = (
@@ -28,20 +29,14 @@ export const githubImageStorage = (
         return entry?.type === 'file' || entry?.type === 'bin_file' ? entry : undefined;
     };
 
-    const writeFile = async (path: string, content: string | Blob) => {
-        // an existing file is only updated with its sha
-        const existing = loadedFile(path) ?? (await fetchFile(path));
-        const sha = existing && !Array.isArray(existing) ? existing.sha : undefined;
-        const data = typeof content === 'string' ? content : new Uint8Array(await content.arrayBuffer());
-        await github.createOrUpdateFile(path, data, branch, sha);
+    /** a deletion of the file, when it exists on github */
+    const deletionOf = (path: string): FileChange[] => {
+        const entry = github.store.findEntry(branch, path);
+        const exists = entry && entry.type !== 'dir' && !entry.isDummy;
+        return exists ? [{ path, content: null }] : [];
     };
 
-    const deleteFile = async (path: string) => {
-        const file = loadedFile(path);
-        if (file) {
-            await github.deleteFile(file);
-        }
-    };
+    const asBytes = async (blob: Blob) => new Uint8Array(await blob.arrayBuffer());
 
     const loadSidecar = async (): Promise<ExcalidrawInitialDataState | null> => {
         const sidecar = await fetchFile(excaliSrc);
@@ -68,12 +63,12 @@ export const githubImageStorage = (
         },
         save: async (state, blob, asWebp) => {
             const { imgExport, excaliExport, isRenamed } = exportPaths(imagePath, excaliSrc, imgName, asWebp);
-            await writeFile(excaliExport, JSON.stringify(state, null, 2));
-            await writeFile(imgExport, blob);
-            if (isRenamed) {
-                await deleteFile(imagePath);
-                await deleteFile(excaliSrc);
-            }
+            const oldFiles = isRenamed ? [...deletionOf(imagePath), ...deletionOf(excaliSrc)] : [];
+            await github.commitFiles(branch, `Update drawing ${imgExport}`, [
+                { path: excaliExport, content: JSON.stringify(state, null, 2) },
+                { path: imgExport, content: await asBytes(blob) },
+                ...oldFiles
+            ]);
             return imgExport;
         },
         restore: async () => {
@@ -83,11 +78,12 @@ export const githubImageStorage = (
                 return null;
             }
             const restoredPath = excaliSrc.replace(`${imgName}.excalidraw`, original.name);
-            await writeFile(restoredPath, original.blob);
-            await deleteFile(excaliSrc);
-            if (restoredPath !== imagePath) {
-                await deleteFile(imagePath);
-            }
+            const oldImage = restoredPath !== imagePath ? deletionOf(imagePath) : [];
+            await github.commitFiles(branch, `Restore original ${restoredPath}`, [
+                { path: restoredPath, content: await asBytes(original.blob) },
+                ...deletionOf(excaliSrc),
+                ...oldImage
+            ]);
             return restoredPath;
         }
     };
