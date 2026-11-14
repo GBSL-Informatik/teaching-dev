@@ -9,6 +9,7 @@ import {
     mdiEmoticonOutline,
     mdiFileDocumentEditOutline,
     mdiFormatListNumbered,
+    mdiFormatListText,
     mdiFormatPageBreak,
     mdiFormTextbox,
     mdiImport,
@@ -136,6 +137,13 @@ const BLOCKS: MenuItem[] = [
         keywords: ['import', 'export', 'esm'],
         create: () => nodes.raw_block.create({ kind: 'mdxjsEsm' }),
         isAvailable: isInTopLevelBlock
+    },
+    {
+        label: 'Definitionsliste',
+        icon: mdiFormatListText,
+        keywords: [':', 'deflist', 'definition', 'begriff'],
+        // the lines stay in one paragraph, the `deflist` plugin styles them
+        create: () => paragraph('Begriff\n: Definition')
     },
     {
         label: 'Trennlinie',
