@@ -1,6 +1,14 @@
+import { isEqual } from 'es-toolkit';
 import type { PhrasingContent, TableRow } from 'mdast';
 import type { Mark, Node } from 'prosemirror-model';
-import type { ContainerFormat, DirectiveAttributes, ItemFormat, JsxAttribute, MarkName } from '../schema';
+import type {
+    ContainerFormat,
+    DirectiveAttributes,
+    ItemFormat,
+    JsxAttribute,
+    JsxOpeningTag,
+    MarkName
+} from '../schema';
 import { imageMarkdown } from './imageAlt';
 import { originalMarkdown, originalSeparator } from './origin';
 import { stringifyMdast } from './syntax';
@@ -85,7 +93,7 @@ class ProseMirrorToMarkdown {
                 return this.jsxFlow(node);
             case 'jsx_flow_void':
                 return (
-                    node.attrs.format?.openingTag ??
+                    originalOpeningTag(node) ??
                     `<${node.attrs.name}${jsxAttributes(node.attrs.attributes)} />`
                 );
             case 'footnote_definition':
@@ -208,7 +216,7 @@ class ProseMirrorToMarkdown {
     private jsxFlow(node: Node) {
         const { name, attributes } = node.attrs;
         const format: ContainerFormat = node.attrs.format ?? DEFAULT_JSX_FORMAT;
-        const opening = format.openingTag ?? `<${name}${jsxAttributes(attributes)}>`;
+        const opening = originalOpeningTag(node) ?? `<${name}${jsxAttributes(attributes)}>`;
         const children = childrenOf(node);
         if (children.every(isEmptyBlock)) {
             return `${opening.replace(/\s*\/?>$/, '')} />`;
@@ -398,6 +406,18 @@ export const directiveAttributes = (attributes: DirectiveAttributes): string => 
         return [`${key}=${quote(value)}`];
     });
     return parts.length > 0 ? `{${parts.join(' ')}}` : '';
+};
+
+/**
+ * The opening tag of a jsx node as written in the source, while the node still has the name and
+ * attributes parsed from it. Once they are changed, the tag is written anew.
+ */
+export const originalOpeningTag = (node: Node): string | undefined => {
+    const tag: JsxOpeningTag | undefined = node.attrs.format?.openingTag;
+    if (!tag || tag.name !== node.attrs.name || !isEqual(tag.attributes, node.attrs.attributes)) {
+        return undefined;
+    }
+    return tag.source;
 };
 
 export const jsxAttributes = (attributes: JsxAttribute[]): string => {

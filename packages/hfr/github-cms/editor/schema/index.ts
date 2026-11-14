@@ -17,13 +17,21 @@ export type JsxAttribute =
 
 export type DirectiveAttributes = Record<string, string>;
 
+/** an opening jsx tag as written, with the name and attributes it was parsed into */
+export interface JsxOpeningTag {
+    /** e.g. `<Foo\n  bar="baz"\n>` */
+    source: string;
+    name: string;
+    attributes: JsxAttribute[];
+}
+
 /**
  * Formatting details of the original source of a container node,
  * used to reproduce the original formatting when the container is serialized.
  */
 export interface ContainerFormat {
-    /** the opening jsx tag as written in the source, e.g. `<Foo\n  bar="baz"\n>` */
-    openingTag?: string;
+    /** the opening jsx tag as written in the source, see `originalOpeningTag` */
+    openingTag?: JsxOpeningTag;
     /** the number of colons of a directive fence */
     fence?: number;
     /** the indentation of the children */

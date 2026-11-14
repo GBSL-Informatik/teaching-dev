@@ -10,7 +10,6 @@ import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/Attri
 import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
-import { withJsxAttributes } from '../../jsxAttributes';
 import { jsxOpeningTagOf, parseJsxOpeningTag, withJsxOpeningTag } from '../../markdown/jsxOpeningTag';
 import { jsxAttributes } from '../../markdown/serialize';
 import { type JsxAttribute, schema } from '../../schema';
@@ -79,9 +78,7 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
             title={`Attribute von <${name}>`}
             rows={jsxAttributesToRows(attributes)}
             allowExpressions
-            onApply={(rows) =>
-                handle.updateAttrs(withJsxAttributes(handle.node, rowsToJsxAttributes(rows, attributes)))
-            }
+            onApply={(rows) => handle.updateAttrs({ attributes: rowsToJsxAttributes(rows, attributes) })}
         />
     );
 

@@ -1,16 +1,9 @@
 import type { MdxJsxFlowElement } from 'mdast-util-mdx-jsx';
 import type { Node } from 'prosemirror-model';
-import { type ContainerFormat, type JsxAttribute, schema } from '../schema';
+import { type ContainerFormat, type JsxOpeningTag, schema } from '../schema';
 import { toJsxAttributes } from './parse';
-import { DEFAULT_JSX_FORMAT, jsxAttributes } from './serialize';
+import { DEFAULT_JSX_FORMAT, jsxAttributes, originalOpeningTag } from './serialize';
 import { parseMdx } from './syntax';
-
-export interface JsxOpeningTag {
-    name: string;
-    attributes: JsxAttribute[];
-    /** the tag as typed, closed like the node: `<Name a="b">` or `<Name a="b" />` */
-    source: string;
-}
 
 const isVoid = (node: Node) => node.type === schema.nodes.jsx_flow_void;
 
@@ -18,10 +11,11 @@ const isVoid = (node: Node) => node.type === schema.nodes.jsx_flow_void;
  * The opening tag of a jsx node as written in the source, e.g. `<Foo bar="baz">`.
  */
 export const jsxOpeningTagOf = (node: Node): string => {
-    const { name, attributes, format } = node.attrs;
-    if (format?.openingTag) {
-        return format.openingTag;
+    const original = originalOpeningTag(node);
+    if (original) {
+        return original;
     }
+    const { name, attributes } = node.attrs;
     const tag = `<${name}${jsxAttributes(attributes)}`;
     return isVoid(node) ? `${tag} />` : `${tag}>`;
 };
@@ -40,6 +34,7 @@ export const parseJsxOpeningTag = (text: string, node: Node): JsxOpeningTag => {
     if (!element.name) {
         throw new Error('Der Name des Elements fehlt, z.B. <Name attribut="wert">.');
     }
+    // closed like the node: `<Name a="b">` or `<Name a="b" />`
     return {
         name: element.name,
         attributes: toJsxAttributes(element.attributes, 0),
@@ -56,7 +51,7 @@ export const withJsxOpeningTag = (node: Node, tag: JsxOpeningTag) => {
     return {
         name: tag.name,
         attributes: tag.attributes,
-        format: { ...format, openingTag: tag.source }
+        format: { ...format, openingTag: tag }
     };
 };
 

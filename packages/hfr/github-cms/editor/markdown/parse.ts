@@ -20,6 +20,7 @@ import {
     type DirectiveAttributes,
     ITEMS_DIRECTIVES,
     type JsxAttribute,
+    type JsxOpeningTag,
     schema
 } from '../schema';
 import { rawImageAlt } from './imageAlt';
@@ -214,18 +215,26 @@ class MdastToProseMirror {
     private jsxFlow(node: MdxJsxFlowElement) {
         const indent = (node.position?.start.column ?? 1) - 1;
         const attrs = { name: node.name ?? '', attributes: toJsxAttributes(node.attributes, indent) };
+        const openingTagOf = (source: string): JsxOpeningTag | undefined => {
+            const dedented = dedent(source, indent);
+            return dedented === undefined ? undefined : { source: dedented, ...attrs };
+        };
         if (node.children.length === 0) {
-            const openingTag = dedent(this.sourceOf(node), indent);
             return schema.nodes.jsx_flow_void.create({
                 ...attrs,
-                format: { openingTag, childIndent: '', leading: 0, trailing: 0 }
+                format: {
+                    openingTag: openingTagOf(this.sourceOf(node)),
+                    childIndent: '',
+                    leading: 0,
+                    trailing: 0
+                }
             });
         }
         const nodeStart = node.position?.start.offset ?? 0;
         const firstChildStart = node.children[0].position?.start.offset ?? nodeStart;
         const rawOpeningTag = this.source.slice(nodeStart, firstChildStart).trimEnd();
         const format = this.containerFormat(node, node.children, nodeStart + rawOpeningTag.length, {
-            openingTag: dedent(rawOpeningTag, indent)
+            openingTag: openingTagOf(rawOpeningTag)
         });
         return schema.nodes.jsx_flow.createAndFill({ ...attrs, format }, this.blocks(node.children))!;
     }

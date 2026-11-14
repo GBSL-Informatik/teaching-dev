@@ -5,7 +5,7 @@ import { useComputed } from '@tdev-hooks/useComputed';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { withJsxAttributes, withStringAttributes } from '../../../jsxAttributes';
+import { withStringAttributes } from '../../../jsxAttributes';
 import { type TabItemChild, tabItems } from '../../../tabs';
 import type { NodeViewProps } from '../../ReactNodeView';
 import styles from './styles.module.scss';
@@ -47,7 +47,7 @@ const TabsBar = observer(({ handle }: NodeViewProps) => {
         if (attributes === tab.node.attrs.attributes) {
             return;
         }
-        handle.updateChildAttrs(tab.index, withJsxAttributes(tab.node, attributes));
+        handle.updateChildAttrs(tab.index, { attributes });
     };
 
     return (

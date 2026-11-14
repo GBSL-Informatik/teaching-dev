@@ -141,13 +141,49 @@ Edit *me* please
             const { node, pos } = findNode(tr.doc, 'jsx_flow');
             tr.setNodeMarkup(pos, null, {
                 ...node.attrs,
-                attributes: [{ type: 'attribute', name: 'url', value: 'new' }],
-                format: { ...node.attrs.format, openingTag: undefined }
+                attributes: [{ type: 'attribute', name: 'url', value: 'new' }]
             });
         });
         expect(result).toMatchInlineSnapshot(`
           "<BrowserWindow url="new">
               Some   content
+          </BrowserWindow>
+          "
+        `);
+    });
+
+    it('regenerates the opening tag of a self-closing jsx element when its attributes change', () => {
+        const result = edit('<String\n    id="abc"\n/>\n', (tr) => {
+            const { node, pos } = findNode(tr.doc, 'jsx_flow_void');
+            tr.setNodeMarkup(pos, null, {
+                ...node.attrs,
+                attributes: [{ type: 'attribute', name: 'id', value: 'xyz' }]
+            });
+        });
+        expect(result).toBe('<String id="xyz" />\n');
+    });
+
+    it('keeps the opening tag of a jsx element when its attributes are set to equal ones', () => {
+        const source = `<BrowserWindow
+    url="same"
+>
+    Some   content
+</BrowserWindow>
+`;
+        const result = edit(source, (tr) => {
+            const { node, pos } = findNode(tr.doc, 'jsx_flow');
+            tr.setNodeMarkup(pos, null, {
+                ...node.attrs,
+                attributes: [{ type: 'attribute', name: 'url', value: 'same' }]
+            });
+            // a changed node is serialized anew, only its opening tag is reused
+            tr.insertText('!', endOfTextblock(tr.doc, 'Some   content'));
+        });
+        expect(result).toMatchInlineSnapshot(`
+          "<BrowserWindow
+              url="same"
+          >
+              Some   content!
           </BrowserWindow>
           "
         `);

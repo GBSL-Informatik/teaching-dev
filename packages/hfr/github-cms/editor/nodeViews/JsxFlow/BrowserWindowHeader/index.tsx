@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import StringAttributesForm, { type Field } from '../../../components/StringAttributesForm';
-import { stringAttribute, withJsxAttributes, withStringAttributes } from '../../../jsxAttributes';
+import { stringAttribute, withStringAttributes } from '../../../jsxAttributes';
 import type { JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
 import styles from './styles.module.scss';
@@ -31,7 +31,7 @@ const BrowserWindowHeader = observer(({ handle }: NodeViewProps) => {
         if (updated === attributes) {
             return;
         }
-        handle.updateAttrs(withJsxAttributes(handle.node, updated));
+        handle.updateAttrs({ attributes: updated });
     };
 
     const addressBar = isEditing ? (
