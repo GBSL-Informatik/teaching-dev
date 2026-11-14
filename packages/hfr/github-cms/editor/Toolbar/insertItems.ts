@@ -11,6 +11,7 @@ import {
     mdiFormatListNumbered,
     mdiFormatPageBreak,
     mdiFormTextbox,
+    mdiImport,
     mdiInformationOutline,
     mdiMathIntegral,
     mdiMathIntegralBox,
@@ -88,6 +89,9 @@ const jsx = (name: string, attributes: JsxAttribute[], children?: Node[]) => {
 const emptyOrderedList = () =>
     createNode(nodes.ordered_list, null, createNode(nodes.list_item, null, paragraph()));
 
+/** mdx only recognizes `import`/`export` at the top level of the document */
+const isInTopLevelBlock = (state: EditorState) => state.selection.$from.depth === 1;
+
 const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: uuidv4() });
 
 /** the type can be changed in the admonition itself */
@@ -125,6 +129,13 @@ const BLOCKS: MenuItem[] = [
         icon: mdiCodeBlockTags,
         keywords: ['<', 'jsx', 'html', 'div'],
         create: () => jsx('div', [], [paragraph('Text')])
+    },
+    {
+        label: 'MDX import/export',
+        icon: mdiImport,
+        keywords: ['import', 'export', 'esm'],
+        create: () => nodes.raw_block.create({ kind: 'mdxjsEsm' }),
+        isAvailable: isInTopLevelBlock
     },
     {
         label: 'Trennlinie',
