@@ -37,10 +37,13 @@ const insertHardBreak: Command = chainCommands(exitCode, (state, dispatch) => {
     return true;
 });
 
+// In each chain, the first command that applies handles the key, so the order matters.
+// Commands not applying fall through to `baseKeymap`, see `createPlugins`.
 const editorKeymap = keymap({
     'Mod-z': undo,
     'Shift-Mod-z': redo,
     'Mod-y': redo,
+    // first, Backspace right after a markdown shortcut restores the typed text, e.g. `- `
     Backspace: chainCommands(undoInputRule, deleteEmptyDirectiveItem),
     'Mod-b': toggleMarkOnWord(marks.strong),
     'Mod-i': toggleMarkOnWord(marks.emphasis),
@@ -49,21 +52,27 @@ const editorKeymap = keymap({
     'Mod-k': toggleMarkOnWord(marks.kbd),
     'Shift-Enter': insertHardBreak,
     // like a page break in word processors: after the directive or component ending at the cursor,
-    // the next card or column, a line break elsewhere
+    // the next card or column, a line break elsewhere. The innermost container wins: at the end of
+    // an admonition inside a card, the admonition is left (`leaveIsolatingNode` skips the cards).
     'Mod-Enter': chainCommands(
         leaveIsolatingNode,
         withoutSpacesAtCursor(splitDirectiveItem),
         insertHardBreak
     ),
     Enter: chainCommands(
+        // first: splitting the paragraph, as all following commands may, would end the definition list
         enterInDeflist,
+        // before the containers, so that lists inside directives behave like lists elsewhere
         withoutSpacesAtCursor(splitListItem(nodes.list_item)),
+        // these only act on an empty paragraph and never on the same one: their order is free
         enterInDirectiveItem,
         enterAtEndOfIsolatingNode,
+        // last: it can not leave directives and components, see `isolatingNodes.ts`
         withoutSpacesAtCursor(baseKeymap.Enter)
     ),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
     'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),
+    // the first press leaves inline code at the start or end of a textblock, the second moves into a code block
     ArrowLeft: chainCommands(arrowOutOfCode('left'), arrowIntoCode('left')),
     ArrowRight: chainCommands(arrowOutOfCode('right'), arrowIntoCode('right')),
     ArrowUp: arrowIntoCode('up'),
@@ -110,6 +119,7 @@ export const createPlugins = (document: MdxDocument): Plugin[] => [
     suggestionMenu(suggestionSources(document)),
     imageFiles(document),
     markdownInputRules,
+    // before the base keymap, which handles the keys not handled by the editor's commands
     editorKeymap,
     keymap(baseKeymap),
     history(),
@@ -121,5 +131,6 @@ export const createPlugins = (document: MdxDocument): Plugin[] => [
     leaveCode(),
     rawSelection(),
     deflist(),
+    // last, as recommended by prosemirror-tables: it handles mouse and arrow key events in tables broadly
     tableEditing()
 ];
