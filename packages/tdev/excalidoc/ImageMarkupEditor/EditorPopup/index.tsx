@@ -1,101 +1,42 @@
-import { mdiClose, mdiImageEditOutline } from '@mdi/js';
-import Button from '@tdev-components/shared/Button';
-import Card from '@tdev-components/shared/Card';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import requestDocusaurusRootAcess from '@tdev-components/utils/localFS/requestDocusaurusRootAcess';
 import { useStore } from '@tdev-hooks/useStore';
-import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
-import Popup from 'reactjs-popup';
-import type { PopupActions } from 'reactjs-popup/dist/types';
-import ImageMarkupEditor from '..';
-import useExcalidrawSource from '../hooks/useExcalidrawSource';
-import styles from './styles.module.scss';
+import extractExalidrawImageName from '../helpers/extractExalidrawImageName';
+import ImageEditorPopup from '../ImageEditorPopup';
+import { fsImageStorage } from '../storage';
 
 interface Props {
     src: string;
     className?: string;
 }
 
+/**
+ * Edits an image of the docusaurus root directory, using the File System Access API (dev mode).
+ */
 const EditorPopup = observer((props: Props) => {
     const sessionStore = useStore('sessionStore');
-    const ref = React.useRef<PopupActions>(null);
-    const root = sessionStore.fileSystemDirectoryHandles.get('root') || null;
-    const { excaliState, setExcaliState, mimeType, load, save, restore } = useExcalidrawSource(
-        root,
-        props.src
-    );
+
+    const openStorage = async () => {
+        if (!sessionStore.fileSystemDirectoryHandles.get('root')) {
+            const hasAccess = await requestDocusaurusRootAcess();
+            if (!hasAccess) {
+                return null;
+            }
+        }
+        const root = sessionStore.fileSystemDirectoryHandles.get('root');
+        if (!root) {
+            window.alert('Kein Zugriff auf lokale Dateien. Bitte aktiviere den Zugriff.');
+            return null;
+        }
+        return fsImageStorage(root, props.src);
+    };
 
     return (
-        <Popup
-            trigger={
-                <span className={clsx(props.className)}>
-                    <Button icon={mdiImageEditOutline} size={SIZE_S} />
-                </span>
-            }
-            lockScroll
-            closeOnEscape={false}
-            nested
-            closeOnDocumentClick={false}
-            onOpen={async () => {
-                if (!sessionStore.fileSystemDirectoryHandles.get('root')) {
-                    const result = await requestDocusaurusRootAcess();
-                    if (!result) {
-                        ref.current?.close();
-                        return;
-                    }
-                }
-                if (!sessionStore.fileSystemDirectoryHandles.get('root')) {
-                    window.alert('Kein Zugriff auf lokale Dateien. Bitte aktiviere den Zugriff.');
-                    return;
-                }
-                await load();
-            }}
-            onClose={() => {
-                setExcaliState(null);
-            }}
-            ref={ref}
-            modal
-            on="click"
-            overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
-        >
-            <Card
-                classNames={{ body: clsx(styles.body), card: clsx(styles.card) }}
-                header={
-                    <div className={clsx(styles.header)}>
-                        <h3>Bild bearbeiten</h3>
-                        <Button
-                            icon={mdiClose}
-                            text="Schliessen"
-                            onClick={() => {
-                                ref.current?.close();
-                            }}
-                        />
-                    </div>
-                }
-            >
-                {excaliState && (
-                    <ImageMarkupEditor
-                        initialData={excaliState}
-                        mimeType={mimeType}
-                        onDiscard={() => {
-                            ref.current?.close();
-                        }}
-                        onSave={async (state, blob, asWebp) => {
-                            await save(state, blob, asWebp);
-                            ref.current?.close();
-                        }}
-                        onRestore={async () => {
-                            const restored = await restore();
-                            if (restored) {
-                                ref.current?.close();
-                            }
-                        }}
-                    />
-                )}
-            </Card>
-        </Popup>
+        <ImageEditorPopup
+            className={props.className}
+            mimeType={extractExalidrawImageName(props.src).mimeType}
+            openStorage={openStorage}
+        />
     );
 });
 

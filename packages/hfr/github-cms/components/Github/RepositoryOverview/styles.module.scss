@@ -1,0 +1,23 @@
+.card {
+    width: min(50em, 95vw);
+    max-height: 85vh;
+    .account {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .body {
+        overflow-y: auto;
+        .navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1em;
+        }
+        .home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+    }
+}

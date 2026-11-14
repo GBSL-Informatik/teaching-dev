@@ -17,7 +17,7 @@ const MdxEditor = observer((props: Props) => {
             }
         >
             {() => {
-                const LibComponent = require('./CmsMdxEditor').default;
+                const LibComponent = require('../../editor').default;
                 return <LibComponent {...props} />;
             }}
         </BrowserOnly>

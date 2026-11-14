@@ -2,10 +2,13 @@ import Card from '@tdev-components/shared/Card';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { useCmsStore } from '../../../hooks/useCmsStore';
 import { default as DirModel } from '../../../models/Dir';
-import UserAvatar from '../../Github/AccountOptions/UserAvatar';
 import Dir from '../../Github/iFile/Dir';
+import RepositoryOverviewButton from '../../Github/RepositoryOverviewButton';
+import UserAvatar from '../../Github/UserAvatar';
 import styles from './styles.module.scss';
+import UploadDialog, { type DroppedFiles } from './UploadDialog';
 
 interface Props {
     dir?: DirModel;
@@ -18,6 +21,12 @@ interface Props {
 
 const Directory = observer((props: Props) => {
     const { dir } = props;
+    const cmsStore = useCmsStore();
+    const [upload, setUpload] = React.useState<DroppedFiles | null>(null);
+    const handleDropFiles = React.useCallback(
+        (dir: DirModel, files: File[]) => setUpload({ dir, files }),
+        []
+    );
     React.useEffect(() => {
         if (dir && !dir.isOpen) {
             dir.setOpen(true);
@@ -29,7 +38,12 @@ const Directory = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.directory, props.className, props.compact && styles.compact)}>
-            {props.showAvatar && <UserAvatar showOptions />}
+            {props.showAvatar && (
+                <div className={clsx(styles.account)}>
+                    <UserAvatar />
+                    <RepositoryOverviewButton />
+                </div>
+            )}
             <Card
                 classNames={{
                     body: styles.cardBody,
@@ -37,9 +51,14 @@ const Directory = observer((props: Props) => {
                 }}
             >
                 <ul className={clsx(styles.dirTree)}>
-                    <Dir dir={dir} showActions={props.showActions} />
+                    <Dir
+                        dir={dir}
+                        showActions={props.showActions}
+                        onDropFiles={cmsStore.canModifyActiveBranch ? handleDropFiles : undefined}
+                    />
                 </ul>
             </Card>
+            <UploadDialog upload={upload} onClose={() => setUpload(null)} />
         </div>
     );
 });

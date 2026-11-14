@@ -1,0 +1,75 @@
+.label {
+    font-family: var(--ifm-heading-font-family);
+    font-weight: var(--ifm-heading-font-weight);
+    font-size: var(--ifm-h4-font-size);
+}
+.input {
+    padding: 0.3em 0.5em;
+    font-family: var(--ifm-font-family-monospace);
+    border: 1px solid var(--ifm-color-emphasis-400);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+}
+
+/* fixed, so it is not clipped by a popover; positioned by `useFloatingPlacement` */
+.dropdown {
+    position: fixed;
+    z-index: var(--ifm-z-index-dropdown);
+    max-width: calc(100vw - 16px);
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 0.25em;
+    background: var(--ifm-background-surface-color);
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    box-shadow: var(--ifm-global-shadow-md);
+    &.list {
+        display: flex;
+        flex-direction: column;
+        min-width: 14em;
+    }
+    &.grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(5.5em, 1fr));
+        gap: 0.2em;
+        width: 360px;
+    }
+    .option {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        padding: 0.25em 0.5em;
+        border: 1px solid transparent;
+        border-radius: var(--ifm-global-radius);
+        background: none;
+        color: var(--ifm-font-color-base);
+        font-family: var(--ifm-font-family-monospace);
+        text-align: left;
+        white-space: nowrap;
+        cursor: pointer;
+        &.highlighted {
+            background: var(--ifm-color-emphasis-200);
+        }
+        &.current {
+            border-color: var(--ifm-color-primary);
+        }
+    }
+    &.grid .option {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.2em;
+        padding: 0.3em 0.2em;
+    }
+    /* invisible until placed, but still focusable (unlike `visibility: hidden`) */
+    &.measuring {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .empty {
+        grid-column: 1 / -1;
+        padding: 0.5em;
+        text-align: center;
+        color: var(--ifm-color-emphasis-600);
+    }
+}

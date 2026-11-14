@@ -1,18 +1,19 @@
+/* framed like the visual editor, so that the header stays at the same place when switching */
 .codeEditor {
-    background: var(--prism-background-color);
-    color: var(--prism-color);
-    margin: 1em;
-    margin-bottom: var(--ifm-leading);
-    box-shadow: var(--ifm-global-shadow-lw);
-    border-radius: var(--ifm-code-border-radius);
-    .header {
-        border-bottom: 1px solid var(--ifm-color-emphasis-300);
-        font-size: var(--ifm-code-font-size);
-        padding: 0.75rem var(--ifm-pre-padding);
-        border-top-left-radius: inherit;
-        border-top-right-radius: inherit;
-        font-weight: 500;
-        display: flex;
-        justify-content: space-between;
+    margin: 0 1px 1em 1px;
+    box-shadow: var(--ifm-global-shadow-md);
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+}
+.warning {
+    margin: 0.5em;
+}
+
+@media screen and (max-width: 620px) {
+    .codeEditor {
+        margin: 0 0 1em 0;
+        border-inline: none;
+        border-radius: 0;
     }
 }

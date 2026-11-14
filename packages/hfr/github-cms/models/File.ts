@@ -1,7 +1,9 @@
+import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
 import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, observable } from 'mobx';
 import { Position } from 'unist';
 import { CmsStore } from '../stores/CmsStore';
+import { Asset } from './Dir';
 import iFile, { FileProps } from './iFile';
 
 class File extends iFile {
@@ -18,7 +20,10 @@ class File extends iFile {
      */
     @observable accessor resetCounter = 0;
 
-    @observable accessor preventMdxEditor = false;
+    /** a markdown file is shown in the source editor instead of the visual editor */
+    @observable accessor showsSource = false;
+    /** why the source editor is shown, e.g. the file is not valid mdx. Null when chosen by the user */
+    @observable accessor sourceReason: string | null = null;
 
     constructor(props: FileProps, store: CmsStore) {
         super(props, store);
@@ -42,8 +47,16 @@ class File extends iFile {
     }
 
     @action
-    setPreventMdxEditor(prevent: boolean) {
-        this.preventMdxEditor = prevent;
+    showSource(reason: string | null = null) {
+        this.showsSource = true;
+        this.sourceReason = reason;
+    }
+
+    /** the visual editor shows the source editor again when the file is not valid mdx */
+    @action
+    showVisual() {
+        this.showsSource = false;
+        this.sourceReason = null;
     }
 
     /**
@@ -65,7 +78,9 @@ class File extends iFile {
         this.refContent = content;
         if (isInit) {
             this._pristine = content;
+            return;
         }
+        this.store.drafts.sync(this);
     }
 
     @computed
@@ -80,16 +95,61 @@ class File extends iFile {
     @action
     save(commitMessage?: string) {
         this.apiState = ApiState.SYNCING;
-        this.store.github?.saveFile(this, commitMessage).catch(
-            action(() => {
-                this.apiState = ApiState.IDLE;
-            })
-        );
+        // a saved file is usually replaced by a new model, but not when the response is unexpected
+        const handleDone = action(() => {
+            this.apiState = ApiState.IDLE;
+        });
+        this.store.github?.saveFile(this, commitMessage).then(handleDone, handleDone);
+    }
+
+    /** `./images` next to the file, where its images are uploaded to */
+    @computed
+    get imageDirPath() {
+        return this.resolvePath(`./${Asset.IMAGE}`);
+    }
+
+    /** the images in `./images` next to the file, loaded with `loadImages` */
+    @computed
+    get images(): iFile[] {
+        return this.store
+            .findChildren(this.branch, this.imageDirPath)
+            .filter((entry): entry is Exclude<typeof entry, { type: 'dir' }> => entry.type !== 'dir')
+            .filter((entry) => entry.isImage);
+    }
+
+    @action
+    loadImages() {
+        // the directory does not exist before the first image is uploaded
+        return this.store.github?.fetchDirectory(this.branch, this.imageDirPath).catch(() => undefined);
+    }
+
+    /** the entries of the directory at the path relative to the file, loaded with `loadDirectory` */
+    entriesAt(relDirPath: string) {
+        return this.store.findChildren(this.branch, this.resolvePath(relDirPath));
+    }
+
+    @action
+    loadDirectory(relDirPath: string) {
+        const path = trimSlashes(this.resolvePath(relDirPath));
+        const dir = this.store.findEntry(this.branch, path);
+        if (dir?.type === 'dir' && dir.isFetched) {
+            return Promise.resolve();
+        }
+        // e.g. while a path is typed, the directory may not exist
+        return this.store.github?.fetchDirectory(this.branch, path).catch(() => undefined);
     }
 
     @computed
     get isDirty() {
         return this.content !== this._pristine;
+    }
+
+    /** shows the unsaved changes kept in the browser, see `DraftStore` */
+    @action
+    restoreContent(content: string) {
+        this.setContent(content);
+        // remounts an open editor, which keeps its own state of the content
+        this.resetCounter++;
     }
 
     @action

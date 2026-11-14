@@ -1,4 +1,5 @@
 import { RestEndpointMethodTypes as GhTypes, Octokit } from '@octokit/rest';
+import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
 import { ApiState } from '@tdev-stores/iStore';
 import { action, computed, IObservableArray, observable, observableRef } from 'mobx';
 import { CmsStore } from '../stores/CmsStore';
@@ -8,7 +9,7 @@ import Dir from './Dir';
 import { default as FileModel } from './File';
 import FileStub from './FileStub';
 import PR from './PR';
-import { convertToBase64, isBinaryFile, withoutPreviewPRName } from './helpers';
+import { convertToBase64, isBinaryFile, isSameOrInside, movedPath, withoutPreviewPRName } from './helpers';
 import { FileStubProps, iFile } from './iFile';
 
 export type GhRepo = GhTypes['repos']['get']['response']['data'];
@@ -16,7 +17,26 @@ export type GhBranch = GhTypes['repos']['listBranches']['response']['data'][numb
 export type GhPr =
     GhTypes['pulls']['list']['response']['data'][number] | GhTypes['pulls']['create']['response']['data'];
 
+type TreeEntry = GhTypes['git']['createTree']['parameters']['tree'][number];
+
+/** writes the content to the file at `path`, or deletes the file when the content is `null` */
+export interface FileChange {
+    path: string;
+    content: string | Uint8Array<ArrayBuffer> | null;
+}
+
+export type MergeMethod = NonNullable<GhTypes['pulls']['merge']['parameters']['merge_method']>;
+
+/** squash first: it keeps the intermediate versions, e.g. of an image saved several times, out of the history */
+const MERGE_METHOD_SETTINGS = {
+    squash: 'allow_squash_merge',
+    merge: 'allow_merge_commit',
+    rebase: 'allow_rebase_merge'
+} as const satisfies Record<MergeMethod, keyof GhRepo>;
+
 const PR_PAGE_SIZE = 20;
+const BLOB_MODE = { mode: '100644', type: 'blob' } as const;
+const TREE_MODE = { mode: '040000', type: 'tree' } as const;
 type FileEntry = FileStub | BinFile | FileModel | Dir;
 
 const WritePermission = new Set(['admin', 'write']);
@@ -87,6 +107,13 @@ class Github {
         const before = this.store.repoKey;
         return this.octokit.repos
             .get({ repo: this.store.repoName, owner: this.store.repoOwner, _: Date.now() })
+            .catch((err) => {
+                // github answers 404 for repositories without access, too
+                if (err.status === 404) {
+                    this.store.handleRepoNotFound(before);
+                }
+                throw err;
+            })
             .then(
                 action((res) => {
                     if (before !== this.store.repoKey) {
@@ -150,6 +177,13 @@ class Github {
             return undefined;
         }
         return this.repo.default_branch;
+    }
+
+    /** the merge methods allowed in the repository, a method is offered when its setting is unknown */
+    @computed
+    get mergeMethods(): MergeMethod[] {
+        const methods = Object.keys(MERGE_METHOD_SETTINGS) as MergeMethod[];
+        return methods.filter((method) => this.repo?.[MERGE_METHOD_SETTINGS[method]] !== false);
     }
 
     @computed
@@ -244,23 +278,27 @@ class Github {
 
     @action
     saveFileInNewBranchAndCreatePr(file: FileModel, newBranch: string, skipCreatePr?: boolean) {
-        return this.createNewBranch(newBranch)
-            .then(async () => {
-                await this.createOrUpdateFile(file.path, file.content, newBranch, file.sha);
-                if (!skipCreatePr) {
-                    await this.createPR(newBranch, withoutPreviewPRName(newBranch));
-                }
-                this.store.triggerNavigateToFile(newBranch, file.path);
-                return true;
-            })
-            .catch(() => {
-                return this.deleteBranch(newBranch)
-                    .then(() => false)
-                    .catch(() => {
-                        console.warn('Failed to delete branch', newBranch);
-                        return false;
-                    });
-            });
+        return file.withApiState(() =>
+            this.createNewBranch(newBranch)
+                .then(async () => {
+                    await this.createOrUpdateFile(file.path, file.content, newBranch, file.sha);
+                    if (!skipCreatePr) {
+                        await this.createPR(newBranch, withoutPreviewPRName(newBranch));
+                    }
+                    // the changes are saved in the new branch, they are no unsaved changes of this branch
+                    file.reset();
+                    this.store.triggerNavigateToFile(newBranch, file.path);
+                    return true;
+                })
+                .catch(() => {
+                    return this.deleteBranch(newBranch)
+                        .then(() => false)
+                        .catch(() => {
+                            console.warn('Failed to delete branch', newBranch);
+                            return false;
+                        });
+                })
+        );
     }
 
     @action
@@ -295,6 +333,49 @@ class Github {
             });
     }
 
+    /**
+     * Moves a file or folder in one commit, e.g. to rename it.
+     * Unsaved changes are not moved: their drafts are stored by path, see `DraftStore`.
+     */
+    @action
+    moveEntry(entry: FileModel | BinFile | FileStub | Dir, newPath: string) {
+        const { branch, path } = entry;
+        if (this.store.drafts.hasDraftsIn(branch, path)) {
+            return Promise.reject(new Error('Ungespeicherte Änderungen zuerst speichern oder verwerfen.'));
+        }
+        return entry
+            .withApiState(() => this.commitMove(entry, newPath))
+            .then(
+                action(() => {
+                    this._rmEntriesIn(branch, path);
+                    this.store.findBranch(branch)?.sync();
+                    if (branch === this.store.activeBranchName) {
+                        this.store.triggerNavigateToFile(
+                            branch,
+                            movedPath(this.store.activeFilePath, path, newPath)
+                        );
+                    }
+                    return this._fetchIntoTree(branch, newPath);
+                })
+            );
+    }
+
+    /**
+     * Writes and deletes the files in a single commit, e.g. an image together with its excalidraw sidecar.
+     * Unlike `createOrUpdateFile`, the files are overwritten without comparing their sha.
+     */
+    @action
+    commitFiles(branch: string, message: string, changes: FileChange[]) {
+        return Promise.all(changes.map((change) => this.toTreeEntry(change)))
+            .then((treeEntries) => this.commitTree(branch, message, treeEntries))
+            .then(
+                action(() => {
+                    this.store.findBranch(branch)?.sync();
+                    return Promise.all(changes.map((change) => this._reloadChangedEntry(branch, change)));
+                })
+            );
+    }
+
     @action
     rebaseBranch(branch: string, to: string) {
         // octokit has no "rebase" action, so do a merge
@@ -323,21 +404,26 @@ class Github {
             });
     }
 
+    /**
+     * Merges the PR with the first allowed merge method, unless a method is given.
+     * When the merge fails, the error is shown with the PR, to choose another method.
+     */
     @action
-    mergePR(prNumber: number) {
+    mergePR(prNumber: number, method: MergeMethod = this.mergeMethods[0] ?? 'squash') {
         const pr = this.PRs.find((pr) => pr.number === prNumber);
         let prepare: Promise<any> = Promise.resolve(undefined);
         if (pr && !pr.hasPreview) {
             prepare = pr.setPreview(true);
         }
         const branchName = pr?.branchName;
+        pr?.setMergeError(undefined);
         prepare.then(() => {
             this.octokit.pulls
                 .merge({
                     owner: this.store.repoOwner,
                     repo: this.store.repoName,
                     pull_number: prNumber,
-                    merge_method: 'merge', // or "squash" or "rebase"
+                    merge_method: method,
                     commit_title: `CMS: Merge #${prNumber}`
                 })
                 .then(
@@ -352,7 +438,11 @@ class Github {
                             this.deleteBranch(bName);
                         }
                     })
-                );
+                )
+                .catch((err) => {
+                    console.error('Error merging PR', prNumber, err);
+                    this.store.findPr(prNumber)?.setMergeError({ method, message: err.message });
+                });
         });
     }
 
@@ -564,13 +654,18 @@ class Github {
                         return;
                     }
                     branchModel?.sync();
+                    this.store.drafts.remove(branch, path);
                     switch (res.status) {
                         case 200:
                             // file updated
                             if (current) {
                                 const file = Github.NewFileModel(resContent, binContent, this.store);
                                 this._addFileEntry(branch, file);
-                                file.setEditing(true);
+                                // keep editing a saved file, but do not open other updated files
+                                // (e.g. the image and sidecar saved by the excalidraw editor)
+                                if (current.isEditing) {
+                                    file.setEditing(true);
+                                }
                                 return file;
                             }
                             break;
@@ -578,10 +673,49 @@ class Github {
                             // file created
                             const file = Github.NewFileModel(resContent, binContent, this.store);
                             this._addFileEntry(branch, file);
+                            if (!file.dir) {
+                                this._fetchIntoTree(branch, file.path);
+                            }
                             return file;
                     }
                 })
             );
+    }
+
+    /**
+     * Loads a new entry into the tree, e.g. after it was created or moved, together with its new folders,
+     * e.g. `foo` of a new file `foo/bar.png`. Opens the folders to show the entry.
+     */
+    @action
+    _fetchIntoTree(branch: string, path: string) {
+        const entry = FileStub.DummyFile(path, branch, this.store);
+        const ancestors = entry.tree.slice(0, -1);
+        // the root, when no folder of the branch is loaded yet
+        const closestDir = ancestors.filter((ancestor) => !!ancestor).pop();
+        const closestPath = closestDir ? trimSlashes(closestDir.path) : '';
+        // `fetchDirectoryTree` only loads the content of the new folders: the entry, or the first
+        // new folder, is part of the content of the closest existing folder
+        return this.fetchDirectory(branch, closestPath)
+            .then(() => this.fetchDirectoryTree(entry, true))
+            .catch((err) => console.error('Error fetching', path, err));
+    }
+
+    /**
+     * Updates the tree after the change was committed: a written file is replaced by a stub
+     * with its new sha, its content is loaded again when it is shown.
+     */
+    @action
+    _reloadChangedEntry(branch: string, { path, content }: FileChange) {
+        this.store.drafts.remove(branch, path);
+        if (content === null) {
+            this._rmEntriesIn(branch, path);
+            return Promise.resolve();
+        }
+        const parentDir = this.store.findEntry(branch, path)?.dir;
+        if (parentDir) {
+            return this.fetchDirectory(branch, trimSlashes(parentDir.path));
+        }
+        return this._fetchIntoTree(branch, path);
     }
 
     @action
@@ -839,6 +973,9 @@ class Github {
             }
             this.entries.get(branch)!.remove(old);
         }
+        if (file.type === 'file') {
+            this.store.drafts.restore(file);
+        }
         this.entries.get(branch)!.push(file);
     }
 
@@ -851,6 +988,18 @@ class Github {
             return;
         }
         this.entries.get(file.branch)!.remove(file);
+    }
+
+    /**
+     * Removes the entry and, for a folder, its content only from the entries map - like `_rmFileEntry`.
+     */
+    @action
+    _rmEntriesIn(branch: string, path: string) {
+        const entries = this.entries.get(branch);
+        if (!entries) {
+            return;
+        }
+        entries.filter((entry) => isSameOrInside(entry.path, path)).forEach((entry) => entries.remove(entry));
     }
 
     @action
@@ -869,6 +1018,58 @@ class Github {
             this.PRs.remove(current);
         }
         this.PRs.push(pr);
+    }
+
+    private commitMove(entry: FileModel | BinFile | FileStub | Dir, newPath: string) {
+        // the contents api does not tell the mode, executable files and symlinks become regular files
+        const { mode, type } = entry.type === 'dir' ? TREE_MODE : BLOB_MODE;
+        return this.commitTree(entry.branch, `Move ${entry.path} to ${newPath}`, [
+            { path: entry.path, mode, type, sha: null },
+            { path: newPath, mode, type, sha: entry.sha }
+        ]);
+    }
+
+    private async toTreeEntry(change: FileChange): Promise<TreeEntry> {
+        if (change.content === null) {
+            return { path: change.path, ...BLOB_MODE, sha: null };
+        }
+        const binContent =
+            typeof change.content === 'string' ? new TextEncoder().encode(change.content) : change.content;
+        const { data: blob } = await this.octokit.git.createBlob({
+            owner: this.store.repoOwner,
+            repo: this.store.repoName,
+            content: await convertToBase64(binContent),
+            encoding: 'base64'
+        });
+        return { path: change.path, ...BLOB_MODE, sha: blob.sha };
+    }
+
+    /**
+     * Applies the changes to the tree of the branch in a single commit, with the git data api.
+     * See https://docs.github.com/en/rest/git/trees#create-a-tree
+     */
+    private async commitTree(branch: string, message: string, changes: TreeEntry[]) {
+        const repo = { owner: this.store.repoOwner, repo: this.store.repoName };
+        const ref = `heads/${branch}`;
+
+        const { data: head } = await this.octokit.git.getRef({ ...repo, ref });
+        const { data: headCommit } = await this.octokit.git.getCommit({
+            ...repo,
+            commit_sha: head.object.sha
+        });
+        const { data: tree } = await this.octokit.git.createTree({
+            ...repo,
+            base_tree: headCommit.tree.sha,
+            tree: changes
+        });
+        const { data: commit } = await this.octokit.git.createCommit({
+            ...repo,
+            message,
+            tree: tree.sha,
+            parents: [head.object.sha]
+        });
+        // fails when the branch changed in the meantime, the changes are not applied then
+        await this.octokit.git.updateRef({ ...repo, ref, sha: commit.sha });
     }
 }
 

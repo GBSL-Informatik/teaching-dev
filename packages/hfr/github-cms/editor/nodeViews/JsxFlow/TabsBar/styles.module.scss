@@ -1,0 +1,30 @@
+.tabsBar {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0 0 0.5em 0;
+    /* styled by infima's `.tabs`, like on the page */
+    .tabs {
+        flex-grow: 1;
+        min-width: 0;
+        margin: 0;
+        padding-left: 0;
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 0.2em;
+            margin: 0;
+            /* the tab keeps its height */
+            .editButton {
+                margin-block: -0.4em;
+                opacity: 0.6;
+            }
+        }
+        .editing {
+            cursor: auto;
+        }
+    }
+    .layoutSwitch {
+        margin-left: auto;
+    }
+}

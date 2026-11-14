@@ -130,7 +130,10 @@ abstract class iEntry {
         if (this.path === '/') {
             return undefined;
         }
-        const path = this.path.replace(new RegExp(`${this.name}$`), '').replace(/\/+$/, '');
+        const pathWithoutName = this.path.endsWith(this.name)
+            ? this.path.slice(0, -this.name.length)
+            : this.path;
+        const path = pathWithoutName.replace(/\/+$/, '');
         if (path === '') {
             return '/';
         }

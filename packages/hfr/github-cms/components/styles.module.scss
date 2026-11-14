@@ -1,17 +1,19 @@
 .cms {
     --cms-tree-view-width: 0px;
-    --cms-toolbar-top-offset: 64px;
+    /* the height of the sticky header, the page has no navbar */
+    --cms-toolbar-top-offset: 8px;
 
     display: grid;
     grid-template-areas:
         'nav nav'
-        'fileTree content'
-        'fileTree footer';
+        'fileTree content';
     grid-template-columns: var(--cms-tree-view-width) minmax(10em, 1fr);
-    grid-template-rows: auto 1fr auto;
-    min-height: 60vh;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
     .header {
         grid-area: nav;
+        /* padding instead of margin: the gap stays when the header sticks to the top */
+        padding-top: 0.25rem;
         background-color: var(--ifm-background-color);
         border-top-left-radius: var(--ifm-global-radius);
         border-top-right-radius: var(--ifm-global-radius);
@@ -37,9 +39,8 @@
     }
     .content {
         grid-area: content;
-    }
-    .footer {
-        grid-area: footer;
+        /* wide content (e.g. a table) scrolls instead of widening the grid */
+        min-width: 0;
     }
     &.showFileTree {
         --cms-tree-view-width: 300px;
@@ -48,7 +49,6 @@
 
 @media screen and (max-width: 620px) {
     .cms {
-        margin: 0 0.5em;
         .header {
             justify-content: flex-start;
         }
@@ -64,10 +64,10 @@
 
 @media screen and (min-width: 900px) {
     .cms {
-        --cms-toolbar-top-offset: 88px;
+        --cms-toolbar-top-offset: 32px;
         .header {
             position: sticky;
-            top: 60px;
+            top: 0;
             z-index: var(--ifm-z-index-dropdown);
         }
     }
@@ -76,6 +76,16 @@
 @media screen and (max-width: 1200px) {
     .cms {
         margin: 0 1em;
+    }
+}
+
+/* after the 1200px rule: on phones, the editor uses the whole width */
+@media screen and (max-width: 620px) {
+    .cms {
+        margin: 0;
+        .header {
+            padding-inline: 0.3em;
+        }
     }
 }
 

@@ -9,6 +9,7 @@ import AddFilePopup from '../File/AddOrUpdateFile/AddFilePopup';
 import PreviewPopup from '../File/FilePreview/PreviewPopup';
 import shared from '../styles.module.scss';
 import styles from './styles.module.scss';
+import { useFileDrop } from './useFileDrop';
 
 interface Props<T extends iFile = iFile> {
     dir: DirModel;
@@ -27,11 +28,14 @@ interface Props<T extends iFile = iFile> {
     hideEmpty?: boolean;
     skipLoadOnHover?: boolean;
     onSelect?: (file: T) => void;
+    /** makes the folders drop targets for files of the file system */
+    onDropFiles?: (dir: DirModel, files: File[]) => void;
 }
 
 const Dir = observer((props: Props) => {
-    const { dir, filter, useLocalMode, expandedByDefault } = props;
+    const { dir, filter, useLocalMode, expandedByDefault, onDropFiles } = props;
     const [isOpen, setOpen] = React.useState(!!props.expandedOnLoad);
+    const { isDragOver, dropHandlers } = useFileDrop(onDropFiles && ((files) => onDropFiles(dir, files)));
     React.useEffect(() => {
         if (expandedByDefault && expandedByDefault.includes(dir.name)) {
             setOpen(true);
@@ -51,7 +55,11 @@ const Dir = observer((props: Props) => {
 
     return (
         <li className={clsx(shared.item, styles.dir)}>
-            <div className={clsx(styles.dirName)} onMouseEnter={onHover}>
+            <div
+                className={clsx(styles.dirName, isDragOver && styles.dropTarget)}
+                onMouseEnter={onHover}
+                {...dropHandlers}
+            >
                 <span
                     className={clsx(styles.dir)}
                     onClick={() => {
@@ -92,7 +100,7 @@ const Dir = observer((props: Props) => {
             </div>
             {(useLocalMode ? isOpen : dir.isOpen) && dir.children.length > 0 && (
                 <ul>
-                    {dir.children.map((child, idx) => {
+                    {dir.children.map((child) => {
                         if (child.type === 'dir') {
                             if (props.hideEmpty && filter && child.isFetched) {
                                 if (!child.children.find((item) => item.type === 'dir' || filter(item))) {
@@ -101,20 +109,21 @@ const Dir = observer((props: Props) => {
                             }
                             return (
                                 <Dir
-                                    key={idx}
+                                    key={child.path}
                                     dir={child}
                                     showActions={props.showActions}
                                     useLocalMode={useLocalMode}
                                     filter={filter}
                                     expandedByDefault={expandedByDefault || []}
                                     onSelect={props.onSelect}
+                                    onDropFiles={onDropFiles}
                                 />
                             );
                         }
                         if (!filter || filter(child)) {
                             return (
                                 <File
-                                    key={idx}
+                                    key={child.path}
                                     file={child}
                                     showActions={props.showActions}
                                     onSelect={props.onSelect}

@@ -1,0 +1,33 @@
+.header {
+    padding: 0.1em 0.4em;
+    background: var(--ifm-color-emphasis-200);
+    border-top-left-radius: var(--ifm-code-border-radius);
+    border-top-right-radius: var(--ifm-code-border-radius);
+    /* only the meta string gives way, the language stays readable */
+    /* grows, so the meta string can be edited in the whole free space */
+    .fence {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        min-width: 0;
+        .fenceStart {
+            flex-shrink: 0;
+            display: flex;
+        }
+        /* like the separator between the icon and the text of a button */
+        .divider {
+            flex-shrink: 0;
+            align-self: stretch;
+            margin: 0.25em 0;
+            border-left: 1px solid var(--ifm-color-emphasis-400);
+        }
+        .meta {
+            opacity: 0.75;
+        }
+    }
+}
+.preview {
+    padding: 0.5em;
+    overflow-x: auto;
+}

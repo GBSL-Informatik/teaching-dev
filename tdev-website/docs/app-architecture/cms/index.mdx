@@ -10,7 +10,7 @@ Das CMS ist aktuell noch in der Entwicklungsphase und kann noch Fehler oder Unvo
 
 ## Konzept
 
-Das CMS verwendet den [MdxEditor](https://mdxeditor.dev/) von [Petyo Ivanov](https://github.com/petyosi) und basiert auf dem [Lexical-Editor](https://lexical.dev/) von Meta aufgebaut. Die Anbindung an Github wird mit dem offiziellen [Octokit](https://github.com/octokit) vorgenommen, wobei für die Github-Anmeldung und die Zugriffstoken für Repositories die [Teaching-Dev API](https://github.com/GBSL-Informatik/teaching-api/pull/30) verwendet wird.
+Das CMS ist im Package __packages/hfr/github-cms__ umgesetzt. Der visuelle Editor basiert auf [ProseMirror](https://prosemirror.net/), der Zustand wird mit MobX verwaltet. Die Anbindung an Github wird mit dem offiziellen [Octokit](https://github.com/octokit) vorgenommen, wobei für die Github-Anmeldung und die Zugriffstoken für Repositories die [Teaching-Dev API](https://github.com/GBSL-Informatik/teaching-api/pull/30) verwendet wird.
 
 Dies ermöglicht es, dass direkt aus dem CMS heraus Änderungen an den Markdown-Dateien vorgenommen werden können. Da Octokit die Limitation mitbringt, dass nur eine Datei auf einmal bearbeitet werden kann, lassen sich übers CMS auch Branches erstellen und Pull-Requests erstellen - und Bonus: auch Mergen 🥳.
 
@@ -64,24 +64,80 @@ Bilder können ohne überprüfung, ob sie noch in einem Dokument verwendet werde
 :::
 
 
-### Plugins
+### Editor
 
-Für viele Erweiterungen wurden Plugins geschrieben. Die Plugins sind grundsätzlich an zwei Orten zu suchen:
+Der Editor liegt im Ordner __packages/hfr/github-cms/editor__:
 
-1. Unter `@tdev-components/Cms/MdxEditor/plugins` - alles was direkt mit dem MdxEditor zu tun hat und nicht auf einem Remark-Plugin basiert.
-2. Unter `@tdev-plugins/remark-*/mdx-editor-plugin` - alles was auf einem Remark-Plugin basiert liefert auch gleich das entsprechende MdxEditor-Plugin mit.
+`markdown/`
+: Wandelt MDX in ein ProseMirror-Dokument um und zurück. Geparst wird mit `mdast-util-from-markdown` und denselben Syntax-Erweiterungen wie in Teaching-Dev (MDX, GFM, Direktiven, Mathematik, Frontmatter).
+: Unveränderte Knoten werden mit ihrem ursprünglichen Markdown geschrieben. Wird eine Datei ohne Änderungen gespeichert, entsteht kein Diff, und eine Änderung betrifft nur die bearbeiteten Zeilen.
+`schema/`
+: Das ProseMirror-Schema. Verschachtelte Komponenten (Admonitions, Details, JSX-Elemente) sind normale Knoten mit Block-Inhalt. Das ganze Dokument wird in einem einzigen Editor mit einer Auswahl und einem Undo-Verlauf bearbeitet.
+: Was der Editor nicht darstellen kann (z.B. `import`-Anweisungen oder `{Ausdrücke}`), bleibt als Quelltext erhalten und kann direkt bearbeitet werden.
+: Die Elemente von `:::cards` und `:::flex` sind eigene Knoten (`directive_item`), im Markdown werden sie durch `::br` getrennt. Beim ersten Element wird ein `::br` ohne Attribute weggelassen, im Editor wird es ausgegraut angezeigt. Die Elemente werden wie auf der Seite nebeneinander angezeigt, mit denselben Klassen und Stilen (`columns`, `minWidth`, `flexBasis`, ...) wie im Remark-Plugin (`src/plugins/remark-flex-cards/flexOptions.ts`). Unveränderte Elemente behalten ihr ursprüngliches Markdown.
+`models/MdxDocument.ts`
+: Hält den ProseMirror-Zustand als MobX-Observable. Toolbar und Node-Views beobachten den Zustand, Änderungen werden verzögert als Markdown in die Datei geschrieben.
+`nodeViews/`
+: React-Komponenten für Knoten wie Direktiven, JSX-Elemente, Bilder oder Mathematik. Code-Blöcke werden mit CodeMirror bearbeitet, Mermaid-Diagramme neben ihrer Vorschau.
+: In CodeMirror wird mit 4 Leerzeichen eingerückt, [[Tab]] und [[Shift]] + [[Tab]] rücken den Code ein und aus. Mit [[Esc]] und danach [[Tab]] verlässt der Fokus den Code (`codeMirrorIndentation.ts`).
+: `:::tree` wird wie auf der Seite als Dateibaum angezeigt. Sobald der Cursor im Block steht (oder der Baum angeklickt wird), wird die Liste bearbeitet. Eine ungültige Liste, mit der die Seite nicht gebaut werden kann, bleibt sichtbar (`nodeViews/ContainerDirective/fileTree.ts`).
+: Medien-Direktiven (`::video`, `::audio`, `::youtube`, `::circuitverse`, `::learningapps`, `::codepen`) werden mit einer Vorschau angezeigt. Das Element mit seinen Stilen und Attributen wird mit derselben Funktion erzeugt wie im Remark-Plugin (`src/plugins/remark-media/mediaElement.ts`). Relative Pfade von `::audio` und `::video` werden aus dem Repository geladen und bei der Eingabe vervollständigt, ebenso die PDF-Dateien von `::pdf` (ohne Vorschau).
+: Bildunterschriften werden als Text (Markdown) unter dem Bild bearbeitet, die Bild-Optionen wie `--width=20em` separat in den Bild-Einstellungen. Beides wird im Alt-Text gespeichert.
+: Bilder können aus dem Dateisystem in den Editor gezogen oder aus der Zwischenablage eingefügt werden (z.B. ein Screenshot): Nach der Eingabe des Namens werden sie nach `./images` hochgeladen und an der Stelle eingefügt (`plugins/imageFiles.ts`).
+: Bilder aus dem Repository können mit Excalidraw bearbeitet werden, in jedem Browser. Wie im Dev-Modus liegt die Szene neben dem Bild in `<bild>.<ext>.excalidraw`; sie wird geladen, falls vorhanden, sonst aus dem Bild erstellt. Erst beim Speichern werden Szene und Bild auf den Branch committet (`nodeViews/Image/githubImageStorage.ts`).
+`plugins/`
+: ProseMirror-Plugins: Tastenkürzel, Markdown-Kürzel, Ziehgriff für Blöcke, Definitionslisten und UUID-Markierungen.
+: In `:::cards` und `:::flex` beginnt [[Ctrl]] + [[Enter]] beim Cursor ein neues Element, ebenso [[Enter]] in einem leeren letzten Absatz. [[Backspace]] am Anfang eines Elements verbindet es mit dem vorherigen (`plugins/directiveItems.ts`).
+: Folgt auf eine Direktive, eine Komponente oder eine Tabelle ein Block ohne Text (z.B. ein Code-Block), gibt es dazwischen keine Cursor-Position. [[Ctrl]] + [[Enter]] am Ende ihres Inhalts fügt deshalb einen Absatz danach ein, ebenso [[Enter]] in einem leeren letzten Absatz (`plugins/isolatingNodes.ts`). In Code-Blöcken fügt [[Ctrl]] + [[Enter]] einen Absatz nach dem Code-Block ein.
+: Endet oder beginnt ein Textblock mit Inline-Code oder Inline-MDX, verlässt der erste Druck auf [[→]] bzw. [[←]] den Code, erst der zweite wechselt in den nächsten Block, z.B. vom Titel einer `:::def` zum Inhalt (`plugins/leaveCode.ts`).
+: Zwei Leerzeichen am Ende von Inline-Code oder Inline-MDX verlassen diesen auch mitten im Absatz: Das erste Leerzeichen wird aus dem Code verschoben (`plugins/leaveCode.ts`).
+: Inline-MDX (z.B. `<Foo />` oder `{ausdruck}`) wird orange hervorgehoben und direkt im Text bearbeitet. Ein Klick auf den linken Rand wählt es ganz aus, z.B. um es zu verschieben (`plugins/rawSelection.ts`). Neues Inline-MDX wird mit «Einfügen» › «MDX» oder `/mdx` als `<span>Text</span>` eingefügt. «Einfügen» › «MDX-Block» fügt ein `<div>` ein, dessen Inhalt wie gewohnt bearbeitet wird; der Tag (z.B. `<Foo bar="baz">`) wird in der Kopfzeile geändert.
+`suggestions/`
+: Vorschläge, die beim Tippen erscheinen. Jede Quelle erkennt den getippten Text an einem regulären Ausdruck:
+: `/tip` zeigt die Schnellaktionen: die Einträge des Menüs «Einfügen», die Hinweis-Typen sowie Titel, Listen und Zitate. Innerhalb eines offenen JSX-Tags (z.B. `<Foo />`) erscheinen sie nicht.
+: `![` (oder `/bild`) zeigt die Bilder in `./images` neben der Datei mit einer Vorschau, «Anderes Bild...» öffnet den Dialog zum Hochladen oder Auswählen.
+: `/excalidraw-new` erstellt eine neue Excalidraw-Zeichnung in `./images` (webp, oder `/excalidraw-png-new`, `-jpg-`, `-svg-`). Beim Speichern werden Bild und Szene committet und das Bild an der Stelle eingefügt.
+: `:::`, `::` und `:` zeigen die registrierten Direktiven (`directiveNames.ts`, Hinweis-Typen aus der Docusaurus-Konfiguration). `:mdi` führt weiter zu `:mdi[`, wo ein Icon mit Vorschau ausgewählt wird.
+: Das Menü wird mit den Pfeiltasten bedient, [[Enter]] wendet den Vorschlag an, [[Esc]] schliesst das Menü. Das Plugin `plugins/suggestionMenu.ts` verwaltet den Zustand, `components/SuggestionMenu/` zeigt das Menü an.
+: Eine neue Direktive eines Remark-Plugins wird in `suggestions/directiveNames.ts` ergänzt.
+`Toolbar/insertItems.ts`
+: Die Einträge des Menüs «Einfügen». Ein Eintrag wird nur angezeigt, wenn er an der aktuellen Position eingefügt werden kann, z.B. `::br` nur innerhalb von `:::cards` oder `:::flex`.
+`imports.ts`
+: Ergänzt beim Einfügen einer Komponente die `import`-Anweisung am Anfang der Datei. Ist der Name bereits importiert, bleibt der bestehende Import unverändert.
+`SourceEditor/`
+: Bearbeitet den Quelltext einer Datei mit CodeMirror, z.B. für `.ts`-Dateien oder wenn der visuelle Editor ausgeschaltet ist.
+`components/MdxDiff/`
+: Zeigt die Änderungen seit dem letzten Speichern (nebeneinander oder untereinander). Einzelne Änderungen können rückgängig gemacht werden, der visuelle Editor lädt die Datei danach neu.
+
+Kann eine Datei nicht als MDX geparst werden, wird sie im Quelltext-Editor geöffnet.
+
+#### Neue Syntax unterstützen
+
+1. Knoten oder Markierung im Schema (`schema/index.ts`) ergänzen.
+2. Die Umwandlung in `markdown/parse.ts` und `markdown/serialize.ts` ergänzen.
+3. Optional eine Node-View in `nodeViews/` hinzufügen und in `nodeViews/index.ts` registrieren.
+
+Die Tests in __editor/markdown/tests__ prüfen unter anderem, dass alle Markdown-Dateien dieses Repositories unverändert bleiben, wenn sie geöffnet und wieder gespeichert werden.
+
+#### Komponente im Menü «Einfügen» anbieten
+
+Einen Eintrag in `COMPONENTS` in `Toolbar/insertItems.ts` ergänzen. Komponenten, die nicht in `src/theme/MDXComponents.tsx` registriert sind, brauchen einen `requiredImport`:
+
+```ts
+{
+    label: 'Browser-Fenster',
+    icon: mdiApplicationOutline,
+    create: () => jsx('BrowserWindow', [], [paragraph('Inhalt')]),
+    requiredImport: { name: 'BrowserWindow', source: '@tdev-components/BrowserWindow' }
+}
+```
 
 ## Todos
 
 - [ ] Installationsanleitung schreiben
 - [ ] Generischer Attribute-Editor fürs Frontmatter verwenden
 - [ ] Medien-Upload (aktuell nur für Bilder umgesetzt)
-- [ ] Keyboard-Events handeln, wenn innerhalb einer selbst geschriebenen Komponente
-    - [ ] KBD Node: 2x Leerschlag = aus dem KBD-Node raus
-    - [ ] BOX Node: 2x Leerschlag = aus dem BOX-Node raus
-    - [ ] Admonitions: ArrowUp = neuer Absatz vorher, falls zuoberst und kein Absatz vorher
-    - [ ] Admonitions: ArrowDown = neuer Absatz, falls zuunterst und kein Absatz nachher
-- [ ] Deflist Komponente hinzufügen
+- [ ] Vorschau für `::pdf`
 - [ ] Darkmode
 - [ ] Ansichts-Einstellungen speichern (Richtext / Markdown)
 
@@ -139,33 +195,4 @@ const config: Config = {
 };
 ```
 
-```json title="package.json"
-{
-    
-    "dependencies": {
-        "@lexical/clipboard": "^0.23.1",
-        "@lexical/link": "^0.23.1",
-        "@lexical/list": "^0.23.1",
-        "@lexical/markdown": "^0.23.1",
-        "@lexical/react": "^0.23.1",
-        "@lexical/rich-text": "^0.23.1",
-        "@lexical/selection": "^0.23.1",
-        "@lexical/utils": "^0.23.1",
-        "@mdxeditor/editor": "^3.24.0",
-        "@octokit/rest": "^21.1.0",
-        "browser-image-compression": "^2.0.2",
-        "mdast-util-gfm-footnote": "^2.1.0",
-        "mdast-util-math": "^3.0.0",
-        "micromark-extension-math": "^3.1.0",
-        "react-katex": "^3.0.1",
-        "react-select": "^5.9.0",
-    },
-    "devDependencies": {
-        "@types/react-dom": "^19.0.3",
-        "@types/react-katex": "^3.0.4",
-    },
-    "peerDependencies": {
-        "react-hook-form": "*"
-    },
-}
-```
+Die Abhängigkeiten sind in __packages/hfr/github-cms/package.json__ festgelegt und werden mit `yarn install` installiert.

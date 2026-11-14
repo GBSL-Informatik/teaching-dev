@@ -1,7 +1,4 @@
-import { mdiFileTree, mdiFileTreeOutline } from '@mdi/js';
 import Loader from '@tdev-components/Loader';
-import Button from '@tdev-components/shared/Button';
-import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -9,16 +6,20 @@ import React from 'react';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 import { default as BranchOverview } from '../../Github/Branch/ExpandableOverwiew';
 import { default as PrOverview } from '../../Github/PR/ExpandableOverwiew';
+import FileTreeToggle from '../FileTreeToggle';
 import BranchPathNav from './BranchPathNav';
 import styles from './styles.module.scss';
+import useReportVisibility from './useReportVisibility';
 
 interface Props {}
 
 const EditorNav = observer((props: Props) => {
     const cmsStore = useCmsStore();
     const { activeEntry, viewStore } = cmsStore;
-    const { showFileTree } = viewStore;
+    const [nav, setNav] = React.useState<HTMLDivElement | null>(null);
     const isMobile = useIsMobileView(900);
+    // on large screens, the nav sticks to the top, see `components/styles.module.scss`
+    useReportVisibility(isMobile ? nav : null);
     React.useEffect(() => {
         viewStore.setShowFileTree(!isMobile);
     }, [isMobile, viewStore]);
@@ -28,17 +29,9 @@ const EditorNav = observer((props: Props) => {
     }
 
     return (
-        <div className={clsx(styles.editorNav)}>
+        <div ref={setNav} className={clsx(styles.editorNav)}>
             {viewStore.showFileTree && <div className={clsx(styles.navLeftSpacer)} />}
-            <Button
-                icon={showFileTree ? mdiFileTree : mdiFileTreeOutline}
-                color={showFileTree ? 'blue' : undefined}
-                onClick={() => {
-                    viewStore.setShowFileTree(!showFileTree);
-                }}
-                className={clsx(styles.toggleFileTree)}
-                size={SIZE_S}
-            />
+            <FileTreeToggle />
             <BranchPathNav item={activeEntry} />
             <span className={clsx(styles.spacer)} />
             {cmsStore.activeBranch &&

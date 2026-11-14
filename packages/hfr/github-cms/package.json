@@ -4,23 +4,43 @@
     "main": "index.ts",
     "types": "index.ts",
     "dependencies": {
-        "@lexical/clipboard": "^0.35.0",
-        "@lexical/link": "^0.35.0",
-        "@lexical/list": "^0.35.0",
-        "@lexical/markdown": "^0.35.0",
-        "@lexical/plain-text": "^0.35.0",
-        "@lexical/react": "^0.35.0",
-        "@lexical/rich-text": "^0.35.0",
-        "@lexical/selection": "^0.35.0",
-        "@lexical/utils": "^0.35.0",
-        "@mdxeditor/editor": "^3.54.0",
-        "@octokit/rest": "^21.1.0"
+        "@codemirror/commands": "^6.2.4",
+        "@codemirror/language": "^6.10.0",
+        "@codemirror/language-data": "^6.5.1",
+        "@codemirror/merge": "^6.12.3",
+        "@codemirror/state": "^6.4.0",
+        "@codemirror/view": "^6.23.0",
+        "@octokit/rest": "^21.1.0",
+        "katex": "^0.16.47",
+        "mdast-util-directive": "^3.0.0",
+        "mdast-util-from-markdown": "^2.0.0",
+        "mdast-util-frontmatter": "^2.0.0",
+        "mdast-util-gfm": "^3.0.0",
+        "mdast-util-mdx": "^3.0.0",
+        "mdast-util-to-markdown": "^2.1.0",
+        "micromark-extension-directive": "^3.0.0",
+        "micromark-extension-frontmatter": "^2.0.0",
+        "micromark-extension-gfm": "^3.0.0",
+        "micromark-extension-mdxjs": "^3.0.0",
+        "prosemirror-commands": "^1.7.2",
+        "prosemirror-dropcursor": "^1.8.4",
+        "prosemirror-gapcursor": "^1.4.1",
+        "prosemirror-history": "^1.5.1",
+        "prosemirror-inputrules": "^1.5.1",
+        "prosemirror-keymap": "^1.2.3",
+        "prosemirror-model": "^1.25.12",
+        "prosemirror-schema-list": "^1.6.0",
+        "prosemirror-state": "^1.4.4",
+        "prosemirror-tables": "^1.8.5",
+        "prosemirror-transform": "^1.12.5",
+        "prosemirror-view": "^1.42.9"
     },
     "devDependencies": {
         "@docusaurus/core": "*",
         "@docusaurus/module-type-aliases": "*"
     },
     "peerDependencies": {
-        "@tdev/core": "1.0.0"
+        "@tdev/core": "1.0.0",
+        "@tdev/excalidoc": "1.0.0"
     }
 }

@@ -1,0 +1,125 @@
+.figure {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    border-radius: var(--ifm-global-radius);
+    &.selected {
+        outline: 2px solid var(--ifm-color-primary);
+    }
+    .frame {
+        position: relative;
+        max-width: 100%;
+    }
+    /* the natural size of the image, but not wider than the page */
+    .image {
+        display: block;
+        max-width: 100%;
+        /* images without a natural size (e.g. svgs with only a viewBox) would collapse */
+        min-width: 16px;
+    }
+    /* the width is set by `--width=` or while resizing */
+    &.sized {
+        .frame,
+        .image {
+            width: 100%;
+        }
+    }
+    .caption {
+        align-self: stretch;
+        min-width: 8em;
+        padding: 0.1em 0.2em;
+        border: none;
+        border-bottom: 1px dashed transparent;
+        background: transparent;
+        color: var(--ifm-color-emphasis-700);
+        font: inherit;
+        font-size: 0.85em;
+        text-align: center;
+        &::placeholder {
+            color: transparent;
+        }
+        &:hover,
+        &:focus {
+            outline: none;
+            border-bottom-color: var(--ifm-color-emphasis-500);
+        }
+    }
+    /* the placeholder of an empty caption, visible when the image is hovered or selected */
+    &:hover .caption::placeholder,
+    &.selected .caption::placeholder,
+    .caption:focus::placeholder {
+        color: var(--ifm-color-emphasis-500);
+    }
+
+    .handle {
+        --handle-size: 0.7em;
+        position: absolute;
+        width: var(--handle-size);
+        height: var(--handle-size);
+        border: 1px solid var(--ifm-background-color);
+        border-radius: 2px;
+        background: var(--ifm-color-primary);
+        opacity: 0;
+        /* hidden handles must not catch touches near the corners of the image */
+        pointer-events: none;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        transition: opacity 0.15s ease-in-out;
+        /* touch devices: a larger handle and an even larger (invisible) area to grab it */
+        @media (pointer: coarse) {
+            --handle-size: 1.1em;
+            &::after {
+                content: '';
+                position: absolute;
+                inset: -0.8em;
+            }
+        }
+        &.nw,
+        &.se {
+            cursor: nwse-resize;
+        }
+        &.ne,
+        &.sw {
+            cursor: nesw-resize;
+        }
+        &.nw,
+        &.ne {
+            top: calc(var(--handle-size) / -2);
+        }
+        &.sw,
+        &.se {
+            bottom: calc(var(--handle-size) / -2);
+        }
+        &.nw,
+        &.sw {
+            left: calc(var(--handle-size) / -2);
+        }
+        &.ne,
+        &.se {
+            right: calc(var(--handle-size) / -2);
+        }
+    }
+    .settings {
+        position: absolute;
+        display: flex;
+        top: 0.3em;
+        right: 0.3em;
+        border-radius: var(--ifm-global-radius);
+        background: var(--ifm-background-surface-color);
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+    }
+    &:hover .handle,
+    &.selected .handle,
+    &:hover .settings,
+    &.selected .settings {
+        opacity: 1;
+    }
+    &:hover .handle,
+    &.selected .handle {
+        pointer-events: auto;
+    }
+}
