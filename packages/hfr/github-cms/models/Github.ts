@@ -1046,7 +1046,12 @@ class Github {
         const repo = { owner: this.store.repoOwner, repo: this.store.repoName };
         const ref = `heads/${branch}`;
 
-        const { data: head } = await this.octokit.git.getRef({ ...repo, ref });
+        const { data: head } = await this.octokit.git.getRef({
+            ...repo,
+            ref,
+            // a cached head is not the parent of the new commit when the branch was saved within a minute
+            _: Date.now() // disable cache
+        });
         const { data: headCommit } = await this.octokit.git.getCommit({
             ...repo,
             commit_sha: head.object.sha
