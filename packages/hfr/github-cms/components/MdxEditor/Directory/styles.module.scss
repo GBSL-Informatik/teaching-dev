@@ -3,6 +3,11 @@
     &.compact {
         --cms-tree-indent: 0.5em;
     }
+    .account {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
     .cardBody {
         padding-top: 0.25em;
         .dirTree {

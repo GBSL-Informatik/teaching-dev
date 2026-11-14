@@ -4,8 +4,9 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 import { default as DirModel } from '../../../models/Dir';
-import UserAvatar from '../../Github/AccountOptions/UserAvatar';
 import Dir from '../../Github/iFile/Dir';
+import RepositoryOverviewButton from '../../Github/RepositoryOverviewButton';
+import UserAvatar from '../../Github/UserAvatar';
 import styles from './styles.module.scss';
 import UploadDialog, { type DroppedFiles } from './UploadDialog';
 
@@ -37,7 +38,12 @@ const Directory = observer((props: Props) => {
 
     return (
         <div className={clsx(styles.directory, props.className, props.compact && styles.compact)}>
-            {props.showAvatar && <UserAvatar showOptions />}
+            {props.showAvatar && (
+                <div className={clsx(styles.account)}>
+                    <UserAvatar />
+                    <RepositoryOverviewButton />
+                </div>
+            )}
             <Card
                 classNames={{
                     body: styles.cardBody,
