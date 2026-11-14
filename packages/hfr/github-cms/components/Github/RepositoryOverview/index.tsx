@@ -13,6 +13,7 @@ import LocalChanges from '../LocalChanges';
 import PR from '../PR';
 import RepositoryList from '../RepositoryList';
 import UserAvatar from '../UserAvatar';
+import Section from './Section';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -65,19 +66,20 @@ const RepositoryOverview = observer(({ onClose }: Props) => {
             </div>
             {showRepositories && <RepositoryList onOpen={onClose} />}
             <LocalChanges onNavigate={onClose} />
-            <h5>Pull Requests und Branches</h5>
-            <ul>
-                {github.PRs.map((pr) => (
-                    <li key={pr.number}>
-                        <PR pr={pr} />
-                    </li>
-                ))}
-                {branchesWithoutPR.map((branch) => (
-                    <li key={branch.name}>
-                        <Branch branch={branch} />
-                    </li>
-                ))}
-            </ul>
+            <Section title="Pull Requests und Branches">
+                <ul>
+                    {github.PRs.map((pr) => (
+                        <li key={pr.number}>
+                            <PR pr={pr} />
+                        </li>
+                    ))}
+                    {branchesWithoutPR.map((branch) => (
+                        <li key={branch.name}>
+                            <Branch branch={branch} />
+                        </li>
+                    ))}
+                </ul>
+            </Section>
         </Card>
     );
 });
