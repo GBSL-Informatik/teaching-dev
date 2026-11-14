@@ -308,13 +308,24 @@ export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> 
         return this.github.entries.get(branch)!.find((entry) => entry.path === fPath) as T;
     });
 
-    findChildren = computedFn(function (this: CmsStore, branch: string, parentPath: string) {
+    /**
+     * The entries of the folder. Placeholders of files that are loading or do not exist are left out,
+     * e.g. of an image that was just renamed, see `useAssetFile`.
+     */
+    findChildren = computedFn(function (
+        this: CmsStore,
+        branch: string,
+        parentPath: string
+    ): (Dir | FileModel | BinFile | FileStub)[] {
         if (!this.github?.entries.has(branch)) {
             return [];
         }
         const refPath = trimSlashes(parentPath);
+        const isPlaceholder = (entry: Dir | iFile) => entry.type !== 'dir' && entry.isDummy;
         return _.orderBy(
-            this.github.entries.get(branch)!.filter((entry) => entry.parentPath === refPath),
+            this.github.entries
+                .get(branch)!
+                .filter((entry) => entry.parentPath === refPath && !isPlaceholder(entry)),
             [(e) => (e.type === 'dir' ? 1 : -1), 'name'],
             ['desc', 'asc']
         );
