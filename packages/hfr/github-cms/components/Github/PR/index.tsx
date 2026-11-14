@@ -21,6 +21,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useCmsStore } from '../../../hooks/useCmsStore';
 import { default as PrModel } from '../../../models/PR';
+import MergeFallback from './MergeFallback';
 import styles from './styles.module.scss';
 
 type PRElements =
@@ -160,6 +161,7 @@ const PR = observer((props: Props) => {
                         title={`In den ${github.defaultBranchName}-Branch Mergen: ${pr.mergeableState}`}
                         className={clsx(classNames?.merge)}
                     />
+                    <MergeFallback pr={pr} />
                 </>
             )}
         </div>

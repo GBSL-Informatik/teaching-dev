@@ -25,6 +25,15 @@ export interface FileChange {
     content: string | Uint8Array<ArrayBuffer> | null;
 }
 
+export type MergeMethod = NonNullable<GhTypes['pulls']['merge']['parameters']['merge_method']>;
+
+/** squash first: it keeps the intermediate versions, e.g. of an image saved several times, out of the history */
+const MERGE_METHOD_SETTINGS = {
+    squash: 'allow_squash_merge',
+    merge: 'allow_merge_commit',
+    rebase: 'allow_rebase_merge'
+} as const satisfies Record<MergeMethod, keyof GhRepo>;
+
 const PR_PAGE_SIZE = 20;
 const BLOB_MODE = { mode: '100644', type: 'blob' } as const;
 const TREE_MODE = { mode: '040000', type: 'tree' } as const;
@@ -168,6 +177,13 @@ class Github {
             return undefined;
         }
         return this.repo.default_branch;
+    }
+
+    /** the merge methods allowed in the repository, a method is offered when its setting is unknown */
+    @computed
+    get mergeMethods(): MergeMethod[] {
+        const methods = Object.keys(MERGE_METHOD_SETTINGS) as MergeMethod[];
+        return methods.filter((method) => this.repo?.[MERGE_METHOD_SETTINGS[method]] !== false);
     }
 
     @computed
@@ -388,22 +404,26 @@ class Github {
             });
     }
 
+    /**
+     * Merges the PR with the first allowed merge method, unless a method is given.
+     * When the merge fails, the error is shown with the PR, to choose another method.
+     */
     @action
-    mergePR(prNumber: number) {
+    mergePR(prNumber: number, method: MergeMethod = this.mergeMethods[0] ?? 'squash') {
         const pr = this.PRs.find((pr) => pr.number === prNumber);
         let prepare: Promise<any> = Promise.resolve(undefined);
         if (pr && !pr.hasPreview) {
             prepare = pr.setPreview(true);
         }
         const branchName = pr?.branchName;
+        pr?.setMergeError(undefined);
         prepare.then(() => {
             this.octokit.pulls
                 .merge({
                     owner: this.store.repoOwner,
                     repo: this.store.repoName,
                     pull_number: prNumber,
-                    // keeps the intermediate versions, e.g. of an image saved several times, out of the history
-                    merge_method: 'squash',
+                    merge_method: method,
                     commit_title: `CMS: Merge #${prNumber}`
                 })
                 .then(
@@ -418,7 +438,11 @@ class Github {
                             this.deleteBranch(bName);
                         }
                     })
-                );
+                )
+                .catch((err) => {
+                    console.error('Error merging PR', prNumber, err);
+                    this.store.findPr(prNumber)?.setMergeError({ method, message: err.message });
+                });
         });
     }
 

@@ -1,6 +1,6 @@
 import { ApiState } from '@tdev-stores/iStore';
-import { action, computed, observable } from 'mobx';
-import Github from './Github';
+import { action, computed, observable, observableRef } from 'mobx';
+import Github, { type MergeMethod } from './Github';
 import { withoutPreviewPRName, withPreviewPRName } from './helpers';
 
 type PRRef = {
@@ -14,6 +14,11 @@ type PRRef = {
         };
     };
 };
+
+export interface MergeError {
+    method: MergeMethod;
+    message: string;
+}
 
 interface Props {
     number: number;
@@ -59,6 +64,7 @@ class PR {
     @observable accessor apiState: ApiState = ApiState.IDLE;
     @observable accessor isSynced: boolean = false;
     @observable accessor isDraft: boolean = false;
+    @observableRef accessor mergeError: MergeError | undefined = undefined;
 
     constructor(props: Props, github: Github) {
         this.gitProvider = github;
@@ -106,6 +112,21 @@ class PR {
     @action
     setMerged(merged: boolean) {
         this.merged = merged;
+    }
+
+    @action
+    setMergeError(mergeError: MergeError | undefined) {
+        this.mergeError = mergeError;
+    }
+
+    /** the allowed merge methods to try after the merge failed */
+    @computed
+    get alternativeMergeMethods(): MergeMethod[] {
+        const failedMethod = this.mergeError?.method;
+        if (!failedMethod) {
+            return [];
+        }
+        return this.gitProvider.mergeMethods.filter((method) => method !== failedMethod);
     }
 
     @computed
