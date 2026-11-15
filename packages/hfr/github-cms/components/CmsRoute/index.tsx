@@ -16,7 +16,8 @@ interface Props {
  * Opens the location of the url `/cms/<owner>/<name>/<path>?ref=<branch>`:
  * - without a branch and a file, the last visited location is restored, see `VisitStore`
  * - the location is remembered before the logins, which return to `/cms`
- * - without a branch, the default branch of the repository is opened
+ * - without a branch, the default branch of the repository is opened, with its readme when
+ *   no file is requested
  */
 const CmsRoute = observer(({ children }: Props) => {
     const cmsStore = useCmsStore();
@@ -27,6 +28,7 @@ const CmsRoute = observer(({ children }: Props) => {
     const { visits } = cmsStore;
     const restored = visits.isLoaded ? visits.restore(request) : undefined;
     const canOpen = visits.isLoaded && !restored;
+    const defaultBranch = request ? cmsStore.defaultBranchOf(request.repo) : undefined;
     useRequestedNavigation();
 
     // runs before the redirect to the login is followed, so the request is remembered
@@ -35,6 +37,12 @@ const CmsRoute = observer(({ children }: Props) => {
             cmsStore.open(request);
         }
     }, [cmsStore, request, canOpen]);
+
+    React.useEffect(() => {
+        if (canOpen && request && !request.branch && !request.path && defaultBranch) {
+            cmsStore.loadStartPath(request.repo);
+        }
+    }, [cmsStore, request, canOpen, defaultBranch]);
 
     if (!visits.isLoaded) {
         return <Loader label="Laden..." />;
@@ -49,11 +57,11 @@ const CmsRoute = observer(({ children }: Props) => {
         return <Loader label="Laden..." />;
     }
     if (!request.branch) {
-        const defaultBranch = cmsStore.defaultBranchOf(request.repo);
-        if (!defaultBranch) {
+        const startLocation = cmsStore.startLocationOf(request);
+        if (!startLocation) {
             return <Loader label="Repository laden..." />;
         }
-        return <Redirect to={cmsUrl({ ...request, branch: defaultBranch })} />;
+        return <Redirect to={cmsUrl(startLocation)} />;
     }
     return children;
 });

@@ -33,6 +33,11 @@ if (!organizationName || !projectName) {
     throw new Error('"organizationName" and "projectName" must be set in docusaurus.config.ts');
 }
 
+/** opened for a repository without a branch and a file, the first one found */
+const README_NAMES = ['README.md', 'README.mdx'];
+
+const startPathKey = (repo: string, branch: string) => `${repo}:${branch}`;
+
 /** a navigation requested by the store, applied to the url by `useRequestedNavigation` */
 export interface NavigationRequest {
     location: CmsLocation;
@@ -56,6 +61,8 @@ export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> 
     /** the location of the url, see `open` */
     @observable accessor activeBranchName: string | undefined = undefined;
     @observable accessor activeFilePath = '';
+    /** by `repo:branch`, the readme or `''` for the root directory, see `startLocationOf` */
+    private readonly startPaths = observable.map<string, string>();
 
     constructor(store: ViewStore) {
         super();
@@ -132,6 +139,40 @@ export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> 
             return undefined;
         }
         return this.github?.defaultBranchName;
+    }
+
+    /**
+     * The location a request without a branch is redirected to: the default branch, with its readme
+     * when no file is requested. Undefined while loading, see `loadStartPath`.
+     */
+    startLocationOf(request: CmsLocation): CmsLocation | undefined {
+        const branch = this.defaultBranchOf(request.repo);
+        if (!branch) {
+            return undefined;
+        }
+        if (request.path) {
+            return { ...request, branch };
+        }
+        const path = this.startPaths.get(startPathKey(request.repo, branch));
+        if (path === undefined) {
+            return undefined;
+        }
+        return { ...request, branch, path };
+    }
+
+    /** a repository without a readme or with an unreadable root directory opens the root directory */
+    @action
+    loadStartPath(repo: string) {
+        const { github } = this;
+        const branch = this.defaultBranchOf(repo);
+        if (!github || !branch || this.startPaths.has(startPathKey(repo, branch))) {
+            return;
+        }
+        github
+            .fetchDirectory(branch)
+            .then(() => this.readmePath(branch))
+            .catch(() => '')
+            .then(action((path) => this.startPaths.set(startPathKey(repo, branch), path)));
     }
 
     /** e.g. a repository without access: its visits are forgotten, the site's repository is opened */
@@ -429,11 +470,18 @@ export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> 
         }
         const [owner, name] = repo.split('/');
         this.github?.reset();
+        this.startPaths.clear();
         this.activeBranchName = undefined;
         this.activeFilePath = '';
         this.repoOwner = owner;
         this.repoName = name;
         this.github?.load();
+    }
+
+    private readmePath(branch: string) {
+        const rootEntries = this.findChildren(branch, '/');
+        const readmes = README_NAMES.map((name) => rootEntries.find((entry) => entry.name === name));
+        return readmes.find(Boolean)?.path ?? '';
     }
 
     /** the token is refreshed by loading the settings, see the cms api */
