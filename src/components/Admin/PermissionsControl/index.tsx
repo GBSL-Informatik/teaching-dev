@@ -8,7 +8,6 @@ import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import TextInput from '@tdev-components/shared/TextInput';
 import { useStore } from '@tdev-hooks/useStore';
-import { ApiState } from '@tdev-stores/iStore';
 import clsx from 'clsx';
 import { reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
@@ -77,7 +76,7 @@ const PermissionsControl = observer((props: Props) => {
                             });
                     }}
                     text="Berechtigungen neu laden"
-                    spin={permissionStore.apiStateFor('load-all-permissions') === ApiState.SYNCING}
+                    spin={permissionStore.isLoadingPermissions}
                 />
                 <TextInput
                     label="Pfad filtern"
