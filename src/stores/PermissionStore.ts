@@ -17,10 +17,18 @@ import User from '@tdev-models/User';
 import UserPermission from '@tdev-models/UserPermission';
 import { UnknownMeta } from '@tdev-models/documents/Unknown';
 import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
-import iStore from '@tdev-stores/iStore';
+import iStore, { ApiState } from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
+
+const LOAD_PERMISSIONS_REQUEST = 'load-all-permissions';
+
+// One key per set of ids: concurrent loads of different document roots must not abort each other.
+const loadPermissionsRequestKey = (documentRootIds: string[]) => {
+    const sortedIds = [...documentRootIds].sort();
+    return `${LOAD_PERMISSIONS_REQUEST}-${sortedIds.join(',')}` as const;
+};
 
 class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
@@ -279,6 +287,13 @@ class PermissionStore extends iStore<`update-${string}`> {
         });
     }
 
+    @computed
+    get isLoadingPermissions() {
+        return [...this.apiState.entries()].some(
+            ([key, state]) => key.startsWith(LOAD_PERMISSIONS_REQUEST) && state === ApiState.SYNCING
+        );
+    }
+
     @action
     loadAllPermissions(documentRootIds: string[], forceReload: boolean = false) {
         const { current } = this.root.userStore;
@@ -296,7 +311,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         if (idsToLoad.length === 0) {
             return Promise.resolve();
         }
-        return this.withAbortController('load-all-permissions', async (signal) => {
+        return this.withAbortController(loadPermissionsRequestKey(idsToLoad), async (signal) => {
             return apiDocumentRootPermissions(idsToLoad, signal.signal).then(
                 action(({ data }) => {
                     data.forEach((p) => {
