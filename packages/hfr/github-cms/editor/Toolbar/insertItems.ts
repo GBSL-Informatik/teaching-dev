@@ -30,7 +30,7 @@ import {
 import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
 import { v4 as uuidv4 } from 'uuid';
-import { createNode, createTable, insertBlock, insertInline, insertInlineMdx } from '../commands';
+import { createNode, createTable, insertBlock, insertInline, insertInlineMdx, startIcon } from '../commands';
 import { type ImportSpec, withImports } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { isInDirectiveItem } from '../plugins/directiveItems';
@@ -120,8 +120,7 @@ export const ICON_ITEM: MenuItem = {
     label: 'Icon',
     icon: mdiEmoticonOutline,
     keywords: ['mdi', 'emoji'],
-    create: () => nodes.text_directive.create({ name: 'mdi', label: 'robot' }),
-    inline: true
+    command: startIcon
 };
 
 /** offered by the quick actions only, the insert menu has a single admonition */

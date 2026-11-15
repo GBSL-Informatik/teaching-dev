@@ -1,8 +1,8 @@
 import { mdiCodeBrackets, mdiInformationOutline, mdiMinusBoxOutline, mdiTextBoxOutline } from '@mdi/js';
-import { insertBlock, insertInline, insertText } from '../commands';
+import { insertBlock, insertInline, startIcon } from '../commands';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
-import { schema } from '../schema';
 import { splitDirectiveItem } from '../plugins/directiveItems';
+import { schema } from '../schema';
 import { createContainerDirective } from '../Toolbar/insertItems';
 import { CONTAINER_DIRECTIVES, LEAF_DIRECTIVES, TEXT_DIRECTIVES } from './directiveNames';
 import { fuzzyFilter } from './fuzzyScore';
@@ -32,7 +32,7 @@ const leafSuggestion = (name: string): Suggestion => ({
 const textSuggestion = (name: string): Suggestion => ({
     label: `:${name}`,
     icon: mdiCodeBrackets,
-    command: name === 'mdi' ? insertText(':mdi[') : insertInline(nodes.text_directive.create({ name }))
+    command: name === 'mdi' ? startIcon : insertInline(nodes.text_directive.create({ name }))
 });
 
 const directiveSource = (pattern: RegExp, suggestions: Suggestion[]): SuggestionSource => ({

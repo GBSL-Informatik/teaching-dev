@@ -107,6 +107,21 @@ export const insertText = (text: string): Command => {
 
 const canContainInline = (parent: Node) => parent.inlineContent && !parent.type.spec.code;
 
+/**
+ * Types `:mdi[`, which opens the icon suggestions, see `iconSource`.
+ * After a word, a space is typed first: `Wort:mdi[` would be text, not a directive.
+ */
+export const startIcon: Command = (state, dispatch) => {
+    const { $from } = state.selection;
+    if (!canContainInline($from.parent)) {
+        return false;
+    }
+    const before = $from.nodeBefore;
+    const isAfterWhitespace = !before || (before.isText && /\s$/.test(before.text!));
+    dispatch?.(state.tr.insertText(isAfterWhitespace ? ':mdi[' : ' :mdi[').scrollIntoView());
+    return true;
+};
+
 export const insertInline = (node: Node): Command => {
     return (state, dispatch) => {
         if (!canContainInline(state.selection.$from.parent)) {
