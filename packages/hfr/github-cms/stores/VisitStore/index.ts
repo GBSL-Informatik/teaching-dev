@@ -10,11 +10,17 @@ const toLocation = ({ repo, branch, path }: Visit): CmsLocation => ({
     path
 });
 
+const latest = (visits: Visit[]): CmsLocation | undefined => {
+    const [latestVisit] = visits.sort((a, b) => b.visitedAt - a.visitedAt);
+    return latestVisit && toLocation(latestVisit);
+};
+
 const logError = (error: unknown) => console.error('Failed to persist the visited location', error);
 
 /**
- * Remembers the last visited location of each branch in IndexedDB, to restore it when the cms
- * is opened without a branch and a file, e.g. `/cms` after the login.
+ * Remembers the last visited location of each branch in IndexedDB, to restore the last viewed
+ * file when the cms is opened without a branch and a file, e.g. `/cms` after the login.
+ * Without a viewed file, the readme of the default branch is opened, see `CmsStore.startLocationOf`.
  *
  * - Each opened location is visited, also before the login, see `CmsStore.open`.
  * - A location requested without a branch is resolved to the default branch, its visit is then
@@ -32,21 +38,17 @@ export class VisitStore {
 
     /**
      * The location to open instead of the requested one, when the request names no branch
-     * and no file: the last visited location of the repository (or of any repository for `/cms`).
+     * and no file: the last viewed file of the repository (of the last visited one for `/cms`).
      */
     restore(request: CmsLocation | null): CmsLocation | undefined {
         if (!request) {
-            return this.lastVisited() ?? { repo: SITE_REPOSITORY, path: '' };
+            const repo = latest([...this.visits.values()])?.repo ?? SITE_REPOSITORY;
+            return this.lastViewedFile(repo) ?? { repo, path: '' };
         }
         if (request.branch || request.path) {
             return undefined;
         }
-        const lastVisited = this.lastVisited(request.repo);
-        // a visit naming no branch and no file is the request itself
-        if (!lastVisited?.branch && !lastVisited?.path) {
-            return undefined;
-        }
-        return lastVisited;
+        return this.lastViewedFile(request.repo);
     }
 
     @action
@@ -83,10 +85,10 @@ export class VisitStore {
         }
     }
 
-    private lastVisited(repo?: string): CmsLocation | undefined {
-        const visits = [...this.visits.values()].filter((visit) => !repo || visit.repo === repo);
-        const latest = visits.sort((a, b) => b.visitedAt - a.visitedAt)[0];
-        return latest && toLocation(latest);
+    /** also a directory, but not the root directory of a branch */
+    private lastViewedFile(repo: string): CmsLocation | undefined {
+        const visits = [...this.visits.values()].filter((visit) => visit.repo === repo && visit.path);
+        return latest(visits);
     }
 
     private load() {
