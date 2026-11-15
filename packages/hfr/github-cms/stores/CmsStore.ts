@@ -33,8 +33,8 @@ if (!organizationName || !projectName) {
     throw new Error('"organizationName" and "projectName" must be set in docusaurus.config.ts');
 }
 
-/** opened for a repository without a branch and a file, the first one found */
-const README_NAMES = ['README.md', 'README.mdx'];
+/** opened for a repository without a branch and a file, the first one found, ignoring the case */
+const README_NAMES = ['readme.md', 'readme.mdx'];
 
 const startPathKey = (repo: string, branch: string) => `${repo}:${branch}`;
 
@@ -480,7 +480,9 @@ export class CmsStore extends iStore<'logout' | `load-settings` | `load-token`> 
 
     private readmePath(branch: string) {
         const rootEntries = this.findChildren(branch, '/');
-        const readmes = README_NAMES.map((name) => rootEntries.find((entry) => entry.name === name));
+        const readmes = README_NAMES.map((name) =>
+            rootEntries.find((entry) => entry.name.toLowerCase() === name)
+        );
         return readmes.find(Boolean)?.path ?? '';
     }
 
