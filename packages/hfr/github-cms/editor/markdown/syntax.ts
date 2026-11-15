@@ -1,17 +1,17 @@
 import type { Root } from 'mdast';
-import { directiveFromMarkdown, directiveToMarkdown } from 'mdast-util-directive';
+import { directiveFromMarkdown } from 'mdast-util-directive';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { frontmatterFromMarkdown, frontmatterToMarkdown } from 'mdast-util-frontmatter';
 import { gfmFromMarkdown, gfmToMarkdown } from 'mdast-util-gfm';
 import { mathFromMarkdown, mathToMarkdown } from 'mdast-util-math';
 import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
 import { toMarkdown, type Options as ToMarkdownOptions } from 'mdast-util-to-markdown';
-import { directive } from 'micromark-extension-directive';
 import { frontmatter } from 'micromark-extension-frontmatter';
 import { gfm } from 'micromark-extension-gfm';
 import { math } from 'micromark-extension-math';
 import { mdxjs } from 'micromark-extension-mdxjs';
 import { customToMarkdown } from './customNodes';
+import { directiveSyntax, directiveToMarkdownAtWordBoundary } from './textDirective';
 
 /**
  * The markdown dialect understood by the editor. It mirrors the syntax
@@ -19,7 +19,7 @@ import { customToMarkdown } from './customNodes';
  */
 export const parseMdx = (source: string): Root => {
     return fromMarkdown(source, {
-        extensions: [mdxjs(), gfm(), directive(), math(), frontmatter(['yaml'])],
+        extensions: [mdxjs(), gfm(), directiveSyntax(), math(), frontmatter(['yaml'])],
         mdastExtensions: [
             mdxFromMarkdown(),
             gfmFromMarkdown(),
@@ -39,7 +39,7 @@ const TO_MARKDOWN_OPTIONS: ToMarkdownOptions = {
     extensions: [
         mdxToMarkdown(),
         gfmToMarkdown(),
-        directiveToMarkdown(),
+        directiveToMarkdownAtWordBoundary(),
         mathToMarkdown(),
         frontmatterToMarkdown(['yaml']),
         customToMarkdown

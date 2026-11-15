@@ -22,6 +22,8 @@
         "micromark-extension-frontmatter": "^2.0.0",
         "micromark-extension-gfm": "^3.0.0",
         "micromark-extension-mdxjs": "^3.0.0",
+        "micromark-util-classify-character": "^2.0.0",
+        "micromark-util-types": "^2.0.0",
         "prosemirror-commands": "^1.7.2",
         "prosemirror-dropcursor": "^1.8.4",
         "prosemirror-gapcursor": "^1.4.1",
