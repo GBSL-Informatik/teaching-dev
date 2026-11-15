@@ -79,15 +79,22 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (!this.meta.hasHistory || this.isDummy) {
             return;
         }
-        this.store.root.documentRootStore
-            .loadDocumentsOf(this.authorId, this.documentRootId, 'script_version')
-            .catch((e) => console.warn('Error loading code versions', e));
+        if (this.isAuthoredByCurrentUser) {
+            this.loadOwnVersions();
+        } else {
+            this.loadVersionsOfAuthor();
+        }
         this._initialVersionsLoaded = true;
     }
 
     @computed
     get versionsLoaded() {
         return this._initialVersionsLoaded;
+    }
+
+    @computed
+    get isAuthoredByCurrentUser() {
+        return this.authorId === this.store.root.userStore.current?.id;
     }
 
     @computed
@@ -276,6 +283,26 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
             return this.root.meta as iCodeMeta<T>;
         }
         return new iCodeMeta(this.type, { code: '' });
+    }
+
+    private loadOwnVersions() {
+        this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
+            documentType: 'script_version',
+            skipCreate: true,
+            documentRoot: false,
+            groupPermissions: false,
+            userPermissions: false
+        });
+    }
+
+    /**
+     * The author's view of the document root hides the data when the author has no access
+     * (e.g. a locked task), so teachers load the versions independent of the author's access.
+     */
+    private loadVersionsOfAuthor() {
+        this.store
+            .apiLoadDocumentsOfAuthor(this.authorId, this.documentRootId, 'script_version')
+            .catch((e) => console.warn('Error loading code versions', e));
     }
 }
 

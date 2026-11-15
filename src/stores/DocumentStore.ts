@@ -450,6 +450,23 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
         });
     }
 
+    /**
+     * Loads another author's documents with their data, even when the author's own
+     * access to the document root is `None` (e.g. a locked task).
+     */
+    @action
+    apiLoadDocumentsOfAuthor(authorId: string, documentRootId: string, documentType: DocumentType) {
+        if (!this.root.userStore.current?.hasElevatedAccess) {
+            return Promise.resolve([]);
+        }
+        return this.withAbortController(`load-${documentType}-of-${authorId}-${documentRootId}`, (sig) => {
+            return apiAllDocuments([documentRootId], sig.signal, authorId);
+        }).then(({ data }) => {
+            const documents = (data ?? []).filter((doc) => doc.type === documentType);
+            return documents.map((doc) => this.addToStore(doc));
+        });
+    }
+
     @action
     apiDelete(document: DocumentModelType | iDocument<any>): Promise<boolean> {
         if (document.authorId !== this.root.userStore.current?.id) {
