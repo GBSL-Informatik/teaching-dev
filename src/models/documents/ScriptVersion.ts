@@ -24,11 +24,11 @@ class ScriptVersion extends iDocument<'script_version'> {
 
     @computed
     get version() {
-        const code = this.root?.mainDocument as iCode | undefined;
+        const code = this.root?.mainDocuments.find((doc) => doc.authorId === this.authorId);
         if (!code) {
             return 0;
         }
-        return code.versions.indexOf(this) + 1;
+        return (code as iCode).versions.indexOf(this) + 1;
     }
 
     get pasted() {

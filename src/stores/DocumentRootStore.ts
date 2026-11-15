@@ -368,6 +368,36 @@ export class DocumentRootStore extends iStore {
         });
     }
 
+    /**
+     * loads the documents of the given user - independent of the viewed user.
+     * Useful when another user's document is shown, e.g. a presented student document.
+     */
+    @action
+    loadDocumentsOf(userId: string, documentRootId: string, documentType: DocumentType) {
+        if (!this.hasApiAccess) {
+            return Promise.resolve();
+        }
+        return this.withAbortController(
+            `load-${documentType}-of-${userId}-${documentRootId}`,
+            async (signal) => {
+                const { data } = await apiFindManyFor(
+                    userId,
+                    [documentRootId],
+                    true,
+                    documentType,
+                    signal.signal
+                );
+                runInAction(() => {
+                    data.forEach((documentRoot) => {
+                        this.addApiResultToStore(documentRoot, {
+                            load: { documentRoot: false, documents: true }
+                        });
+                    });
+                });
+            }
+        );
+    }
+
     @action
     create<Type extends DocumentType>(id: string, meta: TypeMeta<Type>, config: Partial<Config>) {
         return this.withAbortController(`create-${id}`, async (signal) => {

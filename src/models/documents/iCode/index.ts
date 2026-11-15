@@ -76,16 +76,12 @@ class iCode<T extends CodeType = CodeType> extends iDocument<T> {
         if (this._initialVersionsLoaded && !force) {
             return;
         }
-        if (!this.meta.hasHistory) {
+        if (!this.meta.hasHistory || this.isDummy) {
             return;
         }
-        this.store.root.documentRootStore.loadInNextBatch(this.documentRootId, this.meta, {
-            documentType: 'script_version',
-            skipCreate: true,
-            documentRoot: false,
-            groupPermissions: false,
-            userPermissions: false
-        });
+        this.store.root.documentRootStore
+            .loadDocumentsOf(this.authorId, this.documentRootId, 'script_version')
+            .catch((e) => console.warn('Error loading code versions', e));
         this._initialVersionsLoaded = true;
     }
 
