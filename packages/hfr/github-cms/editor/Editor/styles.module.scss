@@ -1,0 +1,363 @@
+@use '../uuid';
+@use '../../../../../src/components/CodeDefBox/colors' as defBox;
+
+.editor {
+    margin: 0 1px 1em 1px;
+    box-shadow: var(--ifm-global-shadow-md);
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+}
+
+/* the suggestion menu is positioned relative to the content */
+.contentArea {
+    position: relative;
+}
+
+.content {
+    position: relative;
+    padding: 1em 1.5em 1em 2em;
+    &.hidden {
+        display: none;
+    }
+    &.hideSolutions :global(.cms-jsx--solution) {
+        > :global(.cms-node-view-content) {
+            display: none;
+        }
+        &::after {
+            content: 'Inhalt nur für Lehrpersonen sichtbar';
+            display: block;
+            padding: 0.3em 0 0.5em 0;
+            font-style: italic;
+            color: var(--ifm-color-emphasis-600);
+        }
+    }
+    /* created by the drag handle plugin, see `plugins/dragHandle.ts` */
+    :global(.cms-drag-handle) {
+        position: absolute;
+        transform: translate(calc(-100% - 2px), -50%);
+        display: flex;
+        width: 1.2em;
+        height: 1.5em;
+        border-radius: var(--ifm-global-radius);
+        color: var(--ifm-color-emphasis-700);
+        cursor: grab;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease-in-out;
+        svg {
+            width: 100%;
+            fill: currentColor;
+        }
+        &:hover {
+            background: var(--ifm-color-emphasis-200);
+            color: var(--ifm-color-emphasis-900);
+        }
+        &:active {
+            cursor: grabbing;
+        }
+    }
+    :global(.cms-drag-handle--visible) {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    /* the drop of a dragged block goes to ProseMirror, see `plugins/dropTargets.ts` */
+    &:global(.cms-dragging) :is(:global(.cm-editor), input, textarea, select, button, [data-stop-event]) {
+        pointer-events: none;
+    }
+}
+
+/**
+ * Styles of the document. Node views and nodes rendered by their `toDOM` spec use
+ * plain class names (`cms-*`), since ProseMirror creates their DOM outside of React.
+ */
+.prosemirror {
+    min-height: 60vh;
+    outline: none;
+    white-space: pre-wrap;
+
+    :global {
+        .cms-node-view-content > :last-child {
+            margin-bottom: 0;
+        }
+
+        .cms-directive {
+            margin-bottom: var(--ifm-spacing-vertical);
+            padding: 0.3em 1em 1em 1em;
+            &:not(.alert) {
+                border: 1px dashed var(--ifm-color-emphasis-500);
+                border-radius: var(--ifm-global-radius);
+            }
+            /* the line shows where the title ends and the content starts */
+            .cms-directive-label {
+                font-weight: var(--ifm-font-weight-bold);
+                margin-bottom: 0.5em;
+                padding-bottom: 0.2em;
+                border-bottom: 1px solid var(--ifm-alert-border-color, var(--ifm-color-emphasis-300));
+            }
+        }
+        /* the icon of an admonition, in the toolbar next to `:::tip` */
+        .cms-admonition-icon {
+            display: inline-flex;
+            color: var(--ifm-alert-foreground-color);
+            svg {
+                width: 1.4em;
+                height: 1.4em;
+                fill: currentColor;
+            }
+        }
+        .cms-directive--details {
+            background: var(--ifm-color-info-contrast-background);
+        }
+
+        /* like `@tdev-components/CodeDefBox` (colors shared in its `_colors.scss`), the label is its heading */
+        .cms-directive--def {
+            @include defBox.colors('> .cms-node-view-content > .cms-directive-label');
+            > .cms-node-view-content > .cms-directive-label {
+                font-family: var(--ifm-heading-font-family);
+                font-weight: var(--ifm-heading-font-weight);
+                line-height: var(--ifm-heading-line-height);
+            }
+        }
+        @for $level from 1 through 6 {
+            .cms-directive--def.cms-directive--h#{$level} > .cms-node-view-content > .cms-directive-label {
+                font-size: var(--ifm-h#{$level}-font-size);
+            }
+        }
+
+        /*
+         * The items of :::cards and :::flex are laid out by the site css (`div.flex > div.item`),
+         * with the styles of the attributes, see `nodeViews/DirectiveItem/flexLayout.ts`.
+         */
+        .cms-directive-item {
+            /* wide content (code, tables) must not widen the item beyond its flex-basis */
+            min-width: 0;
+        }
+        /*
+         * Attributes and classes (e.g. `{display=none}`, `.empty`) must not hide what is edited:
+         * `!important` wins over the inline styles of the attributes.
+         */
+        .cms-node-view-content.flex,
+        .cms-directive-item {
+            visibility: visible !important;
+            opacity: 1 !important;
+            content-visibility: visible !important;
+        }
+        .cms-node-view-content.flex {
+            display: flex !important;
+        }
+        .cms-directive-item {
+            display: block !important;
+        }
+        .flex > .cms-directive-label {
+            flex-basis: 100%;
+        }
+        /* `::br` between the items of :::flex, the cards are separated by their gap */
+        .cms-directive--flex > .cms-node-view-content > .cms-directive-item + .cms-directive-item {
+            padding-left: 0.4em;
+            border-left: 1px solid var(--ifm-color-emphasis-300);
+        }
+        /* the `::br` of the first item is not saved without props, see `DirectiveItem` */
+        .cms-node-view-content > .cms-directive-item--plain:first-child,
+        .cms-directive-label + .cms-directive-item--plain {
+            > .cms-node-view-component .cms-item-break {
+                opacity: 0.45;
+                font-style: italic;
+            }
+        }
+        /* like infima's `.card` */
+        .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
+            padding: 0.3em var(--ifm-card-horizontal-spacing) var(--ifm-card-vertical-spacing);
+            border-radius: var(--ifm-card-border-radius);
+            background: var(--ifm-card-background-color);
+            box-shadow: var(--ifm-global-shadow-md);
+        }
+
+        /* definition lists, see `plugins/deflist.ts` */
+        .cms-dt {
+            font-weight: var(--ifm-font-weight-bold);
+        }
+        .cms-dd-marker {
+            display: inline-block;
+            width: 1.5em;
+            color: var(--ifm-color-emphasis-400);
+        }
+        .cms-directive.cms-directive--dd {
+            margin-left: 1.5em;
+            border-style: solid;
+            border-width: 0 0 0 2px;
+            border-radius: 0;
+        }
+
+        /* inline mdx, distinct from inline code; a click on the left border selects it, see `plugins/rawSelection.ts` */
+        .cms-raw-inline {
+            --cms-raw-border-width: 6px;
+            color: var(--ifm-color-warning-contrast-foreground);
+            background: var(--ifm-color-warning-contrast-background);
+            border-color: var(--ifm-color-warning-light);
+            border-left: var(--cms-raw-border-width) solid var(--ifm-color-warning);
+            /*
+             * Covers the left border of the first line, the only clickable one. Not positioned absolutely:
+             * the background of a positioned inline element is painted over the caret.
+             */
+            &::before {
+                content: '';
+                display: inline-block;
+                width: var(--cms-raw-border-width);
+                height: 1lh;
+                margin-left: calc(-1 * var(--cms-raw-border-width));
+                vertical-align: top;
+                cursor: pointer;
+            }
+        }
+
+        .cms-jsx {
+            margin-bottom: var(--ifm-spacing-vertical);
+            padding: 0.2em 0.8em;
+            border-left: 3px solid var(--ifm-color-primary);
+            background: var(--ifm-color-emphasis-100);
+            border-radius: var(--ifm-global-radius);
+            > .cms-node-view-content {
+                padding: 0.3em 0 0.5em 0;
+            }
+        }
+        /* framed like `@tdev-components/BrowserWindow`, the header is rendered by the node view */
+        .cms-jsx.cms-jsx--browser-window {
+            padding: 0;
+            border: 3px solid var(--ifm-color-emphasis-200);
+            background: var(--ifm-background-color);
+            box-shadow: var(--ifm-global-shadow-lw);
+            > .cms-node-view-content {
+                padding: 1rem;
+            }
+        }
+
+        /* only the active tab of `<Tabs>` is shown, see `nodeViews/JsxFlow/TabsBar` */
+        @for $index from 0 through 49 {
+            .cms-node-view-content[data-active-child='#{$index}']
+                > .cms-jsx--tab-item:not(:nth-child(#{$index + 1})) {
+                display: none;
+            }
+        }
+
+        .cms-footnote-definition {
+            font-size: 0.9em;
+            margin-bottom: var(--ifm-spacing-vertical);
+        }
+
+        .cms-code-block {
+            margin-bottom: var(--ifm-spacing-vertical);
+            border-radius: var(--ifm-code-border-radius);
+            background: var(--ifm-pre-background);
+            .cm-editor {
+                padding: 0.3em 0;
+                font-family: var(--ifm-font-family-monospace);
+                font-size: var(--ifm-code-font-size);
+                &.cm-focused {
+                    outline: 1px solid var(--ifm-color-primary);
+                }
+            }
+        }
+        /* the code on the left, the preview (e.g. a mermaid diagram) on the right, see `nodeViews/CodeHeaders` */
+        .cms-code-block--split {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            /* the header */
+            > :first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @include uuid.marker;
+
+        .ProseMirror-selectednode {
+            outline: 2px solid var(--ifm-color-primary);
+        }
+
+        /* scrolls horizontally (see prosemirror-tables/style/tables.css), the table has a min-width */
+        .tableWrapper {
+            max-width: 100%;
+            margin-bottom: var(--ifm-spacing-vertical);
+            > table {
+                margin-bottom: 0;
+            }
+        }
+        table {
+            display: table;
+            width: auto;
+            td,
+            th {
+                vertical-align: top;
+            }
+            .selectedCell::after {
+                background: var(--ifm-color-primary-lightest);
+                opacity: 0.3;
+            }
+        }
+
+        /* docusaurus renders tight lists without paragraphs, prosemirror always has one */
+        [data-tight='true'] > li > p {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        li[data-checked='true']::marker {
+            content: '☑ ';
+        }
+        li[data-checked='false']::marker {
+            content: '☐ ';
+        }
+
+        strong.boxed {
+            border: 1px solid currentColor;
+            border-radius: var(--ifm-global-radius);
+            padding: 0 0.2em;
+        }
+
+        kbd {
+            font-size: 0.85em;
+        }
+    }
+}
+
+/* small screens: less space around the content and inside nested blocks */
+@media screen and (max-width: 620px) {
+    .editor {
+        margin: 0 0 1em 0;
+        border-inline: none;
+        border-radius: 0;
+    }
+    .content {
+        /* the drag handle needs the space on the left */
+        padding: 0.5em 0.3em 0.5em 1.4em;
+        :global(.cms-drag-handle) {
+            /* easier to grab with a finger */
+            height: 2em;
+        }
+    }
+    .prosemirror {
+        min-height: 40vh;
+        :global {
+            .cms-directive {
+                padding: 0.2em 0.5em 0.5em 0.5em;
+            }
+            .cms-jsx {
+                padding: 0.2em 0.4em;
+            }
+            .cms-directive--cards > .cms-node-view-content > .cms-directive-item {
+                padding-inline: 0.5em;
+            }
+            /* without specificity: lists of components, e.g. `<Steps>`, keep their own padding */
+            :where(ul, ol) {
+                padding-left: 1.2em;
+            }
+            .cms-code-block--split {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    }
+}
+
+:global(html[data-theme='dark']) .prosemirror :global(.cms-directive--def) {
+    @include defBox.dark-colors('> :global(.cms-node-view-content) > :global(.cms-directive-label)');
+}

@@ -1,0 +1,12 @@
+.repositoryList {
+    margin-bottom: 1em;
+    .repoHeader {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+    }
+    .repos {
+        max-height: 40vh;
+        overflow: auto;
+    }
+}

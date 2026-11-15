@@ -1,6 +1,5 @@
 .steps {
     --ifm-list-item-margin: 0;
-    &.mdxEditor ol:not(ol ol),
     > ol {
         display: block;
         margin-block-start: 1em;

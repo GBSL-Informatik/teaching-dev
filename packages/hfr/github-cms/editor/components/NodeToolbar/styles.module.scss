@@ -1,0 +1,54 @@
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 1.8em;
+    font-size: 0.85em;
+    cursor: pointer;
+    user-select: none;
+    .title {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        font-family: var(--ifm-font-family-monospace);
+        opacity: 0.8;
+        &.shrink {
+            min-width: 0;
+        }
+    }
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.2em;
+        cursor: default;
+    }
+    &.wideControls {
+        .title {
+            flex-grow: 0;
+        }
+        .controls {
+            flex-grow: 1;
+        }
+        /* while the title is edited (e.g. the attributes), it takes the space of the controls */
+        .title:focus-within {
+            flex-grow: 1;
+            + .controls {
+                flex-grow: 0;
+                min-width: 0;
+            }
+        }
+    }
+}
+.modal {
+    width: 30em;
+    max-width: 95vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    .modalBody {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5em;
+    }
+}

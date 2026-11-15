@@ -133,14 +133,14 @@ const Sentry = observer(() => {
 
 const TrackPageVisibility = observer(() => {
     const viewStore = useStore('viewStore');
-    const onVisibilityChange = React.useEffectEvent(() => {
-        viewStore.setPageVisibility(!document.hidden);
-    });
     React.useEffect(() => {
-        document.addEventListener('visibilitychange', onVisibilityChange);
+        const handleVisibilityChange = () => {
+            viewStore.setPageVisibility(!document.hidden);
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
-            document.removeEventListener('visibilitychange', onVisibilityChange);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, [viewStore]);
     return null;

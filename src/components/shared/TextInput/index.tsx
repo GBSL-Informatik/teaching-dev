@@ -11,6 +11,7 @@ interface Props {
     onEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     onEscape?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     onSave?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
     validator?: (text: string) => string | null;
     className?: string;
     labelClassName?: string;
@@ -21,6 +22,7 @@ interface Props {
     noSpellCheck?: boolean;
     noAutoFocus?: boolean;
     required?: boolean;
+    /** suggested values, shown by the browser while typing */
     options?: string[];
     step?: string | number | undefined;
     min?: string | number | undefined;
@@ -32,6 +34,7 @@ interface Props {
 const TextInput = observer((props: Props) => {
     const _id = React.useId();
     const id = props.id || _id;
+    const optionsId = `${id}-options`;
     const [text, setText] = React.useState(props.defaultValue || '');
     const validator = React.useCallback(props.validator ?? ((text: string) => null), [props.validator]);
     return (
@@ -59,6 +62,8 @@ const TextInput = observer((props: Props) => {
                 className={clsx(props.className, styles.textInput)}
                 required={props.required}
                 disabled={props.readOnly}
+                list={props.options ? optionsId : undefined}
+                onBlur={props.onBlur}
                 onChange={(e) => {
                     if (props.value === undefined) {
                         setText(e.target.value);
@@ -93,6 +98,13 @@ const TextInput = observer((props: Props) => {
                 min={props.min}
                 max={props.max}
             />
+            {props.options && (
+                <datalist id={optionsId}>
+                    {props.options.map((option) => (
+                        <option key={option} value={option} />
+                    ))}
+                </datalist>
+            )}
         </>
     );
 });

@@ -1,0 +1,19 @@
+@use '../uuid';
+
+.sourceEditor {
+    :global {
+        .cm-editor {
+            font-family: var(--ifm-font-family-monospace);
+            font-size: var(--ifm-code-font-size);
+            &.cm-focused {
+                outline: none;
+            }
+        }
+        .cm-gutters {
+            background: transparent;
+            border-right: 1px solid var(--ifm-color-emphasis-300);
+            color: var(--ifm-color-emphasis-600);
+        }
+        @include uuid.marker;
+    }
+}

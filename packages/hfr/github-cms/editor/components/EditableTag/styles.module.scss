@@ -1,0 +1,19 @@
+/* only the attributes give way, the tag name stays readable */
+.editableTag {
+    display: flex;
+    min-width: 0;
+    white-space: pre;
+    .tag {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        /* e.g. between the icon of an admonition and its name */
+        gap: 0.4em;
+    }
+    .attributes {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 0.75;
+    }
+}

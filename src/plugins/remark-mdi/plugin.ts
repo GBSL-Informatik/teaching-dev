@@ -130,7 +130,7 @@ const IMPORT_MDI_ICONS = (icons: string[]): MdxjsEsm => {
     };
 };
 
-interface OptionsInput {
+export interface OptionsInput {
     colorMapping?: Record<string, string>;
     defaultSize?: number | string;
 }

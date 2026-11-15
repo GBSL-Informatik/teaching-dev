@@ -28,7 +28,6 @@ const ExpandableOverview = observer((props: Props) => {
                 classNames={{
                     prName: styles.prName,
                     reload: styles.reload,
-                    preview: styles.preview,
                     commits: styles.commits,
                     merged: styles.merged,
                     closed: styles.closed,

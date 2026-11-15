@@ -1,0 +1,11 @@
+.directive {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: var(--ifm-global-radius);
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.9em;
+    &.selected {
+        outline: 2px solid var(--ifm-color-primary);
+    }
+}

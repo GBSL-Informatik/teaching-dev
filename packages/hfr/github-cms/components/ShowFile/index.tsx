@@ -3,10 +3,12 @@ import Card from '@tdev-components/shared/Card';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { useCmsStore } from '../../hooks/useCmsStore';
 import BinFile from '../../models/BinFile';
 import Dir from '../../models/Dir';
 import File from '../../models/File';
 import FileStub from '../../models/FileStub';
+import DraftConflict from '../DraftConflict';
 import DefaultEditor from '../Github/DefaultEditor';
 import AudioPreview from '../Github/iFile/File/FilePreview/AudioPreview';
 import ImagePreview from '../Github/iFile/File/FilePreview/ImagePreview';
@@ -26,6 +28,7 @@ const Centered = observer(({ children }: { children: React.ReactNode }) => {
 
 const ShowFile = observer((props: Props) => {
     const { file } = props;
+    const { drafts } = useCmsStore();
     const loadedFile = useLoadedFile(file);
     if (!loadedFile) {
         return <Loader label={`Lade ${file.name}`} />;
@@ -33,11 +36,17 @@ const ShowFile = observer((props: Props) => {
     switch (loadedFile.type) {
         case 'dir':
             return <Directory dir={loadedFile} />;
-        case 'file':
-            if (loadedFile.isMarkdown && !loadedFile.preventMdxEditor) {
+        case 'file': {
+            // the file is not editable until the user chose between the draft and the version on github
+            const outdatedDraft = drafts.outdatedDraftOf(loadedFile);
+            if (outdatedDraft) {
+                return <DraftConflict file={loadedFile} draft={outdatedDraft} />;
+            }
+            if (loadedFile.isMarkdown && !loadedFile.showsSource) {
                 return <MdxEditor file={loadedFile} key={loadedFile.componentKey} />;
             }
             return <DefaultEditor file={loadedFile} key={loadedFile.componentKey} />;
+        }
         case 'bin_file':
             if (loadedFile.isImage) {
                 return (

@@ -2,7 +2,6 @@ import { mdiFileEdit } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import { resolvePath } from '@tdev-models/helpers/resolvePath';
 import { ApiState } from '@tdev-stores/iStore';
-import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
@@ -43,49 +42,21 @@ const RenameFilePopup = observer((props: Props) => {
             }
             on="click"
             disabled={props.disabled}
-            onOpen={action(() => {
-                if (file.mustBeFetched && !file.isSyncing) {
-                    cmsStore.fetchFile(file);
-                }
-            })}
             modal
             ref={ref}
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
         >
             <AddOrUpdateFile
                 file={file}
-                onCreateOrUpdate={(fileName, isUpdate) => {
+                onCreateOrUpdate={(fileName) => {
                     const newPath = resolvePath(file.parentPath || '', fileName);
-                    if (!file.isLoadedFile()) {
-                        return Promise.resolve({ state: ApiState.ERROR, message: 'File not loaded' });
-                    }
                     return github
-                        .createOrUpdateFile(
-                            newPath,
-                            file.fileContent,
-                            activeBranchName,
-                            file.sha,
-                            `Rename ${fileName}`
-                        )
-                        .then((movedFile) => {
-                            if (movedFile) {
-                                return github.deleteFile(file).then(() => {
-                                    github._rmFileEntry(file);
-                                    return movedFile;
-                                });
-                            }
-                            return movedFile;
-                        })
-                        .then((movedFile) => {
-                            if (movedFile) {
-                                cmsStore.setActiveEntry(movedFile);
-                            }
+                        .moveEntry(file, newPath)
+                        .then(() => {
                             ref.current?.close();
                             return { state: ApiState.SUCCESS };
                         })
-                        .catch((e) => {
-                            return { state: ApiState.ERROR, message: e.message };
-                        });
+                        .catch((e: Error) => ({ state: ApiState.ERROR, message: e.message }));
                 }}
                 onDiscard={() => {
                     ref.current?.close();

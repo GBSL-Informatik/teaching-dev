@@ -4,13 +4,17 @@ import Button from '@tdev-components/shared/Button';
 import { Color } from '@tdev-components/shared/Colors';
 import { apiButtonColor, apiIcon } from '@tdev-components/utils/apiStateIcon';
 import { ApiState } from '@tdev-stores/iStore';
+import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useCmsStore } from '../../../../hooks/useCmsStore';
 import File from '../../../../models/File';
+import styles from './styles.module.scss';
 
 export interface Props {
     file: File;
     showIcon?: boolean;
+    /** without the label, e.g. on small screens */
+    iconOnly?: boolean;
     apiState?: ApiState;
     color?: Color | string;
     className?: string;
@@ -22,7 +26,7 @@ const Save = observer((props: Props) => {
     return (
         <Button
             icon={
-                props.showIcon || props.apiState === ApiState.SYNCING
+                props.showIcon || props.iconOnly || props.apiState === ApiState.SYNCING
                     ? apiIcon(mdiContentSave, props.apiState)
                     : undefined
             }
@@ -31,6 +35,8 @@ const Save = observer((props: Props) => {
                 file.save();
             }}
             text="Speichern"
+            textClassName={clsx(props.iconOnly && styles.hiddenText)}
+            title="Speichern"
             disabled={!file.isDirty || file.isOnMainBranch || !cmsStore.github?.canWrite}
             color={apiButtonColor(props.color ?? 'green', props.apiState)}
             spin={props.apiState === ApiState.SYNCING}

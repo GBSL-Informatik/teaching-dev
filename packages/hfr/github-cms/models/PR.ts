@@ -1,7 +1,6 @@
 import { ApiState } from '@tdev-stores/iStore';
-import { action, computed, observable } from 'mobx';
-import Github from './Github';
-import { withoutPreviewPRName, withPreviewPRName } from './helpers';
+import { action, computed, observable, observableRef } from 'mobx';
+import Github, { type MergeMethod } from './Github';
 
 type PRRef = {
     label: string;
@@ -14,6 +13,11 @@ type PRRef = {
         };
     };
 };
+
+export interface MergeError {
+    method: MergeMethod;
+    message: string;
+}
 
 interface Props {
     number: number;
@@ -59,6 +63,7 @@ class PR {
     @observable accessor apiState: ApiState = ApiState.IDLE;
     @observable accessor isSynced: boolean = false;
     @observable accessor isDraft: boolean = false;
+    @observableRef accessor mergeError: MergeError | undefined = undefined;
 
     constructor(props: Props, github: Github) {
         this.gitProvider = github;
@@ -80,20 +85,6 @@ class PR {
     }
 
     @computed
-    get hasPreview() {
-        return this.title === withPreviewPRName(this.title);
-    }
-
-    @action
-    setPreview(enabled: boolean) {
-        if (enabled) {
-            return this.gitProvider.updatePr(this.number, { title: withPreviewPRName(this.title) });
-        } else {
-            return this.gitProvider.updatePr(this.number, { title: withoutPreviewPRName(this.title) });
-        }
-    }
-
-    @computed
     get branch() {
         return this.gitProvider.store.findBranch(this.branchName);
     }
@@ -106,6 +97,21 @@ class PR {
     @action
     setMerged(merged: boolean) {
         this.merged = merged;
+    }
+
+    @action
+    setMergeError(mergeError: MergeError | undefined) {
+        this.mergeError = mergeError;
+    }
+
+    /** the allowed merge methods to try after the merge failed */
+    @computed
+    get alternativeMergeMethods(): MergeMethod[] {
+        const failedMethod = this.mergeError?.method;
+        if (!failedMethod) {
+            return [];
+        }
+        return this.gitProvider.mergeMethods.filter((method) => method !== failedMethod);
     }
 
     @computed

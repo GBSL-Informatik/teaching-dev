@@ -17,10 +17,7 @@ import {
 import { getBoundingRect } from './getBoundingRect';
 import { withoutMetaElements } from './getElementsFromScene';
 
-export const createExcalidrawMarkup = async (
-    imgFileHandle: FileSystemFileHandle
-): Promise<ExcalidrawInitialDataState> => {
-    const file = await imgFileHandle.getFile();
+export const createExcalidrawMarkup = async (file: File): Promise<ExcalidrawInitialDataState> => {
     const binData = await fileToDataUrl(file);
     const dimensions = await getImageDimensions(file, EXCALIDRAW_MAX_WIDTH);
     return {

@@ -20,7 +20,7 @@ const loadExcalidrawState = async (
     } catch {
         let parentDir: FileSystemDirectoryHandle;
         ({ fileHandle, parentDir } = await requestFileHandle(root, src, 'read'));
-        const excaliData = await createExcalidrawMarkup(fileHandle);
+        const excaliData = await createExcalidrawMarkup(await fileHandle.getFile());
         const excaliFile = await parentDir.getFileHandle(excaliName, { create: true });
         await writeFileHandle(excaliFile, JSON.stringify(excaliData, null, 2));
         fileHandle = excaliFile;

@@ -6,6 +6,8 @@ import { CmsStore } from '../stores/CmsStore';
 export default class ViewStore extends iViewStore<CmsStore> {
     @observable accessor showFileTree = false;
     @observable accessor isNavOverviewExpanded = false;
+    /** whether the breadcrumbs of the file path are on the screen, see `EditorNav` */
+    @observable accessor isEditorNavVisible = true;
     @observable accessor openInlineMathEditor: string | null = null;
     @observable accessor _assetEntrypoint: Dir | null = null;
 
@@ -42,6 +44,12 @@ export default class ViewStore extends iViewStore<CmsStore> {
     setIsNavOverviewExpanded(isExpanded: boolean) {
         this.isNavOverviewExpanded = isExpanded;
     }
+
+    @action
+    setIsEditorNavVisible(isVisible: boolean) {
+        this.isEditorNavVisible = isVisible;
+    }
+
     @action
     setOpenInlineMathEditor(id: string | null) {
         this.openInlineMathEditor = id;

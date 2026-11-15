@@ -1,10 +1,12 @@
+/* the defaults can be overwritten by the parent, e.g. `--cms-tree-indent` of a compact `Directory` */
 .dir {
-    --ifm-list-left-padding: var(--cms-tree-indent);
+    --ifm-list-left-padding: var(--cms-tree-indent, 1.25em);
     position: relative;
     &::before {
         content: '';
-        border-left: var(--cms-tree-dir-indicator-line-width) var(--cms-tree-dir-indicator-line-style)
-            var(--cms-tree-dir-indicator-line-color);
+        border-left: var(--cms-tree-dir-indicator-line-width, 1px)
+            var(--cms-tree-dir-indicator-line-style, solid)
+            var(--cms-tree-dir-indicator-line-color, var(--ifm-color-gray-500));
         height: calc(100% - 32px);
         position: absolute;
         top: 26px;
@@ -31,6 +33,10 @@
             .onHover {
                 display: flex;
             }
+        }
+        &.dropTarget {
+            outline: 2px dashed var(--ifm-color-primary);
+            background-color: var(--ifm-color-emphasis-200);
         }
     }
 }

@@ -1,0 +1,43 @@
+.card {
+    width: min(50em, 95vw);
+    max-height: 85vh;
+    .account {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .body {
+        overflow-y: auto;
+        .navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1em;
+        }
+        .section {
+            border: 1px solid var(--ifm-color-emphasis-300);
+            border-radius: var(--ifm-global-radius);
+            padding: 0.5em 0.75em;
+            margin-bottom: 1em;
+            .sectionHeader {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5em;
+                margin-bottom: 0.5em;
+                h5 {
+                    margin: 0;
+                }
+            }
+            ul {
+                margin-bottom: 0;
+            }
+        }
+        .home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+    }
+}

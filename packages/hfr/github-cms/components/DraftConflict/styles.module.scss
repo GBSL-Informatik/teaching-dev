@@ -1,0 +1,31 @@
+.conflict {
+    padding: 0.5em;
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em;
+    }
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+        margin: 0.5em 0;
+        font-weight: var(--ifm-font-weight-semibold);
+        /* the underlines of the changed text in the unified view of @codemirror/merge */
+        .removed {
+            background: linear-gradient(#ee443366, #ee443366) bottom/100% 2px no-repeat;
+        }
+        .added {
+            background: linear-gradient(#22bb22aa, #22bb22aa) bottom/100% 2px no-repeat;
+        }
+    }
+    :global {
+        .cm-editor {
+            font-family: var(--ifm-font-family-monospace);
+            font-size: var(--ifm-code-font-size);
+            &.cm-focused {
+                outline: none;
+            }
+        }
+    }
+}

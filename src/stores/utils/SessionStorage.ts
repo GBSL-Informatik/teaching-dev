@@ -9,6 +9,7 @@ const getStorageKey = (key: string) => {
 
 export interface StorageKey {
     GithubToken: 'githubToken';
+    GithubOAuthState: 'githubOAuthState';
 }
 
 /**

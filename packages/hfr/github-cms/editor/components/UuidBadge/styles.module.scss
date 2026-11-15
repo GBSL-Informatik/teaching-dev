@@ -1,0 +1,13 @@
+.uuid {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+    padding: 0 0 0 0.3em;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.85em;
+}
+.missing {
+    font-family: var(--ifm-font-family-base);
+    font-style: italic;
+    opacity: 0.7;
+}

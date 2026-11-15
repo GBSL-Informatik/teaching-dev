@@ -1,0 +1,27 @@
+.diff {
+    padding: 0.5em;
+    .options {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 0.5em;
+    }
+    .titles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        font-weight: var(--ifm-font-weight-semibold);
+    }
+    :global {
+        .cm-editor {
+            font-family: var(--ifm-font-family-monospace);
+            font-size: var(--ifm-code-font-size);
+            &.cm-focused {
+                outline: none;
+            }
+        }
+    }
+}
+.noChanges {
+    padding: 2em;
+    text-align: center;
+    color: var(--ifm-color-emphasis-600);
+}

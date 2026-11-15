@@ -1,31 +1,10 @@
-import _ from 'es-toolkit/compat';
 import { BlockContent, Image, Node, Paragraph, Parent, PhrasingContent, Root, RootContent } from 'mdast';
 import { LeafDirective } from 'mdast-util-directive';
 import type { MdxJsxFlowElement } from 'mdast-util-mdx';
 import { SKIP, visit } from 'unist-util-visit';
-import { Options, toJsxAttribute, transformAttributes } from '../helpers';
+import { type Options, toJsxAttribute } from '../helpers';
+import { flexContainerOptions, flexItemOptions } from './flexOptions';
 import { ContainerDirectiveName, DirectiveBreak, DirectiveCard, DirectiveFlex } from './plugin';
-const MIN_WIDTH = '50px';
-
-const configureFlexOptions = (options: Options, mergeWith?: Partial<Options>) => {
-    const opts = _.merge({}, options, mergeWith) as Options;
-    if (!('flexBasis' in opts.style)) {
-        const { columns, minWidth, gap } = opts.style;
-        const cols = columns ? Number.parseInt(columns as string, 10) : undefined;
-        if (cols && minWidth) {
-            opts.style.flexBasis = `max(${minWidth}, ${100 / cols}% - calc(${cols - 1} * ${gap || '0.4em'}))`;
-            delete opts.style.columns;
-            delete opts.style.minWidth;
-        } else if (cols) {
-            opts.style.flexBasis = `max(${MIN_WIDTH}, ${100 / cols}% - calc(${cols - 1} * ${gap || '0.4em'}))`;
-            delete opts.style.columns;
-        } else if (minWidth) {
-            opts.style.flexBasis = minWidth;
-            delete opts.style.minWidth;
-        }
-    }
-    return opts;
-};
 
 const generateImage = (
     image: Paragraph
@@ -64,9 +43,7 @@ const visitItems = (
         }
         if (node.type === 'leafDirective' && (node as LeafDirective).name === DirectiveBreak) {
             const directive = node as LeafDirective;
-            const attributes = configureFlexOptions(transformAttributes(directive.attributes), {
-                style: defaultStyle
-            });
+            const attributes = flexItemOptions(directive.attributes, defaultStyle);
             const item = config.flexItem(name, attributes);
             parent.children.splice(idx || 0, 1, item as BlockContent);
             setItem(item);
@@ -74,9 +51,7 @@ const visitItems = (
         }
         /** ensure at least one item is present */
         if (!currentItem) {
-            const attributes = configureFlexOptions(transformAttributes(null), {
-                style: defaultStyle
-            });
+            const attributes = flexItemOptions(null, defaultStyle);
             const item = config.flexItem(name, attributes);
             currentItem = item;
             /**
@@ -144,12 +119,7 @@ export const transformer = (ast: Root | MdxJsxFlowElement | Parent, config: Conf
         if (!ContainerName.has(name)) {
             return;
         }
-        const attributes = configureFlexOptions(transformAttributes(node.attributes as any));
-        const itemStyle: { [key: string]: string | boolean } = {};
-        if ('flexBasis' in attributes.style) {
-            itemStyle.flexBasis = attributes.style.flexBasis;
-            delete attributes.style.flexBasis;
-        }
+        const { options: attributes, itemStyle } = flexContainerOptions(node.attributes as any);
         const container = config.flex(name, node.children, attributes);
         transformer(container, config);
         parent.children.splice(idx || 0, 1, container as BlockContent);

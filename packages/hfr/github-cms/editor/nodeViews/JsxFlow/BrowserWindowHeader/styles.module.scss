@@ -1,0 +1,13 @@
+.address {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    .url {
+        flex-grow: 1;
+        min-width: 0;
+    }
+    /* the address bar keeps its height */
+    .editButton {
+        margin-block: -0.4em;
+    }
+}

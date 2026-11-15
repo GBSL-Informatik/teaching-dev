@@ -25,8 +25,7 @@
 @media screen and (max-width: 900px) {
     .PrState {
         &:not(.expanded) {
-            .reload,
-            .preview {
+            .reload {
                 display: none;
             }
         }
