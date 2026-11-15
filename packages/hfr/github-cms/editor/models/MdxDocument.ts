@@ -146,6 +146,11 @@ class MdxDocument implements NodeViewEditor {
         return command(this.state);
     }
 
+    /** whether an image can be inserted at the selection - observes the state */
+    get canInsertImage() {
+        return this.canRun(insertInline(schema.nodes.image.create()));
+    }
+
     /** whether the mark is active at the current selection - observes the state */
     isMarkActive(type: MarkType) {
         const { from, $from, to, empty } = this.state.selection;

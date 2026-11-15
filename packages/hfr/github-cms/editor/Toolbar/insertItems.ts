@@ -106,13 +106,31 @@ const admonitionItem = (type: string, label: string): MenuItem => ({
     create: () => createContainerDirective(type)
 });
 
+/** also offered by the toolbar, see `InsertButtons` */
+export const ADMONITION_ITEM = admonitionItem(DEFAULT_ADMONITION, 'Hinweis');
+
+export const FLEX_ITEM: MenuItem = {
+    label: 'Spalten',
+    icon: mdiViewColumnOutline,
+    keywords: ['flex', 'columns'],
+    create: () => createContainerDirective('flex')
+};
+
+export const ICON_ITEM: MenuItem = {
+    label: 'Icon',
+    icon: mdiEmoticonOutline,
+    keywords: ['mdi', 'emoji'],
+    create: () => nodes.text_directive.create({ name: 'mdi', label: 'robot' }),
+    inline: true
+};
+
 /** offered by the quick actions only, the insert menu has a single admonition */
 export const ADMONITION_ITEMS: MenuItem[] = ADMONITION_TYPES.filter(
     (type) => type !== DEFAULT_ADMONITION
 ).map((type) => admonitionItem(type, `Hinweis: ${type}`));
 
 const BLOCKS: MenuItem[] = [
-    admonitionItem(DEFAULT_ADMONITION, 'Hinweis'),
+    ADMONITION_ITEM,
     { label: 'Tabelle', icon: mdiTable, keywords: ['table'], create: () => createTable(3, 3) },
     {
         label: 'Code',
@@ -172,12 +190,7 @@ const BLOCKS: MenuItem[] = [
         keywords: ['cards'],
         create: () => createContainerDirective('cards')
     },
-    {
-        label: 'Spalten',
-        icon: mdiViewColumnOutline,
-        keywords: ['flex', 'columns'],
-        create: () => createContainerDirective('flex')
-    },
+    FLEX_ITEM,
     {
         label: 'Nächste Karte/Spalte (::br, Strg+Enter)',
         icon: mdiFormatPageBreak,
@@ -195,13 +208,7 @@ const INLINE: MenuItem[] = [
         create: () => nodes.math_inline.create({ value: '\\LaTeX' }),
         inline: true
     },
-    {
-        label: 'Icon',
-        icon: mdiEmoticonOutline,
-        keywords: ['mdi', 'emoji'],
-        create: () => nodes.text_directive.create({ name: 'mdi', label: 'robot' }),
-        inline: true
-    },
+    ICON_ITEM,
     {
         label: 'MDX',
         icon: mdiXml,

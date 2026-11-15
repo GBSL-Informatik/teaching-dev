@@ -7,13 +7,10 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
 import type { PopupActions } from 'reactjs-popup/dist/types';
-import { hasFrontmatter, insertFrontmatter, insertInline } from '../commands';
+import { hasFrontmatter, insertFrontmatter } from '../commands';
 import type MdxDocument from '../models/MdxDocument';
-import { schema } from '../schema';
 import { availableInsertSections, insertCommand, type MenuItem } from './insertItems';
 import styles from './styles.module.scss';
-
-const { nodes } = schema;
 
 const InsertMenu = observer(({ document }: { document: MdxDocument }) => {
     const ref = React.useRef<PopupActions>(null);
@@ -24,7 +21,6 @@ const InsertMenu = observer(({ document }: { document: MdxDocument }) => {
     };
 
     const sections = availableInsertSections(document.state);
-    const canInsertImage = document.canRun(insertInline(nodes.image.create()));
 
     return (
         <>
@@ -41,7 +37,7 @@ const InsertMenu = observer(({ document }: { document: MdxDocument }) => {
                 arrow={false}
             >
                 <Card classNames={{ body: clsx(styles.menu) }}>
-                    {canInsertImage && (
+                    {document.canInsertImage && (
                         <Button
                             icon={mdiImageOutline}
                             text="Bild"

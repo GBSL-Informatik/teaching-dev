@@ -29,6 +29,7 @@ import {
 } from '../commands';
 import type MdxDocument from '../models/MdxDocument';
 import { schema } from '../schema';
+import InsertButtons from './InsertButtons';
 import InsertMenu from './InsertMenu';
 import LinkButton from './LinkButton';
 import styles from './styles.module.scss';
@@ -129,6 +130,7 @@ const EditingTools = observer(({ document }: Props) => {
                     onClick={() => document.run(toggleBlockquote)}
                 />
             </div>
+            <InsertButtons document={document} />
             <InsertMenu document={document} />
             {document.isInside(schema.nodes.table) && <TableActions document={document} />}
         </>
