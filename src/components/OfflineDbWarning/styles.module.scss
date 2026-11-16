@@ -1,4 +1,8 @@
 .warning {
     border-radius: 0;
     text-align: center;
+    // Beats the bottom margin of the shared Alert, which this bar does not need above the navbar.
+    &:global(.alert) {
+        margin-bottom: 0;
+    }
 }

@@ -1,7 +1,8 @@
+import Alert from '@tdev-components/shared/Alert';
 import { useStore } from '@tdev-hooks/useStore';
 import type { OfflineDbProblem } from '@tdev-stores/SessionStore';
-import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import styles from './styles.module.scss';
 
 const MESSAGES: Record<OfflineDbProblem, string> = {
@@ -16,17 +17,18 @@ const MESSAGES: Record<OfflineDbProblem, string> = {
 const OfflineDbWarning = observer(() => {
     const sessionStore = useStore('sessionStore');
     const problem = sessionStore.offlineDbProblem;
-    if (!problem) {
+    const handleDiscard = React.useCallback(() => sessionStore.dismissOfflineDbProblem(), [sessionStore]);
+    if (!problem || problem === sessionStore.dismissedOfflineDbProblem) {
         return null;
     }
-    const isBlocked = problem === 'blocked';
     return (
-        <div
-            className={clsx('alert', isBlocked ? 'alert--warning' : 'alert--danger', styles.warning)}
-            role="alert"
+        <Alert
+            type={problem === 'blocked' ? 'warning' : 'danger'}
+            className={styles.warning}
+            onDiscard={handleDiscard}
         >
             {MESSAGES[problem]}
-        </div>
+        </Alert>
     );
 });
 
