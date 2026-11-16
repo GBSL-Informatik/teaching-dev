@@ -98,7 +98,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
             return;
         }
         this.store.root.documentRootStore
-            .create(id, new ContainerMeta(this.containerType), {
+            .create(id, meta, {
                 access: Access.None_DocumentRoot,
                 sharedAccess: Access.RO_DocumentRoot
             })
