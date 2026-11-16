@@ -48,9 +48,15 @@ Follow existing TypeScript/TSX patterns and `.prettierrc`: four-space indentatio
 
 Use PascalCase for components and classes, `useCamelCase` for hooks. Prefer configured `@tdev-*` import aliases and keep site-specific overrides in the appropriate `tdev-website/` directory.
 
-New components should normally be put in an `index.tsx` alongside a `styles.module.css` file, where the folder is named after the component. Use `clsx` for conditional class names. Avoid inline styles and global CSS.
+### Components & Styling
 
-Use mobx for state management and only use local reactish component state for component-specific state that does not need to be shared or persisted after unmounting. Use `useStore` to access stores.
+- Put new components in `<ComponentName>/index.tsx` with a co-located `styles.module.scss`. Use `clsx` for conditional class names.
+- Write SCSS modules as plain CSS plus nesting: no SCSS variables, mixins, functions, or loops.
+- Prefer Infima `--ifm-*` variables. Add a `--tdev-*` variable only when no Infima variable fits; define global ones in `src/css/custom.scss` (`:root`, plus a `[data-theme='dark']` override for colors).
+- Avoid inline styles and global CSS. Exception: runtime-computed values (e.g. a width or position). If the value only affects the element it is set on, an inline style (`style={{ width }}`) is fine. If children, pseudo-elements, or multiple rules need it, pass it as a CSS custom property (`style={{ '--tdev-x': value }}`) and consume it in the SCSS module. Static styles always belong in the SCSS module.
+- Avoid `!important`; to override Infima, increase specificity via nesting instead.
+
+Use mobx for state management and only use local React component state for component-specific state that does not need to be shared or persisted after unmounting. Use `useStore` to access stores.
 
 
 ## React Usage
@@ -59,7 +65,6 @@ Use mobx for state management and only use local reactish component state for co
 - Event handlers should be prefixed with "handle", like "handleClick" for onClick.
 - Avoid unnecessary re-renders by using React.memo, useMemo, and useCallback appropriately.
 - Use descriptive prop types with TypeScript interfaces.
-- Use Infima `--ifm-*` variables or available `--tdev-*` variables for component styling. Introduce new `--tdev-*` variables only when necessary.
 - Give stable props to memoized and `observer` components, especially list rows. Do not create new arrays, objects, or JSX on each render; use shared constants for empty arrays.
 - Do not read `ref.current` during render to pass it to props or context. Keep the element in state with a callback ref.
 - If the initial value of `useState` reads observables, use a lazy initializer. Otherwise the expression runs, and subscribes, on every render.
@@ -92,7 +97,7 @@ Use tests only for remark plugins or packages which are run from the cli. No tes
 
 Recent commits use short, imperative subjects such as `fix rename error reporting`; occasional prefixes such as `refactor:` also appear. Follow that style and keep commits focused.
 
-In pull requests, describe the behavior change, link relevant issues, report validation commands, and include screenshots for visual changes. Ensure the Prettier CI check passes; pushes to `main` build and deploy to GitHub Pages. Add a postifx `(AI-Assisted)` to the PR title if AI tools were used to generate code or content.
+In pull requests, describe the behavior change, link relevant issues, report validation commands, and include screenshots for visual changes. Ensure the Prettier CI check passes; pushes to `main` build and deploy to GitHub Pages. Add a postfix `(AI-Assisted)` to the PR title if AI tools were used to generate code or content.
 
 ## Configuration & Secrets
 
