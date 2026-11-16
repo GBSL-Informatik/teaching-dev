@@ -24,6 +24,8 @@ versioned_sidebars/*.json
 package.json
 
 static/katex/katex.min.css
+static/tdev-artifacts/
+static/**/*.html
 .vscode/*.code-snippets
 *.mp4
 *.mp3
