@@ -51,7 +51,7 @@ export default class ViewStore {
         if (!this.root.userStore.current?.hasElevatedAccess) {
             return 'open';
         }
-        return this._presentationPanelState ?? ' open';
+        return this._presentationPanelState ?? 'open';
     }
 
     useStore<T extends ViewStoreType>(type: T): ViewStoreTypeMapping[T] {

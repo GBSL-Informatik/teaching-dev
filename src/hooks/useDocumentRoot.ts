@@ -29,6 +29,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
     const hasElevatedAccess = useComputed(() => !!userStore.current?.hasElevatedAccess, [userStore]);
+    // Known limitation: the dummy keeps its first id when the id prop changes, which only happens in dev.
     const [dummyDocumentRoot] = React.useState(
         () =>
             new DocumentRoot(
@@ -81,6 +82,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
         );
         return () => {
             disposer();
+            // Only remove dummies with a generated id (useDummyId): removing by `id` would remove loaded models.
             documentRootStore.removeFromStore(defaultRootDocId, true);
         };
     }, [documentRootStore, id, loadOnlyType]);

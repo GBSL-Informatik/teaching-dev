@@ -82,6 +82,8 @@ const DefaultMeta: TypeMeta<DocumentType>[] = [
     new QuillV2Meta({})
 ];
 
+const MAX_CREATE_ATTEMPTS = 5;
+
 export class DocumentRootStore extends iStore {
     readonly root: RootStore;
     documentRoots = observable.array<DocumentRoot<DocumentType>>([]);
@@ -271,20 +273,12 @@ export class DocumentRootStore extends iStore {
                         .map((id) => {
                             const config = currentBatch.get(id);
                             if (config && config.meta) {
-                                return this.create(id, config.meta, config.access).catch(() => {
-                                    // queue it up for loading later - the model was probably generated in the mean time?
-                                    if (this.createAttempts.has(id)) {
-                                        this.createAttempts.set(id, this.createAttempts.get(id)! + 1);
-                                        if (this.createAttempts.get(id)! >= 5) {
-                                            // prevent infinite loading cycle
-                                            return undefined;
-                                        }
-                                    } else {
-                                        this.createAttempts.set(id, 1);
-                                    }
-                                    this.loadInNextBatch(id, config.meta, config.load, config.access);
-                                    return Promise.resolve({ id: id });
-                                });
+                                return this.create(id, config.meta, config.access)
+                                    .then((docRoot) => {
+                                        this.createAttempts.delete(id);
+                                        return docRoot;
+                                    })
+                                    .catch(() => this.retryCreateInNextBatch(id, config));
                             }
                             return Promise.resolve(undefined);
                         })
@@ -414,6 +408,20 @@ export class DocumentRootStore extends iStore {
     currentUsersPermissions(documentRootId: string) {
         const currentUser = this.root.userStore.current;
         return this._permissionsByUser(documentRootId, currentUser);
+    }
+
+    /**
+     * Queues the document root for loading later - the model was probably created in the meantime.
+     */
+    private retryCreateInNextBatch(id: string, config: BatchedMeta) {
+        const attempts = (this.createAttempts.get(id) ?? 0) + 1;
+        this.createAttempts.set(id, attempts);
+        if (attempts >= MAX_CREATE_ATTEMPTS) {
+            // prevent infinite loading cycle
+            return undefined;
+        }
+        this.loadInNextBatch(id, config.meta, config.load, config.access);
+        return { id: id };
     }
 
     /**
