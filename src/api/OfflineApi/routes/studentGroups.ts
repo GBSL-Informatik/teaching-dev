@@ -3,11 +3,10 @@ import type { User } from '@tdev-api/user';
 import { v4 as uuidv4 } from 'uuid';
 import type { DbAdapter } from '../Adapter';
 import type RouteTable from '../RouteTable';
-import { STUDENT_GROUPS_STORE } from './storeNames';
 
 export const registerStudentGroupRoutes = (routes: RouteTable) => {
     routes.register('GET', '/studentGroups', async ({ db }) => ({
-        data: await db.getAll<StudentGroup>(STUDENT_GROUPS_STORE)
+        data: await db.getAll<StudentGroup>('studentGroups')
     }));
     routes.register<Partial<StudentGroup>>('POST', '/studentGroups', async ({ db, user, data }) => ({
         data: await upsertStudentGroup(db, user, data.id ?? uuidv4(), data)
@@ -20,7 +19,7 @@ export const registerStudentGroupRoutes = (routes: RouteTable) => {
         })
     );
     routes.register('DELETE', '/studentGroups/:id', async ({ db, params }) => {
-        await db.delete(STUDENT_GROUPS_STORE, params.id);
+        await db.delete('studentGroups', params.id);
         return { data: null };
     });
     // Offline, the user is the only member and admin: membership changes are acknowledged but not stored.
@@ -42,6 +41,6 @@ const upsertStudentGroup = async (db: DbAdapter, user: User, id: string, data: P
         updatedAt: now,
         ...data
     } as StudentGroup;
-    await db.put(STUDENT_GROUPS_STORE, studentGroup);
+    await db.put('studentGroups', studentGroup);
     return studentGroup;
 };

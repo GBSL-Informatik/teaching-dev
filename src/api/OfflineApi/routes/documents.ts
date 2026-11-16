@@ -14,18 +14,17 @@ import {
 import OfflineHttpError from '../OfflineHttpError';
 import type RouteTable from '../RouteTable';
 import type { OfflineResponse, OfflineRouteHandler } from '../RouteTable';
-import { DOCUMENTS_STORE } from './storeNames';
 
 type OfflineDocument = Document<DocumentType>;
 
 export const registerDocumentRoutes = (routes: RouteTable) => {
     routes.register('GET', '/documents/:id', async ({ db, params }) => {
-        const document = await db.get<OfflineDocument>(DOCUMENTS_STORE, params.id);
+        const document = await db.get<OfflineDocument>('documents', params.id);
         return { data: document ? cleanDocument(document) : null };
     });
     routes.register<{ documentRootIds: string[] }>('POST', '/documents/multiple', async ({ db, data }) => {
         const documentRootIds = new Set(data.documentRootIds);
-        const documents = await db.getAll<OfflineDocument>(DOCUMENTS_STORE);
+        const documents = await db.getAll<OfflineDocument>('documents');
         const matching = documents.filter((document) => documentRootIds.has(document.documentRootId));
         return { data: matching.map(cleanDocument) };
     });
