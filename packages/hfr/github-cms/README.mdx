@@ -48,3 +48,19 @@ export default {
 
 ```
 :::
+## CMS einer anderen Website verwenden
+
+Websites ohne dieses Package können die «cms»-Links auf das CMS einer anderen Teaching-Dev-Website zeigen lassen. Dort muss man sich mit einem GitHub-Konto anmelden, das Zugriff auf das Repository dieser Website hat.
+
+:::info[`siteConfig.ts`]
+```ts
+export default {
+    // ...
+    showEditThisPageOptions: [/*...*/, 'cms'],
+    editThisPageCmsUrl: 'https://teaching-dev.gbsl.website/cms/',
+    // optional: Links zum CMS immer in einem neuen Tab öffnen.
+    // Standard: Links auf andere Websites öffnen in einem neuen Tab.
+    editThisPageCmsNewTab: true
+};
+```
+:::
