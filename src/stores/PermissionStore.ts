@@ -34,7 +34,8 @@ class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
     userPermissions = observable.array<UserPermission>([]);
     groupPermissions = observable.array<GroupPermission>([]);
-    // A map instead of a set: ObservableSet.has() tracks the whole set, see AGENTS.md.
+    // A map instead of a set: ObservableSet.has() tracks the whole set.
+    // See https://mobx.js.org/api.html#observableset
     private readonly loadedDocumentRootIds = observable.map<string, true>();
 
     constructor(root: RootStore) {
