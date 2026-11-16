@@ -1,5 +1,5 @@
 import { mdiContentSaveOffOutline, mdiDatabaseSyncOutline, mdiHarddisk } from '@mdi/js';
-import api from '@tdev-api/base';
+import { apiMode } from '@tdev-api/base';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import { action, observable } from 'mobx';
@@ -32,7 +32,7 @@ export class SessionStore extends iStore {
     }
 
     get apiMode(): 'indexedDB' | 'memory' | 'api' {
-        return api.mode ?? 'api';
+        return apiMode;
     }
 
     get apiModeIcon(): string {

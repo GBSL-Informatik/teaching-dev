@@ -6,7 +6,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import siteConfig from '@generated/docusaurus.config';
 import { localDb } from '@tdev-api/base';
-import { OfflineUser } from '@tdev-api/OfflineApi';
+import { OfflineUser } from '@tdev-api/OfflineApi/OfflineUser';
 import { User } from '@tdev-api/user';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import customFields from '@tdev-components/utils/customFields';

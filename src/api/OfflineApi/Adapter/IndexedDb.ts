@@ -1,7 +1,7 @@
 import type { Document, DocumentType } from '@tdev-api/document';
 import { deleteDB, type IDBPDatabase, openDB } from 'idb';
 import type { DbAdapter, DBSchema, DocumentsTransaction } from '.';
-import { OfflineUser } from '..';
+import { OfflineUser } from '../OfflineUser';
 import { normalizeDocumentParent } from '../documents';
 import { IMPORT_STORES, type ImportedStores, prepareImport } from './import';
 import { DB_VERSION, migrations } from './migrations';
