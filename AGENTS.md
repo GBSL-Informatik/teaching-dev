@@ -98,6 +98,8 @@ After completing a task in a pull request, review the task's full diff with [`lo
 2. Rerun the validation commands and commit the changes.
 3. Do not implement findings that need an owner decision, such as larger migrations or changed requirements. Report them to the user with concrete options.
 
+For tasks that only change documentation, a short coherence check is enough: is it consistent with existing docs and agent instructions, and does it avoid duplicating a reference? Skip the maintainability review unless the change includes code, such as MDX components or examples.
+
 ## Testing Guidelines
 
 Use tests only for remark plugins or packages which are run from the cli. No tests for components, hooks, or stores. Use Vitest with descriptive `describe` and `it` blocks. Name tests `*.test.ts` under the relevant module's `tests/` directory. Plugin tests commonly use inline snapshots; review snapshot changes for intended output differences. No coverage threshold is configured.
