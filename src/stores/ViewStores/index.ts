@@ -58,10 +58,16 @@ export default class ViewStore {
         return this.stores.get(type) as ViewStoreTypeMapping[T];
     }
 
+    /**
+     * Registering a type again replaces its previous store.
+     */
     registerStore<T extends ViewStoreType>(
         type: T,
         store: (viewStore: ViewStore) => ViewStoreTypeMapping[T]
     ) {
+        if (this.stores.has(type)) {
+            console.warn(`View store ${type} is already registered, replacing it`);
+        }
         this.stores.set(type, store(this));
     }
 

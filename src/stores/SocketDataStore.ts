@@ -86,9 +86,12 @@ export class SocketDataStore extends iStore<'ping'> {
     }
 
     /**
-     * Registering a type again replaces its previous handler.
+     * Registering a type again replaces its previous handler, e.g. to override a core record type.
      */
     registerRecordHandler<T extends AnyRecordType>(type: T, handler: RecordHandler<TypeRecordMap[T]>) {
+        if (this.recordHandlers.has(type)) {
+            console.warn(`Record handler for ${type} is already registered, replacing it`);
+        }
         this.recordHandlers.set(type, handler);
     }
 

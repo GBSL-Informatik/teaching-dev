@@ -105,7 +105,8 @@ export const BuiltinDocumentTypes: AnyDocumentTypeConfig[] = [
     {
         type: 'cms_text',
         factory: (data, store) => new CmsText(data, store),
-        defaultMeta: new CmsTextMeta({})
+        defaultMeta: new CmsTextMeta({}),
+        adminEditable: true
     },
     {
         type: 'dynamic_document_roots',

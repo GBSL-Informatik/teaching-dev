@@ -1,6 +1,5 @@
 import {
     Access,
-    ADMIN_EDITABLE_DOCUMENTS,
     allDocuments as apiAllDocuments,
     create as apiCreate,
     remove as apiDelete,
@@ -41,6 +40,11 @@ export interface DocumentTypeConfig<T extends DocumentType> {
     createOnNewRecord?: boolean;
     /** counts towards the task progress of a page */
     taskable?: boolean;
+    /**
+     * Admins edit the documents of other users on their behalf, e.g. cms texts.
+     * This should not be the default case for most documents.
+     */
+    adminEditable?: boolean;
     /** the main document of a root that also holds other types, e.g. a quiz and its answers */
     preferredInRoot?: boolean;
 }
@@ -77,10 +81,13 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
     );
 
     /**
-     * Registering a type again replaces its previous config.
+     * Registering a type again replaces its previous config, e.g. to override a built-in type.
      */
     @action
     registerDocumentType(config: AnyDocumentTypeConfig) {
+        if (this.documentTypeConfigs.has(config.type)) {
+            console.warn(`Document type ${config.type} is already registered, replacing it`);
+        }
         const fileExtensions = config.fileExtensions?.map((fileConfig) => ({
             ...fileConfig,
             priority: fileConfig.priority ?? DEFAULT_FILE_PRIORITY
@@ -139,6 +146,10 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
 
     isCreatedOnNewRecord(type: DocumentType): boolean {
         return !!this.documentTypeConfigs.get(type)?.createOnNewRecord;
+    }
+
+    isAdminEditable(type: DocumentType): boolean {
+        return !!this.documentTypeConfigs.get(type)?.adminEditable;
     }
 
     createDocument<Type extends DocumentType>(data: DocumentProps<Type>): TypeModelMapping[Type] | null {
@@ -279,8 +290,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             const { id } = model;
             const hasAdminAccess =
                 !!this.root.userStore.current?.hasElevatedAccess &&
-                (model.authorId === this.root.userStore.current.id ||
-                    ADMIN_EDITABLE_DOCUMENTS.includes(model.type));
+                (model.authorId === this.root.userStore.current.id || this.isAdminEditable(model.type));
             if (!model.canEdit && !hasAdminAccess) {
                 return Promise.resolve('error');
             }
@@ -342,8 +352,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             );
         }
         const onBehalfOf =
-            model.authorId !== this.root.userStore.current?.id &&
-            ADMIN_EDITABLE_DOCUMENTS.includes(model.type);
+            model.authorId !== this.root.userStore.current?.id && this.isAdminEditable(model.type);
         return Promise.all(preTasks)
             .then(() =>
                 this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
