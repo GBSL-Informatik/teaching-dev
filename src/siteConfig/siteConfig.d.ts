@@ -101,13 +101,21 @@ export interface SiteConfig {
 
     /**
      * the URL to the CMS to edit the page. Defaults to '/cms/', but can be
-     * redirected to a different path
+     * redirected to a different path or to the CMS of another website, e.g.
+     * when this website does not install the `@hfr/github-cms` package.
      * @default '/cms/'
      * @example 'https://teaching-dev.gbsl.website/cms/'
      *
      * OrganizationName and ProjectName will be appended automatically.
      */
     editThisPageCmsUrl?: string;
+
+    /**
+     * whether the CMS edit link opens in a new tab.
+     * When not set, links to another website open in a new tab and links
+     * to this website in the same tab.
+     */
+    editThisPageCmsNewTab?: boolean;
 
     /**
      * the config of the blog plugin. It will be merged with the default options in docusaurus.config.ts

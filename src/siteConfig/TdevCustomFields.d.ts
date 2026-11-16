@@ -16,6 +16,7 @@ export interface TdevCustomFields {
     showEditThisPage: ShowEditThisPage;
     showEditThisPageOptions: EditThisPageOption[];
     editThisPageCmsUrl: string;
+    editThisPageCmsNewTab?: boolean;
     tdevConfig: Partial<TdevConfig>;
 
     // legacy?

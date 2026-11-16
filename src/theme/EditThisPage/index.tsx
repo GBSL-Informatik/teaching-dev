@@ -1,3 +1,4 @@
+import isInternalUrl from '@docusaurus/isInternalUrl';
 import Link from '@docusaurus/Link';
 import { useLocation } from '@docusaurus/router';
 import { ThemeClassNames } from '@docusaurus/theme-common';
@@ -13,13 +14,18 @@ import { observer } from 'mobx-react-lite';
 import { type ReactNode } from 'react';
 import styles from './styles.module.scss';
 const { organizationName, projectName } = siteConfig;
-const { showEditThisPage, showEditThisPageOptions, editThisPageCmsUrl } = customFields;
+const { showEditThisPage, showEditThisPageOptions, editThisPageCmsUrl, editThisPageCmsNewTab } = customFields;
 const DisplayBadgeFor = new Set<EditThisPageOption>(
     showEditThisPageOptions.length === 0 ? ['github', 'github-dev'] : showEditThisPageOptions
 );
 const GH_EDIT_URL = `https://github.com/${organizationName}/${projectName}/edit/main`;
 const GH_DEV_EDIT_URL = `https://github.dev/${organizationName}/${projectName}/blob/main`;
-const CMS_EDIT_URL = `${editThisPageCmsUrl}${organizationName}/${projectName}`;
+const CMS_BASE_URL = editThisPageCmsUrl.replace(/\/+$/, '');
+const CMS_EDIT_URL = `${CMS_BASE_URL}/${organizationName}/${projectName}`;
+// the login state of this site is irrelevant for a cms hosted on another website
+const IS_CMS_ON_THIS_SITE = isInternalUrl(CMS_BASE_URL);
+// without a target, Docusaurus opens external urls in a new tab and internal ones in the same tab
+const CMS_LINK_TARGET = editThisPageCmsNewTab ? '_blank' : undefined;
 
 const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
     const userStore = useStore('userStore');
@@ -29,6 +35,7 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
         return;
     }
     const isLoggedIn = !!userStore.current;
+    const isCmsLoginRequired = IS_CMS_ON_THIS_SITE && !isLoggedIn;
     switch (showEditThisPage) {
         case 'always':
             break;
@@ -78,15 +85,16 @@ const EditThisPage = observer(({ editUrl }: Props): ReactNode => {
             {DisplayBadgeFor.has('cms') && (
                 <Link
                     to={`${CMS_EDIT_URL}${editUrl}`}
+                    target={CMS_LINK_TARGET}
                     className={clsx(
                         ThemeClassNames.common.editThisPage,
                         styles.edit,
-                        !isLoggedIn && styles.noUser
+                        isCmsLoginRequired && styles.noUser
                     )}
                     title={
-                        isLoggedIn
-                            ? 'Im tdev-CMS bearbeiten (Vorschau).'
-                            : 'Im tdev-CMS bearbeiten (Vorschau, Anmeldung erforderlich).'
+                        isCmsLoginRequired
+                            ? 'Im tdev-CMS bearbeiten (Vorschau, Anmeldung erforderlich).'
+                            : 'Im tdev-CMS bearbeiten (Vorschau).'
                     }
                 >
                     <Icon path={mdiInfinity} size={0.7} className={clsx(styles.cms)} />

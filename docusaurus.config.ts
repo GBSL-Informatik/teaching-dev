@@ -155,6 +155,7 @@ const docusaurusConfig = withSiteConfig().then(async (siteConfig) => {
           siteConfig.showEditThisPageOptions ??
           (['github', 'github-dev'] satisfies EditThisPageOption[]),
         editThisPageCmsUrl: siteConfig.editThisPageCmsUrl ?? '/cms/',
+        editThisPageCmsNewTab: siteConfig.editThisPageCmsNewTab,
         tdevConfig: siteConfig.tdevConfig ?? ({} satisfies Partial<TdevConfig>)
       } satisfies TdevCustomFields,
       future: {
