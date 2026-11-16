@@ -88,6 +88,15 @@ Task-specific instructions live in skills, following the [Agent Skills](https://
 - [`code-style`](.agents/skills/code-style/SKILL.md) - Write or modify code that humans can easily review
 - [`mdx-docs`](.agents/skills/mdx-docs/SKILL.md) - Write or edit Markdown and MDX documentation using Teaching Dev conventions
 - [`long-term-maintainability-reviewer`](.agents/skills/long-term-maintainability-reviewer/SKILL.md) - Challenge design choices during planning, refactoring, and pull-request reviews
+- [`coherence-reviewer`](.agents/skills/coherence-reviewer/SKILL.md) - Keep one model per concern instead of several incompatible ones, based on [The Decoherence Trap](https://maevyn.codes/decoherence)
+
+### Review after each task
+
+After completing a task in a pull request, review the task's full diff with [`long-term-maintainability-reviewer`](.agents/skills/long-term-maintainability-reviewer/SKILL.md) and [`coherence-reviewer`](.agents/skills/coherence-reviewer/SKILL.md) before reporting back to the user. When working on several tasks in parallel, run the review once all of them are complete, still before reporting back.
+
+1. Implement the resulting changes following [`code-style`](.agents/skills/code-style/SKILL.md).
+2. Rerun the validation commands and commit the changes.
+3. Do not implement findings that need an owner decision, such as larger migrations or changed requirements. Report them to the user with concrete options.
 
 ## Testing Guidelines
 
@@ -108,7 +117,7 @@ Use `.env.example` and the README to configure local settings. Keep credentials 
 For complex tasks, delegate independent work to subagents:
 
 - Use explorer to investigate relevant code and existing patterns.
-- Use reviewer to review the completed changes.
+- Use reviewer to run the [review after each task](#review-after-each-task) on the completed changes.
 - The main agent implements changes and runs validation.
 - Avoid having multiple agents edit the same files.
 - Keep simple tasks in the main agent
