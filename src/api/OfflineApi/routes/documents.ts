@@ -1,5 +1,5 @@
 import type { Document, DocumentType, UniquenessConstraints } from '@tdev-api/document';
-import { Role } from '@tdev-api/user';
+import { Role, type User } from '@tdev-api/user';
 import { v4 as uuidv4 } from 'uuid';
 import type { DbAdapter, DocumentsTransaction } from '../Adapter';
 import {
@@ -9,10 +9,9 @@ import {
     deleteDocumentTree,
     isDocumentConstraintError,
     matchingConstraint,
-    OfflineDocumentError,
     sameDocumentScope
 } from '../documents';
-import { OfflineUser } from '../OfflineUser';
+import OfflineHttpError from '../OfflineHttpError';
 import type RouteTable from '../RouteTable';
 import type { OfflineResponse, OfflineRouteHandler } from '../RouteTable';
 import { DOCUMENTS_STORE } from './storeNames';
@@ -33,26 +32,26 @@ export const registerDocumentRoutes = (routes: RouteTable) => {
     routes.register<Partial<OfflineDocument>>(
         'POST',
         '/documents',
-        withDocumentErrors(async ({ db, data, query }) => {
+        withConstraintErrors(async ({ db, user, data, query }) => {
             const onBehalfOf = query.get('onBehalfOf') === 'true';
-            const result = await createOrFindDocument(db, data, onBehalfOf);
+            const result = await createOrFindDocument(db, user, data, onBehalfOf);
             return { status: result.exists ? 200 : 201, data: result.document };
         })
     );
     routes.register<Partial<OfflineDocument>>(
         'PUT',
         '/documents/:id',
-        withDocumentErrors(({ db, params, data }) =>
+        withConstraintErrors(({ db, params, data }) =>
             updateDocument(db, params.id, async (document) => ({ data: data.data ?? document.data }))
         )
     );
     routes.register<{ data?: UniquenessConstraints }>(
         'PUT',
         '/documents/:id/constraints',
-        withDocumentErrors(({ db, params, data }) =>
+        withConstraintErrors(({ db, user, params, data }) =>
             updateDocument(db, params.id, async (document) => {
-                if (document.authorId !== OfflineUser.getUser().id) {
-                    throw new OfflineDocumentError('Not authorized');
+                if (document.authorId !== user.id) {
+                    throw new OfflineHttpError(403, 'Not authorized');
                 }
                 return validConstraints(data.data);
             })
@@ -61,11 +60,11 @@ export const registerDocumentRoutes = (routes: RouteTable) => {
     routes.register(
         'PUT',
         '/documents/:id/linkTo/:parentId',
-        withDocumentErrors(({ db, params }) =>
+        withConstraintErrors(({ db, params }) =>
             updateDocument(db, params.id, async (document, store) => {
                 const parent = await store.get(params.parentId);
                 if (!parent || parent.documentRootId !== document.documentRootId) {
-                    throw new OfflineDocumentError('Parent document not found', 404);
+                    throw new OfflineHttpError(404, 'Parent document not found');
                 }
                 return { parentId: parent.id };
             })
@@ -95,42 +94,46 @@ export const documentsBy = async <T extends DocumentType = any>(
     return (await db.byDocumentRootId<T>(documentRootId)).map(cleanDocument);
 };
 
-const createOrFindDocument = async (db: DbAdapter, data: Partial<OfflineDocument>, onBehalfOf: boolean) => {
+const createOrFindDocument = async (
+    db: DbAdapter,
+    actor: User,
+    data: Partial<OfflineDocument>,
+    onBehalfOf: boolean
+) => {
     try {
-        return await createDocumentRecord(db, data, onBehalfOf);
+        return await createDocumentRecord(db, actor, data, onBehalfOf);
     } catch (error) {
         if (!isDocumentConstraintError(error)) {
             throw error;
         }
         // A concurrent create won the unique index: return its document, as the backend does.
-        const requested = { ...data, authorId: authorIdFor(data, onBehalfOf) } as OfflineDocument;
+        const requested = { ...data, authorId: authorIdFor(actor, data, onBehalfOf) } as OfflineDocument;
         const existing = (await documentsBy(db, data.documentRootId)).find((document) =>
             matchingConstraint({ ...requested, parentId: requested.parentId || undefined }, document)
         );
         if (!existing) {
-            throw new OfflineDocumentError('Unique constraint violation');
+            throw new OfflineHttpError(403, 'Unique constraint violation');
         }
         return { document: existing, exists: true };
     }
 };
 
-const authorIdFor = (data: Partial<OfflineDocument>, onBehalfOf: boolean) => {
-    const actor = OfflineUser.getUser();
+const authorIdFor = (actor: User, data: Partial<OfflineDocument>, onBehalfOf: boolean) => {
     return onBehalfOf ? (data.authorId ?? actor.id) : actor.id;
 };
 
 const createDocumentRecord = async (
     db: DbAdapter,
+    actor: User,
     data: Partial<OfflineDocument>,
     onBehalfOf: boolean
 ): Promise<{ document: OfflineDocument; exists: boolean }> => {
-    const actor = OfflineUser.getUser();
-    const authorId = authorIdFor(data, onBehalfOf);
+    const authorId = authorIdFor(actor, data, onBehalfOf);
     if (authorId !== actor.id && actor.role === Role.STUDENT) {
-        throw new OfflineDocumentError('Insufficient access permission');
+        throw new OfflineHttpError(403, 'Insufficient access permission');
     }
     if (!data.documentRootId || !data.type) {
-        throw new OfflineDocumentError('Missing document root or type', 400);
+        throw new OfflineHttpError(400, 'Missing document root or type');
     }
     const now = new Date().toISOString();
     // Client IDs identify requests; the server independently assigns persisted identities.
@@ -200,7 +203,7 @@ const updateDocument = async (
     const updated = await db.withDocumentsTransaction(async (store) => {
         const document = await store.get(id);
         if (!document) {
-            throw new OfflineDocumentError('Document not found', 404);
+            throw new OfflineHttpError(404, 'Document not found');
         }
         const changes = await changesFor(document, store);
         const result = { ...document, ...changes, updatedAt: new Date().toISOString() };
@@ -220,49 +223,28 @@ const validConstraints = (input: UniquenessConstraints | undefined) => {
         }
     }
     if (Object.keys(constraints).length === 0) {
-        throw new OfflineDocumentError('No valid constraints to update');
+        throw new OfflineHttpError(403, 'No valid constraints to update');
     }
     return constraints;
 };
 
-/** Answers document errors with the backend's error status and body. */
-const withDocumentErrors = <TBody>(handler: OfflineRouteHandler<TBody>): OfflineRouteHandler<TBody> => {
+/**
+ * Answers a uniqueness conflict of the db like the backend, which leaves update and relink
+ * conflicts to its generic 500 error handler.
+ */
+const withConstraintErrors = <TBody>(handler: OfflineRouteHandler<TBody>): OfflineRouteHandler<TBody> => {
     return async (request) => {
         try {
             return await handler(request);
         } catch (error) {
-            return documentErrorResponse(error);
+            if (!isDocumentConstraintError(error)) {
+                throw error;
+            }
+            return {
+                status: 500,
+                statusText: 'Unique constraint violation',
+                data: { errors: [{ name: error.name, message: 'Unique constraint violation' }] }
+            };
         }
     };
-};
-
-const documentErrorResponse = (error: unknown): OfflineResponse => {
-    if (error instanceof OfflineDocumentError) {
-        const name =
-            { 400: 'BAD REQUEST', 403: 'FORBIDDEN', 404: 'NOT FOUND' }[error.status] ??
-            'INTERNAL SERVER ERROR';
-        return {
-            status: error.status,
-            statusText: error.message,
-            data: {
-                errors: [
-                    {
-                        name,
-                        message: `[${error.status}] ${error.message}`,
-                        status: error.status,
-                        isOperational: true
-                    }
-                ]
-            }
-        };
-    }
-    if (isDocumentConstraintError(error)) {
-        // The backend leaves update/relink database conflicts to its generic 500 error handler.
-        return {
-            status: 500,
-            statusText: 'Unique constraint violation',
-            data: { errors: [{ name: error.name, message: 'Unique constraint violation' }] }
-        };
-    }
-    throw error;
 };

@@ -2,6 +2,8 @@ import axios from 'axios';
 import { describe, expect, it, vi } from 'vitest';
 import type { DbAdapter } from '../Adapter';
 import { createOfflineAdapter } from '../offlineAdapter';
+import OfflineHttpError from '../OfflineHttpError';
+import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 import RouteTable, { type OfflineRouteHandler } from '../RouteTable';
 import { expectRejection } from './offlineApi';
 
@@ -10,11 +12,12 @@ vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
 vi.mock('@tdev-api/base', () => ({ default: {} }));
 
 const db = {} as DbAdapter;
+const currentUser = () => DEFAULT_OFFLINE_USER;
 
 const createApi = (register: (routes: RouteTable) => void) => {
     const routes = new RouteTable();
     register(routes);
-    return axios.create({ adapter: createOfflineAdapter(routes, db) });
+    return axios.create({ adapter: createOfflineAdapter(routes, db, currentUser) });
 };
 
 describe('RouteTable', () => {
@@ -57,7 +60,7 @@ describe('RouteTable', () => {
 });
 
 describe('offline axios adapter', () => {
-    it('passes decoded params, the query and the parsed json body to the handler', async () => {
+    it('passes decoded params, the query, the parsed json body, the db and the user to the handler', async () => {
         const handler = vi.fn<OfflineRouteHandler>(() => ({ data: 'ok' }));
         const api = createApi((routes) => routes.register('POST', '/items/:id', handler));
 
@@ -69,6 +72,7 @@ describe('offline axios adapter', () => {
         expect(request.query.getAll('ids')).toEqual(['1', '2']);
         expect(request.data).toEqual({ nested: { value: 1 } });
         expect(request.db).toBe(db);
+        expect(request.user).toBe(DEFAULT_OFFLINE_USER);
     });
 
     it('serializes axios params into the query', async () => {
@@ -126,6 +130,34 @@ describe('offline axios adapter', () => {
         await expectRejection(api.get('/unknown'), 404);
         expect(warn).toHaveBeenCalledWith('Offline api: no route for GET /unknown');
         warn.mockRestore();
+    });
+
+    it('answers an OfflineHttpError with its status and the backend error body', async () => {
+        const api = createApi((routes) =>
+            routes.register('GET', '/missing', () => {
+                throw new OfflineHttpError(404, 'Thing not found');
+            })
+        );
+
+        const data = await expectRejection(api.get('/missing'), 404);
+
+        expect(data).toEqual({
+            errors: [
+                { name: 'NOT FOUND', message: '[404] Thing not found', status: 404, isOperational: true }
+            ]
+        });
+    });
+
+    it('names unknown error statuses like the backend', async () => {
+        const api = createApi((routes) =>
+            routes.register('GET', '/teapot', () => {
+                throw new OfflineHttpError(418, 'Teapot');
+            })
+        );
+
+        const data = await expectRejection(api.get('/teapot'), 418);
+
+        expect(data).toMatchObject({ errors: [{ name: 'INTERNAL SERVER ERROR' }] });
     });
 
     it('answers a throwing handler with 500', async () => {

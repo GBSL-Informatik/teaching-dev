@@ -1,3 +1,4 @@
+import type { User } from '@tdev-api/user';
 import axios, {
     AxiosError,
     AxiosHeaders,
@@ -6,6 +7,7 @@ import axios, {
     type InternalAxiosRequestConfig
 } from 'axios';
 import type { DbAdapter } from './Adapter';
+import OfflineHttpError from './OfflineHttpError';
 import type RouteTable from './RouteTable';
 import type { HttpMethod, OfflineRequest, OfflineResponse, RouteMatch } from './RouteTable';
 
@@ -17,7 +19,11 @@ const OFFLINE_ORIGIN = 'http://offline.tdev';
  * Serves axios requests from the offline route table instead of the network.
  * Axios still runs its request/response transforms, interceptors and `validateStatus`.
  */
-export const createOfflineAdapter = (routes: RouteTable, db: DbAdapter): AxiosAdapter => {
+export const createOfflineAdapter = (
+    routes: RouteTable,
+    db: DbAdapter,
+    currentUser: () => User
+): AxiosAdapter => {
     return async (config) => {
         const method = (config.method ?? 'get').toUpperCase() as HttpMethod;
         const url = new URL(axios.getUri(config), OFFLINE_ORIGIN);
@@ -29,7 +35,8 @@ export const createOfflineAdapter = (routes: RouteTable, db: DbAdapter): AxiosAd
             console.warn(`Offline api: no route for ${method} ${url.pathname}`);
             return settle(config, { status: 404, statusText: 'No offline route', data: null });
         }
-        const response = await runHandler(match, { params: match.params, query: url.searchParams, data, db });
+        const request = { params: match.params, query: url.searchParams, data, db, user: currentUser() };
+        const response = await runHandler(match, request);
         log(`    [${response.status ?? 200}]`, response.data);
         return settle(config, response);
     };
@@ -40,6 +47,9 @@ const runHandler = async (match: RouteMatch, request: OfflineRequest): Promise<O
     try {
         return await match.handler(request);
     } catch (error) {
+        if (error instanceof OfflineHttpError) {
+            return error.toResponse();
+        }
         console.error('Offline api: route handler failed', error);
         return { status: 500, statusText: 'Offline handler failed', data: null };
     }

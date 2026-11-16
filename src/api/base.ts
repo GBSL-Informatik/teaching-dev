@@ -1,10 +1,11 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import axios from 'axios';
+import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
 import { createOfflineDb, offlineRoutes } from './OfflineApi';
 import IndexedDbAdapter from './OfflineApi/Adapter/IndexedDb';
 import MemoryDbAdapter from './OfflineApi/Adapter/MemoryDb';
 import { createOfflineAdapter } from './OfflineApi/offlineAdapter';
-import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
+import { OfflineUser } from './OfflineApi/OfflineUser';
 export namespace Api {
     export const BASE_API_URL = eventsApiUrl();
 
@@ -16,7 +17,7 @@ export namespace Api {
 const offlineDb = OFFLINE_API ? createOfflineDb(OFFLINE_API) : undefined;
 
 const api = offlineDb
-    ? axios.create({ adapter: createOfflineAdapter(offlineRoutes, offlineDb) })
+    ? axios.create({ adapter: createOfflineAdapter(offlineRoutes, offlineDb, OfflineUser.getUser) })
     : axios.create({
           baseURL: Api.BASE_API_URL,
           withCredentials: true,

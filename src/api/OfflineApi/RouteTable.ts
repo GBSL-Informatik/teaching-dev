@@ -1,3 +1,4 @@
+import type { User } from '@tdev-api/user';
 import type { DbAdapter } from './Adapter';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -7,10 +8,15 @@ export interface OfflineRequest<TBody = unknown> {
     query: URLSearchParams;
     data: TBody;
     db: DbAdapter;
+    /** The offline user the request is made as. */
+    user: User;
 }
 
 export interface OfflineResponse {
-    /** Defaults to 200. Axios rejects the request when `validateStatus` fails, as for the real api. */
+    /**
+     * Defaults to 200. Axios rejects the request when `validateStatus` fails, as for the real api.
+     * Handlers answer errors by throwing an `OfflineHttpError`, which also sets the backend's error body.
+     */
     status?: number;
     statusText?: string;
     data: unknown;

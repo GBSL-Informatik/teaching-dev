@@ -31,7 +31,7 @@ const createDb = (mode: DbMode): DbAdapter => {
 
 export const createOfflineApi = (mode: DbMode) => {
     const db = createDb(mode);
-    const api = axios.create({ adapter: createOfflineAdapter(offlineRoutes, db) });
+    const api = axios.create({ adapter: createOfflineAdapter(offlineRoutes, db, OfflineUser.getUser) });
     return { api, db };
 };
 

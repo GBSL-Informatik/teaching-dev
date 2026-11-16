@@ -2,15 +2,6 @@ import type { Document, DocumentType } from '@tdev-api/document';
 
 type OfflineDocument = Document<DocumentType>;
 
-export class OfflineDocumentError extends Error {
-    constructor(
-        message: string,
-        readonly status = 403
-    ) {
-        super(message);
-    }
-}
-
 /** The memory adapter and validation use the same error name as IndexedDB's unique indexes. */
 export class OfflineDocumentConstraintError extends Error {
     readonly name = 'ConstraintError';
