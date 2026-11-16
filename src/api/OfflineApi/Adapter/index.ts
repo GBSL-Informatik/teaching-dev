@@ -32,8 +32,11 @@ export interface DocumentsTransaction {
     delete(id: string): Promise<void>;
 }
 
-/** `blocked`: another tab keeps an older version of the db open, so it cannot be upgraded. */
-export type DbStatus = 'opening' | 'ready' | 'blocked' | 'unavailable' | 'migrationFailed';
+/**
+ * `blocked`: another tab keeps an older version of the db open, so it cannot be upgraded.
+ * `outdated`: another tab upgraded the db, so this tab closed its connection.
+ */
+export type DbStatus = 'opening' | 'ready' | 'blocked' | 'outdated' | 'unavailable' | 'migrationFailed';
 
 export interface DbAdapter {
     mode: 'indexedDB' | 'memory';

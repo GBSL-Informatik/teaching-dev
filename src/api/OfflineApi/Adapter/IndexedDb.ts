@@ -74,7 +74,10 @@ class IndexedDbAdapter implements DbAdapter {
                 console.warn('IndexedDB upgrade blocked by another open tab:', this.dbName);
                 this.setStatus('blocked');
             },
-            blocking: () => void this.dbPromise.then((db) => db.close())
+            blocking: () => {
+                void this.dbPromise.then((db) => db.close());
+                this.setStatus('outdated');
+            }
         });
         try {
             const db = await opened;

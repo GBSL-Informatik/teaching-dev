@@ -123,4 +123,17 @@ describe('IndexedDbAdapter status', () => {
         expect(await settledStatus(adapter)).toBe('ready');
         expect(statuses).toEqual(['opening', 'blocked', 'ready']);
     });
+
+    it('reports outdated and closes its connection when another tab upgrades the db', async () => {
+        const name = uniqueDbName();
+        const adapter = new IndexedDbAdapter(name);
+        const statuses = recordStatuses(adapter);
+        await settledStatus(adapter);
+
+        // Opening succeeds only once the adapter has closed its connection.
+        const newerTab = await openDB(name, DB_VERSION + 1);
+
+        expect(statuses).toEqual(['opening', 'ready', 'outdated']);
+        newerTab.close();
+    });
 });

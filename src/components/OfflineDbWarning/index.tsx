@@ -7,7 +7,9 @@ import styles from './styles.module.scss';
 
 const MESSAGES: Record<OfflineDbProblem, string> = {
     blocked:
-        'Diese Seite ist in einem anderen Tab geöffnet. Schliesse die anderen Tabs und lade die Seite neu, damit deine Änderungen gespeichert werden können.',
+        'Die Website ist in einem anderen Tab mit einer älteren Version geöffnet. Schliesse diesen Tab, damit deine Änderungen gespeichert werden können.',
+    outdated:
+        'Die Website wurde in einem anderen Tab aktualisiert. Lade diese Seite neu, damit deine Änderungen gespeichert werden.',
     unavailable:
         'Der lokale Speicher deines Browsers ist nicht verfügbar, z.B. weil Website-Daten blockiert sind. Deine Änderungen können nicht gespeichert werden.',
     migrationFailed:
