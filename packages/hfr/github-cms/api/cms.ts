@@ -1,5 +1,5 @@
+import api from '@tdev-api/base';
 import { AxiosPromise } from 'axios';
-import api from './base';
 
 export interface CmsSettings {
     id: string;

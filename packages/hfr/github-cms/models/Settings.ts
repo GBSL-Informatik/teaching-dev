@@ -1,5 +1,5 @@
-import { FullCmsSettings } from '@tdev-api/cms';
 import { action } from 'mobx';
+import { FullCmsSettings } from '../api/cms';
 import { CmsStore } from '../stores/CmsStore';
 import PartialSettings from './PartialSettings';
 

@@ -1,5 +1,4 @@
 import { default as api } from '@tdev-api/base';
-import { CmsSettings } from '@tdev-api/cms';
 import { DocumentRoot, DocumentRootUpdate } from '@tdev-api/documentRoot';
 import { GroupPermission, UserPermission } from '@tdev-api/permission';
 import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
@@ -12,9 +11,10 @@ import { RootStore } from '@tdev-stores/rootStore';
 import { authClient } from '@tdev/auth-client';
 import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { io, Socket } from 'socket.io-client';
-import { Document, DocumentType, type ViewStoreTypeMapping } from '../api/document';
+import { Document, DocumentType } from '../api/document';
 import {
     Action,
+    AnyRecordType,
     ChangedDocument,
     ChangedRecord,
     ClientToServerEvents,
@@ -25,12 +25,21 @@ import {
     NewRecord,
     RecordType,
     ServerToClientEvents,
-    StreamedDynamicDocument
+    StreamedDynamicDocument,
+    TypeRecordMap
 } from '../api/IoEventTypes';
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 const SOCKET_ID_HEADER = 'x-metadata-sid';
-type PrimitiveCmsStore = { handleSettingsChange: (settings: CmsSettings) => void };
+
+/**
+ * Handles the socket events of a record type the core does not know, e.g. one added by a package.
+ */
+export interface RecordHandler<T> {
+    onNew?: (record: T) => void;
+    onChanged?: (record: T) => void;
+    onDeleted?: (id: string) => void;
+}
 
 const fetchSocketAuth = async (): Promise<{ token?: string }> => {
     const { data, error } = await authClient.oneTimeToken.generate().catch((e) => {
@@ -61,6 +70,8 @@ export class SocketDataStore extends iStore<'ping'> {
 
     connectedClients = observable.map<string, number>();
 
+    private recordHandlers = new Map<AnyRecordType, RecordHandler<any>>();
+
     constructor(root: RootStore) {
         super();
         this.root = root;
@@ -78,6 +89,10 @@ export class SocketDataStore extends iStore<'ping'> {
     @computed
     get isLive() {
         return !!OFFLINE_API || this.socketId !== undefined;
+    }
+
+    registerRecordHandler<T extends AnyRecordType>(type: T, handler: RecordHandler<TypeRecordMap[T]>) {
+        this.recordHandlers.set(type, handler);
     }
 
     /**
@@ -130,7 +145,7 @@ export class SocketDataStore extends iStore<'ping'> {
     }
 
     @action
-    createRecord({ type, record }: NewRecord<RecordType>) {
+    createRecord({ type, record }: NewRecord<AnyRecordType>) {
         switch (type) {
             case RecordType.UserPermission:
                 this.root.permissionStore.handleUserPermissionUpdate(record as UserPermission);
@@ -150,15 +165,6 @@ export class SocketDataStore extends iStore<'ping'> {
                 ) {
                     this.root.documentStore.addToStore(doc);
                 }
-                break;
-            case RecordType.CmsSettings:
-                const settings = record as CmsSettings;
-                if (!this.root.viewStore.stores.has('cmsStore' as keyof ViewStoreTypeMapping)) {
-                    console.log('cmsStore not registered yet, skipping settings update');
-                    return;
-                }
-                const cmsStore = this.root.viewStore.useStore('cmsStore' as keyof ViewStoreTypeMapping);
-                (cmsStore as unknown as PrimitiveCmsStore).handleSettingsChange(settings);
                 break;
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;
@@ -193,13 +199,18 @@ export class SocketDataStore extends iStore<'ping'> {
                 }
                 break;
             default:
-                console.log('newRecord', type, record);
+                const onNew = this.recordHandlers.get(type)?.onNew;
+                if (!onNew) {
+                    console.log('newRecord', type, record);
+                    return;
+                }
+                onNew(record);
                 break;
         }
     }
 
     @action
-    updateRecord({ type, record }: ChangedRecord<RecordType>) {
+    updateRecord({ type, record }: ChangedRecord<AnyRecordType>) {
         switch (type) {
             case RecordType.DocumentRoot:
                 this.root.documentRootStore.handleUpdate(record as DocumentRootUpdate);
@@ -213,14 +224,6 @@ export class SocketDataStore extends iStore<'ping'> {
             case RecordType.Document:
                 this.root.documentStore.addToStore(record as Document<DocumentType>, true);
                 break;
-            case RecordType.CmsSettings:
-                if (!this.root.viewStore.stores.has('cmsStore' as keyof ViewStoreTypeMapping)) {
-                    console.log('cmsStore not registered yet, skipping settings update');
-                    return;
-                }
-                const cmsStore = this.root.viewStore.useStore('cmsStore' as keyof ViewStoreTypeMapping);
-                (cmsStore as unknown as PrimitiveCmsStore).handleSettingsChange(record as CmsSettings);
-                break;
             case RecordType.StudentGroup:
                 const studentGroup = record as ApiStudentGroup;
                 this.root.studentGroupStore.handleUpdate(studentGroup);
@@ -229,7 +232,12 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.root.userStore.addToStore(record as User);
                 break;
             default:
-                console.log('changedRecord', type, record);
+                const onChanged = this.recordHandlers.get(type)?.onChanged;
+                if (!onChanged) {
+                    console.log('changedRecord', type, record);
+                    return;
+                }
+                onChanged(record);
                 break;
         }
     }
@@ -264,7 +272,12 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.leaveRoom(id);
                 break;
             default:
-                console.log('deletedRecord', type, id);
+                const onDeleted = this.recordHandlers.get(type)?.onDeleted;
+                if (!onDeleted) {
+                    console.log('deletedRecord', type, id);
+                    return;
+                }
+                onDeleted(id);
                 break;
         }
     }

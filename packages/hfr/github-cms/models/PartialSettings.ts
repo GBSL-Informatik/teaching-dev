@@ -1,5 +1,5 @@
-import { CmsSettings } from '@tdev-api/cms';
 import { computed } from 'mobx';
+import { CmsSettings } from '../api/cms';
 import { CmsStore } from '../stores/CmsStore';
 
 export const REFRESH_THRESHOLD = 60 * 60;

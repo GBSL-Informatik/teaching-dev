@@ -303,6 +303,32 @@ offlineRoutes.register<{ text: string }>('POST', '/messages/:roomId', ({ params,
 
 Anfragen ohne passende Route werden mit `404` abgelehnt und in der Konsole gemeldet.
 
+#### Eigene SocketIO-Records <Badge type="info">Optional</Badge>
+
+Sendet die teaching-api für ein Paket eigene Records (nicht `Document`s) über SocketIO, ergänzt das Paket den Record-Typ im `TypeRecordMap` und registriert einen Handler:
+
+```ts title="packages/hfr/github-cms/index.ts"
+declare module '@tdev-api/IoEventTypes' {
+    export interface TypeRecordMap {
+        ['CmsSettings']: CmsSettings;
+    }
+}
+```
+
+```ts title="packages/hfr/github-cms/register.ts"
+const handleSettingsChange = (settings: CmsSettings) => {
+    rootStore.viewStore.useStore('cmsStore').handleSettingsChange(settings);
+};
+
+rootStore.socketStore.registerRecordHandler('CmsSettings', {
+    onNew: handleSettingsChange,
+    onChanged: handleSettingsChange
+});
+```
+
+`onNew(record)`, `onChanged(record)`, `onDeleted(id)`
+: Alle optional. Records ohne passenden Handler werden in der Konsole gemeldet.
+
 ## Debug
 
 Im Projekt ist [@docusaurus/plugin-rsdoctor](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-rsdoctor) als dev dependency installiert. Dieses Plugin hilft bei der Analyse von Performance-Problemen und kann beim Aufsuchen von kritischen (langsamen) Code-Teilen helfen.
