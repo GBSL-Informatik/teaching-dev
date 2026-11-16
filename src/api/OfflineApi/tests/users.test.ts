@@ -7,13 +7,14 @@ vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false
 vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
 vi.mock('@tdev-api/base', () => ({ default: {} }));
 
+// The user routes do not touch the db, so one db mode is enough.
 describe('offline users endpoints', () => {
     beforeEach(() => {
         OfflineUser.reset();
     });
 
     it('GET /user returns the default offline user', async () => {
-        const { api } = createOfflineApi();
+        const { api } = createOfflineApi('memory');
 
         const { data } = await api.get<User>('/user');
 
@@ -21,7 +22,7 @@ describe('offline users endpoints', () => {
     });
 
     it('GET /user returns the user set at runtime, e.g. after an import', async () => {
-        const { api } = createOfflineApi();
+        const { api } = createOfflineApi('memory');
         actAsStudent();
 
         const { data } = await api.get<User>('/user');
@@ -31,7 +32,7 @@ describe('offline users endpoints', () => {
     });
 
     it('GET /users lists only the offline user', async () => {
-        const { api } = createOfflineApi();
+        const { api } = createOfflineApi('memory');
 
         const { data } = await api.get<User[]>('/users');
 
@@ -39,7 +40,7 @@ describe('offline users endpoints', () => {
     });
 
     it('PUT /users/:id echoes the request without changing the offline user', async () => {
-        const { api } = createOfflineApi();
+        const { api } = createOfflineApi('memory');
         const body = { data: { firstName: 'Changed' } };
 
         const { data } = await api.put(`/users/${DEFAULT_OFFLINE_USER.id}`, body);
@@ -49,7 +50,7 @@ describe('offline users endpoints', () => {
     });
 
     it('POST /logout resolves without logging the offline user out', async () => {
-        const { api } = createOfflineApi();
+        const { api } = createOfflineApi('memory');
 
         await api.post('/logout', {});
 
@@ -58,7 +59,7 @@ describe('offline users endpoints', () => {
 
     it('does not serve user routes that the client does not call', async () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        const { api } = createOfflineApi();
+        const { api } = createOfflineApi('memory');
 
         await expectRejection(api.get(`/users/${DEFAULT_OFFLINE_USER.id}`), 404);
         await expectRejection(api.post('/user', {}), 404);

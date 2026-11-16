@@ -1,7 +1,7 @@
 import type { Document } from '@tdev-api/document';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
-import { actAsStudent, createOfflineApi, expectRejection } from './offlineApi';
+import { actAsStudent, createOfflineApi, DB_MODES, expectRejection } from './offlineApi';
 
 vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
 vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
@@ -25,14 +25,14 @@ const documentsOf = async (api: Api, documentRootIds = [ROOT]) => {
     return (await api.post<OfflineDocument[]>('/documents/multiple', { documentRootIds })).data;
 };
 
-describe('offline documents endpoints', () => {
+describe.each(DB_MODES)('offline documents endpoints (%s db)', (mode) => {
     beforeEach(() => {
         OfflineUser.reset();
     });
 
     describe('POST /documents', () => {
         it('creates a document owned by the current user with a server-assigned id', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data, status } = await create(api, { id: 'client-id', authorId: 'someone-else' });
 
@@ -44,7 +44,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('creates documents on behalf of another user for admins', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await create(api, { authorId: 'student-id' }, '?onBehalfOf=true');
 
@@ -52,7 +52,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('forbids students to create documents on behalf of others', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             actAsStudent();
 
             const error = await expectRejection(create(api, { authorId: 'other' }, '?onBehalfOf=true'), 403);
@@ -71,7 +71,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('lets students create documents on behalf of themselves', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             actAsStudent();
 
             const { data } = await create(api, { authorId: 'student-id' }, '?onBehalfOf=true');
@@ -83,13 +83,13 @@ describe('offline documents endpoints', () => {
             ['document root', { documentRootId: undefined }],
             ['type', { type: undefined }]
         ])('rejects a document without %s', async (_, document) => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             await expectRejection(create(api, document), 400);
         });
 
         it('omits empty parent ids and constraints in the response', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await create(api, { parentId: '', uniqOnRoot: null, uniqOnParent: undefined });
 
@@ -99,7 +99,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('returns the existing document for a duplicate uniqOnRoot, without overwriting its data', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const existing = await createDocument(api, { uniqOnRoot: 'main', data: { text: 'first' } });
 
             const { data, status } = await create(api, { uniqOnRoot: 'main', data: { text: 'second' } });
@@ -110,7 +110,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('scopes uniqOnRoot by author and type', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             await createDocument(api, { uniqOnRoot: 'main' });
 
             const otherType = await create(api, { uniqOnRoot: 'main', type: 'script' });
@@ -125,7 +125,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('returns the existing child for a duplicate uniqOnParent under the same parent only', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const [quiz, otherQuiz] = [await createDocument(api), await createDocument(api)];
             const answer = await createDocument(api, { parentId: quiz.id, uniqOnParent: 'q1' });
 
@@ -138,7 +138,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('ignores uniqOnParent for documents without a parent', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             await createDocument(api, { uniqOnParent: 'q1' });
 
             const { status } = await create(api, { uniqOnParent: 'q1' });
@@ -166,7 +166,7 @@ describe('offline documents endpoints', () => {
             };
 
             it('promotes the oldest root document to main, keeps the largest data and drops the others', async () => {
-                const { api } = createOfflineApi();
+                const { api } = createOfflineApi(mode);
                 const oldest = await createAt(api, '2026-01-01', { data: { text: 'a' } });
                 const largest = await createAt(api, '2026-01-02', { data: { text: 'the largest payload' } });
                 const child = await createAt(api, '2026-01-03', { parentId: largest.id });
@@ -184,7 +184,7 @@ describe('offline documents endpoints', () => {
             });
 
             it('does not consolidate documents of another type or author', async () => {
-                const { api } = createOfflineApi();
+                const { api } = createOfflineApi(mode);
                 await createAt(api, '2026-01-01', { type: 'script' });
                 await createAt(api, '2026-01-02', { authorId: 'student-id' }, '?onBehalfOf=true');
 
@@ -198,7 +198,7 @@ describe('offline documents endpoints', () => {
 
     describe('GET /documents/:id', () => {
         it('returns the document', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const document = await createDocument(api);
 
             const { data } = await api.get(`/documents/${document.id}`);
@@ -207,7 +207,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('resolves with null for an unknown document', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data, status } = await api.get('/documents/unknown');
 
@@ -218,18 +218,20 @@ describe('offline documents endpoints', () => {
 
     describe('POST /documents/multiple', () => {
         it('returns the documents of all requested roots only', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const first = await createDocument(api, { documentRootId: 'root-1' });
             const second = await createDocument(api, { documentRootId: 'root-2' });
             await createDocument(api, { documentRootId: 'root-3' });
 
             const documents = await documentsOf(api, ['root-1', 'root-2']);
 
-            expect(documents).toEqual([first, second]);
+            // IndexedDB returns the documents ordered by their random id.
+            expect(documents).toHaveLength(2);
+            expect(documents).toEqual(expect.arrayContaining([first, second]));
         });
 
         it('returns an empty list for no requested roots', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             await createDocument(api);
 
             expect(await documentsOf(api, [])).toEqual([]);
@@ -240,7 +242,7 @@ describe('offline documents endpoints', () => {
         it('updates only the data and the update time', async () => {
             vi.useFakeTimers({ toFake: ['Date'] });
             vi.setSystemTime(new Date('2026-01-01'));
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const document = await createDocument(api, { uniqOnRoot: 'main' });
             vi.setSystemTime(new Date('2026-01-02'));
 
@@ -259,7 +261,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('keeps the data when the request has none', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const document = await createDocument(api, { data: { text: 'kept' } });
 
             const { data } = await api.put(`/documents/${document.id}`, {});
@@ -268,7 +270,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('rejects an unknown document with 404', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const error = await expectRejection(api.put('/documents/unknown', { data: {} }), 404);
 
@@ -278,7 +280,7 @@ describe('offline documents endpoints', () => {
 
     describe('PUT /documents/:id/constraints', () => {
         it('sets and clears constraints', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const document = await createDocument(api, { uniqOnRoot: 'main' });
 
             const { data } = await api.put(`/documents/${document.id}/constraints`, {
@@ -290,7 +292,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('ignores invalid values and rejects a request without valid constraints', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const document = await createDocument(api, { uniqOnRoot: 'main' });
 
             await expectRejection(
@@ -302,7 +304,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('forbids changing constraints of documents by other authors', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const foreign = (await create(api, { authorId: 'student-id' }, '?onBehalfOf=true')).data;
 
             const error = await expectRejection(
@@ -314,7 +316,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('answers a uniqueness conflict with the backend generic 500', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             await createDocument(api, { uniqOnRoot: 'main' });
             const other = await createDocument(api);
 
@@ -331,7 +333,7 @@ describe('offline documents endpoints', () => {
 
     describe('PUT /documents/:id/linkTo/:parentId', () => {
         it('links the document to a parent in the same root', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const [parent, child] = [await createDocument(api), await createDocument(api)];
 
             const { data } = await api.put(`/documents/${child.id}/linkTo/${parent.id}`, {});
@@ -343,7 +345,7 @@ describe('offline documents endpoints', () => {
             ['an unknown parent', 'unknown'],
             ['a parent in another root', 'other-root']
         ])('rejects %s with 404', async (_, kind) => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const child = await createDocument(api);
             const parentId =
                 kind === 'unknown' ? 'unknown' : (await createDocument(api, { documentRootId: 'root-2' })).id;
@@ -352,7 +354,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('rejects a link that would duplicate a uniqOnParent child', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const parent = await createDocument(api);
             await createDocument(api, { parentId: parent.id, uniqOnParent: 'q1' });
             const orphan = await createDocument(api, { uniqOnParent: 'q1' });
@@ -365,7 +367,7 @@ describe('offline documents endpoints', () => {
 
     describe('DELETE /documents/:id', () => {
         it('deletes the document with all its descendants and keeps its siblings', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const parent = await createDocument(api);
             const child = await createDocument(api, { parentId: parent.id });
             await createDocument(api, { parentId: child.id });
@@ -377,7 +379,7 @@ describe('offline documents endpoints', () => {
         });
 
         it('resolves for an unknown document', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { status } = await api.delete('/documents/unknown');
 

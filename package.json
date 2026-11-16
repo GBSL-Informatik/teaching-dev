@@ -105,6 +105,7 @@
         "@vitest/coverage-v8": "^5.0.5",
         "concurrently": "^10.0.6",
         "esbuild": "^0.28.2",
+        "fake-indexeddb": "6.2.7",
         "fs-extra": "^11.4.1",
         "prettier": "^3.9.10",
         "remark": "^15.0.1",

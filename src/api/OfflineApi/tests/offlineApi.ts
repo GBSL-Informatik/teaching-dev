@@ -1,7 +1,10 @@
 import { Role } from '@tdev-api/user';
 import axios, { type AxiosError, type AxiosPromise } from 'axios';
+import 'fake-indexeddb/auto';
 import { expect } from 'vitest';
 import { offlineRoutes } from '..';
+import type { DbAdapter } from '../Adapter';
+import IndexedDbAdapter from '../Adapter/IndexedDb';
 import MemoryDbAdapter from '../Adapter/MemoryDb';
 import { createOfflineAdapter } from '../offlineAdapter';
 import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
@@ -12,18 +15,28 @@ import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
  * vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
  * vi.mock('@tdev-api/base', () => ({ default: {} }));
  */
-export const createOfflineApi = () => {
-    const db = new MemoryDbAdapter();
+export const DB_MODES = ['memory', 'indexedDB'] as const;
+export type DbMode = (typeof DB_MODES)[number];
+
+let indexedDbCount = 0;
+
+/** Every IndexedDB gets its own name, so each test starts with an empty, freshly migrated db. */
+const createDb = (mode: DbMode): DbAdapter => {
+    if (mode === 'memory') {
+        return new MemoryDbAdapter();
+    }
+    indexedDbCount += 1;
+    return new IndexedDbAdapter(`offline-api-test-${indexedDbCount}`, true);
+};
+
+export const createOfflineApi = (mode: DbMode) => {
+    const db = createDb(mode);
     const api = axios.create({ adapter: createOfflineAdapter(offlineRoutes, db) });
     return { api, db };
 };
 
 export const actAsStudent = () => {
     OfflineUser.setUser({ ...DEFAULT_OFFLINE_USER, id: 'student-id', role: Role.STUDENT });
-};
-
-export const actAsAdmin = () => {
-    OfflineUser.setUser({ ...DEFAULT_OFFLINE_USER, role: Role.ADMIN });
 };
 
 export const expectRejection = async (request: AxiosPromise<unknown>, status: number) => {

@@ -3,7 +3,7 @@ import type { DocumentRoot } from '@tdev-api/documentRoot';
 import type { Permissions } from '@tdev-api/permission';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
-import { createOfflineApi } from './offlineApi';
+import { createOfflineApi, DB_MODES } from './offlineApi';
 
 vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
 vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
@@ -19,14 +19,14 @@ const createDocument = async (api: Api, documentRootId: string, type: string, da
 const loadRoots = (api: Api, documentRootIds: string[], type?: string) =>
     api.post<DocumentRoot[]>(`/users/${DEFAULT_OFFLINE_USER.id}/documentRoots`, { documentRootIds, type });
 
-describe('offline documentRoots endpoints', () => {
+describe.each(DB_MODES)('offline documentRoots endpoints (%s db)', (mode) => {
     beforeEach(() => {
         OfflineUser.reset();
     });
 
     describe('POST /users/:userId/documentRoots', () => {
         it('returns the roots in request order with their documents and full access', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const first = await createDocument(api, 'root-1', 'string');
             const second = await createDocument(api, 'root-2', 'string');
 
@@ -44,7 +44,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('returns roots without documents with an empty document list', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await loadRoots(api, ['unknown-root']);
 
@@ -52,7 +52,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('returns an empty list for no requested roots', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await loadRoots(api, []);
 
@@ -60,7 +60,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('filters the documents by type but keeps every root', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const text = await createDocument(api, 'root-1', 'string');
             await createDocument(api, 'root-1', 'script');
             await createDocument(api, 'root-2', 'script');
@@ -71,7 +71,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('does not include documents of other roots', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             await createDocument(api, 'root-10', 'string');
 
             const { data } = await loadRoots(api, ['root-1']);
@@ -82,7 +82,7 @@ describe('offline documentRoots endpoints', () => {
 
     describe('POST /documentRoots/permissions', () => {
         it('grants owner permissions without sharing, and is not handled as a root named "permissions"', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await api.post<Permissions[]>('/documentRoots/permissions', {
                 documentRootIds: ['root-1', 'root-2']
@@ -102,7 +102,7 @@ describe('offline documentRoots endpoints', () => {
 
     describe('POST /documentRoots/:id', () => {
         it('creates a root with full access by default', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await api.post<DocumentRoot>('/documentRoots/root-1', {});
 
@@ -117,7 +117,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('keeps the requested access and never returns documents', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             await createDocument(api, 'root-1', 'string');
 
             const { data } = await api.post<DocumentRoot>('/documentRoots/root-1', {
@@ -131,7 +131,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('uses the decoded root id', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data } = await api.post<DocumentRoot>(`/documentRoots/${encodeURIComponent('a b')}`, {});
 
@@ -141,7 +141,7 @@ describe('offline documentRoots endpoints', () => {
 
     describe('PUT /documentRoots/:id', () => {
         it('resolves without persisting anything', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { data, status } = await api.put('/documentRoots/root-1', {
                 access: Access.RO_DocumentRoot
@@ -154,7 +154,7 @@ describe('offline documentRoots endpoints', () => {
 
     describe('DELETE /documentRoots/:id', () => {
         it('deletes all documents of the root, including children, and nothing else', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
             const parent = await createDocument(api, 'root-1', 'string');
             await api.post('/documents', {
                 documentRootId: 'root-1',
@@ -172,7 +172,7 @@ describe('offline documentRoots endpoints', () => {
         });
 
         it('resolves for a root without documents', async () => {
-            const { api } = createOfflineApi();
+            const { api } = createOfflineApi(mode);
 
             const { status } = await api.delete('/documentRoots/unknown-root');
 
