@@ -29,6 +29,7 @@ import {
 } from '../api/IoEventTypes';
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+const SOCKET_ID_HEADER = 'x-metadata-sid';
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
@@ -164,7 +165,7 @@ export class SocketDataStore extends iStore<'ping'> {
                  * add sid to the api headers, so that the api can broadcast messages to
                  * the user except the initiating client.
                  */
-                api.defaults.headers.common['x-metadata-sid'] = socket?.id;
+                api.defaults.headers.common[SOCKET_ID_HEADER] = socket?.id;
                 this.socket = socket;
                 this.setLiveState(true);
             })
@@ -174,6 +175,7 @@ export class SocketDataStore extends iStore<'ping'> {
             'disconnect',
             action((reason) => {
                 this.socket = undefined;
+                delete api.defaults.headers.common[SOCKET_ID_HEADER];
                 this.setLiveState(false);
                 if (reason !== 'io server disconnect' && reason !== 'io client disconnect') {
                     // an error happened, try to reconnect
@@ -370,12 +372,6 @@ export class SocketDataStore extends iStore<'ping'> {
                 this.connectedClients.set(room, count);
             });
         }
-    }
-
-    @action
-    resetUserData() {
-        this.disconnect();
-        api.defaults.headers.common['x-metadata-socketid'] = undefined;
     }
 
     @action
