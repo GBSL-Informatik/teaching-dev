@@ -215,12 +215,6 @@ export type AssessableModelType = AssessableTypeModelMapping[AssessableType];
 export type DocumentType = keyof TypeModelMapping;
 export type DocumentModelType = TypeModelMapping[DocumentType];
 
-/**
- * Document types that can be edited by admins ON BEHALF OF other users.
- * This should not be the default case for most documents - but things like CMS texts
- * should be editeable by admins only.
- */
-export const ADMIN_EDITABLE_DOCUMENTS: DocumentType[] = ['cms_text'] as const;
 export interface Document<Type extends DocumentType> {
     id: string;
     type: Type;
