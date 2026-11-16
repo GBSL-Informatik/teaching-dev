@@ -223,7 +223,7 @@ export default class Page {
         return this.store.loadAllDocuments(this);
     }
 
-    get TaskableDocuments() {
+    get taskableTypes() {
         return this.store.root.documentStore.taskableTypes;
     }
 
@@ -231,7 +231,7 @@ export default class Page {
     get taskableDocumentRootIds() {
         return [...this.documentRootConfigs.keys()].filter((id) => {
             const config = this.documentRootConfigs.get(id)!;
-            return this.TaskableDocuments.has(config.type);
+            return this.taskableTypes.has(config.type);
         });
     }
 
@@ -246,7 +246,7 @@ export default class Page {
                 return this.store.root.documentStore
                     .findByDocumentRoot(rid)
                     .filter(
-                        (doc) => doc.authorId === uid && this.TaskableDocuments.has(doc.type)
+                        (doc) => doc.authorId === uid && this.taskableTypes.has(doc.type)
                     ) as iTaskableDocument[];
             })
             .filter((doc) => !doc.hideFromOverview);
@@ -340,7 +340,7 @@ export default class Page {
                         .findByDocumentRoot(rid)
                         .filter(
                             (doc) =>
-                                this.TaskableDocuments.has(doc.type) &&
+                                this.taskableTypes.has(doc.type) &&
                                 !(doc as iTaskableDocument).hideFromOverview
                         ) as iTaskableDocument[];
                 })
