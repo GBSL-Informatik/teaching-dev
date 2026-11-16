@@ -298,7 +298,7 @@ export class DocumentRootStore extends iStore {
         if (!data.documents) {
             return;
         }
-        const defaultType = this.root.componentStore.extractDefaultDocumentType(
+        const defaultType = this.root.documentStore.extractDefaultDocumentType(
             data.documents.map((d) => d.type)
         );
         const meta =

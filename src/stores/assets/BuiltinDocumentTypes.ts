@@ -61,7 +61,8 @@ export const BuiltinDocumentTypes: AnyDocumentTypeConfig[] = [
         type: 'quiz',
         factory: (data, store) => new Quiz(data, store),
         defaultMeta: new QuizMeta({}),
-        taskable: true
+        taskable: true,
+        preferredInRoot: true
     },
     {
         type: 'true_false_answer',

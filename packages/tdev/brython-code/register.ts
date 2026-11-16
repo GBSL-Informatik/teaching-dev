@@ -24,6 +24,7 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'script',
         factory: createModel,
+        preferredInRoot: true,
         fileExtensions: [
             {
                 extension: '.py',

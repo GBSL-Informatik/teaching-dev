@@ -41,6 +41,8 @@ export interface DocumentTypeConfig<T extends DocumentType> {
     createOnNewRecord?: boolean;
     /** counts towards the task progress of a page */
     taskable?: boolean;
+    /** the main document of a root that also holds other types, e.g. a quiz and its answers */
+    preferredInRoot?: boolean;
 }
 
 /**
@@ -117,6 +119,22 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
     get taskableTypes(): Set<DocumentType> {
         const taskableConfigs = [...this.documentTypeConfigs.values()].filter((config) => config.taskable);
         return new Set(taskableConfigs.map((config) => config.type));
+    }
+
+    /**
+     * The type of a document root, derived from the types of its documents.
+     */
+    extractDefaultDocumentType(types: DocumentType[]): DocumentType | undefined {
+        const preferredType = this.preferredInRootTypes.find((type) => types.includes(type));
+        return preferredType ?? types[0];
+    }
+
+    @computed
+    get preferredInRootTypes(): DocumentType[] {
+        const preferredConfigs = [...this.documentTypeConfigs.values()].filter(
+            (config) => config.preferredInRoot
+        );
+        return preferredConfigs.map((config) => config.type);
     }
 
     isCreatedOnNewRecord(type: DocumentType): boolean {
