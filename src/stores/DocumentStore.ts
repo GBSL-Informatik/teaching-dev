@@ -75,10 +75,13 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
     );
 
     /**
-     * Registering a type again replaces its previous config.
+     * Registering a type again replaces its previous config, e.g. to override a built-in type.
      */
     @action
     registerDocumentType(config: AnyDocumentTypeConfig) {
+        if (this.documentTypeConfigs.has(config.type)) {
+            console.warn(`Document type ${config.type} is already registered, replacing it`);
+        }
         const fileExtensions = config.fileExtensions?.map((fileConfig) => ({
             ...fileConfig,
             priority: fileConfig.priority ?? DEFAULT_FILE_PRIORITY
