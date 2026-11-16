@@ -176,7 +176,7 @@ const LivenessChecker = observer(() => {
                         window.location.reload();
                         return;
                     } else {
-                        rootStore.socketStore?.checkLiveState();
+                        rootStore.socketStore?.connect();
                     }
                 });
             }

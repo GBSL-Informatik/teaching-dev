@@ -67,7 +67,7 @@ const RoomSwitcher = observer((props: RoomSwitcherProps) => {
         return () => {
             socketStore.leaveRoom(docContainerId);
         };
-    }, [dynamicRoot, socketStore.socket?.id]);
+    }, [dynamicRoot, socketStore.socketId]);
     if (!RoomComp || !dynamicRoot.linkedDocumentContainersMap.get(docContainerId)) {
         return <NoType dynamicRoot={dynamicRoot} />;
     }

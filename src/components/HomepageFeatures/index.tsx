@@ -54,10 +54,7 @@ const HomepageFeatures = observer(() => {
                             <Button
                                 icon={mdiConnection}
                                 text="Connect"
-                                onClick={() => {
-                                    socketStore.resetUserData();
-                                    socketStore.connect();
-                                }}
+                                onClick={() => socketStore.reconnect()}
                                 disabled={isLive}
                                 color="blue"
                             />

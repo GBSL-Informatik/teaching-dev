@@ -10,7 +10,7 @@ import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import { authClient } from '@tdev/auth-client';
-import { action, observable, observableRef, reaction } from 'mobx';
+import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { io, Socket } from 'socket.io-client';
 import { Document, DocumentType, type ViewStoreTypeMapping } from '../api/document';
 import {
@@ -29,18 +29,37 @@ import {
 } from '../api/IoEventTypes';
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+const SOCKET_ID_HEADER = 'x-metadata-sid';
 /**
  * Records that should be created when a IoEvent.NEW_RECORD event is received.
  */
 const RecordsToCreate: DocumentType[] = ['dir', 'file', 'mdx_comment', 'dynamic_document_roots'] as const;
 type PrimitiveCmsStore = { handleSettingsChange: (settings: CmsSettings) => void };
 
+const fetchSocketAuth = async (): Promise<{ token?: string }> => {
+    const { data, error } = await authClient.oneTimeToken.generate().catch((e) => {
+        return { data: undefined, error: e };
+    });
+    if (error || !data?.token) {
+        console.log('cannot get one-time-token', error);
+        return {};
+    }
+    return { token: data.token };
+};
+
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
 
-    @observableRef accessor socket: TypedSocket | undefined = undefined;
+    /**
+     * The only socket of the app: socket.io reconnects it on its own, it is
+     * only replaced after cleanup().
+     */
+    private socket: TypedSocket | undefined = undefined;
 
-    @observable accessor isLive: boolean = false;
+    /**
+     * Only set between the socket's 'connect' and 'disconnect' events, so `isLive` can be derived from it.
+     */
+    @observable accessor socketId: string | undefined = undefined;
 
     @observableRef accessor actionRequest: Action['action'] | undefined = undefined;
 
@@ -62,143 +81,43 @@ export class SocketDataStore extends iStore<'ping'> {
         );
     }
 
+    @computed
+    get isLive() {
+        return !!OFFLINE_API || this.socketId !== undefined;
+    }
+
     @action
     registerRecordToCreate(docType: DocumentType) {
         this.recordsToCreate.add(docType);
     }
 
-    @action
-    checkLiveState() {
+    /**
+     * Safe to call at any time: does nothing while the socket is connected
+     * or socket.io is already reconnecting it.
+     */
+    connect() {
         if (OFFLINE_API) {
             return;
         }
-        if (this.socket?.connected) {
-            if (!this.isLive) {
-                this.setLiveState(true);
-            }
+        if (!this.socket) {
+            this.socket = this.createSocket();
+        }
+        if (this.socket.active) {
             return;
         }
-        this.reconnect();
+        this.socket.connect();
     }
 
-    @action
-    reconnect() {
-        const socket = this.socket;
-        this._disconnect(socket);
-        this.setLiveState(false);
-        this.connect();
-    }
-
-    @action
     disconnect() {
-        this._disconnect(this.socket);
-        this.setLiveState(false);
+        this.socket?.disconnect();
     }
 
-    @action
-    _disconnect(socket: TypedSocket | undefined) {
-        if (socket?.connected) {
-            socket.disconnect();
-        }
-        this.socket = undefined;
-    }
-
-    @action
-    setLiveState(isLive: boolean) {
-        this.isLive = isLive;
-    }
-
-    async connect() {
-        if (OFFLINE_API) {
-            if (!this.isLive) {
-                this.setLiveState(true);
-            }
-            return;
-        }
-        if (this.socket?.connected) {
-            return;
-        }
-
-        const { data, error } = await authClient.oneTimeToken.generate().catch((e) => {
-            return { data: { token: undefined }, error: e };
-        });
-        if (error || !data?.token) {
-            console.log('cannot get one-time-token', error);
-            setTimeout(() => this.connect(), 1000);
-            return;
-        }
-        const ws_url = BACKEND_URL;
-        const socket = io(ws_url, {
-            autoConnect: false,
-            auth: {
-                token: data.token
-            },
-            transports: ['websocket', 'webtransport'],
-            reconnection: false
-        });
-
-        this._connect(socket);
-    }
-
-    @action
-    _connect(socket: TypedSocket) {
-        this._socketConfig(socket);
-        const winSock: { tdevSockets?: Socket[] } = window as any;
-        winSock.tdevSockets = (winSock.tdevSockets || []).filter((s: Socket) => s.connected || s.active);
-        winSock.tdevSockets.forEach((s: Socket) => s.disconnect());
-        socket.connect();
-        winSock.tdevSockets.push(socket);
-    }
-
-    _socketConfig(socket: TypedSocket) {
-        if (!socket) {
-            return;
-        }
-        socket.on(
-            'connect',
-            action(() => {
-                if (this.socket) {
-                    this._disconnect(this.socket);
-                }
-                /**
-                 * add sid to the api headers, so that the api can broadcast messages to
-                 * the user except the initiating client.
-                 */
-                api.defaults.headers.common['x-metadata-sid'] = socket?.id;
-                this.socket = socket;
-                this.setLiveState(true);
-            })
-        );
-
-        socket.on(
-            'disconnect',
-            action((reason) => {
-                this.socket = undefined;
-                this.setLiveState(false);
-                if (reason !== 'io server disconnect' && reason !== 'io client disconnect') {
-                    // an error happened, try to reconnect
-                    this.reconnect();
-                }
-            })
-        );
-        socket.on(
-            'connect_error',
-            action((err) => {
-                console.log('connection error', err);
-                // TODO: should we try to connect again in 1s?
-            })
-        );
-        socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
-        socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
-        socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
-        socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
-        socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
-        socket.on(
-            IoEvent.ACTION,
-            action((data: Action['action']) => {
-                this.actionRequest = data;
-            })
-        );
+    /**
+     * Reconnects with a fresh one-time token, e.g. after the current user changed.
+     */
+    reconnect() {
+        this.disconnect();
+        this.connect();
     }
 
     /**
@@ -218,7 +137,7 @@ export class SocketDataStore extends iStore<'ping'> {
         if (meta) {
             data.meta = meta;
         }
-        this.socket?.emit(IoClientEvent.STREAM_UPDATE, data);
+        this.connectedSocket?.emit(IoClientEvent.STREAM_UPDATE, data);
     }
 
     @action
@@ -373,21 +292,15 @@ export class SocketDataStore extends iStore<'ping'> {
     }
 
     @action
-    resetUserData() {
-        this.disconnect();
-        api.defaults.headers.common['x-metadata-socketid'] = undefined;
-    }
-
-    @action
     joinRoom(roomId: string) {
-        this.socket?.emit(IoClientEvent.JOIN_ROOM, roomId, (joined) => {
+        this.connectedSocket?.emit(IoClientEvent.JOIN_ROOM, roomId, (joined) => {
             console.log('joined room', joined ? '✅' : '❌', roomId);
         });
     }
 
     @action
     leaveRoom(roomId: string) {
-        this.socket?.emit(IoClientEvent.LEAVE_ROOM, roomId, (left: boolean) => {
+        this.connectedSocket?.emit(IoClientEvent.LEAVE_ROOM, roomId, (left: boolean) => {
             console.log('left room', left ? '✅' : '❌', roomId);
         });
     }
@@ -398,7 +311,7 @@ export class SocketDataStore extends iStore<'ping'> {
             return Promise.resolve(false);
         }
         return new Promise((resolve) => {
-            this.socket?.emit(IoClientEvent.ACTION, { roomIds, userIds, action }, (ok) => {
+            this.connectedSocket?.emit(IoClientEvent.ACTION, { roomIds, userIds, action }, (ok) => {
                 resolve(ok);
             });
         });
@@ -412,5 +325,54 @@ export class SocketDataStore extends iStore<'ping'> {
     @action
     cleanup() {
         this.disconnect();
+        this.socket = undefined;
+    }
+
+    private createSocket(): TypedSocket {
+        const socket: TypedSocket = io(BACKEND_URL, {
+            autoConnect: false,
+            // socket.io calls this on every (re)connect, so each attempt sends a fresh one-time token
+            auth: (cb) => fetchSocketAuth().then(cb),
+            transports: ['websocket', 'webtransport']
+        });
+        socket.on(
+            'connect',
+            action(() => {
+                // lets the api broadcast changes to all clients of the user except the initiating one
+                api.defaults.headers.common[SOCKET_ID_HEADER] = socket.id;
+                this.socketId = socket.id;
+            })
+        );
+        socket.on(
+            'disconnect',
+            // The api rejects an invalid one-time token with an 'io server disconnect', which socket.io
+            // does not retry: a new login or the LivenessChecker in Root.tsx reconnects.
+            action(() => {
+                delete api.defaults.headers.common[SOCKET_ID_HEADER];
+                this.socketId = undefined;
+            })
+        );
+        socket.on('connect_error', (err) => {
+            console.log('connection error', err);
+        });
+        socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
+        socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
+        socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
+        socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
+        socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
+        socket.on(
+            IoEvent.ACTION,
+            action((data: Action['action']) => {
+                this.actionRequest = data;
+            })
+        );
+        return socket;
+    }
+
+    /**
+     * socket.io buffers emits while disconnected: drop them instead, they would be stale on reconnect.
+     */
+    private get connectedSocket() {
+        return this.socket?.connected ? this.socket : undefined;
     }
 }
