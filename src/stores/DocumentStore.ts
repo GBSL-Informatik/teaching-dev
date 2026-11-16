@@ -45,16 +45,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { DefaultExtensions, FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
 
-const IsNotUniqueError = (error: any) => {
-    try {
-        const message = error.response.data;
-        // @see https://github.com/GBSL-Informatik/teaching-api/blob/main/src/models/Document.ts#Document.createModel
-        return /FORBIDDEN: \[403\] \[not unique\]/.test(message || '');
-    } catch {
-        return false;
-    }
-};
-
 export function CreateDocumentModel<T extends DocumentType>(
     data: DocumentProps<T>,
     store: DocumentStore
