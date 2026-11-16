@@ -1,6 +1,8 @@
+import { offlineRoutes } from '@tdev-api/OfflineApi';
 import { rootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
 import { CmsSettings } from './api/cms';
+import { registerCmsRoutes } from './api/offlineRoutes';
 import { CmsStore } from './stores/CmsStore';
 
 const createStore = (viewStore: ViewStore) => {
@@ -17,6 +19,7 @@ const register = () => {
         onNew: handleSettingsChange,
         onChanged: handleSettingsChange
     });
+    registerCmsRoutes(offlineRoutes);
 };
 
 register();

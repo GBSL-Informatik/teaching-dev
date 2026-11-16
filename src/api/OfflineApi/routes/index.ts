@@ -1,6 +1,5 @@
 import type RouteTable from '../RouteTable';
 import { registerAdminRoutes } from './admin';
-import { registerCmsRoutes } from './cms';
 import { registerDocumentRootRoutes } from './documentRoots';
 import { registerDocumentRoutes } from './documents';
 import { registerPermissionRoutes } from './permissions';
@@ -9,7 +8,6 @@ import { registerUserRoutes } from './users';
 
 export const registerCoreRoutes = (routes: RouteTable) => {
     registerAdminRoutes(routes);
-    registerCmsRoutes(routes);
     registerDocumentRootRoutes(routes);
     registerDocumentRoutes(routes);
     registerPermissionRoutes(routes);
