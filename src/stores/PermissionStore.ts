@@ -34,7 +34,8 @@ class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
     userPermissions = observable.array<UserPermission>([]);
     groupPermissions = observable.array<GroupPermission>([]);
-    permissionsLoadedForDocumentRootIds = observable.set<string>();
+    // A map instead of a set: ObservableSet.has() tracks the whole set, see AGENTS.md.
+    private readonly loadedDocumentRootIds = observable.map<string, true>();
 
     constructor(root: RootStore) {
         super();
@@ -89,6 +90,10 @@ class PermissionStore extends iStore<`update-${string}`> {
             ...this.userPermissionsByDocumentRoot(documentRootId),
             ...this.groupPermissionsByDocumentRoot(documentRootId)
         ];
+    }
+
+    hasLoadedPermissions(documentRootId: string) {
+        return this.loadedDocumentRootIds.has(documentRootId);
     }
 
     get studentGroups() {
@@ -244,7 +249,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         } else {
             this.groupPermissions.remove(permission);
         }
-        this.permissionsLoadedForDocumentRootIds.delete(permission.documentRootId);
+        this.loadedDocumentRootIds.delete(permission.documentRootId);
     }
 
     @action
@@ -254,9 +259,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         const filteredGroupPermissions = this.groupPermissions.filter((p) => !docIds.has(p.documentRootId));
         this.userPermissions.replace(filteredUserPermissions);
         this.groupPermissions.replace(filteredGroupPermissions);
-        this.permissionsLoadedForDocumentRootIds.replace(
-            [...this.permissionsLoadedForDocumentRootIds].filter((id) => !docIds.has(id))
-        );
+        documentRootIds.forEach((id) => this.loadedDocumentRootIds.delete(id));
     }
 
     @action
@@ -304,9 +307,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         const idsToLoad = forceReload
             ? documentRootIds
             : documentRootIds.filter(
-                  (id) =>
-                      !this.root.documentRootStore.find(id) ||
-                      !this.permissionsLoadedForDocumentRootIds.has(id)
+                  (id) => !this.root.documentRootStore.find(id) || !this.hasLoadedPermissions(id)
               );
         if (idsToLoad.length === 0) {
             return Promise.resolve();
@@ -337,7 +338,7 @@ class PermissionStore extends iStore<`update-${string}`> {
                                 new GroupPermission({ ...gp, documentRootId: p.id }, this)
                             );
                         });
-                        this.permissionsLoadedForDocumentRootIds.add(p.id);
+                        this.loadedDocumentRootIds.set(p.id, true);
                     });
                 })
             );
@@ -348,7 +349,7 @@ class PermissionStore extends iStore<`update-${string}`> {
     cleanup() {
         this.userPermissions.clear();
         this.groupPermissions.clear();
-        this.permissionsLoadedForDocumentRootIds.clear();
+        this.loadedDocumentRootIds.clear();
     }
 }
 
