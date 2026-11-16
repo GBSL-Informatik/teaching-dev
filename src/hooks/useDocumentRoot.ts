@@ -29,7 +29,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     const userStore = useStore('userStore');
     const documentRootStore = useStore('documentRootStore');
     const hasElevatedAccess = useComputed(() => !!userStore.current?.hasElevatedAccess, [userStore]);
-    const [dummyDocumentRoot] = React.useState(
+    const dummyDocumentRoot = React.useMemo(
         () =>
             new DocumentRoot(
                 {
@@ -40,7 +40,8 @@ export const useDocumentRoot = <Type extends DocumentType>(
                 meta,
                 documentRootStore,
                 true
-            )
+            ),
+        [id, defaultRootDocId, documentRootStore]
     );
 
     /** initial load */
@@ -83,7 +84,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
             disposer();
             documentRootStore.removeFromStore(defaultRootDocId, true);
         };
-    }, [documentRootStore, id, loadOnlyType]);
+    }, [documentRootStore, id, loadOnlyType, dummyDocumentRoot]);
 
     React.useEffect(() => {
         if (!id || !hasElevatedAccess) {
