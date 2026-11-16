@@ -1,6 +1,6 @@
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import { mdiAccountCircleOutline } from '@mdi/js';
-import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi';
+import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi/OfflineUser';
 import LiveStatusIndicator from '@tdev-components/LiveStatusIndicator';
 import Button from '@tdev-components/shared/Button';
 import useIsMobileView from '@tdev-hooks/useIsMobileView';

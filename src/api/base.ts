@@ -1,9 +1,12 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import axios, { AxiosInstance } from 'axios';
-import OfflineApi from './OfflineApi';
+import axios from 'axios';
+import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
+import { offlineRoutes } from './OfflineApi';
+import type { DbAdapter } from './OfflineApi/Adapter';
 import IndexedDbAdapter from './OfflineApi/Adapter/IndexedDb';
 import MemoryDbAdapter from './OfflineApi/Adapter/MemoryDb';
-import { BACKEND_URL, DB_NAME, OFFLINE_API } from './config';
+import { createOfflineAdapter } from './OfflineApi/offlineAdapter';
+import { OfflineUser } from './OfflineApi/OfflineUser';
 export namespace Api {
     export const BASE_API_URL = eventsApiUrl();
 
@@ -12,20 +15,29 @@ export namespace Api {
     }
 }
 
-const api: AxiosInstance & { mode?: 'indexedDB' | 'memory'; destroyDb?: () => Promise<void> } = OFFLINE_API
-    ? (new OfflineApi(OFFLINE_API) as unknown as AxiosInstance)
+const localDb: DbAdapter = ExecutionEnvironment.canUseDOM
+    ? new IndexedDbAdapter(DB_NAME)
+    : new MemoryDbAdapter();
+
+const createOfflineDb = () => {
+    if (!OFFLINE_API) {
+        return undefined;
+    }
+    // In indexedDB mode, the offline data lives in the local db and survives a reload.
+    return OFFLINE_API === 'indexedDB' ? localDb : new MemoryDbAdapter();
+};
+
+const offlineDb = createOfflineDb();
+
+const api = offlineDb
+    ? axios.create({ adapter: createOfflineAdapter(offlineRoutes, offlineDb, OfflineUser.getUser) })
     : axios.create({
           baseURL: Api.BASE_API_URL,
           withCredentials: true,
           headers: {}
       });
 
-const localDb =
-    OFFLINE_API === 'indexedDB'
-        ? (api as unknown as OfflineApi).dbAdapter
-        : ExecutionEnvironment.canUseDOM
-          ? new IndexedDbAdapter(DB_NAME, false)
-          : new MemoryDbAdapter();
+export const apiMode = offlineDb?.mode ?? 'api';
 
 export { localDb };
 export default api;

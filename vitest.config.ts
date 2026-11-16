@@ -1,6 +1,7 @@
 // vitest.config.ts
-import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 import { transformWithEsbuild } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     plugins: [
@@ -18,6 +19,15 @@ export default defineConfig({
             }
         }
     ],
+    resolve: {
+        // Resolves to the framework sources only: site overrides from the tsconfig paths are not used in tests.
+        alias: [
+            {
+                find: /^@tdev-(api|components|hooks|models|plugins|stores)\/(.*)$/,
+                replacement: fileURLToPath(new URL('./src/$1/$2', import.meta.url))
+            }
+        ]
+    },
     test: {
         coverage: {
             provider: 'v8',

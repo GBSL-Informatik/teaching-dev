@@ -102,7 +102,7 @@ For tasks that only change documentation, a short coherence check is enough: is 
 
 ## Testing Guidelines
 
-Use tests only for remark plugins or packages which are run from the cli. No tests for components, hooks, or stores. Use Vitest with descriptive `describe` and `it` blocks. Name tests `*.test.ts` under the relevant module's `tests/` directory. Plugin tests commonly use inline snapshots; review snapshot changes for intended output differences. No coverage threshold is configured.
+Use tests only for remark plugins, packages which are run from the cli, and the offline api (`src/api/OfflineApi/`). No tests for components, hooks, or stores. For the offline api, test edge cases and error responses rather than every happy path, and add a regression test with every bug fix. Use Vitest with descriptive `describe` and `it` blocks. Name tests `*.test.ts` under the relevant module's `tests/` directory. Plugin tests commonly use inline snapshots; review snapshot changes for intended output differences. No coverage threshold is configured.
 
 ## Commit & Pull Request Guidelines
 

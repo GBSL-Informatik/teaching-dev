@@ -1,4 +1,5 @@
 import type { WrapperProps } from '@docusaurus/types';
+import OfflineDbWarning from '@tdev-components/OfflineDbWarning';
 import PresentationModal from '@tdev-components/PresentationPanel/PresentationModal';
 import { useStore } from '@tdev-hooks/useStore';
 import AnnouncementBar from '@theme-original/AnnouncementBar';
@@ -13,6 +14,7 @@ const AnnouncementBarWrapper = observer((props: Props): ReactNode => {
     return (
         <>
             {sessionStore.apiMode === 'api' && <PresentationModal />}
+            <OfflineDbWarning />
             <AnnouncementBar {...props} />
         </>
     );

@@ -15,7 +15,7 @@ Teaching-Dev is a framework for building educational platforms. It provides a se
 ├── packages            - additional workspace packages, scoped to either the platform `packages/tdev/` or individual devs, e.g. `packages/hfr/`.
 ├── src
 │   ├── api             - axios api endpoints
-│   │   └── OfflineApi  - supports offline mode by caching API responses in IndexedDB or Memory
+│   │   └── OfflineApi  - axios adapter serving API requests from a route table (IndexedDB or Memory), extendable by packages
 │   ├── components      - React components provided by the platform   
 │       └── documents   - all components which display `document` records from the teaching-api  
 │   ├── css             - global css files, e.g. for Infima overrides

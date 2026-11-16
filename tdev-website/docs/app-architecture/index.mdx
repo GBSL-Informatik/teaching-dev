@@ -263,6 +263,34 @@ register();
 
 Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders` hinterlegt werden, so dass die entsprechenden Einträge beim Laden der Client-App noch vor dem ersten Rendern verfügbar sind.
 
+#### Offline-Routen <Badge type="info">Optional</Badge>
+
+Mit `OFFLINE_API` beantwortet ein [axios-Adapter](https://axios-http.com/docs/req_config) die API-Anfragen lokal, statt sie an die teaching-api zu senden. Welcher Handler eine Anfrage beantwortet, legt die Routen-Tabelle `offlineRoutes` fest. Spricht ein Paket eigene Endpunkte an, kann es dafür in seiner `register.ts` Offline-Routen hinzufügen:
+
+```ts title="packages/tdev/text-message/register.ts"
+import { OfflineHttpError, offlineRoutes } from '@tdev-api/OfflineApi';
+
+offlineRoutes.register<{ text: string }>('POST', '/messages/:roomId', ({ params, data, user }) => {
+    if (!data.text) {
+        throw new OfflineHttpError(400, 'Missing text');
+    }
+    return { status: 201, data: { roomId: params.roomId, authorId: user.id, text: data.text } };
+});
+```
+
+`register(method, pattern, handler)`
+: `method`: `'GET'`, `'POST'`, `'PUT'`, `'PATCH'` oder `'DELETE'`.
+: `pattern`: Pfad relativ zur API, `:name` steht für einen Pfad-Parameter. Passen mehrere Muster, gewinnt jenes mit den meisten festen Segmenten (`/documentRoots/permissions` vor `/documentRoots/:id`).
+: Wird dieselbe Route zweimal registriert, wird ein Fehler geworfen.
+`handler(request)`
+: Erhält `params`, `query` (`URLSearchParams`), den Request-Body `data`, die lokale Datenbank `db` und den Offline-User `user`.
+: Gibt `{ data, status? }` zurück. Ohne `status` gilt `200`.
+`OfflineHttpError(status, message)`
+: Fehler werfen Handler als `OfflineHttpError`. Die Anfrage wird dann wie bei der echten API mit einem `AxiosError` abgelehnt, mit demselben Fehler-Body wie die teaching-api.
+: Wirft ein Handler einen anderen Fehler, antwortet die Offline-API mit `500` und meldet den Fehler in der Konsole.
+
+Anfragen ohne passende Route werden mit `404` abgelehnt und in der Konsole gemeldet.
+
 ## Debug
 
 Im Projekt ist [@docusaurus/plugin-rsdoctor](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-rsdoctor) als dev dependency installiert. Dieses Plugin hilft bei der Analyse von Performance-Problemen und kann beim Aufsuchen von kritischen (langsamen) Code-Teilen helfen.

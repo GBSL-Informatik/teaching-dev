@@ -1,8 +1,11 @@
 import { mdiContentSaveOffOutline, mdiDatabaseSyncOutline, mdiHarddisk } from '@mdi/js';
-import api from '@tdev-api/base';
+import { apiMode, localDb } from '@tdev-api/base';
+import type { DbStatus } from '@tdev-api/OfflineApi/Adapter';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
+
+export type OfflineDbProblem = Exclude<DbStatus, 'opening' | 'ready'>;
 
 export class SessionStore extends iStore {
     readonly root: RootStore;
@@ -12,6 +15,8 @@ export class SessionStore extends iStore {
 
     @observable accessor currentUserId: string | undefined;
     @observable accessor storageSyncInitialized = false;
+    @observable accessor localDbStatus: DbStatus = 'opening';
+    @observable accessor offlineDbWarningDismissed = false;
 
     fileSystemDirectoryHandles = observable.map<string, FileSystemDirectoryHandle>([], { deep: false });
 
@@ -19,6 +24,12 @@ export class SessionStore extends iStore {
         super();
         this.root = store;
         this.initialized = true;
+        localDb.onStatusChange((status) => this.setLocalDbStatus(status));
+    }
+
+    @action
+    setLocalDbStatus(status: DbStatus) {
+        this.localDbStatus = status;
     }
 
     @action
@@ -32,7 +43,24 @@ export class SessionStore extends iStore {
     }
 
     get apiMode(): 'indexedDB' | 'memory' | 'api' {
-        return api.mode ?? 'api';
+        return apiMode;
+    }
+
+    @action
+    dismissOfflineDbWarning() {
+        this.offlineDbWarningDismissed = true;
+    }
+
+    /** Why the offline api cannot save changes, if it keeps them in the local db. */
+    @computed
+    get offlineDbProblem(): OfflineDbProblem | undefined {
+        if (this.apiMode !== 'indexedDB') {
+            return undefined;
+        }
+        if (this.localDbStatus === 'opening' || this.localDbStatus === 'ready') {
+            return undefined;
+        }
+        return this.localDbStatus;
     }
 
     get apiModeIcon(): string {

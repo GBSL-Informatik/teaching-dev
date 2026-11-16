@@ -1,7 +1,7 @@
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import { mdiArrowRightThin } from '@mdi/js';
 import Icon from '@mdi/react';
-import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi';
+import { DEFAULT_OFFLINE_USER } from '@tdev-api/OfflineApi/OfflineUser';
 import DefinitionList from '@tdev-components/DefinitionList';
 import Loader from '@tdev-components/Loader';
 import Badge from '@tdev-components/shared/Badge';

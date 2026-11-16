@@ -32,8 +32,16 @@ export interface DocumentsTransaction {
     delete(id: string): Promise<void>;
 }
 
+/**
+ * `blocked`: another tab keeps an older version of the db open, so it cannot be upgraded.
+ * `outdated`: another tab upgraded or deleted the db, so this tab closed its connection.
+ */
+export type DbStatus = 'opening' | 'ready' | 'blocked' | 'outdated' | 'unavailable' | 'migrationFailed';
+
 export interface DbAdapter {
     mode: 'indexedDB' | 'memory';
+    /** Calls the listener with the current status and again on every change. */
+    onStatusChange(listener: (status: DbStatus) => void): void;
     withDocumentsTransaction<T>(work: (store: DocumentsTransaction) => Promise<T>): Promise<T>;
     get<T>(storeName: string, id: string): Promise<T | undefined>;
     byDocumentRootId<T extends DocumentType>(

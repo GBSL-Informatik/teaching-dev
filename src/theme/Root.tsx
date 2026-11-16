@@ -6,7 +6,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import siteConfig from '@generated/docusaurus.config';
 import { localDb } from '@tdev-api/base';
-import { OfflineUser } from '@tdev-api/OfflineApi';
+import { OfflineUser } from '@tdev-api/OfflineApi/OfflineUser';
 import { User } from '@tdev-api/user';
 import LoggedOutOverlay from '@tdev-components/LoggedOutOverlay';
 import customFields from '@tdev-components/utils/customFields';
@@ -91,22 +91,26 @@ const OfflineApi = observer(() => {
         if (OFFLINE_API !== 'indexedDB') {
             return load();
         }
-        localDb.getAll<User>('users').then(async (users) => {
-            if (users.length === 0) {
-                return load();
-            }
-            while (users.length > 1) {
-                const user = users.pop();
-                if (user) {
-                    await localDb.delete('users', user.id);
+        localDb
+            .getAll<User>('users')
+            .then(async (users) => {
+                if (users.length === 0) {
+                    return load();
                 }
-            }
-            const user = users[0];
-            if (user) {
-                OfflineUser.setUser(user);
-                load();
-            }
-        });
+                while (users.length > 1) {
+                    const user = users.pop();
+                    if (user) {
+                        await localDb.delete('users', user.id);
+                    }
+                }
+                const user = users[0];
+                if (user) {
+                    OfflineUser.setUser(user);
+                    load();
+                }
+            })
+            // Without a local db nothing can be loaded; the OfflineDbWarning tells the user why.
+            .catch((error) => console.error('Offline api: local db unavailable', error));
     }, []);
     return null;
 });

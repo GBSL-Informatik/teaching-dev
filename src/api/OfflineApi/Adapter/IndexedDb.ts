@@ -1,7 +1,7 @@
 import type { Document, DocumentType } from '@tdev-api/document';
 import { deleteDB, type IDBPDatabase, openDB } from 'idb';
-import type { DbAdapter, DBSchema, DocumentsTransaction } from '.';
-import { OfflineUser } from '..';
+import type { DbAdapter, DBSchema, DbStatus, DocumentsTransaction } from '.';
+import { OfflineUser } from '../OfflineUser';
 import { normalizeDocumentParent } from '../documents';
 import { IMPORT_STORES, type ImportedStores, prepareImport } from './import';
 import { DB_VERSION, migrations } from './migrations';
@@ -12,16 +12,34 @@ const withFallback = <T>(fn: () => Promise<T>, fallback: T = undefined as T) => 
 
 type InitStores = 'fsHandles' | 'documents' | 'studentGroups' | 'permissions' | 'users';
 
+class MigrationError extends Error {
+    constructor(cause: unknown) {
+        super('IndexedDB migration failed', { cause });
+    }
+}
+
 class IndexedDbAdapter implements DbAdapter {
     private dbName: string;
     private dbPromise: Promise<IDBPDatabase<DBSchema>>;
     readonly mode = 'indexedDB';
+    private status: DbStatus = 'opening';
+    private statusListeners: ((status: DbStatus) => void)[] = [];
 
-    // Retain the constructor argument for existing callers; every mode now uses the same schema.
-    constructor(dbName: string, _initializeStores: boolean = false) {
+    constructor(dbName: string) {
         this.dbName = dbName;
         this.dbPromise = this.initDB();
-        void this.dbPromise.catch((error) => console.error('Failed to initialize IndexedDB:', error));
+        void this.dbPromise.then(
+            () => this.setStatus('ready'),
+            (error) => {
+                console.error('Failed to initialize IndexedDB:', error);
+                this.setStatus(error instanceof MigrationError ? 'migrationFailed' : 'unavailable');
+            }
+        );
+    }
+
+    onStatusChange(listener: (status: DbStatus) => void) {
+        this.statusListeners.push(listener);
+        listener(this.status);
     }
 
     private async initDB(): Promise<IDBPDatabase<DBSchema>> {
@@ -52,8 +70,14 @@ class IndexedDbAdapter implements DbAdapter {
                     }
                 });
             },
-            blocked: () => console.warn('IndexedDB upgrade blocked by another open tab:', this.dbName),
-            blocking: () => void this.dbPromise.then((db) => db.close())
+            blocked: () => {
+                console.warn('IndexedDB upgrade blocked by another open tab:', this.dbName);
+                this.setStatus('blocked');
+            },
+            blocking: () => {
+                void this.dbPromise.then((db) => db.close());
+                this.setStatus('outdated');
+            }
         });
         try {
             const db = await opened;
@@ -64,7 +88,10 @@ class IndexedDbAdapter implements DbAdapter {
             }
             return db;
         } catch (error) {
-            throw upgradeError ?? error;
+            if (upgradeError) {
+                throw new MigrationError(upgradeError);
+            }
+            throw error;
         }
     }
 
@@ -186,6 +213,13 @@ class IndexedDbAdapter implements DbAdapter {
             }
             await done.catch(() => {});
             throw error;
+        }
+    }
+
+    private setStatus(status: DbStatus) {
+        this.status = status;
+        for (const listener of this.statusListeners) {
+            listener(status);
         }
     }
 }
