@@ -203,10 +203,8 @@ export interface TypeModelMapping
     ['cms_text']: CmsText;
     ['dynamic_document_roots']: DynamicDocumentRoots<any>;
     /**
-     * Add more mappings as needed
-     * TODO: implement the mapping in DocumentRoot.ts
-     * @see DocumentRoot
-     * @link file://../../src/stores/DocumentStore.ts#CreateDocumentModel
+     * Add more mappings as needed and register the type
+     * @link file://../../src/stores/assets/BuiltinDocumentTypes.ts
      */
 }
 

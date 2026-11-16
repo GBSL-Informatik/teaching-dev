@@ -12,12 +12,6 @@ import DocumentRoot, { TypeMeta } from '@tdev-models/DocumentRoot';
 import GroupPermission from '@tdev-models/GroupPermission';
 import User from '@tdev-models/User';
 import UserPermission from '@tdev-models/UserPermission';
-import { CodeMeta } from '@tdev-models/documents/Code';
-import { ModelMeta as MdxCommentMeta } from '@tdev-models/documents/MdxComment';
-import { ModelMeta as QuillV2Meta } from '@tdev-models/documents/QuillV2';
-import { ModelMeta as RestrictedMeta } from '@tdev-models/documents/Restricted';
-import { ModelMeta as SolutionMeta } from '@tdev-models/documents/Solution';
-import { ModelMeta as StringMeta } from '@tdev-models/documents/String';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
@@ -25,7 +19,6 @@ import _ from 'es-toolkit/compat';
 import { action, computed, observable, runInAction, transaction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 
-import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 import { UnknownMeta } from '@tdev-models/documents/Unknown';
 
 type LoadConfig = {
@@ -71,16 +64,7 @@ type BatchedMeta = {
     access: Partial<Config>;
 };
 
-const DefaultMeta: TypeMeta<DocumentType>[] = [
-    new UnknownMeta({}),
-    new CodeMeta({}),
-    new MdxCommentMeta({}),
-    new RestrictedMeta({}),
-    new SolutionMeta({}),
-    new StringMeta({}),
-    new CmsTextMeta({}),
-    new QuillV2Meta({})
-];
+const UnknownDefaultMeta = new UnknownMeta({});
 
 const MAX_CREATE_ATTEMPTS = 5;
 
@@ -102,7 +86,11 @@ export class DocumentRootStore extends iStore {
 
     @computed
     get defaultMetas(): TypeMeta<DocumentType>[] {
-        return [...DefaultMeta, ...this.root.componentStore.defaultMeta];
+        return [
+            UnknownDefaultMeta,
+            ...this.root.documentStore.defaultMetas,
+            ...this.root.componentStore.defaultMeta
+        ];
     }
 
     @action

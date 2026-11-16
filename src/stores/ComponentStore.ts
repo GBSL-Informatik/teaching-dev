@@ -1,21 +1,14 @@
 import {
     DocumentModelType,
-    TaskableType,
     TypeModelMapping,
     type CodeType,
     type ContainerType,
     type ContainerTypeModelMapping,
     type DocumentType
 } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { ModelMeta as ChoiceMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
-import { ModelMeta as QuizMeta } from '@tdev-models/documents/Assessable/Quiz';
-import { ModelMeta as TrueFalseMeta } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import { CodeMeta } from '@tdev-models/documents/Code';
 import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
-import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
-import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
 import { computed } from 'mobx';
 import React from 'react';
 import { RootStore } from './rootStore';
@@ -59,13 +52,6 @@ class ComponentStore {
     components = new Map<ContainerType, ContainerComponent>();
     editorComponents = new Map<CodeType, EditorComponent>();
     documentViews = new Map<DocumentType, React.ComponentType<{ document: DocumentModelType }>>();
-    taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
-        ['task_state', new TaskStateMeta({})],
-        ['progress_state', new ProgressStateMeta({})],
-        ['quiz', new QuizMeta({})],
-        ['choice_answer', new ChoiceMeta({ optionsCount: 0 })],
-        ['true_false_answer', new TrueFalseMeta({})]
-    ]);
 
     constructor(root: RootStore) {
         this.root = root;
@@ -79,21 +65,11 @@ class ComponentStore {
         this.components.set(type, component as ContainerComponent<any>);
     }
 
-    registerTaskableDocumentType<T extends TaskableType>(defaultMeta: TypeMeta<T>) {
-        this.taskableDocumentsMeta.set(defaultMeta.type, defaultMeta);
-    }
-
-    @computed
-    get taskableDocuments() {
-        return new Set([...this.taskableDocumentsMeta.keys()]);
-    }
-
     @computed
     get defaultMeta() {
         return [
             ...[...this.components.values()].map((comp) => comp.defaultMeta),
-            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({})),
-            ...[...this.taskableDocumentsMeta.values()]
+            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({}))
         ];
     }
 

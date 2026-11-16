@@ -26,8 +26,8 @@ export interface LogMessage {
     output: string;
     timeStamp: number;
 }
-export const createModel: Factory = (data, store) => {
-    return new Script(data as DocumentProps<'script'>, store);
+export const createModel: Factory<'script'> = (data, store) => {
+    return new Script(data, store);
 };
 
 export default class Script extends iCode<'script'> {

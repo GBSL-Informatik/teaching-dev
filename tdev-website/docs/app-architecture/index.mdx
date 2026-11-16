@@ -36,32 +36,23 @@ wobei der zum Markdown konsistente Document-Typ `script` das `Main-Document` fü
 
 ### Dokument-Modelle instanziieren
 
-Beim Laden von `Document`-Einträgen von der API werden die entsprechenden Modelle im `DocumentStore` instanziiert. Damit das funktioniert, müssen für jeden `Document`-Typ sogenannte `Factory`-Funktionen registriert werden, die ein `Document`-Modell mittels des `data`-Feldes erstellt.
+Beim Laden von `Document`-Einträgen von der API werden die entsprechenden Modelle im `DocumentStore` instanziiert. Damit das funktioniert, wird jeder `Document`-Typ mit `registerDocumentType` registriert. Die `factory` erstellt ein `Document`-Modell mittels des `data`-Feldes. Die eingebauten Typen sind in __src/stores/assets/BuiltinDocumentTypes.ts__ gleich registriert wie die Typen aus Paketen.
 
 
-```ts title="src/stores/DocumentStore.ts"
-const FactoryDefault: [DocumentType, Factory][] = [
-    ['script', (data, store) => new Script(data, store)],
-    ['script_version', (data, store) => new ScriptVersion(data, store)],
+```ts title="src/stores/assets/BuiltinDocumentTypes.ts"
+export const BuiltinDocumentTypes: AnyDocumentTypeConfig[] = [
+    {
+        type: 'code',
+        factory: (data, store) => new Code(data, store),
+        defaultMeta: new CodeMeta({}),
+        fileExtensions: DefaultExtensions.code
+    },
+    {
+        type: 'script_version',
+        factory: (data, store) => new ScriptVersion(data, store)
+    },
     // ...
 ];
-
-class DocumentStore {
-    factories = new Map<DocumentType, Factory>(FactoryDefault);
-
-    registerFactory(type: DocumentType, factory: Factory) {
-        this.factories.set(type, factory);
-    }
-
-    createDocument<Type extends DocumentType>(data: DocumentProps<Type>): TypeModelMapping[Type] | null {
-        const factory = this.factories.get(data.type);
-        if (!factory) {
-            console.warn(`No factory registered for document type ${data.type}`);
-            return null;
-        }
-        return factory(data, this) as TypeModelMapping[Type];
-    }
-}
 ```
 
 
@@ -230,23 +221,26 @@ Beim `TypeDataMapping` wird der Typ des `data`-Attributs eines `Document`s defin
 
 #### Initialisierung des Document Models <Badge type="warning">Pflicht</Badge>
 
-Damit ein neues Dokument initialisiert werden kann, muss eine Initialisierungsfunktion, eine sog. `Factory`, registriert werden.
+Damit ein neues Dokument initialisiert werden kann, muss der Dokumenttyp mit einer Initialisierungsfunktion, einer sog. `Factory`, registriert werden.
 
 ```ts title="packages/tdev/text-message/register.ts"
 import { rootStore } from '@tdev-stores/rootStore';
-import { Document, Factory } from '@tdev-api/document';
+import { Factory } from '@tdev-api/document';
 import TextMessage from './model';
 
-const createModel: Factory = (data, store) => {
-    return new TextMessage(data as Document<'text_message'>, store);
+const createModel: Factory<'text_message'> = (data, store) => {
+    return new TextMessage(data, store);
 };
 
-// Registrierung der Factory
+// Registrierung des Dokumenttyps
 const register = () => {
-    rootStore.documentStore.registerFactory('text_message', createModel);
-    // optional: Registrierung für Server-Seitig erzeugte Dokumente, die über
-    // SocketIO initialisiert werden können
-    rootStore.socketStore.registerRecordToCreate('text_message');
+    rootStore.documentStore.registerDocumentType({
+        type: 'text_message',
+        factory: createModel,
+        // optional: Server-seitig erzeugte Dokumente, die über SocketIO
+        // angekündigt werden, in den Store aufnehmen
+        createOnNewRecord: true
+    });
     // optional: Für dynamische Raum-Komponenten registrieren, so dass
     // die korrekten Komponenten bei Raum-Dokumenten verwendet werden können
     rootStore.componentStore.registerRoomComponent('text_messages', {
@@ -262,6 +256,24 @@ register();
 ```
 
 Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders` hinterlegt werden, so dass die entsprechenden Einträge beim Laden der Client-App noch vor dem ersten Rendern verfügbar sind.
+
+`registerDocumentType` kennt folgende Optionen:
+
+`type`
+: Der Dokumenttyp, wie er im `TypeModelMapping` definiert ist.
+`factory`
+: Erstellt das Modell aus dem `Document` der API.
+`defaultMeta`
+: Meta-Daten für `DocumentRoot`s, deren Dokumente ohne Meta-Daten geladen werden, bspw. in Admin-Ansichten.
+`fileExtensions`
+: Dateiendungen, mit denen der Typ im Dateisystem (`dir` und `file`) erstellt werden kann.
+: Standard-Priorität: `10`.
+`createOnNewRecord`
+: Neue Dokumente dieses Typs in den Store aufnehmen, wenn sie über SocketIO angekündigt werden.
+: Standard: `false`.
+`taskable`
+: Das Dokument zählt zum Bearbeitungsstand einer Seite und muss `iTaskableDocument` implementieren.
+: Standard: `false`.
 
 #### Offline-Routen <Badge type="info">Optional</Badge>
 

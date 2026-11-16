@@ -21,15 +21,20 @@ const register = () => {
             return undefined;
         }
     });
-    rootStore.documentStore.registerFactory('script', createModel);
-    rootStore.documentStore.registerFileExtension('script', {
-        extension: '.py',
-        name: 'Python',
-        description: 'Webbasiertes Python, inkl. Turtle-Grafik',
-        priority: 5,
-        icon: mdiLanguagePython,
-        iconColor: 'light-dark(#ffba00, #ebff00)',
-        defaultData: { code: '' }
+    rootStore.documentStore.registerDocumentType({
+        type: 'script',
+        factory: createModel,
+        fileExtensions: [
+            {
+                extension: '.py',
+                name: 'Python',
+                description: 'Webbasiertes Python, inkl. Turtle-Grafik',
+                priority: 5,
+                icon: mdiLanguagePython,
+                iconColor: 'light-dark(#ffba00, #ebff00)',
+                defaultData: { code: '' }
+            }
+        ]
     });
     rootStore.componentStore.registerDocumentView('script', DocumentView);
 };

@@ -10,15 +10,20 @@ const DEFAULT_IMAGE = `P1
 0 1 0` as const;
 
 const register = () => {
-    rootStore.documentStore.registerFactory('netpbm_graphic', createModel);
-    rootStore.documentStore.registerFileExtension('netpbm_graphic', {
-        name: 'Netpbm',
-        description: 'Für Bitmap-Bilder',
-        extension: '.pbm',
-        priority: 10,
-        defaultData: { imageData: DEFAULT_IMAGE },
-        icon: mdiCheckerboard,
-        iconColor: '#65dbc7'
+    rootStore.documentStore.registerDocumentType({
+        type: 'netpbm_graphic',
+        factory: createModel,
+        fileExtensions: [
+            {
+                name: 'Netpbm',
+                description: 'Für Bitmap-Bilder',
+                extension: '.pbm',
+                priority: 10,
+                defaultData: { imageData: DEFAULT_IMAGE },
+                icon: mdiCheckerboard,
+                iconColor: '#65dbc7'
+            }
+        ]
     });
     rootStore.componentStore.registerDocumentView('netpbm_graphic', DocumentView);
 };

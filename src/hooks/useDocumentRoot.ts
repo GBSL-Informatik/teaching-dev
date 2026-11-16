@@ -130,7 +130,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
     //     if (hash === rootDoc._metaHash) {
     //         return;
     //     }
-    //     if (componentStore.taskableDocuments.has(meta.type)) {
+    //     if (documentStore.taskableTypes.has(meta.type)) {
     //         const isNested =
     //             !!(meta.props as { qid?: string }).qid && !(rootDoc.meta.props as { qid?: string }).qid;
     //         if (isNested) {

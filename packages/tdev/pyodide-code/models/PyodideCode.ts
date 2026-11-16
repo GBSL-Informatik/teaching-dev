@@ -6,8 +6,8 @@ import { action, computed, observable } from 'mobx';
 import type { ErrorMessage, LogMessage, Message } from '../messages';
 import { ModelMeta } from './ModelMeta';
 
-export const createModel: Factory = (data, store) => {
-    return new PyodideCode(data as DocumentProps<'pyodide_code'>, store);
+export const createModel: Factory<'pyodide_code'> = (data, store) => {
+    return new PyodideCode(data, store);
 };
 
 class PyodideCode extends iCode<'pyodide_code'> {

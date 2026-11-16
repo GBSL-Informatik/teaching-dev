@@ -224,7 +224,7 @@ export default class Page {
     }
 
     get TaskableDocuments() {
-        return this.store.root.componentStore.taskableDocuments;
+        return this.store.root.documentStore.taskableTypes;
     }
 
     @computed

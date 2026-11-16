@@ -6,8 +6,8 @@ import { orderBy } from 'es-toolkit/array';
 import { action, computed, observable } from 'mobx';
 import TextMessage from '../TextMessage';
 
-export const createModel: Factory = (data, store) => {
-    return new SimpleChat(data as DocumentProps<'simple_chat'>, store);
+export const createModel: Factory<'simple_chat'> = (data, store) => {
+    return new SimpleChat(data, store);
 };
 
 class SimpleChat extends iDocumentContainer<'simple_chat'> {

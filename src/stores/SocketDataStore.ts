@@ -30,10 +30,6 @@ import {
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 const SOCKET_ID_HEADER = 'x-metadata-sid';
-/**
- * Records that should be created when a IoEvent.NEW_RECORD event is received.
- */
-const RecordsToCreate: DocumentType[] = ['dir', 'file', 'mdx_comment', 'dynamic_document_roots'] as const;
 type PrimitiveCmsStore = { handleSettingsChange: (settings: CmsSettings) => void };
 
 const fetchSocketAuth = async (): Promise<{ token?: string }> => {
@@ -63,8 +59,6 @@ export class SocketDataStore extends iStore<'ping'> {
 
     @observableRef accessor actionRequest: Action['action'] | undefined = undefined;
 
-    recordsToCreate = observable.set<DocumentType>(RecordsToCreate);
-
     connectedClients = observable.map<string, number>();
 
     constructor(root: RootStore) {
@@ -84,11 +78,6 @@ export class SocketDataStore extends iStore<'ping'> {
     @computed
     get isLive() {
         return !!OFFLINE_API || this.socketId !== undefined;
-    }
-
-    @action
-    registerRecordToCreate(docType: DocumentType) {
-        this.recordsToCreate.add(docType);
     }
 
     /**
@@ -151,7 +140,7 @@ export class SocketDataStore extends iStore<'ping'> {
                 break;
             case RecordType.Document:
                 const doc = record as Document<any>;
-                if (this.recordsToCreate.has(doc.type) || doc.parentId) {
+                if (this.root.documentStore.isCreatedOnNewRecord(doc.type) || doc.parentId) {
                     this.root.documentStore.addToStore(doc);
                 }
                 if (
