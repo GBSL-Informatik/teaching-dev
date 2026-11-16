@@ -19,8 +19,8 @@ import { UnknownMeta } from '@tdev-models/documents/Unknown';
 import { AccessLevels, NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import iStore, { ApiState } from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
+import GroupedIndex from '@tdev-stores/utils/GroupedIndex';
 import { action, computed, observable } from 'mobx';
-import { computedFn } from 'mobx-utils';
 
 const LOAD_PERMISSIONS_REQUEST = 'load-all-permissions';
 
@@ -32,8 +32,10 @@ const loadPermissionsRequestKey = (documentRootIds: string[]) => {
 
 class PermissionStore extends iStore<`update-${string}`> {
     readonly root: RootStore;
-    userPermissions = observable.array<UserPermission>([]);
-    groupPermissions = observable.array<GroupPermission>([]);
+    private readonly userPermissionsById = observable.map<string, UserPermission>([], { deep: false });
+    private readonly groupPermissionsById = observable.map<string, GroupPermission>([], { deep: false });
+    private readonly userPermissionsByRoot = new GroupedIndex<UserPermission>();
+    private readonly groupPermissionsByRoot = new GroupedIndex<GroupPermission>();
     permissionsLoadedForDocumentRootIds = observable.set<string>();
 
     constructor(root: RootStore) {
@@ -41,45 +43,37 @@ class PermissionStore extends iStore<`update-${string}`> {
         this.root = root;
     }
 
-    findUserPermission = computedFn(
-        function (this: PermissionStore, id?: string): UserPermission | undefined {
-            if (!id) {
-                return;
-            }
-            return this.userPermissions.find((d) => d.id === id);
-        },
-        { keepAlive: true }
-    );
+    @computed
+    get userPermissions(): UserPermission[] {
+        return [...this.userPermissionsById.values()];
+    }
 
-    findGroupPermission = computedFn(
-        function (this: PermissionStore, id?: string): GroupPermission | undefined {
-            if (!id) {
-                return;
-            }
-            return this.groupPermissions.find((d) => d.id === id);
-        },
-        { keepAlive: true }
-    );
+    @computed
+    get groupPermissions(): GroupPermission[] {
+        return [...this.groupPermissionsById.values()];
+    }
 
-    userPermissionsByDocumentRoot = computedFn(
-        function (this: PermissionStore, documentRootId?: string): UserPermission[] {
-            if (!documentRootId) {
-                return [];
-            }
-            return this.userPermissions.filter((p) => p.documentRootId === documentRootId);
-        },
-        { keepAlive: true }
-    );
+    findUserPermission(id?: string): UserPermission | undefined {
+        if (!id) {
+            return;
+        }
+        return this.userPermissionsById.get(id);
+    }
 
-    groupPermissionsByDocumentRoot = computedFn(
-        function (this: PermissionStore, documentRootId?: string): GroupPermission[] {
-            if (!documentRootId) {
-                return [];
-            }
-            return this.groupPermissions.filter((p) => p.documentRootId === documentRootId);
-        },
-        { keepAlive: true }
-    );
+    findGroupPermission(id?: string): GroupPermission | undefined {
+        if (!id) {
+            return;
+        }
+        return this.groupPermissionsById.get(id);
+    }
+
+    userPermissionsByDocumentRoot(documentRootId?: string): readonly UserPermission[] {
+        return this.userPermissionsByRoot.get(documentRootId);
+    }
+
+    groupPermissionsByDocumentRoot(documentRootId?: string): readonly GroupPermission[] {
+        return this.groupPermissionsByRoot.get(documentRootId);
+    }
 
     permissionsByDocumentRoot(documentRootId?: string): (UserPermission | GroupPermission)[] {
         if (!documentRootId) {
@@ -102,9 +96,10 @@ class PermissionStore extends iStore<`update-${string}`> {
             if (old.access === userPermission.access) {
                 return;
             }
-            this.userPermissions.remove(old);
+            this.unindexUserPermission(old);
         }
-        this.userPermissions.push(userPermission);
+        this.userPermissionsById.set(userPermission.id, userPermission);
+        this.userPermissionsByRoot.add(userPermission.documentRootId, userPermission);
     }
 
     @action
@@ -114,9 +109,10 @@ class PermissionStore extends iStore<`update-${string}`> {
             if (old.access === groupPermission.access) {
                 return;
             }
-            this.groupPermissions.remove(old);
+            this.unindexGroupPermission(old);
         }
-        this.groupPermissions.push(groupPermission);
+        this.groupPermissionsById.set(groupPermission.id, groupPermission);
+        this.groupPermissionsByRoot.add(groupPermission.documentRootId, groupPermission);
     }
 
     @action
@@ -240,23 +236,25 @@ class PermissionStore extends iStore<`update-${string}`> {
             return;
         }
         if (permission instanceof UserPermission) {
-            this.userPermissions.remove(permission);
+            this.unindexUserPermission(permission);
         } else {
-            this.groupPermissions.remove(permission);
+            this.unindexGroupPermission(permission);
         }
         this.permissionsLoadedForDocumentRootIds.delete(permission.documentRootId);
     }
 
     @action
     removeFromStoreByDocumentRootIds(documentRootIds: string[]) {
-        const docIds = new Set(documentRootIds);
-        const filteredUserPermissions = this.userPermissions.filter((p) => !docIds.has(p.documentRootId));
-        const filteredGroupPermissions = this.groupPermissions.filter((p) => !docIds.has(p.documentRootId));
-        this.userPermissions.replace(filteredUserPermissions);
-        this.groupPermissions.replace(filteredGroupPermissions);
-        this.permissionsLoadedForDocumentRootIds.replace(
-            [...this.permissionsLoadedForDocumentRootIds].filter((id) => !docIds.has(id))
-        );
+        documentRootIds.forEach((documentRootId) => {
+            // copies of the groups: unindexing mutates them
+            [...this.userPermissionsByDocumentRoot(documentRootId)].forEach((p) =>
+                this.unindexUserPermission(p)
+            );
+            [...this.groupPermissionsByDocumentRoot(documentRootId)].forEach((p) =>
+                this.unindexGroupPermission(p)
+            );
+            this.permissionsLoadedForDocumentRootIds.delete(documentRootId);
+        });
     }
 
     @action
@@ -267,7 +265,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         this.withAbortController(`destroy-${permission.id}`, async (signal) => {
             return deleteUserPermissionApi(permission.id, signal.signal).then(
                 action(({ data }) => {
-                    this.userPermissions.remove(permission);
+                    this.unindexUserPermission(permission);
                 })
             );
         });
@@ -281,7 +279,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         this.withAbortController(`destroy-${permission.id}`, async (signal) => {
             return deleteGroupPermissionApi(permission.id, signal.signal).then(
                 action(({ data }) => {
-                    this.groupPermissions.remove(permission);
+                    this.unindexGroupPermission(permission);
                 })
             );
         });
@@ -346,9 +344,30 @@ class PermissionStore extends iStore<`update-${string}`> {
 
     @action
     cleanup() {
-        this.userPermissions.clear();
-        this.groupPermissions.clear();
+        this.userPermissionsById.clear();
+        this.groupPermissionsById.clear();
+        this.userPermissionsByRoot.clear();
+        this.groupPermissionsByRoot.clear();
         this.permissionsLoadedForDocumentRootIds.clear();
+    }
+
+    // A stale instance must not unindex the permission that replaced it under the same id.
+    @action
+    private unindexUserPermission(permission: UserPermission) {
+        if (this.userPermissionsById.get(permission.id) !== permission) {
+            return;
+        }
+        this.userPermissionsById.delete(permission.id);
+        this.userPermissionsByRoot.remove(permission.documentRootId, permission);
+    }
+
+    @action
+    private unindexGroupPermission(permission: GroupPermission) {
+        if (this.groupPermissionsById.get(permission.id) !== permission) {
+            return;
+        }
+        this.groupPermissionsById.delete(permission.id);
+        this.groupPermissionsByRoot.remove(permission.documentRootId, permission);
     }
 }
 
