@@ -2,7 +2,6 @@ import { Document, DocumentType } from '../api/document';
 import { DocumentRootUpdate } from '../api/documentRoot';
 import { GroupPermission, UserPermission } from '../api/permission';
 import { User } from '../api/user';
-import { rootStore } from '../stores/rootStore';
 import { StudentGroup } from './studentGroup';
 
 export enum IoEvent {
@@ -143,12 +142,3 @@ export interface ClientToServerEvents {
     [IoClientEvent.ACTION]: (action: Action, callback: (ok: boolean) => void) => void;
     [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDynamicDocument) => void;
 }
-
-export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore | `viewStore#${string}` } = {
-    User: 'userStore',
-    Document: 'documentRootStore',
-    UserPermission: 'permissionStore',
-    GroupPermission: 'permissionStore',
-    DocumentRoot: 'documentRootStore',
-    StudentGroup: 'studentGroupStore'
-} as const;
