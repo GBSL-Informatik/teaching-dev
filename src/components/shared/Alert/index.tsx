@@ -11,6 +11,7 @@ interface Props {
     type?: AlertType;
     title?: string;
     style?: React.CSSProperties;
+    role?: React.AriaRole;
     onDiscard?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -20,6 +21,7 @@ const Alert = observer((props: Props) => {
             className={clsx(styles.alert, 'alert', `alert--${props.type || 'primary'}`, props.className)}
             style={props.style}
             title={props.title}
+            role={props.role}
         >
             {props.onDiscard && (
                 <button

@@ -27,6 +27,7 @@ const OfflineDbWarning = observer(() => {
         <Alert
             type={problem === 'blocked' ? 'warning' : 'danger'}
             className={styles.warning}
+            role="alert"
             onDiscard={handleDiscard}
         >
             {MESSAGES[problem]}
