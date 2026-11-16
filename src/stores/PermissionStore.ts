@@ -36,6 +36,7 @@ class PermissionStore extends iStore<`update-${string}`> {
     private readonly groupPermissionsById = observable.map<string, GroupPermission>([], { deep: false });
     private readonly userPermissionsByRoot = new GroupedIndex<UserPermission>();
     private readonly groupPermissionsByRoot = new GroupedIndex<GroupPermission>();
+    private readonly groupPermissionsByGroupId = new GroupedIndex<GroupPermission>();
     // A map instead of a set: ObservableSet.has() tracks the whole set, see AGENTS.md.
     private readonly loadedDocumentRootIds = observable.map<string, true>();
 
@@ -74,6 +75,10 @@ class PermissionStore extends iStore<`update-${string}`> {
 
     groupPermissionsByDocumentRoot(documentRootId?: string): readonly GroupPermission[] {
         return this.groupPermissionsByRoot.get(documentRootId);
+    }
+
+    groupPermissionsByGroup(groupId?: string): readonly GroupPermission[] {
+        return this.groupPermissionsByGroupId.get(groupId);
     }
 
     permissionsByDocumentRoot(documentRootId?: string): (UserPermission | GroupPermission)[] {
@@ -118,6 +123,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         }
         this.groupPermissionsById.set(groupPermission.id, groupPermission);
         this.groupPermissionsByRoot.add(groupPermission.documentRootId, groupPermission);
+        this.groupPermissionsByGroupId.add(groupPermission.groupId, groupPermission);
     }
 
     @action
@@ -351,6 +357,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         this.groupPermissionsById.clear();
         this.userPermissionsByRoot.clear();
         this.groupPermissionsByRoot.clear();
+        this.groupPermissionsByGroupId.clear();
         this.loadedDocumentRootIds.clear();
     }
 
@@ -371,6 +378,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         }
         this.groupPermissionsById.delete(permission.id);
         this.groupPermissionsByRoot.remove(permission.documentRootId, permission);
+        this.groupPermissionsByGroupId.remove(permission.groupId, permission);
     }
 }
 

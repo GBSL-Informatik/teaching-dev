@@ -312,7 +312,7 @@ class StudentGroup {
 
     @computed
     get permissions() {
-        return this.store.root.permissionStore.groupPermissions.filter((p) => p.groupId === this.id);
+        return this.store.root.permissionStore.groupPermissionsByGroup(this.id);
     }
 
     @computed
