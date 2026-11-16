@@ -82,6 +82,7 @@ export const useDocumentRoot = <Type extends DocumentType>(
         );
         return () => {
             disposer();
+            // Only remove dummies with a generated id (useDummyId): removing by `id` would remove loaded models.
             documentRootStore.removeFromStore(defaultRootDocId, true);
         };
     }, [documentRootStore, id, loadOnlyType]);
