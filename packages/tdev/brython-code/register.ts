@@ -24,6 +24,7 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'script',
         factory: createModel,
+        defaultMeta: new ScriptMeta({}),
         preferredInRoot: true,
         fileExtensions: [
             {

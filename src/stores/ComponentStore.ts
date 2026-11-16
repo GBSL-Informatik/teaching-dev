@@ -43,6 +43,10 @@ export interface EditorComponent<T extends CodeType = CodeType> {
      */
     Meta?: React.ComponentType<EditorComponentProps<T>>;
 
+    /**
+     * Creates the meta of a code block from its props.
+     * The default meta is registered with `registerDocumentType`.
+     */
     createModelMeta: (props: Partial<MetaInit>) => iCodeMeta<T>;
     codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => T | undefined;
 }
@@ -66,11 +70,8 @@ class ComponentStore {
     }
 
     @computed
-    get defaultMeta() {
-        return [
-            ...[...this.components.values()].map((comp) => comp.defaultMeta),
-            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({}))
-        ];
+    get containerDefaultMetas() {
+        return [...this.components.values()].map((comp) => comp.defaultMeta);
     }
 
     @computed

@@ -89,7 +89,7 @@ export class DocumentRootStore extends iStore {
         return [
             UnknownDefaultMeta,
             ...this.root.documentStore.defaultMetas,
-            ...this.root.componentStore.defaultMeta
+            ...this.root.componentStore.containerDefaultMetas
         ];
     }
 

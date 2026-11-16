@@ -29,6 +29,7 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'pyodide_code',
         factory: createModel,
+        defaultMeta: new ModelMeta({}),
         fileExtensions: [
             {
                 name: 'Python',
