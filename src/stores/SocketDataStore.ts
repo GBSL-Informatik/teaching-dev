@@ -56,6 +56,9 @@ export class SocketDataStore extends iStore<'ping'> {
      */
     private socket: TypedSocket | undefined = undefined;
 
+    /**
+     * Only set between the socket's 'connect' and 'disconnect' events, so `isLive` can be derived from it.
+     */
     @observable accessor socketId: string | undefined = undefined;
 
     @observableRef accessor actionRequest: Action['action'] | undefined = undefined;
@@ -342,14 +345,15 @@ export class SocketDataStore extends iStore<'ping'> {
         );
         socket.on(
             'disconnect',
+            // The api rejects an invalid one-time token with an 'io server disconnect', which socket.io
+            // does not retry: a new login or the LivenessChecker in Root.tsx reconnects.
             action(() => {
                 delete api.defaults.headers.common[SOCKET_ID_HEADER];
                 this.socketId = undefined;
             })
         );
         socket.on('connect_error', (err) => {
-            // socket.active is false when the server rejected the connection: socket.io won't retry then
-            console.log('connection error', socket.active ? 'reconnecting...' : 'rejected', err);
+            console.log('connection error', err);
         });
         socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
         socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
