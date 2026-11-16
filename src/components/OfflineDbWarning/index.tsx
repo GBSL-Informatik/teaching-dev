@@ -9,7 +9,7 @@ const MESSAGES: Record<OfflineDbProblem, string> = {
     blocked:
         'Die Website ist in einem anderen Tab mit einer älteren Version geöffnet. Schliesse diesen Tab, damit deine Änderungen gespeichert werden können.',
     outdated:
-        'Die Website wurde in einem anderen Tab aktualisiert. Lade diese Seite neu, damit deine Änderungen gespeichert werden.',
+        'Deine gespeicherten Daten wurden in einem anderen Tab aktualisiert oder gelöscht. Lade diese Seite neu, damit deine Änderungen gespeichert werden.',
     unavailable:
         'Der lokale Speicher deines Browsers ist nicht verfügbar, z.B. weil Website-Daten blockiert sind. Deine Änderungen können nicht gespeichert werden.',
     migrationFailed:

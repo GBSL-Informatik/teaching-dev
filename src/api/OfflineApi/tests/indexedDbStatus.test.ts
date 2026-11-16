@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { openDB } from 'idb';
+import { deleteDB, openDB } from 'idb';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DbStatus } from '../Adapter';
 import IndexedDbAdapter from '../Adapter/IndexedDb';
@@ -135,5 +135,16 @@ describe('IndexedDbAdapter status', () => {
 
         expect(statuses).toEqual(['opening', 'ready', 'outdated']);
         newerTab.close();
+    });
+
+    it('reports outdated when another tab deletes the db', async () => {
+        const name = uniqueDbName();
+        const adapter = new IndexedDbAdapter(name);
+        const statuses = recordStatuses(adapter);
+        await settledStatus(adapter);
+
+        await deleteDB(name);
+
+        expect(statuses).toEqual(['opening', 'ready', 'outdated']);
     });
 });

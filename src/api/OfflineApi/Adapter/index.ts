@@ -34,7 +34,7 @@ export interface DocumentsTransaction {
 
 /**
  * `blocked`: another tab keeps an older version of the db open, so it cannot be upgraded.
- * `outdated`: another tab upgraded the db, so this tab closed its connection.
+ * `outdated`: another tab upgraded or deleted the db, so this tab closed its connection.
  */
 export type DbStatus = 'opening' | 'ready' | 'blocked' | 'outdated' | 'unavailable' | 'migrationFailed';
 
