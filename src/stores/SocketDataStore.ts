@@ -36,6 +36,17 @@ const SOCKET_ID_HEADER = 'x-metadata-sid';
 const RecordsToCreate: DocumentType[] = ['dir', 'file', 'mdx_comment', 'dynamic_document_roots'] as const;
 type PrimitiveCmsStore = { handleSettingsChange: (settings: CmsSettings) => void };
 
+const fetchSocketAuth = async (): Promise<{ token?: string }> => {
+    const { data, error } = await authClient.oneTimeToken.generate().catch((e) => {
+        return { data: undefined, error: e };
+    });
+    if (error || !data?.token) {
+        console.log('cannot get one-time-token', error);
+        return {};
+    }
+    return { token: data.token };
+};
+
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
 
@@ -109,7 +120,7 @@ export class SocketDataStore extends iStore<'ping'> {
         this.isLive = isLive;
     }
 
-    async connect() {
+    connect() {
         if (OFFLINE_API) {
             if (!this.isLive) {
                 this.setLiveState(true);
@@ -120,22 +131,11 @@ export class SocketDataStore extends iStore<'ping'> {
             return;
         }
 
-        const { data, error } = await authClient.oneTimeToken.generate().catch((e) => {
-            return { data: { token: undefined }, error: e };
-        });
-        if (error || !data?.token) {
-            console.log('cannot get one-time-token', error);
-            setTimeout(() => this.connect(), 1000);
-            return;
-        }
-        const ws_url = BACKEND_URL;
-        const socket = io(ws_url, {
+        const socket = io(BACKEND_URL, {
             autoConnect: false,
-            auth: {
-                token: data.token
-            },
-            transports: ['websocket', 'webtransport'],
-            reconnection: false
+            // socket.io calls this on every (re)connect, so each attempt sends a fresh one-time token
+            auth: (cb) => fetchSocketAuth().then(cb),
+            transports: ['websocket', 'webtransport']
         });
 
         this._connect(socket);
@@ -173,21 +173,17 @@ export class SocketDataStore extends iStore<'ping'> {
 
         socket.on(
             'disconnect',
-            action((reason) => {
+            action(() => {
                 this.socket = undefined;
                 delete api.defaults.headers.common[SOCKET_ID_HEADER];
                 this.setLiveState(false);
-                if (reason !== 'io server disconnect' && reason !== 'io client disconnect') {
-                    // an error happened, try to reconnect
-                    this.reconnect();
-                }
             })
         );
         socket.on(
             'connect_error',
             action((err) => {
-                console.log('connection error', err);
-                // TODO: should we try to connect again in 1s?
+                // socket.active is false when the server rejected the connection: socket.io won't retry then
+                console.log('connection error', socket.active ? 'reconnecting...' : 'rejected', err);
             })
         );
         socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
