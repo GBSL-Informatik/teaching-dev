@@ -86,7 +86,11 @@ export class RootStore {
 
 export const rootStore = Object.freeze(new RootStore());
 
-// a hot reload replaces the rootStore: close the old socket, otherwise it stays connected
-import.meta.webpackHot?.dispose(() => rootStore.socketStore.cleanup());
+// A hot reload replaces the rootStore: close the old socket, otherwise it stays connected.
+// No `?.` here: rspack 1.7 compiles `import.meta.webpackHot?.dispose` to `undefined(...)` in production.
+if (import.meta.webpackHot) {
+    import.meta.webpackHot.dispose(() => rootStore.socketStore.cleanup());
+}
+
 export const storesContext = React.createContext(rootStore);
 export const StoresProvider = storesContext.Provider;
