@@ -7,8 +7,6 @@ import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 import RouteTable, { type OfflineRouteHandler } from '../RouteTable';
 import { expectRejection } from './offlineApi';
 
-vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
-vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
 vi.mock('@tdev-api/base', () => ({ default: {} }));
 
 const db = {} as DbAdapter;

@@ -10,9 +10,7 @@ import { createOfflineAdapter } from '../offlineAdapter';
 import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 
 /**
- * Test files must mock the docusaurus runtime before importing this helper:
- * vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
- * vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
+ * Test files must mock the api instance, which needs the docusaurus runtime, before importing this helper:
  * vi.mock('@tdev-api/base', () => ({ default: {} }));
  */
 export const DB_MODES = ['memory', 'indexedDB'] as const;
@@ -26,7 +24,7 @@ const createDb = (mode: DbMode): DbAdapter => {
         return new MemoryDbAdapter();
     }
     indexedDbCount += 1;
-    return new IndexedDbAdapter(`offline-api-test-${indexedDbCount}`, true);
+    return new IndexedDbAdapter(`offline-api-test-${indexedDbCount}`);
 };
 
 export const createOfflineApi = (mode: DbMode, user: User = DEFAULT_OFFLINE_USER) => {

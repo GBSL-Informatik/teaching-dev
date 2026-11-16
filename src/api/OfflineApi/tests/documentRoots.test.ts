@@ -5,8 +5,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 import { createOfflineApi, DB_MODES } from './offlineApi';
 
-vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
-vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
 vi.mock('@tdev-api/base', () => ({ default: {} }));
 
 type Api = ReturnType<typeof createOfflineApi>['api'];

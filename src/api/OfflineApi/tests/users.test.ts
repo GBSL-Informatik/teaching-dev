@@ -3,8 +3,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 import { createOfflineApi, expectRejection, STUDENT } from './offlineApi';
 
-vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
-vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
 vi.mock('@tdev-api/base', () => ({ default: {} }));
 
 // The user routes do not touch the db, so one db mode is enough.

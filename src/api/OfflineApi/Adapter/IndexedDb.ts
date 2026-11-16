@@ -17,8 +17,7 @@ class IndexedDbAdapter implements DbAdapter {
     private dbPromise: Promise<IDBPDatabase<DBSchema>>;
     readonly mode = 'indexedDB';
 
-    // Retain the constructor argument for existing callers; every mode now uses the same schema.
-    constructor(dbName: string, _initializeStores: boolean = false) {
+    constructor(dbName: string) {
         this.dbName = dbName;
         this.dbPromise = this.initDB();
         void this.dbPromise.catch((error) => console.error('Failed to initialize IndexedDB:', error));
