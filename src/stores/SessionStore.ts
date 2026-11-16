@@ -16,7 +16,7 @@ export class SessionStore extends iStore {
     @observable accessor currentUserId: string | undefined;
     @observable accessor storageSyncInitialized = false;
     @observable accessor localDbStatus: DbStatus = 'opening';
-    @observable accessor dismissedOfflineDbProblem: OfflineDbProblem | undefined;
+    @observable accessor offlineDbWarningDismissed = false;
 
     fileSystemDirectoryHandles = observable.map<string, FileSystemDirectoryHandle>([], { deep: false });
 
@@ -47,8 +47,8 @@ export class SessionStore extends iStore {
     }
 
     @action
-    dismissOfflineDbProblem() {
-        this.dismissedOfflineDbProblem = this.offlineDbProblem;
+    dismissOfflineDbWarning() {
+        this.offlineDbWarningDismissed = true;
     }
 
     /** Why the offline api cannot save changes, if it keeps them in the local db. */

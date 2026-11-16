@@ -19,8 +19,8 @@ const MESSAGES: Record<OfflineDbProblem, string> = {
 const OfflineDbWarning = observer(() => {
     const sessionStore = useStore('sessionStore');
     const problem = sessionStore.offlineDbProblem;
-    const handleDiscard = React.useCallback(() => sessionStore.dismissOfflineDbProblem(), [sessionStore]);
-    if (!problem || problem === sessionStore.dismissedOfflineDbProblem) {
+    const handleDiscard = React.useCallback(() => sessionStore.dismissOfflineDbWarning(), [sessionStore]);
+    if (!problem || sessionStore.offlineDbWarningDismissed) {
         return null;
     }
     return (
