@@ -1,3 +1,4 @@
+/// <reference types="@rspack/core/module" />
 import { AdminStore } from '@tdev-stores/AdminStore';
 import { DocumentRootStore } from '@tdev-stores/DocumentRootStore';
 import DocumentStore from '@tdev-stores/DocumentStore';
@@ -84,5 +85,8 @@ export class RootStore {
 }
 
 export const rootStore = Object.freeze(new RootStore());
+
+// a hot reload replaces the rootStore: close the old socket, otherwise it stays connected
+import.meta.webpackHot?.dispose(() => rootStore.socketStore.cleanup());
 export const storesContext = React.createContext(rootStore);
 export const StoresProvider = storesContext.Provider;
