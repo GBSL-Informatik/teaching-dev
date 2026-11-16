@@ -86,11 +86,7 @@ export class DocumentRootStore extends iStore {
 
     @computed
     get defaultMetas(): TypeMeta<DocumentType>[] {
-        return [
-            UnknownDefaultMeta,
-            ...this.root.documentStore.defaultMetas,
-            ...this.root.componentStore.containerDefaultMetas
-        ];
+        return [UnknownDefaultMeta, ...this.root.documentStore.defaultMetas];
     }
 
     @action

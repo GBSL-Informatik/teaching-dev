@@ -13,12 +13,10 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'simple_chat',
         factory: createSimpleChat,
+        defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
         createOnNewRecord: true
     });
-    rootStore.componentStore.registerContainerComponent('simple_chat', {
-        defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
-        component: SimpleChat
-    });
+    rootStore.componentStore.registerContainerComponent('simple_chat', SimpleChat);
 };
 
 register();

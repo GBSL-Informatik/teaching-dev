@@ -122,6 +122,10 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             .filter((meta) => !!meta);
     }
 
+    defaultMetaOf<T extends DocumentType>(type: T): TypeMeta<T> | undefined {
+        return this.documentTypeConfigs.get(type)?.defaultMeta as TypeMeta<T> | undefined;
+    }
+
     @computed
     get taskableTypes(): Set<DocumentType> {
         const taskableConfigs = [...this.documentTypeConfigs.values()].filter((config) => config.taskable);

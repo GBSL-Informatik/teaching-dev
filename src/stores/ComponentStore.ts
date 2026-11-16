@@ -7,7 +7,6 @@ import {
     type DocumentType
 } from '@tdev-api/document';
 import { CodeMeta } from '@tdev-models/documents/Code';
-import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { computed } from 'mobx';
 import React from 'react';
@@ -17,11 +16,6 @@ export type LiveCode = `live_${string}`;
 
 export interface ContainerProps<T extends ContainerType = ContainerType> {
     documentContainer: ContainerTypeModelMapping[T];
-}
-
-export interface ContainerComponent<T extends ContainerType = ContainerType> {
-    defaultMeta: ContainerMeta<T>;
-    component: React.ComponentType<ContainerProps<T>>;
 }
 
 export interface EditorComponentProps<T extends CodeType = CodeType> {
@@ -53,7 +47,7 @@ export interface EditorComponent<T extends CodeType = CodeType> {
 
 class ComponentStore {
     readonly root: RootStore;
-    components = new Map<ContainerType, ContainerComponent>();
+    containerComponents = new Map<ContainerType, React.ComponentType<ContainerProps>>();
     editorComponents = new Map<CodeType, EditorComponent>();
     documentViews = new Map<DocumentType, React.ComponentType<{ document: DocumentModelType }>>();
 
@@ -61,29 +55,18 @@ class ComponentStore {
         this.root = root;
     }
 
-    getComponent<T extends ContainerType>(type: T): ContainerComponent<T> | undefined {
-        return this.components.get(type) as ContainerComponent<T> | undefined;
+    containerComponent<T extends ContainerType>(type: T): React.ComponentType<ContainerProps<T>> | undefined {
+        return this.containerComponents.get(type) as React.ComponentType<ContainerProps<T>> | undefined;
     }
 
-    registerContainerComponent<T extends ContainerType>(type: T, component: ContainerComponent<T>) {
-        this.components.set(type, component as ContainerComponent<any>);
-    }
-
-    @computed
-    get containerDefaultMetas() {
-        return [...this.components.values()].map((comp) => comp.defaultMeta);
-    }
-
-    @computed
-    get registeredContainerTypes(): ContainerType[] {
-        return [...this.components.keys()];
-    }
-
-    isValidContainerType(type?: string): type is ContainerType {
-        if (!type) {
-            return false;
-        }
-        return this.components.has(type as ContainerType);
+    /**
+     * The default meta of a container type is registered with `registerDocumentType`.
+     */
+    registerContainerComponent<T extends ContainerType>(
+        type: T,
+        component: React.ComponentType<ContainerProps<T>>
+    ) {
+        this.containerComponents.set(type, component as React.ComponentType<ContainerProps>);
     }
 
     editorComponent<T extends CodeType>(type: T): EditorComponent<T> | undefined {

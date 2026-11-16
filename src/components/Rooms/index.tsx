@@ -59,7 +59,7 @@ interface RoomSwitcherProps {
 const RoomSwitcher = observer((props: RoomSwitcherProps) => {
     const { dynamicRoot, docContainerId } = props;
     const componentStore = useStore('componentStore');
-    const RoomComp = componentStore.getComponent(dynamicRoot.containerType)?.component;
+    const RoomComp = componentStore.containerComponent(dynamicRoot.containerType);
     const socketStore = useStore('socketStore');
     React.useEffect(() => {
         socketStore.joinRoom(docContainerId);
@@ -80,7 +80,6 @@ interface Props {
 }
 
 const RoomComponent = observer((props: Props): React.ReactNode => {
-    const componentStore = useStore('componentStore');
     const { dynamicRoot, docContainerId } = props;
     React.useEffect(() => {
         if (dynamicRoot && dynamicRoot.linkedDocumentContainersMap.size === 0) {
@@ -88,8 +87,7 @@ const RoomComponent = observer((props: Props): React.ReactNode => {
         }
     }, [dynamicRoot, docContainerId]);
 
-    const [meta] = React.useState(componentStore.getComponent(dynamicRoot.containerType)!.defaultMeta);
-    if (!dynamicRoot || !meta || !dynamicRoot.documentRootIds.has(docContainerId)) {
+    if (!dynamicRoot || !dynamicRoot.documentRootIds.has(docContainerId)) {
         return <NoRoom />;
     }
     if (NoneAccess.has(dynamicRoot.root?.permission)) {
