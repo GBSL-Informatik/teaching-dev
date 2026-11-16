@@ -137,7 +137,7 @@ class Quiz extends iAssessable<AssessableType> implements iAssessable<Assessable
 
     @computed
     get questions(): iAssessable<AssessableType>[] {
-        const docs = (this.root?.allDocuments ?? []) as iAssessable<AssessableType>[];
+        const docs = (this.root?.allDocuments ?? []) as readonly iAssessable<AssessableType>[];
         return docs.filter(
             (doc) => doc.authorId === this.authorId && doc.qid && this.questionIds.has(doc.qid)
         ) as iAssessable<AssessableType>[];

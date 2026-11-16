@@ -37,10 +37,10 @@ import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
+import GroupedIndex from '@tdev-stores/utils/GroupedIndex';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
 import { action, computed, observable } from 'mobx';
-import { computedFn } from 'mobx-utils';
 import { v4 as uuidv4 } from 'uuid';
 import { DefaultExtensions, FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
@@ -117,7 +117,10 @@ const FactoryDefault: [DocumentType, Factory][] = [
 
 class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `update-${string}`> {
     readonly root: RootStore;
-    documents = observable.array<DocumentModelType>([]);
+    private readonly documentsById = observable.map<string, DocumentModelType>([], { deep: false });
+    private readonly documentsByRoot = new GroupedIndex<DocumentModelType>();
+    private readonly documentsByParent = new GroupedIndex<DocumentModelType>();
+    private readonly documentsByType = new GroupedIndex<DocumentModelType>();
     factories = new Map<DocumentType, Factory>(FactoryDefault);
     fileExtensions = new Map<DocumentType, FileConfig<DocumentType>[]>(
         Object.entries(DefaultExtensions) as [DocumentType, FileConfig<DocumentType>[]][]
@@ -128,15 +131,17 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
         this.root = root;
     }
 
-    find = computedFn(
-        function (this: DocumentStore, id?: string | null): DocumentModelType | undefined {
-            if (!id) {
-                return undefined;
-            }
-            return this.documents.find((d) => d.id === id);
-        },
-        { keepAlive: true }
-    );
+    @computed
+    get documents(): DocumentModelType[] {
+        return [...this.documentsById.values()];
+    }
+
+    find(id?: string | null): DocumentModelType | undefined {
+        if (!id) {
+            return undefined;
+        }
+        return this.documentsById.get(id);
+    }
 
     registerFileExtension<T extends DocumentType>(type: T, config: FileConfig<T> | FileConfig<T>[]) {
         const newConfig = (Array.isArray(config) ? config : [config]).map((c) => ({
@@ -171,38 +176,27 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
 
     @action
     addDocument(document: DocumentModelType) {
-        this.documents.push(document);
+        const existing = this.documentsById.get(document.id);
+        if (existing) {
+            this.unindexDocument(existing);
+        }
+        this.documentsById.set(document.id, document);
+        this.documentsByRoot.add(document.documentRootId, document);
+        this.documentsByParent.add(document.parentId, document);
+        this.documentsByType.add(document.type, document);
     }
 
-    findByDocumentRoot = computedFn(
-        function (this: DocumentStore, documentRootId?: string) {
-            if (!documentRootId) {
-                return [];
-            }
-            return this.documents.filter((d) => d.documentRootId === documentRootId);
-        },
-        { keepAlive: true }
-    );
+    findByDocumentRoot(documentRootId?: string): readonly DocumentModelType[] {
+        return this.documentsByRoot.get(documentRootId);
+    }
 
-    byDocumentType = computedFn(
-        function (this: DocumentStore, documentType: DocumentType): TypeModelMapping[typeof documentType][] {
-            if (!documentType) {
-                return [];
-            }
-            return this.documents.filter((d) => d.type === documentType);
-        },
-        { keepAlive: true }
-    );
+    byDocumentType<Type extends DocumentType>(documentType: Type): readonly TypeModelMapping[Type][] {
+        return this.documentsByType.get(documentType) as readonly TypeModelMapping[Type][];
+    }
 
-    byParentId = computedFn(
-        function (this: DocumentStore, parentId?: string) {
-            if (!parentId) {
-                return [] as DocumentModelType[];
-            }
-            return this.documents.filter((d) => d.parentId === parentId);
-        },
-        { keepAlive: true }
-    );
+    byParentId(parentId?: string): readonly DocumentModelType[] {
+        return this.documentsByParent.get(parentId);
+    }
 
     @computed
     get presentedDocuments() {
@@ -262,7 +256,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             this.removeFromStore(oldAssessable);
         }
         this.removeFromStore(old);
-        this.documents.push(model);
+        this.addDocument(model);
         return model as TypeModelMapping[Type];
     }
 
@@ -274,10 +268,14 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
         /**
          * Removes the model to the store
          */
-        if (document) {
-            this.documents.remove(document as DocumentModelType);
-            document.cleanup(cleanupDeep);
+        if (!document) {
+            return;
         }
+        // A stale instance must not unindex the model that replaced it under the same id.
+        if (this.documentsById.get(document.id) === document) {
+            this.unindexDocument(document as DocumentModelType);
+        }
+        document.cleanup(cleanupDeep);
         return document;
     }
 
@@ -532,6 +530,14 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
                 console.warn('Error updating constraints', err);
                 return undefined;
             });
+    }
+
+    @action
+    private unindexDocument(document: DocumentModelType) {
+        this.documentsById.delete(document.id);
+        this.documentsByRoot.remove(document.documentRootId, document);
+        this.documentsByParent.remove(document.parentId, document);
+        this.documentsByType.remove(document.type, document);
     }
 }
 
