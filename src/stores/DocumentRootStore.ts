@@ -23,7 +23,6 @@ import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import _ from 'es-toolkit/compat';
 import { action, computed, observable, runInAction, transaction } from 'mobx';
-import { computedFn } from 'mobx-utils';
 
 import { CmsTextMeta } from '@tdev-models/documents/CmsText';
 import { UnknownMeta } from '@tdev-models/documents/Unknown';
@@ -84,13 +83,20 @@ const DefaultMeta: TypeMeta<DocumentType>[] = [
 
 export class DocumentRootStore extends iStore {
     readonly root: RootStore;
-    documentRoots = observable.array<DocumentRoot<DocumentType>>([]);
+    private readonly documentRootsById = observable.map<string, DocumentRoot<DocumentType>>([], {
+        deep: false
+    });
     createAttempts = new Map<string, number>();
     queued = new Map<string, BatchedMeta>();
 
     constructor(root: RootStore) {
         super();
         this.root = root;
+    }
+
+    @computed
+    get documentRoots(): DocumentRoot<DocumentType>[] {
+        return [...this.documentRootsById.values()];
     }
 
     @computed
@@ -105,15 +111,11 @@ export class DocumentRootStore extends iStore {
 
     @action
     cleanupUnknownDocumentRoots(removePermissions?: boolean) {
-        const knownRoots = this.documentRoots.filter((dr) => !dr.isUnknown);
+        const unknownRoots = this.documentRoots.filter((dr) => dr.isUnknown);
         if (removePermissions) {
-            const unknownRoots = this.documentRoots.filter((dr) => dr.isUnknown);
             this.root.permissionStore.removeFromStoreByDocumentRootIds(unknownRoots.map((dr) => dr.id));
         }
-        if (knownRoots.length === this.documentRoots.length) {
-            return;
-        }
-        this.documentRoots.replace(knownRoots);
+        unknownRoots.forEach((dr) => this.documentRootsById.delete(dr.id));
     }
 
     @action
@@ -122,28 +124,19 @@ export class DocumentRootStore extends iStore {
         config: { cleanup?: boolean; deep?: boolean } = {}
     ) {
         const old = this.find(documentRoot.id);
-        if (old) {
-            this.documentRoots.remove(old);
-            if (config.cleanup) {
-                this.cleanupDocumentRoot(old, config.deep);
-            }
+        if (old && config.cleanup) {
+            this.cleanupDocumentRoot(old, config.deep);
         }
-        this.documentRoots.push(documentRoot);
+        this.documentRootsById.set(documentRoot.id, documentRoot);
         return documentRoot;
     }
 
-    find = computedFn(
-        function <Type extends DocumentType = DocumentType>(
-            this: DocumentRootStore,
-            id?: string
-        ): DocumentRoot<Type> | undefined {
-            if (!id) {
-                return;
-            }
-            return this.documentRoots.find((d) => d.id === id) as DocumentRoot<Type> | undefined;
-        },
-        { keepAlive: true }
-    );
+    find<Type extends DocumentType = DocumentType>(id?: string): DocumentRoot<Type> | undefined {
+        if (!id) {
+            return;
+        }
+        return this.documentRootsById.get(id) as DocumentRoot<Type> | undefined;
+    }
 
     /**
      *
@@ -432,7 +425,7 @@ export class DocumentRootStore extends iStore {
     removeFromStore(documentRootId: string, cleanup: boolean = true) {
         const docRoot = this.find(documentRootId);
         if (docRoot) {
-            this.documentRoots.remove(docRoot);
+            this.documentRootsById.delete(docRoot.id);
             if (cleanup) {
                 this.cleanupDocumentRoot(docRoot);
             }
