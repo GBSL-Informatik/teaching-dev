@@ -83,7 +83,7 @@ Use mobx for state management and only use local React component state for compo
 
 ## Skills
 
-Task-specific instructions live in skills, following the [Agent Skills](https://agentskills.io) format. Read the matching `SKILL.md` before starting one of these tasks:
+Task-specific instructions live in skills, following the [Agent Skills](https://agentskills.io) format. Read the matching `SKILL.md` before starting one of these tasks. Claude Code looks for skills in `.claude/skills`, which is not committed: link it once with `mkdir -p .claude && ln -s ../.agents/skills .claude/skills`.
 
 - [`code-style`](.agents/skills/code-style/SKILL.md) - Write or modify code that humans can easily review
 - [`mdx-docs`](.agents/skills/mdx-docs/SKILL.md) - Write or edit Markdown and MDX documentation using Teaching Dev conventions

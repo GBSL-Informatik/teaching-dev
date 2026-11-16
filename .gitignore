@@ -29,5 +29,5 @@ yarn-error.log*
 .codex
 *.gitignore.*
 
-# `ln -s .agents/skills .claude/skills`
+# `mkdir -p .claude && ln -s ../.agents/skills .claude/skills` (see AGENTS.md)
 .claude/skills
