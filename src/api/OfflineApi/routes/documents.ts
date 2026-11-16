@@ -228,23 +228,16 @@ const validConstraints = (input: UniquenessConstraints | undefined) => {
     return constraints;
 };
 
-/**
- * Answers a uniqueness conflict of the db like the backend, which leaves update and relink
- * conflicts to its generic 500 error handler.
- */
+/** The backend leaves update and relink conflicts of the db to its generic 500 error handler. */
 const withConstraintErrors = <TBody>(handler: OfflineRouteHandler<TBody>): OfflineRouteHandler<TBody> => {
     return async (request) => {
         try {
             return await handler(request);
         } catch (error) {
-            if (!isDocumentConstraintError(error)) {
-                throw error;
+            if (isDocumentConstraintError(error)) {
+                throw new OfflineHttpError(500, 'Unique constraint violation');
             }
-            return {
-                status: 500,
-                statusText: 'Unique constraint violation',
-                data: { errors: [{ name: error.name, message: 'Unique constraint violation' }] }
-            };
+            throw error;
         }
     };
 };

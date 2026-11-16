@@ -33,7 +33,7 @@ export const createOfflineAdapter = (
         const match = routes.match(method, url.pathname);
         if (!match) {
             console.warn(`Offline api: no route for ${method} ${url.pathname}`);
-            return settle(config, { status: 404, statusText: 'No offline route', data: null });
+            return settle(config, new OfflineHttpError(404, 'No offline route').toResponse());
         }
         const request = { params: match.params, query: url.searchParams, data, db, user: currentUser() };
         const response = await runHandler(match, request);
@@ -51,7 +51,7 @@ const runHandler = async (match: RouteMatch, request: OfflineRequest): Promise<O
             return error.toResponse();
         }
         console.error('Offline api: route handler failed', error);
-        return { status: 500, statusText: 'Offline handler failed', data: null };
+        return new OfflineHttpError(500, 'Offline handler failed').toResponse();
     }
 };
 

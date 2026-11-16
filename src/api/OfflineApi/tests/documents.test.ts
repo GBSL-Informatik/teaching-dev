@@ -315,7 +315,7 @@ describe.each(DB_MODES)('offline documents endpoints (%s db)', (mode) => {
             expect(error).toMatchObject({ errors: [{ message: '[403] Not authorized' }] });
         });
 
-        it('answers a uniqueness conflict with the backend generic 500', async () => {
+        it('answers a uniqueness conflict with 500, like the backend', async () => {
             const { api } = createOfflineApi(mode);
             await createDocument(api, { uniqOnRoot: 'main' });
             const other = await createDocument(api);
@@ -325,9 +325,7 @@ describe.each(DB_MODES)('offline documents endpoints (%s db)', (mode) => {
                 500
             );
 
-            expect(error).toEqual({
-                errors: [{ name: 'ConstraintError', message: 'Unique constraint violation' }]
-            });
+            expect(error).toMatchObject({ errors: [{ message: '[500] Unique constraint violation' }] });
         });
     });
 

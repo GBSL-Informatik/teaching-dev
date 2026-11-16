@@ -127,7 +127,8 @@ describe('offline axios adapter', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const api = createApi(() => {});
 
-        await expectRejection(api.get('/unknown'), 404);
+        const data = await expectRejection(api.get('/unknown'), 404);
+        expect(data).toMatchObject({ errors: [{ name: 'NOT FOUND', message: '[404] No offline route' }] });
         expect(warn).toHaveBeenCalledWith('Offline api: no route for GET /unknown');
         warn.mockRestore();
     });
@@ -168,7 +169,8 @@ describe('offline axios adapter', () => {
             })
         );
 
-        await expectRejection(api.get('/boom'), 500);
+        const data = await expectRejection(api.get('/boom'), 500);
+        expect(data).toMatchObject({ errors: [{ message: '[500] Offline handler failed' }] });
         error.mockRestore();
     });
 
