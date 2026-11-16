@@ -108,9 +108,7 @@ const AccessPanel = observer((props: Props) => {
                         ))}
                 </div>
             </div>
-            {!documentRoots.every((dr) => permissionStore.permissionsLoadedForDocumentRootIds.has(dr.id)) && (
-                <Loader overlay />
-            )}
+            {!documentRoots.every((dr) => permissionStore.hasLoadedPermissions(dr.id)) && <Loader overlay />}
         </div>
     );
 });

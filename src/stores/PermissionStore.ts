@@ -36,7 +36,8 @@ class PermissionStore extends iStore<`update-${string}`> {
     private readonly groupPermissionsById = observable.map<string, GroupPermission>([], { deep: false });
     private readonly userPermissionsByRoot = new GroupedIndex<UserPermission>();
     private readonly groupPermissionsByRoot = new GroupedIndex<GroupPermission>();
-    permissionsLoadedForDocumentRootIds = observable.set<string>();
+    // A map instead of a set: ObservableSet.has() tracks the whole set, see AGENTS.md.
+    private readonly loadedDocumentRootIds = observable.map<string, true>();
 
     constructor(root: RootStore) {
         super();
@@ -83,6 +84,10 @@ class PermissionStore extends iStore<`update-${string}`> {
             ...this.userPermissionsByDocumentRoot(documentRootId),
             ...this.groupPermissionsByDocumentRoot(documentRootId)
         ];
+    }
+
+    hasLoadedPermissions(documentRootId: string) {
+        return this.loadedDocumentRootIds.has(documentRootId);
     }
 
     get studentGroups() {
@@ -240,7 +245,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         } else {
             this.unindexGroupPermission(permission);
         }
-        this.permissionsLoadedForDocumentRootIds.delete(permission.documentRootId);
+        this.loadedDocumentRootIds.delete(permission.documentRootId);
     }
 
     @action
@@ -253,7 +258,7 @@ class PermissionStore extends iStore<`update-${string}`> {
             [...this.groupPermissionsByDocumentRoot(documentRootId)].forEach((p) =>
                 this.unindexGroupPermission(p)
             );
-            this.permissionsLoadedForDocumentRootIds.delete(documentRootId);
+            this.loadedDocumentRootIds.delete(documentRootId);
         });
     }
 
@@ -302,9 +307,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         const idsToLoad = forceReload
             ? documentRootIds
             : documentRootIds.filter(
-                  (id) =>
-                      !this.root.documentRootStore.find(id) ||
-                      !this.permissionsLoadedForDocumentRootIds.has(id)
+                  (id) => !this.root.documentRootStore.find(id) || !this.hasLoadedPermissions(id)
               );
         if (idsToLoad.length === 0) {
             return Promise.resolve();
@@ -335,7 +338,7 @@ class PermissionStore extends iStore<`update-${string}`> {
                                 new GroupPermission({ ...gp, documentRootId: p.id }, this)
                             );
                         });
-                        this.permissionsLoadedForDocumentRootIds.add(p.id);
+                        this.loadedDocumentRootIds.set(p.id, true);
                     });
                 })
             );
@@ -348,7 +351,7 @@ class PermissionStore extends iStore<`update-${string}`> {
         this.groupPermissionsById.clear();
         this.userPermissionsByRoot.clear();
         this.groupPermissionsByRoot.clear();
-        this.permissionsLoadedForDocumentRootIds.clear();
+        this.loadedDocumentRootIds.clear();
     }
 
     // A stale instance must not unindex the permission that replaced it under the same id.
