@@ -1,7 +1,7 @@
 import type { Document } from '@tdev-api/document';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
-import { actAsStudent, createOfflineApi, DB_MODES, expectRejection } from './offlineApi';
+import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
+import { createOfflineApi, DB_MODES, expectRejection, STUDENT } from './offlineApi';
 
 vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
 vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
@@ -26,10 +26,6 @@ const documentsOf = async (api: Api, documentRootIds = [ROOT]) => {
 };
 
 describe.each(DB_MODES)('offline documents endpoints (%s db)', (mode) => {
-    beforeEach(() => {
-        OfflineUser.reset();
-    });
-
     describe('POST /documents', () => {
         it('creates a document owned by the current user with a server-assigned id', async () => {
             const { api } = createOfflineApi(mode);
@@ -52,8 +48,7 @@ describe.each(DB_MODES)('offline documents endpoints (%s db)', (mode) => {
         });
 
         it('forbids students to create documents on behalf of others', async () => {
-            const { api } = createOfflineApi(mode);
-            actAsStudent();
+            const { api } = createOfflineApi(mode, STUDENT);
 
             const error = await expectRejection(create(api, { authorId: 'other' }, '?onBehalfOf=true'), 403);
 
@@ -71,8 +66,7 @@ describe.each(DB_MODES)('offline documents endpoints (%s db)', (mode) => {
         });
 
         it('lets students create documents on behalf of themselves', async () => {
-            const { api } = createOfflineApi(mode);
-            actAsStudent();
+            const { api } = createOfflineApi(mode, STUDENT);
 
             const { data } = await create(api, { authorId: 'student-id' }, '?onBehalfOf=true');
 

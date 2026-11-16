@@ -174,6 +174,18 @@ describe('offline axios adapter', () => {
         error.mockRestore();
     });
 
+    it('reads the current user for every request', async () => {
+        const handler = vi.fn<OfflineRouteHandler>(({ user }) => ({ data: user.id }));
+        const routes = new RouteTable();
+        routes.register('GET', '/user', handler);
+        let user = DEFAULT_OFFLINE_USER;
+        const api = axios.create({ adapter: createOfflineAdapter(routes, db, () => user) });
+
+        expect((await api.get('/user')).data).toBe(DEFAULT_OFFLINE_USER.id);
+        user = { ...DEFAULT_OFFLINE_USER, id: 'imported-user' };
+        expect((await api.get('/user')).data).toBe('imported-user');
+    });
+
     it('supports instance defaults and interceptors like the online api', async () => {
         const handler = vi.fn<OfflineRouteHandler>(() => ({ data: 'raw' }));
         const api = createApi((routes) => routes.register('GET', '/intercepted', handler));

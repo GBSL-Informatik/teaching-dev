@@ -1,4 +1,4 @@
-import { Role } from '@tdev-api/user';
+import { Role, type User } from '@tdev-api/user';
 import axios, { type AxiosError, type AxiosPromise } from 'axios';
 import 'fake-indexeddb/auto';
 import { expect } from 'vitest';
@@ -7,7 +7,7 @@ import type { DbAdapter } from '../Adapter';
 import IndexedDbAdapter from '../Adapter/IndexedDb';
 import MemoryDbAdapter from '../Adapter/MemoryDb';
 import { createOfflineAdapter } from '../offlineAdapter';
-import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
+import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 
 /**
  * Test files must mock the docusaurus runtime before importing this helper:
@@ -29,15 +29,13 @@ const createDb = (mode: DbMode): DbAdapter => {
     return new IndexedDbAdapter(`offline-api-test-${indexedDbCount}`, true);
 };
 
-export const createOfflineApi = (mode: DbMode) => {
+export const createOfflineApi = (mode: DbMode, user: User = DEFAULT_OFFLINE_USER) => {
     const db = createDb(mode);
-    const api = axios.create({ adapter: createOfflineAdapter(offlineRoutes, db, OfflineUser.getUser) });
+    const api = axios.create({ adapter: createOfflineAdapter(offlineRoutes, db, () => user) });
     return { api, db };
 };
 
-export const actAsStudent = () => {
-    OfflineUser.setUser({ ...DEFAULT_OFFLINE_USER, id: 'student-id', role: Role.STUDENT });
-};
+export const STUDENT: User = { ...DEFAULT_OFFLINE_USER, id: 'student-id', role: Role.STUDENT };
 
 export const expectRejection = async (request: AxiosPromise<unknown>, status: number) => {
     const error = await request.then(

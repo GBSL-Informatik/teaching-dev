@@ -1,8 +1,8 @@
 import { Access, type Document } from '@tdev-api/document';
 import type { DocumentRoot } from '@tdev-api/documentRoot';
 import type { Permissions } from '@tdev-api/permission';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
+import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
 import { createOfflineApi, DB_MODES } from './offlineApi';
 
 vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
@@ -20,10 +20,6 @@ const loadRoots = (api: Api, documentRootIds: string[], type?: string) =>
     api.post<DocumentRoot[]>(`/users/${DEFAULT_OFFLINE_USER.id}/documentRoots`, { documentRootIds, type });
 
 describe.each(DB_MODES)('offline documentRoots endpoints (%s db)', (mode) => {
-    beforeEach(() => {
-        OfflineUser.reset();
-    });
-
     describe('POST /users/:userId/documentRoots', () => {
         it('returns the roots in request order with their documents and full access', async () => {
             const { api } = createOfflineApi(mode);

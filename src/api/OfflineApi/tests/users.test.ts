@@ -1,7 +1,7 @@
 import type { User } from '@tdev-api/user';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_OFFLINE_USER, OfflineUser } from '../OfflineUser';
-import { actAsStudent, createOfflineApi, expectRejection } from './offlineApi';
+import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_OFFLINE_USER } from '../OfflineUser';
+import { createOfflineApi, expectRejection, STUDENT } from './offlineApi';
 
 vi.mock('@docusaurus/ExecutionEnvironment', () => ({ default: { canUseDOM: false } }));
 vi.mock('@tdev-api/config', () => ({ DB_NAME: 'test' }));
@@ -9,10 +9,6 @@ vi.mock('@tdev-api/base', () => ({ default: {} }));
 
 // The user routes do not touch the db, so one db mode is enough.
 describe('offline users endpoints', () => {
-    beforeEach(() => {
-        OfflineUser.reset();
-    });
-
     it('GET /user returns the default offline user', async () => {
         const { api } = createOfflineApi('memory');
 
@@ -21,9 +17,8 @@ describe('offline users endpoints', () => {
         expect(data).toEqual(DEFAULT_OFFLINE_USER);
     });
 
-    it('GET /user returns the user set at runtime, e.g. after an import', async () => {
-        const { api } = createOfflineApi('memory');
-        actAsStudent();
+    it('GET /user returns the user the request is made as', async () => {
+        const { api } = createOfflineApi('memory', STUDENT);
 
         const { data } = await api.get<User>('/user');
 
