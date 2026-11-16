@@ -10,7 +10,7 @@ import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
 import { authClient } from '@tdev/auth-client';
-import { action, observable, observableRef, reaction } from 'mobx';
+import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { io, Socket } from 'socket.io-client';
 import { Document, DocumentType, type ViewStoreTypeMapping } from '../api/document';
 import {
@@ -50,9 +50,13 @@ const fetchSocketAuth = async (): Promise<{ token?: string }> => {
 export class SocketDataStore extends iStore<'ping'> {
     readonly root: RootStore;
 
-    @observableRef accessor socket: TypedSocket | undefined = undefined;
+    /**
+     * The only socket of the app: socket.io reconnects it on its own, it is
+     * only replaced after cleanup().
+     */
+    private socket: TypedSocket | undefined = undefined;
 
-    @observable accessor isLive: boolean = false;
+    @observable accessor socketId: string | undefined = undefined;
 
     @observableRef accessor actionRequest: Action['action'] | undefined = undefined;
 
@@ -74,129 +78,43 @@ export class SocketDataStore extends iStore<'ping'> {
         );
     }
 
+    @computed
+    get isLive() {
+        return !!OFFLINE_API || this.socketId !== undefined;
+    }
+
     @action
     registerRecordToCreate(docType: DocumentType) {
         this.recordsToCreate.add(docType);
     }
 
-    @action
-    checkLiveState() {
-        if (OFFLINE_API) {
-            return;
-        }
-        if (this.socket?.connected) {
-            if (!this.isLive) {
-                this.setLiveState(true);
-            }
-            return;
-        }
-        this.reconnect();
-    }
-
-    @action
-    reconnect() {
-        const socket = this.socket;
-        this._disconnect(socket);
-        this.setLiveState(false);
-        this.connect();
-    }
-
-    @action
-    disconnect() {
-        this._disconnect(this.socket);
-        this.setLiveState(false);
-    }
-
-    @action
-    _disconnect(socket: TypedSocket | undefined) {
-        if (socket?.connected) {
-            socket.disconnect();
-        }
-        this.socket = undefined;
-    }
-
-    @action
-    setLiveState(isLive: boolean) {
-        this.isLive = isLive;
-    }
-
+    /**
+     * Safe to call at any time: does nothing while the socket is connected
+     * or socket.io is already reconnecting it.
+     */
     connect() {
         if (OFFLINE_API) {
-            if (!this.isLive) {
-                this.setLiveState(true);
-            }
             return;
         }
-        if (this.socket?.connected) {
+        if (!this.socket) {
+            this.socket = this.createSocket();
+        }
+        if (this.socket.active) {
             return;
         }
-
-        const socket = io(BACKEND_URL, {
-            autoConnect: false,
-            // socket.io calls this on every (re)connect, so each attempt sends a fresh one-time token
-            auth: (cb) => fetchSocketAuth().then(cb),
-            transports: ['websocket', 'webtransport']
-        });
-
-        this._connect(socket);
+        this.socket.connect();
     }
 
-    @action
-    _connect(socket: TypedSocket) {
-        this._socketConfig(socket);
-        const winSock: { tdevSockets?: Socket[] } = window as any;
-        winSock.tdevSockets = (winSock.tdevSockets || []).filter((s: Socket) => s.connected || s.active);
-        winSock.tdevSockets.forEach((s: Socket) => s.disconnect());
-        socket.connect();
-        winSock.tdevSockets.push(socket);
+    disconnect() {
+        this.socket?.disconnect();
     }
 
-    _socketConfig(socket: TypedSocket) {
-        if (!socket) {
-            return;
-        }
-        socket.on(
-            'connect',
-            action(() => {
-                if (this.socket) {
-                    this._disconnect(this.socket);
-                }
-                /**
-                 * add sid to the api headers, so that the api can broadcast messages to
-                 * the user except the initiating client.
-                 */
-                api.defaults.headers.common[SOCKET_ID_HEADER] = socket?.id;
-                this.socket = socket;
-                this.setLiveState(true);
-            })
-        );
-
-        socket.on(
-            'disconnect',
-            action(() => {
-                this.socket = undefined;
-                delete api.defaults.headers.common[SOCKET_ID_HEADER];
-                this.setLiveState(false);
-            })
-        );
-        socket.on(
-            'connect_error',
-            action((err) => {
-                // socket.active is false when the server rejected the connection: socket.io won't retry then
-                console.log('connection error', socket.active ? 'reconnecting...' : 'rejected', err);
-            })
-        );
-        socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
-        socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
-        socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
-        socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
-        socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
-        socket.on(
-            IoEvent.ACTION,
-            action((data: Action['action']) => {
-                this.actionRequest = data;
-            })
-        );
+    /**
+     * Reconnects with a fresh one-time token, e.g. after the current user changed.
+     */
+    reconnect() {
+        this.disconnect();
+        this.connect();
     }
 
     /**
@@ -216,7 +134,7 @@ export class SocketDataStore extends iStore<'ping'> {
         if (meta) {
             data.meta = meta;
         }
-        this.socket?.emit(IoClientEvent.STREAM_UPDATE, data);
+        this.connectedSocket?.emit(IoClientEvent.STREAM_UPDATE, data);
     }
 
     @action
@@ -372,14 +290,14 @@ export class SocketDataStore extends iStore<'ping'> {
 
     @action
     joinRoom(roomId: string) {
-        this.socket?.emit(IoClientEvent.JOIN_ROOM, roomId, (joined) => {
+        this.connectedSocket?.emit(IoClientEvent.JOIN_ROOM, roomId, (joined) => {
             console.log('joined room', joined ? '✅' : '❌', roomId);
         });
     }
 
     @action
     leaveRoom(roomId: string) {
-        this.socket?.emit(IoClientEvent.LEAVE_ROOM, roomId, (left: boolean) => {
+        this.connectedSocket?.emit(IoClientEvent.LEAVE_ROOM, roomId, (left: boolean) => {
             console.log('left room', left ? '✅' : '❌', roomId);
         });
     }
@@ -390,7 +308,7 @@ export class SocketDataStore extends iStore<'ping'> {
             return Promise.resolve(false);
         }
         return new Promise((resolve) => {
-            this.socket?.emit(IoClientEvent.ACTION, { roomIds, userIds, action }, (ok) => {
+            this.connectedSocket?.emit(IoClientEvent.ACTION, { roomIds, userIds, action }, (ok) => {
                 resolve(ok);
             });
         });
@@ -404,5 +322,53 @@ export class SocketDataStore extends iStore<'ping'> {
     @action
     cleanup() {
         this.disconnect();
+        this.socket = undefined;
+    }
+
+    private createSocket(): TypedSocket {
+        const socket: TypedSocket = io(BACKEND_URL, {
+            autoConnect: false,
+            // socket.io calls this on every (re)connect, so each attempt sends a fresh one-time token
+            auth: (cb) => fetchSocketAuth().then(cb),
+            transports: ['websocket', 'webtransport']
+        });
+        socket.on(
+            'connect',
+            action(() => {
+                // lets the api broadcast changes to all clients of the user except the initiating one
+                api.defaults.headers.common[SOCKET_ID_HEADER] = socket.id;
+                this.socketId = socket.id;
+            })
+        );
+        socket.on(
+            'disconnect',
+            action(() => {
+                delete api.defaults.headers.common[SOCKET_ID_HEADER];
+                this.socketId = undefined;
+            })
+        );
+        socket.on('connect_error', (err) => {
+            // socket.active is false when the server rejected the connection: socket.io won't retry then
+            console.log('connection error', socket.active ? 'reconnecting...' : 'rejected', err);
+        });
+        socket.on(IoEvent.NEW_RECORD, this.createRecord.bind(this));
+        socket.on(IoEvent.CHANGED_DOCUMENT, this.updateDocument.bind(this));
+        socket.on(IoEvent.CHANGED_RECORD, this.updateRecord.bind(this));
+        socket.on(IoEvent.DELETED_RECORD, this.deleteRecord.bind(this));
+        socket.on(IoEvent.CONNECTED_CLIENTS, this.updateConnectedClients.bind(this));
+        socket.on(
+            IoEvent.ACTION,
+            action((data: Action['action']) => {
+                this.actionRequest = data;
+            })
+        );
+        return socket;
+    }
+
+    /**
+     * socket.io buffers emits while disconnected: drop them instead, they would be stale on reconnect.
+     */
+    private get connectedSocket() {
+        return this.socket?.connected ? this.socket : undefined;
     }
 }
