@@ -76,8 +76,8 @@ Unless the code is on a hot path where performance matters, favor readability ov
 
 ## TypeScript imports
 
-After editing `.ts` or `.tsx` files:
-- Run TypeScript's Organize Imports operation on every changed file.
+After editing `.ts` or `.tsx` files where imports changed (an import was added, removed or renamed, or the last use of an imported name was removed):
+- Run TypeScript's Organize Imports operation on each of these files. Skip files whose imports did not change.
 - Use the project's TypeScript version, tsconfig, and the import-organizing
   preferences and formatting options used by VS Code.
 - Prefer an existing repository command that invokes this operation.
