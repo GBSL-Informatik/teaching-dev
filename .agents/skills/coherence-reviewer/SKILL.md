@@ -23,7 +23,8 @@ This skill is based on the essay [The Decoherence Trap](https://maevyn.codes/dec
 ## Conventions
 
 1. **Find before you build.** Before adding a mechanism, search how the codebase already solves the concern and reuse it. Established models in Teaching Dev include:
-   - packages extend the platform from their `register.ts` (`documentStore.registerDocumentType`, `viewStore.registerStore`, `socketStore.registerRecordHandler`, `componentStore.registerContainerComponent`);
+   - packages extend the platform from their `register.ts` (`documentStore.registerDocumentType`, `viewStore.registerStore`, `socketStore.registerRecordHandler`);
+   - a document type declares its config, including its `defaultMeta`, once in `registerDocumentType`; the `componentStore` only maps a type to its React components (`registerContainerComponent`, `registerEditorComponent`, `registerDocumentView`);
    - api calls live in `src/api/*.ts` and go through the shared axios instance from `@tdev-api/base`;
    - stores load data with `withAbortController` from `iStore`; components reach stores with `useStore`;
    - shared state lives in MobX stores and models, not in components.
