@@ -59,14 +59,18 @@ Folgende Klassen sind verfügbar:
 : Die Farben der Infima-Alerts.
 `.note`, `.tip`, `.caution`
 : Dieselbe Farbe wie die gleichnamige Admonition (`secondary`, `success` bzw. `warning`).
-`.red`, `.orange`, `.green`, `.blue`, `.gray`, `.grey`
-: Aliase für `danger`, `warning`, `success`, `info` bzw. `secondary`.
+`.red`, `.orange`, `.green`, `.lightBlue`, `.gray`, `.grey`, `.black`
+: Dieselben Farbnamen wie bei Buttons: `danger`, `warning`, `success`, `info`, `secondary` bzw. `primary`.
+`.blue`
+: Blau (`--ifm-color-blue`), unabhängig von der Primärfarbe der Website.
 
 ## Installation
 
 :::info[Code]
 - `src/plugins/remark-details`
 - `src/theme/Details`
+- `src/components/shared/Colors/infimaTypes.ts`
+- `.alert--blue` in `src/css/custom.scss`
 :::
 
 Das Plugin ist als `detailsPluginConfig` in den `recommendedBeforeDefaultRemarkPlugins` aus `src/siteConfig/markdownPluginConfigs.ts` enthalten. Websites ohne eigene `beforeDefaultRemarkPlugins` im `siteConfig.ts` erhalten es damit automatisch.
@@ -75,7 +79,7 @@ Das Plugin ist als `detailsPluginConfig` in den `recommendedBeforeDefaultRemarkP
 
 `colors`
 : Weitere Klassen, die eine Farbe setzen. Bestehende Klassen können damit auch umgefärbt werden.
-: Werte: `primary`, `secondary`, `success`, `info`, `warning` oder `danger`.
+: Werte: `primary`, `secondary`, `success`, `info`, `warning`, `danger` oder `blue`.
 
 Um eigene Farb-Klassen zu ergänzen, wird im `siteConfig.ts` die Standardkonfiguration des Plugins ersetzt:
 

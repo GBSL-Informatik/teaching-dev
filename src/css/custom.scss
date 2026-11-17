@@ -20,6 +20,8 @@
     --ifm-color-blue-dark: #306cce;
     --ifm-color-blue-darker: #2d66c3;
     --ifm-color-blue-darkest: #2554a0;
+    --tdev-color-blue-contrast-background: rgb(235, 242, 252);
+    --tdev-color-blue-contrast-foreground: rgb(16, 36, 69);
     --ifm-color-disabled: #6e6e6e;
     --ifm-color-violet: #8957e5;
     --ifm-color-boxed: #3348b5;
@@ -47,6 +49,8 @@
     --ifm-global-shadow-tl: 0 8px 16px 0 rgba(0, 119, 110, 0.08), 0 2px 4px 0 rgba(0, 119, 110, 0.05);
     --ifm-color-boxed: #8395ef;
     --prism-background-color: #282a36;
+    --tdev-color-blue-contrast-background: rgb(16, 36, 69);
+    --tdev-color-blue-contrast-foreground: rgb(235, 242, 252);
 
     --tdev-admonition-aufgabe-background-color: #0095ff1a;
     --tdev-admonition-aufgabe-background-color-highlight: #0095ff44;
@@ -56,6 +60,14 @@
     --tdev-admonition-definition-background-color-highlight: #4e4542;
     --tdev-admonition-definition-foreground-color: #b8e6b8;
     --tdev-admonition-definition-border-color: #6a5f5d;
+}
+
+/* Infima has no blue alert: `alert--primary` follows the site's primary color. */
+.alert--blue {
+    --ifm-alert-background-color: var(--tdev-color-blue-contrast-background);
+    --ifm-alert-background-color-highlight: rgba(53, 120, 229, 0.15);
+    --ifm-alert-foreground-color: var(--tdev-color-blue-contrast-foreground);
+    --ifm-alert-border-color: var(--ifm-color-blue-dark);
 }
 
 strong.boxed {

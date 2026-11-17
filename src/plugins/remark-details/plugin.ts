@@ -2,32 +2,24 @@ import type { BlockContent, Root, Text } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
 import type { Plugin, Transformer } from 'unified';
 import { visit } from 'unist-util-visit';
+import { InfimaTypes, type InfimaType } from '../../components/shared/Colors/infimaTypes';
 
 /**
- * The Infima alert types, which color the details like an admonition.
+ * The alert type coloring the details, used as `alert--<type>`.
+ * `blue` is not an Infima type, it is defined in `src/css/custom.scss`.
  */
-export type AlertType = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger';
+export type AlertType = InfimaType | 'blue';
 
 /**
  * Maps a directive class (e.g. `.danger` or `.red`) to the alert type it colors the details with.
- * Same colors as the Docusaurus admonitions.
+ * Same color names as the shared `Colors`, plus the Docusaurus admonition names.
  */
 export const DEFAULT_COLORS: Record<string, AlertType> = {
-    primary: 'primary',
-    secondary: 'secondary',
-    success: 'success',
-    info: 'info',
-    warning: 'warning',
-    danger: 'danger',
+    ...InfimaTypes,
+    blue: 'blue',
     note: 'secondary',
     tip: 'success',
-    caution: 'warning',
-    red: 'danger',
-    orange: 'warning',
-    green: 'success',
-    blue: 'info',
-    gray: 'secondary',
-    grey: 'secondary'
+    caution: 'warning'
 };
 
 // TODO: How to type this?

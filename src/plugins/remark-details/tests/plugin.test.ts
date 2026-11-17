@@ -343,4 +343,33 @@ describe('#details colors', () => {
           "
         `);
     });
+    it('uses the blue alert for blue and the info alert for lightBlue', async () => {
+        const input = alignLeft(`:::details[Blue]{.blue}
+            Hello world!
+            :::
+
+            :::details[Light Blue]{.lightBlue}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--blue">
+            <summary>
+              Blue
+            </summary>
+
+            Hello world!
+          </details>
+
+          <details className="alert--info">
+            <summary>
+              Light Blue
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
 });
