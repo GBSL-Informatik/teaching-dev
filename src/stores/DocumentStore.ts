@@ -6,6 +6,7 @@ import {
     linkTo as apiLinkTo,
     update as apiUpdate,
     updateConstraints as apiUpdateConstraints,
+    CodeType,
     ContainerType,
     DocumentModelType,
     Document as DocumentProps,
@@ -33,14 +34,22 @@ import { FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
 import { RegistrationOptions } from './utils/RegistrationOptions';
 
-export interface DocumentTypeConfig<T extends DocumentType> {
+/**
+ * The default meta is used for document roots whose documents are loaded without a meta, e.g. in admin views,
+ * and for the dynamic rooms created and loaded with a container type.
+ * Editor and container types rely on it, so they must register one.
+ */
+type DefaultMetaConfig<T extends DocumentType> = T extends ContainerType
+    ? { defaultMeta: ContainerMeta<T> }
+    : T extends CodeType
+      ? { defaultMeta: TypeMeta<T> }
+      : { defaultMeta?: TypeMeta<T> };
+
+export type DocumentTypeConfig<T extends DocumentType> = DocumentTypeOptions<T> & DefaultMetaConfig<T>;
+
+interface DocumentTypeOptions<T extends DocumentType> {
     type: T;
     factory: Factory<T>;
-    /**
-     * used for document roots whose documents are loaded without a meta, e.g. in admin views,
-     * and for the dynamic rooms created and loaded with a container type
-     */
-    defaultMeta?: T extends ContainerType ? ContainerMeta<T> : TypeMeta<T>;
     /** makes the type creatable as a file in the file system (`dir` and `file` documents) */
     fileExtensions?: FileConfig<T>[];
     /** add documents of this type to the store when the socket announces them as new records */

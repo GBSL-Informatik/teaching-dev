@@ -265,6 +265,7 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 `defaultMeta`
 : Meta-Daten für `DocumentRoot`s, deren Dokumente ohne Meta-Daten geladen werden, bspw. in Admin-Ansichten.
 : Bei Container-Typen ein `ContainerMeta`, mit dem auch neue dynamische Räume erstellt und geladen werden.
+: Für Editor- und Container-Typen erforderlich.
 `fileExtensions`
 : Dateiendungen, mit denen der Typ im Dateisystem (`dir` und `file`) erstellt werden kann.
 : Standard-Priorität: `10`.
@@ -281,11 +282,20 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 : Das Haupt-Dokument einer `DocumentRoot`, die auch andere Typen enthält, bspw. ein `quiz` mit seinen Antworten. Bestimmt den Typ der `DocumentRoot`, wenn sie ohne Meta-Daten geladen wird.
 : Standard: `false`.
 
-Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte und in der Konsole erscheint eine Warnung. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler`, `viewStore.registerStore` und die Registrierungen im `componentStore` (`registerContainerComponent`, `registerEditorComponent`, `registerDocumentView`), dort als drittes Argument:
+Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte vollständig und in der Konsole erscheint eine Warnung. Optionen, die nicht erneut angegeben werden, bspw. `defaultMeta` oder `fileExtensions`, gehen dabei verloren. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler`, `viewStore.registerStore` und die Registrierungen im `componentStore` (`registerContainerComponent`, `registerEditorComponent`, `registerDocumentView`), dort als drittes Argument:
 
 ```ts
+import { DefaultExtensions } from '@tdev-stores/assets/FileExtensions';
+import { ModelMeta as QuillV2Meta } from '@tdev-models/documents/QuillV2';
+import MyQuill from './models/MyQuill';
+
 rootStore.documentStore.registerDocumentType(
-    { type: 'quill_v2', factory: (data, store) => new MyQuill(data, store) },
+    {
+        type: 'quill_v2',
+        factory: (data, store) => new MyQuill(data, store),
+        defaultMeta: new QuillV2Meta({}),
+        fileExtensions: DefaultExtensions.quill_v2
+    },
     { override: true }
 );
 ```
