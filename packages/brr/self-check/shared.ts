@@ -1,5 +1,5 @@
+import { SelfCheckStateType } from '@brr/self-check/models';
 import { TypeDataMapping } from '@tdev-api/document';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
 import DocumentRoot from '@tdev-models/DocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import iSideEffect from '@tdev-models/SideEffects/iSideEffect';

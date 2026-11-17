@@ -2,11 +2,11 @@
 page_id: f632a479-cfe4-4a98-848a-a0dd0e0f6535
 ---
 
-import SelfCheckTaskState from '@tdev-components/documents/SelfCheck/SelfCheckTaskState';
-import SelfCheckSolution from '@tdev-components/documents/SelfCheck/SelfCheckSolution';
-import SelfCheckContent from '@tdev-components/documents/SelfCheck/SelfCheckContent';
-import SelfCheck from '@tdev-components/documents/SelfCheck';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
+import SelfCheckTaskState from '@brr/self-check/SelfCheckTaskState';
+import SelfCheckSolution from '@brr/self-check/SelfCheckSolution';
+import SelfCheckContent from '@brr/self-check/SelfCheckContent';
+import SelfCheck from '@brr/self-check';
+import { SelfCheckStateType } from '@brr/self-check/models';
 import Solution from '@tdev-components/documents/Solution';
 import CodeShowcase from '@tdev-components/CodeShowcase';
 
@@ -45,7 +45,7 @@ Die Interpretation der verschiedenen Zustände ist wie folgt vorgesehen:
 | :mdi[checkbox-marked-outline]{.green} Fertig                                                            | Die Bearbeitung der Aufgabe ist abgeschlossen - die eigene Antwort des Schülers ist nun vollständig und korrekt.                                                                                                 |
 
 ## Statusabhängige Sichtbarkeit
-Wenn gewisse Elemente (z.B. die Musterlösung, Hinweise, etc.) nur während bestimmten Zuständen sichtbar sein sollen, eignen sich die Komponenten `<SelfCheckSolution>` (für die Lösung; muss pro `<SelfCheck>` genau einmal vorhanden sein) und `<SelfCheckContent>` (für beliebige Inhalte). Das hier beschriebene Verhalten ist für beide Komponenten identisch. Zusätzlich stehen bei der `<SelfCheckSolution>` auch alle Parameter der [`<Solution>`](../solutions/index.mdx) zur Verfügung.
+Wenn gewisse Elemente (z.B. die Musterlösung, Hinweise, etc.) nur während bestimmten Zuständen sichtbar sein sollen, eignen sich die Komponenten `<SelfCheckSolution>` (für die Lösung; muss pro `<SelfCheck>` genau einmal vorhanden sein) und `<SelfCheckContent>` (für beliebige Inhalte). Das hier beschriebene Verhalten ist für beide Komponenten identisch. Zusätzlich stehen bei der `<SelfCheckSolution>` auch alle Parameter der [`<Solution>`](../../../gallery/lms/solutions/index.mdx) zur Verfügung.
 
 Standardmässig zeigen diese Komponenten ihren Inhalt nur in den Zuständen _Warten auf Musterlösung_ und _Korrektur_ an. Dies kann mit den Eigenschaften `visibleFrom` und `visibleTo` angepasst werden. Es stehen dafür je folgende Konstanten zur Verfügung:
 
@@ -93,7 +93,19 @@ Lösung zur zweiten Aufgabe 🥳
 </SelfCheck>
 </CodeShowcase>
 
-## Erforderliche Konfiguration
+## Installation
+
+:::info[`packages/brr/self-check`]
+Kopiere das `packages/brr/self-check`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder füge es über `updateTdev.config.yaml` hinzu.
+:::
+
+Danach muss erneut installiert werden:
+
+```bash
+yarn install
+```
+
+### Erforderliche Konfiguration
 Damit für die Selfcheck TaskStates eine TaskState-Übersicht generiert wird, muss in `docusaurus.config.ts` bei der Konfiguration des `enumerateAnswersPlugin` der Komponententyp `SelfCheckTaskState` registriert werden:
 ```ts title="docusaurus.config.ts" {4}
 [

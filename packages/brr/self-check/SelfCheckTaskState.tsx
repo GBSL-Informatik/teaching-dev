@@ -1,8 +1,8 @@
+import { SelfCheckStateType } from '@brr/self-check/models';
+import { SelfCheckContext, SelfCheckStateSideEffect } from '@brr/self-check/shared';
 import { DocumentModelType } from '@tdev-api/document';
-import Loader from '@tdev-components/Loader';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
-import { SelfCheckContext, SelfCheckStateSideEffect } from '@tdev-components/documents/SelfCheck/shared';
 import TaskStateComponent from '@tdev-components/documents/TaskState';
+import Loader from '@tdev-components/Loader';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { ModelMeta as SolutionModelMeta } from '@tdev-models/documents/Solution';

@@ -1,7 +1,7 @@
+import { SelfCheckStateType } from '@brr/self-check/models';
+import SelfCheckContent from '@brr/self-check/SelfCheckContent';
+import { SelfCheckContext } from '@brr/self-check/shared';
 import { Access } from '@tdev-api/document';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
-import SelfCheckContent from '@tdev-components/documents/SelfCheck/SelfCheckContent';
-import { SelfCheckContext } from '@tdev-components/documents/SelfCheck/shared';
 import Solution from '@tdev-components/documents/Solution';
 import { MetaInit } from '@tdev-models/documents/TaskState';
 import { observer } from 'mobx-react-lite';

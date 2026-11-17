@@ -1,6 +1,6 @@
+import { SelfCheckStateType } from '@brr/self-check/models';
+import { SelfCheckContext } from '@brr/self-check/shared';
 import Loader from '@tdev-components/Loader';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
-import { SelfCheckContext } from '@tdev-components/documents/SelfCheck/shared';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { TaskMeta } from '@tdev-models/documents/TaskState';
