@@ -1,7 +1,7 @@
 import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
 import { FileConfig } from '@tdev-stores/assets/FileExtensions';
-import DocumentStore from '@tdev-stores/DocumentStore';
+import DocumentStore, { CreatableFileType } from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed } from 'mobx';
 import File from './File';
@@ -119,13 +119,9 @@ class Directory extends iFileSystem<'dir'> {
     }
 
     @action
-    async createFile(type: DocumentType, name?: string): Promise<File | void> {
-        const requestedName = name || 'new-file';
-        const fileConfig = this.findFileConfig(type, requestedName);
-        if (!fileConfig) {
-            throw new Error('Dieser Dateityp kann nicht erstellt werden.');
-        }
-
+    async createFile(fileType: CreatableFileType, name?: string): Promise<File> {
+        const { type, config: fileConfig } = fileType;
+        const requestedName = this.withoutOtherFileExtension(name || 'new-file', fileConfig.extension);
         const fileName = this.getUniqueFileName(requestedName, fileConfig.extension);
         const file = await this.createFileContainer(fileName);
         if (!file) {
@@ -150,22 +146,6 @@ class Directory extends iFileSystem<'dir'> {
         }
     }
 
-    private findFileConfig(type: DocumentType, requestedName: string): FileConfig<DocumentType> | undefined {
-        const fileConfigs = this.store.fileExtensions.get(type) ?? [];
-        if (fileConfigs.length === 0) {
-            console.error(`No file configuration found for type ${type}`);
-            return;
-        }
-
-        const requestedExtension = requestedName.includes('.')
-            ? `.${requestedName.split('.').pop()!.toLowerCase()}`
-            : '';
-        return (
-            fileConfigs.find((config) => config.extension.toLowerCase() === requestedExtension) ??
-            fileConfigs[0]
-        );
-    }
-
     getUniqueFileName(requestedName: string, extension: string, excludedDocId?: string): string {
         const baseName =
             extension && requestedName.toLowerCase().endsWith(extension.toLowerCase())
@@ -173,6 +153,25 @@ class Directory extends iFileSystem<'dir'> {
                 : requestedName;
 
         return this.getUniqueName(baseName, extension, excludedDocId);
+    }
+
+    /**
+     * Removes the registered extension of another file type from a typed name,
+     * e.g. `test.py` becomes `test` for a `.pyo` file.
+     * Types without an extension, e.g. `code`, keep the name as typed: it sets their language.
+     */
+    private withoutOtherFileExtension(name: string, extension: string): string {
+        if (!extension) {
+            return name;
+        }
+        const lowerName = name.toLowerCase();
+        const otherExtension = this.store.registeredFileExtensions
+            .map((config) => config.extension.toLowerCase())
+            .find((other) => other && other !== extension.toLowerCase() && lowerName.endsWith(other));
+        if (!otherExtension || otherExtension.length === name.length) {
+            return name;
+        }
+        return name.slice(0, -otherExtension.length);
     }
 
     private getUniqueName(baseName: string, extension: string = '', excludedDocId?: string): string {

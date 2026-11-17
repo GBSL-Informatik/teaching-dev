@@ -5,14 +5,18 @@ import { ModelMeta } from './models/SimpleChat/ModelMeta';
 import { createModel as createTextMessage } from './models/TextMessage';
 
 const register = () => {
-    rootStore.documentStore.registerFactory('text_message', createTextMessage);
-    rootStore.documentStore.registerFactory('simple_chat', createSimpleChat);
-    rootStore.socketStore.registerRecordToCreate('text_message');
-    rootStore.socketStore.registerRecordToCreate('simple_chat');
-    rootStore.componentStore.registerContainerComponent('simple_chat', {
-        defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
-        component: SimpleChat
+    rootStore.documentStore.registerDocumentType({
+        type: 'text_message',
+        factory: createTextMessage,
+        createOnNewRecord: true
     });
+    rootStore.documentStore.registerDocumentType({
+        type: 'simple_chat',
+        factory: createSimpleChat,
+        defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
+        createOnNewRecord: true
+    });
+    rootStore.componentStore.registerContainerComponent('simple_chat', SimpleChat);
 };
 
 register();

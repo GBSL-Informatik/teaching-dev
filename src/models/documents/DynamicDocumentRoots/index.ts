@@ -83,11 +83,8 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
     }
 
     get defaultContainerMeta(): ContainerMeta<Type> {
-        const component = this.store.root.componentStore.getComponent(this.containerType);
-        if (!component) {
-            return new ContainerMeta(this.containerType);
-        }
-        return component.defaultMeta;
+        const registeredMeta = this.store.defaultContainerMetaOf(this.containerType);
+        return registeredMeta ?? new ContainerMeta(this.containerType);
     }
 
     @action
@@ -100,7 +97,7 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
             return;
         }
         this.store.root.documentRootStore
-            .create(id, new ContainerMeta(this.containerType), {
+            .create(id, meta, {
                 access: Access.None_DocumentRoot,
                 sharedAccess: Access.RO_DocumentRoot
             })

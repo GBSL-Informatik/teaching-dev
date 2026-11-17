@@ -1,34 +1,22 @@
 import {
     DocumentModelType,
-    TaskableType,
     TypeModelMapping,
     type CodeType,
     type ContainerType,
     type ContainerTypeModelMapping,
     type DocumentType
 } from '@tdev-api/document';
-import { TypeMeta } from '@tdev-models/DocumentRoot';
-import { ModelMeta as ChoiceMeta } from '@tdev-models/documents/Assessable/ChoiceAnswer';
-import { ModelMeta as QuizMeta } from '@tdev-models/documents/Assessable/Quiz';
-import { ModelMeta as TrueFalseMeta } from '@tdev-models/documents/Assessable/TrueFalseAnswer';
 import { CodeMeta } from '@tdev-models/documents/Code';
-import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
-import { ModelMeta as ProgressStateMeta } from '@tdev-models/documents/ProgressState';
-import { TaskMeta as TaskStateMeta } from '@tdev-models/documents/TaskState';
 import { computed } from 'mobx';
 import React from 'react';
 import { RootStore } from './rootStore';
+import { RegistrationOptions } from './utils/RegistrationOptions';
 
 export type LiveCode = `live_${string}`;
 
 export interface ContainerProps<T extends ContainerType = ContainerType> {
     documentContainer: ContainerTypeModelMapping[T];
-}
-
-export interface ContainerComponent<T extends ContainerType = ContainerType> {
-    defaultMeta: ContainerMeta<T>;
-    component: React.ComponentType<ContainerProps<T>>;
 }
 
 export interface EditorComponentProps<T extends CodeType = CodeType> {
@@ -50,94 +38,72 @@ export interface EditorComponent<T extends CodeType = CodeType> {
      */
     Meta?: React.ComponentType<EditorComponentProps<T>>;
 
+    /**
+     * Creates the meta of a code block from its props.
+     * The default meta is registered with `registerDocumentType`.
+     */
     createModelMeta: (props: Partial<MetaInit>) => iCodeMeta<T>;
     codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => T | undefined;
 }
 
 class ComponentStore {
     readonly root: RootStore;
-    components = new Map<ContainerType, ContainerComponent>();
+    containerComponents = new Map<ContainerType, React.ComponentType<ContainerProps>>();
     editorComponents = new Map<CodeType, EditorComponent>();
     documentViews = new Map<DocumentType, React.ComponentType<{ document: DocumentModelType }>>();
-    taskableDocumentsMeta = new Map<DocumentType, TypeMeta<TaskableType>>([
-        ['task_state', new TaskStateMeta({})],
-        ['progress_state', new ProgressStateMeta({})],
-        ['quiz', new QuizMeta({})],
-        ['choice_answer', new ChoiceMeta({ optionsCount: 0 })],
-        ['true_false_answer', new TrueFalseMeta({})]
-    ]);
 
     constructor(root: RootStore) {
         this.root = root;
     }
 
-    getComponent<T extends ContainerType>(type: T): ContainerComponent<T> | undefined {
-        return this.components.get(type) as ContainerComponent<T> | undefined;
+    containerComponent<T extends ContainerType>(type: T): React.ComponentType<ContainerProps<T>> | undefined {
+        return this.containerComponents.get(type) as React.ComponentType<ContainerProps<T>> | undefined;
     }
 
-    registerContainerComponent<T extends ContainerType>(type: T, component: ContainerComponent<T>) {
-        this.components.set(type, component as ContainerComponent<any>);
-    }
-
-    registerTaskableDocumentType<T extends TaskableType>(defaultMeta: TypeMeta<T>) {
-        this.taskableDocumentsMeta.set(defaultMeta.type, defaultMeta);
-    }
-
-    @computed
-    get taskableDocuments() {
-        return new Set([...this.taskableDocumentsMeta.keys()]);
-    }
-
-    @computed
-    get defaultMeta() {
-        return [
-            ...[...this.components.values()].map((comp) => comp.defaultMeta),
-            ...[...this.editorComponents.values()].map((comp) => comp.createModelMeta({})),
-            ...[...this.taskableDocumentsMeta.values()]
-        ];
-    }
-
-    extractDefaultDocumentType(types: DocumentType[]): DocumentType | undefined {
-        if (types.length <= 1) {
-            return types[0];
+    /**
+     * The default meta of a container type is registered with `registerDocumentType`.
+     * Registering a type again replaces its component and warns, unless `override` is set.
+     */
+    registerContainerComponent<T extends ContainerType>(
+        type: T,
+        component: React.ComponentType<ContainerProps<T>>,
+        options: RegistrationOptions = {}
+    ) {
+        if (this.containerComponents.has(type) && !options.override) {
+            console.warn(`Container component ${type} is already registered, replacing it`);
         }
-        const typesSet = new Set(types);
-        if (typesSet.size === 1) {
-            return types[0];
-        }
-        if (typesSet.has('quiz')) {
-            return 'quiz';
-        }
-        if (typesSet.has('script')) {
-            return 'script';
-        }
-        return types[0];
-    }
-
-    @computed
-    get registeredContainerTypes(): ContainerType[] {
-        return [...this.components.keys()];
-    }
-
-    isValidContainerType(type?: string): type is ContainerType {
-        if (!type) {
-            return false;
-        }
-        return this.components.has(type as ContainerType);
+        this.containerComponents.set(type, component as React.ComponentType<ContainerProps>);
     }
 
     editorComponent<T extends CodeType>(type: T): EditorComponent<T> | undefined {
         return this.editorComponents.get(type) as EditorComponent<T> | undefined;
     }
 
-    registerEditorComponent<T extends CodeType>(type: T, component: EditorComponent<T>) {
+    /**
+     * Registering a type again replaces its component and warns, unless `override` is set.
+     */
+    registerEditorComponent<T extends CodeType>(
+        type: T,
+        component: EditorComponent<T>,
+        options: RegistrationOptions = {}
+    ) {
+        if (this.editorComponents.has(type) && !options.override) {
+            console.warn(`Editor component ${type} is already registered, replacing it`);
+        }
         this.editorComponents.set(type, component as EditorComponent<any>);
     }
 
+    /**
+     * Registering a type again replaces its view and warns, unless `override` is set.
+     */
     registerDocumentView<T extends DocumentType>(
         type: T,
-        component: React.ComponentType<{ document: TypeModelMapping[T] }>
+        component: React.ComponentType<{ document: TypeModelMapping[T] }>,
+        options: RegistrationOptions = {}
     ) {
+        if (this.documentViews.has(type) && !options.override) {
+            console.warn(`Document view ${type} is already registered, replacing it`);
+        }
         this.documentViews.set(type, component as React.ComponentType<{ document: DocumentModelType }>);
     }
 

@@ -1,4 +1,4 @@
-import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
+import { getScale } from './customProps';
 
 interface ImageDimensions {
     width: number;

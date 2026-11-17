@@ -1,20 +1,13 @@
-import {
-    mdiFileDocument,
-    mdiFolderOpenOutline,
-    mdiFolderPlus,
-    mdiLanguagePython,
-    mdiPlusCircleOutline
-} from '@mdi/js';
+import { mdiFolderOpenOutline, mdiFolderPlus, mdiPlusCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@tdev-components/shared/Alert';
 import Button from '@tdev-components/shared/Button';
 import TextInput from '@tdev-components/shared/TextInput';
 import { useStore } from '@tdev-hooks/useStore';
 import Directory from '@tdev-models/documents/FileSystem/Directory';
-import DocumentStore from '@tdev-stores/DocumentStore';
-import { ExcalidrawColor, mdiExcalidraw } from '@tdev/excalidoc/Component';
+import { CreatableFileType } from '@tdev-stores/DocumentStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { Delta } from 'quill/core';
 import React from 'react';
 import Popup from 'reactjs-popup';
 import { PopupActions } from 'reactjs-popup/dist/types';
@@ -24,42 +17,39 @@ interface Props {
     directory: Directory;
 }
 
-const withFile = async (store: DocumentStore, rootId: string, parentId: string, name: string) => {
-    return store.create({
-        documentRootId: rootId,
-        parentId: parentId,
-        type: 'file',
-        data: {
-            isOpen: true,
-            name: name
-        }
-    });
-};
-
-const asCodeName = (name?: string) => {
-    if (!name) {
-        return 'programm.py';
-    }
-    const extension = name.split('.').pop();
-    if (extension?.toLowerCase() === 'py') {
-        return name;
-    }
-    return `${name}.py`;
-};
-
 const NewItem = observer((props: Props) => {
     const ref = React.useRef<PopupActions>(null);
     const [name, setName] = React.useState('');
-    const isPyScript = React.useMemo(() => {
-        return !name.includes('.') || name.split('.').pop() === 'py';
-    }, [name]);
+    const [error, setError] = React.useState<string | null>(null);
+    const [pending, setPending] = React.useState(false);
     const documentStore = useStore('documentStore');
-    const closeTooltip = () => (ref.current as any)?.close();
     const { directory } = props;
     if (!directory.root) {
         return null;
     }
-    const rootId = directory.root.id;
+
+    const create = async (createItem: () => Promise<unknown>) => {
+        if (pending) {
+            return;
+        }
+        setPending(true);
+        setError(null);
+        try {
+            await createItem();
+            ref.current?.close();
+        } catch (reason) {
+            setError(reason instanceof Error ? reason.message : 'Das Element konnte nicht erstellt werden.');
+        } finally {
+            setPending(false);
+        }
+    };
+    const handleCreateFile = (fileType: CreatableFileType) => {
+        create(() => directory.createFile(fileType, name || undefined));
+    };
+    const handleCreateDir = () => {
+        create(() => directory.createDir(name));
+    };
+
     return (
         <Popup
             trigger={
@@ -69,6 +59,7 @@ const NewItem = observer((props: Props) => {
             }
             modal
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
+            onClose={() => setError(null)}
             ref={ref}
         >
             <div className={clsx('card', styles.card)}>
@@ -79,102 +70,29 @@ const NewItem = observer((props: Props) => {
                 </div>
                 <div className={clsx('card__body', styles.body)}>
                     <TextInput onChange={setName} placeholder="Name" />
-                    <Button
-                        text={'Neues Python Snippet'}
-                        color="rgb(19, 165, 0)"
-                        size={0.8}
-                        icon={mdiLanguagePython}
-                        iconSide="left"
-                        onClick={async () => {
-                            withFile(documentStore, rootId, directory.id, asCodeName(name))
-                                .then((file) => {
-                                    if (file) {
-                                        return documentStore.create({
-                                            documentRootId: rootId,
-                                            parentId: file.id,
-                                            type: 'script',
-                                            data: {
-                                                code: '\n'
-                                            }
-                                        });
-                                    }
-                                })
-                                .then(() => {
-                                    closeTooltip();
-                                });
-                        }}
-                    />
-                    <Button
-                        text="Neue Notiz"
-                        color="var(--ifm-color-blue)"
-                        size={0.8}
-                        icon={mdiFileDocument}
-                        iconSide="left"
-                        onClick={async () => {
-                            withFile(documentStore, rootId, directory.id, name || 'Notiz')
-                                .then((file) => {
-                                    if (file) {
-                                        return documentStore.create({
-                                            documentRootId: rootId,
-                                            parentId: file.id,
-                                            type: 'quill_v2',
-                                            data: {
-                                                delta: { ops: [{ insert: '\n' }] } as Delta
-                                            }
-                                        });
-                                    }
-                                })
-                                .then(() => {
-                                    closeTooltip();
-                                });
-                        }}
-                    />
-                    <Button
-                        text="Neue Skizze"
-                        color={ExcalidrawColor}
-                        size={0.8}
-                        icon={mdiExcalidraw}
-                        iconSide="left"
-                        onClick={async () => {
-                            withFile(documentStore, rootId, directory.id, name || 'Skizze')
-                                .then((file) => {
-                                    if (file) {
-                                        return documentStore.create({
-                                            documentRootId: rootId,
-                                            parentId: file.id,
-                                            type: 'excalidoc',
-                                            data: {
-                                                elements: [],
-                                                files: {},
-                                                image: ''
-                                            }
-                                        });
-                                    }
-                                })
-                                .then(() => {
-                                    closeTooltip();
-                                });
-                        }}
-                    />
+                    {documentStore.creatableFileTypes.map((fileType) => (
+                        <Button
+                            key={`${fileType.type}${fileType.config.extension}`}
+                            text={fileType.config.name || fileType.config.extension || fileType.type}
+                            title={fileType.config.description}
+                            color={fileType.config.iconColor}
+                            size={0.8}
+                            icon={fileType.config.icon}
+                            iconSide="left"
+                            disabled={pending}
+                            onClick={() => handleCreateFile(fileType)}
+                        />
+                    ))}
                     <Button
                         text="Neuer Ordner"
                         color="black"
                         size={0.8}
                         icon={mdiFolderPlus}
                         iconSide="left"
-                        onClick={async () => {
-                            await documentStore.create({
-                                documentRootId: rootId,
-                                parentId: directory.id,
-                                type: 'dir',
-                                data: {
-                                    name: name || 'Ordner',
-                                    isOpen: true
-                                }
-                            });
-                            closeTooltip();
-                        }}
+                        disabled={pending}
+                        onClick={handleCreateDir}
                     />
+                    {error && <Alert type="danger">{error}</Alert>}
                 </div>
             </div>
         </Popup>

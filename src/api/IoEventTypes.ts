@@ -2,8 +2,6 @@ import { Document, DocumentType } from '../api/document';
 import { DocumentRootUpdate } from '../api/documentRoot';
 import { GroupPermission, UserPermission } from '../api/permission';
 import { User } from '../api/user';
-import { rootStore } from '../stores/rootStore';
-import { CmsSettings } from './cms';
 import { StudentGroup } from './studentGroup';
 
 export enum IoEvent {
@@ -21,26 +19,30 @@ export enum RecordType {
     UserPermission = 'UserPermission',
     GroupPermission = 'GroupPermission',
     DocumentRoot = 'DocumentRoot',
-    StudentGroup = 'StudentGroup',
-    CmsSettings = 'CmsSettings'
+    StudentGroup = 'StudentGroup'
 }
 
-type TypeRecordMap = {
+/**
+ * Packages add their record types by augmenting this interface and handle them
+ * with `socketStore.registerRecordHandler`.
+ */
+export interface TypeRecordMap {
     [RecordType.Document]: Document<DocumentType>;
     [RecordType.User]: User;
     [RecordType.UserPermission]: UserPermission;
     [RecordType.GroupPermission]: GroupPermission;
     [RecordType.DocumentRoot]: DocumentRootUpdate;
-    [RecordType.CmsSettings]: CmsSettings;
     [RecordType.StudentGroup]: StudentGroup;
-};
+}
 
-export interface NewRecord<T extends RecordType> {
+export type AnyRecordType = keyof TypeRecordMap;
+
+export interface NewRecord<T extends AnyRecordType> {
     type: T;
     record: TypeRecordMap[T];
 }
 
-export interface ChangedRecord<T extends RecordType> {
+export interface ChangedRecord<T extends AnyRecordType> {
     type: T;
     record: TypeRecordMap[T];
 }
@@ -62,7 +64,7 @@ export interface ConnectedClients {
 }
 
 export interface DeletedRecord {
-    type: RecordType;
+    type: AnyRecordType;
     id: string;
 }
 
@@ -73,12 +75,12 @@ interface NotificationBase {
 
 interface NotificationNewRecord extends NotificationBase {
     event: IoEvent.NEW_RECORD;
-    message: NewRecord<RecordType>;
+    message: NewRecord<AnyRecordType>;
 }
 
 interface NotificationChangedRecord extends NotificationBase {
     event: IoEvent.CHANGED_RECORD;
-    message: ChangedRecord<RecordType>;
+    message: ChangedRecord<AnyRecordType>;
 }
 
 interface NotificationDeletedRecord extends NotificationBase {
@@ -126,8 +128,8 @@ export enum IoClientEvent {
 }
 
 export type ServerToClientEvents = {
-    [IoEvent.NEW_RECORD]: (message: NewRecord<RecordType>) => void;
-    [IoEvent.CHANGED_RECORD]: (message: ChangedRecord<RecordType>) => void;
+    [IoEvent.NEW_RECORD]: (message: NewRecord<AnyRecordType>) => void;
+    [IoEvent.CHANGED_RECORD]: (message: ChangedRecord<AnyRecordType>) => void;
     [IoEvent.DELETED_RECORD]: (message: DeletedRecord) => void;
     [IoEvent.CHANGED_DOCUMENT]: (message: ChangedDocument) => void;
     [IoEvent.CONNECTED_CLIENTS]: (message: ConnectedClients) => void;
@@ -140,13 +142,3 @@ export interface ClientToServerEvents {
     [IoClientEvent.ACTION]: (action: Action, callback: (ok: boolean) => void) => void;
     [IoClientEvent.STREAM_UPDATE]: (payload: StreamedDynamicDocument) => void;
 }
-
-export const RecordStoreMap: { [key in RecordType]: keyof typeof rootStore | `viewStore#${string}` } = {
-    User: 'userStore',
-    Document: 'documentRootStore',
-    UserPermission: 'permissionStore',
-    GroupPermission: 'permissionStore',
-    DocumentRoot: 'documentRootStore',
-    CmsSettings: 'viewStore#cmsStore',
-    StudentGroup: 'studentGroupStore'
-} as const;

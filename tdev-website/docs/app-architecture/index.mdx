@@ -36,32 +36,23 @@ wobei der zum Markdown konsistente Document-Typ `script` das `Main-Document` fü
 
 ### Dokument-Modelle instanziieren
 
-Beim Laden von `Document`-Einträgen von der API werden die entsprechenden Modelle im `DocumentStore` instanziiert. Damit das funktioniert, müssen für jeden `Document`-Typ sogenannte `Factory`-Funktionen registriert werden, die ein `Document`-Modell mittels des `data`-Feldes erstellt.
+Beim Laden von `Document`-Einträgen von der API werden die entsprechenden Modelle im `DocumentStore` instanziiert. Damit das funktioniert, wird jeder `Document`-Typ mit `registerDocumentType` registriert. Die `factory` erstellt ein `Document`-Modell mittels des `data`-Feldes. Die eingebauten Typen sind in __src/stores/assets/BuiltinDocumentTypes.ts__ gleich registriert wie die Typen aus Paketen.
 
 
-```ts title="src/stores/DocumentStore.ts"
-const FactoryDefault: [DocumentType, Factory][] = [
-    ['script', (data, store) => new Script(data, store)],
-    ['script_version', (data, store) => new ScriptVersion(data, store)],
+```ts title="src/stores/assets/BuiltinDocumentTypes.ts"
+export const BuiltinDocumentTypes: AnyDocumentTypeConfig[] = [
+    {
+        type: 'code',
+        factory: (data, store) => new Code(data, store),
+        defaultMeta: new CodeMeta({}),
+        fileExtensions: DefaultExtensions.code
+    },
+    {
+        type: 'script_version',
+        factory: (data, store) => new ScriptVersion(data, store)
+    },
     // ...
 ];
-
-class DocumentStore {
-    factories = new Map<DocumentType, Factory>(FactoryDefault);
-
-    registerFactory(type: DocumentType, factory: Factory) {
-        this.factories.set(type, factory);
-    }
-
-    createDocument<Type extends DocumentType>(data: DocumentProps<Type>): TypeModelMapping[Type] | null {
-        const factory = this.factories.get(data.type);
-        if (!factory) {
-            console.warn(`No factory registered for document type ${data.type}`);
-            return null;
-        }
-        return factory(data, this) as TypeModelMapping[Type];
-    }
-}
 ```
 
 
@@ -230,31 +221,32 @@ Beim `TypeDataMapping` wird der Typ des `data`-Attributs eines `Document`s defin
 
 #### Initialisierung des Document Models <Badge type="warning">Pflicht</Badge>
 
-Damit ein neues Dokument initialisiert werden kann, muss eine Initialisierungsfunktion, eine sog. `Factory`, registriert werden.
+Damit ein neues Dokument initialisiert werden kann, muss der Dokumenttyp mit einer Initialisierungsfunktion, einer sog. `Factory`, registriert werden.
 
 ```ts title="packages/tdev/text-message/register.ts"
 import { rootStore } from '@tdev-stores/rootStore';
-import { Document, Factory } from '@tdev-api/document';
-import TextMessage from './model';
+import SimpleChat from './components/SimpleChat/SimpleChat';
+import { createModel as createSimpleChat } from './models/SimpleChat';
+import { ModelMeta } from './models/SimpleChat/ModelMeta';
+import { createModel as createTextMessage } from './models/TextMessage';
 
-const createModel: Factory = (data, store) => {
-    return new TextMessage(data as Document<'text_message'>, store);
-};
-
-// Registrierung der Factory
+// Registrierung der Dokumenttypen
 const register = () => {
-    rootStore.documentStore.registerFactory('text_message', createModel);
-    // optional: Registrierung für Server-Seitig erzeugte Dokumente, die über
-    // SocketIO initialisiert werden können
-    rootStore.socketStore.registerRecordToCreate('text_message');
-    // optional: Für dynamische Raum-Komponenten registrieren, so dass
-    // die korrekten Komponenten bei Raum-Dokumenten verwendet werden können
-    rootStore.componentStore.registerRoomComponent('text_messages', {
-        name: 'Textnachrichten',
-        description: 'Textnachrichten können in einem Chat versandt- und empfangen werden.',
-        component: TextMessages,
-        default: true
+    rootStore.documentStore.registerDocumentType({
+        type: 'text_message',
+        factory: createTextMessage,
+        // optional: neue Nachrichten anderer Personen sofort anzeigen
+        createOnNewRecord: true
     });
+    // optional: der Chat als Container-Typ, damit er als dynamischer Raum erstellt werden kann
+    rootStore.documentStore.registerDocumentType({
+        type: 'simple_chat',
+        factory: createSimpleChat,
+        defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
+        createOnNewRecord: true
+    });
+    // die Komponente, die einen solchen Chat-Raum anzeigt
+    rootStore.componentStore.registerContainerComponent('simple_chat', SimpleChat);
 };
 
 // zentral: Registrierung direkt beim Import der Datei aufrufen
@@ -262,6 +254,57 @@ register();
 ```
 
 Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders` hinterlegt werden, so dass die entsprechenden Einträge beim Laden der Client-App noch vor dem ersten Rendern verfügbar sind.
+
+`registerDocumentType` kennt folgende Optionen:
+
+`type`
+: Name des Dokumenttyps, wie er im `TypeModelMapping` eingetragen ist.
+`factory`
+: Funktion, die aus den Daten der API das Modell dieses Typs erzeugt.
+`defaultMeta`
+: Meta-Daten, die gelten, wenn ein Dokument ohne seine Komponente geladen wird. Normalerweise liefert die Komponente auf der Seite die Meta-Daten, in der Admin-Ansicht fehlt sie aber.
+: Pflicht für Editor- und Container-Typen. Container-Typen brauchen ein `ContainerMeta`, mit dem auch neue dynamische Räume erstellt werden.
+`fileExtensions`
+: Macht den Typ als Datei im Dateisystem verfügbar. Jeder Eintrag beschreibt eine Dateiart: Endung, Name, Icon, Farbe und den Inhalt einer neuen Datei.
+: Beim Erstellen einer Datei stehen alle Einträge ohne `hide: true` zur Auswahl, sortiert nach `priority` (kleinere Zahl weiter vorne). Das Icon und die Farbe erscheinen auch bei der Datei selbst.
+: Standard-Priorität: `10`.
+`createOnNewRecord`
+: Neue Dokumente dieses Typs, die andere Personen erstellen, erscheinen sofort, ohne dass die Seite neu geladen werden muss. Bspw. neue Nachrichten in einem Chat.
+: Standard: `false`.
+`taskable`
+: Dokumente dieses Typs zählen zum Bearbeitungsstand einer Seite, also dazu, wie viele Aufgaben erledigt sind. Nur möglich für Typen aus dem `TaskableDocumentMapping`, deren Modelle `iTaskableDocument` implementieren.
+: Standard: `false`.
+`adminEditable`
+: Lehrpersonen und Admins dürfen Dokumente dieses Typs im Namen anderer Benutzer:innen ändern, bspw. CMS-Texte. Für die meisten Typen soll das nicht möglich sein.
+: Standard: `false`.
+`preferredInRoot`
+: Für `DocumentRoot`s mit Dokumenten verschiedener Typen, bspw. ein `quiz` mit seinen Antworten. Fehlen beim Laden die Meta-Daten, bestimmt dieser Typ, welche `defaultMeta` die `DocumentRoot` erhält.
+: Kommen mehrere solche Typen in derselben `DocumentRoot` vor, gilt der zuerst registrierte. Eingebaute Typen wie `quiz` sind immer vor den Typen der Pakete registriert.
+: Standard: `false`.
+
+##### Einen Typ ersetzen
+
+Wird derselbe Typ ein zweites Mal registriert, ersetzt die zweite Registrierung die erste, und in der Konsole erscheint eine Warnung. So fällt auf, wenn ein Typ versehentlich doppelt registriert wird. Soll ein Typ bewusst ersetzt werden, bspw. ein eingebauter Typ durch eine eigene Variante, wird `{ override: true }` übergeben. Dann bleibt die Warnung aus.
+
+Ersetzt wird die ganze Konfiguration. Optionen, die nicht erneut angegeben werden, bspw. `defaultMeta` oder `fileExtensions`, fallen also weg. Der ersetzte Typ behält seinen Platz in der Reihenfolge (siehe `preferredInRoot`).
+
+```ts
+import { DefaultExtensions } from '@tdev-stores/assets/FileExtensions';
+import { ModelMeta as QuillV2Meta } from '@tdev-models/documents/QuillV2';
+import MyQuill from './models/MyQuill';
+
+rootStore.documentStore.registerDocumentType(
+    {
+        type: 'quill_v2',
+        factory: (data, store) => new MyQuill(data, store),
+        defaultMeta: new QuillV2Meta({}),
+        fileExtensions: DefaultExtensions.quill_v2
+    },
+    { override: true }
+);
+```
+
+Gleich verhalten sich die anderen Registrierungen: `socketStore.registerRecordHandler`, `viewStore.registerStore` sowie `registerContainerComponent`, `registerEditorComponent` und `registerDocumentView` im `componentStore`. Bei ihnen ist `{ override: true }` das dritte Argument.
 
 #### Offline-Routen <Badge type="info">Optional</Badge>
 
@@ -290,6 +333,32 @@ offlineRoutes.register<{ text: string }>('POST', '/messages/:roomId', ({ params,
 : Wirft ein Handler einen anderen Fehler, antwortet die Offline-API mit `500` und meldet den Fehler in der Konsole.
 
 Anfragen ohne passende Route werden mit `404` abgelehnt und in der Konsole gemeldet.
+
+#### Eigene SocketIO-Records <Badge type="info">Optional</Badge>
+
+Sendet die teaching-api für ein Paket eigene Records (nicht `Document`s) über SocketIO, ergänzt das Paket den Record-Typ im `TypeRecordMap` und registriert einen Handler:
+
+```ts title="packages/hfr/github-cms/index.ts"
+declare module '@tdev-api/IoEventTypes' {
+    export interface TypeRecordMap {
+        ['CmsSettings']: CmsSettings;
+    }
+}
+```
+
+```ts title="packages/hfr/github-cms/register.ts"
+const handleSettingsChange = (settings: CmsSettings) => {
+    rootStore.viewStore.useStore('cmsStore').handleSettingsChange(settings);
+};
+
+rootStore.socketStore.registerRecordHandler('CmsSettings', {
+    onNew: handleSettingsChange,
+    onChanged: handleSettingsChange
+});
+```
+
+`onNew(record)`, `onChanged(record)`, `onDeleted(id)`
+: Alle optional. Records ohne passenden Handler werden in der Konsole gemeldet.
 
 ## Debug
 

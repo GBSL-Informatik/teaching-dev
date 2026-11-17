@@ -4,8 +4,8 @@ import DocumentStore from '@tdev-stores/DocumentStore';
 import { action, computed, observable } from 'mobx';
 import { ModelMeta } from './ModelMeta';
 
-export const createModel: Factory = (data, store) => {
-    return new TextMessage(data as DocumentProps<'text_message'>, store);
+export const createModel: Factory<'text_message'> = (data, store) => {
+    return new TextMessage(data, store);
 };
 
 class TextMessage extends iDocument<'text_message'> {

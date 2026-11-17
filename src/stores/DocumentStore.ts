@@ -1,121 +1,95 @@
 import {
     Access,
-    ADMIN_EDITABLE_DOCUMENTS,
     allDocuments as apiAllDocuments,
     create as apiCreate,
     remove as apiDelete,
     linkTo as apiLinkTo,
     update as apiUpdate,
     updateConstraints as apiUpdateConstraints,
+    CodeType,
+    ContainerType,
     DocumentModelType,
     Document as DocumentProps,
     DocumentType,
     Factory,
+    TaskableType,
     TypeModelMapping,
     UniquenessConstraints
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
-import DocumentRoot, { MetaHasher } from '@tdev-models/DocumentRoot';
-import ChoiceAnswer from '@tdev-models/documents/Assessable/ChoiceAnswer';
-import Quiz from '@tdev-models/documents/Assessable/Quiz';
-import TrueFalseAnswer from '@tdev-models/documents/Assessable/TrueFalseAnswer';
-import CmsText from '@tdev-models/documents/CmsText';
-import Code from '@tdev-models/documents/Code';
-import DynamicDocumentRoots from '@tdev-models/documents/DynamicDocumentRoots';
-import Directory from '@tdev-models/documents/FileSystem/Directory';
-import File from '@tdev-models/documents/FileSystem/File';
+import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
+import type { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
-import MdxComment from '@tdev-models/documents/MdxComment';
-import ProgressState from '@tdev-models/documents/ProgressState';
-import QuillV2 from '@tdev-models/documents/QuillV2';
-import Restricted from '@tdev-models/documents/Restricted';
-import ScriptVersion from '@tdev-models/documents/ScriptVersion';
-import Solution from '@tdev-models/documents/Solution';
-import String from '@tdev-models/documents/String';
-import TaskState from '@tdev-models/documents/TaskState';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
 import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
+import { orderBy } from 'es-toolkit';
 import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { v4 as uuidv4 } from 'uuid';
-import { DefaultExtensions, FileConfig } from './assets/FileExtensions';
+import { BuiltinDocumentTypes } from './assets/BuiltinDocumentTypes';
+import { FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
+import { RegistrationOptions } from './utils/RegistrationOptions';
 
-export function CreateDocumentModel<T extends DocumentType>(
-    data: DocumentProps<T>,
-    store: DocumentStore
-): TypeModelMapping[T];
-export function CreateDocumentModel(data: DocumentProps<DocumentType>, store: DocumentStore) {
-    switch (data.type) {
-        case 'code':
-            return new Code(data as DocumentProps<'code'>, store);
-        case 'task_state':
-            return new TaskState(data as DocumentProps<'task_state'>, store);
-        case 'script_version':
-            return new ScriptVersion(data as DocumentProps<'script_version'>, store);
-        case 'string':
-            return new String(data as DocumentProps<'string'>, store);
-        case 'choice_answer':
-            return new ChoiceAnswer(data as DocumentProps<'choice_answer'>, store);
-        case 'true_false_answer':
-            return new TrueFalseAnswer(data as DocumentProps<'true_false_answer'>, store);
-        case 'quiz':
-            return new Quiz(data as DocumentProps<'quiz'>, store);
-        case 'quill_v2':
-            return new QuillV2(data as DocumentProps<'quill_v2'>, store);
-        case 'solution':
-            return new Solution(data as DocumentProps<'solution'>, store);
-        case 'dir':
-            return new Directory(data as DocumentProps<'dir'>, store);
-        case 'file':
-            return new File(data as DocumentProps<'file'>, store);
-        case 'mdx_comment':
-            return new MdxComment(data as DocumentProps<'mdx_comment'>, store);
-        case 'restricted':
-            return new Restricted(data as DocumentProps<'restricted'>, store);
-        case 'cms_text':
-            return new CmsText(data as DocumentProps<'cms_text'>, store);
-        case 'dynamic_document_roots':
-            return new DynamicDocumentRoots(data as DocumentProps<any>, store);
-        case 'progress_state':
-            return new ProgressState(data as DocumentProps<'progress_state'>, store);
-    }
+/**
+ * The default meta is used for document roots whose documents are loaded without a meta, e.g. in admin views,
+ * and for the dynamic rooms created and loaded with a container type.
+ * Editor and container types rely on it, so they must register one.
+ */
+type DefaultMetaConfig<T extends DocumentType> = T extends ContainerType
+    ? { defaultMeta: ContainerMeta<T> }
+    : T extends CodeType
+      ? { defaultMeta: TypeMeta<T> }
+      : { defaultMeta?: TypeMeta<T> };
+
+export type DocumentTypeConfig<T extends DocumentType> = DocumentTypeOptions<T> & DefaultMetaConfig<T>;
+
+interface DocumentTypeOptions<T extends DocumentType> {
+    type: T;
+    factory: Factory<T>;
+    /** makes the type creatable as a file in the file system (`dir` and `file` documents) */
+    fileExtensions?: FileConfig<T>[];
+    /** add documents of this type to the store when the socket announces them as new records */
+    createOnNewRecord?: boolean;
+    /** counts towards the task progress of a page */
+    taskable?: T extends TaskableType ? boolean : never;
+    /**
+     * Teachers and admins edit the documents of other users on their behalf, e.g. cms texts.
+     * This should not be the default case for most documents.
+     */
+    adminEditable?: boolean;
+    /** the main document of a root that also holds other types, e.g. a quiz and its answers */
+    preferredInRoot?: boolean;
 }
 
-const FactoryDefault: [DocumentType, Factory][] = [
-    ['code', CreateDocumentModel],
-    ['task_state', CreateDocumentModel],
-    ['progress_state', CreateDocumentModel],
-    ['script_version', CreateDocumentModel],
-    ['string', CreateDocumentModel],
-    ['choice_answer', CreateDocumentModel],
-    ['quiz', CreateDocumentModel],
-    ['true_false_answer', CreateDocumentModel],
-    ['quill_v2', CreateDocumentModel],
-    ['solution', CreateDocumentModel],
-    ['dir', CreateDocumentModel],
-    ['file', CreateDocumentModel],
-    ['mdx_comment', CreateDocumentModel],
-    ['restricted', CreateDocumentModel],
-    ['cms_text', CreateDocumentModel],
-    ['dynamic_document_roots', CreateDocumentModel]
-];
+/**
+ * One `DocumentTypeConfig` per type, so the `factory` and the `fileExtensions` are checked against their `type`.
+ */
+export type AnyDocumentTypeConfig = { [T in DocumentType]: DocumentTypeConfig<T> }[DocumentType];
+
+export interface CreatableFileType {
+    type: DocumentType;
+    config: FileConfig<DocumentType>;
+}
+
+const DEFAULT_FILE_PRIORITY = 10;
 
 class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `update-${string}`> {
     readonly root: RootStore;
     documents = observable.array<DocumentModelType>([]);
-    factories = new Map<DocumentType, Factory>(FactoryDefault);
-    fileExtensions = new Map<DocumentType, FileConfig<DocumentType>[]>(
-        Object.entries(DefaultExtensions) as [DocumentType, FileConfig<DocumentType>[]][]
+    private documentTypeConfigs = observable.map<DocumentType, DocumentTypeConfig<DocumentType>>(
+        {},
+        { deep: false }
     );
 
     constructor(root: RootStore) {
         super();
         this.root = root;
+        BuiltinDocumentTypes.forEach((config) => this.registerDocumentType(config));
     }
 
     find = computedFn(
@@ -128,30 +102,94 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
         { keepAlive: true }
     );
 
-    registerFileExtension<T extends DocumentType>(type: T, config: FileConfig<T> | FileConfig<T>[]) {
-        const newConfig = (Array.isArray(config) ? config : [config]).map((c) => ({
-            ...c,
-            priority: c.priority ?? 10
+    /**
+     * Registering a type again replaces its previous config and warns,
+     * unless `override` says it is replaced on purpose, e.g. to override a built-in type.
+     */
+    @action
+    registerDocumentType(config: AnyDocumentTypeConfig, options: RegistrationOptions = {}) {
+        if (this.documentTypeConfigs.has(config.type) && !options.override) {
+            console.warn(`Document type ${config.type} is already registered, replacing it`);
+        }
+        const fileExtensions = config.fileExtensions?.map((fileConfig) => ({
+            ...fileConfig,
+            priority: fileConfig.priority ?? DEFAULT_FILE_PRIORITY
         }));
-        this.fileExtensions.set(type, newConfig);
+        // erases the per-type generic: the map is keyed by `type`, so each factory still gets its own type
+        const registered = { ...config, fileExtensions } as unknown as DocumentTypeConfig<DocumentType>;
+        this.documentTypeConfigs.set(config.type, registered);
+    }
+
+    @computed
+    get documentTypes(): DocumentType[] {
+        return [...this.documentTypeConfigs.keys()];
+    }
+
+    @computed
+    get fileExtensions(): Map<DocumentType, FileConfig<DocumentType>[]> {
+        const typesWithFiles = [...this.documentTypeConfigs.values()].filter(
+            (config) => config.fileExtensions?.length
+        );
+        return new Map(typesWithFiles.map((config) => [config.type, config.fileExtensions!]));
     }
 
     @computed
     get registeredFileExtensions() {
-        return Array.from(this.fileExtensions.values()).flat();
+        return [...this.fileExtensions.values()].flat();
     }
 
-    registerFactory(type: DocumentType, factory: Factory) {
-        this.factories.set(type, factory);
+    /**
+     * The file types offered when creating a new file, ordered by their priority.
+     */
+    @computed
+    get creatableFileTypes(): CreatableFileType[] {
+        const fileTypes = [...this.fileExtensions.entries()].flatMap(([type, configs]) =>
+            configs.filter((config) => !config.hide).map((config) => ({ type, config }))
+        );
+        return orderBy(fileTypes, [(fileType) => fileType.config.priority], ['asc']);
+    }
+
+    defaultMetaOf<T extends DocumentType>(type: T): TypeMeta<T> | undefined {
+        return this.documentTypeConfigs.get(type)?.defaultMeta as TypeMeta<T> | undefined;
+    }
+
+    defaultContainerMetaOf<T extends ContainerType>(type: T): ContainerMeta<T> | undefined {
+        return this.documentTypeConfigs.get(type)?.defaultMeta as ContainerMeta<T> | undefined;
     }
 
     @computed
-    get documentTypes() {
-        return Array.from(this.factories.keys()) as DocumentType[];
+    get taskableTypes(): Set<DocumentType> {
+        const taskableConfigs = [...this.documentTypeConfigs.values()].filter((config) => config.taskable);
+        return new Set(taskableConfigs.map((config) => config.type));
+    }
+
+    /**
+     * The type of a document root, derived from the types of its documents.
+     * Of several preferred types, the first registered wins, e.g. a built-in `quiz` over a package's `script`.
+     */
+    extractDefaultDocumentType(types: DocumentType[]): DocumentType | undefined {
+        const preferredType = this.preferredInRootTypes.find((type) => types.includes(type));
+        return preferredType ?? types[0];
+    }
+
+    @computed
+    get preferredInRootTypes(): DocumentType[] {
+        const preferredConfigs = [...this.documentTypeConfigs.values()].filter(
+            (config) => config.preferredInRoot
+        );
+        return preferredConfigs.map((config) => config.type);
+    }
+
+    isCreatedOnNewRecord(type: DocumentType): boolean {
+        return !!this.documentTypeConfigs.get(type)?.createOnNewRecord;
+    }
+
+    isAdminEditable(type: DocumentType): boolean {
+        return !!this.documentTypeConfigs.get(type)?.adminEditable;
     }
 
     createDocument<Type extends DocumentType>(data: DocumentProps<Type>): TypeModelMapping[Type] | null {
-        const factory = this.factories.get(data.type);
+        const factory = this.factoryOf(data.type);
         if (!factory) {
             console.warn(`No factory registered for document type ${data.type}`);
             return null;
@@ -224,7 +262,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
                 return old as TypeModelMapping[Type];
             }
         }
-        const factory = this.factories.get(data.type);
+        const factory = this.factoryOf(data.type);
         if (!factory) {
             return;
         }
@@ -288,8 +326,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             const { id } = model;
             const hasAdminAccess =
                 !!this.root.userStore.current?.hasElevatedAccess &&
-                (model.authorId === this.root.userStore.current.id ||
-                    ADMIN_EDITABLE_DOCUMENTS.includes(model.type));
+                (model.authorId === this.root.userStore.current.id || this.isAdminEditable(model.type));
             if (!model.canEdit && !hasAdminAccess) {
                 return Promise.resolve('error');
             }
@@ -306,7 +343,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
                             if (replaceStoreModel) {
                                 return this.addToStore(data);
                             }
-                            const factory = this.factories.get(data.type);
+                            const factory = this.factoryOf(data.type);
                             if (!factory) {
                                 return undefined;
                             }
@@ -351,8 +388,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
             );
         }
         const onBehalfOf =
-            model.authorId !== this.root.userStore.current?.id &&
-            ADMIN_EDITABLE_DOCUMENTS.includes(model.type);
+            model.authorId !== this.root.userStore.current?.id && this.isAdminEditable(model.type);
         return Promise.all(preTasks)
             .then(() =>
                 this.withAbortController(`create-${model.id || uuidv4()}`, (sig) => {
@@ -522,6 +558,10 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
                 console.warn('Error updating constraints', err);
                 return undefined;
             });
+    }
+
+    private factoryOf(type: DocumentType): Factory | undefined {
+        return this.documentTypeConfigs.get(type)?.factory;
     }
 }
 

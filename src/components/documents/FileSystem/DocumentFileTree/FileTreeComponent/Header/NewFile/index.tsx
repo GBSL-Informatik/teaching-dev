@@ -7,7 +7,7 @@ import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import { useDocument } from '@tdev-hooks/useContextDocument';
 import { useStore } from '@tdev-hooks/useStore';
 import { FileConfig } from '@tdev-stores/assets/FileExtensions';
-import { orderBy } from 'es-toolkit';
+import { CreatableFileType } from '@tdev-stores/DocumentStore';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import Popup from 'reactjs-popup';
@@ -41,15 +41,7 @@ const NewFile = observer(() => {
     const [error, setError] = React.useState<string | null>(null);
     const ref = React.useRef<PopupActions>(null);
 
-    const fileTypes = orderBy(
-        [...documentStore.fileExtensions.entries()].flatMap(([type, configs]) => {
-            return configs.filter((c) => !c.hide).map((config) => ({ type, config }));
-        }),
-        [(c) => c.config.priority],
-        ['asc']
-    );
-
-    const createFile = async (type: DocumentType, config: FileConfig<DocumentType>) => {
+    const createFile = async (fileType: CreatableFileType) => {
         const dir = getFocusedDirectory(model, root);
         if (pending || !dir) {
             return;
@@ -57,12 +49,10 @@ const NewFile = observer(() => {
         setPending(true);
         setError(null);
         try {
-            const newFile = await dir.createFile(type, `new-file${config.extension}`);
-            if (newFile) {
-                syncFileTree(model, root);
-                ref.current?.close();
-                model.startRenaming(newFile.filePath);
-            }
+            const newFile = await dir.createFile(fileType);
+            syncFileTree(model, root);
+            ref.current?.close();
+            model.startRenaming(newFile.filePath);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Die Datei konnte nicht erstellt werden.');
         } finally {
@@ -84,7 +74,7 @@ const NewFile = observer(() => {
         >
             <Card classNames={{ body: styles.newFile, card: styles.popup }}>
                 <div className={styles.select}>
-                    {fileTypes.map((item) => {
+                    {documentStore.creatableFileTypes.map((item) => {
                         const { type, config } = item;
                         return (
                             <div key={config.extension} onMouseEnter={() => setDocType(config)}>
@@ -97,7 +87,7 @@ const NewFile = observer(() => {
                                     size={SIZE_S}
                                     iconSide="left"
                                     disabled={pending}
-                                    onClick={() => createFile(type, config)}
+                                    onClick={() => createFile(item)}
                                 />
                             </div>
                         );

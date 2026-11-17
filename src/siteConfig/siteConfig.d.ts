@@ -246,8 +246,11 @@ export interface SiteConfig {
      * import { rootStore } from '@tdev-stores/rootStore';
      * import { createModel } from './model';
      * const register = () => {
-     *   rootStore.documentStore.registerFactory('text_message', createModel);
-     *   rootStore.socketStore.registerRecordToCreate('text_message');
+     *   rootStore.documentStore.registerDocumentType({
+     *     type: 'text_message',
+     *     factory: createModel,
+     *     createOnNewRecord: true
+     *   });
      * };
      * register();
      * ```

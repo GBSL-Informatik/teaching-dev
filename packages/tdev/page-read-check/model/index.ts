@@ -7,8 +7,8 @@ import { action, computed, observable } from 'mobx';
 import { fSeconds, fSecondsLong } from '../helpers/time';
 import { ModelMeta } from './ModelMeta';
 
-export const createModel: Factory = (data, store) => {
-    return new PageReadChecker(data as DocumentProps<'page_read_check'>, store);
+export const createModel: Factory<'page_read_check'> = (data, store) => {
+    return new PageReadChecker(data, store);
 };
 
 class PageReadChecker extends iDocument<'page_read_check'> implements iTaskableDocument<'page_read_check'> {

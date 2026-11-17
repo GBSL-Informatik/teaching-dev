@@ -30,6 +30,17 @@ export interface FileConfig<T extends DocumentType> {
     defaultData: TypeDataMapping[T];
 }
 
+/**
+ * The config whose extension matches the file name, or else the first config of the type.
+ */
+export const findFileConfig = <T extends DocumentType>(
+    configs: FileConfig<T>[],
+    fileName: string
+): FileConfig<T> | undefined => {
+    const extension = fileName.includes('.') ? `.${fileName.split('.').pop()!.toLowerCase()}` : '';
+    return configs.find((config) => config.extension.toLowerCase() === extension) ?? configs[0];
+};
+
 export const DefaultExtensions: Partial<{ [K in DocumentType]: FileConfig<K>[] }> = {
     code: [
         {

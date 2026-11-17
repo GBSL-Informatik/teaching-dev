@@ -1,8 +1,5 @@
-import useIsBrowser from '@docusaurus/useIsBrowser';
 import clsx from 'clsx';
 import React, { useRef, type ComponentProps, type ReactElement } from 'react';
-
-import { Collapsible } from '@docusaurus/theme-common';
 
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import styles from './styles.module.css';
@@ -28,11 +25,13 @@ export type DetailsProps = {
      */
     summary: ReactElement | string;
     model: iFileSystem<any>;
-    lazy?: boolean;
 } & ComponentProps<'details'>;
 
-const FsDetails = ({ summary, model, lazy, children, ...props }: DetailsProps): React.ReactNode => {
-    const isBrowser = useIsBrowser();
+/**
+ * The closed `<details>` hides the content itself. The height animation of Docusaurus' `Collapsible`
+ * can leave nested folders at a fixed height, so their growing content overlapped the parent.
+ */
+const FsDetails = ({ summary, model, children, ...props }: DetailsProps): React.ReactNode => {
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const summaryElement = React.isValidElement(summary) ? summary : <summary>{summary}</summary>;
     return (
@@ -41,12 +40,10 @@ const FsDetails = ({ summary, model, lazy, children, ...props }: DetailsProps): 
             {...props}
             ref={detailsRef}
             open={model.isOpen}
-            data-collapsed={!model.isOpen}
             className={clsx(
                 'alert',
                 !/alert--/.test(props.className || '') && 'alert--info',
                 styles.details,
-                isBrowser && styles.isBrowser,
                 props.className
             )}
             onMouseDown={(e) => {
@@ -68,13 +65,7 @@ const FsDetails = ({ summary, model, lazy, children, ...props }: DetailsProps): 
             }}
         >
             {summaryElement}
-
-            <Collapsible
-                lazy={!!lazy} // Here we don't care about SEO
-                collapsed={!model.isOpen}
-            >
-                <div className={clsx(styles.collapsibleContent)}>{children}</div>
-            </Collapsible>
+            <div className={clsx(styles.content)}>{children}</div>
         </details>
     );
 };

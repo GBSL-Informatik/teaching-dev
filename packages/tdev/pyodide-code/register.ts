@@ -1,4 +1,5 @@
 import { mdiLanguagePython } from '@mdi/js';
+import { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
@@ -13,13 +14,14 @@ const createStore = (viewStore: ViewStore) => {
     return new PyodideStore(viewStore);
 };
 
+const createModelMeta = (props: Partial<MetaInit>) => new ModelMeta(props);
+
 const register = () => {
     rootStore.viewStore.registerStore('pyodideStore', createStore);
-    rootStore.documentStore.registerFactory('pyodide_code', createModel);
     rootStore.componentStore.registerEditorComponent('pyodide_code', {
         Header: Header,
         Footer: Footer,
-        createModelMeta: (props) => new ModelMeta(props),
+        createModelMeta: createModelMeta,
         codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => {
             if (metaLiveCode === 'live_pyo') {
                 return 'pyodide_code';
@@ -27,14 +29,21 @@ const register = () => {
             return undefined;
         }
     });
-    rootStore.documentStore.registerFileExtension('pyodide_code', {
-        name: 'Python',
-        description: 'Standard Python, ohne Turtle-Grafik',
-        extension: '.pyo',
-        priority: 5.5,
-        icon: mdiLanguagePython,
-        iconColor: 'light-dark(#3b87c5, #49a0e7)',
-        defaultData: { code: '' }
+    rootStore.documentStore.registerDocumentType({
+        type: 'pyodide_code',
+        factory: createModel,
+        defaultMeta: createModelMeta({}),
+        fileExtensions: [
+            {
+                name: 'Python (Pyodide)',
+                description: 'Standard Python, ohne Turtle-Grafik',
+                extension: '.pyo',
+                priority: 5.5,
+                icon: mdiLanguagePython,
+                iconColor: 'light-dark(#3b87c5, #49a0e7)',
+                defaultData: { code: '' }
+            }
+        ]
     });
     rootStore.componentStore.registerDocumentView('pyodide_code', DocumentView);
 };

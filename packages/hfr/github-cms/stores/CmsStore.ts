@@ -1,11 +1,4 @@
 import siteConfig from '@generated/docusaurus.config';
-import {
-    logout as apiGithubLogout,
-    githubToken as apiGithubToken,
-    load as apiLoadSettings,
-    CmsSettings,
-    FullCmsSettings
-} from '@tdev-api/cms';
 import { trimSlashes } from '@tdev-models/helpers/trimSlashes';
 import iStore, { ApiState } from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
@@ -13,6 +6,13 @@ import ViewStore from '@tdev-stores/ViewStores';
 import _ from 'es-toolkit/compat';
 import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { computedFn } from 'mobx-utils';
+import {
+    logout as apiGithubLogout,
+    githubToken as apiGithubToken,
+    load as apiLoadSettings,
+    CmsSettings,
+    FullCmsSettings
+} from '../api/cms';
 import BinFile from '../models/BinFile';
 import { type CmsLocation, SITE_REPOSITORY } from '../models/cmsLocation';
 import Dir from '../models/Dir';

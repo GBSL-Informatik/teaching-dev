@@ -106,11 +106,15 @@ Wenn ein Plugin ein weiteres *Statusdokument* implementiert, das im Seitenindex 
         }
     }
     ```
-    und den neuen Dokumenttyp im `ComponentStore` registrieren:
+    und den neuen Dokumenttyp als `taskable` registrieren:
     ```ts title="packages/<scope>/<new-plugin>/register.ts"
     const register = () => {
-        rootStore.documentStore.registerFactory('my_new_taskable_document', createModel);
-        rootStore.componentStore.registerTaskableDocumentType(new ModelMeta({}));
+        rootStore.documentStore.registerDocumentType({
+            type: 'my_new_taskable_document',
+            factory: createModel,
+            defaultMeta: new ModelMeta({}),
+            taskable: true
+        });
     };
     ```
 
