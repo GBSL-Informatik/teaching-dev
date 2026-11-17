@@ -1,11 +1,11 @@
-import { SelfCheckStateType } from '@brr/self-check/models';
-import SelfCheckContent from '@brr/self-check/SelfCheckContent';
-import { SelfCheckContext } from '@brr/self-check/shared';
 import { Access } from '@tdev-api/document';
 import Solution from '@tdev-components/documents/Solution';
 import { MetaInit } from '@tdev-models/documents/TaskState';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { SelfCheckStateType } from './models';
+import SelfCheckContent from './SelfCheckContent';
+import { SelfCheckContext } from './shared';
 
 interface Props extends MetaInit {
     visibleFrom?: SelfCheckStateType;

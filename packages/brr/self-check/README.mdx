@@ -105,8 +105,8 @@ Danach muss erneut installiert werden:
 yarn install
 ```
 
-### Erforderliche Konfiguration
-Damit für die Selfcheck TaskStates eine TaskState-Übersicht generiert wird, muss in `docusaurus.config.ts` bei der Konfiguration des `enumerateAnswersPlugin` der Komponententyp `SelfCheckTaskState` registriert werden:
+### Konfiguration der TaskState-Übersicht
+Damit für die Selfcheck TaskStates eine TaskState-Übersicht generiert wird, muss das `enumerateAnswersPlugin` den Komponententyp `SelfCheckTaskState` kennen. Die Standardkonfiguration `enumerateAnswersPluginConfig` enthält ihn bereits. Nur wenn eigene `componentsToEnumerate` gesetzt werden, muss `SelfCheckTaskState` ergänzt werden:
 ```ts title="docusaurus.config.ts" {4}
 [
   enumerateAnswersPlugin,

@@ -1,4 +1,4 @@
-import { SelfCheckContext } from '@brr/self-check/shared';
+import { SelfCheckContext } from './shared';
 
 interface Props {
     solutionId: string;
