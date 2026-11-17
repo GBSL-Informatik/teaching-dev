@@ -159,16 +159,31 @@ class ProseMirrorToMarkdown {
     private containerDirective(node: Node) {
         const [first, ...rest] = childrenOf(node);
         const hasLabel = first.type.name === 'directive_label';
-        const label = hasLabel ? stringifyMdast({ type: 'paragraph', children: this.phrasing(first) }) : '';
+        const label = hasLabel ? this.containerLabel(first) : '';
         const format: ContainerFormat = node.attrs.format ?? DEFAULT_DIRECTIVE_FORMAT;
         const fence = ':'.repeat(Math.max(format.fence ?? 3, innerDirectiveFence(node) + 1));
-        const opening = `${fence}${node.attrs.name}${directiveLabel(label)}${directiveAttributes(node.attrs.attributes)}`;
+        const opening = `${fence}${node.attrs.name}${label}${directiveAttributes(node.attrs.attributes)}`;
         const content = hasLabel ? rest : [first, ...rest];
         const children =
             node.type.name === 'items_directive'
                 ? this.directiveItems(content, format.childIndent)
                 : this.blocks(content, 2, format.childIndent);
         return this.container(opening, children, fence, format);
+    }
+
+    /**
+     * The label with its brackets. It is escaped inside a directive, not as a paragraph:
+     * `[6. Title]` is no ordered list and `]` in the label must be escaped.
+     */
+    private containerLabel(label: Node) {
+        const name = 'label';
+        const leafDirective = stringifyMdast({
+            type: 'leafDirective',
+            name,
+            attributes: {},
+            children: this.phrasing(label)
+        });
+        return leafDirective.slice(`::${name}`.length);
     }
 
     /** the items of `:::cards` and `:::flex`, see `directiveItem` */

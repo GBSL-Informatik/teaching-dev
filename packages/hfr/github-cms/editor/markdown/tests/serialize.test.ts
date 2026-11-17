@@ -294,3 +294,21 @@ describe('image captions', () => {
         );
     });
 });
+
+describe('container directive labels', () => {
+    const editLabel = (source: string) =>
+        edit(source, (tr) => {
+            const label = findNode(tr.doc, 'directive_label');
+            tr.insertText('!', label.pos + label.node.nodeSize - 1);
+        });
+
+    it('does not escape a label looking like an ordered list item', () => {
+        expect(editLabel(':::aufgabe[6. Weihnachtsstern]\nText\n:::\n')).toBe(
+            ':::aufgabe[6. Weihnachtsstern!]\nText\n:::\n'
+        );
+    });
+
+    it('escapes the brackets of a label', () => {
+        expect(editLabel(':::info[x \\[y\\]]\nText\n:::\n')).toBe(':::info[x \\[y\\]!]\nText\n:::\n');
+    });
+});
