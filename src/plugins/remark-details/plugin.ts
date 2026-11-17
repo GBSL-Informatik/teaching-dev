@@ -6,9 +6,9 @@ import { InfimaTypes, type InfimaType } from '../../components/shared/Colors/inf
 
 /**
  * The alert type coloring the details, used as `alert--<type>`.
- * `blue` is not an Infima type, it is defined in `src/css/custom.scss`.
+ * `blue` and `black` are not Infima types, they are defined in `src/css/custom.scss`.
  */
-export type AlertType = InfimaType | 'blue';
+export type AlertType = InfimaType | 'blue' | 'black';
 
 /**
  * Maps a directive class (e.g. `.danger` or `.red`) to the alert type it colors the details with.
@@ -17,6 +17,7 @@ export type AlertType = InfimaType | 'blue';
 export const DEFAULT_COLORS: Record<string, AlertType> = {
     ...InfimaTypes,
     blue: 'blue',
+    black: 'black',
     note: 'secondary',
     tip: 'success',
     caution: 'warning'

@@ -372,4 +372,21 @@ describe('#details colors', () => {
           "
         `);
     });
+    it('uses the black alert for black', async () => {
+        const input = alignLeft(`:::details[Black]{.black}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--black">
+            <summary>
+              Black
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
 });

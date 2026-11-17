@@ -51,6 +51,10 @@ Zuerst die Aufgabenstellung genau lesen.
 :::details[Zusatzaufgabe]{.orange}
 Für alle, die schon fertig sind.
 :::
+
+:::details[Für Profis 🕶️]{.black}
+Mit `Code` und einem [Link](#farben).
+:::
 </CodeShowcase>
 
 Folgende Klassen sind verfügbar:
@@ -59,10 +63,12 @@ Folgende Klassen sind verfügbar:
 : Die Farben der Infima-Alerts.
 `.note`, `.tip`, `.caution`
 : Dieselbe Farbe wie die gleichnamige Admonition (`secondary`, `success` bzw. `warning`).
-`.red`, `.orange`, `.green`, `.lightBlue`, `.gray`, `.grey`, `.black`
-: Dieselben Farbnamen wie bei Buttons: `danger`, `warning`, `success`, `info`, `secondary` bzw. `primary`.
+`.red`, `.orange`, `.green`, `.lightBlue`, `.gray`, `.grey`
+: Dieselben Farbnamen wie bei Buttons: `danger`, `warning`, `success`, `info` bzw. `secondary`.
 `.blue`
 : Blau (`--ifm-color-blue`), unabhängig von der Primärfarbe der Website.
+`.black`
+: Dunkelgrau, auch im Dark-Mode gut sichtbar.
 
 ## Installation
 
@@ -78,7 +84,7 @@ Das Plugin ist als `detailsPluginConfig` in den `recommendedBeforeDefaultRemarkP
 
 `colors`
 : Weitere Klassen, die eine Farbe setzen. Bestehende Klassen können damit auch umgefärbt werden.
-: Werte: `primary`, `secondary`, `success`, `info`, `warning`, `danger` oder `blue`.
+: Werte: `primary`, `secondary`, `success`, `info`, `warning`, `danger`, `blue` oder `black`.
 
 Um eigene Farb-Klassen zu ergänzen, wird im `siteConfig.ts` die Standardkonfiguration des Plugins ersetzt:
 
