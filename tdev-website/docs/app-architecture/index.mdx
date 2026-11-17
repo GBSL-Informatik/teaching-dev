@@ -235,18 +235,17 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'text_message',
         factory: createTextMessage,
-        // optional: Server-seitig erzeugte Dokumente, die über SocketIO
-        // angekündigt werden, in den Store aufnehmen
+        // optional: neue Nachrichten anderer Personen sofort anzeigen
         createOnNewRecord: true
     });
-    // optional: ein Container-Typ für dynamische Räume, mit seinen Meta-Daten
+    // optional: der Chat als Container-Typ, damit er als dynamischer Raum erstellt werden kann
     rootStore.documentStore.registerDocumentType({
         type: 'simple_chat',
         factory: createSimpleChat,
         defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
         createOnNewRecord: true
     });
-    // die Komponente, mit der Räume dieses Container-Typs angezeigt werden
+    // die Komponente, die einen solchen Chat-Raum anzeigt
     rootStore.componentStore.registerContainerComponent('simple_chat', SimpleChat);
 };
 
@@ -259,31 +258,35 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 `registerDocumentType` kennt folgende Optionen:
 
 `type`
-: Der Dokumenttyp, wie er im `TypeModelMapping` definiert ist.
+: Name des Dokumenttyps, wie er im `TypeModelMapping` eingetragen ist.
 `factory`
-: Erstellt das Modell aus dem `Document` der API.
+: Funktion, die aus den Daten der API das Modell dieses Typs erzeugt.
 `defaultMeta`
-: Meta-Daten für `DocumentRoot`s, deren Dokumente ohne Meta-Daten geladen werden, bspw. in Admin-Ansichten.
-: Bei Container-Typen ein `ContainerMeta`, mit dem auch neue dynamische Räume erstellt und geladen werden.
-: Für Editor- und Container-Typen erforderlich.
+: Meta-Daten, die gelten, wenn ein Dokument ohne seine Komponente geladen wird. Normalerweise liefert die Komponente auf der Seite die Meta-Daten, in der Admin-Ansicht fehlt sie aber.
+: Pflicht für Editor- und Container-Typen. Container-Typen brauchen ein `ContainerMeta`, mit dem auch neue dynamische Räume erstellt werden.
 `fileExtensions`
-: Dateiendungen, mit denen der Typ im Dateisystem (`dir` und `file`) erstellt werden kann. Beide Dateisystem-Ansichten bieten die nicht versteckten (`hide`) Endungen nach `priority` geordnet zum Erstellen an und zeigen Dateien mit `icon` und `iconColor` an.
+: Macht den Typ als Datei im Dateisystem verfügbar. Jeder Eintrag beschreibt eine Dateiart: Endung, Name, Icon, Farbe und den Inhalt einer neuen Datei.
+: Beim Erstellen einer Datei stehen alle Einträge ohne `hide: true` zur Auswahl, sortiert nach `priority` (kleinere Zahl weiter vorne). Das Icon und die Farbe erscheinen auch bei der Datei selbst.
 : Standard-Priorität: `10`.
 `createOnNewRecord`
-: Neue Dokumente dieses Typs in den Store aufnehmen, wenn sie über SocketIO angekündigt werden.
+: Neue Dokumente dieses Typs, die andere Personen erstellen, erscheinen sofort, ohne dass die Seite neu geladen werden muss. Bspw. neue Nachrichten in einem Chat.
 : Standard: `false`.
 `taskable`
-: Das Dokument zählt zum Bearbeitungsstand einer Seite. Nur für Typen im `TaskableDocumentMapping` erlaubt, deren Modelle `iTaskableDocument` implementieren.
+: Dokumente dieses Typs zählen zum Bearbeitungsstand einer Seite, also dazu, wie viele Aufgaben erledigt sind. Nur möglich für Typen aus dem `TaskableDocumentMapping`, deren Modelle `iTaskableDocument` implementieren.
 : Standard: `false`.
 `adminEditable`
-: Lehrpersonen und Admins bearbeiten die Dokumente anderer Benutzer:innen in deren Namen, bspw. CMS-Texte. Für die meisten Dokumente sollte das nicht gelten.
+: Lehrpersonen und Admins dürfen Dokumente dieses Typs im Namen anderer Benutzer:innen ändern, bspw. CMS-Texte. Für die meisten Typen soll das nicht möglich sein.
 : Standard: `false`.
 `preferredInRoot`
-: Das Haupt-Dokument einer `DocumentRoot`, die auch andere Typen enthält, bspw. ein `quiz` mit seinen Antworten. Bestimmt den Typ der `DocumentRoot`, wenn sie ohne Meta-Daten geladen wird.
-: Enthält eine `DocumentRoot` mehrere solche Typen, gewinnt der zuerst registrierte. Eingebaute Typen wie `quiz` werden vor den Paketen registriert, ein `override` behält die Reihenfolge bei.
+: Für `DocumentRoot`s mit Dokumenten verschiedener Typen, bspw. ein `quiz` mit seinen Antworten. Fehlen beim Laden die Meta-Daten, bestimmt dieser Typ, welche `defaultMeta` die `DocumentRoot` erhält.
+: Kommen mehrere solche Typen in derselben `DocumentRoot` vor, gilt der zuerst registrierte. Eingebaute Typen wie `quiz` sind immer vor den Typen der Pakete registriert.
 : Standard: `false`.
 
-Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte vollständig und in der Konsole erscheint eine Warnung. Optionen, die nicht erneut angegeben werden, bspw. `defaultMeta` oder `fileExtensions`, gehen dabei verloren. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler`, `viewStore.registerStore` und die Registrierungen im `componentStore` (`registerContainerComponent`, `registerEditorComponent`, `registerDocumentView`), dort als drittes Argument:
+##### Einen Typ ersetzen
+
+Wird derselbe Typ ein zweites Mal registriert, ersetzt die zweite Registrierung die erste, und in der Konsole erscheint eine Warnung. So fällt auf, wenn ein Typ versehentlich doppelt registriert wird. Soll ein Typ bewusst ersetzt werden, bspw. ein eingebauter Typ durch eine eigene Variante, wird `{ override: true }` übergeben. Dann bleibt die Warnung aus.
+
+Ersetzt wird die ganze Konfiguration. Optionen, die nicht erneut angegeben werden, bspw. `defaultMeta` oder `fileExtensions`, fallen also weg. Der ersetzte Typ behält seinen Platz in der Reihenfolge (siehe `preferredInRoot`).
 
 ```ts
 import { DefaultExtensions } from '@tdev-stores/assets/FileExtensions';
@@ -300,6 +303,8 @@ rootStore.documentStore.registerDocumentType(
     { override: true }
 );
 ```
+
+Gleich verhalten sich die anderen Registrierungen: `socketStore.registerRecordHandler`, `viewStore.registerStore` sowie `registerContainerComponent`, `registerEditorComponent` und `registerDocumentView` im `componentStore`. Bei ihnen ist `{ override: true }` das dritte Argument.
 
 #### Offline-Routen <Badge type="info">Optional</Badge>
 
