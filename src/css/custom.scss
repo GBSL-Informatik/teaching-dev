@@ -15,13 +15,24 @@
 
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-    --ifm-color-blue-lighter: #72a1ed;
     --ifm-color-blue: #3578e5;
     --ifm-color-blue-dark: #306cce;
     --ifm-color-blue-darker: #2d66c3;
     --ifm-color-blue-darkest: #2554a0;
-    --tdev-color-blue-contrast-background: rgb(235, 242, 252);
-    --tdev-color-blue-contrast-foreground: rgb(16, 36, 69);
+    --ifm-color-blue-light: #538ce9;
+    --ifm-color-blue-lighter: #72a1ed;
+    --ifm-color-blue-lightest: #9abcf2;
+    /* same mix as Infima's `--ifm-color-*-contrast-*` */
+    --tdev-color-blue-contrast-background: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 10%,
+        var(--ifm-color-white)
+    );
+    --tdev-color-blue-contrast-foreground: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 30%,
+        var(--ifm-color-black)
+    );
     --tdev-color-black-contrast-background: var(--ifm-color-gray-800);
     --tdev-color-black-contrast-foreground: var(--ifm-color-gray-100);
     --tdev-color-black-border: var(--ifm-color-black);
@@ -53,8 +64,16 @@
     --ifm-global-shadow-tl: 0 8px 16px 0 rgba(0, 119, 110, 0.08), 0 2px 4px 0 rgba(0, 119, 110, 0.05);
     --ifm-color-boxed: #8395ef;
     --prism-background-color: #282a36;
-    --tdev-color-blue-contrast-background: rgb(16, 36, 69);
-    --tdev-color-blue-contrast-foreground: rgb(235, 242, 252);
+    --tdev-color-blue-contrast-background: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 30%,
+        var(--ifm-color-black)
+    );
+    --tdev-color-blue-contrast-foreground: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 10%,
+        var(--ifm-color-white)
+    );
     --tdev-color-black-border: var(--ifm-color-gray-500);
     --tdev-color-black-hover: var(--ifm-color-gray-700);
 

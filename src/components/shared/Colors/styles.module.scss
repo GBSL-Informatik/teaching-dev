@@ -88,6 +88,13 @@
 }
 
 [data-theme='dark'] {
+    /* solid black buttons invert in dark mode, outline buttons stay dark gray */
+    .buttonBlack:not(:global(.button--outline)) {
+        --ifm-color-primary: var(--ifm-font-color-base);
+        --ifm-color-primary-dark: var(--ifm-color-gray-300);
+        --ifm-color-primary-darker: var(--ifm-color-gray-300);
+        --ifm-button-color: var(--ifm-font-color-base-inverse);
+    }
     .buttonGray {
         --ifm-button-border-color: var(--ifm-color-secondary);
     }
