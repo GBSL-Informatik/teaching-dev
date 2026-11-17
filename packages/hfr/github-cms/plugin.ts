@@ -1,11 +1,12 @@
 import { PluginConfig } from '@docusaurus/types';
 import { SiteConfig } from '@tdev/siteConfig/siteConfig';
+import type { Pluggable } from 'unified';
 
 const githubCmsPlugin = (options: {
     pages: SiteConfig['pages'];
-    remarkPlugins: any[];
-    rehypePlugins: any[];
-    beforeDefaultRemarkPlugins: any[];
+    remarkPlugins: Pluggable[];
+    rehypePlugins: Pluggable[];
+    beforeDefaultRemarkPlugins: Pluggable[];
 }): PluginConfig => {
     return [
         '@docusaurus/plugin-content-pages',

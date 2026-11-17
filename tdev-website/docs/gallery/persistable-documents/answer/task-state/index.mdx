@@ -129,21 +129,8 @@ Im `src/stores/rootStore.ts` den `PageStore` registrieren.
 Damit die TaskState-Übersicht gebraucht werden kann, braucht es die Plugins
 - [remark-page](../../../../app-architecture/remark-plugins/mdx-page/index.mdx)
 - [remark-enumerate-components](../../../../app-architecture/remark-plugins/enumerate-components/index.mdx)
-```ts title="docusaurus.config.ts" {1,5-12}
-import enumerateAnswersPlugin from './src/plugins/remark-enumerate-components/plugin';
 
-const REMARK_PLUGINS = [
-    /* ... */
-    [
-      [
-        enumerateAnswersPlugin,
-        {
-          componentsToEnumerate: ['TaskState', /*...*/],
-        }
-      ]
-    ]
-];
-```
+Beide sind in den `recommendedRemarkPlugins` enthalten, `remark-enumerate-components` nummeriert `<TaskState />` standardmässig. Nur bei einer eigenen Plugin-Konfiguration im `siteConfig.ts` muss `TaskState` in den `componentsToEnumerate` stehen.
 :::
 
 Die TaskState-Übersicht kann in der Navbar hinzugefügt werden.

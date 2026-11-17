@@ -19,15 +19,19 @@ und, falls nicht bereits vorhanden:
 - `src/models/Page.tsx`
 :::
 
+Das Plugin ist als `pagePluginConfig` in den `recommendedRemarkPlugins` aus `src/siteConfig/markdownPluginConfigs.ts` enthalten. Websites ohne eigene `remarkPlugins` im `siteConfig.ts` erhalten es damit automatisch. Das Plugin hat keine Optionen.
 
-:::info[`docusaurus.config.ts`]
+:::warning[Eigene Plugin-Liste]
+Bei einer eigenen Plugin-Liste muss `pagePluginConfig` darin enthalten sein:
 
-```ts
-import pagePlugin from './src/plugins/remark-page/plugin';
+```ts title="siteConfig.ts"
+import { pagePluginConfig } from '../src/siteConfig/markdownPluginConfigs';
 
-const REMARK_PLUGINS = [
-    /* ... */
-    pagePlugin
-];
+const getSiteConfig: SiteConfigProvider = () => ({
+    remarkPlugins: [
+        /* ... */
+        pagePluginConfig
+    ]
+});
 ```
 :::

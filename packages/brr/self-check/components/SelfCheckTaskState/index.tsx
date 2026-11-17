@@ -1,8 +1,6 @@
 import { DocumentModelType } from '@tdev-api/document';
-import Loader from '@tdev-components/Loader';
-import { SelfCheckStateType } from '@tdev-components/documents/SelfCheck/models';
-import { SelfCheckContext, SelfCheckStateSideEffect } from '@tdev-components/documents/SelfCheck/shared';
 import TaskStateComponent from '@tdev-components/documents/TaskState';
+import Loader from '@tdev-components/Loader';
 import { useDocumentRoot } from '@tdev-hooks/useDocumentRoot';
 import { useFirstMainDocument } from '@tdev-hooks/useFirstMainDocument';
 import { ModelMeta as SolutionModelMeta } from '@tdev-models/documents/Solution';
@@ -10,6 +8,9 @@ import TaskState, { MetaInit, TaskMeta } from '@tdev-models/documents/TaskState'
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
+import SelfCheckStateSideEffect from '../../models/SelfCheckStateSideEffect';
+import { SelfCheckStateType } from '../../models/SelfCheckStateType';
+import { SelfCheckContext } from '../SelfCheck/context';
 
 interface Props extends MetaInit {
     includeQuestion: boolean;

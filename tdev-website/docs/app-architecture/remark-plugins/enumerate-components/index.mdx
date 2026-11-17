@@ -53,20 +53,44 @@ consectetur adipiscing elit.
 - `src/plugins/remark-enumerate-components`
 :::
 
-:::info[`docusaurus.config.ts`]
-```ts
-import enumerateAnswersPlugin from './src/plugins/remark-enumerate-components/plugin';
+Das Plugin ist in den `recommendedRemarkPlugins` aus `src/siteConfig/markdownPluginConfigs.ts` enthalten. Websites ohne eigene `remarkPlugins` im `siteConfig.ts` nummerieren damit standardmässig `Answer`, `TaskState` und `ProgressState`.
 
-const REMARK_PLUGINS = [
-    /* ... */
-    [
-      [
-        enumerateAnswersPlugin,
-        {
-          componentsToEnumerate: ['Answer', 'TaskState', /*...*/],
-        }
-      ]
-    ]
-];
+## Optionen
+
+`componentsToEnumerate`
+: Namen der Komponenten, die eine `pagePosition` erhalten.
+: Standard der `recommendedRemarkPlugins`: `['Answer', 'TaskState', 'ProgressState']`.
+
+## Weitere Komponenten nummerieren
+
+Um weitere Komponenten zu nummerieren (z.B. aus einem Package), wird im `siteConfig.ts` die Standardkonfiguration des Plugins durch eine erweiterte ersetzt:
+
+```ts title="siteConfig.ts"
+import type { Pluggable } from 'unified';
+import enumerateAnswersPlugin from '../src/plugins/remark-enumerate-components/plugin';
+import {
+    enumerateAnswersPluginConfig,
+    enumerateAnswersPluginOptions,
+    recommendedRemarkPlugins
+} from '../src/siteConfig/markdownPluginConfigs';
+
+const extendedEnumerateAnswersPluginConfig = [
+    enumerateAnswersPlugin,
+    {
+        // highlight-next-line
+        componentsToEnumerate: [...enumerateAnswersPluginOptions.componentsToEnumerate, 'MyComponent']
+    }
+] satisfies Pluggable;
+
+const remarkPlugins = recommendedRemarkPlugins.map((plugin) =>
+    plugin === enumerateAnswersPluginConfig ? extendedEnumerateAnswersPluginConfig : plugin
+);
+
+const getSiteConfig: SiteConfigProvider = () => ({
+    remarkPlugins: remarkPlugins
+});
 ```
+
+:::warning[Eigene Plugin-Liste]
+Die Ersetzung greift nur, wenn die Liste die unveränderte `enumerateAnswersPluginConfig` enthält. Bei einer eigenen Plugin-Liste muss das Plugin mit den gewünschten `componentsToEnumerate` direkt eingetragen werden.
 :::

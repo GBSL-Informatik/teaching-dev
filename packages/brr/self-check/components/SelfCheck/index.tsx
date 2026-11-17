@@ -1,4 +1,4 @@
-import { SelfCheckContext } from '@tdev-components/documents/SelfCheck/shared';
+import { SelfCheckContext } from './context';
 
 interface Props {
     solutionId: string;
