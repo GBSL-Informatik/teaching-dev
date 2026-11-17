@@ -21,7 +21,7 @@ Compare the change against this table, not against memory. A concern listed here
 
 | Concern | Model | Where | Accepted exceptions |
 | --- | --- | --- | --- |
-| Package extension | `register.ts` calls `documentStore.registerDocumentType` (factory, `defaultMeta`, `createOnNewRecord`), `componentStore.registerContainerComponent` / `registerEditorComponent` / `registerDocumentView`, `socketStore.registerRecordHandler`, `viewStore.registerStore`; types via `declare module '@tdev-api/document'` in the package's `index.ts` | `packages/*/*/register.ts`, `index.ts` | — |
+| Package extension | `register.ts` calls `documentStore.registerDocumentType` (factory, `defaultMeta`, `createOnNewRecord`), `componentStore.registerContainerComponent` / `registerEditorComponent` / `registerDocumentView`, `socketStore.registerRecordHandler`, `viewStore.registerStore`; registering a key again warns unless `{ override: true }` (`RegistrationOptions`); types via `declare module '@tdev-api/document'` in the package's `index.ts` | `packages/*/*/register.ts`, `index.ts` | — |
 | New document type | `iDocument` model + `TypeMeta` subclass, started from `_scaffold.ts` | `src/models/documents/`, or the package | — |
 | Backend calls | function per endpoint in `src/api/*.ts`, using the shared `api` from `@tdev-api/base`, taking an `AbortSignal` | `src/api/` | `fetch()` of static files under `siteConfig.baseUrl` (`PageStore`, `Root.tsx`); `fetch()` of browser-local blob or data URLs (`quill-img-compress/dropImage.ts`) |
 | Request state and cancellation | `withAbortController(sigId, …)` and `apiStateFor` from `iStore` | `src/stores/iStore.ts` | — |

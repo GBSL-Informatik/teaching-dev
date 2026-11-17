@@ -11,6 +11,7 @@ import iCodeMeta, { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { computed } from 'mobx';
 import React from 'react';
 import { RootStore } from './rootStore';
+import { RegistrationOptions } from './utils/RegistrationOptions';
 
 export type LiveCode = `live_${string}`;
 
@@ -61,11 +62,16 @@ class ComponentStore {
 
     /**
      * The default meta of a container type is registered with `registerDocumentType`.
+     * Registering a type again replaces its component and warns, unless `override` is set.
      */
     registerContainerComponent<T extends ContainerType>(
         type: T,
-        component: React.ComponentType<ContainerProps<T>>
+        component: React.ComponentType<ContainerProps<T>>,
+        options: RegistrationOptions = {}
     ) {
+        if (this.containerComponents.has(type) && !options.override) {
+            console.warn(`Container component ${type} is already registered, replacing it`);
+        }
         this.containerComponents.set(type, component as React.ComponentType<ContainerProps>);
     }
 
@@ -73,14 +79,31 @@ class ComponentStore {
         return this.editorComponents.get(type) as EditorComponent<T> | undefined;
     }
 
-    registerEditorComponent<T extends CodeType>(type: T, component: EditorComponent<T>) {
+    /**
+     * Registering a type again replaces its component and warns, unless `override` is set.
+     */
+    registerEditorComponent<T extends CodeType>(
+        type: T,
+        component: EditorComponent<T>,
+        options: RegistrationOptions = {}
+    ) {
+        if (this.editorComponents.has(type) && !options.override) {
+            console.warn(`Editor component ${type} is already registered, replacing it`);
+        }
         this.editorComponents.set(type, component as EditorComponent<any>);
     }
 
+    /**
+     * Registering a type again replaces its view and warns, unless `override` is set.
+     */
     registerDocumentView<T extends DocumentType>(
         type: T,
-        component: React.ComponentType<{ document: TypeModelMapping[T] }>
+        component: React.ComponentType<{ document: TypeModelMapping[T] }>,
+        options: RegistrationOptions = {}
     ) {
+        if (this.documentViews.has(type) && !options.override) {
+            console.warn(`Document view ${type} is already registered, replacing it`);
+        }
         this.documentViews.set(type, component as React.ComponentType<{ document: DocumentModelType }>);
     }
 

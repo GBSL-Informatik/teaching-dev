@@ -281,7 +281,7 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 : Das Haupt-Dokument einer `DocumentRoot`, die auch andere Typen enthält, bspw. ein `quiz` mit seinen Antworten. Bestimmt den Typ der `DocumentRoot`, wenn sie ohne Meta-Daten geladen wird.
 : Standard: `false`.
 
-Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte und in der Konsole erscheint eine Warnung. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler` und `viewStore.registerStore`, dort als drittes Argument:
+Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte und in der Konsole erscheint eine Warnung. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler`, `viewStore.registerStore` und die Registrierungen im `componentStore` (`registerContainerComponent`, `registerEditorComponent`, `registerDocumentView`), dort als drittes Argument:
 
 ```ts
 rootStore.documentStore.registerDocumentType(
