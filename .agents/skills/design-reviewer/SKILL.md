@@ -32,7 +32,7 @@ Compare the change against this table, not against memory. A concern listed here
 | Browser persistence | `Storage` with a key in `StorageKey`, or `useLocalStorage` in components | `src/stores/utils/Storage.ts`, `src/hooks/useLocalStorage.ts` | IndexedDB only inside the offline API |
 | Configuration | typed `customFields.tdevConfig` (`siteConfig.d.ts`); package options in its plugin config | `src/siteConfig/` | — |
 | Docusaurus overrides | swizzled components in `src/theme/`, wrapping `@theme-original/*` where possible | `src/theme/` | — |
-| Styling | co-located `styles.module.scss`, Infima `--ifm-*` vars, `clsx` | see `AGENTS.md` | inline style only for runtime values |
+| Styling | co-located `styles.module.scss`, Infima `--ifm-*` vars, `clsx` | see `AGENTS.md` | inline style only for runtime values; global `alert--<type>` classes in `src/css/custom.scss` (`alert--blue`, `alert--black`), because remark plugins emit plain class names at build time and cannot use CSS modules |
 | User-facing errors | **no single model yet**: `FileTreeView.addNotification` inside the file tree, `console.error` elsewhere | — | do not add a third global mechanism in passing; that is an owner decision |
 
 ## What to check
