@@ -74,7 +74,7 @@
         --ifm-button-border-color: var(--ifm-font-color-base);
         --ifm-button-color: var(--ifm-font-color-base);
     }
-    &:global(.button--outline):is(:hover, :active, :global(.button--active)) {
+    &:global(.button--outline):not(:disabled):is(:hover, :active, :global(.button--active)) {
         --ifm-button-background-color: var(--tdev-color-black-contrast-background);
         --ifm-button-color: var(--tdev-color-black-contrast-foreground);
     }
