@@ -17,7 +17,7 @@ import {
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
 import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
-import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
+import type { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
