@@ -50,13 +50,11 @@ CSS variables, meant to be overridden by final theme
     transform: rotate(90deg);
 }
 
-.collapsibleContent {
-    margin-top: 1rem;
+.content {
     border-top: 1px solid var(--docusaurus-details-decoration-color);
-    padding-top: 1rem;
 }
 
-.collapsibleContent > *:last-child {
+.content > *:last-child {
     margin-bottom: 0;
 }
 
