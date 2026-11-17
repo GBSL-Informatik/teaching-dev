@@ -42,7 +42,7 @@ const FsDetails = ({ summary, model, children, ...props }: DetailsProps): React.
             open={model.isOpen}
             className={clsx(
                 'alert',
-                !/alert--/.test(props.className || '') && 'alert--info',
+                !/\balert--/.test(props.className || '') && 'alert--info',
                 styles.details,
                 props.className
             )}

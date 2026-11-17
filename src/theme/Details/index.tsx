@@ -9,6 +9,7 @@ const hasAlertType = (className?: string) => /\balert--/.test(className || '');
 /**
  * Same as the Docusaurus Details, but keeps an alert type (e.g. `alert--danger`) set by the remark-details plugin.
  * The original always adds `alert--info`, which overrides some of the other types.
+ * Mirrors `@docusaurus/theme-classic/lib/theme/Details`: re-sync it and its styles on Docusaurus upgrades.
  */
 export default function Details(props: Props): React.ReactNode {
     return (

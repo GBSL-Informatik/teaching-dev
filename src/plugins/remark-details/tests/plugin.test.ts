@@ -326,4 +326,21 @@ describe('#details colors', () => {
           "
         `);
     });
+    it('ignores classes named like object properties', async () => {
+        const input = alignLeft(`:::details[Constructor]{.constructor}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="constructor">
+            <summary>
+              Constructor
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
 });

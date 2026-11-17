@@ -66,7 +66,7 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(optionsInput = {})
         }
         return directiveClass
             .split(/\s+/)
-            .map((name) => (name in COLORS ? `alert--${COLORS[name]}` : name))
+            .map((name) => (Object.hasOwn(COLORS, name) ? `alert--${COLORS[name]}` : name))
             .join(' ');
     };
     const getClassNameAttribute = (tag: string, directiveClass?: string | null): MdxJsxAttribute[] => {
