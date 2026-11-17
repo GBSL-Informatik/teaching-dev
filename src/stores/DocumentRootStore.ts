@@ -19,8 +19,6 @@ import _ from 'es-toolkit/compat';
 import { action, computed, observable, runInAction, transaction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 
-import { UnknownMeta } from '@tdev-models/documents/Unknown';
-
 type LoadConfig = {
     /** if true, user permissions will be loaded
      * @default true
@@ -64,8 +62,6 @@ type BatchedMeta = {
     access: Partial<Config>;
 };
 
-const UnknownDefaultMeta = new UnknownMeta({});
-
 const MAX_CREATE_ATTEMPTS = 5;
 
 export class DocumentRootStore extends iStore {
@@ -82,11 +78,6 @@ export class DocumentRootStore extends iStore {
     @computed
     get hasApiAccess() {
         return this.root.sessionStore.isLoggedIn;
-    }
-
-    @computed
-    get defaultMetas(): TypeMeta<DocumentType>[] {
-        return [UnknownDefaultMeta, ...this.root.documentStore.defaultMetas];
     }
 
     @action
@@ -300,7 +291,7 @@ export class DocumentRootStore extends iStore {
         const meta =
             config.meta ||
             (this.find(data.id)?.meta as TypeMeta<any>) ||
-            (defaultType ? this.defaultMetas.find((m) => m.type === defaultType) : undefined);
+            (defaultType ? this.root.documentStore.defaultMetaOf(defaultType) : undefined);
         const documentRoot =
             config.load.documentRoot && meta ? new DocumentRoot(data, meta, this) : this.find(data.id);
         if (!documentRoot) {

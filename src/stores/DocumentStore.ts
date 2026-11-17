@@ -115,13 +115,6 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
         return [...this.fileExtensions.values()].flat();
     }
 
-    @computed
-    get defaultMetas(): TypeMeta<DocumentType>[] {
-        return [...this.documentTypeConfigs.values()]
-            .map((config) => config.defaultMeta)
-            .filter((meta) => !!meta);
-    }
-
     defaultMetaOf<T extends DocumentType>(type: T): TypeMeta<T> | undefined {
         return this.documentTypeConfigs.get(type)?.defaultMeta as TypeMeta<T> | undefined;
     }

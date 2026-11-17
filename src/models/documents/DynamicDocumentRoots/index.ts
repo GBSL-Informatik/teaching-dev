@@ -83,9 +83,11 @@ class DynamicDocumentRoots<Type extends ContainerType> extends iDocument<'dynami
     }
 
     get defaultContainerMeta(): ContainerMeta<Type> {
-        const registeredMeta = this.store.defaultMetaOf(this.containerType) as
-            ContainerMeta<Type> | undefined;
-        return registeredMeta ?? new ContainerMeta(this.containerType);
+        const registeredMeta = this.store.defaultMetaOf(this.containerType);
+        if (registeredMeta instanceof ContainerMeta) {
+            return registeredMeta;
+        }
+        return new ContainerMeta(this.containerType);
     }
 
     @action
