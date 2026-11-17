@@ -21,13 +21,13 @@ import {
     StreamedDynamicDocument,
     TypeRecordMap
 } from '../api/IoEventTypes';
-import { registerCoreRecordHandlers } from './coreRecordHandlers';
+import { registerCoreRecordHandlers } from './assets/coreRecordHandlers';
 const { OFFLINE_API, BACKEND_URL } = customFields;
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 const SOCKET_ID_HEADER = 'x-metadata-sid';
 
 /**
- * Handles the socket events of a record type, see `coreRecordHandlers.ts` for the types of the core.
+ * Handles the socket events of a record type, see `assets/coreRecordHandlers.ts` for the types of the core.
  */
 export interface RecordHandler<T> {
     onNew?: (record: T) => void;

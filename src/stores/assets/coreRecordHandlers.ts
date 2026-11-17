@@ -4,7 +4,7 @@ import { RecordType } from '@tdev-api/IoEventTypes';
 import { StudentGroup as ApiStudentGroup } from '@tdev-api/studentGroup';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import StudentGroup from '@tdev-models/StudentGroup';
-import type { SocketDataStore } from './SocketDataStore';
+import type { SocketDataStore } from '../SocketDataStore';
 
 /**
  * Registers the handlers for the record types of the core. Packages register theirs the same way.

@@ -27,7 +27,7 @@ Compare the change against this table, not against memory. A concern listed here
 | Backend calls | function per endpoint in `src/api/*.ts`, using the shared `api` from `@tdev-api/base`, taking an `AbortSignal` | `src/api/` | `fetch()` of static files under `siteConfig.baseUrl` (`PageStore`, `Root.tsx`); `fetch()` of browser-local blob or data URLs (`quill-img-compress/dropImage.ts`) |
 | Request state and cancellation | `withAbortController(sigId, …)` and `apiStateFor` from `iStore` | `src/stores/iStore.ts` | — |
 | Offline mode | offline adapter serving the same `src/api` calls from the `RouteTable`; errors as `OfflineHttpError` | `src/api/OfflineApi/` | — |
-| Real-time updates | `IoEvent`s dispatched by `SocketDataStore` to handlers registered per record type with `registerRecordHandler`; core handlers in `coreRecordHandlers.ts` | `src/stores/SocketDataStore.ts`, `src/stores/coreRecordHandlers.ts`, `src/api/IoEventTypes.ts` | — |
+| Real-time updates | `IoEvent`s dispatched by `SocketDataStore` to handlers registered per record type with `registerRecordHandler`; core handlers in `coreRecordHandlers.ts` | `src/stores/SocketDataStore.ts`, `src/stores/assets/coreRecordHandlers.ts`, `src/api/IoEventTypes.ts` | — |
 | Shared state | MobX stores owned by `rootStore` (app lifetime); view state in view stores; components use `useStore` | `src/stores/` | local `useState` for state that dies with the component |
 | Browser persistence | `Storage` with a key in `StorageKey`, or `useLocalStorage` in components | `src/stores/utils/Storage.ts`, `src/hooks/useLocalStorage.ts` | IndexedDB only inside the offline API |
 | Configuration | typed `customFields.tdevConfig` (`siteConfig.d.ts`); package options in its plugin config | `src/siteConfig/` | — |
