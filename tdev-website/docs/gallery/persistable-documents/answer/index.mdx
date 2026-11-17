@@ -66,22 +66,6 @@ export default {
 Damit auch TaskStates, die von einer `<Answer />` Komponente dargestellt werden, in die **Seitenübersicht** aufgenommen werden, braucht es das Plugin `remark-enumerate-components`
 - [remark-enumerate-components](../../../app-architecture/remark-plugins/enumerate-components/index.mdx)
 
-mit der Konfiguration
-
-```ts title="docusaurus.config.ts"
-import enumerateAnswersPlugin from './src/plugins/remark-enumerate-components/plugin';
-
-const REMARK_PLUGINS = [
-    /* ... */
-    [
-      [
-        enumerateAnswersPlugin,
-        {
-          componentsToEnumerate: ['Answer', /*...*/],
-        }
-      ]
-    ]
-];
-```
+Es ist in den `recommendedRemarkPlugins` enthalten und nummeriert `<Answer />` standardmässig. Nur bei einer eigenen Plugin-Konfiguration im `siteConfig.ts` muss `Answer` in den `componentsToEnumerate` stehen.
 :::
 
