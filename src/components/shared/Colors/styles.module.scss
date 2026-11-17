@@ -66,11 +66,11 @@
     --ifm-color-primary: var(--tdev-color-black-contrast-background);
     --ifm-color-primary-dark: var(--tdev-color-black-hover);
     --ifm-color-primary-darker: var(--tdev-color-black-hover);
-    --ifm-button-border-color: var(--tdev-color-black-border);
     &:not(.button--outline) {
         --ifm-button-color: var(--tdev-color-black-contrast-foreground);
     }
     &.button--outline {
+        --ifm-button-border-color: var(--ifm-font-color-base);
         --ifm-button-color: var(--ifm-font-color-base);
     }
     &.button--outline:is(:hover, :active, .button--active) {

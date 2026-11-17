@@ -22,13 +22,9 @@
     --ifm-color-blue-darkest: #2554a0;
     --tdev-color-blue-contrast-background: rgb(235, 242, 252);
     --tdev-color-blue-contrast-foreground: rgb(16, 36, 69);
-    --tdev-color-black-contrast-background: color-mix(
-        in srgb,
-        var(--ifm-color-gray-900) 60%,
-        var(--ifm-color-gray-800)
-    );
+    --tdev-color-black-contrast-background: var(--ifm-color-gray-800);
     --tdev-color-black-contrast-foreground: var(--ifm-color-gray-100);
-    --tdev-color-black-border: var(--ifm-color-gray-900);
+    --tdev-color-black-border: var(--ifm-color-gray-500);
     --tdev-color-black-hover: var(--ifm-color-gray-900);
     --ifm-color-disabled: #6e6e6e;
     --ifm-color-violet: #8957e5;
@@ -59,8 +55,6 @@
     --prism-background-color: #282a36;
     --tdev-color-blue-contrast-background: rgb(16, 36, 69);
     --tdev-color-blue-contrast-foreground: rgb(235, 242, 252);
-    --tdev-color-black-contrast-background: var(--ifm-color-gray-800);
-    --tdev-color-black-border: var(--ifm-color-gray-600);
     --tdev-color-black-hover: var(--ifm-color-gray-700);
 
     --tdev-admonition-aufgabe-background-color: #0095ff1a;
@@ -108,7 +102,7 @@
     --ifm-alert-border-color: var(--ifm-color-blue-dark);
 }
 
-/* A dark gray alert, also on dark backgrounds. Links and inline code derive from these variables. */
+/* A dark gray alert in both themes. The light border keeps the details arrow visible. Links and inline code derive from these variables. */
 .alert--black,
 .alert--info.alert--black {
     --ifm-alert-background-color: var(--tdev-color-black-contrast-background);
