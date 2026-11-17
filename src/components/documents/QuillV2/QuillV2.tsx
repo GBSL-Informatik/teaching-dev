@@ -35,7 +35,7 @@ const FORMATS = [
     'code-block',
     'indent',
     'blockquote',
-    'script',
+    'script', // Quill's sub- and superscript format, not the document type
     'code'
     // 'width',
     // 'clean',
