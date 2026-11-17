@@ -65,7 +65,7 @@
 /* Infima has no blue alert: `alert--primary` follows the site's primary color. */
 .alert--blue {
     --ifm-alert-background-color: var(--tdev-color-blue-contrast-background);
-    --ifm-alert-background-color-highlight: rgba(53, 120, 229, 0.15);
+    --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-blue) 15%, transparent);
     --ifm-alert-foreground-color: var(--tdev-color-blue-contrast-foreground);
     --ifm-alert-border-color: var(--ifm-color-blue-dark);
 }
