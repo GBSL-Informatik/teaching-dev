@@ -17,7 +17,6 @@ import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
-import getImageDimensions from '@tdev-components/utils/localFS/getImageDimensions';
 import {
     type CustomData,
     EXCALIDRAW_BACKGROUND_FILE_ID,
@@ -30,6 +29,7 @@ import {
     getImageFileFromScene,
     getRectangleElementFromScene
 } from '@tdev/excalidoc/ImageMarkupEditor/helpers/getElementsFromScene';
+import getImageDimensions from '@tdev/excalidoc/ImageMarkupEditor/helpers/getImageDimensions';
 import clsx from 'clsx';
 import React from 'react';
 import styles from './styles.module.scss';
