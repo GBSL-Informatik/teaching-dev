@@ -1,16 +1,7 @@
-import {
-    mdiFile,
-    mdiFileCode,
-    mdiFileCodeOutline,
-    mdiFileDocument,
-    mdiFileDocumentOutline,
-    mdiFileOutline
-} from '@mdi/js';
+import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { DocumentType } from '@tdev-api/document';
 import SyncStatus from '@tdev-components/SyncStatus';
 import { default as FileModel } from '@tdev-models/documents/FileSystem/File';
-import { ExcalidrawColor, mdiExcalidraw, mdiExcalidrawOutline } from '@tdev/excalidoc/Component';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import Actions from '../Actions';
@@ -25,45 +16,6 @@ interface Props {
     className?: string;
 }
 
-const getColor = (type?: DocumentType) => {
-    switch (type) {
-        case 'quill_v2':
-            return 'var(--ifm-color-blue)';
-        case 'script':
-            return 'rgb(19, 165, 0)';
-        case 'excalidoc':
-            return ExcalidrawColor;
-        default:
-            return undefined;
-    }
-};
-
-export const getIcon = (type?: DocumentType) => {
-    switch (type) {
-        case 'quill_v2':
-            return mdiFileDocumentOutline;
-        case 'script':
-            return mdiFileCodeOutline;
-        case 'excalidoc':
-            return mdiExcalidrawOutline;
-        default:
-            return mdiFileOutline;
-    }
-};
-
-const getOpenIcon = (type?: DocumentType) => {
-    switch (type) {
-        case 'quill_v2':
-            return mdiFileDocument;
-        case 'script':
-            return mdiFileCode;
-        case 'excalidoc':
-            return mdiExcalidraw;
-        default:
-            return mdiFile;
-    }
-};
-
 const File = observer((props: Props) => {
     const { file, className } = props;
     return (
@@ -73,10 +25,10 @@ const File = observer((props: Props) => {
             summary={
                 <summary className={clsx(shared.summary, styles.summary)}>
                     <Icon
-                        path={file.isOpen ? getOpenIcon(file.document?.type) : getIcon(file.document?.type)}
+                        path={file.fileConfig?.icon ?? mdiFileOutline}
                         size={0.8}
                         className={clsx(shared.icon)}
-                        color={getColor(file.document?.type)}
+                        color={file.fileConfig?.iconColor}
                     />
                     <Name model={file} className={shared.name} />
                     <div className={clsx(shared.syncState)}>

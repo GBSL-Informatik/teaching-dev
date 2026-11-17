@@ -267,7 +267,7 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 : Bei Container-Typen ein `ContainerMeta`, mit dem auch neue dynamische Räume erstellt und geladen werden.
 : Für Editor- und Container-Typen erforderlich.
 `fileExtensions`
-: Dateiendungen, mit denen der Typ im Dateisystem (`dir` und `file`) erstellt werden kann.
+: Dateiendungen, mit denen der Typ im Dateisystem (`dir` und `file`) erstellt werden kann. Beide Dateisystem-Ansichten bieten die nicht versteckten (`hide`) Endungen nach `priority` geordnet zum Erstellen an und zeigen Dateien mit `icon` und `iconColor` an.
 : Standard-Priorität: `10`.
 `createOnNewRecord`
 : Neue Dokumente dieses Typs in den Store aufnehmen, wenn sie über SocketIO angekündigt werden.
@@ -280,6 +280,7 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 : Standard: `false`.
 `preferredInRoot`
 : Das Haupt-Dokument einer `DocumentRoot`, die auch andere Typen enthält, bspw. ein `quiz` mit seinen Antworten. Bestimmt den Typ der `DocumentRoot`, wenn sie ohne Meta-Daten geladen wird.
+: Enthält eine `DocumentRoot` mehrere solche Typen, gewinnt der zuerst registrierte. Eingebaute Typen wie `quiz` werden vor den Paketen registriert, ein `override` behält die Reihenfolge bei.
 : Standard: `false`.
 
 Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte vollständig und in der Konsole erscheint eine Warnung. Optionen, die nicht erneut angegeben werden, bspw. `defaultMeta` oder `fileExtensions`, gehen dabei verloren. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler`, `viewStore.registerStore` und die Registrierungen im `componentStore` (`registerContainerComponent`, `registerEditorComponent`, `registerDocumentView`), dort als drittes Argument:

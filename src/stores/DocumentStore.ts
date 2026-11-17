@@ -26,6 +26,7 @@ import StudentGroup from '@tdev-models/StudentGroup';
 import iStore from '@tdev-stores/iStore';
 import { isStalledUpdate } from '@tdev/helpers/isStalledUpdate';
 import axios from 'axios';
+import { orderBy } from 'es-toolkit';
 import { action, computed, observable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -69,6 +70,11 @@ interface DocumentTypeOptions<T extends DocumentType> {
  * One `DocumentTypeConfig` per type, so the `factory` and the `fileExtensions` are checked against their `type`.
  */
 export type AnyDocumentTypeConfig = { [T in DocumentType]: DocumentTypeConfig<T> }[DocumentType];
+
+export interface CreatableFileType {
+    type: DocumentType;
+    config: FileConfig<DocumentType>;
+}
 
 const DEFAULT_FILE_PRIORITY = 10;
 
@@ -132,6 +138,17 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
         return [...this.fileExtensions.values()].flat();
     }
 
+    /**
+     * The file types offered when creating a new file, ordered by their priority.
+     */
+    @computed
+    get creatableFileTypes(): CreatableFileType[] {
+        const fileTypes = [...this.fileExtensions.entries()].flatMap(([type, configs]) =>
+            configs.filter((config) => !config.hide).map((config) => ({ type, config }))
+        );
+        return orderBy(fileTypes, [(fileType) => fileType.config.priority], ['asc']);
+    }
+
     defaultMetaOf<T extends DocumentType>(type: T): TypeMeta<T> | undefined {
         return this.documentTypeConfigs.get(type)?.defaultMeta as TypeMeta<T> | undefined;
     }
@@ -148,6 +165,7 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
 
     /**
      * The type of a document root, derived from the types of its documents.
+     * Of several preferred types, the first registered wins, e.g. a built-in `quiz` over a package's `script`.
      */
     extractDefaultDocumentType(types: DocumentType[]): DocumentType | undefined {
         const preferredType = this.preferredInRootTypes.find((type) => types.includes(type));

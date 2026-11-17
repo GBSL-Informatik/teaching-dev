@@ -1,5 +1,6 @@
-import { type DocumentModelType, Document as DocumentProps } from '@tdev-api/document';
+import { type DocumentModelType, Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
+import { FileConfig } from '@tdev-stores/assets/FileExtensions';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { computed } from 'mobx';
 import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
@@ -32,6 +33,19 @@ class File extends iFileSystem<'file'> {
         }
         const configs = this.store.fileExtensions.get(this.document.type)!;
         return configs.map((c) => c.extension.toLowerCase().replace(/^\./, ''));
+    }
+
+    /**
+     * The registered file type of this file, e.g. to show its icon.
+     */
+    @computed
+    get fileConfig(): FileConfig<DocumentType> | undefined {
+        if (!this.document) {
+            return undefined;
+        }
+        const configs = this.store.fileExtensions.get(this.document.type) ?? [];
+        const extension = this.fileExtension;
+        return configs.find((config) => config.extension.toLowerCase().replace(/^\./, '') === extension);
     }
 
     @computed
