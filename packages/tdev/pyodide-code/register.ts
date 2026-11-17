@@ -35,7 +35,7 @@ const register = () => {
         defaultMeta: createModelMeta({}),
         fileExtensions: [
             {
-                name: 'Python',
+                name: 'Python (Pyodide)',
                 description: 'Standard Python, ohne Turtle-Grafik',
                 extension: '.pyo',
                 priority: 5.5,

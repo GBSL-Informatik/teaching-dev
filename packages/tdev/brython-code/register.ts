@@ -32,7 +32,7 @@ const register = () => {
         fileExtensions: [
             {
                 extension: '.py',
-                name: 'Python',
+                name: 'Python (Brython)',
                 description: 'Webbasiertes Python, inkl. Turtle-Grafik',
                 priority: 5,
                 icon: mdiLanguagePython,
