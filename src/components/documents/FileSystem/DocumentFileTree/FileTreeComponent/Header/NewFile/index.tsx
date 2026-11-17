@@ -48,7 +48,7 @@ const NewFile = observer(() => {
         setPending(true);
         setError(null);
         try {
-            const newFile = await dir.createFile(type, `new-file${config.extension}`);
+            const newFile = await dir.createFile(type, undefined, config);
             if (newFile) {
                 syncFileTree(model, root);
                 ref.current?.close();

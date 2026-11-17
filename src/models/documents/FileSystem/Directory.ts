@@ -1,6 +1,6 @@
 import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import { FileConfig } from '@tdev-stores/assets/FileExtensions';
+import { FileConfig, findFileConfig } from '@tdev-stores/assets/FileExtensions';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed } from 'mobx';
@@ -118,10 +118,17 @@ class Directory extends iFileSystem<'dir'> {
         });
     }
 
+    /**
+     * Without a `chosenFileConfig`, the file type is chosen by the extension of the name.
+     */
     @action
-    async createFile(type: DocumentType, name?: string): Promise<File | void> {
+    async createFile(
+        type: DocumentType,
+        name?: string,
+        chosenFileConfig?: FileConfig<DocumentType>
+    ): Promise<File | void> {
         const requestedName = name || 'new-file';
-        const fileConfig = this.findFileConfig(type, requestedName);
+        const fileConfig = chosenFileConfig ?? this.findFileConfig(type, requestedName);
         if (!fileConfig) {
             throw new Error('Dieser Dateityp kann nicht erstellt werden.');
         }
@@ -157,13 +164,7 @@ class Directory extends iFileSystem<'dir'> {
             return;
         }
 
-        const requestedExtension = requestedName.includes('.')
-            ? `.${requestedName.split('.').pop()!.toLowerCase()}`
-            : '';
-        return (
-            fileConfigs.find((config) => config.extension.toLowerCase() === requestedExtension) ??
-            fileConfigs[0]
-        );
+        return findFileConfig(fileConfigs, requestedName);
     }
 
     getUniqueFileName(requestedName: string, extension: string, excludedDocId?: string): string {

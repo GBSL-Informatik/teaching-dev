@@ -17,36 +17,37 @@ interface Props {
     directory: Directory;
 }
 
-const withExtension = (name: string, extension: string) => {
-    if (name.toLowerCase().endsWith(extension.toLowerCase())) {
-        return name;
-    }
-    return `${name}${extension}`;
-};
-
 const NewItem = observer((props: Props) => {
     const ref = React.useRef<PopupActions>(null);
     const [name, setName] = React.useState('');
     const [error, setError] = React.useState<string | null>(null);
+    const [pending, setPending] = React.useState(false);
     const documentStore = useStore('documentStore');
     const { directory } = props;
     if (!directory.root) {
         return null;
     }
 
-    const handleCreated = () => {
+    const create = async (createItem: () => Promise<unknown>) => {
+        if (pending) {
+            return;
+        }
+        setPending(true);
         setError(null);
-        ref.current?.close();
-    };
-    const handleError = (error: unknown) => {
-        setError(error instanceof Error ? error.message : 'Die Datei konnte nicht erstellt werden.');
+        try {
+            await createItem();
+            ref.current?.close();
+        } catch (reason) {
+            setError(reason instanceof Error ? reason.message : 'Das Element konnte nicht erstellt werden.');
+        } finally {
+            setPending(false);
+        }
     };
     const handleCreateFile = ({ type, config }: CreatableFileType) => {
-        const fileName = withExtension(name || config.name || type, config.extension);
-        directory.createFile(type, fileName).then(handleCreated).catch(handleError);
+        create(() => directory.createFile(type, name || undefined, config));
     };
     const handleCreateDir = () => {
-        directory.createDir(name).then(handleCreated).catch(handleError);
+        create(() => directory.createDir(name));
     };
 
     return (
@@ -58,6 +59,7 @@ const NewItem = observer((props: Props) => {
             }
             modal
             overlayStyle={{ background: 'rgba(0,0,0,0.5)' }}
+            onClose={() => setError(null)}
             ref={ref}
         >
             <div className={clsx('card', styles.card)}>
@@ -77,6 +79,7 @@ const NewItem = observer((props: Props) => {
                             size={0.8}
                             icon={fileType.config.icon}
                             iconSide="left"
+                            disabled={pending}
                             onClick={() => handleCreateFile(fileType)}
                         />
                     ))}
@@ -86,6 +89,7 @@ const NewItem = observer((props: Props) => {
                         size={0.8}
                         icon={mdiFolderPlus}
                         iconSide="left"
+                        disabled={pending}
                         onClick={handleCreateDir}
                     />
                     {error && <Alert type="danger">{error}</Alert>}

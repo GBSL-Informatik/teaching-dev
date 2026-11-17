@@ -1,6 +1,6 @@
 import { type DocumentModelType, Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import { FileConfig } from '@tdev-stores/assets/FileExtensions';
+import { FileConfig, findFileConfig } from '@tdev-stores/assets/FileExtensions';
 import DocumentStore from '@tdev-stores/DocumentStore';
 import { computed } from 'mobx';
 import iFileSystem, { DefaultName, iFSMeta, MetaInit } from './iFileSystem';
@@ -26,15 +26,6 @@ class File extends iFileSystem<'file'> {
         return new ModelMeta({});
     }
 
-    @computed
-    get allowedFileExtensions() {
-        if (!this.document || !this.store.fileExtensions.has(this.document.type)) {
-            return [];
-        }
-        const configs = this.store.fileExtensions.get(this.document.type)!;
-        return configs.map((c) => c.extension.toLowerCase().replace(/^\./, ''));
-    }
-
     /**
      * The registered file type of this file, e.g. to show its icon.
      */
@@ -44,24 +35,15 @@ class File extends iFileSystem<'file'> {
             return undefined;
         }
         const configs = this.store.fileExtensions.get(this.document.type) ?? [];
-        const extension = this.fileExtension;
-        return configs.find((config) => config.extension.toLowerCase().replace(/^\./, '') === extension);
+        return findFileConfig(configs, this.name);
     }
 
+    /**
+     * The extension of the registered file type, lower case and without the dot.
+     */
     @computed
     get fileExtension(): string {
-        if (this.allowedFileExtensions.length === 0) {
-            return '';
-        }
-        if (this.allowedFileExtensions.length === 1) {
-            return this.allowedFileExtensions[0];
-        }
-        const parts = this.name.split('.');
-        if (parts.length < 2) {
-            return this.allowedFileExtensions[0] || '';
-        }
-        const ext = parts[parts.length - 1].toLowerCase();
-        return this.allowedFileExtensions.includes(ext) ? ext : this.allowedFileExtensions[0];
+        return this.fileConfig?.extension.toLowerCase().replace(/^\./, '') ?? '';
     }
 
     @computed
