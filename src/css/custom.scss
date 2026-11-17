@@ -24,7 +24,7 @@
     --tdev-color-blue-contrast-foreground: rgb(16, 36, 69);
     --tdev-color-black-contrast-background: var(--ifm-color-gray-800);
     --tdev-color-black-contrast-foreground: var(--ifm-color-gray-100);
-    --tdev-color-black-border: var(--ifm-color-gray-500);
+    --tdev-color-black-border: var(--ifm-color-gray-600);
     --tdev-color-black-hover: var(--ifm-color-gray-900);
     --ifm-color-disabled: #6e6e6e;
     --ifm-color-violet: #8957e5;
@@ -55,6 +55,7 @@
     --prism-background-color: #282a36;
     --tdev-color-blue-contrast-background: rgb(16, 36, 69);
     --tdev-color-blue-contrast-foreground: rgb(235, 242, 252);
+    --tdev-color-black-border: var(--ifm-color-gray-500);
     --tdev-color-black-hover: var(--ifm-color-gray-700);
 
     --tdev-admonition-aufgabe-background-color: #0095ff1a;
