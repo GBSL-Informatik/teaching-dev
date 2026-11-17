@@ -66,14 +66,14 @@
     --ifm-color-primary: var(--tdev-color-black-contrast-background);
     --ifm-color-primary-dark: var(--tdev-color-black-hover);
     --ifm-color-primary-darker: var(--tdev-color-black-hover);
-    &:not(.button--outline) {
+    &:not(:global(.button--outline)) {
         --ifm-button-color: var(--tdev-color-black-contrast-foreground);
     }
-    &.button--outline {
+    &:global(.button--outline) {
         --ifm-button-border-color: var(--ifm-font-color-base);
         --ifm-button-color: var(--ifm-font-color-base);
     }
-    &.button--outline:is(:hover, :active, .button--active) {
+    &:global(.button--outline):is(:hover, :active, :global(.button--active)) {
         --ifm-button-background-color: var(--tdev-color-black-contrast-background);
         --ifm-button-color: var(--tdev-color-black-contrast-foreground);
     }
