@@ -1,4 +1,5 @@
 import { mdiLanguagePython } from '@mdi/js';
+import { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
 import ViewStore from '@tdev-stores/ViewStores';
@@ -13,12 +14,14 @@ const createStore = (viewStore: ViewStore) => {
     return new PyodideStore(viewStore);
 };
 
+const createModelMeta = (props: Partial<MetaInit>) => new ModelMeta(props);
+
 const register = () => {
     rootStore.viewStore.registerStore('pyodideStore', createStore);
     rootStore.componentStore.registerEditorComponent('pyodide_code', {
         Header: Header,
         Footer: Footer,
-        createModelMeta: (props) => new ModelMeta(props),
+        createModelMeta: createModelMeta,
         codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => {
             if (metaLiveCode === 'live_pyo') {
                 return 'pyodide_code';
@@ -29,7 +32,7 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'pyodide_code',
         factory: createModel,
-        defaultMeta: new ModelMeta({}),
+        defaultMeta: createModelMeta({}),
         fileExtensions: [
             {
                 name: 'Python',

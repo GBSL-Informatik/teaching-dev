@@ -1,4 +1,5 @@
 import { mdiLanguagePython } from '@mdi/js';
+import { MetaInit } from '@tdev-models/documents/iCode/iCodeMeta';
 import { LiveCode } from '@tdev-stores/ComponentStore';
 import { rootStore } from '@tdev-stores/rootStore';
 import DocumentView from './components/DocumentView';
@@ -8,12 +9,14 @@ import Meta from './components/Meta';
 import { createModel } from './models/Script';
 import { ScriptMeta } from './models/ScriptMeta';
 
+const createModelMeta = (props: Partial<MetaInit>) => new ScriptMeta(props);
+
 const register = () => {
     rootStore.componentStore.registerEditorComponent('script', {
         Header: Header,
         Footer: Footer,
         Meta: Meta,
-        createModelMeta: (props) => new ScriptMeta(props),
+        createModelMeta: createModelMeta,
         codeBlockMetastringMatcher: (metaLiveCode: LiveCode) => {
             if (metaLiveCode === 'live_py') {
                 return 'script';
@@ -24,7 +27,7 @@ const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'script',
         factory: createModel,
-        defaultMeta: new ScriptMeta({}),
+        defaultMeta: createModelMeta({}),
         preferredInRoot: true,
         fileExtensions: [
             {
