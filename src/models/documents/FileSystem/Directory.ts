@@ -1,7 +1,7 @@
 import { Document as DocumentProps, DocumentType } from '@tdev-api/document';
 import { formatDateTime } from '@tdev-models/helpers/date';
-import { FileConfig, findFileConfig } from '@tdev-stores/assets/FileExtensions';
-import DocumentStore from '@tdev-stores/DocumentStore';
+import { FileConfig } from '@tdev-stores/assets/FileExtensions';
+import DocumentStore, { CreatableFileType } from '@tdev-stores/DocumentStore';
 import { orderBy } from 'es-toolkit/array';
 import { action, computed } from 'mobx';
 import File from './File';
@@ -118,21 +118,10 @@ class Directory extends iFileSystem<'dir'> {
         });
     }
 
-    /**
-     * Without a `chosenFileConfig`, the file type is chosen by the extension of the name.
-     */
     @action
-    async createFile(
-        type: DocumentType,
-        name?: string,
-        chosenFileConfig?: FileConfig<DocumentType>
-    ): Promise<File | void> {
+    async createFile(fileType: CreatableFileType, name?: string): Promise<File> {
+        const { type, config: fileConfig } = fileType;
         const requestedName = name || 'new-file';
-        const fileConfig = chosenFileConfig ?? this.findFileConfig(type, requestedName);
-        if (!fileConfig) {
-            throw new Error('Dieser Dateityp kann nicht erstellt werden.');
-        }
-
         const fileName = this.getUniqueFileName(requestedName, fileConfig.extension);
         const file = await this.createFileContainer(fileName);
         if (!file) {
@@ -155,16 +144,6 @@ class Directory extends iFileSystem<'dir'> {
             }
             throw error;
         }
-    }
-
-    private findFileConfig(type: DocumentType, requestedName: string): FileConfig<DocumentType> | undefined {
-        const fileConfigs = this.store.fileExtensions.get(type) ?? [];
-        if (fileConfigs.length === 0) {
-            console.error(`No file configuration found for type ${type}`);
-            return;
-        }
-
-        return findFileConfig(fileConfigs, requestedName);
     }
 
     getUniqueFileName(requestedName: string, extension: string, excludedDocId?: string): string {

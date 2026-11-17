@@ -1,4 +1,3 @@
-import useIsBrowser from '@docusaurus/useIsBrowser';
 import clsx from 'clsx';
 import React, { useRef, type ComponentProps, type ReactElement } from 'react';
 
@@ -33,7 +32,6 @@ export type DetailsProps = {
  * can leave nested folders at a fixed height, so their growing content overlapped the parent.
  */
 const FsDetails = ({ summary, model, children, ...props }: DetailsProps): React.ReactNode => {
-    const isBrowser = useIsBrowser();
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const summaryElement = React.isValidElement(summary) ? summary : <summary>{summary}</summary>;
     return (
@@ -42,12 +40,10 @@ const FsDetails = ({ summary, model, children, ...props }: DetailsProps): React.
             {...props}
             ref={detailsRef}
             open={model.isOpen}
-            data-collapsed={!model.isOpen}
             className={clsx(
                 'alert',
                 !/alert--/.test(props.className || '') && 'alert--info',
                 styles.details,
-                isBrowser && styles.isBrowser,
                 props.className
             )}
             onMouseDown={(e) => {

@@ -43,8 +43,8 @@ const NewItem = observer((props: Props) => {
             setPending(false);
         }
     };
-    const handleCreateFile = ({ type, config }: CreatableFileType) => {
-        create(() => directory.createFile(type, name || undefined, config));
+    const handleCreateFile = (fileType: CreatableFileType) => {
+        create(() => directory.createFile(fileType, name || undefined));
     };
     const handleCreateDir = () => {
         create(() => directory.createDir(name));
