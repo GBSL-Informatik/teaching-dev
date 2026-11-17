@@ -95,8 +95,7 @@
 }
 
 /* Infima has no blue alert: `alert--primary` follows the site's primary color. */
-.alert--blue,
-.alert--info.alert--blue {
+.alert--blue {
     --ifm-alert-background-color: var(--tdev-color-blue-contrast-background);
     --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-blue) 15%, transparent);
     --ifm-alert-foreground-color: var(--tdev-color-blue-contrast-foreground);
@@ -104,8 +103,7 @@
 }
 
 /* A dark gray alert in both themes. Links and inline code derive from these variables. */
-.alert--black,
-.alert--info.alert--black {
+.alert--black {
     --ifm-alert-background-color: var(--tdev-color-black-contrast-background);
     --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-white) 15%, transparent);
     --ifm-alert-foreground-color: var(--tdev-color-black-contrast-foreground);

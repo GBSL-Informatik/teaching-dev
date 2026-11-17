@@ -69,7 +69,8 @@
     &:not(:global(.button--outline)) {
         --ifm-button-color: var(--tdev-color-black-contrast-foreground);
     }
-    &:global(.button--outline) {
+    /* disabled buttons keep the gray border and text of `Button` */
+    &:global(.button--outline):not(:disabled) {
         --ifm-button-border-color: var(--ifm-font-color-base);
         --ifm-button-color: var(--ifm-font-color-base);
     }
