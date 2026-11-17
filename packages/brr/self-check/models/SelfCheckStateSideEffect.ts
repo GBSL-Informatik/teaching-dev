@@ -3,22 +3,16 @@ import DocumentRoot from '@tdev-models/DocumentRoot';
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import iSideEffect from '@tdev-models/SideEffects/iSideEffect';
 import { computed } from 'mobx';
-import React from 'react';
-import { SelfCheckStateType } from './models';
+import { SelfCheckStateType } from './SelfCheckStateType';
 
-interface SelfCheckContextType {
-    solutionId: string;
-    taskStateId: string;
-}
+class SelfCheckStateSideEffect extends iSideEffect<'task_state'> {
+    private readonly authorId: string;
+    private readonly solutionDocRoot: DocumentRoot<'solution'>;
 
-export const SelfCheckContext = React.createContext<SelfCheckContextType | undefined>(undefined);
-
-export class SelfCheckStateSideEffect extends iSideEffect<'task_state'> {
-    constructor(
-        private readonly authorId: string,
-        private readonly solutionDocRoot: DocumentRoot<'solution'>
-    ) {
+    constructor(authorId: string, solutionDocRoot: DocumentRoot<'solution'>) {
         super('SelfCheckStateSideEffect');
+        this.authorId = authorId;
+        this.solutionDocRoot = solutionDocRoot;
     }
 
     @computed
@@ -40,3 +34,5 @@ export class SelfCheckStateSideEffect extends iSideEffect<'task_state'> {
         };
     }
 }
+
+export default SelfCheckStateSideEffect;

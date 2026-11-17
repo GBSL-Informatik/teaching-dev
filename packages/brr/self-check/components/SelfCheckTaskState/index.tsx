@@ -8,8 +8,9 @@ import TaskState, { MetaInit, TaskMeta } from '@tdev-models/documents/TaskState'
 import { NoneAccess } from '@tdev-models/helpers/accessPolicy';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { SelfCheckStateType } from './models';
-import { SelfCheckContext, SelfCheckStateSideEffect } from './shared';
+import SelfCheckStateSideEffect from '../../models/SelfCheckStateSideEffect';
+import { SelfCheckStateType } from '../../models/SelfCheckStateType';
+import { SelfCheckContext } from '../SelfCheck/context';
 
 interface Props extends MetaInit {
     includeQuestion: boolean;

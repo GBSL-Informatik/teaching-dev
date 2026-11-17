@@ -4,8 +4,8 @@ import { useStore } from '@tdev-hooks/useStore';
 import { TaskMeta } from '@tdev-models/documents/TaskState';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { SelfCheckStateType } from './models';
-import { SelfCheckContext } from './shared';
+import { SelfCheckStateType } from '../../models/SelfCheckStateType';
+import { SelfCheckContext } from '../SelfCheck/context';
 
 interface StateDependentProps {
     visibleFrom?: SelfCheckStateType;

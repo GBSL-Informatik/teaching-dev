@@ -1,4 +1,4 @@
-import { SelfCheckContext } from './shared';
+import { SelfCheckContext } from './context';
 
 interface Props {
     solutionId: string;
