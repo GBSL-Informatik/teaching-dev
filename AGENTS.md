@@ -87,18 +87,20 @@ Task-specific instructions live in skills, following the [Agent Skills](https://
 
 - [`code-style`](.agents/skills/code-style/SKILL.md) - Write or modify code that humans can easily review
 - [`mdx-docs`](.agents/skills/mdx-docs/SKILL.md) - Write or edit Markdown and MDX documentation using Teaching Dev conventions
-- [`long-term-maintainability-reviewer`](.agents/skills/long-term-maintainability-reviewer/SKILL.md) - Challenge design choices during planning, refactoring, and pull-request reviews
-- [`coherence-reviewer`](.agents/skills/coherence-reviewer/SKILL.md) - Keep one model per concern instead of several incompatible ones, based on [The Decoherence Trap](https://maevyn.codes/decoherence)
+- [`design-reviewer`](.agents/skills/design-reviewer/SKILL.md) - Keep one model per concern and justify new complexity, for tasks that add a mechanism and before each pull request
 
-### Review after each task
+### Design review
 
-After completing a task in a pull request, review the task's full diff with [`long-term-maintainability-reviewer`](.agents/skills/long-term-maintainability-reviewer/SKILL.md) and [`coherence-reviewer`](.agents/skills/coherence-reviewer/SKILL.md) before reporting back to the user. When working on several tasks in parallel, run the review once all of them are complete, still before reporting back.
+Review with [`design-reviewer`](.agents/skills/design-reviewer/SKILL.md) before reporting back to the user:
 
-1. Implement the resulting changes following [`code-style`](.agents/skills/code-style/SKILL.md).
+- After a task that adds a new mechanism (store, extension point, async flow, error reporting or dependency), review the task's full diff. When working on several tasks in parallel, run the review once all of them are complete.
+- Before opening a pull request, always review the whole branch.
+
+Run each review in a fresh context with the reviewer subagent; it reports findings and does not edit files.
+
+1. Implement the resulting changes in the main agent, following [`code-style`](.agents/skills/code-style/SKILL.md).
 2. Rerun the validation commands and commit the changes.
 3. Do not implement findings that need an owner decision, such as larger migrations or changed requirements. Report them to the user with concrete options.
-
-For tasks that only change documentation, a short coherence check is enough: is it consistent with existing docs and agent instructions, and does it avoid duplicating a reference? Skip the maintainability review unless the change includes code, such as MDX components or examples.
 
 ## Testing Guidelines
 
@@ -119,7 +121,7 @@ Use `.env.example` and the README to configure local settings. Keep credentials 
 For complex tasks, delegate independent work to subagents:
 
 - Use explorer to investigate relevant code and existing patterns.
-- Use reviewer to run the [review after each task](#review-after-each-task) on the completed changes.
+- Use reviewer to run the [design review](#design-review) on the completed changes.
 - The main agent implements changes and runs validation.
 - Avoid having multiple agents edit the same files.
 - Keep simple tasks in the main agent
