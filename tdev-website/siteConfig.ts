@@ -4,8 +4,12 @@ import type { PluginOptions as PyodidePluginOptions } from '@tdev/pyodide-code/p
 import { SiteConfigProvider } from '@tdev/siteConfig/siteConfig';
 import path from 'node:path';
 import { themes as prismThemes } from 'prism-react-renderer';
+import type { Pluggable } from 'unified';
 import githubCmsPlugin from '../packages/hfr/github-cms/plugin';
+import enumerateAnswersPlugin from '../src/plugins/remark-enumerate-components/plugin';
 import {
+    enumerateAnswersPluginConfig,
+    enumerateAnswersPluginOptions,
     recommendedBeforeDefaultRemarkPlugins,
     recommendedRehypePlugins,
     recommendedRemarkPlugins
@@ -23,6 +27,17 @@ import {
     taskStateOverview
 } from '../src/siteConfig/navbarItems';
 import { brythonCodePluginConfig, yamlLoaderPluginConfig } from '../src/siteConfig/pluginConfigs';
+
+const enumerateAnswersWithSelfCheckPluginConfig = [
+    enumerateAnswersPlugin,
+    {
+        componentsToEnumerate: [...enumerateAnswersPluginOptions.componentsToEnumerate, 'SelfCheckTaskState']
+    }
+] satisfies Pluggable;
+
+const remarkPlugins = recommendedRemarkPlugins.map((plugin) =>
+    plugin === enumerateAnswersPluginConfig ? enumerateAnswersWithSelfCheckPluginConfig : plugin
+);
 
 const getSiteConfig: SiteConfigProvider = () => {
     return {
@@ -101,6 +116,7 @@ const getSiteConfig: SiteConfigProvider = () => {
             ]
         },
         onBrokenLinks: 'throw',
+        remarkPlugins: remarkPlugins,
         tdevConfig: {
             excalidraw: {
                 excalidoc: true
@@ -127,7 +143,7 @@ const getSiteConfig: SiteConfigProvider = () => {
             yamlLoaderPluginConfig,
             githubCmsPlugin({
                 pages: {},
-                remarkPlugins: recommendedRemarkPlugins,
+                remarkPlugins: remarkPlugins,
                 rehypePlugins: recommendedRehypePlugins,
                 beforeDefaultRemarkPlugins: recommendedBeforeDefaultRemarkPlugins
             })

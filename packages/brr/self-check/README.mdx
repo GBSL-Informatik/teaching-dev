@@ -106,12 +106,31 @@ yarn install
 ```
 
 ### Konfiguration der TaskState-Übersicht
-Damit für die Selfcheck TaskStates eine TaskState-Übersicht generiert wird, muss das `enumerateAnswersPlugin` den Komponententyp `SelfCheckTaskState` kennen. Die Standardkonfiguration `enumerateAnswersPluginConfig` enthält ihn bereits. Nur wenn eigene `componentsToEnumerate` gesetzt werden, muss `SelfCheckTaskState` ergänzt werden:
-```ts title="docusaurus.config.ts" {4}
-[
-  enumerateAnswersPlugin,
-  {
-    componentsToEnumerate: ['SelfCheckTaskState', ...],
-  }
-]
+Damit für die Selfcheck TaskStates eine TaskState-Übersicht generiert wird, muss das `enumerateAnswersPlugin` den Komponententyp `SelfCheckTaskState` kennen. Dazu wird in `siteConfig.ts` die Standardkonfiguration des Plugins durch eine erweiterte Konfiguration ersetzt:
+
+```ts title="siteConfig.ts"
+import type { Pluggable } from 'unified';
+import enumerateAnswersPlugin from '../src/plugins/remark-enumerate-components/plugin';
+import {
+    enumerateAnswersPluginConfig,
+    enumerateAnswersPluginOptions,
+    recommendedRemarkPlugins
+} from '../src/siteConfig/markdownPluginConfigs';
+
+const enumerateAnswersWithSelfCheckPluginConfig = [
+    enumerateAnswersPlugin,
+    {
+        // highlight-next-line
+        componentsToEnumerate: [...enumerateAnswersPluginOptions.componentsToEnumerate, 'SelfCheckTaskState']
+    }
+] satisfies Pluggable;
+
+const remarkPlugins = recommendedRemarkPlugins.map((plugin) =>
+    plugin === enumerateAnswersPluginConfig ? enumerateAnswersWithSelfCheckPluginConfig : plugin
+);
+
+const getSiteConfig: SiteConfigProvider = () => ({
+    // highlight-next-line
+    remarkPlugins: remarkPlugins
+});
 ```

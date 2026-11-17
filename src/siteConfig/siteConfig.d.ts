@@ -1,5 +1,6 @@
 import { FooterLinkItem, NavbarItem } from '@docusaurus/theme-common';
-import type { PluginConfig, PluginOptions, RouteConfig } from '@docusaurus/types';
+import type { PluginConfig, RouteConfig } from '@docusaurus/types';
+import type { Pluggable } from 'unified';
 import { ConfigTransformer } from './transformers';
 
 import type { Options as BlogPluginOptions } from '@docusaurus/plugin-content-blog';
@@ -192,13 +193,13 @@ export interface SiteConfig {
     themes?: PluginConfig[];
 
     /** List of plugins to be loaded before the default remark plugins. */
-    beforeDefaultRemarkPlugins?: PluginOptions[];
+    beforeDefaultRemarkPlugins?: Pluggable[];
 
     /** List of remark plugins to be loaded. */
-    remarkPlugins?: PluginOptions[];
+    remarkPlugins?: Pluggable[];
 
     /** List of rehype plugins to be loaded. */
-    rehypePlugins?: PluginOptions[];
+    rehypePlugins?: Pluggable[];
 
     /** docusaurus markdown config */
     markdown?: DeepPartial<MarkdownConfig>;
