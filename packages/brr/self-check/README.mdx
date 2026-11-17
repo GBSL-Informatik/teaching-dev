@@ -95,9 +95,14 @@ Lösung zur zweiten Aufgabe 🥳
 
 ## Installation
 
-:::info[`packages/brr/self-check`]
-Kopiere das `packages/brr/self-check`-Verzeichnis in das `tdev-website/website/packages`-Verzeichnis oder füge es über `updateTdev.config.yaml` hinzu.
-:::
+Das Package wird über `updateTdev.config.yaml` in das `packages/brr/self-check`-Verzeichnis der eigenen Website synchronisiert, damit es als Yarn-Workspace `@brr/self-check` verfügbar ist:
+
+```yaml title="updateTdev.config.yaml"
+trackedElements:
+    # ...
+    - src: packages/brr/self-check/
+      dst: packages/brr/self-check
+```
 
 Danach muss erneut installiert werden:
 
