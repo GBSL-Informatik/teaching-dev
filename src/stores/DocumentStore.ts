@@ -6,15 +6,18 @@ import {
     linkTo as apiLinkTo,
     update as apiUpdate,
     updateConstraints as apiUpdateConstraints,
+    ContainerType,
     DocumentModelType,
     Document as DocumentProps,
     DocumentType,
     Factory,
+    TaskableType,
     TypeModelMapping,
     UniquenessConstraints
 } from '@tdev-api/document';
 import { ChangedDocument } from '@tdev-api/IoEventTypes';
 import DocumentRoot, { MetaHasher, TypeMeta } from '@tdev-models/DocumentRoot';
+import { ContainerMeta } from '@tdev-models/documents/DynamicDocumentRoots/ContainerMeta';
 import iFileSystem from '@tdev-models/documents/FileSystem/iFileSystem';
 import { RWAccess } from '@tdev-models/helpers/accessPolicy';
 import iDocument, { Source } from '@tdev-models/iDocument';
@@ -28,20 +31,24 @@ import { v4 as uuidv4 } from 'uuid';
 import { BuiltinDocumentTypes } from './assets/BuiltinDocumentTypes';
 import { FileConfig } from './assets/FileExtensions';
 import { RootStore } from './rootStore';
+import { RegistrationOptions } from './utils/RegistrationOptions';
 
 export interface DocumentTypeConfig<T extends DocumentType> {
     type: T;
     factory: Factory<T>;
-    /** used for document roots whose documents are loaded without a meta, e.g. in admin views */
-    defaultMeta?: TypeMeta<T>;
+    /**
+     * used for document roots whose documents are loaded without a meta, e.g. in admin views,
+     * and for the dynamic rooms created and loaded with a container type
+     */
+    defaultMeta?: T extends ContainerType ? ContainerMeta<T> : TypeMeta<T>;
     /** makes the type creatable as a file in the file system (`dir` and `file` documents) */
     fileExtensions?: FileConfig<T>[];
     /** add documents of this type to the store when the socket announces them as new records */
     createOnNewRecord?: boolean;
     /** counts towards the task progress of a page */
-    taskable?: boolean;
+    taskable?: T extends TaskableType ? boolean : never;
     /**
-     * Admins edit the documents of other users on their behalf, e.g. cms texts.
+     * Teachers and admins edit the documents of other users on their behalf, e.g. cms texts.
      * This should not be the default case for most documents.
      */
     adminEditable?: boolean;
@@ -81,11 +88,12 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
     );
 
     /**
-     * Registering a type again replaces its previous config, e.g. to override a built-in type.
+     * Registering a type again replaces its previous config and warns,
+     * unless `override` says it is replaced on purpose, e.g. to override a built-in type.
      */
     @action
-    registerDocumentType(config: AnyDocumentTypeConfig) {
-        if (this.documentTypeConfigs.has(config.type)) {
+    registerDocumentType(config: AnyDocumentTypeConfig, options: RegistrationOptions = {}) {
+        if (this.documentTypeConfigs.has(config.type) && !options.override) {
             console.warn(`Document type ${config.type} is already registered, replacing it`);
         }
         const fileExtensions = config.fileExtensions?.map((fileConfig) => ({
@@ -117,6 +125,10 @@ class DocumentStore extends iStore<`delete-${string}` | `move-${string}` | `upda
 
     defaultMetaOf<T extends DocumentType>(type: T): TypeMeta<T> | undefined {
         return this.documentTypeConfigs.get(type)?.defaultMeta as TypeMeta<T> | undefined;
+    }
+
+    defaultContainerMetaOf<T extends ContainerType>(type: T): ContainerMeta<T> | undefined {
+        return this.documentTypeConfigs.get(type)?.defaultMeta as ContainerMeta<T> | undefined;
     }
 
     @computed

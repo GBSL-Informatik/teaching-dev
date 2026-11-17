@@ -2,6 +2,7 @@ import { default as api } from '@tdev-api/base';
 import customFields from '@tdev-components/utils/customFields';
 import iStore from '@tdev-stores/iStore';
 import { RootStore } from '@tdev-stores/rootStore';
+import { RegistrationOptions } from '@tdev-stores/utils/RegistrationOptions';
 import { authClient } from '@tdev/auth-client';
 import { action, computed, observable, observableRef, reaction } from 'mobx';
 import { io, Socket } from 'socket.io-client';
@@ -86,10 +87,15 @@ export class SocketDataStore extends iStore<'ping'> {
     }
 
     /**
-     * Registering a type again replaces its previous handler, e.g. to override a core record type.
+     * Registering a type again replaces its previous handler and warns,
+     * unless `override` says it is replaced on purpose, e.g. to override a core record type.
      */
-    registerRecordHandler<T extends AnyRecordType>(type: T, handler: RecordHandler<TypeRecordMap[T]>) {
-        if (this.recordHandlers.has(type)) {
+    registerRecordHandler<T extends AnyRecordType>(
+        type: T,
+        handler: RecordHandler<TypeRecordMap[T]>,
+        options: RegistrationOptions = {}
+    ) {
+        if (this.recordHandlers.has(type) && !options.override) {
             console.warn(`Record handler for ${type} is already registered, replacing it`);
         }
         this.recordHandlers.set(type, handler);

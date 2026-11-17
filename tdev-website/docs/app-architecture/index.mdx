@@ -225,30 +225,29 @@ Damit ein neues Dokument initialisiert werden kann, muss der Dokumenttyp mit ein
 
 ```ts title="packages/tdev/text-message/register.ts"
 import { rootStore } from '@tdev-stores/rootStore';
-import { Factory } from '@tdev-api/document';
-import TextMessage from './model';
+import SimpleChat from './components/SimpleChat/SimpleChat';
+import { createModel as createSimpleChat } from './models/SimpleChat';
+import { ModelMeta } from './models/SimpleChat/ModelMeta';
+import { createModel as createTextMessage } from './models/TextMessage';
 
-const createModel: Factory<'text_message'> = (data, store) => {
-    return new TextMessage(data, store);
-};
-
-// Registrierung des Dokumenttyps
+// Registrierung der Dokumenttypen
 const register = () => {
     rootStore.documentStore.registerDocumentType({
         type: 'text_message',
-        factory: createModel,
+        factory: createTextMessage,
         // optional: Server-seitig erzeugte Dokumente, die über SocketIO
         // angekündigt werden, in den Store aufnehmen
         createOnNewRecord: true
     });
-    // optional: Für dynamische Raum-Komponenten registrieren, so dass
-    // die korrekten Komponenten bei Raum-Dokumenten verwendet werden können
-    rootStore.componentStore.registerRoomComponent('text_messages', {
-        name: 'Textnachrichten',
-        description: 'Textnachrichten können in einem Chat versandt- und empfangen werden.',
-        component: TextMessages,
-        default: true
+    // optional: ein Container-Typ für dynamische Räume, mit seinen Meta-Daten
+    rootStore.documentStore.registerDocumentType({
+        type: 'simple_chat',
+        factory: createSimpleChat,
+        defaultMeta: new ModelMeta({ name: 'Simple Chat' }),
+        createOnNewRecord: true
     });
+    // die Komponente, mit der Räume dieses Container-Typs angezeigt werden
+    rootStore.componentStore.registerContainerComponent('simple_chat', SimpleChat);
 };
 
 // zentral: Registrierung direkt beim Import der Datei aufrufen
@@ -265,6 +264,7 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 : Erstellt das Modell aus dem `Document` der API.
 `defaultMeta`
 : Meta-Daten für `DocumentRoot`s, deren Dokumente ohne Meta-Daten geladen werden, bspw. in Admin-Ansichten.
+: Bei Container-Typen ein `ContainerMeta`, mit dem auch neue dynamische Räume erstellt und geladen werden.
 `fileExtensions`
 : Dateiendungen, mit denen der Typ im Dateisystem (`dir` und `file`) erstellt werden kann.
 : Standard-Priorität: `10`.
@@ -272,14 +272,20 @@ Diese `register`-Funktion muss in der `siteConfig.ts` als `apiDocumentProviders`
 : Neue Dokumente dieses Typs in den Store aufnehmen, wenn sie über SocketIO angekündigt werden.
 : Standard: `false`.
 `taskable`
-: Das Dokument zählt zum Bearbeitungsstand einer Seite und muss `iTaskableDocument` implementieren.
+: Das Dokument zählt zum Bearbeitungsstand einer Seite. Nur für Typen im `TaskableDocumentMapping` erlaubt, deren Modelle `iTaskableDocument` implementieren.
 : Standard: `false`.
 `adminEditable`
-: Admins bearbeiten die Dokumente anderer Benutzer:innen in deren Namen, bspw. CMS-Texte. Für die meisten Dokumente sollte das nicht gelten.
+: Lehrpersonen und Admins bearbeiten die Dokumente anderer Benutzer:innen in deren Namen, bspw. CMS-Texte. Für die meisten Dokumente sollte das nicht gelten.
 : Standard: `false`.
 `preferredInRoot`
 : Das Haupt-Dokument einer `DocumentRoot`, die auch andere Typen enthält, bspw. ein `quiz` mit seinen Antworten. Bestimmt den Typ der `DocumentRoot`, wenn sie ohne Meta-Daten geladen wird.
 : Standard: `false`.
+
+Wird ein Typ erneut registriert, ersetzt die neue Konfiguration die alte und in der Konsole erscheint eine Warnung. Wer einen Typ absichtlich ersetzt, bspw. einen eingebauten Typ, übergibt `{ override: true }` als zweites Argument. Dasselbe gilt für `registerRecordHandler` und `viewStore.registerStore`, dort als drittes Argument:
+
+```ts
+rootStore.documentStore.registerDocumentType({ type: 'quill_v2', factory: createQuill }, { override: true });
+```
 
 #### Offline-Routen <Badge type="info">Optional</Badge>
 

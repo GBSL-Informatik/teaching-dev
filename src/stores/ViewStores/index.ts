@@ -1,5 +1,6 @@
 import { ViewStore as ViewStores, ViewStoreType, ViewStoreTypeMapping } from '@tdev-api/document';
 import type { RootStore } from '@tdev-stores/rootStore';
+import { RegistrationOptions } from '@tdev-stores/utils/RegistrationOptions';
 import { action, computed, observable, observableRef } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { AdminView } from './AdminView';
@@ -59,13 +60,15 @@ export default class ViewStore {
     }
 
     /**
-     * Registering a type again replaces its previous store.
+     * Registering a type again replaces its previous store and warns,
+     * unless `override` says it is replaced on purpose.
      */
     registerStore<T extends ViewStoreType>(
         type: T,
-        store: (viewStore: ViewStore) => ViewStoreTypeMapping[T]
+        store: (viewStore: ViewStore) => ViewStoreTypeMapping[T],
+        options: RegistrationOptions = {}
     ) {
-        if (this.stores.has(type)) {
+        if (this.stores.has(type) && !options.override) {
             console.warn(`View store ${type} is already registered, replacing it`);
         }
         this.stores.set(type, store(this));
