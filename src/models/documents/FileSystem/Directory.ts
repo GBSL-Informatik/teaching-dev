@@ -121,7 +121,7 @@ class Directory extends iFileSystem<'dir'> {
     @action
     async createFile(fileType: CreatableFileType, name?: string): Promise<File> {
         const { type, config: fileConfig } = fileType;
-        const requestedName = name || 'new-file';
+        const requestedName = this.withoutOtherFileExtension(name || 'new-file', fileConfig.extension);
         const fileName = this.getUniqueFileName(requestedName, fileConfig.extension);
         const file = await this.createFileContainer(fileName);
         if (!file) {
@@ -153,6 +153,25 @@ class Directory extends iFileSystem<'dir'> {
                 : requestedName;
 
         return this.getUniqueName(baseName, extension, excludedDocId);
+    }
+
+    /**
+     * Removes the registered extension of another file type from a typed name,
+     * e.g. `test.py` becomes `test` for a `.pyo` file.
+     * Types without an extension, e.g. `code`, keep the name as typed: it sets their language.
+     */
+    private withoutOtherFileExtension(name: string, extension: string): string {
+        if (!extension) {
+            return name;
+        }
+        const lowerName = name.toLowerCase();
+        const otherExtension = this.store.registeredFileExtensions
+            .map((config) => config.extension.toLowerCase())
+            .find((other) => other && other !== extension.toLowerCase() && lowerName.endsWith(other));
+        if (!otherExtension || otherExtension.length === name.length) {
+            return name;
+        }
+        return name.slice(0, -otherExtension.length);
     }
 
     private getUniqueName(baseName: string, extension: string = '', excludedDocId?: string): string {
