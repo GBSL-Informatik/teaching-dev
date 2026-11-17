@@ -40,19 +40,35 @@ Um die Details mit weniger Aufwand zu erstellen, können auch `:::details`-Blöc
 Wie bei den Admonitions kann die Farbe über eine Klasse gewählt werden. Ohne Klasse sind Details blau (`info`).
 
 <CodeShowcase lang="md">
-:::details[Achtung, Lösung! 🚨]{.danger}
-Nicht zu früh aufklappen.
+:::details[`.primary`]{.primary}
+Mit `Code` und einem [Link](#farben).
 :::
 
-:::details[Tipp 💡]{.tip}
-Zuerst die Aufgabenstellung genau lesen.
+:::details[`.secondary`]{.secondary}
+Aliase: `.note`, `.gray`, `.grey`. Mit `Code` und einem [Link](#farben).
 :::
 
-:::details[Zusatzaufgabe]{.orange}
-Für alle, die schon fertig sind.
+:::details[`.success`]{.success}
+Aliase: `.tip`, `.green`. Mit `Code` und einem [Link](#farben).
 :::
 
-:::details[Für Profis 🕶️]{.black}
+:::details[`.info`]{.info}
+Aliase: `.lightBlue`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.warning`]{.warning}
+Aliase: `.caution`, `.orange`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.danger`]{.danger}
+Aliase: `.red`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.blue`]{.blue}
+Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.black`]{.black}
 Mit `Code` und einem [Link](#farben).
 :::
 </CodeShowcase>
@@ -71,42 +87,6 @@ Folgende Klassen sind verfügbar:
 : Dunkelgrau, auch im Dark-Mode gut sichtbar.
 
 Pro Block sollte nur eine Farb-Klasse verwendet werden: Bei mehreren (z.B. `{.red .tip}`) gewinnt diejenige, die im CSS später definiert ist, nicht die zuletzt geschriebene.
-
-### Übersicht
-
-Jede Farbe einmal, mit ihren Aliasen:
-
-:::details[`.primary`]{.primary}
-Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.secondary`]{.secondary}
-Aliase: `.note`, `.gray`, `.grey`. Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.success`]{.success}
-Aliase: `.tip`, `.green`. Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.info`]{.info}
-Aliase: `.lightBlue`. Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.warning`]{.warning}
-Aliase: `.caution`, `.orange`. Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.danger`]{.danger}
-Aliase: `.red`. Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.blue`]{.blue}
-Mit `Code` und einem [Link](#übersicht).
-:::
-
-:::details[`.black`]{.black}
-Mit `Code` und einem [Link](#übersicht).
-:::
 
 ## Installation
 
