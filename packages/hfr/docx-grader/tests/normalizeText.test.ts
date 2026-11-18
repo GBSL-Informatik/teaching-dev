@@ -24,13 +24,13 @@ describe('normalizeText', () => {
         const bold = { ...INITIAL_RUN_FORMAT, bold: true };
         const chars = normalizeRuns(
             [
-                { text: 'Access ', format: INITIAL_RUN_FORMAT },
-                { text: ' granted', format: bold }
+                { text: 'Access ', format: INITIAL_RUN_FORMAT, styleFormat: INITIAL_RUN_FORMAT },
+                { text: ' granted', format: bold, styleFormat: INITIAL_RUN_FORMAT }
             ],
             DEFAULT_EQUIVALENT_CHARACTERS
         );
 
         expect(chars.map(({ char }) => char).join('')).toBe('Access granted');
-        expect(chars.at(-1)?.format.bold).toBe(true);
+        expect(chars.at(-1)?.run.format.bold).toBe(true);
     });
 });

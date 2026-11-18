@@ -1,4 +1,5 @@
 import { AnchorType } from '../checks/Check';
+import { FormatSource, isFormatSource } from '../checks/formatSource';
 import { Check, CHECK_KINDS, isCheckKind } from '../checks/kinds';
 import { EquivalentCharacters } from '../checks/normalizeText';
 
@@ -11,6 +12,11 @@ export interface DocxSpec {
     source: string;
     /** Characters treated as equal when comparing text; defaults to dashes, quotes and apostrophes. */
     equivalentCharacters?: EquivalentCharacters;
+    /**
+     * Where paragraph and character formats without their own `source` may come from:
+     * `any` (default) accepts direct formatting, `style` requires it from a style.
+     */
+    defaultSource?: FormatSource;
     checks: Check[];
 }
 
@@ -51,9 +57,16 @@ export const parseSpec = (value: unknown): ParsedSpec => {
         );
     }
 
+    const defaultSource = value.defaultSource;
+    const hasValidDefaultSource = defaultSource === undefined || isFormatSource(defaultSource);
+    if (!hasValidDefaultSource) {
+        errors.push('«defaultSource» muss «style» oder «any» sein; es gilt «any».');
+    }
+
     const spec: DocxSpec = {
         version: SPEC_VERSION,
         source: String(value.source ?? ''),
+        ...(hasValidDefaultSource && defaultSource ? { defaultSource } : {}),
         ...(hasValidEquivalents && equivalentCharacters ? { equivalentCharacters } : {}),
         checks
     };
@@ -70,6 +83,9 @@ const checkError = (check: unknown, index: number, usedIds: Set<string>): string
     }
     if (!isCheckKind(check.kind)) {
         return `${name} hat die unbekannte Art «${String(check.kind)}».`;
+    }
+    if (check.source !== undefined && !isFormatSource(check.source)) {
+        return `${name}: «source» muss «style» oder «any» sein.`;
     }
     if (typeof check.title !== 'string' || !isObject(check.expect)) {
         return `${name} braucht einen «title» und ein «expect».`;

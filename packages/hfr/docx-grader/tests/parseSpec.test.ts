@@ -52,4 +52,27 @@ describe('parseSpec', () => {
             '«equivalentCharacters» muss eine Liste von Listen von Zeichen sein; sie wird ignoriert.'
         ]);
     });
+
+    it('rejects invalid sources', () => {
+        const { spec, errors } = parseSpec({
+            version: 1,
+            source: 'original.docx',
+            defaultSource: 'styles',
+            checks: [
+                {
+                    id: 'a',
+                    kind: 'documentSettings',
+                    title: 'Silbentrennung',
+                    source: 'styles',
+                    expect: { autoHyphenation: true }
+                }
+            ]
+        });
+
+        expect(spec?.defaultSource).toBeUndefined();
+        expect(errors).toEqual([
+            'Check «a»: «source» muss «style» oder «any» sein.',
+            '«defaultSource» muss «style» oder «any» sein; es gilt «any».'
+        ]);
+    });
 });

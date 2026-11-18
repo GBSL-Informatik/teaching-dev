@@ -58,7 +58,11 @@ Wird das CLI erneut ausgeführt, sind die zuvor übernommenen Formatierungen vor
 
 ## Was überprüft wird
 
-Überprüft wird nur, was vom leeren Word-Dokument (Normal.dotm) abweicht. Dabei zählt das Ergebnis, nicht der Weg: Ob ein Absatz direkt oder über eine Formatvorlage im Blocksatz steht, ist gleichwertig. Nur die Verwendung einer Formatvorlage selbst wird als eigene Formatierung überprüft, weil z.B. das Inhaltsverzeichnis von ihr abhängt.
+Überprüft wird nur, was vom leeren Word-Dokument (Normal.dotm) abweicht.
+
+Absatz- und Zeichenformate müssen so entstehen wie im Original: Kommt z.B. der Blocksatz im Original aus der Formatvorlage «Standard», muss er auch bei den Schüler:innen aus der Formatvorlage kommen (`source: style`); direkt formatierter Blocksatz wird dann als Fehler gemeldet. Was im Original direkt formatiert ist, darf auf beide Arten entstehen. Mit `defaultSource: style` verlangt die Spezifikation für alle Formate Formatvorlagen; einzelne Checks lassen sich mit `source: any` davon ausnehmen.
+
+Automatisch erzeugte Inhalte müssen automatisch erzeugt sein: Nummerierungen von Überschriften und Listen, Seitenzahlen, Beschriftungen und Verzeichnisse. Eine von Hand eingetippte Nummer wie «1.1 » wird erkannt und gemeldet.
 
 Formatvorlagen
 : Welche Formatvorlage ein Absatz verwendet.
@@ -111,6 +115,12 @@ checks:
 : Optionaler Hinweis, der bei einem Fehler angezeigt wird.
 `docs`
 : Optionaler Link zu einer Seite der Dokumentation.
+`source`
+: Nur bei Absatz- und Zeichenformaten: `style` verlangt, dass die erwarteten Werte aus einer Formatvorlage stammen, `any` erlaubt auch direkte Formatierung.
+: Standard: `defaultSource`. Das CLI setzt `style`, wo das Original die Werte aus der Formatvorlage hat.
+`defaultSource`
+: Optional, auf oberster Ebene: `source` für alle Checks ohne eigenes `source`.
+: Standard: `any`.
 `equivalentCharacters`
 : Optional, auf oberster Ebene: Gruppen von Zeichen, die beim Textvergleich als gleich gelten.
 : Standard: `[['-', '–', '—', '‑'], ['"', '“', '”', '„', '«', '»'], ["'", '‘', '’', '‚', '‹', '›']]`. Leerräume werden immer zu einem Leerzeichen zusammengefasst; Tabulatoren überprüft die eigene Art `tabs`.

@@ -50,6 +50,7 @@ const main = async () => {
         version: SPEC_VERSION,
         source: path.basename(originalPath),
         ...(previousSpec?.equivalentCharacters ? { equivalentCharacters: equivalents } : {}),
+        ...(previousSpec?.defaultSource ? { defaultSource: previousSpec.defaultSource } : {}),
         checks: mergeWithPreviousSpec(
             checks.filter((check) => selectedIds.has(check.id)),
             previousSpec
