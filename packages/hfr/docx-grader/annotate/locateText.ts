@@ -1,4 +1,4 @@
-import { PdfPage } from './readPdf';
+import { PdfPage, PdfText } from './readPdf';
 
 /** Where a text starts: its first line, in PDF points of its page. */
 export interface TextBox {
@@ -27,11 +27,15 @@ export const compactText = (text: string) => {
         .replace(/[^\p{L}\p{N}]/gu, '');
 };
 
-export const createTextLocator = (pages: PdfPage[]) => {
+/** Locates texts in the pages, considering only the texts `include` accepts. */
+export const createTextLocator = (
+    pages: PdfPage[],
+    include: (text: PdfText, page: PdfPage) => boolean = () => true
+) => {
     const chars: LocatedChar[] = [];
     let stream = '';
     for (const page of pages) {
-        for (const text of page.texts) {
+        for (const text of page.texts.filter((text) => include(text, page))) {
             const compact = compactText(text.str);
             const charWidth = text.width / Math.max(compact.length, 1);
             [...compact].forEach((char, index) => {

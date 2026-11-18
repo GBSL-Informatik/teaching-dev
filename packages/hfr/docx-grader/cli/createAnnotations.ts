@@ -4,7 +4,6 @@ import path from 'node:path';
 import { annotationsOf } from '../annotate/annotationsOf';
 import { excalidrawScene } from '../annotate/excalidrawScene';
 import { layoutPage } from '../annotate/layoutPage';
-import { createTextLocator } from '../annotate/locateText';
 import { readPdf } from '../annotate/readPdf';
 import { renderAnnotatedPng } from '../annotate/renderAnnotatedPng';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
@@ -41,12 +40,12 @@ const main = async () => {
     const originalPath = path.resolve(REPO_ROOT, original);
     const spec = readSpecFile(originalPath.replace(/\.docx$/i, '.docx-spec.yaml'));
     const model = buildDocModel(await readDocx(fs.readFileSync(originalPath)));
-    const pages = await readPdf(new Uint8Array(fs.readFileSync(path.resolve(REPO_ROOT, argv.pdf))));
+    const pdf = await readPdf(new Uint8Array(fs.readFileSync(path.resolve(REPO_ROOT, argv.pdf))));
     const normalize = createNormalizer(spec.equivalentCharacters ?? DEFAULT_EQUIVALENT_CHARACTERS);
-    const annotations = annotationsOf(spec.checks, model, createTextLocator(pages), normalize);
+    const annotations = annotationsOf(spec.checks, model, pdf.pages, normalize);
 
     const unplaced = annotations.filter((annotation) => !annotation.target).length;
-    for (const page of pages) {
+    for (const page of pdf.pages) {
         // Annotations without a place in the PDF are listed on the first page.
         const ofPage = annotations.filter(({ target }) => (target?.page ?? 0) === page.index);
         const layout = layoutPage(page, ofPage);
@@ -60,6 +59,7 @@ const main = async () => {
         );
         console.log(`✅ ${ofPage.length} Anmerkungen: ${imagePath}`);
     }
+    await pdf.close();
     if (unplaced > 0) {
         console.warn(`⚠️ ${unplaced} Anmerkungen ohne Stelle im PDF stehen oben auf Seite 1.`);
     }

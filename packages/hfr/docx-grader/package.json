@@ -10,6 +10,9 @@
         "fast-xml-parser": "^5.2.5",
         "jszip": "^3.10.1"
     },
+    "optionalDependencies": {
+        "canvas": "^3.0.0-rc2"
+    },
     "devDependencies": {
         "@docusaurus/core": "*",
         "@docusaurus/module-type-aliases": "*",
@@ -17,7 +20,6 @@
         "@types/minimist": "^1.2.5",
         "@types/node": "*",
         "@types/prompts": "^2.4.9",
-        "canvas": "^3.0.0-rc2",
         "js-yaml": "^5.5.0",
         "minimist": "^1.2.8",
         "pdfjs-dist": "4.8.69",

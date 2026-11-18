@@ -1,6 +1,7 @@
-import { createCanvas, loadImage } from 'canvas';
+import type { CanvasRenderingContext2D as NodeCanvasContext } from 'canvas';
 import { ANNOTATION_COLOR } from './excalidrawScene';
 import { FONT_SIZE, LINE_HEIGHT, PAGE_WIDTH, PageLayout } from './layoutPage';
+import { loadCanvas } from './loadCanvas';
 
 const PADDING = 20;
 
@@ -11,6 +12,7 @@ const PADDING = 20;
 export const renderAnnotatedPng = async (layout: PageLayout, pagePng: Buffer, pixelRatio: number) => {
     const labelsRight = Math.max(PAGE_WIDTH, ...layout.labels.map((label) => label.x + label.width));
     const labelsBottom = Math.max(layout.height, ...layout.labels.map((label) => label.y + label.height));
+    const { createCanvas, loadImage } = await loadCanvas();
     const canvas = createCanvas((labelsRight + PADDING) * pixelRatio, (labelsBottom + PADDING) * pixelRatio);
     const context = canvas.getContext('2d');
     context.scale(pixelRatio, pixelRatio);
@@ -38,11 +40,7 @@ export const renderAnnotatedPng = async (layout: PageLayout, pagePng: Buffer, pi
     return canvas.toBuffer('image/png');
 };
 
-const drawArrow = (
-    context: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
-    from: [number, number],
-    to: [number, number]
-) => {
+const drawArrow = (context: NodeCanvasContext, from: [number, number], to: [number, number]) => {
     const angle = Math.atan2(to[1] - from[1], to[0] - from[0]);
     const headLength = 8;
     context.beginPath();

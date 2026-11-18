@@ -1,5 +1,6 @@
-import { createCanvas } from 'canvas';
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import type { TextItem, TextMarkedContent } from 'pdfjs-dist/types/src/display/api';
+import { loadCanvas } from './loadCanvas';
 
 /** A text fragment of a page, in PDF points with the origin at the top left. */
 export interface PdfText {
@@ -19,8 +20,14 @@ export interface PdfPage {
     renderPng: (scale: number) => Promise<Buffer>;
 }
 
+export interface Pdf {
+    pages: PdfPage[];
+    /** Frees pdf.js' resources once all pages are rendered. */
+    close: () => Promise<void>;
+}
+
 /** Reads the pages of a PDF exported from Word: their size, text positions and a renderer. */
-export const readPdf = async (data: Uint8Array): Promise<PdfPage[]> => {
+export const readPdf = async (data: Uint8Array): Promise<Pdf> => {
     const document = await pdfjs.getDocument({ data, isEvalSupported: false }).promise;
     const pages: PdfPage[] = [];
     for (let number = 1; number <= document.numPages; number++) {
@@ -28,14 +35,9 @@ export const readPdf = async (data: Uint8Array): Promise<PdfPage[]> => {
         const viewport = page.getViewport({ scale: 1 });
         const content = await page.getTextContent();
         const texts = content.items
-            .filter((item) => 'str' in item && item.str.trim())
-            .map((item) => {
-                const { str, transform, width, height } = item as {
-                    str: string;
-                    transform: number[];
-                    width: number;
-                    height: number;
-                };
+            .filter(isTextItem)
+            .filter((item) => item.str.trim())
+            .map(({ str, transform, width, height }) => {
                 const textHeight = height || Math.abs(transform[3]);
                 return {
                     str,
@@ -52,6 +54,7 @@ export const readPdf = async (data: Uint8Array): Promise<PdfPage[]> => {
             texts,
             renderPng: async (scale) => {
                 const scaled = page.getViewport({ scale });
+                const { createCanvas } = await loadCanvas();
                 const canvas = createCanvas(scaled.width, scaled.height);
                 // pdf.js draws on the `canvas` package's context like on a browser canvas.
                 const context = canvas.getContext('2d') as unknown as CanvasRenderingContext2D;
@@ -60,5 +63,7 @@ export const readPdf = async (data: Uint8Array): Promise<PdfPage[]> => {
             }
         });
     }
-    return pages;
+    return { pages, close: () => document.destroy() };
 };
+
+const isTextItem = (item: TextItem | TextMarkedContent): item is TextItem => 'str' in item;

@@ -1,9 +1,4 @@
-import {
-    EXCALIDRAW_BACKGROUND_FILE,
-    EXCALIDRAW_BACKGROUND_FILE_ID,
-    EXCALIDRAW_BACKGROUND_IMAGE,
-    EXCALIDRAW_IMAGE_RECTANGLE
-} from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
+import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
 import { FONT_SIZE, LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel } from './layoutPage';
 
@@ -16,32 +11,23 @@ const HANDWRITING_FONT_FAMILY = 5;
  * labels and arrows as ordinary elements, which stay editable.
  */
 export const excalidrawScene = (layout: PageLayout, pagePng: Buffer) => {
-    const background = { width: PAGE_WIDTH, height: layout.height };
-    return {
-        type: 'excalidraw',
-        version: 2,
-        elements: [
-            {
-                ...EXCALIDRAW_BACKGROUND_IMAGE,
-                ...background,
-                customData: {
-                    exportFormatMimeType: 'image/png',
-                    scale: getScale(background.width, background.height),
-                    initExtension: '.png'
-                }
-            },
-            { ...EXCALIDRAW_IMAGE_RECTANGLE, ...background },
-            ...layout.labels.flatMap((label, index) => labelElements(label, index))
-        ],
-        appState: {},
-        files: {
-            [EXCALIDRAW_BACKGROUND_FILE_ID]: {
-                ...EXCALIDRAW_BACKGROUND_FILE,
-                mimeType: 'image/png',
-                dataURL: `data:image/png;base64,${pagePng.toString('base64')}`,
-                created: 0
-            }
+    const scene = backgroundImageScene({
+        dataURL: `data:image/png;base64,${pagePng.toString('base64')}`,
+        mimeType: 'image/png',
+        width: PAGE_WIDTH,
+        height: layout.height,
+        customData: {
+            exportFormatMimeType: 'image/png',
+            scale: getScale(PAGE_WIDTH, layout.height),
+            initExtension: '.png'
         }
+    });
+    return {
+        ...scene,
+        elements: [
+            ...(scene.elements ?? []),
+            ...layout.labels.flatMap((label, index) => labelElements(label, index))
+        ]
     };
 };
 

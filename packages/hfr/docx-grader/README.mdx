@@ -86,7 +86,9 @@ Für die Schüler:innen lässt sich pro Seite des Originals ein Bild erzeugen, a
 
 Neben jedem Bild __original-annotated-1.png__ entsteht __original-annotated-1.png.excalidraw__: Die Seite ist darin das Hintergrundbild (`TDEV-BACKGROUND--FILE`), die Beschriftungen und Pfeile sind gewöhnliche Excalidraw-Elemente. Im [Bild-Editor](/docs/gallery/tools/image-markup) lassen sie sich verschieben, ändern oder löschen; beim Speichern wird das Bild neu exportiert.
 
-Die Beschriftungen stehen rechts neben der Seite, mit einem Pfeil zur ersten Stelle pro Seite, an der ein Check gilt. Mehrere Checks für dieselbe Stelle teilen sich eine Beschriftung. Was im PDF keine Stelle hat (z.B. Bilder ohne Beschriftung, Verzeichnisse oder die Silbentrennung), steht oben auf der ersten Seite.
+Das erzeugte PNG ist eine Vorschau in einfacher Schrift; sobald die Szene im Editor gespeichert wird, ersetzt der Export im Excalidraw-Stil das PNG. Das CLI braucht das Paket `canvas`, das als optionale Abhängigkeit installiert wird.
+
+Die Beschriftungen stehen rechts neben der Seite, mit einem Pfeil zur ersten Stelle pro Seite, an der ein Check gilt. Mehrere Checks für dieselbe Stelle teilen sich eine Beschriftung. Was im PDF keine Stelle hat (z.B. Bilder ohne Beschriftung, Verzeichnisse oder die Silbentrennung), steht oben auf der ersten Seite. Text in Kopf- und Fusszeilen (nach den Seitenrändern des ersten Abschnitts) wird dabei nur für die Checks der Kopf- und Fusszeilen gesucht.
 
 ## Was überprüft wird
 

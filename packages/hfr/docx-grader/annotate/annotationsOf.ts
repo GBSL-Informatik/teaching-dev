@@ -5,6 +5,7 @@ import { RunAnchor } from '../checks/kinds/runFormat';
 import { Normalizer } from '../checks/normalizeText';
 import { DocModel, Paragraph } from '../docx/DocModel';
 import { compactText, createTextLocator, TextBox } from './locateText';
+import { PdfPage, PdfText } from './readPdf';
 
 export interface Annotation {
     label: string;
@@ -14,6 +15,8 @@ export interface Annotation {
 
 type Locator = ReturnType<typeof createTextLocator>;
 
+const POINTS_PER_CM = 72 / 2.54;
+
 /**
  * One annotation per check and page, pointing to the first place the check applies to there.
  * Annotations of the same place are merged, so each place gets one label and one arrow.
@@ -21,16 +24,32 @@ type Locator = ReturnType<typeof createTextLocator>;
 export const annotationsOf = (
     checks: Check[],
     original: DocModel,
-    locator: Locator,
+    pages: PdfPage[],
     normalize: Normalizer
 ): Annotation[] => {
-    return mergeByTarget(annotationsPerCheck(checks, original, locator, normalize));
+    const locators = { body: createTextLocator(pages, isInBody(original)), all: createTextLocator(pages) };
+    return mergeByTarget(annotationsPerCheck(checks, original, locators, normalize));
+};
+
+/**
+ * Headers and footers repeat on every page, e.g. a running head with the current heading: leaving
+ * them out keeps occurrences in the PDF in step with those in the document. Uses the margins of the
+ * first section.
+ */
+const isInBody = (original: DocModel) => (text: PdfText, page: PdfPage) => {
+    const margins = original.sections[0]?.marginsCm;
+    if (!margins) {
+        return true;
+    }
+    const isInHeader = text.y + text.height <= margins.top * POINTS_PER_CM;
+    const isInFooter = text.y >= page.heightPt - margins.bottom * POINTS_PER_CM;
+    return !isInHeader && !isInFooter;
 };
 
 const annotationsPerCheck = (
     checks: Check[],
     original: DocModel,
-    locator: Locator,
+    locators: { body: Locator; all: Locator },
     normalize: Normalizer
 ): Annotation[] => {
     const { findParagraph } = createAnchoring(original, normalize);
@@ -40,17 +59,18 @@ const annotationsPerCheck = (
             return undefined;
         }
         const text = anchor.segment ?? anchor.text;
-        return locator.locate(text, occurrencesBefore(original, paragraph, text));
+        return locators.body.locate(text, occurrencesBefore(original, paragraph, text));
     };
 
     return checks.flatMap((check) => {
         const label = labelOf(check);
         if (check.kind === 'headerFooter') {
-            return [{ label, target: check.expect.text ? locator.locate(check.expect.text) : undefined }];
+            const target = check.expect.text ? locators.all.locate(check.expect.text) : undefined;
+            return [{ label, target }];
         }
         if (check.kind === 'image') {
             const caption = check.expect.caption?.text;
-            return [{ label, target: caption ? locator.locate(caption) : undefined }];
+            return [{ label, target: caption ? locators.body.locate(caption) : undefined }];
         }
         if (!('anchors' in check)) {
             return [{ label }];
@@ -68,7 +88,7 @@ const occurrencesBefore = (document: DocModel, paragraph: Paragraph, text: strin
     const key = compactText(text);
     return document.paragraphs
         .slice(0, paragraph.index)
-        .filter((before) => compactText(before.text).includes(key)).length;
+        .reduce((count, before) => count + compactText(before.text).split(key).length - 1, 0);
 };
 
 const mergeByTarget = (annotations: Annotation[]): Annotation[] => {

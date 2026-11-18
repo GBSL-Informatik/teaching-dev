@@ -1,11 +1,8 @@
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import type { BinaryFileData, ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
+import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import fileToDataUrl from '@tdev-components/utils/localFS/fileToDataUrl';
+import { backgroundImageScene } from './backgroundImageScene';
 import {
-    CustomData,
-    EXCALIDRAW_BACKGROUND_FILE,
-    EXCALIDRAW_BACKGROUND_FILE_ID,
-    EXCALIDRAW_BACKGROUND_IMAGE,
     EXCALIDRAW_BACKGROUND_IMAGE_ID,
     EXCALIDRAW_IMAGE_RECTANGLE,
     EXCALIDRAW_IMAGE_RECTANGLE_ID,
@@ -18,37 +15,18 @@ import { withoutMetaElements } from './getElementsFromScene';
 import getImageDimensions from './getImageDimensions';
 
 export const createExcalidrawMarkup = async (file: File): Promise<ExcalidrawInitialDataState> => {
-    const binData = await fileToDataUrl(file);
     const dimensions = await getImageDimensions(file, EXCALIDRAW_MAX_WIDTH);
-    return {
-        type: 'excalidraw',
-        version: 2,
-        elements: [
-            {
-                ...EXCALIDRAW_BACKGROUND_IMAGE,
-                width: dimensions.width,
-                height: dimensions.height,
-                customData: {
-                    exportFormatMimeType: file.type,
-                    scale: dimensions.scale,
-                    initExtension: `.${file.name.split('.').pop() || 'png'}`
-                } satisfies CustomData
-            } as ExcalidrawElement,
-            {
-                ...EXCALIDRAW_IMAGE_RECTANGLE,
-                width: dimensions.width,
-                height: dimensions.height
-            } as ExcalidrawElement
-        ],
-        appState: {},
-        files: {
-            [EXCALIDRAW_BACKGROUND_FILE_ID]: {
-                ...EXCALIDRAW_BACKGROUND_FILE,
-                mimeType: file.type,
-                dataURL: binData
-            } as BinaryFileData
+    return backgroundImageScene({
+        dataURL: await fileToDataUrl(file),
+        mimeType: file.type,
+        width: dimensions.width,
+        height: dimensions.height,
+        customData: {
+            exportFormatMimeType: file.type,
+            scale: dimensions.scale,
+            initExtension: `.${file.name.split('.').pop() || 'png'}`
         }
-    };
+    });
 };
 
 const handleStandaloneDrawing = (excalidrawState: ExcalidrawInitialDataState): ExcalidrawInitialDataState => {
