@@ -162,6 +162,28 @@ checks:
             segment: Access denied
       expect:
           font: Consolas
+    - id: tabs-tabulatoren-statt-leerzeichen
+      kind: tabs
+      title: Tabulatoren statt Leerzeichen
+      anchors:
+          - text: ➊ First, the file SecretPasswordFile.txt is opened ➊,
+            tabbed: "➊\tFirst, the file SecretPasswordFile.txt is opened ➊,"
+          - text: ➋ and the secret password in it is read ➋.
+            tabbed: "➋\tand the secret password in it is read ➋."
+          - text: ➌ Then, the user is prompted to input a password (from the k
+            tabbed: "➌\tThen, the user is prompted to input a password (from the keyboard) ➌."
+          - text: ➍ These two passwords are compared ➍, and if they're the sam
+            tabbed: "➍\tThese two passwords are compared ➍, and if they're the same,"
+          - text: ➎ the program prints Access granted to the screen ➎.
+            tabbed: "➎\tthe program prints Access granted to the screen ➎."
+          - text: ➏ Next, the program checks to see whether the password is 12
+            tabbed: "➏\tNext, the program checks to see whether the password is 12345 ➏"
+          - text: ➐ and hints that this choice might not be the best for a pas
+            tabbed: "➐\tand hints that this choice might not be the best for a password ➐."
+          - text: ➑ If the passwords are not the same, the program prints Acce
+            tabbed: "➑\tIf the passwords are not the same, the program prints Access denied to the screen ➑."
+      expect:
+          useTabs: true
     - id: section-abschnitt-ab-television-shows-and-films-often-show-pr-abschn-cc5c6d
       kind: section
       title: 'Abschnitt ab «Television shows and films often show pr…»: Abschnittsumbruch: fortlaufend, Spalten: 3, Abstand 0.87 cm'
