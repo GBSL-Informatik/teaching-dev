@@ -1,8 +1,6 @@
-import checkbox, { Separator } from '@inquirer/checkbox';
+import prompts from 'prompts';
 import { Check, CHECK_KINDS, CheckKindName } from '../checks/kinds';
 import { DocxSpec } from '../spec/DocxSpec';
-
-const PAGE_SIZE = 30;
 
 /** Lets the teacher pick the checks to keep: all on a first run, the previous selection on a re-run. */
 export const selectChecks = async (
@@ -18,22 +16,32 @@ export const selectChecks = async (
             return [];
         }
         return [
-            new Separator(`── ${CHECK_KINDS[kind].category} ──`),
+            // A disabled choice serves as the heading of a category.
+            { title: `── ${CHECK_KINDS[kind].category} ──`, value: kind, disabled: true },
             ...checksOfKind.map((check) => ({
-                name: `${check.title}${occurrences(check)}`,
+                title: `${check.title}${occurrences(check)}`,
                 value: check.id,
-                checked: previousIds ? previousIds.has(check.id) : true
+                selected: previousIds ? previousIds.has(check.id) : true
             }))
         ];
     });
 
-    const selected = await checkbox({
-        message: 'Welche Formatierungen sollen überprüft werden?',
-        choices,
-        pageSize: PAGE_SIZE,
-        loop: false
-    });
-    return new Set(selected);
+    const { selected } = await prompts(
+        {
+            type: 'multiselect',
+            name: 'selected',
+            message: 'Welche Formatierungen sollen überprüft werden?',
+            choices,
+            instructions: false,
+            hint: '[Leertaste] wählt ab/aus, [a] alle, [Enter] bestätigt'
+        },
+        {
+            onCancel: () => {
+                throw new Error('Abgebrochen, es wurde nichts gespeichert.');
+            }
+        }
+    );
+    return new Set(selected as string[]);
 };
 
 const occurrences = (check: Check) => {
