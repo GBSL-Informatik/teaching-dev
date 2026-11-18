@@ -45,6 +45,8 @@ export interface StyleSheet {
 export interface ResolvedParagraph {
     style: Style | undefined;
     format: ParagraphFormat;
+    /** The format the style alone gives: its chain and the numbering it defines, no direct formatting. */
+    styleFormat: ParagraphFormat;
     numbering?: NumberingLevel & { level: number };
 }
 
@@ -94,16 +96,17 @@ export const resolveParagraph = (
     const style = paragraphStyle(sheet, styleId);
     const styleChain = styleChainOf(sheet, style);
     const numbering = resolveNumbering(sheet, styleChain, childElement(pPr, 'w:numPr'));
+    const styleNumbering = resolveNumbering(sheet, styleChain, undefined);
+    const styleLayers = [sheet.paragraphDefaults, ...styleChain.map((chainStyle) => chainStyle.paragraph)];
 
-    const layers = [
-        sheet.paragraphDefaults,
-        ...styleChain.map((chainStyle) => chainStyle.paragraph),
-        ...(numbering ? [numbering.paragraph] : []),
-        parseParagraphFormat(pPr)
-    ];
+    const layers = [...styleLayers, ...(numbering ? [numbering.paragraph] : []), parseParagraphFormat(pPr)];
     return {
         style,
         format: applyParagraphLayers(INITIAL_PARAGRAPH_FORMAT, layers),
+        styleFormat: applyParagraphLayers(INITIAL_PARAGRAPH_FORMAT, [
+            ...styleLayers,
+            ...(styleNumbering ? [styleNumbering.paragraph] : [])
+        ]),
         numbering
     };
 };
@@ -113,14 +116,30 @@ export const resolveRun = (
     paragraphStyleId: string | undefined,
     rPr: XmlElement | undefined
 ): RunFormat => {
+    const layers = [...runStyleLayers(sheet, paragraphStyleId, rPr), parseRunFormat(rPr, sheet.themeFonts)];
+    return applyRunLayers(INITIAL_RUN_FORMAT, layers);
+};
+
+/** The run format the paragraph and character styles alone give, without direct formatting. */
+export const resolveRunFromStyles = (
+    sheet: StyleSheet,
+    paragraphStyleId: string | undefined,
+    rPr: XmlElement | undefined
+): RunFormat => {
+    return applyRunLayers(INITIAL_RUN_FORMAT, runStyleLayers(sheet, paragraphStyleId, rPr));
+};
+
+const runStyleLayers = (
+    sheet: StyleSheet,
+    paragraphStyleId: string | undefined,
+    rPr: XmlElement | undefined
+) => {
     const characterStyle = sheet.styles.get(childVal(rPr, 'w:rStyle') ?? '');
-    const layers = [
+    return [
         sheet.runDefaults,
         ...styleChainOf(sheet, paragraphStyle(sheet, paragraphStyleId)).map((style) => style.run),
-        ...styleChainOf(sheet, characterStyle).map((style) => style.run),
-        parseRunFormat(rPr, sheet.themeFonts)
+        ...styleChainOf(sheet, characterStyle).map((style) => style.run)
     ];
-    return applyRunLayers(INITIAL_RUN_FORMAT, layers);
 };
 
 /** The style and its `basedOn` ancestors, the root first. */

@@ -1,4 +1,5 @@
 import { Paragraph } from '../../docx/DocModel';
+import { hasTypedNumbering } from '../anchors';
 import { CheckBase, CheckKind, ParagraphAnchor } from '../Check';
 import { anchoredParagraphs, evaluateAnchors, groupBy } from './helpers';
 
@@ -47,6 +48,9 @@ export const numbering: CheckKind<NumberingCheck> = {
     evaluate: (check, context) => {
         return evaluateAnchors(check.anchors, context, (paragraph) => {
             const actual = expectationOf(paragraph);
+            if (!actual && hasTypedNumbering(context.normalize(paragraph.text))) {
+                return [`von Hand eingetippt, verwende die automatische ${describe(check.expect)}`];
+            }
             if (!actual) {
                 return [`keine Aufzählung oder Nummerierung, erwartet: ${describe(check.expect)}`];
             }
