@@ -1,9 +1,10 @@
+import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
 import minimist from 'minimist';
 import fs from 'node:fs';
 import path from 'node:path';
 import { annotationsOf } from '../annotate/annotationsOf';
 import { excalidrawScene } from '../annotate/excalidrawScene';
-import { layoutPage } from '../annotate/layoutPage';
+import { layoutPage, PAGE_WIDTH } from '../annotate/layoutPage';
 import { readPdf } from '../annotate/readPdf';
 import { renderAnnotatedPng } from '../annotate/renderAnnotatedPng';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
@@ -52,7 +53,9 @@ const main = async () => {
         const pagePng = await page.renderPng(PAGE_PIXEL_RATIO);
         const imagePath = originalPath.replace(/\.docx$/i, `-annotated-${page.index + 1}.png`);
 
-        fs.writeFileSync(imagePath, await renderAnnotatedPng(layout, pagePng, PAGE_PIXEL_RATIO));
+        // The same scale the markup editor exports with, so the preview matches its later export.
+        const previewScale = getScale(PAGE_WIDTH, layout.height);
+        fs.writeFileSync(imagePath, await renderAnnotatedPng(layout, pagePng, previewScale));
         fs.writeFileSync(
             `${imagePath}.excalidraw`,
             JSON.stringify(excalidrawScene(layout, pagePng), null, 2)

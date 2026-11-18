@@ -84,6 +84,14 @@ Für die Schüler:innen lässt sich pro Seite des Originals ein Bild erzeugen, a
 
 </Steps>
 
+Für das Beispiel oben entsteht aus dem [Original](./assets/ex01-what-is-programming.docx) und seinem [PDF-Export](./assets/ex01-what-is-programming.pdf):
+
+```bash
+yarn workspace @hfr/docx-grader annotate packages/hfr/docx-grader/assets/ex01-what-is-programming.docx --pdf packages/hfr/docx-grader/assets/ex01-what-is-programming.pdf
+```
+
+![Automatisch beschriftete Seite des Beispiels; die Beschriftungen lassen sich im Bild-Editor anpassen](./assets/ex01-what-is-programming-annotated-1.png)
+
 Neben jedem Bild __original-annotated-1.png__ entsteht __original-annotated-1.png.excalidraw__: Die Seite ist darin das Hintergrundbild (`TDEV-BACKGROUND--FILE`), die Beschriftungen und Pfeile sind gewöhnliche Excalidraw-Elemente. Im [Bild-Editor](/docs/gallery/tools/image-markup) lassen sie sich verschieben, ändern oder löschen; beim Speichern wird das Bild neu exportiert.
 
 Das erzeugte PNG ist eine Vorschau in einfacher Schrift; sobald die Szene im Editor gespeichert wird, ersetzt der Export im Excalidraw-Stil das PNG. Das CLI braucht das Paket `canvas`, das als optionale Abhängigkeit installiert wird.
