@@ -66,6 +66,28 @@ Das unformatierte Dokument enthält nur noch:
 
 Verzeichnisse, Kopf- und Fusszeilen, Abschnitte, Nummerierungen, leere Absätze und Kommentare entfallen.
 
+## Annotierte Bilder (Prototyp)
+
+Für die Schüler:innen lässt sich pro Seite des Originals ein Bild erzeugen, auf dem die überprüften Formatierungen beschriftet sind:
+
+<Steps>
+
+1. Erstelle zuerst die Spezifikation (siehe oben).
+2. Exportiere das Original in Word als PDF (__Datei › Speichern unter › PDF__), z.B. als __docs/word/original.pdf__.
+3. Erzeuge die Bilder:
+
+   ```bash
+   yarn workspace @hfr/docx-grader annotate docs/word/original.docx --pdf docs/word/original.pdf
+   ```
+
+4. Binde die Bilder ein, z.B. `![](./original-annotated-1.png)`, und passe die Beschriftungen bei Bedarf im Bild-Editor an.
+
+</Steps>
+
+Neben jedem Bild __original-annotated-1.png__ entsteht __original-annotated-1.png.excalidraw__: Die Seite ist darin das Hintergrundbild (`TDEV-BACKGROUND--FILE`), die Beschriftungen und Pfeile sind gewöhnliche Excalidraw-Elemente. Im [Bild-Editor](/docs/gallery/tools/image-markup) lassen sie sich verschieben, ändern oder löschen; beim Speichern wird das Bild neu exportiert.
+
+Die Beschriftungen stehen rechts neben der Seite, mit einem Pfeil zur ersten Stelle pro Seite, an der ein Check gilt. Mehrere Checks für dieselbe Stelle teilen sich eine Beschriftung. Was im PDF keine Stelle hat (z.B. Bilder ohne Beschriftung, Verzeichnisse oder die Silbentrennung), steht oben auf der ersten Seite.
+
 ## Was überprüft wird
 
 Überprüft wird nur, was vom leeren Word-Dokument (Normal.dotm) abweicht.

@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "description": "Grade the formatting of Word documents against a spec extracted from a model document",
     "scripts": {
-        "create-spec": "tsx cli/createSpec.ts"
+        "create-spec": "tsx cli/createSpec.ts",
+        "annotate": "tsx cli/createAnnotations.ts"
     },
     "dependencies": {
         "fast-xml-parser": "^5.2.5",
@@ -16,14 +17,17 @@
         "@types/minimist": "^1.2.5",
         "@types/node": "*",
         "@types/prompts": "^2.4.9",
+        "canvas": "^3.0.0-rc2",
         "js-yaml": "^5.5.0",
         "minimist": "^1.2.8",
+        "pdfjs-dist": "4.8.69",
         "prettier": "^3.9.10",
         "prompts": "^2.4.2",
         "tsx": "^4.23.15",
         "vitest": "*"
     },
     "peerDependencies": {
-        "@tdev/core": "1.0.0"
+        "@tdev/core": "1.0.0",
+        "@tdev/excalidoc": "1.0.0"
     }
 }
