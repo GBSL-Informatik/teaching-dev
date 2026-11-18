@@ -6,6 +6,8 @@ import { isSameValue, mismatches, PropertyDescriptors } from './properties';
  */
 export type FormatSource = 'style' | 'any';
 
+export const isFormatSource = (value: unknown): value is FormatSource => value === 'style' || value === 'any';
+
 /**
  * Splits expected properties by where the original got them from: those its styles give in every
  * part (`style`), and the directly formatted ones (`any`). Empty parts are left out.

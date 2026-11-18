@@ -1,5 +1,5 @@
 import { AnchorType } from '../checks/Check';
-import { FormatSource } from '../checks/formatSource';
+import { FormatSource, isFormatSource } from '../checks/formatSource';
 import { Check, CHECK_KINDS, isCheckKind } from '../checks/kinds';
 import { EquivalentCharacters } from '../checks/normalizeText';
 
@@ -58,8 +58,7 @@ export const parseSpec = (value: unknown): ParsedSpec => {
     }
 
     const defaultSource = value.defaultSource;
-    const hasValidDefaultSource =
-        defaultSource === undefined || defaultSource === 'style' || defaultSource === 'any';
+    const hasValidDefaultSource = defaultSource === undefined || isFormatSource(defaultSource);
     if (!hasValidDefaultSource) {
         errors.push('«defaultSource» muss «style» oder «any» sein; es gilt «any».');
     }
@@ -84,6 +83,9 @@ const checkError = (check: unknown, index: number, usedIds: Set<string>): string
     }
     if (!isCheckKind(check.kind)) {
         return `${name} hat die unbekannte Art «${String(check.kind)}».`;
+    }
+    if (check.source !== undefined && !isFormatSource(check.source)) {
+        return `${name}: «source» muss «style» oder «any» sein.`;
     }
     if (typeof check.title !== 'string' || !isObject(check.expect)) {
         return `${name} braucht einen «title» und ein «expect».`;

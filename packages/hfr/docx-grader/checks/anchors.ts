@@ -22,16 +22,17 @@ export const createAnchoring = (document: DocModel, normalize: Normalizer) => {
         return normalize(paragraph.caption?.description ?? paragraph.text).slice(0, ANCHOR_LENGTH);
     };
 
-    const typedNumberingTextOf = (paragraph: Paragraph) => {
+    // Indexes all paragraphs, so occurrences count the same as in `paragraphsByText`.
+    const textWithoutTypedNumberOf = (paragraph: Paragraph) => {
         const text = normalize(paragraph.text);
         if (paragraph.generatedBy || paragraph.caption || !hasTypedNumbering(text)) {
-            return '';
+            return anchorTextOf(paragraph);
         }
         return text.replace(TYPED_NUMBERING, '').slice(0, ANCHOR_LENGTH);
     };
 
     const paragraphsByText = indexBy(document.paragraphs, anchorTextOf);
-    const paragraphsByTextWithoutTypedNumber = indexBy(document.paragraphs, typedNumberingTextOf);
+    const paragraphsByTextWithoutTypedNumber = indexBy(document.paragraphs, textWithoutTypedNumberOf);
 
     const anchorOf = (paragraph: Paragraph): ParagraphAnchor | undefined => {
         const text = anchorTextOf(paragraph);

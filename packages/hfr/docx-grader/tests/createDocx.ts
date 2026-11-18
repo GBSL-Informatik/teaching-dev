@@ -11,7 +11,7 @@ const NAMESPACES = [
 ].join(' ');
 
 /** A minimal document with the given body content, for structures the sample documents lack. */
-export const docModelOf = async (bodyXml: string, stylesXml?: string) => {
+export const docModelOf = async (bodyXml: string, stylesXml?: string, numberingXml?: string) => {
     const zip = new JSZip();
     zip.file(
         'word/document.xml',
@@ -19,6 +19,9 @@ export const docModelOf = async (bodyXml: string, stylesXml?: string) => {
     );
     if (stylesXml) {
         zip.file('word/styles.xml', `<w:styles ${NAMESPACES}>${stylesXml}</w:styles>`);
+    }
+    if (numberingXml) {
+        zip.file('word/numbering.xml', `<w:numbering ${NAMESPACES}>${numberingXml}</w:numbering>`);
     }
     return buildDocModel(await readDocx(await zip.generateAsync({ type: 'uint8array' })));
 };
