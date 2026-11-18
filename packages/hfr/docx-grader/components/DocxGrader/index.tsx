@@ -40,10 +40,23 @@ const DocxGrader = (props: Props) => {
         }
     };
 
+    const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        setIsDragOver(true);
+    };
+
+    const handleDragLeave = () => setIsDragOver(false);
+
     const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
         event.preventDefault();
         setIsDragOver(false);
         handleFile(event.dataTransfer.files[0]);
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        handleFile(event.target.files?.[0]);
+        // Allows uploading the same, changed file again.
+        event.target.value = '';
     };
 
     return (
@@ -60,37 +73,32 @@ const DocxGrader = (props: Props) => {
             )}
             <label
                 htmlFor={inputId}
-                className={clsx(styles.upload, isDragOver && styles.dragOver)}
-                onDragOver={(event) => {
-                    event.preventDefault();
-                    setIsDragOver(true);
-                }}
-                onDragLeave={() => setIsDragOver(false)}
+                className={clsx(styles.upload, isDragOver && styles.dragOver, !spec && styles.disabled)}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
             >
                 <Icon path={mdiFileWordOutline} size={1.2} />
                 <span>{grading ? grading.fileName : 'Word-Dokument hierher ziehen oder auswählen'}</span>
-                <span className={clsx('button button--primary button--sm')}>
+                <span className="button button--primary button--sm">
                     {grading ? 'Neu überprüfen' : 'Auswählen'}
                 </span>
                 <input
                     id={inputId}
                     type="file"
-                    hidden
+                    className={styles.input}
                     accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     disabled={!spec}
-                    onChange={(event) => {
-                        handleFile(event.target.files?.[0]);
-                        // Allows uploading the same, changed file again.
-                        event.target.value = '';
-                    }}
+                    onChange={handleInputChange}
                 />
             </label>
-            {grading?.error && <Alert type="danger">{grading.error}</Alert>}
-            {grading && !grading.results && !grading.error && (
-                <p className={styles.status}>Wird überprüft…</p>
-            )}
-            {grading?.results && <Results results={grading.results} />}
+            <div aria-live="polite">
+                {grading?.error && <Alert type="danger">{grading.error}</Alert>}
+                {grading && !grading.results && !grading.error && (
+                    <p className={styles.status}>Wird überprüft…</p>
+                )}
+                {grading?.results && <Results results={grading.results} />}
+            </div>
         </div>
     );
 };

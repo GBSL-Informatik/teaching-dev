@@ -129,6 +129,19 @@ describe('gradeDocument', () => {
         expect(spaced.find((result) => result.check.kind === 'tabs')?.failures).toHaveLength(1);
     });
 
+    it('reports all failures of a paragraph in one message', async () => {
+        const spec = await specOf('ex01-what-is-programming');
+        spec.checks = spec.checks.filter(
+            (check) => check.title === '«Titel»: Ausrichtung: Blocksatz, Abstand nach: 14 pt'
+        );
+
+        const [result] = gradeDocument(spec, await loadFixture('ex01-what-is-programming-raw'));
+
+        expect(result.failures).toEqual([
+            '«What Is Programming?»: Ausrichtung: linksbündig statt Blocksatz; Abstand nach: 8 pt statt 14 pt'
+        ]);
+    });
+
     it('reports changed text instead of failing silently', async () => {
         const spec = await specOf('21E_MachineLearning');
         spec.checks = spec.checks.filter((check) => check.kind === 'paragraphStyle');

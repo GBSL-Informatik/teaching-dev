@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import { readDocx } from '../docx/readDocx';
 import { loadFixture } from './loadFixture';
+
+describe('readDocx', () => {
+    it('rejects a file that is not a docx', async () => {
+        await expect(readDocx(new TextEncoder().encode('Hallo'))).rejects.toThrow(
+            'Die Datei ist kein Word-Dokument (.docx).'
+        );
+    });
+});
 
 describe('buildDocModel', () => {
     it('resolves paragraph formatting through styles, numbering and direct formatting', async () => {

@@ -17,22 +17,16 @@ Dieses Package ist ein Work in Progress ([#385](https://github.com/GBSL-Informat
 
 Schüler:innen erhalten ein unformatiertes Word-Dokument und formatieren es so wie ein Original der Lehrperson. Der docx-grader überprüft danach wie bei Unit-Tests, welche Formatierungen bereits stimmen.
 
-<CodeShowcase
-    lang="md"
-    imports={[
-        `import DocxGrader from '@hfr/docx-grader/components/DocxGrader';`,
-        `import spec from './assets/ex01-what-is-programming.docx-spec.yaml';`
-    ]}
->
+<CodeShowcase lang="md" imports={[`import DocxGrader from '@hfr/docx-grader/components/DocxGrader';`, `import spec from './assets/ex01-what-is-programming.docx-spec.yaml';`]}>
 <DocxGrader spec={spec} />
 </CodeShowcase>
 
-Zum Ausprobieren: Lade das [unformatierte Dokument](./assets/ex01-what-is-programming-raw.docx) oder das [Original](./assets/ex01-what-is-programming.docx) herunter und ziehe es auf die Komponente.
+Zum Ausprobieren (die Beispieldateien stammen aus [#385](https://github.com/GBSL-Informatik/teaching-dev/issues/385)): Lade das [unformatierte Dokument](./assets/ex01-what-is-programming-raw.docx) oder das [Original](./assets/ex01-what-is-programming.docx) herunter und ziehe es auf die Komponente.
 
 Das Dokument wird nur im Browser überprüft: Es wird nicht hochgeladen und das Resultat wird nicht gespeichert.
 
 `spec`
-: Die docx-spec, als YAML-Datei importiert. Fehler in der Datei werden oberhalb der Komponente angezeigt; fehlerhafte Checks werden übersprungen.
+: Die docx-spec, als YAML-Datei importiert (`unknown`, wird beim Rendern überprüft). Fehler in der Datei werden oberhalb der Komponente angezeigt; fehlerhafte Checks werden übersprungen.
 `className`
 : Optionale CSS-Klasse.
 
