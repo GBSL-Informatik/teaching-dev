@@ -61,12 +61,22 @@
     --ifm-color-primary-darker: var(--ifm-color-blue-darker);
     --button-separator-color: var(--ifm-color-secondary);
 }
+/* use this class together with button--primary: the same dark gray as `alert--black` in both themes */
 .buttonBlack {
-    --ifm-color-primary: var(--ifm-font-color-base);
-    --ifm-color-primary-darker: var(--ifm-font-color-base);
-    &:hover {
-        --ifm-button-color: var(--ifm-color-white);
-        --baseTextContrast: var(--ifm-color-white);
+    --ifm-color-primary: var(--tdev-color-black-contrast-background);
+    --ifm-color-primary-dark: var(--tdev-color-black-hover);
+    --ifm-color-primary-darker: var(--tdev-color-black-hover);
+    &:not(:global(.button--outline)) {
+        --ifm-button-color: var(--tdev-color-black-contrast-foreground);
+    }
+    /* disabled buttons keep the gray border and text of `Button` */
+    &:global(.button--outline):not(:disabled) {
+        --ifm-button-border-color: var(--ifm-font-color-base);
+        --ifm-button-color: var(--ifm-font-color-base);
+    }
+    &:global(.button--outline):not(:disabled):is(:hover, :active, :global(.button--active)) {
+        --ifm-button-background-color: var(--tdev-color-black-contrast-background);
+        --ifm-button-color: var(--tdev-color-black-contrast-foreground);
     }
 }
 .buttonGray {
@@ -78,11 +88,12 @@
 }
 
 [data-theme='dark'] {
-    .buttonBlack {
-        &:hover {
-            --ifm-button-color: var(--ifm-color-black);
-            --baseTextContrast: var(--ifm-color-black);
-        }
+    /* solid black buttons invert in dark mode, outline buttons stay dark gray */
+    .buttonBlack:not(:global(.button--outline)) {
+        --ifm-color-primary: var(--ifm-font-color-base);
+        --ifm-color-primary-dark: var(--ifm-color-gray-300);
+        --ifm-color-primary-darker: var(--ifm-color-gray-300);
+        --ifm-button-color: var(--ifm-font-color-base-inverse);
     }
     .buttonGray {
         --ifm-button-border-color: var(--ifm-color-secondary);

@@ -35,21 +35,100 @@ Um die Details mit weniger Aufwand zu erstellen, können auch `:::details`-Blöc
 :::
 </CodeShowcase>
 
+## Farben
+
+Wie bei den Admonitions kann die Farbe über eine Klasse gewählt werden. Ohne Klasse sind Details blau (`info`).
+
+<CodeShowcase lang="md">
+:::details[`.primary`]{.primary}
+Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.secondary`]{.secondary}
+Aliase: `.note`, `.gray`, `.grey`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.success`]{.success}
+Aliase: `.tip`, `.green`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.info`]{.info}
+Aliase: `.lightBlue`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.warning`]{.warning}
+Aliase: `.caution`, `.orange`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.danger`]{.danger}
+Aliase: `.red`. Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.blue`]{.blue}
+Mit `Code` und einem [Link](#farben).
+:::
+
+:::details[`.black`]{.black}
+Mit `Code` und einem [Link](#farben).
+:::
+</CodeShowcase>
+
+Folgende Klassen sind verfügbar:
+
+`.primary`, `.secondary`, `.success`, `.info`, `.warning`, `.danger`
+: Die Farben der Infima-Alerts.
+`.note`, `.tip`, `.caution`
+: Dieselbe Farbe wie die gleichnamige Admonition (`secondary`, `success` bzw. `warning`).
+`.red`, `.orange`, `.green`, `.lightBlue`, `.gray`, `.grey`
+: Dieselben Farbnamen wie bei Buttons: `danger`, `warning`, `success`, `info` bzw. `secondary`.
+`.blue`
+: Blau (`--ifm-color-blue`), unabhängig von der Primärfarbe der Website.
+`.black`
+: Dunkelgrau, auch im Dark-Mode gut sichtbar.
+
+Pro Block sollte nur eine Farb-Klasse verwendet werden: Bei mehreren (z.B. `{.red .tip}`) gewinnt diejenige, die im CSS später definiert ist, nicht die zuletzt geschriebene.
+
 ## Installation
 
 :::info[Code]
 - `src/plugins/remark-details`
+- `src/components/shared/Colors/infimaTypes.ts`
+- `.alert--*`-Regeln in `src/css/custom.scss`
 :::
 
+Das Plugin ist als `detailsPluginConfig` in den `recommendedBeforeDefaultRemarkPlugins` aus `src/siteConfig/markdownPluginConfigs.ts` enthalten. Websites ohne eigene `beforeDefaultRemarkPlugins` im `siteConfig.ts` erhalten es damit automatisch.
 
-:::info[`docusaurus.config.ts`]
+## Konfiguration
 
-```ts
-import detailsPlugin from './src/plugins/remark-details/plugin';
-const BEFORE_DEFAULT_REMARK_PLUGINS = [
-    /* ... */
-    detailsPlugin
-];
+`colors`
+: Weitere Klassen, die eine Farbe setzen. Bestehende Klassen können damit auch umgefärbt werden.
+: Werte: `primary`, `secondary`, `success`, `info`, `warning`, `danger`, `blue` oder `black`.
 
+Um eigene Farb-Klassen zu ergänzen, wird im `siteConfig.ts` die Standardkonfiguration des Plugins ersetzt:
+
+```ts title="siteConfig.ts"
+import type { Pluggable } from 'unified';
+import detailsPlugin from '../src/plugins/remark-details/plugin';
+import {
+    detailsPluginConfig,
+    recommendedBeforeDefaultRemarkPlugins
+} from '../src/siteConfig/markdownPluginConfigs';
+
+const coloredDetailsPluginConfig = [
+    detailsPlugin,
+    {
+        // highlight-next-line
+        colors: { purple: 'primary', exam: 'danger' }
+    }
+] satisfies Pluggable;
+
+const getSiteConfig: SiteConfigProvider = () => ({
+    beforeDefaultRemarkPlugins: recommendedBeforeDefaultRemarkPlugins.map((plugin) =>
+        plugin === detailsPluginConfig ? coloredDetailsPluginConfig : plugin
+    )
+});
 ```
+
+:::warning[Eigene Plugin-Liste]
+Die Ersetzung greift nur, wenn die Liste die unveränderte `detailsPluginConfig` enthält. Bei einer eigenen Plugin-Liste muss das Plugin mit den gewünschten `colors` direkt eingetragen werden.
 :::

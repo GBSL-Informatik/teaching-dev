@@ -15,11 +15,28 @@
 
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-    --ifm-color-blue-lighter: #72a1ed;
     --ifm-color-blue: #3578e5;
     --ifm-color-blue-dark: #306cce;
     --ifm-color-blue-darker: #2d66c3;
     --ifm-color-blue-darkest: #2554a0;
+    --ifm-color-blue-light: #538ce9;
+    --ifm-color-blue-lighter: #72a1ed;
+    --ifm-color-blue-lightest: #9abcf2;
+    /* same mix as Infima's `--ifm-color-*-contrast-*` */
+    --tdev-color-blue-contrast-background: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 10%,
+        var(--ifm-color-white)
+    );
+    --tdev-color-blue-contrast-foreground: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 30%,
+        var(--ifm-color-black)
+    );
+    --tdev-color-black-contrast-background: var(--ifm-color-gray-800);
+    --tdev-color-black-contrast-foreground: var(--ifm-color-gray-100);
+    --tdev-color-black-border: var(--ifm-color-black);
+    --tdev-color-black-hover: var(--ifm-color-gray-900);
     --ifm-color-disabled: #6e6e6e;
     --ifm-color-violet: #8957e5;
     --ifm-color-boxed: #3348b5;
@@ -47,6 +64,18 @@
     --ifm-global-shadow-tl: 0 8px 16px 0 rgba(0, 119, 110, 0.08), 0 2px 4px 0 rgba(0, 119, 110, 0.05);
     --ifm-color-boxed: #8395ef;
     --prism-background-color: #282a36;
+    --tdev-color-blue-contrast-background: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 30%,
+        var(--ifm-color-black)
+    );
+    --tdev-color-blue-contrast-foreground: color-mix(
+        in srgb,
+        var(--ifm-color-blue) 10%,
+        var(--ifm-color-white)
+    );
+    --tdev-color-black-border: var(--ifm-color-gray-500);
+    --tdev-color-black-hover: var(--ifm-color-gray-700);
 
     --tdev-admonition-aufgabe-background-color: #0095ff1a;
     --tdev-admonition-aufgabe-background-color-highlight: #0095ff44;
@@ -56,6 +85,48 @@
     --tdev-admonition-definition-background-color-highlight: #4e4542;
     --tdev-admonition-definition-foreground-color: #b8e6b8;
     --tdev-admonition-definition-border-color: #6a5f5d;
+}
+
+/* Docusaurus' Details always adds `alert--info`, which wins over the alert types Infima defines before it. */
+.alert--info {
+    &.alert--primary {
+        --ifm-alert-background-color: var(--ifm-color-primary-contrast-background);
+        --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-primary) 15%, transparent);
+        --ifm-alert-foreground-color: var(--ifm-color-primary-contrast-foreground);
+        --ifm-alert-border-color: var(--ifm-color-primary-dark);
+    }
+    &.alert--secondary {
+        --ifm-alert-background-color: var(--ifm-color-secondary-contrast-background);
+        --ifm-alert-background-color-highlight: color-mix(
+            in srgb,
+            var(--ifm-color-secondary) 15%,
+            transparent
+        );
+        --ifm-alert-foreground-color: var(--ifm-color-secondary-contrast-foreground);
+        --ifm-alert-border-color: var(--ifm-color-secondary-dark);
+    }
+    &.alert--success {
+        --ifm-alert-background-color: var(--ifm-color-success-contrast-background);
+        --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-success) 15%, transparent);
+        --ifm-alert-foreground-color: var(--ifm-color-success-contrast-foreground);
+        --ifm-alert-border-color: var(--ifm-color-success-dark);
+    }
+}
+
+/* Infima has no blue alert: `alert--primary` follows the site's primary color. */
+.alert--blue {
+    --ifm-alert-background-color: var(--tdev-color-blue-contrast-background);
+    --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-blue) 15%, transparent);
+    --ifm-alert-foreground-color: var(--tdev-color-blue-contrast-foreground);
+    --ifm-alert-border-color: var(--ifm-color-blue-dark);
+}
+
+/* A dark gray alert in both themes. Links and inline code derive from these variables. */
+.alert--black {
+    --ifm-alert-background-color: var(--tdev-color-black-contrast-background);
+    --ifm-alert-background-color-highlight: color-mix(in srgb, var(--ifm-color-white) 15%, transparent);
+    --ifm-alert-foreground-color: var(--tdev-color-black-contrast-foreground);
+    --ifm-alert-border-color: var(--tdev-color-black-border);
 }
 
 strong.boxed {

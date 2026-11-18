@@ -71,6 +71,8 @@ Use the relevant gallery page for detailed syntax rather than inventing JSX or c
   :::
   ```
 
+  Color it like an admonition with a class, such as `{.danger}`, `{.tip}` or `{.red}`.
+
 - [Admonitions](../../../tdev-website/docs/gallery/markdown/admonitions/index.mdx): use notes, tips, and warnings for information that needs attention, not routine prose.
 - [Keyboard shortcuts](../../../tdev-website/docs/gallery/markdown/remark-kbd/index.mdx): `[[Ctrl]] + [[C]]`.
 - [Inline icons](../../../tdev-website/docs/gallery/markdown/remark-mdi/index.mdx): `:mdi[skateboarding]`.

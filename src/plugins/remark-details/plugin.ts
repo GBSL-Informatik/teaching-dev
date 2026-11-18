@@ -2,6 +2,26 @@ import type { BlockContent, Root, Text } from 'mdast';
 import type { MdxJsxAttribute, MdxJsxFlowElement } from 'mdast-util-mdx';
 import type { Plugin, Transformer } from 'unified';
 import { visit } from 'unist-util-visit';
+import { InfimaTypes, type InfimaType } from '../../components/shared/Colors/infimaTypes';
+
+/**
+ * The alert type coloring the details, used as `alert--<type>`.
+ * `blue` and `black` are not Infima types, they are defined in `src/css/custom.scss`.
+ */
+export type AlertType = InfimaType | 'blue' | 'black';
+
+/**
+ * Maps a directive class (e.g. `.danger` or `.red`) to the alert type it colors the details with.
+ * Same color names as the shared `Colors`, plus the Docusaurus admonition names.
+ */
+export const DEFAULT_COLORS: Record<string, AlertType> = {
+    ...InfimaTypes,
+    blue: 'blue',
+    black: 'black',
+    note: 'secondary',
+    tip: 'success',
+    caution: 'warning'
+};
 
 // TODO: How to type this?
 //       TS doesn't enforce that only keys of directiveNames can be used in
@@ -21,11 +41,27 @@ export interface PluginOptions<T extends readonly string[] = readonly string[]> 
     classNames?: {
         [key in T[number] | 'details' | 'summary']?: string;
     };
+    /**
+     * Additional directive classes coloring the details, merged with `DEFAULT_COLORS`.
+     * @example { purple: 'primary' } // :::details[Title]{.purple}
+     */
+    colors?: Record<string, AlertType>;
 }
 
 const plugin: Plugin<PluginOptions[], Root> = function plugin(optionsInput = {}): Transformer<Root> {
     const TAG_NAMES = { details: 'details', summary: 'summary', ...optionsInput.tagNames };
     const DIRECTIVE_NAMES = new Set(['details', ...(optionsInput.directiveNames || [])]);
+    const COLORS: Record<string, AlertType> = { ...DEFAULT_COLORS, ...optionsInput.colors };
+
+    const toAlertClasses = (directiveClass?: string | null) => {
+        if (!directiveClass) {
+            return directiveClass;
+        }
+        return directiveClass
+            .split(/\s+/)
+            .map((name) => (Object.hasOwn(COLORS, name) ? `alert--${COLORS[name]}` : name))
+            .join(' ');
+    };
     const getClassNameAttribute = (tag: string, directiveClass?: string | null): MdxJsxAttribute[] => {
         const classNames = [(optionsInput.classNames || {})[tag], directiveClass].filter(Boolean) as string[];
         return classNames.length > 0
@@ -59,7 +95,8 @@ const plugin: Plugin<PluginOptions[], Root> = function plugin(optionsInput = {})
                     children: summaryTitle as BlockContent[]
                 });
             }
-            const attributes = [...getClassNameAttribute(node.name, node.attributes?.class)];
+            const directiveClass = toAlertClasses(node.attributes?.class);
+            const attributes = [...getClassNameAttribute(node.name, directiveClass)];
             if (node.attributes?.open !== undefined) {
                 attributes.push({ type: 'mdxJsxAttribute', name: 'open', value: 'true' });
             }

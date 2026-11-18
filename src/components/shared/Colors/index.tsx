@@ -1,7 +1,10 @@
 import clsx from 'clsx';
+import { type Color, InfimaTypes } from './infimaTypes';
 import styles from './styles.module.scss';
 
-export const Colors = {
+export type { Color };
+
+export const Colors: { [key in Color]: string } = {
     primary: styles.primary,
     secondary: styles.secondary,
     blue: styles.blue,
@@ -17,24 +20,10 @@ export const Colors = {
     info: styles.gray,
     black: styles.black
 };
-export type Color = keyof typeof Colors;
 
-export const ButtonColors: { [key in Color]: string } = {
-    primary: 'button--primary',
-    secondary: 'button--secondary',
-    blue: 'button--primary',
-    green: 'button--success',
-    success: 'button--success',
-    red: 'button--danger',
-    danger: 'button--danger',
-    orange: 'button--warning',
-    warning: 'button--warning',
-    gray: 'button--secondary',
-    grey: 'button--secondary',
-    lightBlue: 'button--info',
-    info: 'button--info',
-    black: 'button--primary'
-};
+export const ButtonColors = Object.fromEntries(
+    Object.entries(InfimaTypes).map(([color, type]) => [color, `button--${type}`])
+) as { [key in Color]: string };
 
 export const IfmColors = {
     primary: 'var(--ifm-color-primary)',

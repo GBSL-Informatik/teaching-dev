@@ -236,3 +236,157 @@ describe('#details', () => {
         `);
     });
 });
+
+describe('#details colors', () => {
+    it('maps admonition types to alert classes', async () => {
+        const input = alignLeft(`:::details[Danger]{.danger}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--danger">
+            <summary>
+              Danger
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('maps color aliases to alert classes', async () => {
+        const input = alignLeft(`:::details[Red]{.red}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--danger">
+            <summary>
+              Red
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('keeps other classes next to the color', async () => {
+        const input = alignLeft(`:::solution[Lösung]{.custom .tip}
+            Hello world!
+            :::
+        `);
+        const result = await process(input, {
+            directiveNames: ['solution'],
+            classNames: { solution: 'solution' }
+        });
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="solution custom alert--success">
+            <summary>
+              Lösung
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('accepts custom colors from the config', async () => {
+        const input = alignLeft(`:::details[Purple]{.purple}
+            Hello world!
+            :::
+        `);
+        const result = await process(input, { colors: { purple: 'primary' } });
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--primary">
+            <summary>
+              Purple
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('lets custom colors override the defaults', async () => {
+        const input = alignLeft(`:::details[Red]{.red}
+            Hello world!
+            :::
+        `);
+        const result = await process(input, { colors: { red: 'warning' } });
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--warning">
+            <summary>
+              Red
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('ignores classes named like object properties', async () => {
+        const input = alignLeft(`:::details[Constructor]{.constructor}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="constructor">
+            <summary>
+              Constructor
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('uses the blue alert for blue and the info alert for lightBlue', async () => {
+        const input = alignLeft(`:::details[Blue]{.blue}
+            Hello world!
+            :::
+
+            :::details[Light Blue]{.lightBlue}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--blue">
+            <summary>
+              Blue
+            </summary>
+
+            Hello world!
+          </details>
+
+          <details className="alert--info">
+            <summary>
+              Light Blue
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+    it('uses the black alert for black', async () => {
+        const input = alignLeft(`:::details[Black]{.black}
+            Hello world!
+            :::
+        `);
+        const result = await process(input);
+        expect(result).toMatchInlineSnapshot(`
+          "<details className="alert--black">
+            <summary>
+              Black
+            </summary>
+
+            Hello world!
+          </details>
+          "
+        `);
+    });
+});
