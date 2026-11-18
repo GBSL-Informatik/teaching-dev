@@ -1,5 +1,6 @@
 import { Field } from '../../docx/DocModel';
 import { CheckBase, CheckKind } from '../Check';
+import { isSameValue } from '../properties';
 import { groupBy } from './helpers';
 
 type DirectoryType = 'tableOfContents' | 'tableOfFigures' | 'bibliography';
@@ -24,6 +25,7 @@ const TYPE_LABELS: { [type in DirectoryType]: string } = {
 
 export const field: CheckKind<FieldCheck> = {
     category: 'Verzeichnisse',
+    anchors: 'none',
 
     extract: ({ original }) => {
         const expectations = original.fields.flatMap((fieldOfOriginal) => {
@@ -41,7 +43,7 @@ export const field: CheckKind<FieldCheck> = {
         const candidates = context.document.fields
             .map(expectationOf)
             .filter((expect) => expect?.type === check.expect.type);
-        if (candidates.some((candidate) => JSON.stringify(candidate) === JSON.stringify(check.expect))) {
+        if (candidates.some((candidate) => isSameValue(candidate, check.expect))) {
             return [];
         }
         if (candidates.length > 0) {

@@ -1,4 +1,4 @@
-import { checkbox, Separator } from '@inquirer/prompts';
+import checkbox, { Separator } from '@inquirer/checkbox';
 import { Check, CHECK_KINDS, CheckKindName } from '../checks/kinds';
 import { DocxSpec } from '../spec/DocxSpec';
 

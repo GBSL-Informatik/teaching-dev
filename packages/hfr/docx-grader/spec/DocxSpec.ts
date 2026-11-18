@@ -1,4 +1,5 @@
-import { Check, isCheckKind } from '../checks/kinds';
+import { AnchorType } from '../checks/Check';
+import { Check, CHECK_KINDS, isCheckKind } from '../checks/kinds';
 import { EquivalentCharacters } from '../checks/normalizeText';
 
 export const SPEC_VERSION = 1;
@@ -19,33 +20,86 @@ export interface ParsedSpec {
     errors: string[];
 }
 
-/** Validates a spec loaded from YAML, which is only plain data at runtime. */
+type PlainObject = { [key: string]: unknown };
+
+/**
+ * Validates a spec loaded from YAML, which is only plain data at runtime. The structure is checked,
+ * so hand edits cannot crash the grader; the expected values are compared as they are.
+ */
 export const parseSpec = (value: unknown): ParsedSpec => {
     if (!isObject(value) || value.version !== SPEC_VERSION || !Array.isArray(value.checks)) {
         return { errors: [`Keine gültige docx-spec (Version ${SPEC_VERSION} mit einer Liste «checks»).`] };
     }
     const errors: string[] = [];
+    const usedIds = new Set<string>();
     const checks = value.checks.filter((check, index) => {
-        if (!isObject(check) || typeof check.id !== 'string') {
-            errors.push(`Check Nr. ${index + 1} hat keine «id».`);
+        const error = checkError(check, index, usedIds);
+        if (error) {
+            errors.push(error);
             return false;
         }
-        if (!isCheckKind(check.kind)) {
-            errors.push(`Check «${check.id}» hat die unbekannte Art «${String(check.kind)}».`);
-            return false;
-        }
+        usedIds.add((check as Check).id);
         return true;
-    }) as Check[]; // The expectations of each kind are trusted: the CLI wrote them.
+    }) as Check[];
+
+    const equivalentCharacters = value.equivalentCharacters;
+    const hasValidEquivalents =
+        equivalentCharacters === undefined || isEquivalentCharacters(equivalentCharacters);
+    if (!hasValidEquivalents) {
+        errors.push(
+            '«equivalentCharacters» muss eine Liste von Listen von Zeichen sein; sie wird ignoriert.'
+        );
+    }
 
     const spec: DocxSpec = {
         version: SPEC_VERSION,
         source: String(value.source ?? ''),
-        equivalentCharacters: value.equivalentCharacters as EquivalentCharacters | undefined,
+        ...(hasValidEquivalents && equivalentCharacters ? { equivalentCharacters } : {}),
         checks
     };
     return { spec, errors };
 };
 
-const isObject = (value: unknown): value is { [key: string]: unknown } => {
+const checkError = (check: unknown, index: number, usedIds: Set<string>): string | undefined => {
+    if (!isObject(check) || typeof check.id !== 'string') {
+        return `Check Nr. ${index + 1} hat keine «id».`;
+    }
+    const name = `Check «${check.id}»`;
+    if (usedIds.has(check.id)) {
+        return `${name} kommt mehrfach vor.`;
+    }
+    if (!isCheckKind(check.kind)) {
+        return `${name} hat die unbekannte Art «${String(check.kind)}».`;
+    }
+    if (typeof check.title !== 'string' || !isObject(check.expect)) {
+        return `${name} braucht einen «title» und ein «expect».`;
+    }
+    const anchorType = CHECK_KINDS[check.kind].anchors;
+    if (anchorType !== 'none' && !hasAnchors(check, anchorType)) {
+        return `${name} braucht eine Liste «anchors».`;
+    }
+    return undefined;
+};
+
+const hasAnchors = (check: PlainObject, anchorType: Exclude<AnchorType, 'none'>) => {
+    if (!Array.isArray(check.anchors)) {
+        return false;
+    }
+    return check.anchors.every((anchor) => {
+        if (anchorType === 'image') {
+            return isObject(anchor) && typeof anchor.image === 'number';
+        }
+        return isObject(anchor) && typeof anchor.text === 'string';
+    });
+};
+
+const isEquivalentCharacters = (value: unknown): value is EquivalentCharacters => {
+    return (
+        Array.isArray(value) &&
+        value.every((group) => Array.isArray(group) && group.every((char) => typeof char === 'string'))
+    );
+};
+
+const isObject = (value: unknown): value is PlainObject => {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 };

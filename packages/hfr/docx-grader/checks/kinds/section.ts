@@ -9,7 +9,7 @@ import {
     PropertyDescriptors,
     yesNo
 } from '../properties';
-import { evaluateAnchors, sectionAnchor } from './helpers';
+import { evaluateAnchors, SECTION_NOT_FOUND, sectionAnchor } from './helpers';
 
 type PageSetup = Omit<Section, 'index' | 'headersAndFooters'>;
 
@@ -66,6 +66,7 @@ const SECTION_PROPERTIES: PropertyDescriptors<PageSetup> = {
 
 export const section: CheckKind<SectionCheck> = {
     category: 'Abschnitte und Seitenlayout',
+    anchors: 'paragraph',
 
     extract: (context) => {
         return context.original.sections.flatMap((sectionOfOriginal) => {
@@ -99,6 +100,9 @@ export const section: CheckKind<SectionCheck> = {
     evaluate: (check, context) => {
         return evaluateAnchors(check.anchors, context, (paragraph) => {
             const actual = context.document.sections[paragraph.sectionIndex];
+            if (!actual) {
+                return [SECTION_NOT_FOUND];
+            }
             return mismatches(check.expect, pageSetupOf(actual), SECTION_PROPERTIES);
         });
     }

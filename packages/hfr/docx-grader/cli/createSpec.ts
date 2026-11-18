@@ -7,7 +7,7 @@ import { buildDocModel } from '../docx/buildDocModel';
 import { readDocx } from '../docx/readDocx';
 import { SPEC_VERSION } from '../spec/DocxSpec';
 import { selectChecks } from './selectChecks';
-import { mergeWithPreviousSpec, readSpecFile, writeSpecFile } from './specFile';
+import { mergeWithPreviousSpec, readSpecFile, warnAboutDroppedHints, writeSpecFile } from './specFile';
 
 const USAGE = `
 yarn workspace @hfr/docx-grader create-spec <original.docx> [--out <name.docx-spec.yaml>] [--all]
@@ -38,6 +38,7 @@ const main = async () => {
     const equivalents = previousSpec?.equivalentCharacters ?? DEFAULT_EQUIVALENT_CHARACTERS;
     const original = buildDocModel(await readDocx(fs.readFileSync(originalPath)));
     const checks = extractChecks(original, equivalents);
+    warnAboutDroppedHints(checks, previousSpec);
 
     const selectedIds = argv.all
         ? new Set(checks.map((check) => check.id))

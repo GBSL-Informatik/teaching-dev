@@ -5,7 +5,7 @@ import { CheckDraft, ExtractionContext } from './Check';
 import { Check, CHECK_KINDS } from './kinds';
 import { createNormalizer, EquivalentCharacters } from './normalizeText';
 
-const MAX_ID_LENGTH = 80;
+const MAX_SLUG_LENGTH = 60;
 
 /** All formatting of the original document that differs from a blank document, as checks. */
 export const extractChecks = (original: DocModel, equivalents: EquivalentCharacters): Check[] => {
@@ -24,7 +24,10 @@ export const extractChecks = (original: DocModel, equivalents: EquivalentCharact
     return withUniqueIds(drafts);
 };
 
-/** Ids derive from kind and title, so re-running the CLI on the same document yields the same ids. */
+/**
+ * Ids derive from kind and title, so re-running the CLI on the same document yields the same ids.
+ * Only checks with the same title get a numbered suffix, in document order.
+ */
 const withUniqueIds = (drafts: CheckDraft<Check>[]): Check[] => {
     const usedIds = new Set<string>();
     return drafts.map((draft) => {
@@ -38,13 +41,26 @@ const withUniqueIds = (drafts: CheckDraft<Check>[]): Check[] => {
     });
 };
 
+/** A readable slug; long titles are shortened and get a hash of the full title to stay distinct. */
 const slug = (text: string) => {
-    return text
+    const full = text
         .toLowerCase()
         .replace(/ä/g, 'ae')
         .replace(/ö/g, 'oe')
         .replace(/ü/g, 'ue')
         .replace(/[^a-z0-9]+/g, '-')
-        .slice(0, MAX_ID_LENGTH)
         .replace(/^-|-$/g, '');
+    if (full.length <= MAX_SLUG_LENGTH) {
+        return full;
+    }
+    return `${full.slice(0, MAX_SLUG_LENGTH).replace(/-$/, '')}-${hash(text)}`;
+};
+
+/** FNV-1a, as 6 hex digits. */
+const hash = (text: string) => {
+    let value = 0x811c9dc5;
+    for (let i = 0; i < text.length; i++) {
+        value = Math.imul(value ^ text.charCodeAt(i), 0x01000193);
+    }
+    return (value >>> 0).toString(16).padStart(8, '0').slice(0, 6);
 };

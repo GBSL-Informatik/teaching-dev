@@ -42,9 +42,13 @@ export interface GradingContext {
 /** A check without the id, which is assigned once all checks are extracted. */
 export type CheckDraft<C extends CheckBase<string>> = C extends unknown ? Omit<C, 'id'> : never;
 
+/** How checks of a kind locate their content: `paragraph` and `image` anchors, or the whole document. */
+export type AnchorType = 'paragraph' | 'image' | 'none';
+
 export interface CheckKind<C extends CheckBase<string>> {
     /** Groups checks in the CLI selection and in the results. */
     category: string;
+    anchors: AnchorType;
     extract: (context: ExtractionContext) => CheckDraft<C>[];
     /** Returns one message per unmet expectation; none means the check passed. */
     evaluate: (check: C, context: GradingContext) => string[];

@@ -41,6 +41,7 @@ const formatWrap = lookup({
 
 export const image: CheckKind<ImageCheck> = {
     category: 'Bilder und Beschriftungen',
+    anchors: 'image',
 
     extract: ({ original, normalize }) => {
         return original.images.map((imageOfOriginal) => {

@@ -14,6 +14,7 @@ export interface ParagraphFormatCheck extends CheckBase<'paragraphFormat'> {
 
 export const paragraphFormat: CheckKind<ParagraphFormatCheck> = {
     category: 'Absatzformat',
+    anchors: 'paragraph',
 
     extract: (context) => {
         const formatted = anchoredParagraphs(context)

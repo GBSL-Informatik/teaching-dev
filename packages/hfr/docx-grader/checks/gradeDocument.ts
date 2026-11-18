@@ -20,5 +20,14 @@ export const gradeDocument = (spec: DocxSpec, document: DocModel): CheckResult[]
         equivalents,
         findParagraph: createAnchoring(document, normalize).findParagraph
     };
-    return spec.checks.map((check) => ({ check, failures: evaluateCheck(check, context) }));
+    return spec.checks.map((check) => ({ check, failures: evaluateSafely(check, context) }));
+};
+
+/** Specs are edited by hand: a check with unexpected values fails instead of stopping the grading. */
+const evaluateSafely = (check: Check, context: GradingContext): string[] => {
+    try {
+        return evaluateCheck(check, context);
+    } catch (error) {
+        return [`Check konnte nicht ausgewertet werden: ${error instanceof Error ? error.message : error}`];
+    }
 };

@@ -70,13 +70,17 @@ export const childVal = (element: XmlElement | undefined, tag: string): string |
     return attr(childElement(element, tag), 'w:val');
 };
 
-export const descendants = (element: XmlElement, tag: string): XmlElement[] => {
+/** All descendants with the tag, without looking into elements tagged `stopAt`. */
+export const descendants = (element: XmlElement, tag: string, stopAt?: string): XmlElement[] => {
     const found: XmlElement[] = [];
     for (const child of childElements(element)) {
+        if (child.tag === stopAt) {
+            continue;
+        }
         if (child.tag === tag) {
             found.push(child);
         }
-        found.push(...descendants(child, tag));
+        found.push(...descendants(child, tag, stopAt));
     }
     return found;
 };

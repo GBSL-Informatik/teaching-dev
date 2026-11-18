@@ -26,6 +26,7 @@ const FORMAT_LABELS: { [format: string]: string } = {
 
 export const numbering: CheckKind<NumberingCheck> = {
     category: 'Aufzählungen und Nummerierungen',
+    anchors: 'paragraph',
 
     extract: (context) => {
         const numbered = anchoredParagraphs(context).flatMap(({ paragraph, anchor }) => {

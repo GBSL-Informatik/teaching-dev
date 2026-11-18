@@ -7,6 +7,7 @@ export interface DocumentSettingsCheck extends CheckBase<'documentSettings'> {
 
 export const documentSettings: CheckKind<DocumentSettingsCheck> = {
     category: 'Dokument',
+    anchors: 'none',
 
     extract: ({ original }) => {
         if (!original.autoHyphenation) {

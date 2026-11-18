@@ -40,6 +40,7 @@ export const readDocx = async (data: ArrayBuffer | Uint8Array): Promise<DocxPack
 
     return {
         document,
+        // Like the main document part, Word always stores these parts at fixed paths.
         styles: await readPart('word/styles.xml'),
         numbering: await readPart('word/numbering.xml'),
         theme: await readPart('word/theme/theme1.xml'),

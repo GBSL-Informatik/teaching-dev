@@ -35,9 +35,15 @@ describe.each(SAMPLES)('$original', ({ original, raw }) => {
     });
 
     it('derives unique ids that are the same on every run', async () => {
-        const ids = (await specOf(original)).checks.map((check) => check.id);
+        const { checks } = await specOf(original);
+        const ids = checks.map((check) => check.id);
 
         expect(new Set(ids).size).toBe(ids.length);
+        // Numbered suffixes depend on the order of the checks: only equal titles may need them.
+        const numbered = checks.filter((check) => ids.includes(`${check.id}-2`));
+        numbered.forEach((check) => {
+            expect(checks.find((other) => other.id === `${check.id}-2`)?.title).toBe(check.title);
+        });
         expect((await specOf(original)).checks.map((check) => check.id)).toEqual(ids);
     });
 });
@@ -60,6 +66,33 @@ describe('gradeDocument', () => {
         const [result] = gradeDocument(spec, await loadFixture('21E_MachineLearning_RAW'));
 
         expect(result.failures).toEqual(['Inhaltsverzeichnis fehlt']);
+    });
+
+    it('compares expectations independently of their key order', async () => {
+        const spec = await specOf('Week2-Nummerierung-not-annotated');
+        spec.checks = [
+            {
+                id: 'tof',
+                kind: 'field',
+                title: 'Abbildungsverzeichnis',
+                expect: { label: 'Abbildung', type: 'tableOfFigures' }
+            }
+        ];
+
+        const [result] = gradeDocument(spec, await loadFixture('Week2-Nummerierung-not-annotated'));
+
+        expect(result.failures).toEqual([]);
+    });
+
+    it('fails a check with broken expectations instead of stopping the grading', async () => {
+        const spec = await specOf('ex01-what-is-programming');
+        const broken = { id: 'broken', kind: 'image', title: 'Bild', anchors: [{ image: 0 }], expect: null };
+        spec.checks = [broken as unknown as DocxSpec['checks'][number], ...spec.checks];
+
+        const results = gradeDocument(spec, await loadFixture('ex01-what-is-programming'));
+
+        expect(results[0].failures[0]).toMatch(/^Check konnte nicht ausgewertet werden/);
+        expect(results.slice(1).every((result) => result.failures.length === 0)).toBe(true);
     });
 
     it('reports changed text instead of failing silently', async () => {

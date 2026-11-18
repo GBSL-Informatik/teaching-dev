@@ -9,6 +9,7 @@ export interface ParagraphStyleCheck extends CheckBase<'paragraphStyle'> {
 
 export const paragraphStyle: CheckKind<ParagraphStyleCheck> = {
     category: 'Formatvorlagen',
+    anchors: 'paragraph',
 
     extract: (context) => {
         // Captions are checked with their image.

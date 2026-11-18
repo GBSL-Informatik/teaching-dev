@@ -51,6 +51,9 @@ export const anchoredParagraphs = (context: ExtractionContext) => {
     });
 };
 
+/** Word always stores a section for every paragraph; other programs may not. */
+export const SECTION_NOT_FOUND = 'Abschnitt nicht gefunden – wurde das Dokument mit Word gespeichert?';
+
 /** Anchor of the first anchored paragraph in a section, which identifies the section in other documents. */
 export const sectionAnchor = (
     context: ExtractionContext,

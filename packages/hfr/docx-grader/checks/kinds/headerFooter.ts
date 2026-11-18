@@ -4,7 +4,7 @@ import { quote } from '../anchors';
 import { CheckBase, CheckKind, ParagraphAnchor } from '../Check';
 import { Normalizer } from '../normalizeText';
 import { PARAGRAPH_PROPERTIES } from '../properties';
-import { evaluateAnchors, groupBy, sectionAnchor } from './helpers';
+import { evaluateAnchors, groupBy, SECTION_NOT_FOUND, sectionAnchor } from './helpers';
 
 /** The sections containing the anchored paragraphs have the original's header or footer. */
 export interface HeaderFooterCheck extends CheckBase<'headerFooter'> {
@@ -29,6 +29,7 @@ const VARIANT_LABELS: { [variant: string]: string } = {
 
 export const headerFooter: CheckKind<HeaderFooterCheck> = {
     category: 'Kopf- und Fusszeilen',
+    anchors: 'paragraph',
 
     extract: (context) => {
         const { original, normalize } = context;
@@ -58,6 +59,9 @@ export const headerFooter: CheckKind<HeaderFooterCheck> = {
         const { kind, variant } = check.expect;
         return evaluateAnchors(check.anchors, context, (paragraph) => {
             const sectionOfStudent = context.document.sections[paragraph.sectionIndex];
+            if (!sectionOfStudent) {
+                return [SECTION_NOT_FOUND];
+            }
             const part = visibleHeadersAndFooters(sectionOfStudent, context.document).find(
                 (candidate) => candidate.kind === kind && candidate.variant === variant
             );

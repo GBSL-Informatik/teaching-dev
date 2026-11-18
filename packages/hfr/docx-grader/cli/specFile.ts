@@ -23,6 +23,14 @@ export const writeSpecFile = (specPath: string, spec: DocxSpec) => {
     fs.writeFileSync(specPath, `${HEADER}${dump(spec, { lineWidth: -1, noRefs: true })}`);
 };
 
+/** Hints of checks the document no longer produces, e.g. after its formatting changed, are dropped. */
+export const warnAboutDroppedHints = (checks: Check[], previousSpec: DocxSpec | undefined) => {
+    const ids = new Set(checks.map((check) => check.id));
+    previousSpec?.checks
+        .filter((check) => (check.hint || check.docs) && !ids.has(check.id))
+        .forEach((check) => console.warn(`⚠️ «${check.id}» gibt es nicht mehr, hint und docs entfallen.`));
+};
+
 /** Keeps the hints and documentation links the teacher added to the previous spec. */
 export const mergeWithPreviousSpec = (checks: Check[], previousSpec: DocxSpec | undefined): Check[] => {
     const previousChecks = new Map(previousSpec?.checks.map((check) => [check.id, check]));

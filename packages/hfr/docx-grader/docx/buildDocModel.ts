@@ -108,7 +108,7 @@ class DocModelBuilder {
                     this.readParagraph(block, kind);
                     break;
                 case 'w:tbl':
-                    descendants(block, 'w:tc').forEach((cell) => this.readBlocks(cell, 'table'));
+                    this.readTable(block);
                     break;
                 case 'w:sdt':
                     this.readContentControl(block, kind);
@@ -119,6 +119,14 @@ class DocModelBuilder {
                 case 'w:sectPr':
                     this.sectionProperties.push(block);
                     break;
+            }
+        }
+    }
+
+    private readTable(table: XmlElement) {
+        for (const row of unwrappedChildren(table, 'w:tr')) {
+            for (const cell of unwrappedChildren(row, 'w:tc')) {
+                this.readBlocks(cell, 'table');
             }
         }
     }
@@ -137,6 +145,8 @@ class DocModelBuilder {
         const styleId = childVal(pPr, 'w:pStyle');
         const state: ParagraphState = { styleId, runs: [], fields: [], images: [], textBoxes: [] };
         this.readInline(p, state);
+        // A field instruction never continues in the next paragraph: drop fields Word left unterminated.
+        this.openFields = this.openFields.filter((open) => open.field);
 
         const resolved = resolveParagraph(this.styleSheet, styleId, pPr);
         const text = state.runs.map((run) => run.text).join('');
@@ -158,25 +168,30 @@ class DocModelBuilder {
             sectionIndex: this.sectionProperties.length
         };
         this.paragraphs.push(paragraph);
+        this.addImagesAndTextBoxes(paragraph, state);
 
+        const sectPr = childElement(pPr, 'w:sectPr');
+        if (sectPr) {
+            this.sectionProperties.push(sectPr);
+        }
+    }
+
+    /** Images of the paragraph, then the paragraphs of its text boxes, whose caption belongs to the images drawn with them. */
+    private addImagesAndTextBoxes(paragraph: Paragraph, state: ParagraphState) {
         const images = state.images.map((image) => ({
             ...image,
             index: this.images.length,
             paragraphIndex: paragraph.index
         }));
         images.forEach((image) => this.images.push(image));
-        state.textBoxes.forEach(({ content, drawingImages }) => {
+
+        for (const { content, drawingImages } of state.textBoxes) {
             const caption = this.readTextBox(content);
             const groupedImages = images.slice(
                 drawingImages.first,
                 drawingImages.first + drawingImages.count
             );
             groupedImages.forEach((image) => (image.caption ??= caption));
-        });
-
-        const sectPr = childElement(pPr, 'w:sectPr');
-        if (sectPr) {
-            this.sectionProperties.push(sectPr);
         }
     }
 
@@ -270,7 +285,8 @@ class DocModelBuilder {
         if (!frame) {
             return;
         }
-        const pictureCount = descendants(frame, 'pic:pic').length;
+        // Pictures inside a text box are read with the text box's paragraphs.
+        const pictureCount = descendants(frame, 'pic:pic', 'w:txbxContent').length;
         const drawingImages = { first: state.images.length, count: pictureCount };
         const extent = childElement(frame, 'wp:extent');
         for (let i = 0; i < pictureCount; i++) {
@@ -341,6 +357,19 @@ class DocModelBuilder {
         }
     }
 }
+
+/** Children with the tag, also when wrapped in content controls or custom XML. */
+const unwrappedChildren = (element: XmlElement, tag: string): XmlElement[] => {
+    return childElements(element).flatMap((child) => {
+        if (child.tag === 'w:sdt') {
+            return unwrappedChildren(childElement(child, 'w:sdtContent') ?? child, tag);
+        }
+        if (child.tag === 'w:customXml') {
+            return unwrappedChildren(child, tag);
+        }
+        return child.tag === tag ? [child] : [];
+    });
+};
 
 const captionOf = (
     text: string,

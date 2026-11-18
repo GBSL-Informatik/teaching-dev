@@ -29,6 +29,7 @@ interface Segment {
 
 export const runFormat: CheckKind<RunFormatCheck> = {
     category: 'Zeichenformat',
+    anchors: 'paragraph',
 
     extract: (context) => {
         const segments = anchoredParagraphs(context).flatMap(({ paragraph, anchor }) => {
