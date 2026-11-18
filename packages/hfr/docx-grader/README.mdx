@@ -12,7 +12,7 @@ import spec from './assets/ex01-what-is-programming.docx-spec.yaml';
 # docx-grader
 
 :::warning[WIP 🚧]
-Dieses Package ist ein Work in Progress ([#385](https://github.com/GBSL-Informatik/teaching-dev/issues/385)). Das Erzeugen des unformatierten Dokuments folgt.
+Dieses Package ist neu ([#385](https://github.com/GBSL-Informatik/teaching-dev/issues/385)). Tabellen werden ins unformatierte Dokument übernommen, ihre Formatierung wird aber noch nicht überprüft.
 :::
 
 Schüler:innen erhalten ein unformatiertes Word-Dokument und formatieren es so wie ein Original der Lehrperson. Der docx-grader überprüft danach wie bei Unit-Tests, welche Formatierungen bereits stimmen.
@@ -30,12 +30,12 @@ Das Dokument wird nur im Browser überprüft: Es wird nicht hochgeladen und das 
 `className`
 : Optionale CSS-Klasse.
 
-## Spezifikation erstellen
+## Spezifikation und unformatiertes Dokument erstellen
 
 <Steps>
 
 1. Formatiere das Original in Word fertig: Formatvorlagen, Absatz- und Zeichenformate, Abschnitte, Kopf- und Fusszeilen, Bilder mit Beschriftungen und Verzeichnisse.
-2. Erstelle daraus die Spezifikation:
+2. Erstelle daraus die Spezifikation und das unformatierte Dokument:
 
    ```bash
    yarn workspace @hfr/docx-grader create-spec docs/word/original.docx
@@ -45,6 +45,7 @@ Das Dokument wird nur im Browser überprüft: Es wird nicht hochgeladen und das 
 
 3. Wähle in der Liste die Formatierungen ab, die nicht überprüft werden sollen, und bestätige mit [[Enter]].
 4. Ergänze in der erzeugten Datei __docs/word/original.docx-spec.yaml__ bei Bedarf Hinweise und Links zur Dokumentation.
+5. Gib den Schüler:innen __docs/word/original-raw.docx__ ab, zusammen mit einem (annotierten) Bild des Originals, und binde die Spezifikation mit `<DocxGrader>` ein.
 
 </Steps>
 
@@ -54,7 +55,16 @@ Das Dokument wird nur im Browser überprüft: Es wird nicht hochgeladen und das 
 `--all`
 : Übernimmt alle Formatierungen ohne Auswahlliste.
 
-Wird das CLI erneut ausgeführt, sind die zuvor übernommenen Formatierungen vorausgewählt, und Hinweise sowie Links bleiben erhalten.
+Wird das CLI erneut ausgeführt, sind die zuvor übernommenen Formatierungen vorausgewählt, und Hinweise sowie Links bleiben erhalten. Das unformatierte Dokument wird jedes Mal neu geschrieben.
+
+Das unformatierte Dokument enthält nur noch:
+
+- den Text jedes Absatzes, mit Tabulatoren und Zeilenumbrüchen, in der Formatvorlage «Standard» eines leeren Dokuments,
+- alle Bilder, mit Text in Zeile und 5 cm breit,
+- Tabellen ohne Formatvorlage, Rahmen und Breiten,
+- von Bildunterschriften nur die Beschreibung, ohne «Abbildung 1:».
+
+Verzeichnisse, Kopf- und Fusszeilen, Abschnitte, Nummerierungen, leere Absätze und Kommentare entfallen.
 
 ## Was überprüft wird
 

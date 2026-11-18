@@ -5,6 +5,7 @@ import { extractChecks } from '../checks/extractChecks';
 import { DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
 import { buildDocModel } from '../docx/buildDocModel';
 import { readDocx } from '../docx/readDocx';
+import { createRawDocx } from '../raw/createRawDocx';
 import { SPEC_VERSION } from '../spec/DocxSpec';
 import { selectChecks } from './selectChecks';
 import { mergeWithPreviousSpec, readSpecFile, warnAboutDroppedHints, writeSpecFile } from './specFile';
@@ -15,7 +16,8 @@ const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const USAGE = `
 yarn workspace @hfr/docx-grader create-spec <original.docx> [--out <name.docx-spec.yaml>] [--all]
 
-Extracts the formatting of the original document and writes it as checks to a docx-spec.
+Extracts the formatting of the original document and writes it as checks to a docx-spec,
+and writes the unformatted document for students as <original>-raw.docx.
 Relative paths are resolved from the repository root.
 
   --out   spec file to write; defaults to <original>.docx-spec.yaml next to the document
@@ -26,7 +28,8 @@ Running it again on an existing spec preselects the kept checks and keeps their 
 
 const main = async () => {
     const argv = minimist(process.argv.slice(2), { boolean: ['all', 'help'], string: ['out'] });
-    if (argv.help || argv._.length !== 1) {
+    // The spec and raw document are written next to the original, by replacing its extension.
+    if (argv.help || argv._.length !== 1 || !/\.docx$/i.test(String(argv._[0]))) {
         console.log(USAGE);
         return;
     }
@@ -38,7 +41,8 @@ const main = async () => {
 
     const previousSpec = fs.existsSync(specPath) ? readSpecFile(specPath) : undefined;
     const equivalents = previousSpec?.equivalentCharacters ?? DEFAULT_EQUIVALENT_CHARACTERS;
-    const original = buildDocModel(await readDocx(fs.readFileSync(originalPath)));
+    const originalData = fs.readFileSync(originalPath);
+    const original = buildDocModel(await readDocx(originalData));
     const checks = extractChecks(original, equivalents);
     warnAboutDroppedHints(checks, previousSpec);
 
@@ -46,7 +50,7 @@ const main = async () => {
         ? new Set(checks.map((check) => check.id))
         : await selectChecks(checks, previousSpec);
 
-    writeSpecFile(specPath, {
+    await writeSpecFile(specPath, {
         version: SPEC_VERSION,
         source: path.basename(originalPath),
         ...(previousSpec?.equivalentCharacters ? { equivalentCharacters: equivalents } : {}),
@@ -56,6 +60,16 @@ const main = async () => {
         )
     });
     console.log(`✅ ${selectedIds.size} von ${checks.length} Checks gespeichert: ${specPath}`);
+
+    const rawPath = originalPath.replace(/\.docx$/i, '-raw.docx');
+    const raw = await createRawDocx(originalData);
+    fs.writeFileSync(rawPath, raw.data);
+    console.log(`✅ Unformatiertes Dokument gespeichert: ${rawPath}`);
+    if (raw.skippedImageCount > 0) {
+        console.warn(
+            `⚠️ ${raw.skippedImageCount} verknüpfte oder unbekannte Bilder wurden nicht übernommen.`
+        );
+    }
 };
 
 main().catch((error: unknown) => {

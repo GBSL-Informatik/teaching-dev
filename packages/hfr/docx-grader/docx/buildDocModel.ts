@@ -1,4 +1,4 @@
-import { Caption, DocModel, Field, FieldType, Image, Paragraph, TextRun } from './DocModel';
+import { Block, Caption, DocModel, Field, FieldType, Image, Paragraph, TableCell, TextRun } from './DocModel';
 import { GENERATING_FIELDS, parseField } from './fields';
 import { isOn } from './formatting';
 import { DocxPackage } from './readDocx';
@@ -73,6 +73,7 @@ export const buildDocModel = (docx: DocxPackage): DocModel => {
     };
 
     return {
+        blocks: builder.blocks,
         paragraphs,
         images: attachAdjacentCaptions(builder.images, paragraphs),
         fields: paragraphs.filter((paragraph) => paragraph.container !== 'textBox').flatMap((p) => p.fields),
@@ -84,6 +85,7 @@ export const buildDocModel = (docx: DocxPackage): DocModel => {
 };
 
 class DocModelBuilder {
+    readonly blocks: Block[];
     readonly paragraphs: Paragraph[];
     readonly images: Image[];
     /** One `w:sectPr` per section, in document order. */
@@ -92,9 +94,13 @@ class DocModelBuilder {
     /** Complex fields can span several paragraphs, e.g. a table of contents. */
     private openFields: OpenField[];
     private buildingBlock?: FieldType;
+    /** Where read blocks go: the body, or the cell of a table being read. */
+    private blockTarget: Block[];
 
     constructor(styleSheet: StyleSheet) {
         this.styleSheet = styleSheet;
+        this.blocks = [];
+        this.blockTarget = this.blocks;
         this.paragraphs = [];
         this.images = [];
         this.sectionProperties = [];
@@ -124,11 +130,26 @@ class DocModelBuilder {
     }
 
     private readTable(table: XmlElement) {
-        for (const row of unwrappedChildren(table, 'w:tr')) {
-            for (const cell of unwrappedChildren(row, 'w:tc')) {
-                this.readBlocks(cell, 'table');
-            }
-        }
+        const rows = unwrappedChildren(table, 'w:tr').map((row) =>
+            unwrappedChildren(row, 'w:tc').map((cell) => this.readCell(cell))
+        );
+        this.blockTarget.push({ type: 'table', rows });
+    }
+
+    private readCell(cell: XmlElement): TableCell {
+        const outerTarget = this.blockTarget;
+        const blocks: Block[] = [];
+        this.blockTarget = blocks;
+        this.readBlocks(cell, 'table');
+        this.blockTarget = outerTarget;
+
+        const properties = childElement(cell, 'w:tcPr');
+        const verticalMerge = childElement(properties, 'w:vMerge');
+        return {
+            blocks,
+            gridSpan: Number(childVal(properties, 'w:gridSpan') ?? 1),
+            verticalMerge: verticalMerge && (attr(verticalMerge, 'w:val') ?? 'continue')
+        };
     }
 
     private readContentControl(sdt: XmlElement, kind: Container) {
@@ -168,6 +189,7 @@ class DocModelBuilder {
             sectionIndex: this.sectionProperties.length
         };
         this.paragraphs.push(paragraph);
+        this.blockTarget.push({ type: 'paragraph', paragraphIndex: paragraph.index });
         this.addImagesAndTextBoxes(paragraph, state);
 
         const sectPr = childElement(pPr, 'w:sectPr');
@@ -286,15 +308,16 @@ class DocModelBuilder {
             return;
         }
         // Pictures inside a text box are read with the text box's paragraphs.
-        const pictureCount = descendants(frame, 'pic:pic', 'w:txbxContent').length;
-        const drawingImages = { first: state.images.length, count: pictureCount };
+        const pictures = descendants(frame, 'pic:pic', 'w:txbxContent');
+        const drawingImages = { first: state.images.length, count: pictures.length };
         const extent = childElement(frame, 'wp:extent');
-        for (let i = 0; i < pictureCount; i++) {
+        for (const picture of pictures) {
             state.images.push({
                 widthCm: emuToCm(attr(extent, 'cx') ?? 0),
                 heightCm: emuToCm(attr(extent, 'cy') ?? 0),
                 placement: frame.tag === 'wp:inline' ? 'inline' : 'anchored',
-                wrap: frame.tag === 'wp:anchor' ? wrapOf(frame) : undefined
+                wrap: frame.tag === 'wp:anchor' ? wrapOf(frame) : undefined,
+                relationshipId: attr(descendants(picture, 'a:blip')[0], 'r:embed')
             });
         }
         descendants(frame, 'w:txbxContent').forEach((content) =>

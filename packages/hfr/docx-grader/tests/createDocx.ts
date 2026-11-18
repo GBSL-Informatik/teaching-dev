@@ -11,13 +11,17 @@ const NAMESPACES = [
 ].join(' ');
 
 /** A minimal document with the given body content, for structures the sample documents lack. */
-export const docModelOf = async (bodyXml: string) => {
+export const docxOf = async (bodyXml: string) => {
     const zip = new JSZip();
     zip.file(
         'word/document.xml',
         `<w:document ${NAMESPACES}><w:body>${bodyXml}<w:sectPr/></w:body></w:document>`
     );
-    return buildDocModel(await readDocx(await zip.generateAsync({ type: 'uint8array' })));
+    return zip.generateAsync({ type: 'uint8array' });
+};
+
+export const docModelOf = async (bodyXml: string) => {
+    return buildDocModel(await readDocx(await docxOf(bodyXml)));
 };
 
 export const paragraph = (text: string) => `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;

@@ -1,5 +1,6 @@
 import { dump, load } from 'js-yaml';
 import fs from 'node:fs';
+import { format, resolveConfig } from 'prettier';
 import { Check } from '../checks/kinds';
 import { DocxSpec, parseSpec } from '../spec/DocxSpec';
 
@@ -19,8 +20,11 @@ export const readSpecFile = (specPath: string): DocxSpec => {
     return spec;
 };
 
-export const writeSpecFile = (specPath: string, spec: DocxSpec) => {
-    fs.writeFileSync(specPath, `${HEADER}${dump(spec, { lineWidth: -1, noRefs: true })}`);
+/** Formatted with the repository's Prettier config, so `yarn format:check` accepts the spec. */
+export const writeSpecFile = async (specPath: string, spec: DocxSpec) => {
+    const yaml = `${HEADER}${dump(spec, { lineWidth: -1, noRefs: true })}`;
+    const config = await resolveConfig(specPath);
+    fs.writeFileSync(specPath, await format(yaml, { ...config, parser: 'yaml' }));
 };
 
 /** Hints of checks the document no longer produces, e.g. after its formatting changed, are dropped. */

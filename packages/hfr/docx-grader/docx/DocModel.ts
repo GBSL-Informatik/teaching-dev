@@ -59,6 +59,8 @@ export interface Image {
     /** Text wrapping of anchored images, e.g. `square`, `topAndBottom`, `behindText`. */
     wrap?: string;
     caption?: Caption;
+    /** Relationship id of the picture file, see `DocxPackage.relationships`. */
+    relationshipId?: string;
 }
 
 export interface HeaderFooter {
@@ -81,7 +83,20 @@ export interface Section {
     headersAndFooters: HeaderFooter[];
 }
 
+/** The structure of the body: paragraphs (by index) and tables, in document order. */
+export type Block = { type: 'paragraph'; paragraphIndex: number } | { type: 'table'; rows: TableCell[][] };
+
+export interface TableCell {
+    blocks: Block[];
+    /** Number of grid columns the cell spans. */
+    gridSpan: number;
+    /** `restart` or `continue` for vertically merged cells. */
+    verticalMerge?: string;
+}
+
 export interface DocModel {
+    /** Paragraphs of text boxes follow the paragraph the text box is anchored in. */
+    blocks: Block[];
     paragraphs: Paragraph[];
     images: Image[];
     fields: Field[];
