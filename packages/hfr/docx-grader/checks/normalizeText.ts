@@ -22,7 +22,8 @@ export type Normalizer = (text: string) => string;
 
 /**
  * Normalizes the text of runs, keeping the run format of every character, so a text segment can be
- * located in the normalized text and its formatting read. Any whitespace sequence becomes one space.
+ * located in the normalized text and its formatting read. Any whitespace sequence becomes one space:
+ * this locates text even where a student typed spaces instead of a tab, which the `tabs` check reports.
  */
 export const normalizeRuns = (runs: TextRun[], equivalents: EquivalentCharacters): NormalizedChar[] => {
     const representatives = new Map<string, string>();

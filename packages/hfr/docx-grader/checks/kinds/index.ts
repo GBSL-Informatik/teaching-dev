@@ -8,11 +8,13 @@ import { paragraphFormat, ParagraphFormatCheck } from './paragraphFormat';
 import { paragraphStyle, ParagraphStyleCheck } from './paragraphStyle';
 import { runFormat, RunFormatCheck } from './runFormat';
 import { section, SectionCheck } from './section';
+import { tabs, TabsCheck } from './tabs';
 
 export type Check =
     | ParagraphStyleCheck
     | ParagraphFormatCheck
     | RunFormatCheck
+    | TabsCheck
     | NumberingCheck
     | SectionCheck
     | HeaderFooterCheck
@@ -27,6 +29,7 @@ export const CHECK_KINDS: { [K in CheckKindName]: CheckKind<Extract<Check, { kin
     paragraphStyle,
     paragraphFormat,
     runFormat,
+    tabs,
     numbering,
     section,
     headerFooter,
@@ -47,6 +50,8 @@ export const evaluateCheck = (check: Check, context: GradingContext): string[] =
             return paragraphFormat.evaluate(check, context);
         case 'runFormat':
             return runFormat.evaluate(check, context);
+        case 'tabs':
+            return tabs.evaluate(check, context);
         case 'numbering':
             return numbering.evaluate(check, context);
         case 'section':

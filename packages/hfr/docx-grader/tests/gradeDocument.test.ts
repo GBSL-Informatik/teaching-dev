@@ -4,6 +4,7 @@ import { extractChecks } from '../checks/extractChecks';
 import { gradeDocument } from '../checks/gradeDocument';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
 import { DocxSpec } from '../spec/DocxSpec';
+import { docModelOf, paragraph } from './createDocx';
 import { loadFixture } from './loadFixture';
 
 const SAMPLES = [
@@ -93,6 +94,39 @@ describe('gradeDocument', () => {
 
         expect(results[0].failures[0]).toMatch(/^Check konnte nicht ausgewertet werden/);
         expect(results.slice(1).every((result) => result.failures.length === 0)).toBe(true);
+    });
+
+    it('requires tabs where the original has them, not spaces', async () => {
+        const spec = await specOf('ex01-what-is-programming');
+        spec.checks = spec.checks.filter((check) => check.kind === 'tabs');
+
+        // The teacher's raw document has spaces where the original has tabs.
+        const [result] = gradeDocument(spec, await loadFixture('ex01-what-is-programming-raw'));
+
+        expect(result.failures).toHaveLength(8);
+        expect(result.failures[0]).toBe(
+            '«➊ First, the file SecretPasswordFile.txt…»: Tabulator fehlt (0 statt 1), Leerzeichen ersetzen keinen Tabulator'
+        );
+    });
+
+    it('ignores spaces next to a tab', async () => {
+        const original = await docModelOf('<w:p><w:r><w:t>➊</w:t><w:tab/><w:t>First</w:t></w:r></w:p>');
+        const spec: DocxSpec = {
+            version: 1,
+            source: 'x.docx',
+            checks: extractChecks(original, DEFAULT_EQUIVALENT_CHARACTERS)
+        };
+
+        const results = gradeDocument(
+            spec,
+            await docModelOf(
+                '<w:p><w:r><w:t xml:space="preserve">➊ </w:t><w:tab/><w:t>First</w:t></w:r></w:p>'
+            )
+        );
+        const spaced = gradeDocument(spec, await docModelOf(paragraph('➊ First')));
+
+        expect(results.find((result) => result.check.kind === 'tabs')?.failures).toEqual([]);
+        expect(spaced.find((result) => result.check.kind === 'tabs')?.failures).toHaveLength(1);
     });
 
     it('reports changed text instead of failing silently', async () => {
