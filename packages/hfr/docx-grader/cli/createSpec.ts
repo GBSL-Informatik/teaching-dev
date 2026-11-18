@@ -9,10 +9,14 @@ import { SPEC_VERSION } from '../spec/DocxSpec';
 import { selectChecks } from './selectChecks';
 import { mergeWithPreviousSpec, readSpecFile, warnAboutDroppedHints, writeSpecFile } from './specFile';
 
+// `yarn workspace` runs the script in the package folder, so paths are relative to the repository.
+const REPO_ROOT = path.resolve(__dirname, '../../../..');
+
 const USAGE = `
 yarn workspace @hfr/docx-grader create-spec <original.docx> [--out <name.docx-spec.yaml>] [--all]
 
 Extracts the formatting of the original document and writes it as checks to a docx-spec.
+Relative paths are resolved from the repository root.
 
   --out   spec file to write; defaults to <original>.docx-spec.yaml next to the document
   --all   keep all checks without asking
@@ -27,11 +31,9 @@ const main = async () => {
         return;
     }
 
-    // yarn runs workspace scripts in the package folder; paths are relative to where it was called.
-    const callerDir = process.env.INIT_CWD ?? process.cwd();
-    const originalPath = path.resolve(callerDir, String(argv._[0]));
+    const originalPath = path.resolve(REPO_ROOT, String(argv._[0]));
     const specPath = argv.out
-        ? path.resolve(callerDir, argv.out)
+        ? path.resolve(REPO_ROOT, argv.out)
         : originalPath.replace(/\.docx$/i, '.docx-spec.yaml');
 
     const previousSpec = fs.existsSync(specPath) ? readSpecFile(specPath) : undefined;
