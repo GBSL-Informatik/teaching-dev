@@ -11,7 +11,8 @@
         "jszip": "^3.10.1"
     },
     "optionalDependencies": {
-        "canvas": "^3.0.0-rc2"
+        "canvas": "^3.0.0-rc2",
+        "sharp": "^0.35.5"
     },
     "devDependencies": {
         "@docusaurus/core": "*",

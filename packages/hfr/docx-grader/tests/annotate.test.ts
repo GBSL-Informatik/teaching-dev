@@ -5,7 +5,7 @@ import {
 } from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
 import { describe, expect, it } from 'vitest';
 import { annotationsOf } from '../annotate/annotationsOf';
-import { excalidrawScene } from '../annotate/excalidrawScene';
+import { excalidrawScene, LABEL_COLOR, NOTES_COLOR } from '../annotate/excalidrawScene';
 import { layoutPage } from '../annotate/layoutPage';
 import { compactText, createTextLocator } from '../annotate/locateText';
 import { PdfPage, PdfText } from '../annotate/readPdf';
@@ -77,19 +77,30 @@ describe('annotationsOf', () => {
 describe('excalidrawScene', () => {
     it('uses the page as the background image of the markup editor and adds editable labels', () => {
         const layout = layoutPage(pageOf([]), [
-            { label: 'Titel', target: { page: 0, x: 70, y: 100, width: 50, height: 11 } }
+            { label: 'Titel', target: { page: 0, x: 70, y: 100, width: 50, height: 11 } },
+            { label: 'Automatische Silbentrennung' }
         ]);
+        const page = { data: Buffer.from('webp'), mimeType: 'image/webp', extension: '.webp' };
 
-        const scene = excalidrawScene(layout, Buffer.from('png'));
+        const scene = excalidrawScene(layout, page);
 
         expect(scene.elements.map((element) => element.id)).toEqual([
             EXCALIDRAW_BACKGROUND_IMAGE_ID,
             EXCALIDRAW_IMAGE_RECTANGLE_ID,
             'docx-grader-label-0',
-            'docx-grader-arrow-0'
+            'docx-grader-arrow-0',
+            'docx-grader-notes'
         ]);
-        expect(scene.elements[0]).toMatchObject({ width: 800, height: (842 * 800) / 595 });
-        expect(scene.files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/png;base64,cG5n');
+        const [background, , label, arrow, notes] = scene.elements;
+        expect(background).toMatchObject({
+            width: 800,
+            height: (842 * 800) / 595,
+            customData: { exportFormatMimeType: 'image/webp', initExtension: '.webp' }
+        });
+        expect(scene.files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/webp;base64,d2VicA==');
+        expect(label).toMatchObject({ fontFamily: 6, strokeColor: LABEL_COLOR });
+        expect(arrow).toMatchObject({ roughness: 0, endArrowhead: 'triangle_outline' });
+        expect(notes).toMatchObject({ text: '• Automatische Silbentrennung', strokeColor: NOTES_COLOR });
     });
 });
 
@@ -98,14 +109,24 @@ describe('layoutPage', () => {
         const target = { page: 0, x: 70, y: 100, width: 50, height: 11 };
         const { labels } = layoutPage(pageOf([]), [
             { label: 'Ausrichtung: Blocksatz', target },
-            { label: 'Schriftart: Consolas', target: { ...target, x: 200 } },
-            { label: 'Automatische Silbentrennung' }
+            { label: 'Schriftart: Consolas', target: { ...target, x: 200 } }
         ]);
 
-        const sorted = [...labels].sort((a, b) => a.y - b.y);
-        sorted.slice(1).forEach((label, index) => {
-            expect(label.y).toBeGreaterThanOrEqual(sorted[index].y + sorted[index].height);
+        expect(labels[1].y).toBeGreaterThanOrEqual(labels[0].y + labels[0].height);
+        expect(labels.every((label) => label.arrow)).toBe(true);
+    });
+
+    it('lists annotations without a place at the top left of the page', () => {
+        const { labels, notes } = layoutPage(pageOf([]), [
+            { label: 'Automatische Silbentrennung' },
+            { label: 'Inhaltsverzeichnis (Ebenen 1-3)' }
+        ]);
+
+        expect(labels).toEqual([]);
+        expect(notes).toMatchObject({
+            x: 16,
+            y: 12,
+            lines: ['• Automatische Silbentrennung', '• Inhaltsverzeichnis (Ebenen 1-3)']
         });
-        expect(sorted[0].arrow).toBeUndefined();
     });
 });

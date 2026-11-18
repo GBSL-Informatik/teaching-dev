@@ -80,7 +80,7 @@ Für die Schüler:innen lässt sich pro Seite des Originals ein Bild erzeugen, a
    yarn workspace @hfr/docx-grader annotate docs/word/original.docx --pdf docs/word/original.pdf
    ```
 
-4. Binde die Bilder ein, z.B. `![](./original-annotated-1.png)`, und passe die Beschriftungen bei Bedarf im Bild-Editor an.
+4. Binde die Bilder ein, z.B. `![](./original-annotated-1.webp)`, und passe die Beschriftungen bei Bedarf im Bild-Editor an.
 
 </Steps>
 
@@ -90,13 +90,13 @@ Für das Beispiel oben entsteht aus dem [Original](./assets/ex01-what-is-program
 yarn workspace @hfr/docx-grader annotate packages/hfr/docx-grader/assets/ex01-what-is-programming.docx --pdf packages/hfr/docx-grader/assets/ex01-what-is-programming.pdf
 ```
 
-![Automatisch beschriftete Seite des Beispiels; die Beschriftungen lassen sich im Bild-Editor anpassen](./assets/ex01-what-is-programming-annotated-1.png)
+![Automatisch beschriftete Seite des Beispiels; die Beschriftungen lassen sich im Bild-Editor anpassen](./assets/ex01-what-is-programming-annotated-1.webp)
 
-Neben jedem Bild __original-annotated-1.png__ entsteht __original-annotated-1.png.excalidraw__: Die Seite ist darin das Hintergrundbild (`TDEV-BACKGROUND--FILE`), die Beschriftungen und Pfeile sind gewöhnliche Excalidraw-Elemente. Im [Bild-Editor](/docs/gallery/tools/image-markup) lassen sie sich verschieben, ändern oder löschen; beim Speichern wird das Bild neu exportiert.
+Neben jedem Bild __original-annotated-1.webp__ entsteht __original-annotated-1.webp.excalidraw__: Die Seite ist darin das Hintergrundbild (`TDEV-BACKGROUND--FILE`), die Beschriftungen und Pfeile sind gewöhnliche Excalidraw-Elemente. Im [Bild-Editor](/docs/gallery/tools/image-markup) lassen sie sich verschieben, ändern oder löschen; beim Speichern wird das Bild neu exportiert.
 
-Das erzeugte PNG ist eine Vorschau in einfacher Schrift; sobald die Szene im Editor gespeichert wird, ersetzt der Export im Excalidraw-Stil das PNG. Das CLI braucht das Paket `canvas`, das als optionale Abhängigkeit installiert wird.
+Die Bilder sind standardmässig WebP (`--format png` für PNG). Das erzeugte Bild ist eine Vorschau; sobald die Szene im Editor gespeichert wird, ersetzt sie der Export von Excalidraw. Das CLI braucht die Pakete `canvas` und `sharp`, die als optionale Abhängigkeiten installiert werden.
 
-Die Beschriftungen stehen rechts neben der Seite, mit einem Pfeil zur ersten Stelle pro Seite, an der ein Check gilt. Mehrere Checks für dieselbe Stelle teilen sich eine Beschriftung. Was im PDF keine Stelle hat (z.B. Bilder ohne Beschriftung, Verzeichnisse oder die Silbentrennung), steht oben auf der ersten Seite. Text in Kopf- und Fusszeilen (nach den Seitenrändern des ersten Abschnitts) wird dabei nur für die Checks der Kopf- und Fusszeilen gesucht.
+Die Beschriftungen stehen rechts neben der Seite, mit einem Pfeil zur ersten Stelle pro Seite, an der ein Check gilt. Mehrere Checks für dieselbe Stelle teilen sich eine Beschriftung. Was im PDF keine Stelle hat (z.B. Bilder ohne Beschriftung, Verzeichnisse oder die Silbentrennung), steht als orange Liste oben links auf der ersten Seite. Text in Kopf- und Fusszeilen (nach den Seitenrändern des ersten Abschnitts) wird dabei nur für die Checks der Kopf- und Fusszeilen gesucht.
 
 ## Was überprüft wird
 

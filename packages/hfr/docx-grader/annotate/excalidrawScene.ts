@@ -1,75 +1,93 @@
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
-import { FONT_SIZE, LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel } from './layoutPage';
+import { FONT_SIZE, LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText } from './layoutPage';
 
-export const ANNOTATION_COLOR = '#1971c2';
-// Excalifont, the hand-drawn font of Excalidraw.
-const HANDWRITING_FONT_FAMILY = 5;
+/** Excalidraw's blue and orange from its color picker. */
+export const LABEL_COLOR = '#1971c2';
+export const NOTES_COLOR = '#f08c00';
+// Excalidraw's «Normal» font family.
+const NORMAL_FONT_FAMILY = 6;
+
+export interface EncodedImage {
+    data: Buffer;
+    mimeType: string;
+    /** e.g. `.webp` */
+    extension: string;
+}
 
 /**
  * A scene the markup editor of `@tdev/excalidoc` opens: the page as its background image, and the
- * labels and arrows as ordinary elements, which stay editable.
+ * labels, arrows and notes as ordinary elements, which stay editable.
  */
-export const excalidrawScene = (layout: PageLayout, pagePng: Buffer) => {
+export const excalidrawScene = (layout: PageLayout, page: EncodedImage) => {
     const scene = backgroundImageScene({
-        dataURL: `data:image/png;base64,${pagePng.toString('base64')}`,
-        mimeType: 'image/png',
+        dataURL: `data:${page.mimeType};base64,${page.data.toString('base64')}`,
+        mimeType: page.mimeType,
         width: PAGE_WIDTH,
         height: layout.height,
         customData: {
-            exportFormatMimeType: 'image/png',
+            exportFormatMimeType: page.mimeType,
             scale: getScale(PAGE_WIDTH, layout.height),
-            initExtension: '.png'
+            initExtension: page.extension
         }
     });
     return {
         ...scene,
         elements: [
             ...(scene.elements ?? []),
-            ...layout.labels.flatMap((label, index) => labelElements(label, index))
+            ...layout.labels.flatMap((label, index) => labelElements(label, index)),
+            ...(layout.notes ? [textElement('docx-grader-notes', layout.notes, NOTES_COLOR)] : [])
         ]
     };
 };
 
 const labelElements = (label: PlacedLabel, index: number) => {
-    const text = label.lines.join('\n');
-    const textElement = {
-        ...baseElement(`docx-grader-label-${index}`, 'text', label.x, label.y, label.width, label.height),
+    const text = textElement(`docx-grader-label-${index}`, label, LABEL_COLOR);
+    if (!label.arrow) {
+        return [text];
+    }
+    const { from, to } = label.arrow;
+    const width = Math.abs(to[0] - from[0]);
+    const height = Math.abs(to[1] - from[1]);
+    const arrow = {
+        ...baseElement(`docx-grader-arrow-${index}`, 'arrow', from[0], from[1], width, height, LABEL_COLOR),
+        points: [
+            [0, 0],
+            [to[0] - from[0], to[1] - from[1]]
+        ],
+        startArrowhead: null,
+        endArrowhead: 'triangle_outline',
+        elbowed: false
+    };
+    return [text, arrow];
+};
+
+const textElement = (id: string, placed: PlacedText, color: string) => {
+    const text = placed.lines.join('\n');
+    return {
+        ...baseElement(id, 'text', placed.x, placed.y, placed.width, placed.height, color),
         text,
         originalText: text,
         fontSize: FONT_SIZE,
-        fontFamily: HANDWRITING_FONT_FAMILY,
+        fontFamily: NORMAL_FONT_FAMILY,
         textAlign: 'left',
         verticalAlign: 'top',
         containerId: null,
         lineHeight: LINE_HEIGHT,
         autoResize: true
     };
-    if (!label.arrow) {
-        return [textElement];
-    }
-    const { from, to } = label.arrow;
-    const arrow = {
-        ...baseElement(
-            `docx-grader-arrow-${index}`,
-            'arrow',
-            from[0],
-            from[1],
-            Math.abs(to[0] - from[0]),
-            Math.abs(to[1] - from[1])
-        ),
-        points: [
-            [0, 0],
-            [to[0] - from[0], to[1] - from[1]]
-        ],
-        startArrowhead: null,
-        endArrowhead: 'arrow',
-        elbowed: false
-    };
-    return [textElement, arrow];
 };
 
-const baseElement = (id: string, type: string, x: number, y: number, width: number, height: number) => ({
+/** «Architect» sloppiness (roughness 0): straight lines like the typeset page. */
+const baseElement = (
+    id: string,
+    type: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    strokeColor: string
+) => ({
     id,
     type,
     x,
@@ -77,12 +95,12 @@ const baseElement = (id: string, type: string, x: number, y: number, width: numb
     width,
     height,
     angle: 0,
-    strokeColor: ANNOTATION_COLOR,
+    strokeColor,
     backgroundColor: 'transparent',
     fillStyle: 'solid',
     strokeWidth: 1,
     strokeStyle: 'solid',
-    roughness: 1,
+    roughness: 0,
     opacity: 100,
     groupIds: [],
     frameId: null,

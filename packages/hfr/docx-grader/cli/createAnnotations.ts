@@ -6,7 +6,8 @@ import { annotationsOf } from '../annotate/annotationsOf';
 import { excalidrawScene } from '../annotate/excalidrawScene';
 import { layoutPage, PAGE_WIDTH } from '../annotate/layoutPage';
 import { readPdf } from '../annotate/readPdf';
-import { renderAnnotatedPng } from '../annotate/renderAnnotatedPng';
+import { renderPreview } from '../annotate/renderPreview';
+import { encodeImage, IMAGE_FORMATS, ImageFormat } from '../annotate/encodeImage';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
 import { buildDocModel } from '../docx/buildDocModel';
 import { readDocx } from '../docx/readDocx';
@@ -18,22 +19,30 @@ const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const PAGE_PIXEL_RATIO = 2;
 
 const USAGE = `
-yarn workspace @hfr/docx-grader annotate <original.docx> --pdf <original.pdf>
+yarn workspace @hfr/docx-grader annotate <original.docx> --pdf <original.pdf> [--format webp|png]
 
 Writes one annotated image per page of the original, labelling the formatting the docx-spec checks:
-<original>-annotated-<page>.png, and next to it the editable Excalidraw scene
-<original>-annotated-<page>.png.excalidraw for the markup editor of @tdev/excalidoc.
+<original>-annotated-<page>.webp, and next to it the editable Excalidraw scene
+<original>-annotated-<page>.webp.excalidraw for the markup editor of @tdev/excalidoc.
 
-  --pdf   the original exported as PDF from Word (File › Save as › PDF); it gives the page images
-          and where each text is on them
+  --pdf      the original exported as PDF from Word (File › Save as › PDF); it gives the page images
+             and where each text is on them
+  --format   image format, webp (default) or png
 
 The docx-spec must exist (create-spec). Relative paths are resolved from the repository root.
 `;
 
 const main = async () => {
-    const argv = minimist(process.argv.slice(2), { boolean: ['help'], string: ['pdf'] });
+    const argv = minimist(process.argv.slice(2), {
+        boolean: ['help'],
+        string: ['pdf', 'format'],
+        default: { format: 'webp' }
+    });
     const original = String(argv._[0] ?? '');
-    if (argv.help || argv._.length !== 1 || !/\.docx$/i.test(original) || !argv.pdf) {
+    const format = argv.format as ImageFormat;
+    const isValid =
+        argv._.length === 1 && /\.docx$/i.test(original) && argv.pdf && IMAGE_FORMATS.includes(format);
+    if (argv.help || !isValid) {
         console.log(USAGE);
         return;
     }
@@ -47,24 +56,22 @@ const main = async () => {
 
     const unplaced = annotations.filter((annotation) => !annotation.target).length;
     for (const page of pdf.pages) {
-        // Annotations without a place in the PDF are listed on the first page.
+        // Annotations without a place in the PDF are listed at the top of the first page.
         const ofPage = annotations.filter(({ target }) => (target?.page ?? 0) === page.index);
         const layout = layoutPage(page, ofPage);
         const pagePng = await page.renderPng(PAGE_PIXEL_RATIO);
-        const imagePath = originalPath.replace(/\.docx$/i, `-annotated-${page.index + 1}.png`);
+        const imagePath = originalPath.replace(/\.docx$/i, `-annotated-${page.index + 1}.${format}`);
 
         // The same scale the markup editor exports with, so the preview matches its later export.
-        const previewScale = getScale(PAGE_WIDTH, layout.height);
-        fs.writeFileSync(imagePath, await renderAnnotatedPng(layout, pagePng, previewScale));
-        fs.writeFileSync(
-            `${imagePath}.excalidraw`,
-            JSON.stringify(excalidrawScene(layout, pagePng), null, 2)
-        );
+        const previewPng = await renderPreview(layout, pagePng, getScale(PAGE_WIDTH, layout.height));
+        fs.writeFileSync(imagePath, (await encodeImage(previewPng, format)).data);
+        const scene = excalidrawScene(layout, await encodeImage(pagePng, format));
+        fs.writeFileSync(`${imagePath}.excalidraw`, JSON.stringify(scene, null, 2));
         console.log(`✅ ${ofPage.length} Anmerkungen: ${imagePath}`);
     }
     await pdf.close();
     if (unplaced > 0) {
-        console.warn(`⚠️ ${unplaced} Anmerkungen ohne Stelle im PDF stehen oben auf Seite 1.`);
+        console.warn(`⚠️ ${unplaced} Anmerkungen ohne Stelle im PDF stehen oben links auf Seite 1.`);
     }
 };
 

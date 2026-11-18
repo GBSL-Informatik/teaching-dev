@@ -11,13 +11,19 @@ const MAX_LINE_LENGTH = 34;
 // Excalidraw measures text itself when the scene is opened; this estimate only spaces the labels.
 const CHAR_WIDTH = FONT_SIZE * 0.55;
 const LABEL_GAP = 10;
+// General notes go into the top margin of the page, which is empty in most documents.
+const NOTES_POSITION = { x: 16, y: 12 };
+const NOTES_MAX_LINE_LENGTH = 60;
 
-export interface PlacedLabel {
+export interface PlacedText {
     lines: string[];
     x: number;
     y: number;
     width: number;
     height: number;
+}
+
+export interface PlacedLabel extends PlacedText {
     /** From the label to the text it describes. */
     arrow?: { from: [number, number]; to: [number, number] };
 }
@@ -25,33 +31,55 @@ export interface PlacedLabel {
 export interface PageLayout {
     height: number;
     labels: PlacedLabel[];
+    /** Annotations without a place on the page, as a list at its top left. */
+    notes?: PlacedText;
 }
 
 /**
- * Places a label per annotation in the column right of the page, as close to its target as the
- * labels above allow. Annotations without a target come first.
+ * Places a label per annotation with a target in the column right of the page, as close to its
+ * target as the labels above allow, and lists the others at the top left of the page.
  */
 export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout => {
     const scale = PAGE_WIDTH / page.widthPt;
-    const ordered = [...annotations].sort((a, b) => (a.target?.y ?? -1) - (b.target?.y ?? -1));
+    const targeted = annotations
+        .filter((annotation) => annotation.target)
+        .sort((a, b) => a.target!.y - b.target!.y);
+    const untargeted = annotations.filter((annotation) => !annotation.target);
 
     let nextFreeY = 0;
-    const labels = ordered.map(({ label, target }) => {
-        const lines = wrap(label, MAX_LINE_LENGTH);
-        const height = lines.length * FONT_SIZE * LINE_HEIGHT;
-        const width = Math.max(...lines.map((line) => line.length)) * CHAR_WIDTH;
-        const targetY = target ? (target.y + target.height / 2) * scale : 0;
+    const labels = targeted.map(({ label, target }) => {
+        const targetY = (target!.y + target!.height / 2) * scale;
+        const text = placeText(wrap(label, MAX_LINE_LENGTH), LABEL_COLUMN_X, 0);
         const y = Math.max(targetY - (FONT_SIZE * LINE_HEIGHT) / 2, nextFreeY);
-        nextFreeY = y + height + LABEL_GAP;
-
-        const placed: PlacedLabel = { lines, x: LABEL_COLUMN_X, y, width, height };
-        if (target) {
-            const targetEnd: [number, number] = [(target.x + target.width) * scale + 6, targetY];
-            placed.arrow = { from: [LABEL_COLUMN_X - 8, y + (FONT_SIZE * LINE_HEIGHT) / 2], to: targetEnd };
-        }
-        return placed;
+        nextFreeY = y + text.height + LABEL_GAP;
+        const targetEnd: [number, number] = [(target!.x + target!.width) * scale + 6, targetY];
+        return {
+            ...text,
+            y,
+            arrow: { from: [LABEL_COLUMN_X - 8, y + (FONT_SIZE * LINE_HEIGHT) / 2], to: targetEnd }
+        } satisfies PlacedLabel;
     });
-    return { height: page.heightPt * scale, labels };
+
+    const noteLines = untargeted.flatMap(({ label }) => listItem(label, NOTES_MAX_LINE_LENGTH));
+    const notes = noteLines.length > 0 ? placeText(noteLines, NOTES_POSITION.x, NOTES_POSITION.y) : undefined;
+    return { height: page.heightPt * scale, labels, ...(notes ? { notes } : {}) };
+};
+
+const placeText = (lines: string[], x: number, y: number): PlacedText => ({
+    lines,
+    x,
+    y,
+    width: Math.max(...lines.map((line) => line.length)) * CHAR_WIDTH,
+    height: lines.length * FONT_SIZE * LINE_HEIGHT
+});
+
+/** A list item per line of the label, continuation lines indented. */
+const listItem = (label: string, maxLength: number): string[] => {
+    return label
+        .split('\n')
+        .flatMap((line) =>
+            wrapLine(line, maxLength - 2).map((part, index) => `${index === 0 ? '•' : ' '} ${part}`)
+        );
 };
 
 /** Wraps each line of the text at word boundaries. */

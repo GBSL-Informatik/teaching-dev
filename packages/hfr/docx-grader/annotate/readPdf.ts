@@ -1,6 +1,6 @@
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { TextItem, TextMarkedContent } from 'pdfjs-dist/types/src/display/api';
-import { loadCanvas } from './loadCanvas';
+import { loadCanvas } from './optionalDependencies';
 
 /** A text fragment of a page, in PDF points with the origin at the top left. */
 export interface PdfText {
