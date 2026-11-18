@@ -12,12 +12,13 @@
     "devDependencies": {
         "@docusaurus/core": "*",
         "@docusaurus/module-type-aliases": "*",
-        "@inquirer/checkbox": "^5.3.0",
         "@types/js-yaml": "^4.0.9",
         "@types/minimist": "^1.2.5",
         "@types/node": "*",
+        "@types/prompts": "^2.4.9",
         "js-yaml": "^5.5.0",
         "minimist": "^1.2.8",
+        "prompts": "^2.4.2",
         "tsx": "^4.23.15",
         "vitest": "*"
     },
