@@ -23,6 +23,7 @@ export const gradeDocument = (spec: DocxSpec, document: DocModel): CheckResult[]
     const normalize = createNormalizer(equivalents);
     const context: GradingContext = {
         document,
+        defaultSource: spec.defaultSource ?? 'any',
         normalize,
         equivalents,
         findParagraph: createAnchoring(document, normalize).findParagraph

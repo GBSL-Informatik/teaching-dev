@@ -11,18 +11,28 @@ const NAMESPACES = [
 ].join(' ');
 
 /** A minimal document with the given body content, for structures the sample documents lack. */
-export const docxOf = async (bodyXml: string) => {
+export const docxOf = async (bodyXml: string, stylesXml?: string, numberingXml?: string) => {
     const zip = new JSZip();
     zip.file(
         'word/document.xml',
         `<w:document ${NAMESPACES}><w:body>${bodyXml}<w:sectPr/></w:body></w:document>`
     );
+    if (stylesXml) {
+        zip.file('word/styles.xml', `<w:styles ${NAMESPACES}>${stylesXml}</w:styles>`);
+    }
+    if (numberingXml) {
+        zip.file('word/numbering.xml', `<w:numbering ${NAMESPACES}>${numberingXml}</w:numbering>`);
+    }
     return zip.generateAsync({ type: 'uint8array' });
 };
 
-export const docModelOf = async (bodyXml: string) => {
-    return buildDocModel(await readDocx(await docxOf(bodyXml)));
+export const docModelOf = async (bodyXml: string, stylesXml?: string, numberingXml?: string) => {
+    return buildDocModel(await readDocx(await docxOf(bodyXml, stylesXml, numberingXml)));
 };
+
+/** A `Normal` style with the given paragraph properties. */
+export const normalStyle = (pPr: string) =>
+    `<w:style w:type="paragraph" w:default="1" w:styleId="Standard"><w:name w:val="Normal"/><w:pPr>${pPr}</w:pPr></w:style>`;
 
 export const paragraph = (text: string) => `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;
 

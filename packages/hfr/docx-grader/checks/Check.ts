@@ -1,5 +1,6 @@
 import { DocModel, Paragraph, Section } from '../docx/DocModel';
 import { StyleSheet } from '../docx/styleSheet';
+import { FormatSource } from './formatSource';
 import { EquivalentCharacters, Normalizer } from './normalizeText';
 
 export interface CheckBase<Kind extends string> {
@@ -34,6 +35,8 @@ export interface ExtractionContext {
 
 export interface GradingContext {
     document: DocModel;
+    /** For format checks without their own `source`. */
+    defaultSource: FormatSource;
     normalize: Normalizer;
     equivalents: EquivalentCharacters;
     findParagraph: (anchor: ParagraphAnchor) => Paragraph | undefined;

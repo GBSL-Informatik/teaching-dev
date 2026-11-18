@@ -1,9 +1,10 @@
-import { Paragraph } from '../../docx/DocModel';
+import { Paragraph, TextRun } from '../../docx/DocModel';
 import { RunFormat } from '../../docx/formatting';
 import { quote } from '../anchors';
 import { CheckBase, CheckKind, ParagraphAnchor } from '../Check';
+import { FormatSource, sourceMismatches, splitBySource } from '../formatSource';
 import { EquivalentCharacters, NormalizedChar, Normalizer, normalizeRuns } from '../normalizeText';
-import { describeProperties, differences, mismatches, RUN_PROPERTIES } from '../properties';
+import { describeProperties, differences, RUN_PROPERTIES } from '../properties';
 import { anchoredParagraphs, baselineRunFormat, evaluateAnchors, groupBy } from './helpers';
 
 export interface RunAnchor extends ParagraphAnchor {
@@ -15,6 +16,8 @@ export interface RunAnchor extends ParagraphAnchor {
 export interface RunFormatCheck extends CheckBase<'runFormat'> {
     anchors: RunAnchor[];
     expect: Partial<RunFormat>;
+    /** Set to `style` by the CLI when the original's paragraph or character style gives the format. */
+    source?: FormatSource;
 }
 
 interface TextContext {
@@ -25,6 +28,7 @@ interface TextContext {
 interface Segment {
     text: string;
     expect: Partial<RunFormat>;
+    source: FormatSource;
 }
 
 export const runFormat: CheckKind<RunFormatCheck> = {
@@ -38,17 +42,20 @@ export const runFormat: CheckKind<RunFormatCheck> = {
             const paragraphText = chars.map(({ char }) => char).join('');
             return formattedSegments(chars, baseline).map((segment) => ({
                 anchor: segment.text === paragraphText ? anchor : { ...anchor, segment: segment.text },
-                expect: segment.expect
+                expect: segment.expect,
+                source: segment.source
             }));
         });
 
-        return groupBy(segments, ({ expect }) => JSON.stringify(expect)).map((group) => {
-            const { expect } = group[0];
+        return groupBy(segments, ({ expect, source }) => JSON.stringify([expect, source])).map((group) => {
+            const { expect, source } = group[0];
+            const viaStyle = source === 'style' ? ' (über eine Formatvorlage)' : '';
             return {
                 kind: 'runFormat',
-                title: `Zeichenformat: ${describeProperties(expect, RUN_PROPERTIES)}`,
+                title: `Zeichenformat: ${describeProperties(expect, RUN_PROPERTIES)}${viaStyle}`,
                 anchors: group.map(({ anchor }) => anchor),
-                expect
+                expect,
+                ...(source === 'style' ? { source } : {})
             };
         });
     },
@@ -63,10 +70,13 @@ export const runFormat: CheckKind<RunFormatCheck> = {
                 return [`Text ${quote(anchor.segment!)} nicht gefunden`];
             }
             const end = anchor.segment ? start + anchor.segment.length : text.length;
+            const source = check.source ?? context.defaultSource;
             const failures = chars
                 .slice(start, end)
                 .filter(({ char }) => char !== ' ')
-                .flatMap(({ format }) => mismatches(check.expect, format, RUN_PROPERTIES));
+                .flatMap(({ run }) =>
+                    sourceMismatches(check.expect, run, source, RUN_PROPERTIES, 'eine Formatvorlage')
+                );
             const location = anchor.segment ? `${quote(anchor.segment)}: ` : '';
             return [...new Set(failures)].map((failure) => `${location}${failure}`);
         });
@@ -85,23 +95,29 @@ const authoredChars = (paragraph: Paragraph, context: TextContext): NormalizedCh
 
 /** Splits the characters into segments of equal formatting and keeps those differing from the baseline. */
 const formattedSegments = (chars: NormalizedChar[], baseline: RunFormat): Segment[] => {
-    const segments: (Segment & { key: string })[] = [];
-    for (const { char, format } of chars) {
+    const segments: { text: string; expect: Partial<RunFormat>; key: string; runs: TextRun[] }[] = [];
+    for (const { char, run } of chars) {
         const current = segments.at(-1);
         // Spaces join the segment they are in, so "two words" stays one segment.
         if (char === ' ' && current) {
             current.text += char;
             continue;
         }
-        const expect = differences(format, baseline, RUN_PROPERTIES);
+        const expect = differences(run.format, baseline, RUN_PROPERTIES);
         const key = JSON.stringify(expect);
         if (current?.key === key) {
             current.text += char;
+            current.runs.push(run);
         } else {
-            segments.push({ text: char, expect, key });
+            segments.push({ text: char, expect, key, runs: [run] });
         }
     }
     return segments
-        .map(({ text, expect }) => ({ text: text.trim(), expect }))
-        .filter(({ text, expect }) => text && Object.keys(expect).length > 0);
+        .filter(({ text, expect }) => text.trim() && Object.keys(expect).length > 0)
+        .flatMap(({ text, expect, runs }) =>
+            splitBySource(
+                expect,
+                runs.map((run) => run.styleFormat)
+            ).map((part) => ({ text: text.trim(), ...part }))
+        );
 };

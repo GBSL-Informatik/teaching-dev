@@ -1,5 +1,5 @@
 import { TextRun } from '../docx/DocModel';
-import { INITIAL_RUN_FORMAT, RunFormat } from '../docx/formatting';
+import { INITIAL_RUN_FORMAT } from '../docx/formatting';
 
 /** Characters a group treats as equal, e.g. `['-', '–', '—']`; the first one represents the group. */
 export type EquivalentCharacters = string[][];
@@ -15,7 +15,8 @@ const INVISIBLE = /[­​‌‍﻿]/;
 
 export interface NormalizedChar {
     char: string;
-    format: RunFormat;
+    /** The run the character comes from, with its formatting. */
+    run: TextRun;
 }
 
 export type Normalizer = (text: string) => string;
@@ -38,7 +39,7 @@ export const normalizeRuns = (runs: TextRun[], equivalents: EquivalentCharacters
             const normalized = /\s/.test(char) ? ' ' : (representatives.get(char) ?? char);
             const isLeadingOrRepeatedSpace = normalized === ' ' && (chars.at(-1)?.char ?? ' ') === ' ';
             if (!isLeadingOrRepeatedSpace) {
-                chars.push({ char: normalized, format: run.format });
+                chars.push({ char: normalized, run });
             }
         }
     }
@@ -50,7 +51,8 @@ export const normalizeRuns = (runs: TextRun[], equivalents: EquivalentCharacters
 
 export const createNormalizer = (equivalents: EquivalentCharacters): Normalizer => {
     return (text) => {
-        const chars = normalizeRuns([{ text, format: INITIAL_RUN_FORMAT }], equivalents);
+        const run = { text, format: INITIAL_RUN_FORMAT, styleFormat: INITIAL_RUN_FORMAT };
+        const chars = normalizeRuns([run], equivalents);
         return chars.map(({ char }) => char).join('');
     };
 };

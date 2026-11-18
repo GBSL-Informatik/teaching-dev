@@ -2,7 +2,9 @@
 # Add to any check:
 #   hint: Text shown to students when the check fails
 #   docs: /link/to/a/documentation/page
-# Re-running the CLI keeps hint and docs of checks with the same id.
+# Format checks also take source: style (from a style) or any (also direct formatting),
+# and defaultSource at the top sets it for all checks without their own.
+# Re-running the CLI keeps defaultSource, and hint, docs and source of checks with the same id.
 version: 1
 source: ex01-what-is-programming.docx
 checks:

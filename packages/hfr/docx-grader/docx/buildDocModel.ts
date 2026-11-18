@@ -3,7 +3,14 @@ import { GENERATING_FIELDS, parseField } from './fields';
 import { isOn } from './formatting';
 import { DocxPackage } from './readDocx';
 import { buildSections } from './sections';
-import { parseStyleSheet, parseThemeFonts, resolveParagraph, resolveRun, StyleSheet } from './styleSheet';
+import {
+    parseStyleSheet,
+    parseThemeFonts,
+    resolveParagraph,
+    resolveRun,
+    resolveRunFromStyles,
+    StyleSheet
+} from './styleSheet';
 import { emuToCm } from './units';
 import { attr, childElement, childElements, childVal, descendants, textContent, XmlElement } from './xml';
 
@@ -177,6 +184,7 @@ class DocModelBuilder {
             runs: state.runs,
             style: { id: resolved.style?.id ?? '', name: resolved.style?.name ?? 'Normal' },
             format: resolved.format,
+            styleFormat: resolved.styleFormat,
             numbering: resolved.numbering && {
                 level: resolved.numbering.level,
                 format: resolved.numbering.format,
@@ -263,6 +271,7 @@ class DocModelBuilder {
             state.runs.push({
                 text,
                 format: resolveRun(this.styleSheet, state.styleId, rPr),
+                styleFormat: resolveRunFromStyles(this.styleSheet, state.styleId, rPr),
                 field: this.openFields.at(-1)?.field?.type
             });
         };

@@ -23,6 +23,8 @@ export interface Field {
 export interface TextRun {
     text: string;
     format: RunFormat;
+    /** The format its paragraph and character styles give, without direct formatting. */
+    styleFormat: RunFormat;
     /** Set when the text is the result of a field, e.g. a page number. */
     field?: FieldType;
 }
@@ -41,6 +43,8 @@ export interface Paragraph {
     runs: TextRun[];
     style: { id: string; name: string };
     format: ParagraphFormat;
+    /** The format the style gives, without direct formatting. */
+    styleFormat: ParagraphFormat;
     numbering?: { level: number; format: string; text: string };
     fields: Field[];
     caption?: Caption;
