@@ -1,0 +1,27 @@
+{
+    "name": "@hfr/docx-grader",
+    "version": "1.0.0",
+    "description": "Grade the formatting of Word documents against a spec extracted from a model document",
+    "scripts": {
+        "create-spec": "tsx cli/createSpec.ts"
+    },
+    "dependencies": {
+        "fast-xml-parser": "^5.2.5",
+        "jszip": "^3.10.1"
+    },
+    "devDependencies": {
+        "@docusaurus/core": "*",
+        "@docusaurus/module-type-aliases": "*",
+        "@inquirer/prompts": "^8.8.0",
+        "@types/js-yaml": "^4.0.9",
+        "@types/minimist": "^1.2.5",
+        "@types/node": "*",
+        "js-yaml": "^5.5.0",
+        "minimist": "^1.2.8",
+        "tsx": "^4.23.15",
+        "vitest": "*"
+    },
+    "peerDependencies": {
+        "@tdev/core": "1.0.0"
+    }
+}

@@ -1,0 +1,96 @@
+---
+page_id: 1c290e99-93a2-457d-9c5a-8b7b95ff2a15
+tags:
+  - '@hfr/'
+---
+
+import Steps from '@tdev-components/Steps';
+
+# docx-grader
+
+:::warning[WIP 🚧]
+Dieses Package ist ein Work in Progress ([#385](https://github.com/GBSL-Informatik/teaching-dev/issues/385)). Bisher gibt es das CLI, welches aus einem Word-Dokument eine Spezifikation (docx-spec) erstellt. Die Komponente für Schüler:innen und das Erzeugen des unformatierten Dokuments folgen.
+:::
+
+Schüler:innen erhalten ein unformatiertes Word-Dokument und formatieren es so wie ein Original der Lehrperson. Der docx-grader überprüft danach wie bei Unit-Tests, welche Formatierungen bereits stimmen.
+
+## Spezifikation erstellen
+
+<Steps>
+
+1. Formatiere das Original in Word fertig: Formatvorlagen, Absatz- und Zeichenformate, Abschnitte, Kopf- und Fusszeilen, Bilder mit Beschriftungen und Verzeichnisse.
+2. Erstelle daraus die Spezifikation:
+
+   ```bash
+   yarn workspace @hfr/docx-grader create-spec pfad/zu/original.docx
+   ```
+
+3. Wähle in der Liste die Formatierungen ab, die nicht überprüft werden sollen, und bestätige mit [[Enter]].
+4. Ergänze in der erzeugten Datei __pfad/zu/original.docx-spec.yaml__ bei Bedarf Hinweise und Links zur Dokumentation.
+
+</Steps>
+
+`--out <datei.docx-spec.yaml>`
+: Pfad der Spezifikation.
+: Standard: neben dem Original, mit der Endung `.docx-spec.yaml`.
+`--all`
+: Übernimmt alle Formatierungen ohne Auswahlliste.
+
+Wird das CLI erneut ausgeführt, sind die zuvor übernommenen Formatierungen vorausgewählt, und Hinweise sowie Links bleiben erhalten.
+
+## Was überprüft wird
+
+Überprüft wird nur, was vom leeren Word-Dokument (Normal.dotm) abweicht. Dabei zählt das Ergebnis, nicht der Weg: Ob ein Absatz direkt oder über eine Formatvorlage im Blocksatz steht, ist gleichwertig. Nur die Verwendung einer Formatvorlage selbst wird als eigene Formatierung überprüft, weil z.B. das Inhaltsverzeichnis von ihr abhängt.
+
+Formatvorlagen
+: Welche Formatvorlage ein Absatz verwendet.
+Absatzformat
+: Ausrichtung, Einzüge, Abstände, Zeilenabstand, Tabstopps und Umbruchsteuerung.
+Zeichenformat
+: Schriftart, -grösse, -farbe, fett, kursiv, unterstrichen, durchgestrichen, Hervorhebung, Grossbuchstaben, Kapitälchen, hoch- und tiefgestellt.
+Aufzählungen und Nummerierungen
+: Art und Ebene der Aufzählung, bei Nummerierungen auch das Muster (z.B. `1.1`).
+Abschnitte und Seitenlayout
+: Abschnittsumbruch, Ausrichtung, Seitenränder, Spalten, Seitenzahlenformat und -beginn, erste Seite anders.
+Kopf- und Fusszeilen
+: Text, Seitenzahl und Ausrichtung.
+Bilder und Beschriftungen
+: Breite (±0.3 cm), Layout und Textumbruch. Die Beschriftung muss direkt vor oder nach dem Bild stehen oder mit ihm gruppiert sein; die genaue Position spielt keine Rolle.
+Verzeichnisse
+: Inhalts-, Abbildungs- und Literaturverzeichnis.
+Dokument
+: Automatische Silbentrennung.
+
+Die Formatierungen werden über den Text der Absätze gefunden. Deshalb dürfen Schüler:innen den Text nicht verändern. Bilder werden über ihre Reihenfolge gefunden.
+
+## Aufbau der docx-spec
+
+```yaml
+version: 1
+source: original.docx
+checks:
+  - id: paragraphStyle-formatvorlage-ueberschrift-1
+    kind: paragraphStyle
+    title: Formatvorlage «Überschrift 1»
+    anchors:
+      - text: Zielsetzung
+      - text: Über die Autoren
+    expect:
+      style: heading 1
+    hint: Verwende die Formatvorlage «Überschrift 1», damit die Überschrift im Inhaltsverzeichnis erscheint.
+    docs: /word/formatvorlagen
+```
+
+`id`
+: Eindeutige Kennung, abgeleitet aus Art und Titel. Sie bleibt gleich, solange das Original gleich formatiert ist.
+`kind`, `anchors`, `expect`
+: Art, Fundstellen und erwartete Werte. Werden vom CLI erzeugt; Werte in `expect` dürfen angepasst werden.
+`title`
+: Wird den Schüler:innen angezeigt.
+`hint`
+: Optionaler Hinweis, der bei einem Fehler angezeigt wird.
+`docs`
+: Optionaler Link zu einer Seite der Dokumentation.
+`equivalentCharacters`
+: Optional, auf oberster Ebene: Gruppen von Zeichen, die beim Textvergleich als gleich gelten.
+: Standard: `[['-', '–', '—', '‑'], ['"', '“', '”', '„', '«', '»'], ["'", '‘', '’', '‚', '‹', '›']]`. Leerräume werden immer zu einem Leerzeichen zusammengefasst.
