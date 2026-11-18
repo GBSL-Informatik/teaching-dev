@@ -1,0 +1,33 @@
+.results {
+    .summary {
+        margin-bottom: 1em;
+    }
+
+    .progress {
+        height: 0.5em;
+        margin-top: 0.25em;
+        border-radius: var(--ifm-global-radius);
+        background-color: var(--ifm-color-danger-contrast-background);
+        overflow: hidden;
+
+        .bar {
+            height: 100%;
+            background-color: var(--ifm-color-warning);
+            transition: width var(--ifm-transition-fast);
+
+            &.complete {
+                background-color: var(--ifm-color-success);
+            }
+        }
+    }
+
+    .category {
+        margin: 1em 0 0.25em;
+    }
+
+    .list {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+}

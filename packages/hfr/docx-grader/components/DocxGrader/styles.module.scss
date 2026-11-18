@@ -1,0 +1,29 @@
+.docxGrader {
+    margin-bottom: var(--ifm-leading);
+
+    .upload {
+        display: flex;
+        align-items: center;
+        gap: 0.75em;
+        padding: 1em;
+        border: 2px dashed var(--ifm-color-emphasis-400);
+        border-radius: var(--ifm-global-radius);
+        cursor: pointer;
+        margin-bottom: 1em;
+
+        &:hover,
+        &.dragOver {
+            border-color: var(--ifm-color-primary);
+            background-color: var(--ifm-hover-overlay);
+        }
+
+        span:first-of-type {
+            flex-grow: 1;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    .status {
+        color: var(--ifm-color-emphasis-700);
+    }
+}

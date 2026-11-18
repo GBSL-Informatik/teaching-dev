@@ -63,7 +63,7 @@ export const sectionAnchor = (
         ?.anchor;
 };
 
-/** Evaluates every anchored paragraph and prefixes each failure with a quote of its text. */
+/** Evaluates every anchored paragraph: one message per paragraph, starting with a quote of its text. */
 export const evaluateAnchors = <A extends ParagraphAnchor>(
     anchors: A[],
     context: GradingContext,
@@ -74,7 +74,8 @@ export const evaluateAnchors = <A extends ParagraphAnchor>(
         if (!paragraph) {
             return [`${quote(anchor.text)}: Absatz nicht gefunden – wurde der Text verändert?`];
         }
-        return evaluate(paragraph, anchor).map((failure) => `${quote(anchor.text)}: ${failure}`);
+        const failures = evaluate(paragraph, anchor);
+        return failures.length > 0 ? [`${quote(anchor.text)}: ${failures.join('; ')}`] : [];
     });
 };
 

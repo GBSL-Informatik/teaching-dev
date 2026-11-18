@@ -5,14 +5,36 @@ tags:
 ---
 
 import Steps from '@tdev-components/Steps';
+import CodeShowcase from '@tdev-components/CodeShowcase';
+import DocxGrader from '@hfr/docx-grader/components/DocxGrader';
+import spec from './assets/ex01-what-is-programming.docx-spec.yaml';
 
 # docx-grader
 
 :::warning[WIP 🚧]
-Dieses Package ist ein Work in Progress ([#385](https://github.com/GBSL-Informatik/teaching-dev/issues/385)). Bisher gibt es das CLI, welches aus einem Word-Dokument eine Spezifikation (docx-spec) erstellt. Die Komponente für Schüler:innen und das Erzeugen des unformatierten Dokuments folgen.
+Dieses Package ist ein Work in Progress ([#385](https://github.com/GBSL-Informatik/teaching-dev/issues/385)). Das Erzeugen des unformatierten Dokuments folgt.
 :::
 
 Schüler:innen erhalten ein unformatiertes Word-Dokument und formatieren es so wie ein Original der Lehrperson. Der docx-grader überprüft danach wie bei Unit-Tests, welche Formatierungen bereits stimmen.
+
+<CodeShowcase
+    lang="md"
+    imports={[
+        `import DocxGrader from '@hfr/docx-grader/components/DocxGrader';`,
+        `import spec from './assets/ex01-what-is-programming.docx-spec.yaml';`
+    ]}
+>
+<DocxGrader spec={spec} />
+</CodeShowcase>
+
+Zum Ausprobieren: Lade das [unformatierte Dokument](./assets/ex01-what-is-programming-raw.docx) oder das [Original](./assets/ex01-what-is-programming.docx) herunter und ziehe es auf die Komponente.
+
+Das Dokument wird nur im Browser überprüft: Es wird nicht hochgeladen und das Resultat wird nicht gespeichert.
+
+`spec`
+: Die docx-spec, als YAML-Datei importiert. Fehler in der Datei werden oberhalb der Komponente angezeigt; fehlerhafte Checks werden übersprungen.
+`className`
+: Optionale CSS-Klasse.
 
 ## Spezifikation erstellen
 

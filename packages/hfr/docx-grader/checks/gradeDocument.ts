@@ -1,4 +1,6 @@
+import { buildDocModel } from '../docx/buildDocModel';
 import { DocModel } from '../docx/DocModel';
+import { readDocx } from '../docx/readDocx';
 import { DocxSpec } from '../spec/DocxSpec';
 import { createAnchoring } from './anchors';
 import { GradingContext } from './Check';
@@ -10,6 +12,11 @@ export interface CheckResult {
     /** Empty when the check passed. */
     failures: string[];
 }
+
+/** Grades the bytes of an uploaded `.docx` file. */
+export const gradeDocx = async (spec: DocxSpec, data: ArrayBuffer | Uint8Array): Promise<CheckResult[]> => {
+    return gradeDocument(spec, buildDocModel(await readDocx(data)));
+};
 
 export const gradeDocument = (spec: DocxSpec, document: DocModel): CheckResult[] => {
     const equivalents = spec.equivalentCharacters ?? DEFAULT_EQUIVALENT_CHARACTERS;
