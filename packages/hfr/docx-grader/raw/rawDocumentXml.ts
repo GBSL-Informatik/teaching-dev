@@ -118,13 +118,10 @@ const EMPTY_PARAGRAPH = '<w:p/>';
 
 const endsWithTable = (xml: string) => xml.endsWith('</w:tbl>');
 
-/** Tabs and line breaks are content, everything else is plain text. */
+/** Line breaks are content; tabs become spaces, as inserting them is part of the task. */
 const runsXml = (text: string): string => {
-    const parts = text.split(/(\t|\n)/).filter(Boolean);
+    const parts = text.replace(/\t/g, ' ').split(/(\n)/).filter(Boolean);
     const content = parts.map((part) => {
-        if (part === '\t') {
-            return '<w:tab/>';
-        }
         if (part === '\n') {
             return '<w:br/>';
         }

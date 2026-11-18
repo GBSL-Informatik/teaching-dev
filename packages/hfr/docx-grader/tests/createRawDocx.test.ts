@@ -27,6 +27,7 @@ describe.each(SAMPLES)('createRawDocx with %s', (name) => {
         expect(new Set(raw.paragraphs.map((p) => p.style.name))).toEqual(new Set(['Normal']));
         expect(raw.paragraphs.filter((p) => p.numbering || p.generatedBy || p.caption)).toEqual([]);
         expect(raw.fields).toEqual([]);
+        expect(raw.paragraphs.filter((p) => p.text.includes('\t'))).toEqual([]);
         expect(raw.autoHyphenation).toBe(false);
     });
 
