@@ -1,3 +1,10 @@
+import type {
+    ExcalidrawArrowElement,
+    ExcalidrawElement,
+    ExcalidrawRectangleElement,
+    ExcalidrawTextElement
+} from '@excalidraw/excalidraw/element/types';
+import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
 import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText, Point } from './layoutPage';
@@ -19,7 +26,7 @@ export interface EncodedImage {
  * A scene the markup editor of `@tdev/excalidoc` opens: the page as its background image, and the
  * labels, arrows and notes as ordinary elements, which stay editable.
  */
-export const excalidrawScene = (layout: PageLayout, page: EncodedImage) => {
+export const excalidrawScene = (layout: PageLayout, page: EncodedImage): ExcalidrawInitialDataState => {
     const scene = backgroundImageScene({
         dataURL: `data:${page.mimeType};base64,${page.data.toString('base64')}`,
         mimeType: page.mimeType,
@@ -49,7 +56,7 @@ const labelElements = (label: PlacedLabel, index: number) => {
     }
     const { x, y, width, height } = label.marker;
     const marker = baseElement(`docx-grader-marker-${index}`, 'rectangle', x, y, width, height, LABEL_COLOR);
-    return [text, arrow, marker];
+    return [text, arrow, marker as ExcalidrawRectangleElement];
 };
 
 /** Excalidraw stores the points of an arrow relative to its position, the first point. */
@@ -63,10 +70,13 @@ const arrowElement = (id: string, points: Point[]) => {
     return {
         ...baseElement(id, 'arrow', x, y, width, height, LABEL_COLOR),
         points: relative,
+        startBinding: null,
+        endBinding: null,
+        lastCommittedPoint: null,
         startArrowhead: null,
         endArrowhead: 'triangle_outline',
         elbowed: false
-    };
+    } as ExcalidrawArrowElement;
 };
 
 const textElement = (id: string, placed: PlacedText, color: string) => {
@@ -77,18 +87,18 @@ const textElement = (id: string, placed: PlacedText, color: string) => {
         originalText: text,
         fontSize: placed.fontSize,
         fontFamily: NORMAL_FONT_FAMILY,
-        textAlign: 'left',
-        verticalAlign: 'top',
+        textAlign: 'left' as const,
+        verticalAlign: 'top' as const,
         containerId: null,
-        lineHeight: LINE_HEIGHT,
+        lineHeight: LINE_HEIGHT as ExcalidrawTextElement['lineHeight'],
         autoResize: true
-    };
+    } as ExcalidrawTextElement;
 };
 
 /** «Architect» sloppiness (roughness 0): straight lines like the typeset page. */
-const baseElement = (
+const baseElement = <Type extends ExcalidrawElement['type']>(
     id: string,
-    type: string,
+    type: Type,
     x: number,
     y: number,
     width: number,
@@ -104,13 +114,15 @@ const baseElement = (
     angle: 0,
     strokeColor,
     backgroundColor: 'transparent',
-    fillStyle: 'solid',
+    fillStyle: 'solid' as const,
     strokeWidth: 1,
-    strokeStyle: 'solid',
+    strokeStyle: 'solid' as const,
     roughness: 0,
     opacity: 100,
     groupIds: [],
     frameId: null,
+    // Excalidraw orders elements by fractional indices; restoring the scene assigns them.
+    index: null,
     roundness: null,
     seed: 1,
     version: 1,

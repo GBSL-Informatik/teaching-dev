@@ -165,22 +165,22 @@ describe('excalidrawScene', () => {
         ]);
         const page = { data: Buffer.from('webp'), mimeType: 'image/webp', extension: '.webp' };
 
-        const scene = excalidrawScene(layout, page);
+        const { elements, files } = excalidrawScene(layout, page);
 
-        expect(scene.elements.map((element) => element.id)).toEqual([
+        expect(elements!.map((element) => element.id)).toEqual([
             EXCALIDRAW_BACKGROUND_IMAGE_ID,
             EXCALIDRAW_IMAGE_RECTANGLE_ID,
             'docx-grader-label-0',
             'docx-grader-arrow-0',
             'docx-grader-notes'
         ]);
-        const [background, , label, arrow, notes] = scene.elements;
+        const [background, , label, arrow, notes] = elements!;
         expect(background).toMatchObject({
             width: 800,
             height: (842 * 800) / 595,
             customData: { exportFormatMimeType: 'image/webp', initExtension: '.webp' }
         });
-        expect(scene.files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/webp;base64,d2VicA==');
+        expect(files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/webp;base64,d2VicA==');
         expect(label).toMatchObject({ fontFamily: 6, strokeColor: LABEL_COLOR });
         expect(arrow).toMatchObject({ roughness: 0, endArrowhead: 'triangle_outline' });
         expect(notes).toMatchObject({ text: '• Automatische Silbentrennung', strokeColor: NOTES_COLOR });

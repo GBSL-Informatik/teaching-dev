@@ -57,6 +57,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -93,6 +94,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -112,6 +114,9 @@
           0
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -133,6 +138,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -169,6 +175,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -192,6 +199,9 @@
           0
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -213,6 +223,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -249,6 +260,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -272,6 +284,9 @@
           -20.122959080830356
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -293,6 +308,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -320,6 +336,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -356,6 +373,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -379,6 +397,9 @@
           -110.61076395887918
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -400,6 +421,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -427,6 +449,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -463,6 +486,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -486,6 +510,9 @@
           -11.080427333198884
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -507,6 +534,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -543,6 +571,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -566,6 +595,9 @@
           -72.42894577706102
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -587,6 +619,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -623,6 +656,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -646,6 +680,9 @@
           -30.95545252973193
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -667,6 +704,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -694,6 +732,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -730,6 +769,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -753,6 +793,9 @@
           -21.904185984008677
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -774,6 +817,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -810,6 +854,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -833,6 +878,9 @@
           0
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -854,6 +902,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -890,6 +939,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -913,6 +963,9 @@
           -29.040516024994872
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -934,6 +987,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -970,6 +1024,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -993,6 +1048,9 @@
           -33.09010280185453
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -1014,6 +1072,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -1041,6 +1100,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -1077,6 +1137,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
@@ -1100,6 +1161,9 @@
           0
         ]
       ],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "triangle_outline",
       "elbowed": false
@@ -1121,6 +1185,7 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
+      "index": null,
       "roundness": null,
       "seed": 1,
       "version": 1,
