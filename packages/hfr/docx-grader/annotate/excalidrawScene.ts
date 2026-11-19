@@ -1,6 +1,6 @@
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
-import { FONT_SIZE, LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText } from './layoutPage';
+import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText } from './layoutPage';
 
 /** Excalidraw's blue and orange from its color picker. */
 export const LABEL_COLOR = '#1971c2';
@@ -68,7 +68,7 @@ const textElement = (id: string, placed: PlacedText, color: string) => {
         ...baseElement(id, 'text', placed.x, placed.y, placed.width, placed.height, color),
         text,
         originalText: text,
-        fontSize: FONT_SIZE,
+        fontSize: placed.fontSize,
         fontFamily: NORMAL_FONT_FAMILY,
         textAlign: 'left',
         verticalAlign: 'top',

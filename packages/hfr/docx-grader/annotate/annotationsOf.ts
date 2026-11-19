@@ -118,10 +118,14 @@ const firstPerPage = (targets: TextBox[]): TextBox[] => {
     });
 };
 
-/** Titles describe the expectation; anchors quoted in them are redundant next to an arrow. */
+/**
+ * Titles describe the expectation; anchors quoted in them are redundant next to an arrow, and so is
+ * the style a paragraph format is for: the paragraph style annotation names it, e.g. «Überschrift 1».
+ */
 const labelOf = (check: Check) => {
     return check.title
-        .replace(/^Abschnitt ab «[^»]*»: /, 'Abschnitt: ')
+        .replace(/^Abschnitt ab "[^"]*": /, 'Abschnitt: ')
+        .replace(/^«[^»]*»: /, '')
         .replace(/^Formatvorlage /, '')
         .replace(/^Zeichenformat: /, '');
 };

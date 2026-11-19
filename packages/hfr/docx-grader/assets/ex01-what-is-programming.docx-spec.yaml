@@ -186,9 +186,9 @@ checks:
             tabbed: "➑\tIf the passwords are not the same, the program prints Access denied to the screen ➑."
       expect:
           useTabs: true
-    - id: section-abschnitt-ab-television-shows-and-films-often-show-pr-abschn-cc5c6d
+    - id: section-abschnitt-ab-television-shows-and-films-often-show-pr-abschn-e4af02
       kind: section
-      title: 'Abschnitt ab «Television shows and films often show pr…»: Abschnittsumbruch: fortlaufend, Spalten: 3, Abstand 0.87 cm'
+      title: 'Abschnitt ab "Television shows and films often show pr…": Abschnittsumbruch: fortlaufend, Spalten: 3, Abstand 0.87 cm'
       anchors:
           - text: 'Television shows and films often show programmers furiously '
       expect:
@@ -198,9 +198,9 @@ checks:
               spacingCm: 0.87
               separator: false
       hint: Füge vor und nach dem Text einen fortlaufenden Abschnittsumbruch ein («Layout» › «Umbrüche»), damit nur dieser Teil dreispaltig ist.
-    - id: section-abschnitt-ab-all-programs-use-basic-instructions-as-b-abschn-2caea1
+    - id: section-abschnitt-ab-all-programs-use-basic-instructions-as-b-abschn-e2287e
       kind: section
-      title: 'Abschnitt ab «All programs use basic instructions as b…»: Abschnittsumbruch: fortlaufend, Seitenränder: oben 2.5 cm, rechts 2.5 cm, unten 1.25 cm, links 2.5 cm'
+      title: 'Abschnitt ab "All programs use basic instructions as b…": Abschnittsumbruch: fortlaufend, Seitenränder: oben 2.5 cm, rechts 2.5 cm, unten 1.25 cm, links 2.5 cm'
       anchors:
           - text: All programs use basic instructions as building blocks. Here
       expect:
@@ -212,7 +212,7 @@ checks:
               left: 2.5
     - id: headerFooter-kopfzeile-of-informatik-rechtsbuendig
       kind: headerFooter
-      title: 'Kopfzeile: «OF Informatik», rechtsbündig'
+      title: 'Kopfzeile: "OF Informatik", rechtsbündig'
       anchors:
           - text: What Is Programming?
           - text: 'Television shows and films often show programmers furiously '
@@ -225,7 +225,7 @@ checks:
           alignment: right
     - id: headerFooter-fusszeile-quelle-https-automatetheboringstuff-c-blocksatz
       kind: headerFooter
-      title: 'Fusszeile: «Quelle: https://automatetheboringstuff.c…», Blocksatz'
+      title: 'Fusszeile: "Quelle: https://automatetheboringstuff.c…", Blocksatz'
       anchors:
           - text: What Is Programming?
           - text: 'Television shows and films often show programmers furiously '

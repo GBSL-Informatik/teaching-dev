@@ -4,12 +4,14 @@ import { PdfPage } from './readPdf';
 
 /** The page is as wide as images the markup editor creates; labels go to a column on its right. */
 export const PAGE_WIDTH = EXCALIDRAW_MAX_WIDTH;
-export const FONT_SIZE = 16;
+const LABEL_FONT_SIZE = 16;
+// General notes are larger: they are not next to the text they are about.
+const NOTES_FONT_SIZE = 20;
 export const LINE_HEIGHT = 1.25;
 const LABEL_COLUMN_X = PAGE_WIDTH + 40;
 const MAX_LINE_LENGTH = 34;
 // Excalidraw measures text itself when the scene is opened; this estimate only spaces the labels.
-const CHAR_WIDTH = FONT_SIZE * 0.55;
+const CHAR_WIDTH_PER_FONT_SIZE = 0.55;
 const LABEL_GAP = 10;
 // General notes go into the top margin of the page, which is empty in most documents.
 const NOTES_POSITION = { x: 16, y: 12 };
@@ -17,6 +19,7 @@ const NOTES_MAX_LINE_LENGTH = 60;
 
 export interface PlacedText {
     lines: string[];
+    fontSize: number;
     x: number;
     y: number;
     width: number;
@@ -49,28 +52,33 @@ export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout
     let nextFreeY = 0;
     const labels = targeted.map(({ label, target }) => {
         const targetY = (target!.y + target!.height / 2) * scale;
-        const text = placeText(wrap(label, MAX_LINE_LENGTH), LABEL_COLUMN_X, 0);
-        const y = Math.max(targetY - (FONT_SIZE * LINE_HEIGHT) / 2, nextFreeY);
+        const text = placeText(wrap(label, MAX_LINE_LENGTH), LABEL_COLUMN_X, 0, LABEL_FONT_SIZE);
+        const firstLineCenter = (LABEL_FONT_SIZE * LINE_HEIGHT) / 2;
+        const y = Math.max(targetY - firstLineCenter, nextFreeY);
         nextFreeY = y + text.height + LABEL_GAP;
         const targetEnd: [number, number] = [(target!.x + target!.width) * scale + 6, targetY];
         return {
             ...text,
             y,
-            arrow: { from: [LABEL_COLUMN_X - 8, y + (FONT_SIZE * LINE_HEIGHT) / 2], to: targetEnd }
+            arrow: { from: [LABEL_COLUMN_X - 8, y + firstLineCenter], to: targetEnd }
         } satisfies PlacedLabel;
     });
 
     const noteLines = untargeted.flatMap(({ label }) => listItem(label, NOTES_MAX_LINE_LENGTH));
-    const notes = noteLines.length > 0 ? placeText(noteLines, NOTES_POSITION.x, NOTES_POSITION.y) : undefined;
+    const notes =
+        noteLines.length > 0
+            ? placeText(noteLines, NOTES_POSITION.x, NOTES_POSITION.y, NOTES_FONT_SIZE)
+            : undefined;
     return { height: page.heightPt * scale, labels, ...(notes ? { notes } : {}) };
 };
 
-const placeText = (lines: string[], x: number, y: number): PlacedText => ({
+const placeText = (lines: string[], x: number, y: number, fontSize: number): PlacedText => ({
     lines,
+    fontSize,
     x,
     y,
-    width: Math.max(...lines.map((line) => line.length)) * CHAR_WIDTH,
-    height: lines.length * FONT_SIZE * LINE_HEIGHT
+    width: Math.max(...lines.map((line) => line.length)) * fontSize * CHAR_WIDTH_PER_FONT_SIZE,
+    height: lines.length * fontSize * LINE_HEIGHT
 });
 
 /** A list item per line of the label, continuation lines indented. */

@@ -1,5 +1,5 @@
 import { Paragraph } from '../../docx/DocModel';
-import { hasTypedNumbering } from '../anchors';
+import { hasTypedNumbering, quote } from '../anchors';
 import { CheckBase, CheckKind, ParagraphAnchor } from '../Check';
 import { anchoredParagraphs, evaluateAnchors, groupBy } from './helpers';
 
@@ -76,6 +76,6 @@ const expectationOf = (paragraph: Paragraph): NumberingCheck['expect'] | undefin
 
 const describe = (expect: NumberingCheck['expect']) => {
     const format = FORMAT_LABELS[expect.format] ?? expect.format;
-    const pattern = expect.text ? ` «${expect.text.replace(/%\d/g, '1')}»` : '';
+    const pattern = expect.text ? ` ${quote(expect.text.replace(/%\d/g, '1'))}` : '';
     return `${format}${pattern}, Ebene ${expect.level + 1}`;
 };

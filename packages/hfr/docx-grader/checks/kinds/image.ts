@@ -112,8 +112,8 @@ const captionMismatches = (
     }
     if (expect.label && !actual.label) {
         failures.push('Beschriftung wurde nicht mit «Beschriftung einfügen» erstellt');
-    } else if (expect.label && actual.label !== expect.label) {
-        failures.push(`Bezeichnung «${actual.label}» statt «${expect.label}»`);
+    } else if (expect.label && actual.label && actual.label !== expect.label) {
+        failures.push(`Bezeichnung ${quote(actual.label)} statt ${quote(expect.label)}`);
     }
     return failures;
 };

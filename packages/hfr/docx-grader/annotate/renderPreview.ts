@@ -1,6 +1,6 @@
 import type { CanvasRenderingContext2D as NodeCanvasContext } from 'canvas';
 import { LABEL_COLOR, NOTES_COLOR } from './excalidrawScene';
-import { FONT_SIZE, LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedText } from './layoutPage';
+import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedText } from './layoutPage';
 import { loadCanvas } from './optionalDependencies';
 
 const PADDING = 20;
@@ -27,7 +27,6 @@ export const renderPreview = async (layout: PageLayout, pagePng: Buffer, pixelRa
     context.strokeRect(0, 0, PAGE_WIDTH, layout.height);
     context.setLineDash([]);
 
-    context.font = `${FONT_SIZE}px sans-serif`;
     context.textBaseline = 'top';
     for (const label of layout.labels) {
         drawText(context, label, LABEL_COLOR);
@@ -43,8 +42,9 @@ export const renderPreview = async (layout: PageLayout, pagePng: Buffer, pixelRa
 
 const drawText = (context: NodeCanvasContext, text: PlacedText, color: string) => {
     context.fillStyle = color;
+    context.font = `${text.fontSize}px sans-serif`;
     text.lines.forEach((line, index) => {
-        context.fillText(line, text.x, text.y + index * FONT_SIZE * LINE_HEIGHT);
+        context.fillText(line, text.x, text.y + index * text.fontSize * LINE_HEIGHT);
     });
 };
 

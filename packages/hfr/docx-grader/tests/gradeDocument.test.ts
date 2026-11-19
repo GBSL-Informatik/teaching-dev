@@ -105,7 +105,7 @@ describe('gradeDocument', () => {
 
         expect(result.failures).toHaveLength(8);
         expect(result.failures[0]).toBe(
-            '«➊ First, the file SecretPasswordFile.txt…»: Tabulator fehlt (0 statt 1), Leerzeichen ersetzen keinen Tabulator'
+            '"➊ First, the file SecretPasswordFile.txt…": Tabulator fehlt (0 statt 1), Leerzeichen ersetzen keinen Tabulator'
         );
     });
 
@@ -138,7 +138,7 @@ describe('gradeDocument', () => {
         const [result] = gradeDocument(spec, await loadFixture('ex01-what-is-programming-raw'));
 
         expect(result.failures).toEqual([
-            '«What Is Programming?»: Ausrichtung: linksbündig statt Blocksatz; Abstand nach: 8 pt statt 14 pt'
+            '"What Is Programming?": Ausrichtung: linksbündig statt Blocksatz; Abstand nach: 8 pt statt 14 pt'
         ]);
     });
 
@@ -149,7 +149,7 @@ describe('gradeDocument', () => {
         const results = gradeDocument(spec, await loadFixture('21E_MachineLearning_RAW'));
 
         expect(results[0].failures).toContain(
-            '«Zielsetzung»: Formatvorlage «Standard» statt «Überschrift 1»'
+            '"Zielsetzung": Formatvorlage «Standard» statt «Überschrift 1»'
         );
     });
 });
