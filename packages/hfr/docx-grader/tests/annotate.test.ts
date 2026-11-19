@@ -11,6 +11,7 @@ import { compactText, createTextLocator } from '../annotate/locateText';
 import { PdfPage, PdfText } from '../annotate/readPdf';
 import { extractChecks } from '../checks/extractChecks';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
+import { docModelOf, paragraph, picture } from './createDocx';
 import { loadFixture } from './loadFixture';
 
 const line = (str: string, y: number): PdfText => ({ str, x: 70, y, width: str.length * 5, height: 11 });
@@ -82,6 +83,25 @@ describe('annotationsOf', () => {
         );
         const runningHead = line('Begriffsklärung', 30);
         const pages = [pageOf([runningHead, line('1 Begriffsklärung 1', 100), line('Begriffsklärung', 500)])];
+
+        const [annotation] = annotationsOf(checks, original, pages, normalize);
+
+        expect(annotation.target).toMatchObject({ y: 500 });
+    });
+    it('points to the caption, not to the same text before it, e.g. in the list of figures', async () => {
+        const captionStyle =
+            '<w:style w:type="paragraph" w:styleId="Beschriftung"><w:name w:val="caption"/></w:style>';
+        const original = await docModelOf(
+            paragraph('Methodenauswahl') +
+                `<w:p>${picture(5)}</w:p>` +
+                '<w:p><w:pPr><w:pStyle w:val="Beschriftung"/></w:pPr><w:r><w:t>Methodenauswahl</w:t></w:r></w:p>',
+            captionStyle
+        );
+        const normalize = createNormalizer(DEFAULT_EQUIVALENT_CHARACTERS);
+        const checks = extractChecks(original, DEFAULT_EQUIVALENT_CHARACTERS).filter(
+            (check) => check.kind === 'image'
+        );
+        const pages = [pageOf([line('Methodenauswahl', 100), line('Methodenauswahl', 500)])];
 
         const [annotation] = annotationsOf(checks, original, pages, normalize);
 

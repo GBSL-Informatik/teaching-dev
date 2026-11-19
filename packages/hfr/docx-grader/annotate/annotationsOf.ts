@@ -1,6 +1,7 @@
 import { createAnchoring } from '../checks/anchors';
 import { ParagraphAnchor } from '../checks/Check';
 import { Check } from '../checks/kinds';
+import { ImageAnchor } from '../checks/kinds/image';
 import { RunAnchor } from '../checks/kinds/runFormat';
 import { Normalizer } from '../checks/normalizeText';
 import { DocModel, Paragraph } from '../docx/DocModel';
@@ -66,6 +67,16 @@ const annotationsPerCheck = (
         }
         return locators.body.locateLine(anchor.text, occurrencesBefore(original, paragraph, anchor.text));
     };
+    const locateCaption = (anchor: ImageAnchor) => {
+        const caption = original.images[anchor.image]?.caption;
+        // The caption's paragraph and its images share the same `Caption` object.
+        const paragraph = caption && original.paragraphs.find((candidate) => candidate.caption === caption);
+        if (!paragraph) {
+            return undefined;
+        }
+        const { description } = caption;
+        return locators.body.locateLine(description, occurrencesBefore(original, paragraph, description));
+    };
 
     return checks.flatMap((check) => {
         const label = labelOf(check);
@@ -74,8 +85,7 @@ const annotationsPerCheck = (
             return [{ label, target }];
         }
         if (check.kind === 'image') {
-            const caption = check.expect.caption?.text;
-            return [{ label, target: caption ? locators.body.locateLine(caption) : undefined }];
+            return check.anchors.map((anchor) => ({ label, target: locateCaption(anchor) }));
         }
         if (!('anchors' in check)) {
             return [{ label }];
