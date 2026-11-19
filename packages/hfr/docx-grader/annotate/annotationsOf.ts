@@ -58,8 +58,13 @@ const annotationsPerCheck = (
         if (!paragraph) {
             return undefined;
         }
-        const text = anchor.segment ?? anchor.text;
-        return locators.body.locate(text, occurrencesBefore(original, paragraph, text));
+        if (anchor.segment) {
+            return locators.body.locate(
+                anchor.segment,
+                occurrencesBefore(original, paragraph, anchor.segment)
+            );
+        }
+        return locators.body.locateLine(anchor.text, occurrencesBefore(original, paragraph, anchor.text));
     };
 
     return checks.flatMap((check) => {
@@ -70,7 +75,7 @@ const annotationsPerCheck = (
         }
         if (check.kind === 'image') {
             const caption = check.expect.caption?.text;
-            return [{ label, target: caption ? locators.body.locate(caption) : undefined }];
+            return [{ label, target: caption ? locators.body.locateLine(caption) : undefined }];
         }
         if (!('anchors' in check)) {
             return [{ label }];

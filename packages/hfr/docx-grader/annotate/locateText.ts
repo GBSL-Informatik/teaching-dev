@@ -7,12 +7,15 @@ export interface TextBox {
     y: number;
     width: number;
     height: number;
+    /** Right edge of all text on the same line of the page, including other columns. */
+    lineRight: number;
 }
 
 interface LocatedChar {
     page: number;
     x: number;
     y: number;
+    width: number;
     height: number;
 }
 
@@ -44,15 +47,15 @@ export const createTextLocator = (
                     page: page.index,
                     x: text.x + index * charWidth,
                     y: text.y,
+                    width: charWidth,
                     height: text.height
                 });
             });
         }
     }
 
-    /** The `occurrence`-th place of the text (counted from 0), or undefined when it is not in the PDF. */
-    const locate = (text: string, occurrence = 0): TextBox | undefined => {
-        const key = compactText(text);
+    /** The `occurrence`-th match of the text (counted from 0) as index into `chars`. */
+    const indexOf = (key: string, occurrence: number): number | undefined => {
         if (!key) {
             return undefined;
         }
@@ -63,24 +66,51 @@ export const createTextLocator = (
                 return undefined;
             }
         }
-        return firstLineBox(chars.slice(start, start + key.length));
+        return start;
     };
 
-    return { locate };
+    const boxOf = (line: LocatedChar[]): TextBox => {
+        const first = line[0];
+        const right = (char: LocatedChar) => char.x + char.width;
+        const wholeLine = chars.filter((char) => isOnLineOf(first, char));
+        return {
+            page: first.page,
+            x: first.x,
+            y: first.y,
+            width: Math.max(...line.map(right)) - first.x,
+            height: first.height,
+            lineRight: Math.max(...wholeLine.map(right))
+        };
+    };
+
+    /** The first line of the `occurrence`-th place of the text, or undefined when it is not in the PDF. */
+    const locate = (text: string, occurrence = 0): TextBox | undefined => {
+        const key = compactText(text);
+        const start = indexOf(key, occurrence);
+        if (start === undefined) {
+            return undefined;
+        }
+        return boxOf(firstLine(chars.slice(start, start + key.length)));
+    };
+
+    /** Like `locate`, up to the end of the line in its column: the first line of a paragraph starting with the text. */
+    const locateLine = (text: string, occurrence = 0): TextBox | undefined => {
+        const start = indexOf(compactText(text), occurrence);
+        if (start === undefined) {
+            return undefined;
+        }
+        return boxOf(firstLine(chars.slice(start)));
+    };
+
+    return { locate, locateLine };
 };
 
-const firstLineBox = (matched: LocatedChar[]): TextBox => {
-    const first = matched[0];
-    const sameLine = matched.filter(
-        (char) => char.page === first.page && Math.abs(char.y - first.y) < first.height / 2
-    );
-    const lastX = Math.max(...sameLine.map((char) => char.x));
-    const charWidth = first.height * 0.5;
-    return {
-        page: first.page,
-        x: first.x,
-        y: first.y,
-        width: lastX - first.x + charWidth,
-        height: first.height
-    };
+const isOnLineOf = (first: LocatedChar, char: LocatedChar) => {
+    return char.page === first.page && Math.abs(char.y - first.y) < first.height / 2;
+};
+
+/** The characters up to the first line break; pdf.js lists the lines of a column one after another. */
+const firstLine = (chars: LocatedChar[]): LocatedChar[] => {
+    const end = chars.findIndex((char) => !isOnLineOf(chars[0], char));
+    return end < 0 ? chars : chars.slice(0, end);
 };

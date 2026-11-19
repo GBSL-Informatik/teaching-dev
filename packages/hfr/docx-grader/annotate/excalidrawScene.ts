@@ -1,6 +1,6 @@
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
-import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText } from './layoutPage';
+import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText, Point } from './layoutPage';
 
 /** Excalidraw's blue and orange from its color picker. */
 export const LABEL_COLOR = '#1971c2';
@@ -43,23 +43,30 @@ export const excalidrawScene = (layout: PageLayout, page: EncodedImage) => {
 
 const labelElements = (label: PlacedLabel, index: number) => {
     const text = textElement(`docx-grader-label-${index}`, label, LABEL_COLOR);
-    if (!label.arrow) {
-        return [text];
+    const arrow = arrowElement(`docx-grader-arrow-${index}`, label.arrow);
+    if (!label.marker) {
+        return [text, arrow];
     }
-    const { from, to } = label.arrow;
-    const width = Math.abs(to[0] - from[0]);
-    const height = Math.abs(to[1] - from[1]);
-    const arrow = {
-        ...baseElement(`docx-grader-arrow-${index}`, 'arrow', from[0], from[1], width, height, LABEL_COLOR),
-        points: [
-            [0, 0],
-            [to[0] - from[0], to[1] - from[1]]
-        ],
+    const { x, y, width, height } = label.marker;
+    const marker = baseElement(`docx-grader-marker-${index}`, 'rectangle', x, y, width, height, LABEL_COLOR);
+    return [text, arrow, marker];
+};
+
+/** Excalidraw stores the points of an arrow relative to its position, the first point. */
+const arrowElement = (id: string, points: Point[]) => {
+    const [[x, y]] = points;
+    const relative = points.map(([pointX, pointY]) => [pointX - x, pointY - y]);
+    const xs = relative.map(([pointX]) => pointX);
+    const ys = relative.map(([, pointY]) => pointY);
+    const width = Math.max(...xs) - Math.min(...xs);
+    const height = Math.max(...ys) - Math.min(...ys);
+    return {
+        ...baseElement(id, 'arrow', x, y, width, height, LABEL_COLOR),
+        points: relative,
         startArrowhead: null,
         endArrowhead: 'triangle_outline',
         elbowed: false
     };
-    return [text, arrow];
 };
 
 const textElement = (id: string, placed: PlacedText, color: string) => {

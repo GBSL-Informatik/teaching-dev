@@ -41,6 +41,21 @@ describe('locateText', () => {
         expect(locator.locate('programmers furiously', 1)).toMatchObject({ page: 0, y: 300 });
         expect(locator.locate('programmers furiously', 2)).toBeUndefined();
     });
+
+    it('locates the first line of a paragraph up to its end in the column, and the end of the whole line', () => {
+        const columnText = (str: string, x: number, y: number) => ({ ...line(str, y), x });
+        const locator = createTextLocator([
+            pageOf([
+                columnText('Television', 70, 100),
+                columnText('shows', 125, 100),
+                columnText('and films', 70, 112),
+                columnText('Programming', 300, 100)
+            ])
+        ]);
+
+        expect(locator.locateLine('Television')).toMatchObject({ x: 70, width: 80, lineRight: 355 });
+        expect(locator.locate('Television')).toMatchObject({ x: 70, width: 50, lineRight: 355 });
+    });
 });
 
 describe('annotationsOf', () => {
@@ -77,7 +92,7 @@ describe('annotationsOf', () => {
 describe('excalidrawScene', () => {
     it('uses the page as the background image of the markup editor and adds editable labels', () => {
         const layout = layoutPage(pageOf([]), [
-            { label: 'Titel', target: { page: 0, x: 70, y: 100, width: 50, height: 11 } },
+            { label: 'Titel', target: { page: 0, x: 70, y: 100, width: 50, height: 11, lineRight: 120 } },
             { label: 'Automatische Silbentrennung' }
         ]);
         const page = { data: Buffer.from('webp'), mimeType: 'image/webp', extension: '.webp' };
@@ -106,14 +121,29 @@ describe('excalidrawScene', () => {
 
 describe('layoutPage', () => {
     it('stacks labels without overlap, even for targets on the same line', () => {
-        const target = { page: 0, x: 70, y: 100, width: 50, height: 11 };
+        const target = { page: 0, x: 70, y: 100, width: 50, height: 11, lineRight: 120 };
         const { labels } = layoutPage(pageOf([]), [
             { label: 'Ausrichtung: Blocksatz', target },
             { label: 'Schriftart: Consolas', target: { ...target, x: 200 } }
         ]);
 
         expect(labels[1].y).toBeGreaterThanOrEqual(labels[0].y + labels[0].height);
-        expect(labels.every((label) => label.arrow)).toBe(true);
+    });
+
+    it('routes arrows through the right margin and frames text that does not end its line', () => {
+        const justified = line('A justified line that reaches the right margin', 300);
+        const page = pageOf([justified]);
+        const scale = 800 / 595;
+        const segment = { page: 0, x: 100, y: 100, width: 50, height: 11, lineRight: 200 };
+
+        const [label] = layoutPage(page, [{ label: 'Fett: ja', target: segment }]).labels;
+
+        const marginX = (justified.x + justified.width) * scale + 6;
+        expect(label.arrow.slice(1)).toEqual([
+            [marginX, (100 + 11 * 0.2 + 5.5) * scale],
+            [200 * scale + 6, (100 + 11 * 0.2 + 5.5) * scale]
+        ]);
+        expect(label.marker).toMatchObject({ x: 100 * scale - 2, width: 50 * scale + 4 });
     });
 
     it('lists annotations without a place at the top left of the page', () => {

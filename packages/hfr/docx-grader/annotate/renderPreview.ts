@@ -1,6 +1,6 @@
 import type { CanvasRenderingContext2D as NodeCanvasContext } from 'canvas';
 import { LABEL_COLOR, NOTES_COLOR } from './excalidrawScene';
-import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedText } from './layoutPage';
+import { Box, LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedText, Point } from './layoutPage';
 import { loadCanvas } from './optionalDependencies';
 
 const PADDING = 20;
@@ -30,8 +30,9 @@ export const renderPreview = async (layout: PageLayout, pagePng: Buffer, pixelRa
     context.textBaseline = 'top';
     for (const label of layout.labels) {
         drawText(context, label, LABEL_COLOR);
-        if (label.arrow) {
-            drawArrow(context, label.arrow.from, label.arrow.to);
+        drawArrow(context, label.arrow);
+        if (label.marker) {
+            drawMarker(context, label.marker);
         }
     }
     if (layout.notes) {
@@ -48,20 +49,28 @@ const drawText = (context: NodeCanvasContext, text: PlacedText, color: string) =
     });
 };
 
-/** A straight arrow with an outlined triangle as head, like Excalidraw's `triangle_outline`. */
-const drawArrow = (context: NodeCanvasContext, from: [number, number], to: [number, number]) => {
+const drawMarker = (context: NodeCanvasContext, { x, y, width, height }: Box) => {
+    context.strokeStyle = LABEL_COLOR;
+    context.strokeRect(x, y, width, height);
+};
+
+/** Straight segments with an outlined triangle as head, like Excalidraw's `triangle_outline`. */
+const drawArrow = (context: NodeCanvasContext, points: Point[]) => {
+    const from = points.at(-2)!;
+    const to = points.at(-1)!;
     const angle = Math.atan2(to[1] - from[1], to[0] - from[0]);
-    const corner = (side: number): [number, number] => [
+    const corner = (side: number): Point => [
         to[0] - ARROWHEAD_LENGTH * Math.cos(angle + side * 0.4),
         to[1] - ARROWHEAD_LENGTH * Math.sin(angle + side * 0.4)
     ];
-    const headBase: [number, number] = [
+    const headBase: Point = [
         to[0] - ARROWHEAD_LENGTH * Math.cos(angle) * Math.cos(0.4),
         to[1] - ARROWHEAD_LENGTH * Math.sin(angle) * Math.cos(0.4)
     ];
     context.strokeStyle = LABEL_COLOR;
     context.beginPath();
-    context.moveTo(...from);
+    context.moveTo(...points[0]);
+    points.slice(1, -1).forEach((point) => context.lineTo(...point));
     context.lineTo(...headBase);
     context.stroke();
     context.beginPath();

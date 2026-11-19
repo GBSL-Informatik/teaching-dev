@@ -1,5 +1,6 @@
 import { EXCALIDRAW_MAX_WIDTH } from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
 import { Annotation } from './annotationsOf';
+import { TextBox } from './locateText';
 import { PdfPage } from './readPdf';
 
 /** The page is as wide as images the markup editor creates; labels go to a column on its right. */
@@ -16,19 +17,31 @@ const LABEL_GAP = 10;
 // General notes go into the top margin of the page, which is empty in most documents.
 const NOTES_POSITION = { x: 16, y: 12 };
 const NOTES_MAX_LINE_LENGTH = 60;
+// Space between an arrowhead or marker and the text, in pixels.
+const ARROW_GAP = 6;
+const MARKER_PADDING = 2;
+// pdf.js boxes end at the baseline; descenders reach about a fifth of the font size below it.
+const DESCENT = 0.2;
 
-export interface PlacedText {
-    lines: string[];
-    fontSize: number;
+export interface Box {
     x: number;
     y: number;
     width: number;
     height: number;
 }
 
+export interface PlacedText extends Box {
+    lines: string[];
+    fontSize: number;
+}
+
+export type Point = [number, number];
+
 export interface PlacedLabel extends PlacedText {
-    /** From the label to the text it describes. */
-    arrow?: { from: [number, number]; to: [number, number] };
+    /** From the label through the right margin to the end of the line it describes, so it crosses no text. */
+    arrow: Point[];
+    /** Frames the described text when it does not end the line the arrow points to. */
+    marker?: Box;
 }
 
 export interface PageLayout {
@@ -44,6 +57,7 @@ export interface PageLayout {
  */
 export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout => {
     const scale = PAGE_WIDTH / page.widthPt;
+    const textRight = Math.max(0, ...page.texts.map((text) => text.x + text.width)) * scale;
     const targeted = annotations
         .filter((annotation) => annotation.target)
         .sort((a, b) => a.target!.y - b.target!.y);
@@ -51,16 +65,19 @@ export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout
 
     let nextFreeY = 0;
     const labels = targeted.map(({ label, target }) => {
-        const targetY = (target!.y + target!.height / 2) * scale;
+        const glyphs = glyphBox(target!, scale);
+        const targetY = glyphs.y + glyphs.height / 2;
         const text = placeText(wrap(label, MAX_LINE_LENGTH), LABEL_COLUMN_X, 0, LABEL_FONT_SIZE);
         const firstLineCenter = (LABEL_FONT_SIZE * LINE_HEIGHT) / 2;
         const y = Math.max(targetY - firstLineCenter, nextFreeY);
         nextFreeY = y + text.height + LABEL_GAP;
-        const targetEnd: [number, number] = [(target!.x + target!.width) * scale + 6, targetY];
+        const lineEnd: Point = [target!.lineRight * scale + ARROW_GAP, targetY];
+        const arrow = arrowPoints([LABEL_COLUMN_X - 8, y + firstLineCenter], lineEnd, textRight + ARROW_GAP);
         return {
             ...text,
             y,
-            arrow: { from: [LABEL_COLUMN_X - 8, y + firstLineCenter], to: targetEnd }
+            arrow,
+            ...(endsLine(target!) ? {} : { marker: padded(glyphs) })
         } satisfies PlacedLabel;
     });
 
@@ -71,6 +88,33 @@ export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout
             : undefined;
     return { height: page.heightPt * scale, labels, ...(notes ? { notes } : {}) };
 };
+
+/** Bends at the right margin when the line ends left of it, e.g. in a column or a short line. */
+const arrowPoints = (from: Point, lineEnd: Point, marginX: number): Point[] => {
+    if (marginX <= lineEnd[0]) {
+        return [from, lineEnd];
+    }
+    return [from, [marginX, lineEnd[1]], lineEnd];
+};
+
+const endsLine = (target: TextBox) => {
+    const tolerance = target.height / 2;
+    return target.x + target.width >= target.lineRight - tolerance;
+};
+
+const glyphBox = (target: TextBox, scale: number): Box => ({
+    x: target.x * scale,
+    y: (target.y + target.height * DESCENT) * scale,
+    width: target.width * scale,
+    height: target.height * scale
+});
+
+const padded = (box: Box): Box => ({
+    x: box.x - MARKER_PADDING,
+    y: box.y - MARKER_PADDING,
+    width: box.width + 2 * MARKER_PADDING,
+    height: box.height + 2 * MARKER_PADDING
+});
 
 const placeText = (lines: string[], x: number, y: number, fontSize: number): PlacedText => ({
     lines,
