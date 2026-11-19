@@ -7,7 +7,6 @@ import type {
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
-import { EncodedImage } from './encodeImage';
 import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText, Point } from './layoutPage';
 
 /** Excalidraw's blue and orange from its color picker. */
@@ -18,18 +17,19 @@ const NORMAL_FONT_FAMILY = 6;
 
 /**
  * A scene the markup editor of `@tdev/excalidoc` opens: the page as its background image, and the
- * labels, arrows and notes as ordinary elements, which stay editable.
+ * labels, arrows and notes as ordinary elements, which stay editable. Saving it exports a WebP.
  */
-export const excalidrawScene = (layout: PageLayout, page: EncodedImage): ExcalidrawInitialDataState => {
+export const excalidrawScene = (layout: PageLayout, pagePng: Buffer): ExcalidrawInitialDataState => {
     const scene = backgroundImageScene({
-        dataURL: `data:${page.mimeType};base64,${page.data.toString('base64')}`,
-        mimeType: page.mimeType,
+        dataURL: `data:image/png;base64,${pagePng.toString('base64')}`,
+        mimeType: 'image/png',
         width: PAGE_WIDTH,
         height: layout.height,
         customData: {
-            exportFormatMimeType: page.mimeType,
+            exportFormatMimeType: 'image/webp',
             scale: getScale(PAGE_WIDTH, layout.height),
-            initExtension: page.extension
+            // The format of the original page, which the editor can restore.
+            initExtension: '.png'
         }
     });
     return {

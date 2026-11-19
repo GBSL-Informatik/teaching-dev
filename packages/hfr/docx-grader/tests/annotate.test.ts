@@ -163,9 +163,9 @@ describe('excalidrawScene', () => {
             { label: 'Titel', target: { page: 0, x: 70, y: 100, width: 50, height: 11, lineRight: 120 } },
             { label: 'Automatische Silbentrennung' }
         ]);
-        const page = { data: Buffer.from('webp'), mimeType: 'image/webp', extension: '.webp' };
+        const pagePng = Buffer.from('png');
 
-        const { elements, files } = excalidrawScene(layout, page);
+        const { elements, files } = excalidrawScene(layout, pagePng);
 
         expect(elements!.map((element) => element.id)).toEqual([
             EXCALIDRAW_BACKGROUND_IMAGE_ID,
@@ -178,9 +178,9 @@ describe('excalidrawScene', () => {
         expect(background).toMatchObject({
             width: 800,
             height: (842 * 800) / 595,
-            customData: { exportFormatMimeType: 'image/webp', initExtension: '.webp' }
+            customData: { exportFormatMimeType: 'image/webp', initExtension: '.png' }
         });
-        expect(files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/webp;base64,d2VicA==');
+        expect(files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/png;base64,cG5n');
         expect(label).toMatchObject({ fontFamily: 6, strokeColor: LABEL_COLOR });
         expect(arrow).toMatchObject({ roughness: 0, endArrowhead: 'triangle_outline' });
         expect(notes).toMatchObject({ text: '• Automatische Silbentrennung', strokeColor: NOTES_COLOR });
