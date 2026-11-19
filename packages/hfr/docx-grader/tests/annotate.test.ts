@@ -178,7 +178,12 @@ describe('excalidrawScene', () => {
         expect(background).toMatchObject({
             width: 800,
             height: (842 * 800) / 595,
-            customData: { exportFormatMimeType: 'image/webp', initExtension: '.png' }
+            customData: {
+                exportFormatMimeType: 'image/webp',
+                initExtension: '.png',
+                scale: 4,
+                exportPadding: 4
+            }
         });
         expect(files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/png;base64,cG5n');
         expect(label).toMatchObject({ fontFamily: 6, strokeColor: LABEL_COLOR });

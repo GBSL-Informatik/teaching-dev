@@ -6,7 +6,6 @@ import type {
 } from '@excalidraw/excalidraw/element/types';
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
-import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
 import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText, Point } from './layoutPage';
 
 /** Excalidraw's blue and orange from its color picker. */
@@ -14,6 +13,9 @@ export const LABEL_COLOR = '#1971c2';
 export const NOTES_COLOR = '#f08c00';
 // Excalidraw's «Normal» font family.
 const NORMAL_FONT_FAMILY = 6;
+// Export settings of the markup editor: four times the scene size, with a small margin.
+const EXPORT_SCALE = 4;
+const EXPORT_PADDING = 4;
 
 /**
  * A scene the markup editor of `@tdev/excalidoc` opens: the page as its background image, and the
@@ -27,7 +29,8 @@ export const excalidrawScene = (layout: PageLayout, pagePng: Buffer): Excalidraw
         height: layout.height,
         customData: {
             exportFormatMimeType: 'image/webp',
-            scale: getScale(PAGE_WIDTH, layout.height),
+            scale: EXPORT_SCALE,
+            exportPadding: EXPORT_PADDING,
             // The format of the original page, which the editor can restore.
             initExtension: '.png'
         }

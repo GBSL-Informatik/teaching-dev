@@ -24,6 +24,7 @@ export interface CustomData {
     exportFormatMimeType: 'image/webp' | string;
     scale: number;
     initExtension: '.png' | '.jpg' | '.jpeg' | '.webp' | string;
+    exportPadding?: number;
 }
 
 export const EXCALIDRAW_IMAGE_RECTANGLE = {

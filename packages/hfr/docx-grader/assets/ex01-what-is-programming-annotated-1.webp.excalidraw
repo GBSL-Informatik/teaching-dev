@@ -20,7 +20,8 @@
       "locked": true,
       "customData": {
         "exportFormatMimeType": "image/webp",
-        "scale": 1.5,
+        "scale": 4,
+        "exportPadding": 4,
         "initExtension": ".png"
       }
     },
