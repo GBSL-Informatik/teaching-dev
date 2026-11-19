@@ -62,9 +62,40 @@ Das unformatierte Dokument enthält nur noch:
 - den Text jedes Absatzes, mit Zeilenumbrüchen, in der Formatvorlage «Standard» eines leeren Dokuments; Tabulatoren werden durch Leerzeichen ersetzt,
 - alle Bilder, mit Text in Zeile und 5 cm breit,
 - Tabellen ohne Formatvorlage, Rahmen und Breiten,
-- von Bildunterschriften nur die Beschreibung, ohne «Abbildung 1:».
+- von Bildunterschriften nur die Beschreibung, ohne "Abbildung 1:".
 
 Verzeichnisse, Kopf- und Fusszeilen, Abschnitte, Nummerierungen, leere Absätze und Kommentare entfallen.
+
+## Annotierte Bilder (Prototyp)
+
+Für die Schüler:innen lässt sich pro Seite des Originals ein Bild erzeugen, auf dem die überprüften Formatierungen beschriftet sind:
+
+<Steps>
+
+1. Erstelle zuerst die Spezifikation (siehe oben).
+2. Exportiere das Original in Word als PDF (__Datei › Speichern unter › PDF__), z.B. als __docs/word/original.pdf__.
+3. Erzeuge die beschrifteten Seiten:
+
+   ```bash
+   yarn workspace @hfr/docx-grader annotate docs/word/original.docx --pdf docs/word/original.pdf
+   ```
+
+4. Binde die Bilder ein, z.B. `![](./original-annotated-1.webp)`. Bis zum ersten Speichern zeigen sie einen Platzhalter.
+5. Öffne jedes Bild im [Bild-Editor](/docs/gallery/tools/image-markup), prüfe die Beschriftungen, passe sie bei Bedarf an und speichere: Erst dann wird das Bild exportiert.
+
+</Steps>
+
+Für das Beispiel oben entsteht aus dem [Original](./assets/ex01-what-is-programming.docx) und seinem [PDF-Export](./assets/ex01-what-is-programming.pdf):
+
+```bash
+yarn workspace @hfr/docx-grader annotate packages/hfr/docx-grader/assets/ex01-what-is-programming.docx --pdf packages/hfr/docx-grader/assets/ex01-what-is-programming.pdf
+```
+
+![Automatisch beschriftete Seite des Beispiels; die Beschriftungen lassen sich im Bild-Editor anpassen](./assets/ex01-what-is-programming-annotated-1.webp)
+
+Pro Seite entsteht __original-annotated-1.webp.excalidraw__: Die Seite ist darin das Hintergrundbild (`TDEV-BACKGROUND--FILE`, als PNG), die Beschriftungen und Pfeile sind gewöhnliche Excalidraw-Elemente. Im Bild-Editor lassen sie sich verschieben, ändern oder löschen. Daneben legt das CLI __original-annotated-1.webp__ als Platzhalter ab; beim Speichern im Bild-Editor ersetzt ihn der Export als WebP. Das CLI braucht das Paket `canvas`, das als optionale Abhängigkeit installiert wird.
+
+Die Beschriftungen stehen rechts neben der Seite, mit einem Pfeil zur ersten Stelle pro Seite, an der ein Check gilt. Mehrere Checks für dieselbe Stelle teilen sich eine Beschriftung. Damit kein Pfeil Text durchstreicht, führt er über den rechten Rand zum Ende der Zeile; endet die Stelle nicht dort, z.B. bei einem Zeichenformat oder in einer Spalte, ist sie zusätzlich umrahmt. Was im PDF keine Stelle hat (z.B. Bilder ohne Beschriftung, Verzeichnisse oder die Silbentrennung), steht als orange Liste über der ersten Seite. Text in Kopf- und Fusszeilen wird dabei nur für die Checks der Kopf- und Fusszeilen gesucht. Word markiert Kopf- und Fusszeilen im PDF mit Tags (Option «Dokumentstrukturtags für Barrierefreiheit», standardmässig aktiv); fehlen sie, gelten die Seitenränder des ersten Abschnitts.
 
 ## Was überprüft wird
 
@@ -72,7 +103,7 @@ Verzeichnisse, Kopf- und Fusszeilen, Abschnitte, Nummerierungen, leere Absätze 
 
 Absatz- und Zeichenformate müssen so entstehen wie im Original: Kommt z.B. der Blocksatz im Original aus der Formatvorlage «Standard», muss er auch bei den Schüler:innen aus der Formatvorlage kommen (`source: style`); direkt formatierter Blocksatz wird dann als Fehler gemeldet. Was im Original direkt formatiert ist, darf auf beide Arten entstehen. Mit `defaultSource: style` verlangt die Spezifikation für alle Formate Formatvorlagen; einzelne Checks lassen sich mit `source: any` davon ausnehmen.
 
-Automatisch erzeugte Inhalte müssen automatisch erzeugt sein: Nummerierungen von Überschriften und Listen, Seitenzahlen, Beschriftungen und Verzeichnisse. Eine von Hand eingetippte Nummer wie «1.1 » wird erkannt und gemeldet.
+Automatisch erzeugte Inhalte müssen automatisch erzeugt sein: Nummerierungen von Überschriften und Listen, Seitenzahlen, Beschriftungen und Verzeichnisse. Eine von Hand eingetippte Nummer wie "1.1 " wird erkannt und gemeldet.
 
 Formatvorlagen
 : Welche Formatvorlage ein Absatz verwendet.
@@ -89,7 +120,7 @@ Abschnitte und Seitenlayout
 Kopf- und Fusszeilen
 : Text, Seitenzahl und Ausrichtung.
 Bilder und Beschriftungen
-: Breite (±0.3 cm), Layout und Textumbruch. Die Beschriftung muss direkt vor oder nach dem Bild stehen oder mit ihm gruppiert sein; die genaue Position spielt keine Rolle.
+: Breite (wie im Feld «Breite» eingegeben, nicht von Hand gezogen), Layout und Textumbruch. Die Beschriftung muss direkt vor oder nach dem Bild stehen oder mit ihm gruppiert sein; die genaue Position spielt keine Rolle.
 Verzeichnisse
 : Inhalts-, Abbildungs- und Literaturverzeichnis.
 Dokument

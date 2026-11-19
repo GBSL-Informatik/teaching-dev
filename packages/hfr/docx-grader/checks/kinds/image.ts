@@ -2,11 +2,9 @@ import { Caption, Image } from '../../docx/DocModel';
 import { quote } from '../anchors';
 import { CheckBase, CheckKind } from '../Check';
 import { Normalizer } from '../normalizeText';
-import { lookup } from '../properties';
+import { isSameValue, lookup } from '../properties';
 
 const CAPTION_LENGTH = 60;
-// Images are resized by dragging, so their size is never exact.
-const WIDTH_TOLERANCE_CM = 0.3;
 
 /** Images are anchored by their position, as the raw document contains them in the same order. */
 export interface ImageAnchor {
@@ -81,7 +79,7 @@ const captionExpectation = (caption: Caption, normalize: Normalizer) => {
 
 const layoutMismatches = (expect: ImageCheck['expect'], actual: Image): string[] => {
     const failures: string[] = [];
-    if (Math.abs(actual.widthCm - expect.widthCm) > WIDTH_TOLERANCE_CM) {
+    if (!isSameValue(actual.widthCm, expect.widthCm)) {
         failures.push(`Breite: ${actual.widthCm} cm statt ${expect.widthCm} cm`);
     }
     if (actual.placement !== expect.placement) {
@@ -112,8 +110,8 @@ const captionMismatches = (
     }
     if (expect.label && !actual.label) {
         failures.push('Beschriftung wurde nicht mit «Beschriftung einfügen» erstellt');
-    } else if (expect.label && actual.label !== expect.label) {
-        failures.push(`Bezeichnung «${actual.label}» statt «${expect.label}»`);
+    } else if (expect.label && actual.label && actual.label !== expect.label) {
+        failures.push(`Bezeichnung ${quote(actual.label)} statt ${quote(expect.label)}`);
     }
     return failures;
 };

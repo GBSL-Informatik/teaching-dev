@@ -191,7 +191,7 @@ class DocModelBuilder {
                 text: resolved.numbering.text
             },
             fields: state.fields,
-            caption: captionOf(text, resolved.style?.name, state.sequence),
+            caption: captionOf(text, resolved.style?.name, state.sequence, this.paragraphs.length),
             generatedBy: state.generatedBy ?? this.buildingBlock,
             container,
             sectionIndex: this.sectionProperties.length
@@ -406,13 +406,15 @@ const unwrappedChildren = (element: XmlElement, tag: string): XmlElement[] => {
 const captionOf = (
     text: string,
     styleName: string | undefined,
-    sequence: ParagraphState['sequence']
+    sequence: ParagraphState['sequence'],
+    paragraphIndex: number
 ): Caption | undefined => {
     if (sequence) {
-        return { label: sequence.label, description: stripCaptionSeparator(text.slice(sequence.textEnd)) };
+        const description = stripCaptionSeparator(text.slice(sequence.textEnd));
+        return { label: sequence.label, description, paragraphIndex };
     }
     if (styleName === 'caption' && text.trim()) {
-        return { description: stripCaptionSeparator(text.replace(TYPED_CAPTION_LABEL, '')) };
+        return { description: stripCaptionSeparator(text.replace(TYPED_CAPTION_LABEL, '')), paragraphIndex };
     }
     return undefined;
 };

@@ -34,7 +34,7 @@ describe('format source', () => {
         expect(spec.checks[0]).toMatchObject({ source: 'style' });
         expect(failuresOf(spec, await docModelOf(paragraph('Hallo'), normalStyle(JUSTIFIED)))).toEqual([]);
         expect(failuresOf(spec, await docModelOf(justifiedParagraph('Hallo')))).toEqual([
-            '«Hallo»: Ausrichtung: Blocksatz ist direkt formatiert statt über die Formatvorlage «Standard»'
+            '"Hallo": Ausrichtung: Blocksatz ist direkt formatiert statt über die Formatvorlage «Standard»'
         ]);
     });
 
@@ -68,7 +68,7 @@ describe('format source of characters and lists', () => {
             []
         );
         expect(failuresOf(spec, await docModelOf(body('<w:b/>'), STRONG_STYLE))).toEqual([
-            '«Access granted»: «granted»: Fett: ja ist direkt formatiert statt über eine Formatvorlage'
+            '"Access granted": "granted": Fett: ja ist direkt formatiert statt über eine Formatvorlage'
         ]);
     });
 
@@ -97,7 +97,7 @@ describe('typed numbering', () => {
     it('finds a heading whose number was typed by hand and reports it', async () => {
         const original = await loadFixture('21E_MachineLearning');
         const checks = extractChecks(original, DEFAULT_EQUIVALENT_CHARACTERS).filter(
-            (check) => check.kind === 'numbering' && check.title.includes('«1»')
+            (check) => check.kind === 'numbering' && check.title.includes('"1"')
         );
 
         const results = gradeDocument(
@@ -106,7 +106,7 @@ describe('typed numbering', () => {
         );
 
         expect(results[0].failures).toContain(
-            '«Begriffsklärung»: von Hand eingetippt, verwende die automatische Nummerierung 1, 2, 3 «1», Ebene 1'
+            '"Begriffsklärung": von Hand eingetippt, verwende die automatische Nummerierung 1, 2, 3 "1", Ebene 1'
         );
     });
 });
