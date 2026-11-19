@@ -78,12 +78,11 @@ const annotationsPerCheck = (
     };
     const locateCaption = (anchor: ImageAnchor) => {
         const caption = original.images[anchor.image]?.caption;
-        // The caption's paragraph and its images share the same `Caption` object.
-        const paragraph = caption && original.paragraphs.find((candidate) => candidate.caption === caption);
-        if (!paragraph) {
+        if (!caption) {
             return undefined;
         }
-        const { description } = caption;
+        const { description, paragraphIndex } = caption;
+        const paragraph = original.paragraphs[paragraphIndex];
         return locators.body.locateLine(description, occurrencesBefore(original, paragraph, description));
     };
 
