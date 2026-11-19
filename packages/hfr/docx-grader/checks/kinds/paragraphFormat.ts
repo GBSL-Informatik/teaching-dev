@@ -35,10 +35,9 @@ export const paragraphFormat: CheckKind<ParagraphFormatCheck> = {
         );
         return groups.map((group) => {
             const { style, expect, source } = group[0];
-            const viaStyle = source === 'style' ? ' (über die Formatvorlage)' : '';
             return {
                 kind: 'paragraphFormat',
-                title: `«${styleLabel(style)}»: ${describeProperties(expect, PARAGRAPH_PROPERTIES)}${viaStyle}`,
+                title: `«${styleLabel(style)}»: ${describeParagraphFormat(expect, source)}`,
                 anchors: group.map(({ anchor }) => anchor),
                 expect,
                 ...(source === 'style' ? { source } : {})
@@ -53,4 +52,10 @@ export const paragraphFormat: CheckKind<ParagraphFormatCheck> = {
             return sourceMismatches(check.expect, paragraph, source, PARAGRAPH_PROPERTIES, styleName);
         });
     }
+};
+
+/** The expected format, without the style it is for. */
+export const describeParagraphFormat = (expect: ParagraphFormatCheck['expect'], source?: FormatSource) => {
+    const viaStyle = source === 'style' ? ' (über die Formatvorlage)' : '';
+    return `${describeProperties(expect, PARAGRAPH_PROPERTIES)}${viaStyle}`;
 };

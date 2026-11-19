@@ -1,8 +1,11 @@
 import { createAnchoring } from '../checks/anchors';
 import { ParagraphAnchor } from '../checks/Check';
 import { Check } from '../checks/kinds';
+import { styleLabel } from '../checks/kinds/helpers';
 import { ImageAnchor } from '../checks/kinds/image';
-import { RunAnchor } from '../checks/kinds/runFormat';
+import { describeParagraphFormat } from '../checks/kinds/paragraphFormat';
+import { describeRunFormat, RunAnchor } from '../checks/kinds/runFormat';
+import { describeSection } from '../checks/kinds/section';
 import { Normalizer } from '../checks/normalizeText';
 import { DocModel, Paragraph } from '../docx/DocModel';
 import { compactText, createTextLocator, TextBox } from './locateText';
@@ -142,13 +145,20 @@ const firstPerPage = (targets: TextBox[]): TextBox[] => {
 };
 
 /**
- * Titles describe the expectation; anchors quoted in them are redundant next to an arrow, and so is
- * the style a paragraph format is for: the paragraph style annotation names it, e.g. «Überschrift 1».
+ * The check's title without what the arrow already shows: the anchored text, and the style a
+ * paragraph format is for, which the paragraph style's label names, e.g. «Überschrift 1».
  */
 const labelOf = (check: Check) => {
-    return check.title
-        .replace(/^Abschnitt ab "[^"]*": /, 'Abschnitt: ')
-        .replace(/^«[^»]*»: /, '')
-        .replace(/^Formatvorlage /, '')
-        .replace(/^Zeichenformat: /, '');
+    switch (check.kind) {
+        case 'paragraphStyle':
+            return `«${styleLabel(check.expect.style)}»`;
+        case 'paragraphFormat':
+            return describeParagraphFormat(check.expect, check.source);
+        case 'runFormat':
+            return describeRunFormat(check.expect, check.source);
+        case 'section':
+            return `Abschnitt: ${describeSection(check.expect)}`;
+        default:
+            return check.title;
+    }
 };
