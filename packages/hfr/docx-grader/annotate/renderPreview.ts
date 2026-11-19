@@ -12,15 +12,18 @@ const ARROWHEAD_LENGTH = 10;
  */
 export const renderPreview = async (layout: PageLayout, pagePng: Buffer, pixelRatio: number) => {
     const texts = [...layout.labels, ...(layout.notes ? [layout.notes] : [])];
+    const top = Math.min(0, ...texts.map((text) => text.y));
     const right = Math.max(PAGE_WIDTH, ...texts.map((text) => text.x + text.width)) + PADDING;
     const bottom = Math.max(layout.height, ...texts.map((text) => text.y + text.height)) + PADDING;
     const { createCanvas, loadImage } = await loadCanvas();
-    const canvas = createCanvas(right * pixelRatio, bottom * pixelRatio);
+    const canvas = createCanvas(right * pixelRatio, (bottom - top) * pixelRatio);
     const context = canvas.getContext('2d');
     context.scale(pixelRatio, pixelRatio);
+    // The notes above the page have negative coordinates.
+    context.translate(0, -top);
 
     context.fillStyle = 'white';
-    context.fillRect(0, 0, right, bottom);
+    context.fillRect(0, top, right, bottom - top);
     context.drawImage(await loadImage(pagePng), 0, 0, PAGE_WIDTH, layout.height);
     context.strokeStyle = '#1e1e1e';
     context.setLineDash([2, 3]);

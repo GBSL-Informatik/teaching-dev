@@ -214,7 +214,7 @@ describe('layoutPage', () => {
         expect(label.marker).toMatchObject({ x: 100 * scale - 2, width: 50 * scale + 4 });
     });
 
-    it('lists annotations without a place at the top left of the page', () => {
+    it('lists annotations without a place above the page', () => {
         const { labels, notes } = layoutPage(pageOf([]), [
             { label: 'Automatische Silbentrennung' },
             { label: 'Inhaltsverzeichnis (Ebenen 1-3)' }
@@ -222,9 +222,9 @@ describe('layoutPage', () => {
 
         expect(labels).toEqual([]);
         expect(notes).toMatchObject({
-            x: 16,
-            y: 12,
+            x: 0,
             lines: ['• Automatische Silbentrennung', '• Inhaltsverzeichnis (Ebenen 1-3)']
         });
+        expect(notes!.y + notes!.height).toBeLessThan(0);
     });
 });

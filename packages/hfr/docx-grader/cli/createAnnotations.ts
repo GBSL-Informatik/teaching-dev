@@ -56,7 +56,7 @@ const main = async () => {
 
     const unplaced = annotations.filter((annotation) => !annotation.target).length;
     for (const page of pdf.pages) {
-        // Annotations without a place in the PDF are listed at the top of the first page.
+        // Annotations without a place in the PDF are listed above the first page.
         const ofPage = annotations.filter(({ target }) => (target?.page ?? 0) === page.index);
         const layout = layoutPage(page, ofPage);
         const pagePng = await page.renderPng(PAGE_PIXEL_RATIO);
@@ -71,7 +71,7 @@ const main = async () => {
     }
     await pdf.close();
     if (unplaced > 0) {
-        console.warn(`⚠️ ${unplaced} Anmerkungen ohne Stelle im PDF stehen oben links auf Seite 1.`);
+        console.warn(`⚠️ ${unplaced} Anmerkungen ohne Stelle im PDF stehen über Seite 1.`);
     }
 };
 

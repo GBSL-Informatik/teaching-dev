@@ -14,8 +14,8 @@ const MAX_LINE_LENGTH = 34;
 // Excalidraw measures text itself when the scene is opened; this estimate only spaces the labels.
 const CHAR_WIDTH_PER_FONT_SIZE = 0.55;
 const LABEL_GAP = 10;
-// General notes go into the top margin of the page, which is empty in most documents.
-const NOTES_POSITION = { x: 16, y: 12 };
+// General notes go above the page, so they cover none of it.
+const NOTES_GAP = 16;
 const NOTES_MAX_LINE_LENGTH = 60;
 // Space between an arrowhead or marker and the text, in pixels.
 const ARROW_GAP = 6;
@@ -47,13 +47,13 @@ export interface PlacedLabel extends PlacedText {
 export interface PageLayout {
     height: number;
     labels: PlacedLabel[];
-    /** Annotations without a place on the page, as a list at its top left. */
+    /** Annotations without a place on the page, as a list above it: its `y` is negative. */
     notes?: PlacedText;
 }
 
 /**
  * Places a label per annotation with a target in the column right of the page, as close to its
- * target as the labels above allow, and lists the others at the top left of the page.
+ * target as the labels above allow, and lists the others above the page.
  */
 export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout => {
     const scale = PAGE_WIDTH / page.widthPt;
@@ -82,11 +82,11 @@ export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout
     });
 
     const noteLines = untargeted.flatMap(({ label }) => listItem(label, NOTES_MAX_LINE_LENGTH));
-    const notes =
-        noteLines.length > 0
-            ? placeText(noteLines, NOTES_POSITION.x, NOTES_POSITION.y, NOTES_FONT_SIZE)
-            : undefined;
-    return { height: page.heightPt * scale, labels, ...(notes ? { notes } : {}) };
+    if (noteLines.length === 0) {
+        return { height: page.heightPt * scale, labels };
+    }
+    const notes = placeText(noteLines, 0, 0, NOTES_FONT_SIZE);
+    return { height: page.heightPt * scale, labels, notes: { ...notes, y: -(notes.height + NOTES_GAP) } };
 };
 
 /** Bends at the right margin when the line ends left of it, e.g. in a column or a short line. */

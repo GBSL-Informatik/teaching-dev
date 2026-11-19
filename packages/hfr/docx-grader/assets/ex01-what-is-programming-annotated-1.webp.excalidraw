@@ -1107,8 +1107,8 @@
     {
       "id": "docx-grader-notes",
       "type": "text",
-      "x": 16,
-      "y": 12,
+      "x": 0,
+      "y": -66,
       "width": 319,
       "height": 50,
       "angle": 0,
