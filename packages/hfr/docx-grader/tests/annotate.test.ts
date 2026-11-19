@@ -10,6 +10,7 @@ import { layoutPage } from '../annotate/layoutPage';
 import { compactText, createTextLocator } from '../annotate/locateText';
 import { PdfPage, PdfText } from '../annotate/readPdf';
 import { extractChecks } from '../checks/extractChecks';
+import { Check } from '../checks/kinds';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
 import { docModelOf, paragraph, picture } from './createDocx';
 import { loadFixture } from './loadFixture';
@@ -88,6 +89,29 @@ describe('annotationsOf', () => {
 
         expect(annotation.target).toMatchObject({ y: 500 });
     });
+    it('looks for the text of a header in the header, not in the body', async () => {
+        const original = await loadFixture('21E_MachineLearning');
+        const normalize = createNormalizer(DEFAULT_EQUIVALENT_CHARACTERS);
+        const header: Check = {
+            id: 'header',
+            kind: 'headerFooter',
+            title: 'Kopfzeile: "Begriffsklärung", rechtsbündig',
+            anchors: [],
+            expect: {
+                kind: 'header',
+                variant: 'default',
+                text: 'Begriffsklärung',
+                pageNumber: false,
+                alignment: 'right'
+            }
+        };
+        const pages = [pageOf([line('Begriffsklärung', 100), line('Begriffsklärung', 30)])];
+
+        const [annotation] = annotationsOf([header], original, pages, normalize);
+
+        expect(annotation.target).toMatchObject({ y: 30 });
+    });
+
     it('points to the caption, not to the same text before it, e.g. in the list of figures', async () => {
         const captionStyle =
             '<w:style w:type="paragraph" w:styleId="Beschriftung"><w:name w:val="caption"/></w:style>';

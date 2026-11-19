@@ -28,7 +28,11 @@ export const annotationsOf = (
     pages: PdfPage[],
     normalize: Normalizer
 ): Annotation[] => {
-    const locators = { body: createTextLocator(pages, isInBody(original)), all: createTextLocator(pages) };
+    const isBody = isInBody(original);
+    const locators = {
+        body: createTextLocator(pages, isBody),
+        headerFooter: createTextLocator(pages, (text, page) => !isBody(text, page))
+    };
     return mergeByTarget(annotationsPerCheck(checks, original, locators, normalize));
 };
 
@@ -42,15 +46,17 @@ const isInBody = (original: DocModel) => (text: PdfText, page: PdfPage) => {
     if (!margins) {
         return true;
     }
-    const isInHeader = text.y + text.height <= margins.top * POINTS_PER_CM;
-    const isInFooter = text.y >= page.heightPt - margins.bottom * POINTS_PER_CM;
+    // Compares baselines, the bottom of pdf.js' boxes: a footer's box can reach across the margin.
+    const baseline = text.y + text.height;
+    const isInHeader = baseline <= margins.top * POINTS_PER_CM;
+    const isInFooter = baseline >= page.heightPt - margins.bottom * POINTS_PER_CM;
     return !isInHeader && !isInFooter;
 };
 
 const annotationsPerCheck = (
     checks: Check[],
     original: DocModel,
-    locators: { body: Locator; all: Locator },
+    locators: { body: Locator; headerFooter: Locator },
     normalize: Normalizer
 ): Annotation[] => {
     const { findParagraph } = createAnchoring(original, normalize);
@@ -81,7 +87,7 @@ const annotationsPerCheck = (
     return checks.flatMap((check) => {
         const label = labelOf(check);
         if (check.kind === 'headerFooter') {
-            const target = check.expect.text ? locators.all.locate(check.expect.text) : undefined;
+            const target = check.expect.text ? locators.headerFooter.locate(check.expect.text) : undefined;
             return [{ label, target }];
         }
         if (check.kind === 'image') {
