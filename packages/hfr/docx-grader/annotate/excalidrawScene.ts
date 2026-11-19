@@ -7,6 +7,7 @@ import type {
 import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { getScale } from '@tdev/excalidoc/ImageMarkupEditor/helpers/customProps';
+import { EncodedImage } from './encodeImage';
 import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText, Point } from './layoutPage';
 
 /** Excalidraw's blue and orange from its color picker. */
@@ -14,13 +15,6 @@ export const LABEL_COLOR = '#1971c2';
 export const NOTES_COLOR = '#f08c00';
 // Excalidraw's «Normal» font family.
 const NORMAL_FONT_FAMILY = 6;
-
-export interface EncodedImage {
-    data: Buffer;
-    mimeType: string;
-    /** e.g. `.webp` */
-    extension: string;
-}
 
 /**
  * A scene the markup editor of `@tdev/excalidoc` opens: the page as its background image, and the

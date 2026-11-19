@@ -1,8 +1,14 @@
 import { EXCALIDRAW_EXPORT_QUALITY } from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
-import { EncodedImage } from './excalidrawScene';
 import { loadSharp } from './optionalDependencies';
 
 export type ImageFormat = 'webp' | 'png';
+
+export interface EncodedImage {
+    data: Buffer;
+    mimeType: string;
+    /** e.g. `.webp` */
+    extension: string;
+}
 
 export const IMAGE_FORMATS: ImageFormat[] = ['webp', 'png'];
 
