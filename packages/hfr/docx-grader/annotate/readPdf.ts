@@ -9,6 +9,8 @@ export interface PdfText {
     y: number;
     width: number;
     height: number;
+    /** Word's tagged PDFs mark headers and footers as artifacts, i.e. not part of the content. */
+    isArtifact: boolean;
 }
 
 export interface PdfPage {
@@ -16,6 +18,8 @@ export interface PdfPage {
     widthPt: number;
     heightPt: number;
     texts: PdfText[];
+    /** Whether the page has marked content, which Word's PDF export adds unless its tags are turned off. */
+    isTagged: boolean;
     /** PNG of the page, `scale` pixels per point. */
     renderPng: (scale: number) => Promise<Buffer>;
 }
@@ -33,25 +37,13 @@ export const readPdf = async (data: Uint8Array): Promise<Pdf> => {
     for (let number = 1; number <= document.numPages; number++) {
         const page = await document.getPage(number);
         const viewport = page.getViewport({ scale: 1 });
-        const content = await page.getTextContent();
-        const texts = content.items
-            .filter(isTextItem)
-            .filter((item) => item.str.trim())
-            .map(({ str, transform, width, height }) => {
-                const textHeight = height || Math.abs(transform[3]);
-                return {
-                    str,
-                    x: transform[4],
-                    y: viewport.height - transform[5] - textHeight,
-                    width,
-                    height: textHeight
-                };
-            });
+        const content = await page.getTextContent({ includeMarkedContent: true });
         pages.push({
             index: number - 1,
             widthPt: viewport.width,
             heightPt: viewport.height,
-            texts,
+            texts: textsOf(content.items, viewport.height),
+            isTagged: content.items.some((item) => !isTextItem(item)),
             renderPng: async (scale) => {
                 const scaled = page.getViewport({ scale });
                 const { createCanvas } = await loadCanvas();
@@ -64,6 +56,38 @@ export const readPdf = async (data: Uint8Array): Promise<Pdf> => {
         });
     }
     return { pages, close: () => document.destroy() };
+};
+
+// pdf.js sets the tag of marked content, but does not declare it.
+type MarkedContent = TextMarkedContent & { tag?: string };
+
+const textsOf = (items: (TextItem | MarkedContent)[], pageHeight: number): PdfText[] => {
+    const texts: PdfText[] = [];
+    const openTags: string[] = [];
+    for (const item of items) {
+        if (!isTextItem(item)) {
+            if (item.type === 'endMarkedContent') {
+                openTags.pop();
+            } else {
+                openTags.push(item.tag ?? '');
+            }
+            continue;
+        }
+        if (!item.str.trim()) {
+            continue;
+        }
+        const { str, transform, width, height } = item;
+        const textHeight = height || Math.abs(transform[3]);
+        texts.push({
+            str,
+            x: transform[4],
+            y: pageHeight - transform[5] - textHeight,
+            width,
+            height: textHeight,
+            isArtifact: openTags.includes('Artifact')
+        });
+    }
+    return texts;
 };
 
 const isTextItem = (item: TextItem | TextMarkedContent): item is TextItem => 'str' in item;

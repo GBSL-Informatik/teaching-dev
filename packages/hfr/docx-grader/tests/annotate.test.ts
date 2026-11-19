@@ -15,13 +15,21 @@ import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/norma
 import { docModelOf, paragraph, picture } from './createDocx';
 import { loadFixture } from './loadFixture';
 
-const line = (str: string, y: number): PdfText => ({ str, x: 70, y, width: str.length * 5, height: 11 });
+const line = (str: string, y: number): PdfText => ({
+    str,
+    x: 70,
+    y,
+    width: str.length * 5,
+    height: 11,
+    isArtifact: false
+});
 
-const pageOf = (texts: PdfText[]): PdfPage => ({
+const pageOf = (texts: PdfText[], isTagged = false): PdfPage => ({
     index: 0,
     widthPt: 595,
     heightPt: 842,
     texts,
+    isTagged,
     renderPng: async () => Buffer.alloc(0)
 });
 
@@ -89,6 +97,22 @@ describe('annotationsOf', () => {
 
         expect(annotation.target).toMatchObject({ y: 500 });
     });
+    it("trusts Word's tags for headers and footers over the margins of the first section", async () => {
+        const original = await loadFixture('21E_MachineLearning');
+        const normalize = createNormalizer(DEFAULT_EQUIVALENT_CHARACTERS);
+        const checks = extractChecks(original, DEFAULT_EQUIVALENT_CHARACTERS).filter(
+            (check) => check.kind === 'paragraphStyle' && check.expect.style === 'heading 1'
+        );
+        const runningHead = { ...line('Begriffsklärung', 300), isArtifact: true };
+        // Below the bottom margin of the first section, as in a later section with a smaller margin.
+        const heading = line('Begriffsklärung', 810);
+        const pages = [pageOf([line('1 Begriffsklärung 1', 100), runningHead, heading], true)];
+
+        const [annotation] = annotationsOf(checks, original, pages, normalize);
+
+        expect(annotation.target).toMatchObject({ y: 810 });
+    });
+
     it('looks for the text of a header in the header, not in the body', async () => {
         const original = await loadFixture('21E_MachineLearning');
         const normalize = createNormalizer(DEFAULT_EQUIVALENT_CHARACTERS);

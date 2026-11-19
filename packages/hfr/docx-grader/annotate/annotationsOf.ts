@@ -38,10 +38,13 @@ export const annotationsOf = (
 
 /**
  * Headers and footers repeat on every page, e.g. a running head with the current heading: leaving
- * them out keeps occurrences in the PDF in step with those in the document. Uses the margins of the
- * first section.
+ * them out keeps occurrences in the PDF in step with those in the document. Without Word's tags, the
+ * margins of the first section tell them apart, although later sections may have other margins.
  */
 const isInBody = (original: DocModel) => (text: PdfText, page: PdfPage) => {
+    if (page.isTagged) {
+        return !text.isArtifact;
+    }
     const margins = original.sections[0]?.marginsCm;
     if (!margins) {
         return true;
