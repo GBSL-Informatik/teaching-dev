@@ -9,6 +9,14 @@ export interface DocxPackage {
     settings?: XmlElement;
     /** Header and footer parts, by the relationship id `w:headerReference`/`w:footerReference` point to. */
     headersAndFooters: Map<string, XmlElement>;
+    /** Relationships of the main document part, e.g. to images, by id. */
+    relationships: Map<string, Relationship>;
+}
+
+export interface Relationship {
+    type: string;
+    /** Path of the target part within the package, e.g. `word/media/image1.png`. */
+    path: string;
 }
 
 const HEADER_FOOTER_TYPE = /\/(header|footer)$/;
@@ -29,15 +37,15 @@ export const readDocx = async (data: ArrayBuffer | Uint8Array): Promise<DocxPack
         throw new Error(NOT_A_DOCX);
     }
 
-    const relationships = await readPart('word/_rels/document.xml.rels');
+    const relationships = parseRelationships(await readPart('word/_rels/document.xml.rels'));
     const headersAndFooters = new Map<string, XmlElement>();
-    for (const relationship of relationships ? childElements(relationships, 'Relationship') : []) {
-        if (!HEADER_FOOTER_TYPE.test(attr(relationship, 'Type') ?? '')) {
+    for (const [id, relationship] of relationships) {
+        if (!HEADER_FOOTER_TYPE.test(relationship.type)) {
             continue;
         }
-        const part = await readPart(partPath(attr(relationship, 'Target')!));
+        const part = await readPart(relationship.path);
         if (part) {
-            headersAndFooters.set(attr(relationship, 'Id')!, part);
+            headersAndFooters.set(id, part);
         }
     }
 
@@ -48,8 +56,19 @@ export const readDocx = async (data: ArrayBuffer | Uint8Array): Promise<DocxPack
         numbering: await readPart('word/numbering.xml'),
         theme: await readPart('word/theme/theme1.xml'),
         settings: await readPart('word/settings.xml'),
-        headersAndFooters
+        headersAndFooters,
+        relationships
     };
+};
+
+const parseRelationships = (relationships: XmlElement | undefined): Map<string, Relationship> => {
+    const entries = (relationships ? childElements(relationships, 'Relationship') : [])
+        .filter((relationship) => attr(relationship, 'TargetMode') !== 'External')
+        .map((relationship): [string, Relationship] => [
+            attr(relationship, 'Id') ?? '',
+            { type: attr(relationship, 'Type') ?? '', path: partPath(attr(relationship, 'Target') ?? '') }
+        ]);
+    return new Map(entries);
 };
 
 /** Relationship targets are relative to `word/`, unless they are absolute within the package. */
