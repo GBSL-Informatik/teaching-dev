@@ -51,6 +51,7 @@ https://github.com/GBSL-Informatik/teaching-dev/pull/384
     await $`git checkout main`;
     await $`git merge ${branchName}`;
     await $`git branch -d ${branchName}`;
+    await $`git push`;
 };
 
 export default migrate;
