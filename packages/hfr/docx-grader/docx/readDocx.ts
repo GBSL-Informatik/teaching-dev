@@ -12,9 +12,12 @@ export interface DocxPackage {
 }
 
 const HEADER_FOOTER_TYPE = /\/(header|footer)$/;
+const NOT_A_DOCX = 'Die Datei ist kein Word-Dokument (.docx).';
 
 export const readDocx = async (data: ArrayBuffer | Uint8Array): Promise<DocxPackage> => {
-    const zip = await JSZip.loadAsync(data);
+    const zip = await JSZip.loadAsync(data).catch(() => {
+        throw new Error(NOT_A_DOCX);
+    });
     const readPart = async (path: string) => {
         const file = zip.file(path);
         return file ? parseXml(await file.async('string')) : undefined;
@@ -23,7 +26,7 @@ export const readDocx = async (data: ArrayBuffer | Uint8Array): Promise<DocxPack
     // Word always stores the main document part at this path.
     const document = await readPart('word/document.xml');
     if (!document) {
-        throw new Error('Die Datei ist kein Word-Dokument (word/document.xml fehlt).');
+        throw new Error(NOT_A_DOCX);
     }
 
     const relationships = await readPart('word/_rels/document.xml.rels');
