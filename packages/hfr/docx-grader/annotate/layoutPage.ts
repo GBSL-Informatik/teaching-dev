@@ -19,6 +19,9 @@ const NOTES_GAP = 16;
 const NOTES_MAX_LINE_LENGTH = 60;
 // Space between an arrowhead or marker and the text, in pixels.
 const ARROW_GAP = 6;
+// Excalidraw draws an arrowhead at most half as long as the last segment.
+const LAST_SEGMENT_MIN_LENGTH = 40;
+const SAME_LINE_TOLERANCE = 6;
 const MARKER_PADDING = 2;
 // pdf.js boxes end at the baseline; descenders reach about a fifth of the font size below it.
 const DESCENT = 0.2;
@@ -37,11 +40,25 @@ export interface PlacedText extends Box {
 
 export type Point = [number, number];
 
+export interface Marker extends Box {
+    /** The position among the framed texts on the same line, from left to right. */
+    indexOnLine: number;
+}
+
 export interface PlacedLabel extends PlacedText {
     /** From the label through the right margin to the end of the line it describes, so it crosses no text. */
     arrow: Point[];
     /** Frames the described text when it does not end the line the arrow points to. */
-    marker?: Box;
+    marker?: Marker;
+    isParagraph: boolean;
+}
+
+/** Where an annotation's arrow ends, right of the line its target is on. */
+interface Pointer {
+    label: string;
+    isParagraph: boolean;
+    end: Point;
+    marker?: Marker;
 }
 
 export interface PageLayout {
@@ -58,28 +75,22 @@ export interface PageLayout {
 export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout => {
     const scale = PAGE_WIDTH / page.widthPt;
     const textRight = Math.max(0, ...page.texts.map((text) => text.x + text.width)) * scale;
-    const targeted = annotations
+    const pointers = annotations
         .filter((annotation) => annotation.target)
-        .sort((a, b) => a.target!.y - b.target!.y);
+        .map((annotation) => pointerOf(annotation, scale));
     const untargeted = annotations.filter((annotation) => !annotation.target);
 
     let nextFreeY = 0;
-    const labels = targeted.map(({ label, target }) => {
-        const glyphs = glyphBox(target!, scale);
-        const targetY = glyphs.y + glyphs.height / 2;
-        const text = placeText(wrap(label, MAX_LINE_LENGTH), LABEL_COLUMN_X, 0, LABEL_FONT_SIZE);
-        const firstLineCenter = (LABEL_FONT_SIZE * LINE_HEIGHT) / 2;
-        const y = Math.max(targetY - firstLineCenter, nextFreeY);
-        nextFreeY = y + text.height + LABEL_GAP;
-        const lineEnd: Point = [target!.lineRight * scale + ARROW_GAP, targetY];
-        const arrow = arrowPoints([LABEL_COLUMN_X - 8, y + firstLineCenter], lineEnd, textRight + ARROW_GAP);
-        return {
-            ...text,
-            y,
-            arrow,
-            ...(endsLine(target!) ? {} : { marker: padded(glyphs) })
-        } satisfies PlacedLabel;
-    });
+    const labels = numberFramedPerLine(pointers)
+        .sort((a, b) => a.end[1] - b.end[1] || (a.marker?.x ?? 0) - (b.marker?.x ?? 0))
+        .map(({ label, isParagraph, end, marker }) => {
+            const text = placeText(wrap(label, MAX_LINE_LENGTH), LABEL_COLUMN_X, 0, LABEL_FONT_SIZE);
+            const firstLineCenter = (LABEL_FONT_SIZE * LINE_HEIGHT) / 2;
+            const y = Math.max(end[1] - firstLineCenter, nextFreeY);
+            nextFreeY = y + text.height + LABEL_GAP;
+            const arrow = arrowPoints([LABEL_COLUMN_X - 8, y + firstLineCenter], end, textRight + ARROW_GAP);
+            return { ...text, y, arrow, isParagraph, ...(marker ? { marker } : {}) } satisfies PlacedLabel;
+        });
 
     const noteLines = untargeted.flatMap(({ label }) => listItem(label, NOTES_MAX_LINE_LENGTH));
     if (noteLines.length === 0) {
@@ -89,12 +100,55 @@ export const layoutPage = (page: PdfPage, annotations: Annotation[]): PageLayout
     return { height: page.heightPt * scale, labels, notes: { ...notes, y: -(notes.height + NOTES_GAP) } };
 };
 
-/** Bends at the right margin when the line ends left of it, e.g. in a column or a short line. */
+const pointerOf = ({ label, target, isParagraph = false }: Annotation, scale: number): Pointer => {
+    const glyphs = glyphBox(target!, scale);
+    const end: Point = [target!.lineRight * scale + ARROW_GAP, glyphs.y + glyphs.height / 2];
+    if (endsLine(target!)) {
+        return { label, isParagraph, end };
+    }
+    return { label, isParagraph, end, marker: { ...padded(glyphs), indexOnLine: 0 } };
+};
+
+/** Numbers the framed texts on each line from left to right, so each can get its own color. */
+const numberFramedPerLine = (pointers: Pointer[]): Pointer[] => {
+    const framedByLine = groupByLine(pointers.filter((pointer) => pointer.marker));
+    framedByLine.forEach((line) => line.sort((a, b) => a.marker!.x - b.marker!.x));
+    const indexOnLine = new Map(
+        framedByLine.flatMap((line) => line.map((pointer, index) => [pointer, index]))
+    );
+    return pointers.map((pointer) => {
+        if (!pointer.marker) {
+            return pointer;
+        }
+        return { ...pointer, marker: { ...pointer.marker, indexOnLine: indexOnLine.get(pointer)! } };
+    });
+};
+
+const groupByLine = (pointers: Pointer[]): Pointer[][] => {
+    const lines: Pointer[][] = [];
+    for (const pointer of pointers) {
+        const line = lines.find(([first]) => isSameLine(first, pointer));
+        if (line) {
+            line.push(pointer);
+        } else {
+            lines.push([pointer]);
+        }
+    }
+    return lines;
+};
+
+// Text in another font on the same line has a slightly different box.
+const isSameLine = (a: Pointer, b: Pointer) => {
+    return Math.abs(a.end[0] - b.end[0]) < 1 && Math.abs(a.end[1] - b.end[1]) < SAME_LINE_TOLERANCE;
+};
+
+/** Ends horizontally, from the right margin or far enough right of the line for a full arrowhead. */
 const arrowPoints = (from: Point, lineEnd: Point, marginX: number): Point[] => {
-    if (marginX <= lineEnd[0]) {
+    const bendX = Math.max(marginX, lineEnd[0] + LAST_SEGMENT_MIN_LENGTH);
+    if (bendX >= from[0]) {
         return [from, lineEnd];
     }
-    return [from, [marginX, lineEnd[1]], lineEnd];
+    return [from, [bendX, lineEnd[1]], lineEnd];
 };
 
 const endsLine = (target: TextBox) => {

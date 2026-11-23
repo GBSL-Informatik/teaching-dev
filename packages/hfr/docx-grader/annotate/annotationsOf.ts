@@ -15,6 +15,8 @@ export interface Annotation {
     label: string;
     /** Where the label points to; annotations without one are listed on the first page. */
     target?: TextBox;
+    /** The annotation is about the whole paragraph the target is the first line of. */
+    isParagraph?: boolean;
 }
 
 type Locator = ReturnType<typeof createTextLocator>;
@@ -23,7 +25,7 @@ const POINTS_PER_CM = 72 / 2.54;
 
 /**
  * One annotation per check and page, pointing to the first place the check applies to there.
- * Annotations of the same place are merged, so each place gets one label and one arrow.
+ * Annotations of the same text are merged, so each framed value or line gets one label and one arrow.
  */
 export const annotationsOf = (
     checks: Check[],
@@ -101,8 +103,12 @@ const annotationsPerCheck = (
         if (!('anchors' in check)) {
             return [{ label }];
         }
-        const targets = check.anchors.map(locateAnchor).filter((target) => target !== undefined);
-        return firstPerPage(targets).map((target) => ({ label, target }));
+        const annotations = check.anchors.map((anchor) => ({
+            label,
+            target: locateAnchor(anchor),
+            isParagraph: !('segment' in anchor && anchor.segment)
+        }));
+        return firstPerPage(annotations.filter((annotation) => annotation.target));
     });
 };
 
@@ -121,8 +127,9 @@ const mergeByTarget = (annotations: Annotation[]): Annotation[] => {
     const merged = new Map<string, Annotation>();
     annotations.forEach((annotation, index) => {
         const { target } = annotation;
+        // Paragraph annotations are drawn differently, so they keep their own label.
         const key = target
-            ? `${target.page}:${Math.round(target.x)}:${Math.round(target.y)}`
+            ? `${target.page}:${Math.round(target.x)}:${Math.round(target.y)}:${Math.round(target.width)}:${annotation.isParagraph}`
             : `none:${index}`;
         const existing = merged.get(key);
         merged.set(
@@ -133,13 +140,13 @@ const mergeByTarget = (annotations: Annotation[]): Annotation[] => {
     return [...merged.values()];
 };
 
-const firstPerPage = (targets: TextBox[]): TextBox[] => {
+const firstPerPage = (annotations: Annotation[]): Annotation[] => {
     const pages = new Set<number>();
-    return targets.filter((target) => {
-        if (pages.has(target.page)) {
+    return annotations.filter(({ target }) => {
+        if (pages.has(target!.page)) {
             return false;
         }
-        pages.add(target.page);
+        pages.add(target!.page);
         return true;
     });
 };

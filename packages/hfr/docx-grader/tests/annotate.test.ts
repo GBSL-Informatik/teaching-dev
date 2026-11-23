@@ -1,3 +1,4 @@
+import type { ExcalidrawArrowElement } from '@excalidraw/excalidraw/element/types';
 import {
     EXCALIDRAW_BACKGROUND_FILE_ID,
     EXCALIDRAW_BACKGROUND_IMAGE_ID,
@@ -5,7 +6,13 @@ import {
 } from '@tdev/excalidoc/ImageMarkupEditor/helpers/constants';
 import { describe, expect, it } from 'vitest';
 import { annotationsOf } from '../annotate/annotationsOf';
-import { excalidrawScene, LABEL_COLOR, NOTES_COLOR } from '../annotate/excalidrawScene';
+import {
+    excalidrawScene,
+    FRAMED_TEXT_COLORS,
+    LABEL_COLOR,
+    NOTES_COLOR,
+    UNFRAMED_TEXT_LABEL_COLOR
+} from '../annotate/excalidrawScene';
 import { layoutPage } from '../annotate/layoutPage';
 import { compactText, createTextLocator } from '../annotate/locateText';
 import { PdfPage, PdfText } from '../annotate/readPdf';
@@ -80,7 +87,7 @@ describe('annotationsOf', () => {
         const annotations = annotationsOf(checks, original, pages, normalize);
 
         expect(annotations).toEqual([
-            { label: '«Überschrift 1»', target: expect.objectContaining({ y: 500 }) }
+            { label: '«Überschrift 1»', target: expect.objectContaining({ y: 500 }), isParagraph: true }
         ]);
     });
 
@@ -186,9 +193,36 @@ describe('excalidrawScene', () => {
             }
         });
         expect(files?.[EXCALIDRAW_BACKGROUND_FILE_ID]?.dataURL).toBe('data:image/png;base64,cG5n');
-        expect(label).toMatchObject({ fontFamily: 6, strokeColor: LABEL_COLOR });
+        expect(label).toMatchObject({ fontFamily: 6, strokeColor: UNFRAMED_TEXT_LABEL_COLOR });
         expect(arrow).toMatchObject({ roughness: 0, endArrowhead: 'triangle_outline' });
         expect(notes).toMatchObject({ text: '• Automatische Silbentrennung', strokeColor: NOTES_COLOR });
+    });
+
+    it('colors paragraph labels blue and framed texts on the same line each in their own color', () => {
+        const line = { page: 0, y: 100, height: 11, lineRight: 300 };
+        const layout = layoutPage(pageOf([]), [
+            { label: 'Ausrichtung: Blocksatz', target: { ...line, x: 70, width: 230 }, isParagraph: true },
+            { label: 'Fett: ja', target: { ...line, x: 150, width: 50 } },
+            { label: 'Schriftart: Arial', target: { ...line, x: 70, width: 50 } }
+        ]);
+
+        const elements = excalidrawScene(layout, Buffer.from('png')).elements!;
+
+        const colorOf = (id: string) => elements.find((element) => element.id === id)?.strokeColor;
+        expect(['label-0', 'arrow-0'].map((id) => colorOf(`docx-grader-${id}`))).toEqual([
+            LABEL_COLOR,
+            LABEL_COLOR
+        ]);
+        expect(['label-1', 'arrow-1', 'marker-1'].map((id) => colorOf(`docx-grader-${id}`))).toEqual(
+            Array(3).fill(FRAMED_TEXT_COLORS[0])
+        );
+        expect(['label-2', 'arrow-2', 'marker-2'].map((id) => colorOf(`docx-grader-${id}`))).toEqual(
+            Array(3).fill(FRAMED_TEXT_COLORS[1])
+        );
+        const arrowheads = elements
+            .filter((element): element is ExcalidrawArrowElement => element.type === 'arrow')
+            .map((arrow) => arrow.endArrowhead);
+        expect(arrowheads).toEqual(Array(3).fill('triangle_outline'));
     });
 });
 
@@ -217,6 +251,17 @@ describe('layoutPage', () => {
             [200 * scale + 6, (100 + 11 * 0.2 + 5.5) * scale]
         ]);
         expect(label.marker).toMatchObject({ x: 100 * scale - 2, width: 50 * scale + 4 });
+    });
+
+    it('ends arrows with a segment long enough for a full arrowhead', () => {
+        const justified = line('A justified line that reaches the right margin', 300);
+        const target = { ...justified, page: 0, lineRight: justified.x + justified.width };
+
+        const [label] = layoutPage(pageOf([justified]), [{ label: 'Fett: ja', target }]).labels;
+
+        const [bend, end] = label.arrow.slice(-2);
+        expect(bend[1]).toBe(end[1]);
+        expect(bend[0] - end[0]).toBe(40);
     });
 
     it('lists annotations without a place above the page', () => {

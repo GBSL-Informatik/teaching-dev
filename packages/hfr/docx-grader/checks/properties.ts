@@ -25,6 +25,29 @@ const TAB_ALIGNMENTS: { [value: string]: string } = {
     bar: 'vertikale Linie'
 };
 
+// Black, white and the standard colors of Word's color picker, named as in its German UI.
+const COLOR_NAMES: { [hex: string]: string } = {
+    '000000': 'Schwarz',
+    FFFFFF: 'Weiss',
+    C00000: 'Dunkelrot',
+    FF0000: 'Rot',
+    FFC000: 'Orange',
+    FFFF00: 'Gelb',
+    '92D050': 'Hellgrün',
+    '00B050': 'Grün',
+    '00B0F0': 'Hellblau',
+    '0070C0': 'Blau',
+    '002060': 'Dunkelblau',
+    '7030A0': 'Lila'
+};
+
+const formatColor = (value: string) => {
+    if (value === 'auto') {
+        return 'automatisch';
+    }
+    return COLOR_NAMES[value.toUpperCase()] ?? `#${value}`;
+};
+
 const formatTabStops = (tabStops: TabStop[]) => {
     if (tabStops.length === 0) {
         return 'keine';
@@ -80,7 +103,7 @@ export const RUN_PROPERTIES: PropertyDescriptors<RunFormat> = {
         format: lookup({ none: 'nein', single: 'einfach', double: 'doppelt', words: 'nur Wörter' })
     },
     strike: { label: 'Durchgestrichen', format: yesNo },
-    color: { label: 'Schriftfarbe', format: (value) => (value === 'auto' ? 'automatisch' : `#${value}`) },
+    color: { label: 'Schriftfarbe', format: formatColor },
     highlight: { label: 'Hervorhebung', format: lookup({ none: 'keine' }) },
     allCaps: { label: 'Grossbuchstaben', format: yesNo },
     smallCaps: { label: 'Kapitälchen', format: yesNo },

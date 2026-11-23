@@ -8,9 +8,12 @@ import type { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types';
 import { backgroundImageScene } from '@tdev/excalidoc/ImageMarkupEditor/helpers/backgroundImageScene';
 import { LINE_HEIGHT, PAGE_WIDTH, PageLayout, PlacedLabel, PlacedText, Point } from './layoutPage';
 
-/** Excalidraw's blue and orange from its color picker. */
+/** Colors from Excalidraw's color picker: blue, violet and orange. */
 export const LABEL_COLOR = '#1971c2';
+export const UNFRAMED_TEXT_LABEL_COLOR = '#9c36b5';
 export const NOTES_COLOR = '#f08c00';
+/** One per framed text on the same line, from left to right: blue, red, green and dark orange. */
+export const FRAMED_TEXT_COLORS = ['#1971c2', '#e03131', '#2f9e44', '#e8590c'];
 // Excalidraw's «Normal» font family.
 const NORMAL_FONT_FAMILY = 6;
 // Export settings of the markup editor: four times the scene size, with a small margin.
@@ -45,19 +48,27 @@ export const excalidrawScene = (layout: PageLayout, pagePng: Buffer): Excalidraw
     };
 };
 
-const labelElements = (label: PlacedLabel, index: number) => {
-    const text = textElement(`docx-grader-label-${index}`, label, LABEL_COLOR);
-    const arrow = arrowElement(`docx-grader-arrow-${index}`, label.arrow);
+const labelElements = (label: PlacedLabel, index: number): ExcalidrawElement[] => {
+    const color = labelColor(label);
+    const text = textElement(`docx-grader-label-${index}`, label, color);
+    const arrow = arrowElement(`docx-grader-arrow-${index}`, label.arrow, color);
     if (!label.marker) {
         return [text, arrow];
     }
     const { x, y, width, height } = label.marker;
-    const marker = baseElement(`docx-grader-marker-${index}`, 'rectangle', x, y, width, height, LABEL_COLOR);
+    const marker = baseElement(`docx-grader-marker-${index}`, 'rectangle', x, y, width, height, color);
     return [text, arrow, marker as ExcalidrawRectangleElement];
 };
 
+const labelColor = (label: PlacedLabel) => {
+    if (label.marker) {
+        return FRAMED_TEXT_COLORS[label.marker.indexOnLine % FRAMED_TEXT_COLORS.length];
+    }
+    return label.isParagraph ? LABEL_COLOR : UNFRAMED_TEXT_LABEL_COLOR;
+};
+
 /** Excalidraw stores the points of an arrow relative to its position, the first point. */
-const arrowElement = (id: string, points: Point[]) => {
+const arrowElement = (id: string, points: Point[], color: string) => {
     const [[x, y]] = points;
     const relative = points.map(([pointX, pointY]) => [pointX - x, pointY - y]);
     const xs = relative.map(([pointX]) => pointX);
@@ -65,7 +76,7 @@ const arrowElement = (id: string, points: Point[]) => {
     const width = Math.max(...xs) - Math.min(...xs);
     const height = Math.max(...ys) - Math.min(...ys);
     return {
-        ...baseElement(id, 'arrow', x, y, width, height, LABEL_COLOR),
+        ...baseElement(id, 'arrow', x, y, width, height, color),
         points: relative,
         startBinding: null,
         endBinding: null,
