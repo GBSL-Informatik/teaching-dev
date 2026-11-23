@@ -34,6 +34,8 @@ export interface Caption {
     label?: string;
     /** The caption text without its label and number. */
     description: string;
+    /** The paragraph of the caption, which is not the image's own. */
+    paragraphIndex: number;
 }
 
 export interface Paragraph {

@@ -4,7 +4,7 @@ import { extractChecks } from '../checks/extractChecks';
 import { gradeDocument } from '../checks/gradeDocument';
 import { createNormalizer, DEFAULT_EQUIVALENT_CHARACTERS } from '../checks/normalizeText';
 import { DocxSpec } from '../spec/DocxSpec';
-import { docModelOf, paragraph } from './createDocx';
+import { docModelOf, paragraph, picture } from './createDocx';
 import { loadFixture } from './loadFixture';
 
 const SAMPLES = [
@@ -105,7 +105,7 @@ describe('gradeDocument', () => {
 
         expect(result.failures).toHaveLength(8);
         expect(result.failures[0]).toBe(
-            '«➊ First, the file SecretPasswordFile.txt…»: Tabulator fehlt (0 statt 1), Leerzeichen ersetzen keinen Tabulator'
+            '"➊ First, the file SecretPasswordFile.txt…": Tabulator fehlt (0 statt 1), Leerzeichen ersetzen keinen Tabulator'
         );
     });
 
@@ -138,7 +138,7 @@ describe('gradeDocument', () => {
         const [result] = gradeDocument(spec, await loadFixture('ex01-what-is-programming-raw'));
 
         expect(result.failures).toEqual([
-            '«What Is Programming?»: Ausrichtung: linksbündig statt Blocksatz; Abstand nach: 8 pt statt 14 pt'
+            '"What Is Programming?": Ausrichtung: linksbündig statt Blocksatz; Abstand nach: 8 pt statt 14 pt'
         ]);
     });
 
@@ -149,7 +149,18 @@ describe('gradeDocument', () => {
         const results = gradeDocument(spec, await loadFixture('21E_MachineLearning_RAW'));
 
         expect(results[0].failures).toContain(
-            '«Zielsetzung»: Formatvorlage «Standard» statt «Überschrift 1»'
+            '"Zielsetzung": Formatvorlage «Standard» statt «Überschrift 1»'
         );
+    });
+
+    it('requires the exact image width, apart from rounding', async () => {
+        const imageWithWidth = (widthCm: number) => docModelOf(`<w:p>${picture(widthCm)}</w:p>`);
+        const checks = extractChecks(await imageWithWidth(5), DEFAULT_EQUIVALENT_CHARACTERS);
+        const spec: DocxSpec = { version: 1, source: 'original.docx', checks };
+        const failuresWithWidth = async (widthCm: number) =>
+            gradeDocument(spec, await imageWithWidth(widthCm)).flatMap((result) => result.failures);
+
+        expect(await failuresWithWidth(5.01)).toEqual([]);
+        expect(await failuresWithWidth(5.2)).toEqual(['Bild 1: Breite: 5.2 cm statt 5 cm']);
     });
 });

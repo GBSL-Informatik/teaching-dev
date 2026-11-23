@@ -49,10 +49,9 @@ export const runFormat: CheckKind<RunFormatCheck> = {
 
         return groupBy(segments, ({ expect, source }) => JSON.stringify([expect, source])).map((group) => {
             const { expect, source } = group[0];
-            const viaStyle = source === 'style' ? ' (über eine Formatvorlage)' : '';
             return {
                 kind: 'runFormat',
-                title: `Zeichenformat: ${describeProperties(expect, RUN_PROPERTIES)}${viaStyle}`,
+                title: `Zeichenformat: ${describeRunFormat(expect, source)}`,
                 anchors: group.map(({ anchor }) => anchor),
                 expect,
                 ...(source === 'style' ? { source } : {})
@@ -120,4 +119,9 @@ const formattedSegments = (chars: NormalizedChar[], baseline: RunFormat): Segmen
                 runs.map((run) => run.styleFormat)
             ).map((part) => ({ text: text.trim(), ...part }))
         );
+};
+
+export const describeRunFormat = (expect: RunFormatCheck['expect'], source?: FormatSource) => {
+    const viaStyle = source === 'style' ? ' (über eine Formatvorlage)' : '';
+    return `${describeProperties(expect, RUN_PROPERTIES)}${viaStyle}`;
 };

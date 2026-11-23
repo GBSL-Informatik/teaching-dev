@@ -65,7 +65,7 @@ const indexBy = (paragraphs: Paragraph[], textOf: (paragraph: Paragraph) => stri
     return index;
 };
 
-/** A short quote of the anchored text for messages. */
+/** A short quote of the anchored text for messages; «» are for names of styles. */
 export const quote = (text: string, maxLength = 40) => {
-    return text.length > maxLength ? `«${text.slice(0, maxLength)}…»` : `«${text}»`;
+    return text.length > maxLength ? `"${text.slice(0, maxLength)}…"` : `"${text}"`;
 };

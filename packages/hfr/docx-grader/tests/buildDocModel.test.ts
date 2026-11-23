@@ -36,7 +36,8 @@ describe('buildDocModel', () => {
         // The second caption's instruction is stored as «SEQ Abbildun» + «g \* ARABIC».
         expect(document.images[2].caption).toEqual({
             label: 'Abbildung',
-            description: expect.stringMatching(/^Schematische Darstellung eines künstlichen Neurons/)
+            description: expect.stringMatching(/^Schematische Darstellung eines künstlichen Neurons/),
+            paragraphIndex: 59
         });
     });
 

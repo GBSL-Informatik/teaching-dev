@@ -89,7 +89,7 @@ export const section: CheckKind<SectionCheck> = {
             return [
                 {
                     kind: 'section',
-                    title: `Abschnitt ab ${quote(anchor.text)}: ${describeProperties(expect, SECTION_PROPERTIES)}`,
+                    title: `Abschnitt ab ${quote(anchor.text)}: ${describeSection(expect)}`,
                     anchors: [anchor],
                     expect
                 }
@@ -110,4 +110,8 @@ export const section: CheckKind<SectionCheck> = {
 
 const pageSetupOf = ({ index, headersAndFooters, ...pageSetup }: Section): PageSetup => {
     return pageSetup;
+};
+
+export const describeSection = (expect: SectionCheck['expect']) => {
+    return describeProperties(expect, SECTION_PROPERTIES);
 };
