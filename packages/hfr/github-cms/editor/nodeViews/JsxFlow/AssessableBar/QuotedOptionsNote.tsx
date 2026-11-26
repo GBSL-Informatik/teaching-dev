@@ -30,7 +30,7 @@ const QuotedOptionsNote = observer(({ handle }: NodeViewProps) => {
 
     return (
         <span className={clsx(styles.group, styles.warning)}>
-            Die Antworten stehen im Zitat und werden nicht als Optionen angezeigt.
+            Die Antwortoptionen stehen im Zitat und werden nicht angezeigt.
             <Button
                 icon={mdiFormatIndentDecrease}
                 size={SIZE_S}

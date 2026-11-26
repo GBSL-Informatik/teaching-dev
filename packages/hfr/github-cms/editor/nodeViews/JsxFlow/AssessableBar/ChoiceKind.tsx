@@ -21,7 +21,7 @@ const ChoiceKind = observer(({ handle }: NodeViewProps) => {
         <select
             className={clsx(styles.input)}
             value={isMultiple ? 'multiple' : 'single'}
-            title="Wie viele Antworten ausgewählt werden können"
+            title="Wie viele Antwortoptionen ausgewählt werden können"
             onChange={(event) => handleChange(event.target.value === 'multiple')}
         >
             <option value="single">Single-Choice</option>

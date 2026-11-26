@@ -44,12 +44,12 @@ const KEEP_EXPANDED: SelectOption = {
     kind: 'select',
     name: 'keepExpanded',
     label: 'Nach dem Beantworten',
-    title: 'Welche Antwortmöglichkeiten nach dem Beantworten angezeigt werden (keepExpanded)',
+    title: 'Welche Antwortoptionen nach dem Beantworten angezeigt werden (keepExpanded)',
     values: [
-        { value: 'all', label: 'alle Antworten zeigen' },
-        { value: 'correct', label: 'nur richtige zeigen' },
-        { value: 'selected', label: 'nur ausgewählte zeigen' },
-        { value: 'none', label: 'keine Antworten zeigen' }
+        { value: 'all', label: 'alle Antwortoptionen zeigen' },
+        { value: 'correct', label: 'nur richtige Antwortoptionen zeigen' },
+        { value: 'selected', label: 'nur ausgewählte Antwortoptionen zeigen' },
+        { value: 'none', label: 'keine Antwortoptionen zeigen' }
     ],
     defaultValue: 'all'
 };
@@ -64,8 +64,8 @@ const ALLOW_SELECTION: FlagOption = {
 const RANDOMIZE_OPTIONS: FlagOption = {
     kind: 'flag',
     name: 'randomizeOptions',
-    label: 'Antworten mischen',
-    title: 'Die Antwortmöglichkeiten in zufälliger Reihenfolge anzeigen (randomizeOptions)'
+    label: 'Antwortoptionen mischen',
+    title: 'Die Antwortoptionen in zufälliger Reihenfolge anzeigen (randomizeOptions)'
 };
 
 const CHOICE_ANSWER_OPTIONS: AttributeOption[] = [RANDOMIZE_OPTIONS, ALLOW_SELECTION, KEEP_EXPANDED];
@@ -85,7 +85,7 @@ const QUIZ_OPTIONS: AttributeOption[] = [
         kind: 'flag',
         name: 'shuffleOnReset',
         label: 'Beim Zurücksetzen neu mischen',
-        title: 'Fragen und Antworten beim Zurücksetzen erneut mischen (shuffleOnReset)'
+        title: 'Fragen und Antwortoptionen beim Zurücksetzen erneut mischen (shuffleOnReset)'
     },
     {
         kind: 'flag',
