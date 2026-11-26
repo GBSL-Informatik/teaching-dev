@@ -1,4 +1,4 @@
-import { mdiLinkOff } from '@mdi/js';
+import { mdiLinkOff, mdiOpenInNew } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
 import TextInput from '@tdev-components/shared/TextInput';
 import clsx from 'clsx';
@@ -15,6 +15,8 @@ interface Props {
     isLink: boolean;
     onClose: () => void;
 }
+
+const WEB_URL = /^https?:\/\//i;
 
 const LinkForm = observer(({ document, initialHref, isLink, onClose }: Props) => {
     const [href, setHref] = React.useState(initialHref);
@@ -37,6 +39,15 @@ const LinkForm = observer(({ document, initialHref, isLink, onClose }: Props) =>
         <>
             <TextInput label="URL" value={href} onChange={setHref} onEnter={handleApply} noSpellCheck />
             <div className={clsx(styles.actions)}>
+                {WEB_URL.test(href) && (
+                    <Button
+                        icon={mdiOpenInNew}
+                        href={href}
+                        target="_blank"
+                        title="Link in neuem Tab öffnen"
+                        className={clsx(styles.openLink)}
+                    />
+                )}
                 {isLink && <Button icon={mdiLinkOff} text="Entfernen" color="red" onClick={handleRemove} />}
                 <Button text="Übernehmen" color="green" onClick={() => handleApply()} disabled={!href} />
             </div>

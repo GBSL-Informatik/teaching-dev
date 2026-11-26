@@ -145,6 +145,7 @@ const Button = (props: Props) => {
             <Link
                 to={props.disabled ? '#' : props.href}
                 target={props.target}
+                title={props.title}
                 className={clsx(styles.link, commonCls, props.noBorder && styles.noBorder)}
                 style={style}
             >
