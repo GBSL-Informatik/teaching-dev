@@ -1,5 +1,7 @@
+import type Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
 import type { Node, ResolvedPos } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
+import type { ComponentProps } from 'react';
 import { paragraph } from '../commands';
 import type { ImportSpec } from '../imports';
 import { expressionAttribute, findAttribute, flagAttribute } from '../jsxAttributes';
@@ -53,6 +55,13 @@ export const standaloneQuestionsWithoutId = (doc: Node): number[] => {
     });
     return positions;
 };
+
+// The controls are typed against the props of core: renaming or removing a prop, a value or
+// a component fails the typecheck. Keep the import paths below in sync with the sources of the imports.
+export type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
+export type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
+export type { Props as TrueFalseAnswerProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
+export type HintProps = ComponentProps<typeof Hint>;
 
 const ASSESSABLE_SOURCE = '@tdev-components/documents/Assessable';
 export const QUIZ_IMPORT: ImportSpec = { name: QUIZ, source: `${ASSESSABLE_SOURCE}/Quiz` };

@@ -1,20 +1,23 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { flagValue, withFlag } from '../../../assessable/attributeOptions';
+import type { ChoiceAnswerProps } from '../../../assessable/components';
 import type { JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
 import styles from './styles.module.scss';
 
+const MULTIPLE = 'multiple' satisfies keyof ChoiceAnswerProps;
+
 /** single or multiple choice, the `multiple` flag of `<ChoiceAnswer>`, an expression is edited in the tag */
 const ChoiceKind = observer(({ handle }: NodeViewProps) => {
     const attributes: JsxAttribute[] = handle.node.attrs.attributes;
-    const isMultiple = flagValue(attributes, 'multiple');
+    const isMultiple = flagValue(attributes, MULTIPLE);
     if (isMultiple === null) {
         return null;
     }
 
     const handleChange = (multiple: boolean) => {
-        handle.updateAttrs({ attributes: withFlag(attributes, 'multiple', multiple) });
+        handle.updateAttrs({ attributes: withFlag(attributes, MULTIPLE, multiple) });
     };
 
     return (

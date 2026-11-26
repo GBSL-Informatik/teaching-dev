@@ -1,8 +1,9 @@
 import { booleanAttribute, expressionAttribute, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
+import type { TrueFalseAnswerProps } from './components';
 
 /** the attributes setting the answer, see `TrueFalseAnswer`'s `ModelMeta` */
-const NAMES = ['isTrue', 'correct', 'isFalse', 'incorrect'];
+const NAMES = ['isTrue', 'correct', 'isFalse', 'incorrect'] satisfies (keyof TrueFalseAnswerProps)[];
 
 /**
  * Whether the statement of `<TrueFalseAnswer>` is true, like `TrueFalseAnswer`'s model:

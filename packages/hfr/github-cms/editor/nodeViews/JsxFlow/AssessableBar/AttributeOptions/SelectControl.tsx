@@ -22,7 +22,7 @@ const SelectControl = ({ option, attributes, onChange }: Props) => {
                 onChange={(event) => onChange(withSelectValue(attributes, option, event.target.value))}
             >
                 {value === null && <option value="">Benutzerdefiniert (im Tag bearbeiten)</option>}
-                {option.values.map(({ value, label }) => (
+                {Object.entries(option.labels).map(([value, label]) => (
                     <option key={value} value={value}>
                         {label}
                     </option>

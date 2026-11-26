@@ -1,3 +1,4 @@
+import type * as CoreScoring from '@tdev-components/documents/Assessable/helpers/scoring';
 import type { ImportSpec } from '../imports';
 import {
     booleanLiteral,
@@ -7,6 +8,7 @@ import {
     withAttribute
 } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
+import type { ChoiceAnswerProps, QuizProps } from './components';
 
 /**
  * The scoring functions of `@tdev-components/documents/Assessable/helpers/scoring`,
@@ -30,8 +32,25 @@ interface ScoringFunction {
     parameters: Parameter[];
 }
 
+const SCORING = 'scoring' satisfies keyof ChoiceAnswerProps & keyof QuizProps;
+
+type CoreName = keyof typeof CoreScoring;
+
+/** one parameter for each argument, with a default value of its type */
+type ParametersOf<Args extends unknown[]> = {
+    [Index in keyof Args]-?: Parameter & { defaultValue: NonNullable<Args[Index]> };
+};
+type CoreParameters<Name extends CoreName> = ParametersOf<Parameters<(typeof CoreScoring)[Name]>>;
+
+/** the typecheck fails when core renames or removes the function, or changes its parameters */
+const scoringFunction = <Name extends CoreName>(fn: {
+    name: Name;
+    label: string;
+    parameters: CoreParameters<Name>;
+}): ScoringFunction => ({ ...fn, parameters: [...fn.parameters] });
+
 export const SCORING_FUNCTIONS: ScoringFunction[] = [
-    {
+    scoringFunction({
         name: 'points',
         label: 'Punkte',
         parameters: [
@@ -39,8 +58,8 @@ export const SCORING_FUNCTIONS: ScoringFunction[] = [
             { label: 'falsch', title: 'Punkte wenn falsch', defaultValue: 0, optional: true },
             { label: 'leer', title: 'Punkte wenn nicht beantwortet', defaultValue: 0, optional: true }
         ]
-    },
-    {
+    }),
+    scoringFunction({
         name: 'multipleChoicePoints',
         label: 'Multiple-Choice-Punkte',
         parameters: [
@@ -63,8 +82,8 @@ export const SCORING_FUNCTIONS: ScoringFunction[] = [
                 optional: true
             }
         ]
-    },
-    { name: 'noPoints', label: 'Keine Punkte', parameters: [] }
+    }),
+    scoringFunction({ name: 'noPoints', label: 'Keine Punkte', parameters: [] })
 ];
 
 export interface Scoring {
@@ -77,7 +96,7 @@ export interface Scoring {
 export type ScoringAttribute = { kind: 'none' } | { kind: 'call'; scoring: Scoring } | { kind: 'custom' };
 
 export const scoringAttribute = (attributes: JsxAttribute[]): ScoringAttribute => {
-    const attribute = findAttribute(attributes, 'scoring');
+    const attribute = findAttribute(attributes, SCORING);
     if (!attribute) {
         return { kind: 'none' };
     }
@@ -88,9 +107,9 @@ export const scoringAttribute = (attributes: JsxAttribute[]): ScoringAttribute =
 /** `null` removes the `scoring` attribute */
 export const withScoring = (attributes: JsxAttribute[], scoring: Scoring | null): JsxAttribute[] => {
     const updated: JsxAttribute | null = scoring
-        ? expressionAttribute('scoring', scoringExpression(scoring))
+        ? expressionAttribute(SCORING, scoringExpression(scoring))
         : null;
-    return withAttribute(attributes, 'scoring', updated);
+    return withAttribute(attributes, SCORING, updated);
 };
 
 export const defaultScoring = (fn: ScoringFunction): Scoring => ({

@@ -1,18 +1,21 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import type { ChoiceAnswerProps, TrueFalseAnswerProps } from '../../../assessable/components';
 import EditableText from '../../../components/EditableText';
 import { stringAttribute, withStringAttributes } from '../../../jsxAttributes';
 import type { JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
 import styles from './styles.module.scss';
 
+const TITLE = 'title' satisfies keyof ChoiceAnswerProps & keyof TrueFalseAnswerProps;
+
 /** the `title` of a question, a double click edits it */
 const QuestionTitle = observer(({ handle }: NodeViewProps) => {
     const attributes: JsxAttribute[] = handle.node.attrs.attributes;
-    const title = stringAttribute(attributes, 'title') ?? '';
+    const title = stringAttribute(attributes, TITLE) ?? '';
 
     const handleApply = (title: string) => {
-        handle.updateAttrs({ attributes: withStringAttributes(attributes, { title }) });
+        handle.updateAttrs({ attributes: withStringAttributes(attributes, { [TITLE]: title }) });
     };
 
     return (

@@ -38,10 +38,7 @@ describe('select values', () => {
         name: 'resetMode',
         label: '',
         title: '',
-        values: [
-            { value: 'all', label: '' },
-            { value: 'noReset', label: '' }
-        ],
+        labels: { all: '', noReset: '' },
         defaultValue: 'all'
     };
 

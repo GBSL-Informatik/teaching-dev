@@ -1,8 +1,11 @@
 import type { Node } from 'prosemirror-model';
 import { expressionAttribute, findAttribute, withAttribute } from '../jsxAttributes';
 import { type JsxAttribute, schema } from '../schema';
+import type { ChoiceAnswerProps } from './components';
 
 const { nodes } = schema;
+
+const CORRECT = 'correct' satisfies keyof ChoiceAnswerProps;
 
 const CORRECT_PATTERN = /^\s*\[\s*(\d+(\s*,\s*\d+)*)?\s*,?\s*\]\s*$/;
 
@@ -11,7 +14,7 @@ const CORRECT_PATTERN = /^\s*\[\s*(\d+(\s*,\s*\d+)*)?\s*,?\s*\]\s*$/;
  * `null` when they are not written as a list of numbers, e.g. `correct={solution}`.
  */
 export const correctOptions = (attributes: JsxAttribute[]): number[] | null => {
-    const attribute = findAttribute(attributes, 'correct');
+    const attribute = findAttribute(attributes, CORRECT);
     if (!attribute) {
         return [];
     }
@@ -31,7 +34,7 @@ export const withCorrectOption = (
     const others = correct.filter((number) => number !== option);
     const updated = (isCorrect ? [...others, option] : others).sort((a, b) => a - b);
     const value = `[${updated.join(', ')}]`;
-    return withAttribute(attributes, 'correct', expressionAttribute('correct', value));
+    return withAttribute(attributes, CORRECT, expressionAttribute(CORRECT, value));
 };
 
 const isList = (node: Node) => node.type === nodes.ordered_list || node.type === nodes.bullet_list;

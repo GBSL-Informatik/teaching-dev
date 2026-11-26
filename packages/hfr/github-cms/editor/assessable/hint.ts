@@ -1,6 +1,13 @@
 import type { AlertType } from '@tdev-components/shared/Alert';
 import { expressionAttribute, findAttribute, stringAttribute, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
+import type { HintProps } from './components';
+
+const WHEN = 'when' satisfies keyof HintProps;
+const COLOR = 'color' satisfies keyof HintProps;
+
+/** the conditions of core as strings, e.g. `correct` or `assessed` */
+type When = `${Extract<HintProps['when'], string>}`;
 
 interface HintCondition {
     value: string;
@@ -9,14 +16,20 @@ interface HintCondition {
     color: AlertType;
 }
 
-export const HINT_CONDITIONS: HintCondition[] = [
-    { value: 'correct', label: 'richtig', color: 'success' },
-    { value: 'incorrect', label: 'falsch', color: 'danger' },
-    { value: 'partially_correct', label: 'teilweise richtig', color: 'warning' },
-    { value: 'not_answered', label: 'nicht beantwortet', color: 'secondary' },
-    { value: 'assessed', label: 'bewertet', color: 'info' },
-    { value: 'unassessed', label: 'nicht bewertet', color: 'info' }
-];
+/** one for each condition: the typecheck fails when core adds, renames or removes a condition */
+const CONDITIONS: Record<When, Omit<HintCondition, 'value'>> = {
+    correct: { label: 'richtig', color: 'success' },
+    incorrect: { label: 'falsch', color: 'danger' },
+    partially_correct: { label: 'teilweise richtig', color: 'warning' },
+    not_answered: { label: 'nicht beantwortet', color: 'secondary' },
+    assessed: { label: 'bewertet', color: 'info' },
+    unassessed: { label: 'nicht bewertet', color: 'info' }
+};
+
+export const HINT_CONDITIONS: HintCondition[] = Object.entries(CONDITIONS).map(([value, condition]) => ({
+    value,
+    ...condition
+}));
 
 const CONDITION_LIST_PATTERN = /^\s*\[\s*(['"]\w+['"]\s*,\s*)*(['"]\w+['"])?\s*,?\s*\]\s*$/;
 
@@ -31,7 +44,7 @@ export const hintConditions = (attributes: JsxAttribute[]): string[] | null => {
 };
 
 const writtenConditions = (attributes: JsxAttribute[]): string[] | null => {
-    const attribute = findAttribute(attributes, 'when');
+    const attribute = findAttribute(attributes, WHEN);
     if (!attribute) {
         return [];
     }
@@ -49,10 +62,10 @@ export const withHintConditions = (attributes: JsxAttribute[], conditions: strin
     const ordered = HINT_CONDITIONS.map(({ value }) => value).filter((value) => conditions.includes(value));
     if (ordered.length <= 1) {
         const value = ordered[0];
-        return withAttribute(attributes, 'when', value ? { type: 'attribute', name: 'when', value } : null);
+        return withAttribute(attributes, WHEN, value ? { type: 'attribute', name: WHEN, value } : null);
     }
     const list = `[${ordered.map((condition) => `'${condition}'`).join(', ')}]`;
-    return withAttribute(attributes, 'when', expressionAttribute('when', list));
+    return withAttribute(attributes, WHEN, expressionAttribute(WHEN, list));
 };
 
 /** all values of `AlertType`, the type checks that none is unknown */
@@ -60,7 +73,7 @@ const ALERT_COLORS: AlertType[] = ['primary', 'secondary', 'blue', 'success', 'i
 
 /** the `color` attribute, else the color of the first condition */
 export const hintColor = (attributes: JsxAttribute[]): AlertType => {
-    const color = stringAttribute(attributes, 'color');
+    const color = stringAttribute(attributes, COLOR);
     const alertColor = ALERT_COLORS.find((candidate) => candidate === color);
     if (alertColor) {
         return alertColor;

@@ -1,3 +1,4 @@
+import type { ExpandedOption } from '@tdev-models/documents/Assessable/AssessableMeta';
 import type { Node } from 'prosemirror-model';
 import {
     booleanAttribute,
@@ -8,73 +9,92 @@ import {
     withAttribute
 } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
-import { isChoiceAnswer, isQuiz, isTrueFalseAnswer } from './components';
+import {
+    type ChoiceAnswerProps,
+    isChoiceAnswer,
+    isQuiz,
+    isTrueFalseAnswer,
+    type QuizProps,
+    type TrueFalseAnswerProps
+} from './components';
 
-interface OptionBase {
-    name: string;
+interface OptionBase<Name extends string> {
+    name: Name;
     label: string;
     /** shown as tooltip, e.g. what the attribute does */
     title: string;
 }
 
 /** a boolean attribute, written as flag, e.g. `randomizeOptions` */
-export interface FlagOption extends OptionBase {
+export interface FlagOption<Name extends string = string> extends OptionBase<Name> {
     kind: 'flag';
 }
 
 /** a string attribute with a few values, the default value is not written */
-export interface SelectOption extends OptionBase {
+export interface SelectOption<
+    Name extends string = string,
+    Value extends string = string
+> extends OptionBase<Name> {
     kind: 'select';
-    values: { value: string; label: string }[];
-    defaultValue: string;
+    /** one label for each value: the typecheck fails when core adds, renames or removes a value */
+    labels: Record<Value, string>;
+    defaultValue: Value;
 }
 
 /** a number attribute, e.g. `minPoints={-2}`, not written while empty */
-export interface NumberOption extends OptionBase {
+export interface NumberOption<Name extends string = string> extends OptionBase<Name> {
     kind: 'number';
 }
 
-export type AttributeOption = FlagOption | SelectOption | NumberOption;
+export type AttributeOption<Name extends string = string> =
+    FlagOption<Name> | SelectOption<Name> | NumberOption<Name>;
+
+/** the typecheck fails when core renames or removes one of the props */
+type OptionsOf<Props> = AttributeOption<keyof Props & string>[];
 
 /**
  * The attributes described in the documentation of the assessable components, see
  * tdev-website/docs/gallery/persistable-documents/answer/choice-answer
  * `title`, `multiple`, `correct` and `scoring` have their own controls.
  */
-const KEEP_EXPANDED: SelectOption = {
+const KEEP_EXPANDED: SelectOption<'keepExpanded', ExpandedOption> = {
     kind: 'select',
     name: 'keepExpanded',
     label: 'Nach dem Beantworten',
     title: 'Welche Antwortoptionen nach dem Beantworten angezeigt werden (keepExpanded)',
-    values: [
-        { value: 'all', label: 'alle Antwortoptionen zeigen' },
-        { value: 'correct', label: 'nur richtige Antwortoptionen zeigen' },
-        { value: 'selected', label: 'nur ausgewählte Antwortoptionen zeigen' },
-        { value: 'none', label: 'keine Antwortoptionen zeigen' }
-    ],
+    labels: {
+        all: 'alle Antwortoptionen zeigen',
+        correct: 'nur richtige Antwortoptionen zeigen',
+        selected: 'nur ausgewählte Antwortoptionen zeigen',
+        none: 'keine Antwortoptionen zeigen'
+    },
     defaultValue: 'all'
 };
 
-const ALLOW_SELECTION: FlagOption = {
+const ALLOW_SELECTION: FlagOption<'allowSelection'> = {
     kind: 'flag',
     name: 'allowSelection',
     label: 'Text auswählbar',
     title: 'Der Fragetext kann ausgewählt und kopiert werden (allowSelection)'
 };
 
-const RANDOMIZE_OPTIONS: FlagOption = {
+const RANDOMIZE_OPTIONS: FlagOption<'randomizeOptions'> = {
     kind: 'flag',
     name: 'randomizeOptions',
     label: 'Antwortoptionen mischen',
     title: 'Die Antwortoptionen in zufälliger Reihenfolge anzeigen (randomizeOptions)'
 };
 
-const CHOICE_ANSWER_OPTIONS: AttributeOption[] = [RANDOMIZE_OPTIONS, ALLOW_SELECTION, KEEP_EXPANDED];
+const CHOICE_ANSWER_OPTIONS: OptionsOf<ChoiceAnswerProps> = [
+    RANDOMIZE_OPTIONS,
+    ALLOW_SELECTION,
+    KEEP_EXPANDED
+];
 
 // `<TrueFalseAnswer>` does not support `allowSelection`
-const TRUE_FALSE_ANSWER_OPTIONS: AttributeOption[] = [KEEP_EXPANDED];
+const TRUE_FALSE_ANSWER_OPTIONS: OptionsOf<TrueFalseAnswerProps> = [KEEP_EXPANDED];
 
-const QUIZ_OPTIONS: AttributeOption[] = [
+const QUIZ_OPTIONS: OptionsOf<QuizProps> = [
     {
         kind: 'flag',
         name: 'randomizeQuestions',
@@ -101,12 +121,12 @@ const QUIZ_OPTIONS: AttributeOption[] = [
         name: 'resetMode',
         label: 'Zurücksetzen',
         title: 'Welche Fragen beim Zurücksetzen des Quiz zurückgesetzt werden (resetMode)',
-        values: [
-            { value: 'all', label: 'alle Fragen' },
-            { value: 'incorrect', label: 'nur falsche Fragen' },
-            { value: 'noReset', label: 'nicht möglich' }
-        ],
-        defaultValue: 'all'
+        labels: {
+            all: 'alle Fragen',
+            incorrect: 'nur falsche Fragen',
+            noReset: 'nicht möglich'
+        } satisfies Record<QuizProps['resetMode'], string>,
+        defaultValue: 'all' satisfies QuizProps['resetMode']
     },
     {
         kind: 'number',
@@ -143,7 +163,7 @@ export const selectValue = (attributes: JsxAttribute[], option: SelectOption): s
         return option.defaultValue;
     }
     const value = stringAttribute(attributes, option.name);
-    return option.values.some((candidate) => candidate.value === value) ? value! : null;
+    return value !== undefined && Object.hasOwn(option.labels, value) ? value : null;
 };
 
 export const withSelectValue = (
