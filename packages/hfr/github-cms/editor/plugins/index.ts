@@ -13,7 +13,12 @@ import { keymap } from 'prosemirror-keymap';
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list';
 import type { Command, Plugin } from 'prosemirror-state';
 import { goToNextCell, tableEditing } from 'prosemirror-tables';
-import { toggleMarkOnWord, withoutSpacesAtCursor } from '../commands';
+import {
+    liftNestedListItem,
+    liftOutOfBlockquote,
+    toggleMarkOnWord,
+    withoutSpacesAtCursor
+} from '../commands';
 import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
@@ -73,7 +78,14 @@ const editorKeymap = keymap({
         withoutSpacesAtCursor(baseKeymap.Enter)
     ),
     Tab: chainCommands(goToNextCell(1), sinkListItem(nodes.list_item)),
-    'Shift-Tab': chainCommands(goToNextCell(-1), liftListItem(nodes.list_item)),
+    // outdents one level: a nested list item, then the block out of a quote (a list as a whole),
+    // and last, a list item to a paragraph
+    'Shift-Tab': chainCommands(
+        goToNextCell(-1),
+        liftNestedListItem,
+        liftOutOfBlockquote,
+        liftListItem(nodes.list_item)
+    ),
     // the first press leaves inline code at the start or end of a textblock, the second moves into a code block
     ArrowLeft: chainCommands(arrowOutOfCode('left'), arrowIntoCode('left')),
     ArrowRight: chainCommands(arrowOutOfCode('right'), arrowIntoCode('right')),

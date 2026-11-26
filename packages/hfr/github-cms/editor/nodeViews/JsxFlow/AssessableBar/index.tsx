@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { isChoiceAnswer, isTrueFalseAnswer } from '../../../assessable/components';
 import type { NodeViewProps } from '../../ReactNodeView';
 import ChoiceKind from './ChoiceKind';
+import QuotedOptionsNote from './QuotedOptionsNote';
 import ScoringSelect from './ScoringSelect';
 import styles from './styles.module.scss';
 import TrueFalseChoice from './TrueFalseChoice';
@@ -17,6 +18,7 @@ const AssessableBar = observer(({ handle }: NodeViewProps) => {
         // the inputs handle their events themselves, ProseMirror must not select the node
         <div className={clsx(styles.bar)} data-stop-event>
             {isChoiceAnswer(handle.node) && <ChoiceKind handle={handle} />}
+            {isChoiceAnswer(handle.node) && <QuotedOptionsNote handle={handle} />}
             {isTrueFalseAnswer(handle.node) && <TrueFalseChoice handle={handle} />}
             <ScoringSelect handle={handle} />
         </div>

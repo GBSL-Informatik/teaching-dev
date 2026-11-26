@@ -1,8 +1,15 @@
 import { baseKeymap } from 'prosemirror-commands';
 import type { Node } from 'prosemirror-model';
-import { EditorState, TextSelection } from 'prosemirror-state';
+import { type Command, EditorState, TextSelection } from 'prosemirror-state';
 import { describe, expect, it } from 'vitest';
-import { insertInlineMdx, toggleMarkOnWord, withoutSpacesAtCursor } from '../commands';
+import {
+    insertInlineMdx,
+    liftNestedListItem,
+    liftOutOfBlockquote,
+    liftOutOfBlockquoteAt,
+    toggleMarkOnWord,
+    withoutSpacesAtCursor
+} from '../commands';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import { schema } from '../schema';
 
@@ -105,5 +112,59 @@ describe('insertInlineMdx', () => {
 
     it('replaces inline code at the cursor', () => {
         expect(insertAndTypeAt('one `code` two\n', 'one co', 'x')).toBe('one `co`<span>x</span>`de` two\n');
+    });
+});
+
+/** runs the command with the cursor after the first occurrence of `text` */
+const runAfter = (source: string, text: string, command: Command) => {
+    const { doc } = parseMarkdown(source);
+    let cursor = -1;
+    doc.descendants((node: Node, pos) => {
+        if (cursor < 0 && node.isTextblock && node.textContent.includes(text)) {
+            cursor = pos + 1 + node.textContent.indexOf(text) + text.length;
+        }
+        return cursor < 0;
+    });
+    let state = EditorState.create({ doc, selection: TextSelection.create(doc, cursor) });
+    const isApplied = command(state, (tr) => {
+        state = state.apply(tr);
+    });
+    return isApplied ? serializeMarkdown(state.doc) : null;
+};
+
+describe('liftOutOfBlockquote', () => {
+    it('moves the whole list out of the quote', () => {
+        expect(runAfter('> Frage\n>\n> 1. A\n> 2. B\n', 'B', liftOutOfBlockquote)).toBe(
+            '> Frage\n\n1. A\n2. B\n'
+        );
+    });
+
+    it('splits the quote around the block', () => {
+        expect(runAfter('> Erstens\n>\n> Zweitens\n>\n> Drittens\n', 'Zweitens', liftOutOfBlockquote)).toBe(
+            '> Erstens\n\nZweitens\n\n> Drittens\n'
+        );
+    });
+
+    it('does not apply outside of a quote', () => {
+        expect(runAfter('1. A\n', 'A', liftOutOfBlockquote)).toBeNull();
+    });
+});
+
+describe('liftOutOfBlockquoteAt', () => {
+    it('moves the block at the position out of its quote', () => {
+        const { doc } = parseMarkdown('> Frage\n>\n> - A\n');
+        const listPos = 1 + doc.firstChild!.firstChild!.nodeSize;
+        let state = EditorState.create({ doc });
+        liftOutOfBlockquoteAt(listPos)(state, (tr) => {
+            state = state.apply(tr);
+        });
+        expect(serializeMarkdown(state.doc)).toBe('> Frage\n\n- A\n');
+    });
+});
+
+describe('liftNestedListItem', () => {
+    it('outdents nested list items only', () => {
+        expect(runAfter('- A\n  - B\n', 'B', liftNestedListItem)).toBe('- A\n- B\n');
+        expect(runAfter('> - A\n', 'A', liftNestedListItem)).toBeNull();
     });
 });

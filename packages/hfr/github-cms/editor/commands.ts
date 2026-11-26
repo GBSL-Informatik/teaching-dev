@@ -1,8 +1,16 @@
 import { lift, setBlockType, toggleMark, wrapIn } from 'prosemirror-commands';
-import { type Attrs, Fragment, type MarkType, type Node, type NodeType } from 'prosemirror-model';
+import {
+    type Attrs,
+    Fragment,
+    type MarkType,
+    type Node,
+    type NodeRange,
+    type NodeType
+} from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
 import { type Command, type EditorState, Selection, TextSelection } from 'prosemirror-state';
 import { findTable, selectedRect, TableMap } from 'prosemirror-tables';
+import { liftTarget } from 'prosemirror-transform';
 import { schema } from './schema';
 
 const { nodes, marks } = schema;
@@ -186,6 +194,54 @@ export const toggleList = (listType: NodeType): Command => {
         }
         return wrapInList(listType)(state, dispatch, view);
     };
+};
+
+const isBlockquote = (node: Node) => node.type === nodes.blockquote;
+
+/** moves the blocks of the range out of their quote, the quote is split around them */
+const liftRange = (range: NodeRange | null): Command => {
+    return (state, dispatch) => {
+        if (!range) {
+            return false;
+        }
+        const target = liftTarget(range);
+        if (target === null) {
+            return false;
+        }
+        dispatch?.(state.tr.lift(range, target).scrollIntoView());
+        return true;
+    };
+};
+
+/** moves the block at the cursor out of the quote around it, e.g. a whole list */
+export const liftOutOfBlockquote: Command = (state, dispatch) => {
+    const { $from, $to } = state.selection;
+    return liftRange($from.blockRange($to, isBlockquote))(state, dispatch);
+};
+
+/** moves the block at the position, e.g. a list, out of the quote it is a child of */
+export const liftOutOfBlockquoteAt = (pos: number): Command => {
+    return (state, dispatch) => {
+        const node = state.doc.nodeAt(pos);
+        if (!node) {
+            return false;
+        }
+        const $start = state.doc.resolve(pos);
+        const range = $start.blockRange(state.doc.resolve(pos + node.nodeSize), isBlockquote);
+        return liftRange(range)(state, dispatch);
+    };
+};
+
+/** outdents a list item nested in another list item, top level items are not changed */
+export const liftNestedListItem: Command = (state, dispatch, view) => {
+    const { $from } = state.selection;
+    for (let depth = $from.depth; depth > 2; depth--) {
+        if ($from.node(depth).type === nodes.list_item) {
+            const isNested = $from.node(depth - 2).type === nodes.list_item;
+            return isNested && liftListItem(nodes.list_item)(state, dispatch, view);
+        }
+    }
+    return false;
 };
 
 export const toggleBlockquote: Command = (state, dispatch, view) => {

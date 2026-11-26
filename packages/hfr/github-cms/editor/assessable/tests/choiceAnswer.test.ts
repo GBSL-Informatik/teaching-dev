@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseMarkdown } from '../../markdown';
 import type { JsxAttribute } from '../../schema';
-import { correctOptions, optionList, withCorrectOption } from '../choiceAnswer';
+import { correctOptions, optionList, quotedOptionsOffset, withCorrectOption } from '../choiceAnswer';
 
 const correct = (value: string): JsxAttribute[] => [{ type: 'expressionAttribute', name: 'correct', value }];
 
@@ -40,5 +40,21 @@ describe('optionList', () => {
         const options = optionList(doc.firstChild!);
         expect(options?.list.type.name).toBe('ordered_list');
         expect(options?.list.childCount).toBe(2);
+    });
+});
+
+describe('quotedOptionsOffset', () => {
+    const question = (body: string) =>
+        parseMarkdown(`<ChoiceAnswer>\n${body}\n</ChoiceAnswer>\n`).doc.firstChild!;
+
+    it('finds a list in the quote of a question without options', () => {
+        const choiceAnswer = question('    > Frage\n    >\n    > 1. A');
+        const offset = quotedOptionsOffset(choiceAnswer);
+        expect(offset).not.toBeNull();
+        expect(choiceAnswer.nodeAt(offset!)?.type.name).toBe('ordered_list');
+    });
+
+    it('ignores quoted lists when the question has options', () => {
+        expect(quotedOptionsOffset(question('    > - Fakt\n\n    1. A'))).toBeNull();
     });
 });

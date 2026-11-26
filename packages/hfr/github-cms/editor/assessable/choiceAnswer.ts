@@ -34,6 +34,8 @@ export const withCorrectOption = (
     return withAttribute(attributes, 'correct', { type: 'expressionAttribute', name: 'correct', value });
 };
 
+const isList = (node: Node) => node.type === nodes.ordered_list || node.type === nodes.bullet_list;
+
 /**
  * The options are the items of the first list in the question,
  * see `src/plugins/remark-transform-assessable-components`.
@@ -41,10 +43,31 @@ export const withCorrectOption = (
 export const optionList = (choiceAnswer: Node): { list: Node; offset: number } | null => {
     let found: { list: Node; offset: number } | null = null;
     choiceAnswer.forEach((child, offset) => {
-        const isList = child.type === nodes.ordered_list || child.type === nodes.bullet_list;
-        if (!found && isList) {
+        if (!found && isList(child)) {
             found = { list: child, offset };
         }
+    });
+    return found;
+};
+
+/**
+ * The offset of a list in a quote of a question without options, e.g. typed right after
+ * the question `> Frage`. Not shown as options on the page, see `optionList`.
+ */
+export const quotedOptionsOffset = (choiceAnswer: Node): number | null => {
+    if (optionList(choiceAnswer)) {
+        return null;
+    }
+    let found: number | null = null;
+    choiceAnswer.forEach((child, offset) => {
+        if (found !== null || child.type !== nodes.blockquote) {
+            return;
+        }
+        child.forEach((grandchild, innerOffset) => {
+            if (found === null && isList(grandchild)) {
+                found = offset + 1 + innerOffset;
+            }
+        });
     });
     return found;
 };
