@@ -54,6 +54,13 @@ export const numberAttribute = (attributes: JsxAttribute[], name: string): numbe
     return attribute.type === 'expressionAttribute' ? (numberLiteral(attribute.value) ?? null) : null;
 };
 
+/** an attribute written as expression, e.g. `correct={[1, 3]}` */
+export const expressionAttribute = (name: string, value: string): JsxAttribute => ({
+    type: 'expressionAttribute',
+    name,
+    value
+});
+
 /** a boolean attribute set to true, e.g. `multiple` */
 export const flagAttribute = (name: string): JsxAttribute => ({ type: 'attribute', name, value: null });
 

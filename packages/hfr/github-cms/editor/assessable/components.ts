@@ -2,8 +2,8 @@ import type { Node, ResolvedPos } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
 import { paragraph } from '../commands';
 import type { ImportSpec } from '../imports';
-import { findAttribute, flagAttribute } from '../jsxAttributes';
-import { isJsxFlow, type JsxAttribute, schema } from '../schema';
+import { expressionAttribute, findAttribute, flagAttribute } from '../jsxAttributes';
+import { isJsxFlow, schema } from '../schema';
 import { idAttribute } from '../uuid';
 import { withHintConditions } from './hint';
 
@@ -66,12 +66,6 @@ export const TRUE_FALSE_ANSWER_IMPORT: ImportSpec = {
 };
 export const HINT_IMPORT: ImportSpec = { name: HINT, source: `${ASSESSABLE_SOURCE}/Feedback/Hint` };
 
-const expression = (name: string, value: string): JsxAttribute => ({
-    type: 'expressionAttribute',
-    name,
-    value
-});
-
 const options = (labels: string[]) => {
     const items = labels.map((label) => nodes.list_item.create(null, paragraph(label)));
     return nodes.ordered_list.create(null, items);
@@ -79,7 +73,10 @@ const options = (labels: string[]) => {
 
 /** the questions of a quiz have no `id`: they are stored in the document of the quiz */
 export const createChoiceAnswer = (isInQuiz: boolean, multiple: boolean) => {
-    const attributes = [expression('correct', '[1]'), ...(multiple ? [flagAttribute('multiple')] : [])];
+    const attributes = [
+        expressionAttribute('correct', '[1]'),
+        ...(multiple ? [flagAttribute('multiple')] : [])
+    ];
     return nodes.jsx_flow.create(
         { name: CHOICE_ANSWER, attributes: isInQuiz ? attributes : [...attributes, idAttribute()] },
         [paragraph('Frage'), options(['Antwort 1', 'Antwort 2', 'Antwort 3'])]
@@ -87,7 +84,7 @@ export const createChoiceAnswer = (isInQuiz: boolean, multiple: boolean) => {
 };
 
 export const createTrueFalseAnswer = (isInQuiz: boolean) => {
-    const attributes = [expression('correct', 'true')];
+    const attributes = [expressionAttribute('correct', 'true')];
     return nodes.jsx_flow.create(
         { name: TRUE_FALSE_ANSWER, attributes: isInQuiz ? attributes : [...attributes, idAttribute()] },
         paragraph('Aussage')

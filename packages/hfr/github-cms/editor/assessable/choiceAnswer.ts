@@ -1,5 +1,5 @@
 import type { Node } from 'prosemirror-model';
-import { findAttribute, withAttribute } from '../jsxAttributes';
+import { expressionAttribute, findAttribute, withAttribute } from '../jsxAttributes';
 import { type JsxAttribute, schema } from '../schema';
 
 const { nodes } = schema;
@@ -31,7 +31,7 @@ export const withCorrectOption = (
     const others = correct.filter((number) => number !== option);
     const updated = (isCorrect ? [...others, option] : others).sort((a, b) => a - b);
     const value = `[${updated.join(', ')}]`;
-    return withAttribute(attributes, 'correct', { type: 'expressionAttribute', name: 'correct', value });
+    return withAttribute(attributes, 'correct', expressionAttribute('correct', value));
 };
 
 const isList = (node: Node) => node.type === nodes.ordered_list || node.type === nodes.bullet_list;

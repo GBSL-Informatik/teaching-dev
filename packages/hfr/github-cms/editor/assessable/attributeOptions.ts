@@ -1,6 +1,7 @@
 import type { Node } from 'prosemirror-model';
 import {
     booleanAttribute,
+    expressionAttribute,
     findAttribute,
     flagAttribute,
     stringAttribute,
@@ -161,7 +162,6 @@ export const withNumberValue = (
     name: string,
     value: number | undefined
 ): JsxAttribute[] => {
-    const updated: JsxAttribute | null =
-        value === undefined ? null : { type: 'expressionAttribute', name, value: `${value}` };
+    const updated: JsxAttribute | null = value === undefined ? null : expressionAttribute(name, `${value}`);
     return withAttribute(attributes, name, updated);
 };

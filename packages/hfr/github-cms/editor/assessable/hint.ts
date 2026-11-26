@@ -1,8 +1,8 @@
 import type { AlertType } from '@tdev-components/shared/Alert';
-import { findAttribute, stringAttribute, withAttribute } from '../jsxAttributes';
+import { expressionAttribute, findAttribute, stringAttribute, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
 
-export interface HintCondition {
+interface HintCondition {
     value: string;
     label: string;
     /** the color of the hint on the page, see `ColorMapping` of `Feedback/Hint` */
@@ -52,7 +52,7 @@ export const withHintConditions = (attributes: JsxAttribute[], conditions: strin
         return withAttribute(attributes, 'when', value ? { type: 'attribute', name: 'when', value } : null);
     }
     const list = `[${ordered.map((condition) => `'${condition}'`).join(', ')}]`;
-    return withAttribute(attributes, 'when', { type: 'expressionAttribute', name: 'when', value: list });
+    return withAttribute(attributes, 'when', expressionAttribute('when', list));
 };
 
 /** all values of `AlertType`, the type checks that none is unknown */

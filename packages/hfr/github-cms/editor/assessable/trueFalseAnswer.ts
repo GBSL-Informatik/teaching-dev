@@ -1,4 +1,4 @@
-import { booleanAttribute, withAttribute } from '../jsxAttributes';
+import { booleanAttribute, expressionAttribute, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
 
 /** the attributes setting the answer, see `TrueFalseAnswer`'s `ModelMeta` */
@@ -20,7 +20,7 @@ export const isStatementTrue = (attributes: JsxAttribute[]): boolean | null => {
 
 /** writes the answer as `correct={true}` or `correct={false}`, replacing its other forms */
 export const withStatementTrue = (attributes: JsxAttribute[], isTrue: boolean): JsxAttribute[] => {
-    const correct: JsxAttribute = { type: 'expressionAttribute', name: 'correct', value: `${isTrue}` };
+    const correct = expressionAttribute('correct', `${isTrue}`);
     const otherForms = NAMES.filter((name) => name !== 'correct');
     return otherForms.reduce(
         (result, name) => withAttribute(result, name, null),

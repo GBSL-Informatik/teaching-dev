@@ -25,9 +25,6 @@ const MODAL_OVERLAY = { background: 'rgba(0,0,0,0.5)' };
 const AttributeOptions = observer(({ handle }: NodeViewProps) => {
     const isMobileView = useIsMobileView();
     const options = attributeOptions(handle.node);
-    if (options.length === 0) {
-        return null;
-    }
     const attributes: JsxAttribute[] = handle.node.attrs.attributes;
 
     const handleChange = (updated: JsxAttribute[]) => handle.updateAttrs({ attributes: updated });
@@ -62,7 +59,6 @@ const AttributeOptions = observer(({ handle }: NodeViewProps) => {
             position={['bottom left', 'bottom right', 'top left']}
             on="click"
             closeOnDocumentClick
-            nested
             arrow={false}
         >
             <Card

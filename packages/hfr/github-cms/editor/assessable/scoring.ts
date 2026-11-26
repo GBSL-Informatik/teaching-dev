@@ -1,5 +1,11 @@
 import type { ImportSpec } from '../imports';
-import { booleanLiteral, findAttribute, numberLiteral, withAttribute } from '../jsxAttributes';
+import {
+    booleanLiteral,
+    expressionAttribute,
+    findAttribute,
+    numberLiteral,
+    withAttribute
+} from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
 
 /**
@@ -18,7 +24,7 @@ export interface Parameter {
     optional: boolean;
 }
 
-export interface ScoringFunction {
+interface ScoringFunction {
     name: string;
     label: string;
     parameters: Parameter[];
@@ -82,7 +88,7 @@ export const scoringAttribute = (attributes: JsxAttribute[]): ScoringAttribute =
 /** `null` removes the `scoring` attribute */
 export const withScoring = (attributes: JsxAttribute[], scoring: Scoring | null): JsxAttribute[] => {
     const updated: JsxAttribute | null = scoring
-        ? { type: 'expressionAttribute', name: 'scoring', value: scoringExpression(scoring) }
+        ? expressionAttribute('scoring', scoringExpression(scoring))
         : null;
     return withAttribute(attributes, 'scoring', updated);
 };
