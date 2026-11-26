@@ -3,6 +3,9 @@
     padding: 0.5em 0.8em;
     font-size: 0.85em;
     box-shadow: var(--ifm-global-shadow-md);
+    &.modal {
+        width: min(24em, 90vw);
+    }
     .option {
         padding: 0.2em 0;
         &.scoring {
@@ -21,5 +24,12 @@
                 justify-content: flex-start;
             }
         }
+    }
+}
+
+/* only the icon, when the bar is narrow, e.g. on a phone */
+@container (max-width: 20em) {
+    .label {
+        display: none;
     }
 }

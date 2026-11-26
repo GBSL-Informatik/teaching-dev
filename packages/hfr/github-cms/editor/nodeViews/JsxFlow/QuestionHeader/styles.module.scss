@@ -9,7 +9,9 @@
         font-weight: var(--ifm-font-weight-bold);
         font-size: 1.1em;
     }
+    /* the bar takes the space next to the title: it has no width of its own, see `container-type` */
     .bar {
+        flex: 1 1 12em;
         margin: 0;
     }
 }

@@ -1,4 +1,6 @@
 .bar {
+    /* e.g. the label of the options button is hidden when the bar is narrow */
+    container-type: inline-size;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
