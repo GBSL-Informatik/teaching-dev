@@ -4,7 +4,7 @@ import { type EditorState, NodeSelection, TextSelection, type Transaction } from
 import type { EditorView, NodeView, NodeViewConstructor, ViewMutationRecord } from 'prosemirror-view';
 import React, { type ReactPortal } from 'react';
 import { createPortal } from 'react-dom';
-import { addImport, type ImportSpec } from '../imports';
+import { addImports, type ImportSpec } from '../imports';
 
 /**
  * Focuses ProseMirror, keeping its selection. `view.focus()` focuses the editor before it sets the browser
@@ -111,7 +111,7 @@ export class NodeViewHandle {
         }
         const { state, dispatch } = this.editor;
         const tr = state.tr.setNodeMarkup(pos, undefined, { ...this.node.attrs, ...attrs });
-        dispatch(imports.reduce((current, spec) => addImport(current, spec), tr));
+        dispatch(addImports(tr, imports));
     }
 
     /** inserts the node at the start of the content of this node, e.g. the label of a directive */

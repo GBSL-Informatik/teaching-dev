@@ -21,9 +21,15 @@ const CONDITION_LIST_PATTERN = /^\s*\[\s*(['"]\w+['"]\s*,\s*)*(['"]\w+['"])?\s*,
 
 /**
  * The conditions of `<Hint when="correct">` or `<Hint when={['correct', 'incorrect']}>`,
- * `null` when they are not written as a string or a list of strings, e.g. a function.
+ * `null` when they are not written as a string or a list of known conditions, e.g. a function.
  */
 export const hintConditions = (attributes: JsxAttribute[]): string[] | null => {
+    const conditions = writtenConditions(attributes);
+    const isKnown = (condition: string) => HINT_CONDITIONS.some(({ value }) => value === condition);
+    return conditions?.every(isKnown) ? conditions : null;
+};
+
+const writtenConditions = (attributes: JsxAttribute[]): string[] | null => {
     const attribute = findAttribute(attributes, 'when');
     if (!attribute) {
         return [];
@@ -48,7 +54,8 @@ export const withHintConditions = (attributes: JsxAttribute[], conditions: strin
     return withAttribute(attributes, 'when', { type: 'expressionAttribute', name: 'when', value: list });
 };
 
-const ALERT_COLORS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'];
+/** see `AlertType` of `@tdev-components/shared/Alert` */
+const ALERT_COLORS = ['primary', 'secondary', 'blue', 'success', 'info', 'warning', 'danger'];
 
 /** the `color` attribute, else the color of the first condition */
 export const hintColor = (attributes: JsxAttribute[]): string => {

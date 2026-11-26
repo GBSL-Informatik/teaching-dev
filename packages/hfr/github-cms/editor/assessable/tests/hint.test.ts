@@ -14,8 +14,10 @@ describe('hintConditions', () => {
         ]);
     });
 
-    it('rejects functions', () => {
+    it('rejects functions and unknown conditions', () => {
         expect(hintConditions(whenList('(doc) => ({ show: true })'))).toBeNull();
+        expect(hintConditions(whenList(`['correct', 'corect']`))).toBeNull();
+        expect(hintConditions(when('always'))).toBeNull();
     });
 });
 

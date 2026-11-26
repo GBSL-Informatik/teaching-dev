@@ -21,12 +21,13 @@ export interface ImportSpec {
  */
 export const withImports = (command: Command, specs: ImportSpec[]): Command => {
     return (state, dispatch, view) => {
-        const addAllImports = (tr: Transaction) =>
-            specs.reduce((current, spec) => addImport(current, spec), tr);
-        const dispatchWithImports = dispatch && ((tr: Transaction) => dispatch(addAllImports(tr)));
+        const dispatchWithImports = dispatch && ((tr: Transaction) => dispatch(addImports(tr, specs)));
         return command(state, dispatchWithImports, view);
     };
 };
+
+export const addImports = (tr: Transaction, specs: ImportSpec[]): Transaction =>
+    specs.reduce((current, spec) => addImport(current, spec), tr);
 
 /**
  * Adds the import to the first esm block, or to a new one after the frontmatter.
@@ -86,10 +87,10 @@ const findNamedImportEnd = (esmBlocks: EsmBlock[], source: string): number | und
         const declaration = importDeclarations(node.textContent).find(
             (declaration) => declaration.source.value === source && hasNamedSpecifiers(declaration)
         );
-        const lastSpecifier = declaration?.specifiers.at(-1);
-        if (lastSpecifier) {
+        const end = declaration?.specifiers.at(-1)?.range?.[1];
+        if (end !== undefined) {
             // the offsets of estree are relative to the text of the block, its content starts at `pos + 1`
-            return pos + 1 + (lastSpecifier as unknown as { end: number }).end;
+            return pos + 1 + end;
         }
     }
     return undefined;

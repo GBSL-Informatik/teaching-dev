@@ -1,7 +1,7 @@
 import type { Node, ResolvedPos } from 'prosemirror-model';
 import { type Command, TextSelection } from 'prosemirror-state';
 import { stringAttribute } from './jsxAttributes';
-import { type JsxAttribute, schema } from './schema';
+import { isJsxFlow, type JsxAttribute, schema } from './schema';
 
 const { nodes } = schema;
 
@@ -9,9 +9,8 @@ const { nodes } = schema;
  * `<Tabs>` with `<TabItem value="..." label="...">` children, see
  * https://docusaurus.io/docs/markdown-features/tabs
  */
-const isJsx = (node: Node, name: string) => node.type === nodes.jsx_flow && node.attrs.name === name;
-export const isTabs = (node: Node) => isJsx(node, 'Tabs');
-export const isTabItem = (node: Node) => isJsx(node, 'TabItem');
+export const isTabs = (node: Node) => isJsxFlow(node, 'Tabs');
+export const isTabItem = (node: Node) => isJsxFlow(node, 'TabItem');
 
 export interface TabItemChild {
     node: Node;

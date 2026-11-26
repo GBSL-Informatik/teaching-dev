@@ -1,8 +1,9 @@
 import type { Node, ResolvedPos } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
+import { paragraph } from '../commands';
 import type { ImportSpec } from '../imports';
-import { type JsxAttribute, schema } from '../schema';
-import { newUuid } from '../uuid';
+import { isJsxFlow, type JsxAttribute, schema } from '../schema';
+import { idAttribute } from '../uuid';
 
 const { nodes } = schema;
 
@@ -15,11 +16,10 @@ const CHOICE_ANSWER = 'ChoiceAnswer';
 const TRUE_FALSE_ANSWER = 'TrueFalseAnswer';
 const HINT = 'Hint';
 
-const isJsx = (node: Node, name: string) => node.type === nodes.jsx_flow && node.attrs.name === name;
-export const isQuiz = (node: Node) => isJsx(node, QUIZ);
-export const isChoiceAnswer = (node: Node) => isJsx(node, CHOICE_ANSWER);
-export const isTrueFalseAnswer = (node: Node) => isJsx(node, TRUE_FALSE_ANSWER);
-export const isHint = (node: Node) => isJsx(node, HINT);
+export const isQuiz = (node: Node) => isJsxFlow(node, QUIZ);
+export const isChoiceAnswer = (node: Node) => isJsxFlow(node, CHOICE_ANSWER);
+export const isTrueFalseAnswer = (node: Node) => isJsxFlow(node, TRUE_FALSE_ANSWER);
+export const isHint = (node: Node) => isJsxFlow(node, HINT);
 const isQuestion = (node: Node) => isChoiceAnswer(node) || isTrueFalseAnswer(node);
 /** the components with a `scoring` attribute, the questions inherit the scoring of their quiz */
 export const isScored = (node: Node) => isQuiz(node) || isQuestion(node);
@@ -48,8 +48,6 @@ export const TRUE_FALSE_ANSWER_IMPORT: ImportSpec = {
 };
 export const HINT_IMPORT: ImportSpec = { name: HINT, source: `${ASSESSABLE_SOURCE}/Feedback/Hint` };
 
-const paragraph = (text: string) => nodes.paragraph.create(null, schema.text(text));
-const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: newUuid() });
 const flag = (name: string): JsxAttribute => ({ type: 'attribute', name, value: null });
 const expression = (name: string, value: string): JsxAttribute => ({
     type: 'expressionAttribute',

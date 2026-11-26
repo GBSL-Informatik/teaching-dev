@@ -317,6 +317,8 @@ export const insertFrontmatter: Command = (state, dispatch) => {
     return true;
 };
 
+export const paragraph = (text?: string) => nodes.paragraph.create(null, text ? schema.text(text) : null);
+
 export const createNode = (type: NodeType, attrs: Attrs | null, content?: Node | Node[]) => {
     return type.createAndFill(attrs, content)!;
 };

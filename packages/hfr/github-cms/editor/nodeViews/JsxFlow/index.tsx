@@ -12,9 +12,10 @@ import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/Attri
 import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
+import { findAttribute } from '../../jsxAttributes';
 import { jsxOpeningTagOf, parseJsxOpeningTag, withJsxOpeningTag } from '../../markdown/jsxOpeningTag';
 import { jsxAttributes } from '../../markdown/serialize';
-import { type JsxAttribute, schema } from '../../schema';
+import { schema } from '../../schema';
 import { isTabItem, isTabs } from '../../tabs';
 import type { NodeViewProps } from '../ReactNodeView';
 import AssessableBar from './AssessableBar';
@@ -23,16 +24,13 @@ import HintConditions from './HintConditions';
 import styles from './styles.module.scss';
 import TabsBar from './TabsBar';
 
-const hasAttribute = (attributes: JsxAttribute[], name: string) =>
-    attributes.some((attribute) => attribute.type !== 'spread' && attribute.name === name);
-
 /** `<CodeShowcase>` shows its children in a `<BrowserWindow>`, unless `noBrowserWindow` is set */
 const isBrowserWindow = (node: Node) => {
     const { name, attributes } = node.attrs;
     if (name === 'BrowserWindow') {
         return true;
     }
-    return name === 'CodeShowcase' && !hasAttribute(attributes, 'noBrowserWindow');
+    return name === 'CodeShowcase' && !findAttribute(attributes, 'noBrowserWindow');
 };
 
 /** `<BrowserWindow>` and `<CodeShowcase>` are framed like on the rendered page */

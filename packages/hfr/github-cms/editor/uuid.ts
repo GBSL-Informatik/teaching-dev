@@ -1,5 +1,6 @@
 import { mdiRefresh } from '@mdi/js';
 import { v4 as uuidv4 } from 'uuid';
+import type { JsxAttribute } from './schema';
 
 const UUID_V4_SOURCE = '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
 
@@ -36,6 +37,9 @@ export const duplicatedUuids = (text: string): DuplicatedUuid[] => {
 };
 
 export const newUuid = (): string => uuidv4();
+
+/** the `id` of a new persisted component, e.g. `<Answer>` */
+export const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: newUuid() });
 
 /**
  * The button rendered next to a uuid to replace it with a new one.

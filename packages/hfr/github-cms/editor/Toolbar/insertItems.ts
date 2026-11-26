@@ -34,7 +34,6 @@ import {
 } from '@mdi/js';
 import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
-import { v4 as uuidv4 } from 'uuid';
 import {
     CHOICE_ANSWER_IMPORT,
     createChoiceAnswer,
@@ -47,12 +46,21 @@ import {
     QUIZ_IMPORT,
     TRUE_FALSE_ANSWER_IMPORT
 } from '../assessable/components';
-import { createNode, createTable, insertBlock, insertInline, insertInlineMdx, startIcon } from '../commands';
+import {
+    createNode,
+    createTable,
+    insertBlock,
+    insertInline,
+    insertInlineMdx,
+    paragraph,
+    startIcon
+} from '../commands';
 import { type ImportSpec, withImports } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { isInDirectiveItem } from '../plugins/directiveItems';
 import { ITEMS_DIRECTIVES, type JsxAttribute, schema } from '../schema';
 import { createTabItem, insertTabItem } from '../tabs';
+import { idAttribute } from '../uuid';
 
 const { nodes } = schema;
 
@@ -72,8 +80,6 @@ export type MenuItem =
     | (MenuItemBase & { inline: true; create: () => Node })
     | (MenuItemBase & { inline?: false; create: () => Node | Node[] })
     | (MenuItemBase & { command: Command });
-
-const paragraph = (text?: string) => nodes.paragraph.create(null, text ? schema.text(text) : null);
 
 const directive = (name: string, label?: string) => {
     const content = label
@@ -110,8 +116,6 @@ const emptyOrderedList = () =>
 
 /** mdx only recognizes `import`/`export` at the top level of the document */
 const isInTopLevelBlock = (state: EditorState) => state.selection.$from.depth === 1;
-
-const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: uuidv4() });
 
 /** the type can be changed in the admonition itself */
 const DEFAULT_ADMONITION = ADMONITION_TYPES.includes('info') ? 'info' : ADMONITION_TYPES[0];

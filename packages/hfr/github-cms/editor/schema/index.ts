@@ -389,3 +389,7 @@ export type NodeName = keyof typeof nodes;
 export type MarkName = keyof typeof marks;
 
 export const schema = new Schema<NodeName, MarkName>({ nodes, marks });
+
+/** a jsx element with children, e.g. `<Tabs>` */
+export const isJsxFlow = (node: Node, name: string) =>
+    node.type === schema.nodes.jsx_flow && node.attrs.name === name;
