@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { isChoiceAnswer, isTrueFalseAnswer } from '../../../assessable/components';
 import type { NodeViewProps } from '../../ReactNodeView';
+import AttributeOptions from './AttributeOptions';
 import ChoiceKind from './ChoiceKind';
 import QuotedOptionsNote from './QuotedOptionsNote';
 import ScoringSelect from './ScoringSelect';
@@ -25,6 +26,7 @@ const AssessableBar = observer(({ handle, className }: Props) => {
             {isChoiceAnswer(handle.node) && <QuotedOptionsNote handle={handle} />}
             {isTrueFalseAnswer(handle.node) && <TrueFalseChoice handle={handle} />}
             <ScoringSelect handle={handle} />
+            <AttributeOptions handle={handle} />
         </div>
     );
 });

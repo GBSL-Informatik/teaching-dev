@@ -1,21 +1,5 @@
-import { findAttribute, withAttribute } from '../jsxAttributes';
+import { booleanAttribute, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
-
-/** `isTrue`, `correct={false}`... `undefined` when not written, `null` when not a boolean literal */
-const booleanAttribute = (attributes: JsxAttribute[], name: string): boolean | undefined | null => {
-    const attribute = findAttribute(attributes, name);
-    if (!attribute) {
-        return undefined;
-    }
-    if (attribute.type === 'attribute') {
-        return attribute.value === null ? true : null;
-    }
-    const value = attribute.value.trim();
-    if (value === 'true' || value === 'false') {
-        return value === 'true';
-    }
-    return null;
-};
 
 /** the attributes setting the answer, see `TrueFalseAnswer`'s `ModelMeta` */
 const NAMES = ['isTrue', 'correct', 'isFalse', 'incorrect'];

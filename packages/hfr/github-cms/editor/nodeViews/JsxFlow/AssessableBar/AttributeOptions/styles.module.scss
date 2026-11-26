@@ -1,0 +1,32 @@
+.options {
+    min-width: 14em;
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+    box-shadow: var(--ifm-global-shadow-md);
+    .option {
+        padding: 0.2em 0;
+        label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5em;
+            cursor: pointer;
+            /* the checkbox before its label, other inputs after it */
+            &:has(input[type='checkbox']) {
+                justify-content: flex-start;
+            }
+        }
+        select,
+        input[type='number'] {
+            padding: 0.1em 0.3em;
+            border: 1px solid var(--ifm-color-emphasis-300);
+            border-radius: var(--ifm-global-radius);
+            background: var(--ifm-background-color);
+            color: var(--ifm-font-color-base);
+            font-size: inherit;
+        }
+        input[type='number'] {
+            width: 5em;
+        }
+    }
+}

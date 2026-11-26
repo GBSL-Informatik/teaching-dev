@@ -17,6 +17,25 @@ export const stringAttribute = (attributes: JsxAttribute[], name: string) => {
 };
 
 /**
+ * A boolean attribute, written as flag (`multiple`) or literal (`correct={false}`).
+ * `undefined` when not written, `null` when not a boolean literal, e.g. `correct={isTrue}`.
+ */
+export const booleanAttribute = (attributes: JsxAttribute[], name: string): boolean | undefined | null => {
+    const attribute = findAttribute(attributes, name);
+    if (!attribute) {
+        return undefined;
+    }
+    if (attribute.type === 'attribute') {
+        return attribute.value === null ? true : null;
+    }
+    const value = attribute.value.trim();
+    if (value === 'true' || value === 'false') {
+        return value === 'true';
+    }
+    return null;
+};
+
+/**
  * Replaces the attribute with the same name in place, or adds it at the end.
  * `null` removes the attribute.
  */
