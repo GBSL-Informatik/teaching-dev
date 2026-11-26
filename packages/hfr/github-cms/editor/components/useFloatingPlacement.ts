@@ -2,8 +2,7 @@ import React from 'react';
 
 export interface FloatingPlacement {
     left: number;
-    top?: number;
-    bottom?: number;
+    top: number;
     /** the width of the anchor, see `matchAnchorWidth` */
     minWidth?: number;
 }
@@ -57,7 +56,7 @@ export const placeCentered = (anchor: DOMRect, width: number, height: number): F
     if (!shouldPlaceAbove(anchor, height)) {
         return { left, top: anchor.bottom + GAP };
     }
-    return { left, bottom: window.innerHeight - anchor.top + GAP };
+    return { left, top: anchor.top - height - GAP };
 };
 
 /**

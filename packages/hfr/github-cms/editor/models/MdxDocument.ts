@@ -1,5 +1,5 @@
 import { debounce } from 'es-toolkit';
-import { action, actionBound, computedStruct, observable, observableRef } from 'mobx';
+import { action, actionBound, computed, computedStruct, observable, observableRef } from 'mobx';
 import type { MarkType, NodeType } from 'prosemirror-model';
 import { type Command, EditorState, type Transaction } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
@@ -165,15 +165,18 @@ class MdxDocument implements NodeViewEditor {
     }
 
     /**
-     * The link around the cursor, `null` with a selection - observes the state.
+     * The link to edit at the selection, see `linkAtSelection` - observes the state.
      * Compared structurally: observers re-render when the link changes, not on every transaction.
      */
     @computedStruct
-    get linkAtCursor(): LinkRange | null {
-        if (!this.state.selection.empty) {
-            return null;
-        }
+    get selectedLink(): LinkRange | null {
         return linkAtSelection(this.state);
+    }
+
+    /** the link around the cursor, `null` with a selection - observes the state */
+    @computed
+    get linkAtCursor(): LinkRange | null {
+        return this.state.selection.empty ? this.selectedLink : null;
     }
 
     /** whether the selection is inside a node of the given type - observes the state */
