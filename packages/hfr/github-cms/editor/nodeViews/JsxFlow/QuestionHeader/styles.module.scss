@@ -1,14 +1,10 @@
-/* like `Assessable/QuestionCard`, below the toolbar with the tag */
+/* like `Assessable/QuestionCard`, below the toolbar with the tag. Its background is set by the editor */
 .header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.3em 1em;
     padding: 0.3em 0.8em;
-    background: var(--ifm-color-secondary-lightest);
-    :global(html[data-theme='dark']) & {
-        background: var(--ifm-color-secondary-contrast-background);
-    }
     .title {
         font-weight: var(--ifm-font-weight-bold);
         font-size: 1.1em;

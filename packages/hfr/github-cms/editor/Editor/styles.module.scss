@@ -228,6 +228,11 @@
             background: var(--ifm-card-background-color);
             border-radius: var(--ifm-card-border-radius);
             box-shadow: var(--ifm-global-shadow-lw);
+            /* the toolbar and the card header, see `nodeViews/JsxFlow/QuestionHeader` */
+            > .cms-node-view-component {
+                background: var(--ifm-color-secondary-lightest);
+                border-radius: var(--ifm-card-border-radius) var(--ifm-card-border-radius) 0 0;
+            }
             > .cms-node-view-content {
                 padding: 0.5em 0.8em 0.2em 0.8em;
             }
@@ -383,6 +388,10 @@
             }
         }
     }
+}
+
+:global(html[data-theme='dark']) .prosemirror :global(.cms-jsx--question > .cms-node-view-component) {
+    background: var(--ifm-color-secondary-contrast-background);
 }
 
 :global(html[data-theme='dark']) .prosemirror :global(.cms-directive--def) {
