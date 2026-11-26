@@ -1,5 +1,5 @@
-import type { Parameter } from '../../../../assessable/scoring';
-import NumberInput from '../NumberInput';
+import type { Parameter } from '../../../../../assessable/scoring';
+import NumberInput from '../../NumberInput';
 
 interface Props {
     parameter: Parameter;

@@ -8,10 +8,10 @@ import {
     withScoring,
     type Scoring,
     type ScoringAttribute
-} from '../../../../assessable/scoring';
-import type { JsxAttribute } from '../../../../schema';
-import type { NodeViewProps } from '../../../ReactNodeView';
-import styles from '../styles.module.scss';
+} from '../../../../../assessable/scoring';
+import type { JsxAttribute } from '../../../../../schema';
+import type { NodeViewProps } from '../../../../ReactNodeView';
+import styles from '../../styles.module.scss';
 import ArgumentInput from './ArgumentInput';
 
 const NONE = '';

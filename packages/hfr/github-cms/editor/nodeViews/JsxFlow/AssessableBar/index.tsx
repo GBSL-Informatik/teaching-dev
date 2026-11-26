@@ -5,7 +5,6 @@ import type { NodeViewProps } from '../../ReactNodeView';
 import AttributeOptions from './AttributeOptions';
 import ChoiceKind from './ChoiceKind';
 import QuotedOptionsNote from './QuotedOptionsNote';
-import ScoringSelect from './ScoringSelect';
 import styles from './styles.module.scss';
 import TrueFalseChoice from './TrueFalseChoice';
 
@@ -14,8 +13,8 @@ interface Props extends NodeViewProps {
 }
 
 /**
- * The settings of a `<Quiz>`, `<ChoiceAnswer>` or `<TrueFalseAnswer>` most often changed:
- * the kind of choice, the correct answer of true/false questions and the scoring.
+ * The settings of a `<Quiz>`, `<ChoiceAnswer>` or `<TrueFalseAnswer>`: the kind of choice and the
+ * correct answer of true/false questions, the scoring and other attributes in the options dropdown.
  * The correct options of a choice answer are ticked in the options, see `plugins/choiceOptions`.
  */
 const AssessableBar = observer(({ handle, className }: Props) => {
@@ -25,7 +24,6 @@ const AssessableBar = observer(({ handle, className }: Props) => {
             {isChoiceAnswer(handle.node) && <ChoiceKind handle={handle} />}
             {isChoiceAnswer(handle.node) && <QuotedOptionsNote handle={handle} />}
             {isTrueFalseAnswer(handle.node) && <TrueFalseChoice handle={handle} />}
-            <ScoringSelect handle={handle} />
             <AttributeOptions handle={handle} />
         </div>
     );

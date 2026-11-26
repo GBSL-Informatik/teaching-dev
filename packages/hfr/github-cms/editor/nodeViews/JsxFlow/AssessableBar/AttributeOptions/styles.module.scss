@@ -5,6 +5,11 @@
     box-shadow: var(--ifm-global-shadow-md);
     .option {
         padding: 0.2em 0;
+        &.scoring {
+            margin-bottom: 0.3em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid var(--ifm-color-emphasis-200);
+        }
         label {
             display: flex;
             align-items: center;

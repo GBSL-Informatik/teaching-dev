@@ -10,11 +10,12 @@ import type { JsxAttribute } from '../../../../schema';
 import type { NodeViewProps } from '../../../ReactNodeView';
 import FlagControl from './FlagControl';
 import NumberControl from './NumberControl';
+import ScoringSelect from './ScoringSelect';
 import SelectControl from './SelectControl';
 import styles from './styles.module.scss';
 
 /**
- * The documented attributes of a question or quiz less often changed, in a dropdown.
+ * The scoring and the other documented attributes of a question or quiz, in a dropdown.
  * Changes apply immediately, values not written as literals are edited in the tag.
  */
 const AttributeOptions = observer(({ handle }: NodeViewProps) => {
@@ -40,7 +41,12 @@ const AttributeOptions = observer(({ handle }: NodeViewProps) => {
         <Popup
             trigger={
                 <span>
-                    <Button icon={mdiTune} size={SIZE_S} text="Optionen" title="Weitere Einstellungen" />
+                    <Button
+                        icon={mdiTune}
+                        size={SIZE_S}
+                        text="Optionen"
+                        title="Bewertung und weitere Einstellungen"
+                    />
                 </span>
             }
             position={['bottom left', 'bottom right', 'top left']}
@@ -50,6 +56,9 @@ const AttributeOptions = observer(({ handle }: NodeViewProps) => {
             arrow={false}
         >
             <Card classNames={{ card: clsx(styles.options) }}>
+                <div className={clsx(styles.option, styles.scoring)}>
+                    <ScoringSelect handle={handle} />
+                </div>
                 {options.map((option) => (
                     <div key={option.name} className={clsx(styles.option)} title={option.title}>
                         {control(option)}
