@@ -6,7 +6,7 @@ import type { HintProps } from './components';
 const WHEN = 'when' satisfies keyof HintProps;
 const COLOR = 'color' satisfies keyof HintProps;
 
-/** the conditions of core as strings, e.g. `correct` or `assessed` */
+/** the conditions of core as written in MDX, e.g. `correct` or `assessed`: `Correctness` is an enum */
 type When = `${Extract<HintProps['when'], string>}`;
 
 interface HintCondition {

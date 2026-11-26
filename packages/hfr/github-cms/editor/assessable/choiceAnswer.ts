@@ -5,7 +5,8 @@ import type { ChoiceAnswerProps } from './components';
 
 const { nodes } = schema;
 
-const CORRECT = 'correct' satisfies keyof ChoiceAnswerProps;
+export const CORRECT = 'correct' satisfies keyof ChoiceAnswerProps;
+export const MULTIPLE = 'multiple' satisfies keyof ChoiceAnswerProps;
 
 const CORRECT_PATTERN = /^\s*\[\s*(\d+(\s*,\s*\d+)*)?\s*,?\s*\]\s*$/;
 

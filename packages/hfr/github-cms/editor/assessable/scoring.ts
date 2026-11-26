@@ -13,6 +13,7 @@ import type { ChoiceAnswerProps, QuizProps } from './components';
 /**
  * The scoring functions of `@tdev-components/documents/Assessable/helpers/scoring`,
  * set as `scoring={points(1, -0.5)}` on a question or a quiz.
+ * The same module as the `CoreScoring` type import at the top: change them together.
  */
 const SCORING_SOURCE = '@tdev-components/documents/Assessable/helpers/scoring';
 
@@ -22,7 +23,10 @@ export interface Parameter {
     label: string;
     title: string;
     defaultValue: Argument;
-    /** the scoring function has a default value, so the argument can be left out */
+    /**
+     * the scoring function has a default value, so the argument can be left out. Follows the default
+     * values of core, not its types: `allowNegativeTotal` of `multipleChoicePoints` is typed as required
+     */
     optional: boolean;
 }
 
@@ -36,7 +40,7 @@ const SCORING = 'scoring' satisfies keyof ChoiceAnswerProps & keyof QuizProps;
 
 type CoreName = keyof typeof CoreScoring;
 
-/** one parameter for each argument, with a default value of its type */
+/** one parameter for each argument, with a default value of its type. `-?`: optional arguments too */
 type ParametersOf<Args extends unknown[]> = {
     [Index in keyof Args]-?: Parameter & { defaultValue: NonNullable<Args[Index]> };
 };
@@ -47,7 +51,7 @@ const scoringFunction = <Name extends CoreName>(fn: {
     name: Name;
     label: string;
     parameters: CoreParameters<Name>;
-}): ScoringFunction => ({ ...fn, parameters: [...fn.parameters] });
+}): ScoringFunction => fn;
 
 export const SCORING_FUNCTIONS: ScoringFunction[] = [
     scoringFunction({

@@ -1,12 +1,10 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { flagValue, withFlag } from '../../../assessable/attributeOptions';
-import type { ChoiceAnswerProps } from '../../../assessable/components';
+import { MULTIPLE } from '../../../assessable/choiceAnswer';
 import type { JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
 import styles from './styles.module.scss';
-
-const MULTIPLE = 'multiple' satisfies keyof ChoiceAnswerProps;
 
 /** single or multiple choice, the `multiple` flag of `<ChoiceAnswer>`, an expression is edited in the tag */
 const ChoiceKind = observer(({ handle }: NodeViewProps) => {

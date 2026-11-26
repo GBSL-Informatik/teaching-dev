@@ -2,8 +2,10 @@ import { booleanAttribute, expressionAttribute, withAttribute } from '../jsxAttr
 import type { JsxAttribute } from '../schema';
 import type { TrueFalseAnswerProps } from './components';
 
+const CORRECT = 'correct' satisfies keyof TrueFalseAnswerProps;
+
 /** the attributes setting the answer, see `TrueFalseAnswer`'s `ModelMeta` */
-const NAMES = ['isTrue', 'correct', 'isFalse', 'incorrect'] satisfies (keyof TrueFalseAnswerProps)[];
+const NAMES = ['isTrue', CORRECT, 'isFalse', 'incorrect'] satisfies (keyof TrueFalseAnswerProps)[];
 
 /**
  * Whether the statement of `<TrueFalseAnswer>` is true, like `TrueFalseAnswer`'s model:
@@ -21,10 +23,10 @@ export const isStatementTrue = (attributes: JsxAttribute[]): boolean | null => {
 
 /** writes the answer as `correct={true}` or `correct={false}`, replacing its other forms */
 export const withStatementTrue = (attributes: JsxAttribute[], isTrue: boolean): JsxAttribute[] => {
-    const correct = expressionAttribute('correct', `${isTrue}`);
-    const otherForms = NAMES.filter((name) => name !== 'correct');
+    const correct = expressionAttribute(CORRECT, `${isTrue}`);
+    const otherForms = NAMES.filter((name) => name !== CORRECT);
     return otherForms.reduce(
         (result, name) => withAttribute(result, name, null),
-        withAttribute(attributes, 'correct', correct)
+        withAttribute(attributes, CORRECT, correct)
     );
 };

@@ -36,7 +36,7 @@ export interface SelectOption<
     Value extends string = string
 > extends OptionBase<Name> {
     kind: 'select';
-    /** one label for each value: the typecheck fails when core adds, renames or removes a value */
+    /** one label for each value: with `Value` given, the typecheck fails when core changes a value */
     labels: Record<Value, string>;
     defaultValue: Value;
 }
@@ -85,6 +85,19 @@ const RANDOMIZE_OPTIONS: FlagOption<'randomizeOptions'> = {
     title: 'Die Antwortoptionen in zufälliger Reihenfolge anzeigen (randomizeOptions)'
 };
 
+const RESET_MODE: SelectOption<'resetMode', QuizProps['resetMode']> = {
+    kind: 'select',
+    name: 'resetMode',
+    label: 'Zurücksetzen',
+    title: 'Welche Fragen beim Zurücksetzen des Quiz zurückgesetzt werden (resetMode)',
+    labels: {
+        all: 'alle Fragen',
+        incorrect: 'nur falsche Fragen',
+        noReset: 'nicht möglich'
+    },
+    defaultValue: 'all'
+};
+
 const CHOICE_ANSWER_OPTIONS: OptionsOf<ChoiceAnswerProps> = [
     RANDOMIZE_OPTIONS,
     ALLOW_SELECTION,
@@ -116,18 +129,7 @@ const QUIZ_OPTIONS: OptionsOf<QuizProps> = [
     },
     ALLOW_SELECTION,
     KEEP_EXPANDED,
-    {
-        kind: 'select',
-        name: 'resetMode',
-        label: 'Zurücksetzen',
-        title: 'Welche Fragen beim Zurücksetzen des Quiz zurückgesetzt werden (resetMode)',
-        labels: {
-            all: 'alle Fragen',
-            incorrect: 'nur falsche Fragen',
-            noReset: 'nicht möglich'
-        } satisfies Record<QuizProps['resetMode'], string>,
-        defaultValue: 'all' satisfies QuizProps['resetMode']
-    },
+    RESET_MODE,
     {
         kind: 'number',
         name: 'minPoints',

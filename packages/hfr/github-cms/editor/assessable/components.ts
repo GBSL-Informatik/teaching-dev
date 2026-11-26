@@ -1,4 +1,7 @@
+import type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
 import type Hint from '@tdev-components/documents/Assessable/Feedback/Hint';
+import type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
+import type { Props as TrueFalseAnswerProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
 import type { Node, ResolvedPos } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
 import type { ComponentProps } from 'react';
@@ -7,7 +10,9 @@ import type { ImportSpec } from '../imports';
 import { expressionAttribute, findAttribute, flagAttribute } from '../jsxAttributes';
 import { isJsxFlow, schema } from '../schema';
 import { idAttribute } from '../uuid';
+import { CORRECT, MULTIPLE } from './choiceAnswer';
 import { withHintConditions } from './hint';
+import { withStatementTrue } from './trueFalseAnswer';
 
 const { nodes } = schema;
 
@@ -48,7 +53,7 @@ export const standaloneQuestionsWithoutId = (doc: Node): number[] => {
         if (isQuiz(node)) {
             return false;
         }
-        if (isQuestion(node) && !findAttribute(node.attrs.attributes, 'id')) {
+        if (isQuestion(node) && !findAttribute(node.attrs.attributes, ID)) {
             positions.push(pos);
         }
         return true;
@@ -56,12 +61,15 @@ export const standaloneQuestionsWithoutId = (doc: Node): number[] => {
     return positions;
 };
 
-// The controls are typed against the props of core: renaming or removing a prop, a value or
-// a component fails the typecheck. Keep the import paths below in sync with the sources of the imports.
-export type { ChoiceAnswerProps } from '@tdev-components/documents/Assessable/ChoiceAnswer';
-export type { Props as QuizProps } from '@tdev-components/documents/Assessable/Quiz';
-export type { Props as TrueFalseAnswerProps } from '@tdev-components/documents/Assessable/TrueFalseAnswer';
+// The controls are typed against the props of core: renaming or removing a prop, a value or a component
+// fails the typecheck. The type imports of the props at the top name the same modules as the `*_IMPORT`
+// specs below: change them together.
+export type { ChoiceAnswerProps, QuizProps, TrueFalseAnswerProps };
+// `Feedback/Hint` does not export its props
 export type HintProps = ComponentProps<typeof Hint>;
+
+export const ID = 'id' satisfies keyof ChoiceAnswerProps & keyof TrueFalseAnswerProps & keyof QuizProps;
+export const TITLE = 'title' satisfies keyof ChoiceAnswerProps & keyof TrueFalseAnswerProps;
 
 const ASSESSABLE_SOURCE = '@tdev-components/documents/Assessable';
 export const QUIZ_IMPORT: ImportSpec = { name: QUIZ, source: `${ASSESSABLE_SOURCE}/Quiz` };
@@ -82,10 +90,7 @@ const options = (labels: string[]) => {
 
 /** the questions of a quiz have no `id`: they are stored in the document of the quiz */
 export const createChoiceAnswer = (isInQuiz: boolean, multiple: boolean) => {
-    const attributes = [
-        expressionAttribute('correct', '[1]'),
-        ...(multiple ? [flagAttribute('multiple')] : [])
-    ];
+    const attributes = [expressionAttribute(CORRECT, '[1]'), ...(multiple ? [flagAttribute(MULTIPLE)] : [])];
     return nodes.jsx_flow.create(
         { name: CHOICE_ANSWER, attributes: isInQuiz ? attributes : [...attributes, idAttribute()] },
         [paragraph('Frage'), options(['Antwort 1', 'Antwort 2', 'Antwort 3'])]
@@ -93,7 +98,7 @@ export const createChoiceAnswer = (isInQuiz: boolean, multiple: boolean) => {
 };
 
 export const createTrueFalseAnswer = (isInQuiz: boolean) => {
-    const attributes = [expressionAttribute('correct', 'true')];
+    const attributes = withStatementTrue([], true);
     return nodes.jsx_flow.create(
         { name: TRUE_FALSE_ANSWER, attributes: isInQuiz ? attributes : [...attributes, idAttribute()] },
         paragraph('Aussage')
