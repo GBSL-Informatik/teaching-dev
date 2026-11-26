@@ -38,7 +38,6 @@ const LinkForm = observer(({ document, initialHref, isLink, onClose }: Props) =>
             <TextInput label="URL" value={href} onChange={setHref} onEnter={handleApply} noSpellCheck />
             <div className={clsx(styles.actions)}>
                 {isLink && <Button icon={mdiLinkOff} text="Entfernen" color="red" onClick={handleRemove} />}
-                <Button text="Abbrechen" onClick={onClose} />
                 <Button text="Übernehmen" color="green" onClick={() => handleApply()} disabled={!href} />
             </div>
         </>

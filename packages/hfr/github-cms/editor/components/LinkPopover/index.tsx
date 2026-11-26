@@ -18,7 +18,7 @@ interface Props {
  */
 const LinkPopover = observer(({ document, link, title, trigger }: Props) => {
     return (
-        <InlinePopover title={title} onClose={() => document.focus()} trigger={trigger}>
+        <InlinePopover title={title} onClose={() => document.focus()} trigger={trigger} closeButton>
             {(close) => (
                 <LinkForm
                     document={document}
