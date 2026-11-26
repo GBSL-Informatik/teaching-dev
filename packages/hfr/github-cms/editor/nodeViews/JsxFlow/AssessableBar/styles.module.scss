@@ -1,0 +1,40 @@
+.bar {
+    /* e.g. the label of the options button is hidden when the bar is narrow */
+    container-type: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em 1em;
+    margin: 0 0 0.3em 0;
+    font-size: 0.85em;
+}
+
+/* the selects and number inputs of the bar and its options dropdown */
+.input {
+    padding: 0.1em 0.3em;
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    font-size: inherit;
+    &.number {
+        width: 5em;
+    }
+}
+
+.group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em 0.6em;
+    label {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+        cursor: pointer;
+    }
+}
+
+.warning {
+    color: var(--ifm-color-warning-darkest);
+}

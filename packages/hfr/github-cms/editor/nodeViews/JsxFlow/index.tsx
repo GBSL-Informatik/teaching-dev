@@ -5,22 +5,25 @@ import stepsStyles from '@tdev-components/Steps/styles.module.scss';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
+import { isHint, isQuestion, isQuiz } from '../../assessable/components';
+import { hintColor } from '../../assessable/hint';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
 import EditableTag from '../../components/EditableTag';
 import NodeToolbar from '../../components/NodeToolbar';
 import UuidAttributes from '../../components/UuidAttributes';
+import { findAttribute } from '../../jsxAttributes';
 import { jsxOpeningTagOf, parseJsxOpeningTag, withJsxOpeningTag } from '../../markdown/jsxOpeningTag';
 import { jsxAttributes } from '../../markdown/serialize';
-import { type JsxAttribute, schema } from '../../schema';
+import { schema } from '../../schema';
 import { isTabItem, isTabs } from '../../tabs';
 import type { NodeViewProps } from '../ReactNodeView';
+import AssessableBar from './AssessableBar';
 import BrowserWindowHeader from './BrowserWindowHeader';
+import HintConditions from './HintConditions';
+import QuestionHeader from './QuestionHeader';
 import styles from './styles.module.scss';
 import TabsBar from './TabsBar';
-
-const hasAttribute = (attributes: JsxAttribute[], name: string) =>
-    attributes.some((attribute) => attribute.type !== 'spread' && attribute.name === name);
 
 /** `<CodeShowcase>` shows its children in a `<BrowserWindow>`, unless `noBrowserWindow` is set */
 const isBrowserWindow = (node: Node) => {
@@ -28,7 +31,7 @@ const isBrowserWindow = (node: Node) => {
     if (name === 'BrowserWindow') {
         return true;
     }
-    return name === 'CodeShowcase' && !hasAttribute(attributes, 'noBrowserWindow');
+    return name === 'CodeShowcase' && !findAttribute(attributes, 'noBrowserWindow');
 };
 
 /** `<BrowserWindow>` and `<CodeShowcase>` are framed like on the rendered page */
@@ -42,6 +45,16 @@ export const jsxFlowClassName = (node: Node) => {
     }
     if (isTabItem(node)) {
         return 'cms-jsx cms-jsx--tab-item';
+    }
+    if (isQuiz(node)) {
+        return 'cms-jsx cms-jsx--quiz';
+    }
+    if (isQuestion(node)) {
+        return 'cms-jsx cms-jsx--question';
+    }
+    if (isHint(node)) {
+        // infima's alert class sets the colors of the alert, used by `.cms-jsx--hint`
+        return `cms-jsx cms-jsx--hint alert--${hintColor(node.attrs.attributes)}`;
     }
     return 'cms-jsx';
 };
@@ -99,7 +112,10 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
                     />
                 }
                 shrinkTitle
-                className={clsx(browserWindow && styles.browserWindowToolbar)}
+                className={clsx(
+                    browserWindow && styles.browserWindowToolbar,
+                    isQuestion(handle.node) && styles.questionToolbar
+                )}
             >
                 <UuidAttributes handle={handle} />
                 {isVoid && (
@@ -113,6 +129,9 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
             </NodeToolbar>
             {browserWindow && <BrowserWindowHeader handle={handle} />}
             {isTabs(handle.node) && <TabsBar handle={handle} />}
+            {isQuiz(handle.node) && <AssessableBar handle={handle} />}
+            {isQuestion(handle.node) && <QuestionHeader handle={handle} />}
+            {isHint(handle.node) && <HintConditions handle={handle} />}
         </>
     );
 });

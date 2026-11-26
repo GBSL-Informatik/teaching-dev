@@ -221,6 +221,51 @@
                 padding: 0.3em 0 0.5em 0;
             }
         }
+        /* only the header is shaded, the questions stand out on the page background */
+        .cms-jsx.cms-jsx--quiz {
+            padding: 0;
+            background: var(--ifm-background-color);
+            > .cms-node-view-component {
+                padding: 0.2em 0.8em;
+                background: var(--ifm-color-emphasis-100);
+                border-radius: 0 var(--ifm-global-radius) 0 0;
+            }
+            > .cms-node-view-content {
+                padding: 0.5em 0.8em;
+            }
+        }
+        /* a compact version of the question card on the page, the header is rendered by the node view */
+        .cms-jsx.cms-jsx--question {
+            padding: 0;
+            border-left: none;
+            background: var(--ifm-card-background-color);
+            border-radius: var(--ifm-card-border-radius);
+            box-shadow: var(--ifm-global-shadow-lw);
+            /* the toolbar and the card header, see `nodeViews/JsxFlow/QuestionHeader` */
+            > .cms-node-view-component {
+                background: var(--ifm-color-secondary-lightest);
+                border-radius: var(--ifm-card-border-radius) var(--ifm-card-border-radius) 0 0;
+            }
+            > .cms-node-view-content {
+                padding: 0.5em 0.8em 0.2em 0.8em;
+            }
+        }
+        /* colored like the alert of `<Hint>`, the `alert--*` class sets the colors, see `nodeViews/JsxFlow` */
+        .cms-jsx.cms-jsx--hint {
+            border-left-color: var(--ifm-alert-border-color);
+            background: var(--ifm-alert-background-color);
+        }
+        /* the options of `<ChoiceAnswer>`, see `plugins/choiceOptions.ts` */
+        .cms-choice-checkbox {
+            margin: 0 0.4em 0 0;
+            vertical-align: middle;
+            accent-color: var(--ifm-color-success);
+            cursor: pointer;
+        }
+        .cms-choice-option--correct::marker {
+            color: var(--ifm-color-success);
+            font-weight: bold;
+        }
         /* framed like `@tdev-components/BrowserWindow`, the header is rendered by the node view */
         .cms-jsx.cms-jsx--browser-window {
             padding: 0;
@@ -356,6 +401,10 @@
             }
         }
     }
+}
+
+:global(html[data-theme='dark']) .prosemirror :global(.cms-jsx--question > .cms-node-view-component) {
+    background: var(--ifm-color-secondary-contrast-background);
 }
 
 :global(html[data-theme='dark']) .prosemirror :global(.cms-directive--def) {

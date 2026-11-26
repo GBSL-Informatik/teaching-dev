@@ -3,6 +3,8 @@ import {
     mdiArrowExpandDown,
     mdiCardsOutline,
     mdiCardTextOutline,
+    mdiCheckboxMarkedCircleOutline,
+    mdiCheckboxMultipleMarkedOutline,
     mdiCheckboxOutline,
     mdiCodeBlockTags,
     mdiCodeBraces,
@@ -15,10 +17,13 @@ import {
     mdiFormTextbox,
     mdiImport,
     mdiInformationOutline,
+    mdiLightbulbOnOutline,
     mdiMathIntegral,
     mdiMathIntegralBox,
     mdiMinus,
+    mdiOrderBoolAscendingVariant,
     mdiProgressCheck,
+    mdiRadioboxMarked,
     mdiTab,
     mdiTable,
     mdiTabPlus,
@@ -29,13 +34,33 @@ import {
 } from '@mdi/js';
 import type { Node } from 'prosemirror-model';
 import type { Command, EditorState } from 'prosemirror-state';
-import { v4 as uuidv4 } from 'uuid';
-import { createNode, createTable, insertBlock, insertInline, insertInlineMdx, startIcon } from '../commands';
+import {
+    CHOICE_ANSWER_IMPORT,
+    createChoiceAnswer,
+    createHint,
+    createQuiz,
+    createTrueFalseAnswer,
+    HINT_IMPORT,
+    isInQuestion,
+    isInQuiz,
+    QUIZ_IMPORT,
+    TRUE_FALSE_ANSWER_IMPORT
+} from '../assessable/components';
+import {
+    createNode,
+    createTable,
+    insertBlock,
+    insertInline,
+    insertInlineMdx,
+    paragraph,
+    startIcon
+} from '../commands';
 import { type ImportSpec, withImports } from '../imports';
 import { ADMONITION_TYPES } from '../nodeViews/ContainerDirective/admonitionTypes';
 import { isInDirectiveItem } from '../plugins/directiveItems';
 import { ITEMS_DIRECTIVES, type JsxAttribute, schema } from '../schema';
 import { createTabItem, insertTabItem } from '../tabs';
+import { idAttribute } from '../uuid';
 
 const { nodes } = schema;
 
@@ -55,8 +80,6 @@ export type MenuItem =
     | (MenuItemBase & { inline: true; create: () => Node })
     | (MenuItemBase & { inline?: false; create: () => Node | Node[] })
     | (MenuItemBase & { command: Command });
-
-const paragraph = (text?: string) => nodes.paragraph.create(null, text ? schema.text(text) : null);
 
 const directive = (name: string, label?: string) => {
     const content = label
@@ -93,8 +116,6 @@ const emptyOrderedList = () =>
 
 /** mdx only recognizes `import`/`export` at the top level of the document */
 const isInTopLevelBlock = (state: EditorState) => state.selection.$from.depth === 1;
-
-const idAttribute = (): JsxAttribute => ({ type: 'attribute', name: 'id', value: uuidv4() });
 
 /** the type can be changed in the admonition itself */
 const DEFAULT_ADMONITION = ADMONITION_TYPES.includes('info') ? 'info' : ADMONITION_TYPES[0];
@@ -293,6 +314,51 @@ const COMPONENTS: MenuItem[] = [
     }
 ];
 
+/** inside a quiz, the questions have no `id` */
+const insertQuestion =
+    (create: (isInQuiz: boolean) => Node): Command =>
+    (state, dispatch, view) =>
+        insertBlock(create(isInQuiz(state)))(state, dispatch, view);
+
+const QUIZ: MenuItem[] = [
+    {
+        label: 'Quiz',
+        icon: mdiOrderBoolAscendingVariant,
+        keywords: ['quiz', 'test', 'prüfung'],
+        create: createQuiz,
+        requiredImports: [QUIZ_IMPORT, CHOICE_ANSWER_IMPORT]
+    },
+    {
+        label: 'Single-Choice-Frage',
+        icon: mdiRadioboxMarked,
+        keywords: ['choiceanswer', 'frage', 'question'],
+        command: insertQuestion((isInQuiz) => createChoiceAnswer(isInQuiz, false)),
+        requiredImports: [CHOICE_ANSWER_IMPORT]
+    },
+    {
+        label: 'Multiple-Choice-Frage',
+        icon: mdiCheckboxMultipleMarkedOutline,
+        keywords: ['choiceanswer', 'multiple', 'frage', 'question'],
+        command: insertQuestion((isInQuiz) => createChoiceAnswer(isInQuiz, true)),
+        requiredImports: [CHOICE_ANSWER_IMPORT]
+    },
+    {
+        label: 'Richtig/Falsch-Frage',
+        icon: mdiCheckboxMarkedCircleOutline,
+        keywords: ['truefalseanswer', 'wahr', 'falsch', 'frage', 'question'],
+        command: insertQuestion(createTrueFalseAnswer),
+        requiredImports: [TRUE_FALSE_ANSWER_IMPORT]
+    },
+    {
+        label: 'Lösungshinweis',
+        icon: mdiLightbulbOnOutline,
+        keywords: ['hint', 'feedback', 'hinweis'],
+        create: createHint,
+        isAvailable: isInQuestion,
+        requiredImports: [HINT_IMPORT]
+    }
+];
+
 interface MenuSection {
     title: string;
     items: MenuItem[];
@@ -301,7 +367,8 @@ interface MenuSection {
 const INSERT_SECTIONS: MenuSection[] = [
     { title: 'Blöcke', items: BLOCKS },
     { title: 'Inline', items: INLINE },
-    { title: 'Komponenten', items: COMPONENTS }
+    { title: 'Komponenten', items: COMPONENTS },
+    { title: 'Quiz', items: QUIZ }
 ];
 
 /** the items of all sections */

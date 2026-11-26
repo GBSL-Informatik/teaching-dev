@@ -59,6 +59,54 @@ describe('addImport', () => {
     });
 });
 
+describe('addImport of a named import', () => {
+    const SCORING = '@tdev-components/documents/Assessable/helpers/scoring';
+    const withPointsImport = (source: string) => {
+        const { doc, trailing } = parseMarkdown(source);
+        const state = EditorState.create({ doc });
+        const spec: ImportSpec = { name: 'points', source: SCORING, named: true };
+        return serializeMarkdown(state.apply(addImport(state.tr, spec)).doc, trailing);
+    };
+
+    it('writes the name in braces', () => {
+        expect(withPointsImport("import Steps from '@tdev-components/Steps';\n\nText\n"))
+            .toMatchInlineSnapshot(`
+              "import Steps from '@tdev-components/Steps';
+              import { points } from '@tdev-components/documents/Assessable/helpers/scoring';
+
+              Text
+              "
+            `);
+    });
+
+    it('adds the name to the named import of the same source', () => {
+        const source = `import Steps from '@tdev-components/Steps';\nimport { noPoints } from '${SCORING}';\n\nText\n`;
+        expect(withPointsImport(source)).toMatchInlineSnapshot(`
+          "import Steps from '@tdev-components/Steps';
+          import { noPoints, points } from '@tdev-components/documents/Assessable/helpers/scoring';
+
+          Text
+          "
+        `);
+    });
+
+    it('adds a new import next to a namespace import of the same source', () => {
+        const source = `import * as scoring from '${SCORING}';\n\nText\n`;
+        expect(withPointsImport(source)).toMatchInlineSnapshot(`
+          "import * as scoring from '@tdev-components/documents/Assessable/helpers/scoring';
+          import { points } from '@tdev-components/documents/Assessable/helpers/scoring';
+
+          Text
+          "
+        `);
+    });
+
+    it('keeps an existing named import of the name', () => {
+        const source = `import { multipleChoicePoints, points } from '${SCORING}';\n\nText\n`;
+        expect(withPointsImport(source)).toBe(source);
+    });
+});
+
 describe('withImports', () => {
     it('inserts the content and its imports in a single transaction', () => {
         const { doc, trailing } = parseMarkdown('Text\n');

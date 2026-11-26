@@ -1,0 +1,14 @@
+.conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+    margin: 0 0 0.3em 0;
+    button {
+        cursor: pointer;
+    }
+    .inactive {
+        border-color: var(--ifm-color-emphasis-400);
+        background: transparent;
+        color: var(--ifm-color-emphasis-700);
+    }
+}
