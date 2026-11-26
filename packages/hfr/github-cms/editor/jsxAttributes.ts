@@ -3,6 +3,9 @@ import type { JsxAttribute } from './schema';
 const hasName = (attribute: JsxAttribute, name: string) =>
     attribute.type !== 'spread' && attribute.name === name;
 
+export const findAttribute = (attributes: JsxAttribute[], name: string) =>
+    attributes.find((attribute) => hasName(attribute, name));
+
 /** only plain string attributes can be shown, expressions are evaluated on the page */
 export const stringAttribute = (attributes: JsxAttribute[], name: string) => {
     for (const attribute of attributes) {
@@ -14,17 +17,27 @@ export const stringAttribute = (attributes: JsxAttribute[], name: string) => {
 };
 
 /**
- * Sets a string attribute in place, or adds it at the end. An empty value removes it.
+ * Replaces the attribute with the same name in place, or adds it at the end.
+ * `null` removes the attribute.
  */
-const withStringAttribute = (attributes: JsxAttribute[], name: string, value: string): JsxAttribute[] => {
-    if (!value) {
+export const withAttribute = (
+    attributes: JsxAttribute[],
+    name: string,
+    updated: JsxAttribute | null
+): JsxAttribute[] => {
+    if (!updated) {
         return attributes.filter((attribute) => !hasName(attribute, name));
     }
-    const updated: JsxAttribute = { type: 'attribute', name, value };
-    if (!attributes.some((attribute) => hasName(attribute, name))) {
+    if (!findAttribute(attributes, name)) {
         return [...attributes, updated];
     }
     return attributes.map((attribute) => (hasName(attribute, name) ? updated : attribute));
+};
+
+/** Sets a string attribute. An empty value removes it. */
+const withStringAttribute = (attributes: JsxAttribute[], name: string, value: string): JsxAttribute[] => {
+    const updated: JsxAttribute | null = value ? { type: 'attribute', name, value } : null;
+    return withAttribute(attributes, name, updated);
 };
 
 /**

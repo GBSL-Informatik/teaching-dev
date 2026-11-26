@@ -18,6 +18,7 @@ import type MdxDocument from '../models/MdxDocument';
 import { arrowIntoCode } from '../nodeViews/CodeMirrorNodeView';
 import { schema } from '../schema';
 import { suggestionSources } from '../suggestions';
+import { choiceOptions } from './choiceOptions';
 import { deflist, enterInDeflist, startDefinitionRule } from './deflist';
 import { deleteEmptyDirectiveItem, enterInDirectiveItem, splitDirectiveItem } from './directiveItems';
 import { dragHandle } from './dragHandle';
@@ -128,6 +129,7 @@ export const createPlugins = (document: MdxDocument): Plugin[] => [
     dragHandle(),
     dropTargets(),
     uuidMarker(),
+    choiceOptions(),
     leaveCode(),
     rawSelection(),
     deflist(),

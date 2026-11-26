@@ -1,0 +1,33 @@
+.bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em 1em;
+    margin: 0 0 0.3em 0;
+    font-size: 0.85em;
+    select,
+    input[type='number'] {
+        padding: 0.1em 0.3em;
+        border: 1px solid var(--ifm-color-emphasis-300);
+        border-radius: var(--ifm-global-radius);
+        background: var(--ifm-background-color);
+        color: var(--ifm-font-color-base);
+        font-size: inherit;
+    }
+    input[type='number'] {
+        width: 4.5em;
+    }
+}
+
+.group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em 0.6em;
+    label {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+        cursor: pointer;
+    }
+}

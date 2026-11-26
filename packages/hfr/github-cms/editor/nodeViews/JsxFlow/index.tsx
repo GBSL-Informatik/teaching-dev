@@ -5,6 +5,8 @@ import stepsStyles from '@tdev-components/Steps/styles.module.scss';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
+import { isHint, isScored } from '../../assessable/components';
+import { hintColor } from '../../assessable/hint';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
 import EditableTag from '../../components/EditableTag';
@@ -15,7 +17,9 @@ import { jsxAttributes } from '../../markdown/serialize';
 import { type JsxAttribute, schema } from '../../schema';
 import { isTabItem, isTabs } from '../../tabs';
 import type { NodeViewProps } from '../ReactNodeView';
+import AssessableBar from './AssessableBar';
 import BrowserWindowHeader from './BrowserWindowHeader';
+import HintConditions from './HintConditions';
 import styles from './styles.module.scss';
 import TabsBar from './TabsBar';
 
@@ -42,6 +46,10 @@ export const jsxFlowClassName = (node: Node) => {
     }
     if (isTabItem(node)) {
         return 'cms-jsx cms-jsx--tab-item';
+    }
+    if (isHint(node)) {
+        // infima's alert class sets the colors of the alert, used by `.cms-jsx--hint`
+        return `cms-jsx cms-jsx--hint alert--${hintColor(node.attrs.attributes)}`;
     }
     return 'cms-jsx';
 };
@@ -113,6 +121,8 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
             </NodeToolbar>
             {browserWindow && <BrowserWindowHeader handle={handle} />}
             {isTabs(handle.node) && <TabsBar handle={handle} />}
+            {isScored(handle.node) && <AssessableBar handle={handle} />}
+            {isHint(handle.node) && <HintConditions handle={handle} />}
         </>
     );
 });

@@ -221,6 +221,22 @@
                 padding: 0.3em 0 0.5em 0;
             }
         }
+        /* colored like the alert of `<Hint>`, the `alert--*` class sets the colors, see `nodeViews/JsxFlow` */
+        .cms-jsx.cms-jsx--hint {
+            border-left-color: var(--ifm-alert-border-color);
+            background: var(--ifm-alert-background-color);
+        }
+        /* the options of `<ChoiceAnswer>`, see `plugins/choiceOptions.ts` */
+        .cms-choice-checkbox {
+            margin: 0 0.4em 0 0;
+            vertical-align: middle;
+            accent-color: var(--ifm-color-success);
+            cursor: pointer;
+        }
+        .cms-choice-option--correct::marker {
+            color: var(--ifm-color-success);
+            font-weight: bold;
+        }
         /* framed like `@tdev-components/BrowserWindow`, the header is rendered by the node view */
         .cms-jsx.cms-jsx--browser-window {
             padding: 0;
