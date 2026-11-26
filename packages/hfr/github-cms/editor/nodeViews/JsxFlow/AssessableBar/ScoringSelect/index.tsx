@@ -52,6 +52,7 @@ const ScoringSelect = observer(({ handle }: NodeViewProps) => {
     return (
         <span className={clsx(styles.group)}>
             <select
+                className={clsx(styles.input)}
                 value={selectedOption(current)}
                 title="Bewertung (scoring)"
                 onChange={(event) => handleSelect(event.target.value)}

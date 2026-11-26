@@ -16,6 +16,20 @@ export const stringAttribute = (attributes: JsxAttribute[], name: string) => {
     return undefined;
 };
 
+/** e.g. `true` in `correct={true}`, `undefined` for other expressions */
+export const booleanLiteral = (expression: string): boolean | undefined => {
+    const text = expression.trim();
+    return text === 'true' || text === 'false' ? text === 'true' : undefined;
+};
+
+const NUMBER_PATTERN = /^-?(\d+\.?\d*|\.\d+)$/;
+
+/** e.g. `-0.5` in `minPoints={-0.5}`, `undefined` for other expressions */
+export const numberLiteral = (expression: string): number | undefined => {
+    const text = expression.trim();
+    return NUMBER_PATTERN.test(text) ? Number(text) : undefined;
+};
+
 /**
  * A boolean attribute, written as flag (`multiple`) or literal (`correct={false}`).
  * `undefined` when not written, `null` when not a boolean literal, e.g. `correct={isTrue}`.
@@ -28,12 +42,20 @@ export const booleanAttribute = (attributes: JsxAttribute[], name: string): bool
     if (attribute.type === 'attribute') {
         return attribute.value === null ? true : null;
     }
-    const value = attribute.value.trim();
-    if (value === 'true' || value === 'false') {
-        return value === 'true';
-    }
-    return null;
+    return booleanLiteral(attribute.value) ?? null;
 };
+
+/** `undefined` when not written, `null` when not a number literal, e.g. `minPoints={min}` */
+export const numberAttribute = (attributes: JsxAttribute[], name: string): number | undefined | null => {
+    const attribute = findAttribute(attributes, name);
+    if (!attribute) {
+        return undefined;
+    }
+    return attribute.type === 'expressionAttribute' ? (numberLiteral(attribute.value) ?? null) : null;
+};
+
+/** a boolean attribute set to true, e.g. `multiple` */
+export const flagAttribute = (name: string): JsxAttribute => ({ type: 'attribute', name, value: null });
 
 /**
  * Replaces the attribute with the same name in place, or adds it at the end.

@@ -1,5 +1,5 @@
 import type { ImportSpec } from '../imports';
-import { findAttribute, withAttribute } from '../jsxAttributes';
+import { booleanLiteral, findAttribute, numberLiteral, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
 
 /**
@@ -130,13 +130,6 @@ export const scoringExpression = ({ fn, args }: Scoring): string => {
     return `${fn.name}(${args.slice(0, count).join(', ')})`;
 };
 
-const NUMBER_PATTERN = /^-?(\d+\.?\d*|\.\d+)$/;
-
 /** `undefined` for an argument that is neither a number nor a boolean literal */
-const parseArgument = (source: string): Argument | undefined => {
-    const text = source.trim();
-    if (text === 'true' || text === 'false') {
-        return text === 'true';
-    }
-    return NUMBER_PATTERN.test(text) ? Number(text) : undefined;
-};
+const parseArgument = (source: string): Argument | undefined =>
+    booleanLiteral(source) ?? numberLiteral(source);

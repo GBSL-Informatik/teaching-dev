@@ -2,9 +2,10 @@ import type { Node, ResolvedPos } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
 import { paragraph } from '../commands';
 import type { ImportSpec } from '../imports';
-import { findAttribute } from '../jsxAttributes';
+import { findAttribute, flagAttribute } from '../jsxAttributes';
 import { isJsxFlow, type JsxAttribute, schema } from '../schema';
 import { idAttribute } from '../uuid';
+import { withHintConditions } from './hint';
 
 const { nodes } = schema;
 
@@ -65,7 +66,6 @@ export const TRUE_FALSE_ANSWER_IMPORT: ImportSpec = {
 };
 export const HINT_IMPORT: ImportSpec = { name: HINT, source: `${ASSESSABLE_SOURCE}/Feedback/Hint` };
 
-const flag = (name: string): JsxAttribute => ({ type: 'attribute', name, value: null });
 const expression = (name: string, value: string): JsxAttribute => ({
     type: 'expressionAttribute',
     name,
@@ -79,7 +79,7 @@ const options = (labels: string[]) => {
 
 /** the questions of a quiz have no `id`: they are stored in the document of the quiz */
 export const createChoiceAnswer = (isInQuiz: boolean, multiple: boolean) => {
-    const attributes = [expression('correct', '[1]'), ...(multiple ? [flag('multiple')] : [])];
+    const attributes = [expression('correct', '[1]'), ...(multiple ? [flagAttribute('multiple')] : [])];
     return nodes.jsx_flow.create(
         { name: CHOICE_ANSWER, attributes: isInQuiz ? attributes : [...attributes, idAttribute()] },
         [paragraph('Frage'), options(['Antwort 1', 'Antwort 2', 'Antwort 3'])]
@@ -99,6 +99,6 @@ export const createQuiz = () =>
 
 export const createHint = () =>
     nodes.jsx_flow.create(
-        { name: HINT, attributes: [{ type: 'attribute', name: 'when', value: 'incorrect' }] },
+        { name: HINT, attributes: withHintConditions([], ['incorrect']) },
         paragraph('Hinweis')
     );

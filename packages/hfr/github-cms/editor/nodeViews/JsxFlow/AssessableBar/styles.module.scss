@@ -5,17 +5,18 @@
     gap: 0.3em 1em;
     margin: 0 0 0.3em 0;
     font-size: 0.85em;
-    select,
-    input[type='number'] {
-        padding: 0.1em 0.3em;
-        border: 1px solid var(--ifm-color-emphasis-300);
-        border-radius: var(--ifm-global-radius);
-        background: var(--ifm-background-color);
-        color: var(--ifm-font-color-base);
-        font-size: inherit;
-    }
-    input[type='number'] {
-        width: 4.5em;
+}
+
+/* the selects and number inputs of the bar and its options dropdown */
+.input {
+    padding: 0.1em 0.3em;
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    font-size: inherit;
+    &.number {
+        width: 5em;
     }
 }
 

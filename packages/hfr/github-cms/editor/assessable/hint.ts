@@ -1,11 +1,12 @@
+import type { AlertType } from '@tdev-components/shared/Alert';
 import { findAttribute, stringAttribute, withAttribute } from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
 
 export interface HintCondition {
     value: string;
     label: string;
-    /** the color of the hint on the page, see `Feedback/Hint` */
-    color: string;
+    /** the color of the hint on the page, see `ColorMapping` of `Feedback/Hint` */
+    color: AlertType;
 }
 
 export const HINT_CONDITIONS: HintCondition[] = [
@@ -54,14 +55,15 @@ export const withHintConditions = (attributes: JsxAttribute[], conditions: strin
     return withAttribute(attributes, 'when', { type: 'expressionAttribute', name: 'when', value: list });
 };
 
-/** see `AlertType` of `@tdev-components/shared/Alert` */
-const ALERT_COLORS = ['primary', 'secondary', 'blue', 'success', 'info', 'warning', 'danger'];
+/** all values of `AlertType`, the type checks that none is unknown */
+const ALERT_COLORS: AlertType[] = ['primary', 'secondary', 'blue', 'success', 'info', 'warning', 'danger'];
 
 /** the `color` attribute, else the color of the first condition */
-export const hintColor = (attributes: JsxAttribute[]): string => {
+export const hintColor = (attributes: JsxAttribute[]): AlertType => {
     const color = stringAttribute(attributes, 'color');
-    if (color && ALERT_COLORS.includes(color)) {
-        return color;
+    const alertColor = ALERT_COLORS.find((candidate) => candidate === color);
+    if (alertColor) {
+        return alertColor;
     }
     const [first] = hintConditions(attributes) ?? [];
     return HINT_CONDITIONS.find(({ value }) => value === first)?.color ?? 'info';

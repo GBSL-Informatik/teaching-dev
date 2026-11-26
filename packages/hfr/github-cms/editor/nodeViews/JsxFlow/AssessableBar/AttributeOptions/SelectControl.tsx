@@ -1,5 +1,7 @@
+import clsx from 'clsx';
 import { type SelectOption, selectValue, withSelectValue } from '../../../../assessable/attributeOptions';
 import type { JsxAttribute } from '../../../../schema';
+import styles from '../styles.module.scss';
 
 interface Props {
     option: SelectOption;
@@ -14,6 +16,7 @@ const SelectControl = ({ option, attributes, onChange }: Props) => {
         <label>
             {option.label}
             <select
+                className={clsx(styles.input)}
                 value={value ?? ''}
                 disabled={value === null}
                 onChange={(event) => onChange(withSelectValue(attributes, option, event.target.value))}

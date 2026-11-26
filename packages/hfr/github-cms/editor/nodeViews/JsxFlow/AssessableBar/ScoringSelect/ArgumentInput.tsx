@@ -1,5 +1,5 @@
-import React from 'react';
 import type { Parameter } from '../../../../assessable/scoring';
+import NumberInput from '../NumberInput';
 
 interface Props {
     parameter: Parameter;
@@ -9,12 +9,6 @@ interface Props {
 
 /** a number input, or a checkbox for a boolean parameter */
 const ArgumentInput = ({ parameter, value, onChange }: Props) => {
-    // while typing, the text may not be a number yet, e.g. `-`
-    const [text, setText] = React.useState(String(value));
-    React.useEffect(() => {
-        setText((current) => (Number(current) === value ? current : String(value)));
-    }, [value]);
-
     if (typeof value === 'boolean') {
         return (
             <label title={parameter.title}>
@@ -23,24 +17,10 @@ const ArgumentInput = ({ parameter, value, onChange }: Props) => {
             </label>
         );
     }
-
-    const handleChange = (input: string) => {
-        setText(input);
-        const number = Number(input);
-        if (input.trim() && Number.isFinite(number) && number !== value) {
-            onChange(number);
-        }
-    };
-
     return (
         <label title={parameter.title}>
             {parameter.label}
-            <input
-                type="number"
-                step="0.25"
-                value={text}
-                onChange={(event) => handleChange(event.target.value)}
-            />
+            <NumberInput value={value} onChange={(number) => number !== undefined && onChange(number)} />
         </label>
     );
 };

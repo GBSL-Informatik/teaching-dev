@@ -1,5 +1,11 @@
 import type { Node } from 'prosemirror-model';
-import { booleanAttribute, findAttribute, stringAttribute, withAttribute } from '../jsxAttributes';
+import {
+    booleanAttribute,
+    findAttribute,
+    flagAttribute,
+    stringAttribute,
+    withAttribute
+} from '../jsxAttributes';
 import type { JsxAttribute } from '../schema';
 import { isChoiceAnswer, isQuiz, isTrueFalseAnswer } from './components';
 
@@ -127,8 +133,7 @@ export const flagValue = (attributes: JsxAttribute[], name: string): boolean | n
 
 /** a set flag is written without value, an unset flag is removed */
 export const withFlag = (attributes: JsxAttribute[], name: string, isSet: boolean): JsxAttribute[] => {
-    const flag: JsxAttribute | null = isSet ? { type: 'attribute', name, value: null } : null;
-    return withAttribute(attributes, name, flag);
+    return withAttribute(attributes, name, isSet ? flagAttribute(name) : null);
 };
 
 /** `null` when the value is not one of the values of the option, e.g. an expression */
@@ -148,18 +153,6 @@ export const withSelectValue = (
     const updated: JsxAttribute | null =
         value === option.defaultValue ? null : { type: 'attribute', name: option.name, value };
     return withAttribute(attributes, option.name, updated);
-};
-
-const NUMBER_PATTERN = /^\s*-?(\d+\.?\d*|\.\d+)\s*$/;
-
-/** `undefined` when not written, `null` when not a number literal */
-export const numberValue = (attributes: JsxAttribute[], name: string): number | undefined | null => {
-    const attribute = findAttribute(attributes, name);
-    if (!attribute) {
-        return undefined;
-    }
-    const isNumber = attribute.type === 'expressionAttribute' && NUMBER_PATTERN.test(attribute.value);
-    return isNumber ? Number(attribute.value) : null;
 };
 
 /** `undefined` removes the attribute */

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { numberAttribute } from '../../jsxAttributes';
 import type { JsxAttribute } from '../../schema';
 import {
     flagValue,
-    numberValue,
     type SelectOption,
     selectValue,
     withFlag,
@@ -60,10 +60,10 @@ describe('select values', () => {
 
 describe('number values', () => {
     it('reads number literals', () => {
-        expect(numberValue([expression('minPoints', '-2')], 'minPoints')).toBe(-2);
-        expect(numberValue([], 'minPoints')).toBeUndefined();
-        expect(numberValue([expression('minPoints', 'min')], 'minPoints')).toBeNull();
-        expect(numberValue([string('minPoints', '2')], 'minPoints')).toBeNull();
+        expect(numberAttribute([expression('minPoints', '-2')], 'minPoints')).toBe(-2);
+        expect(numberAttribute([], 'minPoints')).toBeUndefined();
+        expect(numberAttribute([expression('minPoints', 'min')], 'minPoints')).toBeNull();
+        expect(numberAttribute([string('minPoints', '2')], 'minPoints')).toBeNull();
     });
 
     it('writes numbers as expressions and removes empty values', () => {
