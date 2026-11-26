@@ -193,6 +193,24 @@ describe('links', () => {
         expect(doc.textBetween(link!.from, link!.to)).toBe('a bold link');
     });
 
+    it('finds the link with the cursor at its end or its start', () => {
+        const { doc } = parseMarkdown('See [a link](https://a.ch) here\n');
+        const linkStart = 1 + doc.textContent.indexOf('a link');
+        const linkEnd = linkStart + 'a link'.length;
+        for (const cursor of [linkStart, linkEnd]) {
+            const state = EditorState.create({ doc, selection: TextSelection.create(doc, cursor) });
+            const link = linkAtSelection(state);
+            expect(doc.textBetween(link!.from, link!.to)).toBe('a link');
+        }
+    });
+
+    it('finds no link next to the cursor outside a link', () => {
+        const { doc } = parseMarkdown('See [a link](https://a.ch) here\n');
+        const cursor = 1 + doc.textContent.indexOf('ee');
+        const state = EditorState.create({ doc, selection: TextSelection.create(doc, cursor) });
+        expect(linkAtSelection(state)).toBeNull();
+    });
+
     it('changes the href of the whole link around the cursor', () => {
         expect(runAt('See [a **bold** link](https://a.ch) here\n', 'li', setLink('https://b.ch'))).toBe(
             'See [a **bold** link](https://b.ch) here\n'

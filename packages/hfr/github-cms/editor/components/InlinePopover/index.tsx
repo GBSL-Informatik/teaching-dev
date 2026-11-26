@@ -12,8 +12,6 @@ interface Props {
     /** the element that opens the popover when clicked, e.g. the rendered inline node */
     trigger: React.ReactElement;
     title: string;
-    /** shows a close button in the header, e.g. when the content has no cancel action */
-    closeButton?: boolean;
     /** a function receives `close`, e.g. to close the popover once the changes are applied */
     children: React.ReactNode | ((close: () => void) => React.ReactNode);
     /** called when the popover is closed with its trigger, with Escape or with `close`, e.g. to focus the editor again */
@@ -95,14 +93,12 @@ const InlinePopover = (props: Props) => {
                             header={
                                 <div className={clsx(styles.header)}>
                                     <h5>{props.title}</h5>
-                                    {props.closeButton && (
-                                        <Button
-                                            icon={mdiClose}
-                                            size={SIZE_S}
-                                            title="Schliessen"
-                                            onClick={close}
-                                        />
-                                    )}
+                                    <Button
+                                        icon={mdiClose}
+                                        size={SIZE_S}
+                                        title="Schliessen"
+                                        onClick={close}
+                                    />
                                 </div>
                             }
                             classNames={{ card: styles.card, body: clsx(styles.body) }}

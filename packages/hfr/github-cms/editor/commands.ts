@@ -307,7 +307,7 @@ export interface LinkRange {
 
 /**
  * The link to edit: the selected range with the attributes of its first link,
- * or the whole link around the cursor.
+ * or the whole link around the cursor, also with the cursor at the start or the end of the link.
  */
 export const linkAtSelection = (state: EditorState): LinkRange | null => {
     const { $from, from, to, empty } = state.selection;
@@ -315,7 +315,7 @@ export const linkAtSelection = (state: EditorState): LinkRange | null => {
         const link = firstLinkBetween(state.doc, from, to);
         return link ? { from, to, attrs: link.attrs } : null;
     }
-    const link = marks.link.isInSet($from.marks());
+    const link = linkTouching($from);
     if (!link) {
         return null;
     }
@@ -402,6 +402,12 @@ export const paragraph = (text?: string) => nodes.paragraph.create(null, text ? 
 
 export const createNode = (type: NodeType, attrs: Attrs | null, content?: Node | Node[]) => {
     return type.createAndFill(attrs, content)!;
+};
+
+/** the link the position is in or at an edge of, the link before wins between two links */
+const linkTouching = ($pos: ResolvedPos) => {
+    const { nodeBefore, nodeAfter } = $pos;
+    return marks.link.isInSet(nodeBefore?.marks ?? []) ?? marks.link.isInSet(nodeAfter?.marks ?? []);
 };
 
 const firstLinkBetween = (doc: Node, from: number, to: number) => {
