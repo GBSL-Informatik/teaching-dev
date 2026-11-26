@@ -21,7 +21,7 @@ export const isQuiz = (node: Node) => isJsxFlow(node, QUIZ);
 export const isChoiceAnswer = (node: Node) => isJsxFlow(node, CHOICE_ANSWER);
 export const isTrueFalseAnswer = (node: Node) => isJsxFlow(node, TRUE_FALSE_ANSWER);
 export const isHint = (node: Node) => isJsxFlow(node, HINT);
-const isQuestion = (node: Node) => isChoiceAnswer(node) || isTrueFalseAnswer(node);
+export const isQuestion = (node: Node) => isChoiceAnswer(node) || isTrueFalseAnswer(node);
 /** the components with a `scoring` attribute, the questions inherit the scoring of their quiz */
 export const isScored = (node: Node) => isQuiz(node) || isQuestion(node);
 

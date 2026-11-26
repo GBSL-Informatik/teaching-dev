@@ -5,7 +5,7 @@ import stepsStyles from '@tdev-components/Steps/styles.module.scss';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
-import { isHint, isScored } from '../../assessable/components';
+import { isHint, isQuestion, isScored } from '../../assessable/components';
 import { hintColor } from '../../assessable/hint';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
@@ -21,6 +21,7 @@ import type { NodeViewProps } from '../ReactNodeView';
 import AssessableBar from './AssessableBar';
 import BrowserWindowHeader from './BrowserWindowHeader';
 import HintConditions from './HintConditions';
+import QuestionTitle from './QuestionTitle';
 import styles from './styles.module.scss';
 import TabsBar from './TabsBar';
 
@@ -44,6 +45,9 @@ export const jsxFlowClassName = (node: Node) => {
     }
     if (isTabItem(node)) {
         return 'cms-jsx cms-jsx--tab-item';
+    }
+    if (isQuestion(node)) {
+        return 'cms-jsx cms-jsx--question';
     }
     if (isHint(node)) {
         // infima's alert class sets the colors of the alert, used by `.cms-jsx--hint`
@@ -95,14 +99,18 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
                 settings={settings}
                 actionsWhenActive
                 title={
-                    <EditableTag
-                        tag={`<${name}`}
-                        attributes={jsxAttributes(attributes)}
-                        end={isVoid ? ' />' : '>'}
-                        source={jsxOpeningTagOf(handle.node)}
-                        parse={(text) => parseJsxOpeningTag(text, handle.node)}
-                        onApply={(tag) => handle.updateAttrs(withJsxOpeningTag(handle.node, tag))}
-                    />
+                    isQuestion(handle.node) ? (
+                        <QuestionTitle handle={handle} />
+                    ) : (
+                        <EditableTag
+                            tag={`<${name}`}
+                            attributes={jsxAttributes(attributes)}
+                            end={isVoid ? ' />' : '>'}
+                            source={jsxOpeningTagOf(handle.node)}
+                            parse={(text) => parseJsxOpeningTag(text, handle.node)}
+                            onApply={(tag) => handle.updateAttrs(withJsxOpeningTag(handle.node, tag))}
+                        />
+                    )
                 }
                 shrinkTitle
                 className={clsx(browserWindow && styles.browserWindowToolbar)}

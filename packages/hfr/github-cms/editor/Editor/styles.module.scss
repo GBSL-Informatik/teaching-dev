@@ -221,6 +221,22 @@
                 padding: 0.3em 0 0.5em 0;
             }
         }
+        /* a compact version of the question card on the page, see `Assessable/QuestionCard` */
+        .cms-jsx.cms-jsx--question {
+            padding: 0;
+            border-left: none;
+            background: var(--ifm-card-background-color);
+            border-radius: var(--ifm-card-border-radius);
+            box-shadow: var(--ifm-global-shadow-lw);
+            > .cms-node-view-component {
+                padding: 0.2em 0.8em;
+                background: var(--ifm-color-secondary-lightest);
+                border-radius: var(--ifm-card-border-radius) var(--ifm-card-border-radius) 0 0;
+            }
+            > .cms-node-view-content {
+                padding: 0.5em 0.8em 0.2em 0.8em;
+            }
+        }
         /* colored like the alert of `<Hint>`, the `alert--*` class sets the colors, see `nodeViews/JsxFlow` */
         .cms-jsx.cms-jsx--hint {
             border-left-color: var(--ifm-alert-border-color);
@@ -372,6 +388,10 @@
             }
         }
     }
+}
+
+:global(html[data-theme='dark']) .prosemirror :global(.cms-jsx--question > .cms-node-view-component) {
+    background: var(--ifm-color-secondary-contrast-background);
 }
 
 :global(html[data-theme='dark']) .prosemirror :global(.cms-directive--def) {
