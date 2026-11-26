@@ -124,7 +124,7 @@ const main = async (): Promise<void> => {
                             console.warn(
                                 `⚠️ [ignore] ${klass}->${srcPath}: ignored "${ifile}" does not exist`
                             );
-                            return;
+                            continue;
                         }
                         if ((await fs.lstat(opath)).isDirectory()) {
                             gitignore.push(`!${ensureTrailingSlash(ipath)}`);
