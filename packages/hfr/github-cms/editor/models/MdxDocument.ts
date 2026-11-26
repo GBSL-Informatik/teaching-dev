@@ -1,12 +1,12 @@
 import { debounce } from 'es-toolkit';
-import { action, actionBound, observable, observableRef } from 'mobx';
+import { action, actionBound, computedStruct, observable, observableRef } from 'mobx';
 import type { MarkType, NodeType } from 'prosemirror-model';
 import { type Command, EditorState, type Transaction } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 import type { ReactPortal } from 'react';
 import { Asset } from '../../models/Dir';
 import type File from '../../models/File';
-import { insertInline, insertInlineAt } from '../commands';
+import { insertInline, insertInlineAt, linkAtSelection, type LinkRange } from '../commands';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import type { NodeViewEditor } from '../nodeViews/ReactNodeView';
 import { createPlugins } from '../plugins';
@@ -162,6 +162,18 @@ class MdxDocument implements NodeViewEditor {
             return !!type.isInSet(this.state.storedMarks || $from.marks());
         }
         return this.state.doc.rangeHasMark(from, to, type);
+    }
+
+    /**
+     * The link around the cursor, `null` with a selection - observes the state.
+     * Compared structurally: observers re-render when the link changes, not on every transaction.
+     */
+    @computedStruct
+    get linkAtCursor(): LinkRange | null {
+        if (!this.state.selection.empty) {
+            return null;
+        }
+        return linkAtSelection(this.state);
     }
 
     /** whether the selection is inside a node of the given type - observes the state */

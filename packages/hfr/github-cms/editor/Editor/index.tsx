@@ -9,6 +9,7 @@ import React from 'react';
 import DuplicateUuids from '../components/DuplicateUuids';
 import ImageUploadDialog from '../components/ImageUploadDialog';
 import InsertImageDialog from '../components/InsertImageDialog';
+import LinkBubble from '../components/LinkBubble';
 import MdxDiff from '../components/MdxDiff';
 import NewDrawingEditor from '../components/NewDrawingEditor';
 import SuggestionMenu from '../components/SuggestionMenu';
@@ -79,6 +80,7 @@ const Editor = observer(({ document }: Props) => {
                     )}
                 />
                 <SuggestionMenu document={document} container={mount} />
+                <LinkBubble document={document} container={mount} />
             </div>
             {document.showDiff && <MdxDiff file={document.file} />}
             <NodeViewPortals document={document} />
