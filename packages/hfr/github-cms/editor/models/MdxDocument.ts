@@ -137,8 +137,12 @@ class MdxDocument implements NodeViewEditor {
      */
     run(command: Command) {
         const done = command(this.state, this.dispatch, this.view ?? undefined);
-        this.view?.focus();
+        this.focus();
         return done;
+    }
+
+    focus() {
+        this.view?.focus();
     }
 
     /** whether the command can be applied to the current state - observes the state */
