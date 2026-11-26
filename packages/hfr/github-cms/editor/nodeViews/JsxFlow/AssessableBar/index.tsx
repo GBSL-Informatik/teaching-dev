@@ -8,15 +8,19 @@ import ScoringSelect from './ScoringSelect';
 import styles from './styles.module.scss';
 import TrueFalseChoice from './TrueFalseChoice';
 
+interface Props extends NodeViewProps {
+    className?: string;
+}
+
 /**
  * The settings of a `<Quiz>`, `<ChoiceAnswer>` or `<TrueFalseAnswer>` most often changed:
  * the kind of choice, the correct answer of true/false questions and the scoring.
  * The correct options of a choice answer are ticked in the options, see `plugins/choiceOptions`.
  */
-const AssessableBar = observer(({ handle }: NodeViewProps) => {
+const AssessableBar = observer(({ handle, className }: Props) => {
     return (
         // the inputs handle their events themselves, ProseMirror must not select the node
-        <div className={clsx(styles.bar)} data-stop-event>
+        <div className={clsx(styles.bar, className)} data-stop-event>
             {isChoiceAnswer(handle.node) && <ChoiceKind handle={handle} />}
             {isChoiceAnswer(handle.node) && <QuotedOptionsNote handle={handle} />}
             {isTrueFalseAnswer(handle.node) && <TrueFalseChoice handle={handle} />}

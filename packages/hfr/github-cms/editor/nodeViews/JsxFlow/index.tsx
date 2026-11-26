@@ -5,7 +5,7 @@ import stepsStyles from '@tdev-components/Steps/styles.module.scss';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import type { Node } from 'prosemirror-model';
-import { isHint, isQuestion, isScored } from '../../assessable/components';
+import { isHint, isQuestion, isQuiz } from '../../assessable/components';
 import { hintColor } from '../../assessable/hint';
 import AttributesEditor from '../../components/AttributesEditor';
 import { jsxAttributesToRows, rowsToJsxAttributes } from '../../components/AttributesEditor/conversions';
@@ -21,7 +21,7 @@ import type { NodeViewProps } from '../ReactNodeView';
 import AssessableBar from './AssessableBar';
 import BrowserWindowHeader from './BrowserWindowHeader';
 import HintConditions from './HintConditions';
-import QuestionTitle from './QuestionTitle';
+import QuestionHeader from './QuestionHeader';
 import styles from './styles.module.scss';
 import TabsBar from './TabsBar';
 
@@ -99,21 +99,20 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
                 settings={settings}
                 actionsWhenActive
                 title={
-                    isQuestion(handle.node) ? (
-                        <QuestionTitle handle={handle} />
-                    ) : (
-                        <EditableTag
-                            tag={`<${name}`}
-                            attributes={jsxAttributes(attributes)}
-                            end={isVoid ? ' />' : '>'}
-                            source={jsxOpeningTagOf(handle.node)}
-                            parse={(text) => parseJsxOpeningTag(text, handle.node)}
-                            onApply={(tag) => handle.updateAttrs(withJsxOpeningTag(handle.node, tag))}
-                        />
-                    )
+                    <EditableTag
+                        tag={`<${name}`}
+                        attributes={jsxAttributes(attributes)}
+                        end={isVoid ? ' />' : '>'}
+                        source={jsxOpeningTagOf(handle.node)}
+                        parse={(text) => parseJsxOpeningTag(text, handle.node)}
+                        onApply={(tag) => handle.updateAttrs(withJsxOpeningTag(handle.node, tag))}
+                    />
                 }
                 shrinkTitle
-                className={clsx(browserWindow && styles.browserWindowToolbar)}
+                className={clsx(
+                    browserWindow && styles.browserWindowToolbar,
+                    isQuestion(handle.node) && styles.questionToolbar
+                )}
             >
                 <UuidAttributes handle={handle} />
                 {isVoid && (
@@ -127,7 +126,8 @@ const JsxFlow = observer(({ handle }: NodeViewProps) => {
             </NodeToolbar>
             {browserWindow && <BrowserWindowHeader handle={handle} />}
             {isTabs(handle.node) && <TabsBar handle={handle} />}
-            {isScored(handle.node) && <AssessableBar handle={handle} />}
+            {isQuiz(handle.node) && <AssessableBar handle={handle} />}
+            {isQuestion(handle.node) && <QuestionHeader handle={handle} />}
             {isHint(handle.node) && <HintConditions handle={handle} />}
         </>
     );

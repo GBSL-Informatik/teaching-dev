@@ -6,10 +6,7 @@ import type { JsxAttribute } from '../../../schema';
 import type { NodeViewProps } from '../../ReactNodeView';
 import styles from './styles.module.scss';
 
-/**
- * The `title` of a question in place of its tag, like the header of the question card on the page.
- * A double click edits it, the other attributes are edited in the settings.
- */
+/** the `title` of a question, a double click edits it */
 const QuestionTitle = observer(({ handle }: NodeViewProps) => {
     const attributes: JsxAttribute[] = handle.node.attrs.attributes;
     const title = stringAttribute(attributes, 'title') ?? '';
