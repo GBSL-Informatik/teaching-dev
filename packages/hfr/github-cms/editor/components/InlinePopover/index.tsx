@@ -1,4 +1,7 @@
+import { mdiClose } from '@mdi/js';
+import Button from '@tdev-components/shared/Button';
 import Card from '@tdev-components/shared/Card';
+import { SIZE_S } from '@tdev-components/shared/iconSizes';
 import clsx from 'clsx';
 import React from 'react';
 import { createPortal } from 'react-dom';
@@ -6,11 +9,12 @@ import { useFloatingPlacement } from '../useFloatingPlacement';
 import styles from './styles.module.scss';
 
 interface Props {
-    /** the rendered inline node, opens the popover when clicked */
+    /** the element that opens the popover when clicked, e.g. the rendered inline node */
     trigger: React.ReactElement;
     title: string;
-    children: React.ReactNode;
-    /** called when the popover is closed with its trigger or with Escape, e.g. to select the node again */
+    /** a function receives `close`, e.g. to close the popover once the changes are applied */
+    children: React.ReactNode | ((close: () => void) => React.ReactNode);
+    /** called when the popover is closed with its trigger, with Escape or with `close`, e.g. to focus the editor again */
     onClose?: () => void;
 }
 
@@ -18,8 +22,8 @@ interface Props {
 const MODAL_ROOT = '#popup-root';
 
 /**
- * Edits the attributes of an inline node (math, icons, raw mdx...) in a popover,
- * centered below the node or above it, when there is not enough space below.
+ * Edits the attributes of an inline node (math, icons, raw mdx...) or a link in a popover,
+ * centered below the trigger or above it, when there is not enough space below.
  */
 const InlinePopover = (props: Props) => {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -86,10 +90,20 @@ const InlinePopover = (props: Props) => {
                         style={placement ?? undefined}
                     >
                         <Card
-                            header={<h5>{props.title}</h5>}
+                            header={
+                                <div className={clsx(styles.header)}>
+                                    <h5>{props.title}</h5>
+                                    <Button
+                                        icon={mdiClose}
+                                        size={SIZE_S}
+                                        title="Schliessen"
+                                        onClick={close}
+                                    />
+                                </div>
+                            }
                             classNames={{ card: styles.card, body: clsx(styles.body) }}
                         >
-                            {props.children}
+                            {typeof props.children === 'function' ? props.children(close) : props.children}
                         </Card>
                     </div>,
                     document.body

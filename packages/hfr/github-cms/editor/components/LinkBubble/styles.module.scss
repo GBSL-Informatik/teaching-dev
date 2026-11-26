@@ -1,0 +1,26 @@
+.bubble {
+    position: absolute;
+    z-index: var(--ifm-z-index-dropdown);
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    max-width: 100%;
+    padding-left: 0.5em;
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    background: var(--ifm-background-surface-color);
+    box-shadow: var(--ifm-global-shadow-md);
+    font-size: 0.85em;
+    /* invisible until placed, see `useBubblePosition` */
+    &.measuring {
+        opacity: 0;
+    }
+    .href {
+        min-width: 0;
+        max-width: 15em;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: var(--ifm-color-emphasis-700);
+    }
+}

@@ -2,10 +2,12 @@ import { lift, setBlockType, toggleMark, wrapIn } from 'prosemirror-commands';
 import {
     type Attrs,
     Fragment,
+    type Mark,
     type MarkType,
     type Node,
     type NodeRange,
-    type NodeType
+    type NodeType,
+    type ResolvedPos
 } from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
 import { type Command, type EditorState, Selection, TextSelection } from 'prosemirror-state';
@@ -296,33 +298,60 @@ export const toggleMarkOnWord = (markType: MarkType): Command => {
     };
 };
 
+export interface LinkRange {
+    from: number;
+    to: number;
+    attrs: LinkAttrs;
+}
+
+export interface LinkAttrs {
+    href: string;
+    title: string | null;
+}
+
+/**
+ * The link to edit: the selected range with the attributes of its first link,
+ * or the whole link around the cursor, also with the cursor at the start or the end of the link.
+ */
+export const linkAtSelection = (state: EditorState): LinkRange | null => {
+    const { $from, from, to, empty } = state.selection;
+    if (!empty) {
+        const link = firstLinkBetween(state.doc, from, to);
+        return link ? { from, to, attrs: linkAttrs(link) } : null;
+    }
+    const link = linkTouching($from);
+    if (!link) {
+        return null;
+    }
+    return { ...markRangeAround($from, link), attrs: linkAttrs(link) };
+};
+
+/**
+ * Links the selection, or changes the href of the link around the cursor, keeping its title.
+ * Without a selection and outside a link, the href is inserted as link text.
+ */
 export const setLink = (href: string): Command => {
     return (state, dispatch) => {
-        const { from, to, empty } = state.selection;
-        if (empty) {
+        const { selection } = state;
+        const link = linkAtSelection(state);
+        if (!link && selection.empty) {
             const text = schema.text(href, [marks.link.create({ href })]);
             dispatch?.(state.tr.replaceSelectionWith(text, false));
             return true;
         }
-        dispatch?.(state.tr.removeMark(from, to, marks.link).addMark(from, to, marks.link.create({ href })));
+        const { from, to } = link ?? selection;
+        const mark = marks.link.create({ ...link?.attrs, href });
+        dispatch?.(state.tr.removeMark(from, to, marks.link).addMark(from, to, mark));
         return true;
     };
 };
 
 export const removeLink: Command = (state, dispatch) => {
-    const { $from, from, to, empty } = state.selection;
-    if (!empty) {
-        dispatch?.(state.tr.removeMark(from, to, marks.link));
-        return true;
-    }
-    // remove the link around the cursor
-    const { parent, parentOffset } = $from;
-    const child = parent.childBefore(parentOffset);
-    if (!child.node || !marks.link.isInSet(child.node.marks)) {
+    const link = linkAtSelection(state);
+    if (!link) {
         return false;
     }
-    const start = $from.start() + child.offset;
-    dispatch?.(state.tr.removeMark(start, start + child.node.nodeSize, marks.link));
+    dispatch?.(state.tr.removeMark(link.from, link.to, marks.link));
     return true;
 };
 
@@ -377,4 +406,42 @@ export const paragraph = (text?: string) => nodes.paragraph.create(null, text ? 
 
 export const createNode = (type: NodeType, attrs: Attrs | null, content?: Node | Node[]) => {
     return type.createAndFill(attrs, content)!;
+};
+
+const linkAttrs = (link: Mark): LinkAttrs => ({ href: link.attrs.href, title: link.attrs.title });
+
+/** the link the position is in or at an edge of, the link before wins between two links */
+const linkTouching = ($pos: ResolvedPos) => {
+    const { nodeBefore, nodeAfter } = $pos;
+    return marks.link.isInSet(nodeBefore?.marks ?? []) ?? marks.link.isInSet(nodeAfter?.marks ?? []);
+};
+
+const firstLinkBetween = (doc: Node, from: number, to: number) => {
+    let link: Mark | undefined;
+    doc.nodesBetween(from, to, (node) => {
+        link ??= marks.link.isInSet(node.marks);
+        return !link;
+    });
+    return link;
+};
+
+/** the range of the inline nodes around the position that carry the mark, e.g. a partly bold link */
+const markRangeAround = ($pos: ResolvedPos, mark: Mark) => {
+    const { parent } = $pos;
+    const hasMark = (index: number) => mark.isInSet(parent.child(index).marks);
+
+    let startIndex = $pos.index();
+    let from = $pos.posAtIndex(startIndex);
+    while (startIndex > 0 && hasMark(startIndex - 1)) {
+        startIndex--;
+        from -= parent.child(startIndex).nodeSize;
+    }
+
+    let endIndex = $pos.index();
+    let to = $pos.posAtIndex(endIndex);
+    while (endIndex < parent.childCount && hasMark(endIndex)) {
+        to += parent.child(endIndex).nodeSize;
+        endIndex++;
+    }
+    return { from, to };
 };

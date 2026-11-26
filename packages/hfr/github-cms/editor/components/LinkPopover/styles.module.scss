@@ -1,0 +1,10 @@
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5em;
+    /* left aligned, apart from the actions changing the link */
+    .openLink {
+        margin-right: auto;
+    }
+}
