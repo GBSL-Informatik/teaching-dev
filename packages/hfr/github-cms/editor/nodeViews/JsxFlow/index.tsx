@@ -46,6 +46,9 @@ export const jsxFlowClassName = (node: Node) => {
     if (isTabItem(node)) {
         return 'cms-jsx cms-jsx--tab-item';
     }
+    if (isQuiz(node)) {
+        return 'cms-jsx cms-jsx--quiz';
+    }
     if (isQuestion(node)) {
         return 'cms-jsx cms-jsx--question';
     }

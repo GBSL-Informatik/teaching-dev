@@ -221,6 +221,19 @@
                 padding: 0.3em 0 0.5em 0;
             }
         }
+        /* only the header is shaded, the questions stand out on the page background */
+        .cms-jsx.cms-jsx--quiz {
+            padding: 0;
+            background: var(--ifm-background-color);
+            > .cms-node-view-component {
+                padding: 0.2em 0.8em;
+                background: var(--ifm-color-emphasis-100);
+                border-radius: 0 var(--ifm-global-radius) 0 0;
+            }
+            > .cms-node-view-content {
+                padding: 0.5em 0.8em;
+            }
+        }
         /* a compact version of the question card on the page, the header is rendered by the node view */
         .cms-jsx.cms-jsx--question {
             padding: 0;
