@@ -2,6 +2,7 @@ import type { Node, ResolvedPos } from 'prosemirror-model';
 import type { EditorState } from 'prosemirror-state';
 import { paragraph } from '../commands';
 import type { ImportSpec } from '../imports';
+import { findAttribute } from '../jsxAttributes';
 import { isJsxFlow, type JsxAttribute, schema } from '../schema';
 import { idAttribute } from '../uuid';
 
@@ -35,6 +36,24 @@ const hasAncestor = ($pos: ResolvedPos, predicate: (node: Node) => boolean) => {
 export const isInQuiz = (state: EditorState) => hasAncestor(state.selection.$from, isQuiz);
 /** hints are shown by the question they are placed in */
 export const isInQuestion = (state: EditorState) => hasAncestor(state.selection.$from, isQuestion);
+
+/**
+ * The positions of the questions outside of a quiz without `id`, e.g. moved out of a quiz.
+ * They are not rendered on the page: the id of their document is missing.
+ */
+export const standaloneQuestionsWithoutId = (doc: Node): number[] => {
+    const positions: number[] = [];
+    doc.descendants((node, pos) => {
+        if (isQuiz(node)) {
+            return false;
+        }
+        if (isQuestion(node) && !findAttribute(node.attrs.attributes, 'id')) {
+            positions.push(pos);
+        }
+        return true;
+    });
+    return positions;
+};
 
 const ASSESSABLE_SOURCE = '@tdev-components/documents/Assessable';
 export const QUIZ_IMPORT: ImportSpec = { name: QUIZ, source: `${ASSESSABLE_SOURCE}/Quiz` };
