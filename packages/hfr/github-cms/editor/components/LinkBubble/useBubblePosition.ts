@@ -1,13 +1,11 @@
 import type { EditorView } from 'prosemirror-view';
 import React from 'react';
-import { onViewportChange, shouldPlaceAbove } from '../useFloatingPlacement';
+import { GAP_PX, onViewportChange, shouldPlaceAbove } from '../useFloatingPlacement';
 
 export interface BubblePosition {
     top: number;
     left: number;
 }
-
-const GAP_PX = 4;
 
 /**
  * Places the bubble below the position `pos` in the document, or above it when it would be covered

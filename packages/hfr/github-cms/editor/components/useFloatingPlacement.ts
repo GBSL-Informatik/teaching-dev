@@ -7,7 +7,8 @@ export interface FloatingPlacement {
     minWidth?: number;
 }
 
-const GAP = 4;
+/** the distance between a floating element and its anchor */
+export const GAP_PX = 4;
 const VIEWPORT_MARGIN = 8;
 
 /**
@@ -27,7 +28,7 @@ export const shouldPlaceAbove = (anchor: { top: number; bottom: number }, height
     const visible = visibleViewport();
     const spaceBelow = visible.bottom - anchor.bottom;
     const spaceAbove = anchor.top - visible.top;
-    return spaceBelow < height + GAP && spaceAbove > spaceBelow;
+    return spaceBelow < height + GAP_PX && spaceAbove > spaceBelow;
 };
 
 /** calls `update` when the page is scrolled or resized, also when the on-screen keyboard opens */
@@ -54,9 +55,9 @@ export const placeCentered = (anchor: DOMRect, width: number, height: number): F
     const maxLeft = window.innerWidth - width - VIEWPORT_MARGIN;
     const left = Math.max(VIEWPORT_MARGIN, Math.min(centeredLeft, maxLeft));
     if (!shouldPlaceAbove(anchor, height)) {
-        return { left, top: anchor.bottom + GAP };
+        return { left, top: anchor.bottom + GAP_PX };
     }
-    return { left, top: anchor.top - height - GAP };
+    return { left, top: anchor.top - height - GAP_PX };
 };
 
 /**

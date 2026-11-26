@@ -7,6 +7,7 @@ import type { ReactPortal } from 'react';
 import { Asset } from '../../models/Dir';
 import type File from '../../models/File';
 import { insertInline, insertInlineAt, linkAtSelection, type LinkRange } from '../commands';
+import { focusEditor } from '../focusEditor';
 import { parseMarkdown, serializeMarkdown } from '../markdown';
 import type { NodeViewEditor } from '../nodeViews/ReactNodeView';
 import { createPlugins } from '../plugins';
@@ -142,7 +143,9 @@ class MdxDocument implements NodeViewEditor {
     }
 
     focus() {
-        this.view?.focus();
+        if (this.view) {
+            focusEditor(this.view);
+        }
     }
 
     /** whether the command can be applied to the current state - observes the state */

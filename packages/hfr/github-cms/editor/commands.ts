@@ -301,8 +301,12 @@ export const toggleMarkOnWord = (markType: MarkType): Command => {
 export interface LinkRange {
     from: number;
     to: number;
-    /** the attributes of the link mark, `href` and `title` */
-    attrs: Attrs;
+    attrs: LinkAttrs;
+}
+
+export interface LinkAttrs {
+    href: string;
+    title: string | null;
 }
 
 /**
@@ -313,13 +317,13 @@ export const linkAtSelection = (state: EditorState): LinkRange | null => {
     const { $from, from, to, empty } = state.selection;
     if (!empty) {
         const link = firstLinkBetween(state.doc, from, to);
-        return link ? { from, to, attrs: link.attrs } : null;
+        return link ? { from, to, attrs: linkAttrs(link) } : null;
     }
     const link = linkTouching($from);
     if (!link) {
         return null;
     }
-    return { ...markRangeAround($from, link), attrs: link.attrs };
+    return { ...markRangeAround($from, link), attrs: linkAttrs(link) };
 };
 
 /**
@@ -403,6 +407,8 @@ export const paragraph = (text?: string) => nodes.paragraph.create(null, text ? 
 export const createNode = (type: NodeType, attrs: Attrs | null, content?: Node | Node[]) => {
     return type.createAndFill(attrs, content)!;
 };
+
+const linkAttrs = (link: Mark): LinkAttrs => ({ href: link.attrs.href, title: link.attrs.title });
 
 /** the link the position is in or at an edge of, the link before wins between two links */
 const linkTouching = ($pos: ResolvedPos) => {

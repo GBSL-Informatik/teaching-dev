@@ -4,21 +4,8 @@ import { type EditorState, NodeSelection, TextSelection, type Transaction } from
 import type { EditorView, NodeView, NodeViewConstructor, ViewMutationRecord } from 'prosemirror-view';
 import React, { type ReactPortal } from 'react';
 import { createPortal } from 'react-dom';
+import { focusEditor } from '../focusEditor';
 import { addImports, type ImportSpec } from '../imports';
-
-/**
- * Focuses ProseMirror, keeping its selection. `view.focus()` focuses the editor before it sets the browser
- * selection: when the browser selection is outside of the editor (e.g. in a popover), the browser places
- * the caret at the start of the editor, and the first code block (e.g. the frontmatter) takes the focus.
- */
-const focusEditor = (view: EditorView) => {
-    if (view.hasFocus()) {
-        return;
-    }
-    const { node, offset } = view.domAtPos(view.state.selection.from);
-    window.getSelection()?.collapse(node, offset);
-    view.focus();
-};
 
 /**
  * The editor of a node view: the document or a nested editor, e.g. of an image caption.
