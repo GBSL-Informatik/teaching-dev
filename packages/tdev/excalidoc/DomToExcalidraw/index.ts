@@ -29,7 +29,9 @@ export const copyAsExcalidraw = async (article: Element) => {
 
 /**
  * Excalidraw canvases are light (its dark theme inverts their colors), so the page is converted in its light theme.
- * Converting dark colors is not possible: e.g. code blocks may keep a light background in the dark theme.
+ * Converting dark colors is not possible: they can not be told apart from colors that do not depend on the theme.
+ * The page flashes light while converting, also during the slower embedding of images; this is accepted.
+ * Colors set by JavaScript (e.g. the syntax theme of code blocks, see `useColorMode`) keep the current theme.
  */
 const withLightTheme = async <T>(convert: () => Promise<T>): Promise<T> => {
     const root = document.documentElement;
@@ -38,7 +40,11 @@ const withLightTheme = async <T>(convert: () => Promise<T>): Promise<T> => {
     try {
         return await convert();
     } finally {
-        root.setAttribute('data-theme', theme ?? 'light');
+        if (theme === null) {
+            root.removeAttribute('data-theme');
+        } else {
+            root.setAttribute('data-theme', theme);
+        }
     }
 };
 

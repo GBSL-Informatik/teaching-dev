@@ -1,15 +1,15 @@
 import { ThemeClassNames } from '@docusaurus/theme-common';
 import { mdiClipboardCheck, mdiCloseCircle, mdiLoading } from '@mdi/js';
 import Button from '@tdev-components/shared/Button';
+import { CopyState, useCopyState } from '@tdev-hooks/useCopyState';
 import { useStore } from '@tdev-hooks/useStore';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { ExcalidrawColor, mdiExcalidraw } from '../Component';
 import { copyAsExcalidraw } from '../DomToExcalidraw';
+import { ExcalidrawColor, mdiExcalidraw } from '../icons';
 import styles from './styles.module.scss';
 
-type CopyState = 'none' | 'spin' | 'copied' | 'error';
 const CopyIcon: { [key in CopyState]: string } = {
     none: mdiExcalidraw,
     spin: mdiLoading,
@@ -28,29 +28,15 @@ const CopyColor: { [key in CopyState]: string } = {
  */
 const CopyAsExcalidraw = observer(() => {
     const userStore = useStore('userStore');
-    const [copyState, setCopyState] = React.useState<CopyState>('none');
-
-    React.useEffect(() => {
-        if (copyState === 'none' || copyState === 'spin') {
-            return;
-        }
-        const timeoutId = setTimeout(() => setCopyState('none'), 2000);
-        return () => clearTimeout(timeoutId);
-    }, [copyState]);
+    const { copyState, copy } = useCopyState();
 
     const handleClick = React.useCallback(() => {
         const article = document.querySelector(`.${ThemeClassNames.docs.docMarkdown}`);
         if (!article) {
             return;
         }
-        setCopyState('spin');
-        copyAsExcalidraw(article)
-            .then(() => setCopyState('copied'))
-            .catch((error) => {
-                console.error('Copy as Excalidraw failed', error);
-                setCopyState('error');
-            });
-    }, []);
+        copy(() => copyAsExcalidraw(article));
+    }, [copy]);
 
     if (!userStore.current?.hasElevatedAccess) {
         return null;

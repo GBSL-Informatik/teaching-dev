@@ -1,26 +1,9 @@
 import { mdiCheck, mdiContentCopy } from '@mdi/js';
 import { SIZE_S } from '@tdev-components/shared/iconSizes';
+import { useCopyState } from '@tdev-hooks/useCopyState';
 import clsx from 'clsx';
 import React from 'react';
 import Button from '..';
-
-const useCopyButton = (value: string | undefined) => {
-    const [isCopied, setIsCopied] = React.useState(false);
-    const copyTimeout = React.useRef<number | undefined>(undefined);
-
-    const copyText = React.useCallback(() => {
-        navigator.clipboard.writeText(value ?? '').then(() => {
-            setIsCopied(true);
-            copyTimeout.current = window.setTimeout(() => {
-                setIsCopied(false);
-            }, 1000);
-        });
-    }, [value]);
-
-    React.useEffect(() => () => window.clearTimeout(copyTimeout.current), []);
-
-    return { copyText, isCopied };
-};
 
 interface Props {
     className?: string;
@@ -32,13 +15,17 @@ interface Props {
 
 export default function CopyButton(props: Props): React.ReactNode {
     const { className, value, title } = props;
-    const { copyText, isCopied } = useCopyButton(value);
+    const { copyState, copy } = useCopyState(1000);
+    const isCopied = copyState === 'copied';
+    const handleClick = React.useCallback(() => {
+        copy(() => navigator.clipboard.writeText(value ?? ''));
+    }, [copy, value]);
 
     return (
         <Button
             title={title}
             className={clsx(className)}
-            onClick={copyText}
+            onClick={handleClick}
             icon={isCopied ? mdiCheck : mdiContentCopy}
             color={isCopied ? 'green' : undefined}
             size={props.size ?? SIZE_S}

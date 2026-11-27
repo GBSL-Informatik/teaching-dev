@@ -1,11 +1,10 @@
 import { mdiCircle, mdiClipboardCheck, mdiClipboardText, mdiCloseCircle, mdiLoading } from '@mdi/js';
 import Icon, { Stack } from '@mdi/react';
+import { CopyState, useCopyState } from '@tdev-hooks/useCopyState';
 import clsx from 'clsx';
-import * as React from 'react';
 import { Color, getType } from '../Badge';
 import styles from './styles.module.scss';
 
-type CopyState = 'none' | 'spin' | 'copied' | 'error';
 const CopyIcon: { [key in CopyState]: string } = {
     none: mdiClipboardText,
     copied: mdiClipboardCheck,
@@ -28,15 +27,7 @@ interface Props {
 }
 
 const CopyBadge = (props: Props) => {
-    const [copyState, setCopyState] = React.useState<CopyState>('none');
-
-    React.useEffect(() => {
-        if (['none', 'spin'].includes(copyState)) {
-            return;
-        }
-        const timeoutId = setTimeout(() => setCopyState('none'), 2000);
-        return () => clearTimeout(timeoutId);
-    }, [copyState]);
+    const { copyState, copy } = useCopyState();
 
     return (
         <span
@@ -49,15 +40,7 @@ const CopyBadge = (props: Props) => {
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setCopyState('spin');
-                navigator.clipboard
-                    .writeText(props.value)
-                    .then(() => {
-                        setCopyState('copied');
-                    })
-                    .catch(() => {
-                        setCopyState('error');
-                    });
+                copy(() => navigator.clipboard.writeText(props.value));
             }}
             title={props.title ?? `Copy ${props.value}`}
         >
