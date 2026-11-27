@@ -1,6 +1,6 @@
 import { rootStore } from '@tdev-stores/rootStore';
-import { ExcalidrawColor, mdiExcalidraw } from './Component';
 import DocumentView from './Component/DocumentView';
+import { ExcalidrawColor, mdiExcalidraw } from './icons';
 import { createModel } from './model';
 
 const register = () => {

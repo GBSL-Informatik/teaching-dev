@@ -4,7 +4,8 @@
     "main": "index.ts",
     "types": "index.ts",
     "dependencies": {
-        "@excalidraw/excalidraw": "^0.18.1"
+        "@excalidraw/excalidraw": "^0.18.1",
+        "html-to-image": "^1.11.13"
     },
     "devDependencies": {
         "vitest": "*",

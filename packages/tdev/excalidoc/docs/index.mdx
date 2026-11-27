@@ -110,6 +110,20 @@ Es kann auch eine Editor-Komponente mit dem Source-Code angezeigt werden:
     />
 </CodeShowcase>
 
+## Seiten als Excalidraw kopieren
+
+Lehrpersonen sehen am Ende jeder Seite den Button **Als Excalidraw kopieren**. Er kopiert den Seiteninhalt in die Zwischenablage. Mit [[Ctrl]] + [[V]] lässt er sich in eine beliebige Excalidraw-Zeichenfläche einfügen, z.B. auf [excalidraw.com](https://excalidraw.com), in eine `Excalidoc`-Komponente oder in Obsidian. So lassen sich Inhalte aus den Unterlagen für eine Präsentation weiterverwenden.
+
+- Jeder Abschnitt (`##`) wird zu einem eigenen Frame, der als Folie genutzt werden kann. Die Frames liegen nebeneinander.
+- Ist auf der Seite Text markiert, werden nur die markierten Abschnitte kopiert.
+- Texte, Hintergründe, Rahmen, Code-Blöcke und Bilder bleiben in Excalidraw bearbeitbar. Formeln (KaTeX) und Videos werden als Bild eingefügt, eingebettete Seiten (`iframe`) als Rahmen mit einem Link.
+- Kopiert wird die Seite so, wie sie angezeigt wird: Zugeklappte Details und nicht gewählte Tabs werden nicht kopiert.
+- Kopiert werden die Farben des hellen Designs. Im dunklen Design wird die Seite deshalb während des Kopierens kurz hell angezeigt. Code-Blöcke behalten jedoch das Farbschema der aktuellen Ansicht.
+
+:::info[Darstellung]
+Excalidraw verwendet eigene Schriftarten. Zeilenumbrüche bleiben erhalten, die Zeilen sind aber nicht gleich breit wie auf der Seite. Fett- und Kursivschrift sowie die Farben der Syntaxhervorhebung gehen verloren.
+:::
+
 ## Content-Editing Tools
 
 Währenddem Docusaurus im `development`-Modus läuft, steht in der Toolbar das `Edit Document`-Icon zur Verfügung, um das Excalidraw-Dokument direkt zu bearbeiten.

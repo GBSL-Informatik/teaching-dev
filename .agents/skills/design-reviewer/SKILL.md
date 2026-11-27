@@ -30,6 +30,7 @@ Compare the change against this table, not against memory. A concern listed here
 | Real-time updates | `IoEvent`s dispatched by `SocketDataStore` to handlers registered per record type with `registerRecordHandler`; core handlers in `coreRecordHandlers.ts` | `src/stores/SocketDataStore.ts`, `src/stores/assets/coreRecordHandlers.ts`, `src/api/IoEventTypes.ts` | — |
 | Shared state | MobX stores owned by `rootStore` (app lifetime); view state in view stores; components use `useStore` | `src/stores/` | local `useState` for state that dies with the component |
 | Browser persistence | `Storage` with a key in `StorageKey`, or `useLocalStorage` in components | `src/stores/utils/Storage.ts`, `src/hooks/useLocalStorage.ts` | IndexedDB only inside the offline API |
+| Copy feedback | `useCopyState` (spinning, copied, error, reset after a delay); the component only renders the state | `src/hooks/useCopyState.ts`, used by `CopyBadge`, `CopyButton`, `CopyAsExcalidraw` | — |
 | Configuration | typed `customFields.tdevConfig` (`siteConfig.d.ts`); package options in its plugin config | `src/siteConfig/` | — |
 | Docusaurus overrides | swizzled components in `src/theme/`, wrapping `@theme-original/*` where possible | `src/theme/` | — |
 | Styling | co-located `styles.module.scss`, Infima `--ifm-*` vars, `clsx` | see `AGENTS.md` | inline style only for runtime values; global `alert--<type>` classes in `src/css/custom.scss` (`alert--blue`, `alert--black`), because remark plugins emit plain class names at build time and cannot use CSS modules |
