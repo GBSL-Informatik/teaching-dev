@@ -1,6 +1,8 @@
+import { boxSkeletons, iframeSkeleton } from './box';
 import ConversionContext from './ConversionContext';
-import { isIgnored, isInlineFlow, isVisible } from './dom';
-import { textSkeleton } from './text';
+import { isIgnored, isInlineFlow, isReplaced, isVisible } from './dom';
+import { imageSkeleton } from './image';
+import { codeSkeleton, textSkeletons } from './text';
 import { Skeleton } from './types';
 
 /**
@@ -15,10 +17,22 @@ export const convertElement = async (element: Element, context: ConversionContex
         return [];
     }
 
-    const text = textSkeleton(element, style, context);
-    const children = await convertChildren(element, context);
-    return text ? [text, ...children] : children;
+    if (element instanceof HTMLIFrameElement) {
+        return [iframeSkeleton(element, context)];
+    }
+    if (isReplaced(element)) {
+        return withOptional([], await imageSkeleton(element, context));
+    }
+    const boxes = boxSkeletons(element, style, context);
+    if (element instanceof HTMLPreElement) {
+        return withOptional(boxes, codeSkeleton(element, style, context));
+    }
+    const text = [...boxes, ...textSkeletons(element, style, context)];
+    return [...text, ...(await convertChildren(element, context))];
 };
+
+const withOptional = (skeletons: Skeleton[], skeleton: Skeleton | undefined) =>
+    skeleton ? [...skeletons, skeleton] : skeletons;
 
 /**
  * Inline children are part of the text of their parent, but may contain blocks or images.

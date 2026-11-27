@@ -8,11 +8,15 @@ export interface Scene {
     files: BinaryFiles;
 }
 
-/**
- * Font family ids of Excalidraw, see `FONT_FAMILY` in `@excalidraw/excalidraw`.
- * Repeated here, so that copying does not load the Excalidraw bundle.
+/*
+ * Constants of Excalidraw, see `FONT_FAMILY` and `ROUNDNESS` in `@excalidraw/excalidraw`.
+ * Repeated here, so that the converter does not import the Excalidraw bundle, which is only loaded when copying.
  */
 export const FontFamily = {
     Nunito: 6,
     ComicShanns: 8
+} as const;
+
+export const Roundness = {
+    Adaptive: 3
 } as const;

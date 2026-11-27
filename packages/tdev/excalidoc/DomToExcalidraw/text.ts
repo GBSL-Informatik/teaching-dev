@@ -6,6 +6,8 @@ import { FontFamily, Skeleton } from './types';
 
 /** approximate width of a character relative to the font size */
 const MARKER_CHAR_WIDTH = 0.55;
+/** the widest character of Comic Shanns, the (nearly) monospace code font of Excalidraw, relative to the font size */
+const CODE_CHAR_WIDTH = 0.6;
 
 interface TextLine {
     text: string;
@@ -15,21 +17,36 @@ interface TextLine {
 }
 
 /**
- * Converts the text of a block to one text element, keeping the line breaks of the browser.
+ * Converts the text of a block to a text element, keeping the line breaks of the browser.
  * Text of nested blocks is converted separately.
  */
-export const textSkeleton = (
+export const textSkeletons = (
     block: Element,
     style: CSSStyleDeclaration,
     context: ConversionContext
-): Skeleton | undefined => {
-    const lines = readLines(inlineTextNodes(block));
-    if (lines.length === 0) {
-        return;
+): Skeleton[] => {
+    const runs = inlineRuns(block)
+        .map(readLines)
+        .filter((lines) => lines.length > 0);
+    if (runs.length === 0) {
+        return [];
     }
+    const marker = listMarker(block);
+    if (runs.length === 1) {
+        return [paragraph(runs[0], marker, style, context)];
+    }
+    // Excalidraw text can not leave gaps for inline images or formulas, so each line is placed on its own
+    return runs.flat().map((line, idx) => paragraph([line], idx === 0 ? marker : undefined, style, context));
+};
+
+const paragraph = (
+    lines: TextLine[],
+    marker: string | undefined,
+    style: CSSStyleDeclaration,
+    context: ConversionContext
+): Skeleton => {
     const fontSize = parseFloat(style.fontSize);
     const lineHeight = lineHeightInPx(style, fontSize);
-    const marker = listMarker(block);
     // the marker is placed left of the text, as the browser does
     const markerWidth = marker ? marker.length * fontSize * MARKER_CHAR_WIDTH : 0;
     const firstLine = lines[0];
@@ -53,27 +70,81 @@ export const textSkeleton = (
     };
 };
 
-export const lineHeightInPx = (style: CSSStyleDeclaration, fontSize: number) => {
+/**
+ * Converts a code block to monospace text. Its lines are kept as they are, without wrapping.
+ */
+export const codeSkeleton = (
+    pre: HTMLPreElement,
+    style: CSSStyleDeclaration,
+    context: ConversionContext
+): Skeleton | undefined => {
+    const code = codeText(pre);
+    if (code.trim().length === 0) {
+        return;
+    }
+    const rect = pre.getBoundingClientRect();
+    const fontSize = parseFloat(style.fontSize);
+    const contentLeft = rect.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
+    const contentTop = rect.top + parseFloat(style.borderTopWidth) + parseFloat(style.paddingTop);
+
+    const longestLine = Math.max(...code.split('\n').map((line) => line.length));
+
+    return {
+        type: 'text',
+        id: context.nextId(),
+        ...context.toScene(new DOMRect(contentLeft, contentTop)),
+        // Excalidraw would measure the text with the fonts of this page, where its code font is missing,
+        // and the too small width would clip the end of the lines.
+        width: longestLine * fontSize * CODE_CHAR_WIDTH,
+        text: code,
+        fontSize,
+        fontFamily: FontFamily.ComicShanns,
+        lineHeight: (lineHeightInPx(style, fontSize) / fontSize) as ExcalidrawTextElement['lineHeight'],
+        strokeColor: toExcalidrawColor(style.color)
+    };
+};
+
+/**
+ * Docusaurus renders each code line as a block ending with a `<br>`, so `innerText` would double the line breaks.
+ */
+const codeText = (pre: HTMLPreElement) => {
+    const lines = pre.querySelectorAll('.token-line');
+    if (lines.length === 0) {
+        return pre.innerText.replace(/\n$/, '');
+    }
+    return Array.from(lines, (line) => line.textContent ?? '').join('\n');
+};
+
+const lineHeightInPx = (style: CSSStyleDeclaration, fontSize: number) => {
     const lineHeight = parseFloat(style.lineHeight);
     // `line-height: normal` is computed as 'normal'
     return Number.isNaN(lineHeight) ? fontSize * 1.2 : lineHeight;
 };
 
-const inlineTextNodes = (block: Element): Text[] => {
-    const textNodes: Text[] = [];
-    block.childNodes.forEach((child) => {
-        if (child instanceof Text) {
-            textNodes.push(child);
-            return;
-        }
-        if (!(child instanceof Element) || isIgnored(child)) {
-            return;
-        }
-        if (isInlineFlow(child, getComputedStyle(child))) {
-            textNodes.push(...inlineTextNodes(child));
-        }
-    });
-    return textNodes;
+/**
+ * Collects the text nodes flowing in the block, split into runs at every element that interrupts the text,
+ * e.g. an inline formula or a nested list.
+ */
+const inlineRuns = (block: Element): Text[][] => {
+    const runs: Text[][] = [[]];
+    const collect = (element: Element) => {
+        element.childNodes.forEach((child) => {
+            if (child instanceof Text) {
+                runs[runs.length - 1].push(child);
+                return;
+            }
+            if (!(child instanceof Element) || isIgnored(child)) {
+                return;
+            }
+            if (isInlineFlow(child, getComputedStyle(child))) {
+                collect(child);
+                return;
+            }
+            runs.push([]);
+        });
+    };
+    collect(block);
+    return runs;
 };
 
 /**
